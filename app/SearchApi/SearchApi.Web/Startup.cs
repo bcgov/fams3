@@ -24,7 +24,10 @@ namespace SearchApi.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            
             services.AddControllers();
+
+            services.AddHealthChecks();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -41,6 +44,8 @@ namespace SearchApi.Web
 
             app.UseEndpoints(endpoints =>
             {
+                // registration of health endpoints see https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/health-checks
+                endpoints.MapHealthChecks("/health");
                 endpoints.MapControllers();
             });
         }

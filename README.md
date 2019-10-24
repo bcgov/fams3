@@ -9,6 +9,19 @@ FAMS-search-api is a dotnet core rest service to execute people search accross m
     ├── .gitignore              # Git ignore.
     └── README.md               # This file.
 
+## Run on Docker
+
+download and install [Docker](https://www.docker.com)
+
+Run
+
+```shell
+cd app/SearchApi
+docker-compose up
+```
+
+Application health can be checked [here](http://localhost:5050/health).
+
 ## Run
 
 download and install [dotnet core 3.0](https://dotnet.microsoft.com/download/dotnet-core/3.0)

@@ -20,4 +20,4 @@ cd app/SearchApi/SearchApi.Web
 dotnet run
 ```
 
-browse to [default endpoint](http://localhost:5000/weatherforecast)
+Application health can be checked [here](http://localhost:5000/health).

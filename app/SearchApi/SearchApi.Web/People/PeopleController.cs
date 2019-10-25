@@ -13,9 +13,9 @@ namespace SearchApi.Web.Controllers
     {
         [HttpPost]
         [Route("search")]
-        public async Task<IActionResult> Search()
+        public async Task<IActionResult> Search([FromBody]PersonSearchRequest searchRequest)
         {
-            return await Task.FromResult(Ok());
+            return await Task.FromResult(Ok(searchRequest));
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using OpenTracing;
 
 namespace SearchApi.Web.Controllers
 {
@@ -14,6 +15,14 @@ namespace SearchApi.Web.Controllers
     [ApiController]
     public class PeopleController : ControllerBase
     {
+
+        private ITracer _tracer;
+
+        public PeopleController(ITracer tracer)
+        {
+            this._tracer = tracer;
+        }
+
         /// <summary>
         /// Receives a <see cref="PersonSearchRequest"/> and start the process of searching additional information for a person.
         /// </summary>
@@ -23,6 +32,11 @@ namespace SearchApi.Web.Controllers
         [Route("search")]
         public async Task<IActionResult> Search([FromBody]PersonSearchRequest personSearchRequest)
         {
+
+            Guid searchRequestId = Guid.NewGuid();
+
+            _tracer.ActiveSpan.SetTag("searchRequestId", $"{searchRequestId}");
+
             return await Task.FromResult(Accepted(new PersonSearchResponse(Guid.NewGuid())));
         }
     }

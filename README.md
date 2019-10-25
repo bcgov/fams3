@@ -41,6 +41,10 @@ Application health can be checked [here](http://localhost:5050/health).
 
 download and install [dotnet core 3.0](https://dotnet.microsoft.com/download/dotnet-core/3.0)
 
+Configure the following environment variables:
+
+![asp-config](docs/aspnet.configuration.env.png)
+
 Run
 
 ```shell

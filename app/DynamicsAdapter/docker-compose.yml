@@ -2,6 +2,7 @@ version: '3.7'
 services:
   dynamics-adapter:
     build:
+      dockerfile: Dockerfile
       context: .
     ports:
     - "5060:80"

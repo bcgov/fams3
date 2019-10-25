@@ -51,11 +51,31 @@ namespace SearchApi.Web
 
             services.AddSingleton<ITracer>(serviceProvider =>
             {
-                var tracer = Jaeger.Configuration.FromEnv(serviceProvider.GetService<ILoggerFactory>()).GetTracer();
+
+                ITracer tracer;
+
+                try
+                {
+                    tracer = Jaeger.Configuration.FromEnv(serviceProvider.GetService<ILoggerFactory>()).GetTracer();
+                    
+                }
+                catch (ArgumentException ex)
+                {
+                    if (ex.Message == "Service name must not be null or empty")
+                    {
+                        tracer = new Tracer.Builder(serviceProvider.GetRequiredService<IHostEnvironment>().ApplicationName)
+                            .WithSampler(new ConstSampler(false))
+                            .Build();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
 
                 GlobalTracer.Register(tracer);
-
                 return tracer;
+
             });
 
         }

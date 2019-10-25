@@ -21,8 +21,8 @@ The csharp client is set up to use [configuration via environment](https://githu
 
 *Notes*
 
-> You **must** set `JAEGER_SERVICE_NAME`.  
-> Configure `JAEGER_SAMPLER_TYPE=const` if you want to sample all your traces.
+> Set `JAEGER_SERVICE_NAME` if you want the tracer to ship tracing logs.  
+> Set `JAEGER_SAMPLER_TYPE=const` if you want to sample all your traces.
 
 ## Run on Docker
 
@@ -41,7 +41,7 @@ Application health can be checked [here](http://localhost:5050/health).
 
 download and install [dotnet core 3.0](https://dotnet.microsoft.com/download/dotnet-core/3.0)
 
-Configure the following environment variables:
+Optionaly you can configure `jaeger` client to send traces:
 
 ![asp-config](docs/aspnet.configuration.env.png)
 

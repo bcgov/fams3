@@ -13,10 +13,10 @@ namespace SearchApi.Web.Controllers
         public PersonSearchResponse(Guid id)
         {
             if(id == default(Guid)) throw new ArgumentNullException(nameof(id));
-            this.id = id;
+            this.Id = id;
         }
 
         [Description("The unique identifier of the search request")]
-        public Guid id { get; }
+        public Guid Id { get; }
     }
 }

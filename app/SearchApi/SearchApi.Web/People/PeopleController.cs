@@ -42,7 +42,7 @@ namespace SearchApi.Web.Controllers
 
             _tracer.ActiveSpan.SetTag("searchRequestId", $"{searchRequestId}");
 
-            return await Task.FromResult(Accepted(new PersonSearchResponse(Guid.NewGuid())));
+            return await Task.FromResult(Accepted(new PersonSearchResponse(searchRequestId)));
         }
     }
 }

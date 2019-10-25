@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using Newtonsoft.Json;
+using NSwag;
 
 namespace SearchApi.Web.Controllers
 {

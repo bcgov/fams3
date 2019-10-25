@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NSwag;
+using NSwag.Annotations;
 using OpenTracing;
 
 namespace SearchApi.Web.Controllers
@@ -30,6 +32,9 @@ namespace SearchApi.Web.Controllers
         /// <returns><see cref="PersonSearchResponse"/></returns>
         [HttpPost]
         [Route("search")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(PersonSearchResponse), StatusCodes.Status202Accepted)]
+        [OpenApiTag("People API")]
         public async Task<IActionResult> Search([FromBody]PersonSearchRequest personSearchRequest)
         {
 

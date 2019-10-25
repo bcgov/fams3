@@ -7,15 +7,23 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace SearchApi.Web.Controllers
 {
+    /// <summary>
+    /// the PeopleController represents the people API.
+    /// </summary>
     [Route("[controller]")]
     [ApiController]
     public class PeopleController : ControllerBase
     {
+        /// <summary>
+        /// Receives a <see cref="PersonSearchRequest"/> and start the process of searching additional information for a person.
+        /// </summary>
+        /// <param name="personSearchRequest">A request to search a person</param>
+        /// <returns><see cref="PersonSearchResponse"/></returns>
         [HttpPost]
         [Route("search")]
-        public async Task<IActionResult> Search([FromBody]PersonSearchRequest searchRequest)
+        public async Task<IActionResult> Search([FromBody]PersonSearchRequest personSearchRequest)
         {
-            return await Task.FromResult(Ok(searchRequest));
+            return await Task.FromResult(Accepted(new PersonSearchResponse(Guid.NewGuid())));
         }
     }
 }

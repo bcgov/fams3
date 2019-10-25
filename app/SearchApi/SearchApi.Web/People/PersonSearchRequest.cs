@@ -19,9 +19,9 @@ namespace SearchApi.Web.Controllers
         }
 
         [Description("The first name of the subject.")]
-        public String FirstName { get; }
+        public string FirstName { get; }
         [Description("The last name of the subject.")]
-        public String LastName { get; }
+        public string LastName { get; }
         [Description("The date of birth of the subject.")]
         public DateTime? DateOfBirth { get; }
     }

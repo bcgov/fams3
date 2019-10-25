@@ -1,0 +1,11 @@
+version: '3.7'
+services:
+  dynamics-adapter:
+    build:
+      context: .
+    ports:
+    - "5060:80"
+    networks: 
+      - dynamics-adapter-net
+networks:
+  dynamics-adapter-net:

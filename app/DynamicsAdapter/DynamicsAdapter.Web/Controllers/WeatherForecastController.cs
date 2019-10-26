@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace DynamicsAdapter.Web.Controllers
+namespace DynamicsAdapeter.Web.Controllers
 {
     [ApiController]
     [Route("[controller]")]

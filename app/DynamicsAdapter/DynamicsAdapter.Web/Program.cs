@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace DynamicsAdapter.Web
+namespace DynamicsAdapeter.Web
 {
     public class Program
     {

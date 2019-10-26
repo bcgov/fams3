@@ -2,10 +2,52 @@ version: '3.7'
 services:
   dynamics-adapter:
     build:
-      dockerfile: Dockerfile
       context: .
+    environment:
+      JAEGER_SERVICE_NAME: dynamics-adapter
+      JAEGER_SAMPLER_TYPE: const
+      JAEGER_ENDPOINT: http://jaeger-collector:14268/api/traces
     ports:
     - "5060:80"
+    networks: 
+      - dynamics-adapter-net
+
+  jaeger-collector:
+      image: jaegertracing/jaeger-collector
+      command: ["--cassandra.keyspace=jaeger_v1_dc1", "--cassandra.servers=cassandra", "--collector.zipkin.http-port=9411"]
+      ports:
+        - "14269"
+        - "14268:14268"
+        - "14267"
+        - "14250"
+        - "9411:9411"
+      restart: on-failure
+      depends_on:
+        - cassandra-schema
+      networks: 
+        - dynamics-adapter-net
+
+  jaeger-query:
+    image: jaegertracing/jaeger-query
+    command: ["--cassandra.keyspace=jaeger_v1_dc1", "--cassandra.servers=cassandra"]
+    ports:
+      - "16686:16686"
+      - "16687"
+    restart: on-failure
+    depends_on:
+      - cassandra-schema
+    networks: 
+      - dynamics-adapter-net
+
+  cassandra:
+    image: cassandra:3.9
+    networks: 
+      - dynamics-adapter-net
+
+  cassandra-schema:
+    image: jaegertracing/jaeger-cassandra-schema
+    depends_on:
+      - cassandra
     networks: 
       - dynamics-adapter-net
 networks:

@@ -1,6 +1,6 @@
 using System;
 
-namespace DynamicsAdapeter.Web
+namespace DynamicsAdapter.Web
 {
     public class WeatherForecast
     {

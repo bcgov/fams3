@@ -24,6 +24,8 @@ services:
       context: DynamicsAdapter
     ports:
       - "5051:80"
+    environment:
+      SCHEDULER__CRON: 0/5 * * * * ?
     restart: always
     networks:
       - search-api-net

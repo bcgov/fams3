@@ -58,11 +58,12 @@ download and install [Docker](https://www.docker.com)
 Run
 
 ```shell
-cd app/SearchApi
+cd app
 docker-compose up
 ```
 
-Application health can be checked [here](http://localhost:5050/health).
+SearchApi health can be checked [here](http://localhost:5050/health).
+Dynamics Adapter health can be checked [here](http://localhost:5051/health).
 SwaggerUi can be accessed [here](http://localhost:5050/swagger).
 OpenApi specification can be accessed [here](http://localhost:5050/swagger/v1/swagger.json).
 

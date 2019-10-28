@@ -10,12 +10,35 @@
     |   └──                     # Dynamic Adapter
     ├── .gitignore              # Git ignore.
     └── README.md               # This file.
+    └── openshift               # Build and Deploy Configurations.
+    └── bin                     # Useful scripts.
 
 ## SearchApi
 
 FAMS-search-api is a dotnet core rest service to execute people search accross multiple data providers.
 
-### Tracing
+
+#### RabbitMq
+
+Configure RabbiMq using the following ENV variables:
+
+| Property | Required | Description |
+| --- | --- | --- |
+| RABBITMQ__HOST | no | RabbitMq Host |
+| RABBITMQ__PORT | no | RabbitMq Port |
+| RABBITMQ__USERNAME | no | RabbitMq UserName |
+| RABBITMQ__PASSWORD | no | RabbitMq Password |
+
+*Notes*
+
+> the variables key have 2 underscores
+
+#### OpenApi
+
+The Search Api uses [NSwag](https://github.com/RicoSuter/NSwag) to autogenerate api specification from the code.
+To turn on the swagger Ui, set `ASPNETCORE_ENVIRONMENT=Development` environment variable, this should not be use in `production`.
+
+#### Tracing
 
 The Search Api uses [opentracing](https://opentracing.io/) instrumentation for distributed tracing.
 
@@ -40,6 +63,8 @@ docker-compose up
 ```
 
 Application health can be checked [here](http://localhost:5050/health).
+SwaggerUi can be accessed [here](http://localhost:5050/swagger).
+OpenApi specification can be accessed [here](http://localhost:5050/swagger/v1/swagger.json).
 
 ## Run
 

@@ -2,21 +2,25 @@
 using Quartz;
 using System.Threading.Tasks;
 
-/// <summary>
-/// The SearchRequestJob orchestrates dyanmics search request.
-/// </summary>
-[DisallowConcurrentExecution]
-public class SearchRequestJob : IJob
+namespace DynamicsAdapter.Web.SearchRequest
 {
-    private readonly ILogger<SearchRequestJob> _logger;
-    public SearchRequestJob(ILogger<SearchRequestJob> logger)
+    /// <summary>
+    /// The SearchRequestJob orchestrates dyanmics search request.
+    /// </summary>
+    [DisallowConcurrentExecution]
+    public class SearchRequestJob : IJob
     {
-        _logger = logger;
+        private readonly ILogger<SearchRequestJob> _logger;
+        public SearchRequestJob(ILogger<SearchRequestJob> logger)
+        {
+            _logger = logger;
+        }
+
+        public Task Execute(IJobExecutionContext context)
+        {
+            _logger.LogInformation("Search Request started!");
+            return Task.CompletedTask;
+        }
     }
 
-    public Task Execute(IJobExecutionContext context)
-    {
-        _logger.LogInformation("Search Request started!");
-        return Task.CompletedTask;
-    }
 }

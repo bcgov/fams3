@@ -1,7 +1,7 @@
 ﻿using Moq;
 using Microsoft.Extensions.Logging;
 using NUnit.Framework;
-using DynamicsAdapter.Web;
+using DynamicsAdapter.Web.SearchRequest;
 using Quartz;
 
 namespace DynamicsAdapter.Web.Test.SearchRequest

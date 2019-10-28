@@ -1,6 +1,7 @@
 using System;
 using DynamicsAdapter.Web.Configuration;
 using DynamicsAdapter.Web.Infrastructure;
+using DynamicsAdapter.Web.SearchApi;
 using DynamicsAdapter.Web.SearchRequest;
 using Jaeger;
 using Jaeger.Samplers;
@@ -36,7 +37,15 @@ namespace DynamicsAdapter.Web
             
             this.ConfigureOpenTracing(services);
 
+            this.ConfigurePeopleClient(services);
+
             this.ConfigureScheduler(services);
+        }
+
+
+        public void ConfigurePeopleClient(IServiceCollection services)
+        {
+            services.AddHttpClient<IPeopleClient, PeopleClient>(c => c.BaseAddress = new Uri("http://localhost:5050"));
         }
 
         /// <summary>

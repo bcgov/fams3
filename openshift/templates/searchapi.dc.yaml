@@ -39,28 +39,28 @@ parameters:
     required: true
     value: latest
 objects:
-  # - kind: Route
-  #   apiVersion: v1
-  #   metadata:
-  #     name: "${NAME}"
-  #   spec:
-  #     host: "${NAME}-${APPLICATION_DOMAIN}"
-  #     to:
-  #       kind: Service
-  #       name: "${NAME}"
-  # - kind: Service
-  #   apiVersion: v1
-  #   metadata:
-  #     name: "${NAME}"
-  #     annotations:
-  #       description: Exposes and load balances the application pods
-  #   spec:
-  #     ports:
-  #       - name: web
-  #         port: 8080
-  #         targetPort: 8080
-  #     selector:
-  #       name: "${NAME}"
+  - kind: Route
+    apiVersion: v1
+    metadata:
+      name: "${NAME}"
+    spec:
+      host: "${NAME}-${APPLICATION_DOMAIN}"
+      to:
+        kind: Service
+        name: "${NAME}"
+  - kind: Service
+    apiVersion: v1
+    metadata:
+      name: "${NAME}"
+      annotations:
+        description: Exposes and load balances the application pods
+    spec:
+      ports:
+        - name: web
+          port: 8080
+          targetPort: 8080
+      selector:
+        name: "${NAME}"
   - kind: DeploymentConfig
     apiVersion: v1
     metadata:

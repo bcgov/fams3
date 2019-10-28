@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MassTransit;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSwag;
@@ -20,8 +21,11 @@ namespace SearchApi.Web.Controllers
 
         private ITracer _tracer;
 
-        public PeopleController(ITracer tracer)
+        private IBus _bus;
+
+        public PeopleController(IBus bus, ITracer tracer)
         {
+            this._bus = bus;
             this._tracer = tracer;
         }
 
@@ -36,13 +40,20 @@ namespace SearchApi.Web.Controllers
         [ProducesResponseType(typeof(PersonSearchResponse), StatusCodes.Status202Accepted)]
         [OpenApiTag("People API")]
         public async Task<IActionResult> Search([FromBody]PersonSearchRequest personSearchRequest)
-        {
-
+        { 
             Guid searchRequestId = Guid.NewGuid();
 
             _tracer.ActiveSpan.SetTag("searchRequestId", $"{searchRequestId}");
 
-            return await Task.FromResult(Accepted(new PersonSearchResponse(searchRequestId)));
+            await this._bus.Send<ExecuteSearch>(new
+            {
+                Id = searchRequestId,
+                personSearchRequest.FirstName,
+                personSearchRequest.LastName,
+                personSearchRequest.DateOfBirth
+            });
+
+            return Accepted(new PersonSearchResponse(searchRequestId));
         }
     }
 }

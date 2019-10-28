@@ -22,7 +22,7 @@ namespace SearchApi.Web.Test.People
 
             _spanMock.Setup(x => x.SetTag(It.IsAny<string>(), It.IsAny<string>())).Returns(_spanMock.Object);
             _tracerMock.Setup(x => x.ActiveSpan).Returns(_spanMock.Object);
-            _sut = new PeopleController(_tracerMock.Object);
+            _sut = new PeopleController(null, _tracerMock.Object);
         }
 
 

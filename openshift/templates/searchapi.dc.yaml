@@ -48,6 +48,11 @@ objects:
       to:
         kind: Service
         name: "${NAME}"
+    port:
+      targetPort: web
+    tls:
+      insecureEdgeTerminationPolicy: Redirect
+      termination: edge
   - kind: Service
     apiVersion: v1
     metadata:

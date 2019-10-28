@@ -94,7 +94,7 @@ node {
 
    sh "oc process -f openshift/templates/searchapi.dc.yaml \
                   -p NAME=${SEARCH_API} \
-                  -p APPLICATION_DOMAIN=${SUBDOMAIN}-dev-${DOMAIN} \
+                  -p APPLICATION_DOMAIN=${SUBDOMAIN}-dev.${DOMAIN} \
                   -p MEMORY_LIMIT=${RUN_MEMORY} \
                   -p NAMESPACE=${TOOLS_NAMESPACE} \
                   -p TAG=dev | oc apply -f - -n ${DEV_NAMESPACE}"

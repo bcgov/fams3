@@ -10,9 +10,23 @@ services:
       JAEGER_ENDPOINT: http://jaeger-collector:14268/api/traces
     ports:
       - "5050:80"
+    restart: always
     networks: 
       - search-api-net
     
+  rabbitmq:
+    image: rabbitmq:3.7.15-management
+    container_name: rabbitmq
+    hostname: rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - data-rabbit:/var/lib/rabbitmq/mnesia/rabbit@app-rabbitmq:cached
+    restart: always
+    networks:
+      - search-api-net
+
   jaeger-collector:
     image: jaegertracing/jaeger-collector
     command: ["--cassandra.keyspace=jaeger_v1_dc1", "--cassandra.servers=cassandra", "--collector.zipkin.http-port=9411"]
@@ -54,3 +68,6 @@ services:
 
 networks:
   search-api-net:
+
+volumes:
+  data-rabbit:

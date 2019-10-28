@@ -58,7 +58,6 @@ download and install [Docker](https://www.docker.com)
 Run
 
 ```shell
-cd app
 docker-compose up
 ```
 

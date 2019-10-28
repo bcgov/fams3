@@ -2,7 +2,7 @@ version: '3.7'
 services:
   search-api:
     build:
-      context: SearchApi
+      context: app/SearchApi
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       RABBITMQ__HOST: rabbitmq
@@ -21,7 +21,7 @@ services:
 
   dynamics-adapter:
     build:
-      context: DynamicsAdapter
+      context: app/DynamicsAdapter
     ports:
       - "5051:80"
     environment:

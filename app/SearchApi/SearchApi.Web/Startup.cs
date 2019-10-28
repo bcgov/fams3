@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using NSwag;
 using OpenTracing;
 using OpenTracing.Util;
 
@@ -28,12 +29,16 @@ namespace SearchApi.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            
+
+            services.AddMvc().AddNewtonsoftJson();
+
             services.AddControllers();
 
             services.AddHealthChecks();
 
             this.ConfigureOpenTracing(services);
+
+            this.ConfigureOpenApi(services);
         }
 
         /// <summary>
@@ -80,6 +85,32 @@ namespace SearchApi.Web
 
         }
 
+        /// <summary>
+        /// Configure Open Api using NSwag
+        /// </summary>
+        /// <param name="services"></param>
+        public void ConfigureOpenApi(IServiceCollection services)
+        {
+
+            services.AddSwaggerDocument(config =>
+            {
+                // configure swagger properties
+                config.PostProcess = document =>
+                {
+                    document.Info.Version = "V0.1";
+                    document.Info.Description = "For Search";
+                    document.Info.Title = "FAMS Search API";
+                    document.Tags = new List<OpenApiTag>()
+                    {
+                        new OpenApiTag() {
+                            Name = "People API",
+                            Description = "The FAMS People API"
+                        } 
+                    };
+                };
+            });
+
+        }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -87,11 +118,14 @@ namespace SearchApi.Web
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseSwaggerUi3();
             }
 
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.UseOpenApi();
 
             app.UseEndpoints(endpoints =>
             {

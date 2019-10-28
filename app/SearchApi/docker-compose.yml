@@ -4,6 +4,7 @@ services:
     build:
       context: .
     environment:
+      ASPNETCORE_ENVIRONMENT: Development
       JAEGER_SERVICE_NAME: search-api
       JAEGER_SAMPLER_TYPE: const
       JAEGER_ENDPOINT: http://jaeger-collector:14268/api/traces

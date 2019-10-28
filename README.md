@@ -11,6 +11,11 @@ FAMS-search-api is a dotnet core rest service to execute people search accross m
 
 ## SearchApi
 
+### OpenApi
+
+The Search Api uses [NSwag](https://github.com/RicoSuter/NSwag) to autogenerate api specification from the code.
+To turn on the swagger Ui, set `ASPNETCORE_ENVIRONMENT=Development` environment variable, this should not be use in `production`.
+
 ### Tracing
 
 The Search Api uses [opentracing](https://opentracing.io/) instrumentation for distributed tracing.
@@ -36,6 +41,8 @@ docker-compose up
 ```
 
 Application health can be checked [here](http://localhost:5050/health).
+SwaggerUi can be accessed [here](http://localhost:5050/swagger).
+OpenApi specification can be accessed [here](http://localhost:5050/swagger/v1/swagger.json).
 
 ## Run
 

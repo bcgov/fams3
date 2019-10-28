@@ -113,43 +113,4 @@ node {
   }
  }
 
-  stage('Acceptance') {
-    script {
-    def IS_APPROVED = input(message: "Deploy to PROD?", ok: "yes", parameters: [string(name: 'IS_APPROVED', defaultValue: 'yes', description: 'Deploy to PROD?')])
-        if (IS_APPROVED != 'yes') {
-            currentBuild.result = "ABORTED"
-            error "User cancelled"
-        }
-    }
- }
-  stage('Promote to PROD    ') {
-  openshift.withCluster() {
-   openshift.tag("${SEARCH_API}:latest", "${SEARCH_API}:prod")
-  }
- }
-
-  stage('Deploy SearchAPI to Prod') {
-  dir('simple_pipeline') {
-   sh "echo Creating DeploymentConfig in Dev"
-
-   sh "oc process -f openshift/templates/searchapi.dc.yaml \
-                  -p NAME=${SEARCH_API} \
-                  -p APPLICATION_DOMAIN=${SUBDOMAIN}-prod.${DOMAIN} \
-                  -p MEMORY_LIMIT=${RUN_MEMORY} \
-                  -p NAMESPACE=${TOOLS_NAMESPACE} \
-                  -p TAG=dev | oc apply -f - -n ${PROD_NAMESPACE}"
-
-   sh "echo Wait for service to be up"
-   timeout(time: 180, unit: 'SECONDS') {
-    openshift.withCluster() {
-     openshift.withProject("${PROD_NAMESPACE}") {
-      def dc = openshift.selector('dc', "${SEARCH_API}")
-      // this will wait until the desired replicas are available
-      dc.rollout().status()
-     }
-    }
-   }
-  }
- }
-
 }

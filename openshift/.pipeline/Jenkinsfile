@@ -45,6 +45,7 @@ node {
     openshift.withCluster() {
      openshift.withProject("${TOOLS_NAMESPACE}") {
       def searchapiSelector = openshift.selector("bc", "${SEARCH_API}-build")
+      searchapiSelector.startBuild("--wait")
       searchapiSelector.object()
       builds = searchapiSelector.related("builds")
       builds.watch {

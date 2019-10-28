@@ -1,4 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using MassTransit;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using NUnit.Framework.Internal;
@@ -16,13 +21,21 @@ namespace SearchApi.Web.Test.People
 
         private readonly Mock<ISpan> _spanMock = new Mock<ISpan>();
 
-        [SetUp]
+        private readonly Mock<ILogger<PeopleController>> _loggerMock = new Mock<ILogger<PeopleController>>();
+
+        private readonly Mock<ISendEndpoint> _sendEndpointMock = new Mock<ISendEndpoint>();
+
+        private readonly Mock<ISendEndpointProvider> _sendEndPointProviderMock = new Mock<ISendEndpointProvider>();
+
+            [SetUp]
         public void Init()
         {
 
+            EndpointConvention.Map<ExecuteSearch>(new Uri("http://random"));
+            _sendEndPointProviderMock.Setup(x => x.GetSendEndpoint(It.IsAny<Uri>())).Returns(Task.FromResult(_sendEndpointMock.Object));
             _spanMock.Setup(x => x.SetTag(It.IsAny<string>(), It.IsAny<string>())).Returns(_spanMock.Object);
             _tracerMock.Setup(x => x.ActiveSpan).Returns(_spanMock.Object);
-            _sut = new PeopleController(null, _tracerMock.Object);
+            _sut = new PeopleController(_sendEndPointProviderMock.Object, _loggerMock.Object, _tracerMock.Object);
         }
 
 
@@ -34,7 +47,7 @@ namespace SearchApi.Web.Test.People
             Assert.IsInstanceOf<PersonSearchResponse>(result.Value);
             Assert.IsNotNull(((PersonSearchResponse)result.Value).Id);
             _spanMock.Verify(x => x.SetTag("searchRequestId", $"{((PersonSearchResponse)result.Value).Id}"), Times.Once);
-
+            _sendEndpointMock.Verify(x => x.Send(It.IsAny<ExecuteSearch>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
     }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using MassTransit;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using NSwag;
 using NSwag.Annotations;
 using OpenTracing;
@@ -19,18 +20,22 @@ namespace SearchApi.Web.Controllers
     public class PeopleController : ControllerBase
     {
 
-        private ITracer _tracer;
+        private readonly ITracer _tracer;
 
-        private IBus _bus;
+        private readonly ISendEndpointProvider _sendEndpointProvider;
 
-        public PeopleController(IBus bus, ITracer tracer)
+        private readonly ILogger _logger;
+
+        public PeopleController(ISendEndpointProvider sendEndpointProvider, ILogger<PeopleController> logger, ITracer tracer)
         {
-            this._bus = bus;
+            this._sendEndpointProvider = sendEndpointProvider;
+            this._logger = logger;
             this._tracer = tracer;
         }
 
         /// <summary>
-        /// Receives a <see cref="PersonSearchRequest"/> and start the process of searching additional information for a person.
+        /// Receives a <see cref="PersonSearchRequest"/> and start the process of searching additional information for a person
+        /// by submitting an ExecuteSearch Command to appropriate queue.
         /// </summary>
         /// <param name="personSearchRequest">A request to search a person</param>
         /// <returns><see cref="PersonSearchResponse"/></returns>
@@ -43,15 +48,19 @@ namespace SearchApi.Web.Controllers
         { 
             Guid searchRequestId = Guid.NewGuid();
 
+            _logger.LogInformation($"Successfully received new search request [{searchRequestId}].");
+
             _tracer.ActiveSpan.SetTag("searchRequestId", $"{searchRequestId}");
 
-            await this._bus.Send<ExecuteSearch>(new
+            _logger.LogDebug($"Attempting to send {nameof(ExecuteSearch)} to destination queue.");
+            await this._sendEndpointProvider.Send<ExecuteSearch>(new
             {
                 Id = searchRequestId,
                 personSearchRequest.FirstName,
                 personSearchRequest.LastName,
                 personSearchRequest.DateOfBirth
             });
+            _logger.LogInformation($"Successfully sent {nameof(ExecuteSearch)} to destination queue.");
 
             return Accepted(new PersonSearchResponse(searchRequestId));
         }

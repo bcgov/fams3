@@ -1,0 +1,114 @@
+#!/usr/bin/env groovy
+
+//ENV Vars
+def TOOLS_NAMESPACE = "frjeow-tools"
+def DEV_NAMESPACE = "frjeow-dev"
+def TEST_NAMESPACE = "frjeow-test"
+def PROD_NAMESPACE = "frjeow-prod"
+
+def RABBITMQ_SERVICE = "rabbitmq"
+def SEARCH_API = "searchapi"
+
+def DOMAIN = "pathfinder.gov.bc.ca"
+def SUBDOMAIN = "fams3"
+
+def GIT_URI = "https://github.com/bcgov/fams3.git"
+def GIT_REF = "master"
+
+def BUILD_MEMORY = "1Gi"
+def RUN_MEMORY = "128Mi"
+
+//Pipeline
+node {
+
+ stage('Checkout') {
+  dir('simple_pipeline') {
+   checkout scm
+  }
+ }
+
+ stage('Build SearchAPI') {
+  dir('simple_pipeline') {
+   sh "ls -lha openshift/templates"
+
+   sh "oc process -f openshift/templates/searchapi.bc.yaml \
+        -p NAME=${SEARCH_API} \
+        -p SOURCE_REPOSITORY_URL=${GIT_URI} \
+        -p SOURCE_REPOSITORY_REF=${GIT_REF} \
+        -p DOTNET_STARTUP_PROJECT=app/SearchAPI/SearchAPI.csproj \
+        -p MEMORY_LIMIT=${BUILD_MEMORY} \
+        -p NAMESPACE=${TOOLS_NAMESPACE} | oc apply -f - -n ${TOOLS_NAMESPACE}"
+
+   sh "echo Wait for the builds to finish"
+   timeout(time: 10, unit: 'MINUTES') {
+    openshift.withCluster() {
+     openshift.withProject("${TOOLS_NAMESPACE}") {
+      def searchapiSelector = openshift.selector("bc", "${SEARCH_API}-build")
+      searchapiSelector.object()
+      builds = searchapiSelector.related("builds")
+      builds.watch {
+       if (it.count() == 0) {
+        return false
+       }
+       return true
+      }
+      builds.untilEach {
+       return it.object().status.phase == "Complete"
+      }
+     }
+    }
+   }
+   sh "echo Wait for runtime build to finish"
+   timeout(time: 10, unit: 'MINUTES') {
+    openshift.withCluster() {
+     openshift.withProject("${TOOLS_NAMESPACE}") {
+      def searchapiSelector = openshift.selector("bc", "${SEARCH_API}-runtime")
+      searchapiSelector.object()
+      builds = searchapiSelector.related("builds")
+      builds.watch {
+       if (it.count() == 0) {
+        return false
+       }
+       return true
+      }
+      builds.untilEach {
+       return it.object().status.phase == "Complete"
+      }
+     }
+    }
+   }
+  }
+ }
+
+ stage('Promote to DEV') {
+  openshift.withCluster() {
+   sh "echo Tagging image for DEV"
+   openshift.tag("searchapi:latest", "searchapi:dev")
+  }
+ }
+
+ stage('Deploy SearchAPI') {
+  dir('simple_pipeline') {
+   sh "echo Creating DeploymentConfig in Dev"
+
+   sh "oc process -f openshift/templates/searchapi.dc.yaml \
+                  -p NAME=${SEARCH_API} \
+                  -p APPLICATION_DOMAIN=${SUBDOMAIN}-dev-${DOMAIN} \
+                  -p MEMORY_LIMIT=${RUN_MEMORY} \
+                  -p NAMESPACE=${TOOLS_NAMESPACE} \
+                  -p TAG=dev | oc apply -f - -n ${DEV_NAMESPACE}"
+
+   sh "echo Wait for service to be up"
+   timeout(time: 180, unit: 'SECONDS') {
+    openshift.withCluster() {
+     openshift.withProject("${DEV_NAMESPACE}") {
+      def dc = openshift.selector('dc', "${SEARCH_API}")
+      // this will wait until the desired replicas are available
+      dc.rollout().status()
+     }
+    }
+   }
+  }
+ }
+
+}

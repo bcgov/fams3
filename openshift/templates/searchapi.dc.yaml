@@ -1,0 +1,114 @@
+---
+kind: Template
+apiVersion: v1
+metadata:
+  name: fams3-searchapi
+  annotations:
+    openshift.io/display-name: "FAMS3 SearchAPI"
+    description: The FAMS3 Search API
+    tags: quickstart,dotnet,.net
+    iconClass: icon-dotnet
+    template.openshift.io/provider-display-name: BCGov
+    template.openshift.io/documentation-url: https://github.com/bcgov/FAMS3/
+parameters:
+  - name: NAME
+    displayName: Name
+    description: The name assigned to all of the frontend objects defined in this template.
+    required: true
+    value: dotnet-runtime-example
+  - name: MEMORY_LIMIT
+    displayName: Memory Limit
+    description: Maximum amount of memory the container can use.
+    required: true
+    value: 128Mi
+  - name: NAMESPACE
+    displayName: Namespace
+    description: The OpenShift Namespace where the ImageStream resides.
+    required: true
+    value: openshift
+  - name: APPLICATION_DOMAIN
+    displayName: Application Hostname
+    description:
+      The exposed hostname that will route to the .NET Core service, if left
+      blank a value will be defaulted.
+    value: ""
+  - name: TAG
+    displayName: Image Tag
+    description:
+      The image tag to be deployed from the registry.
+    required: true
+    value: latest
+objects:
+  # - kind: Route
+  #   apiVersion: v1
+  #   metadata:
+  #     name: "${NAME}"
+  #   spec:
+  #     host: "${NAME}-${APPLICATION_DOMAIN}"
+  #     to:
+  #       kind: Service
+  #       name: "${NAME}"
+  # - kind: Service
+  #   apiVersion: v1
+  #   metadata:
+  #     name: "${NAME}"
+  #     annotations:
+  #       description: Exposes and load balances the application pods
+  #   spec:
+  #     ports:
+  #       - name: web
+  #         port: 8080
+  #         targetPort: 8080
+  #     selector:
+  #       name: "${NAME}"
+  - kind: DeploymentConfig
+    apiVersion: v1
+    metadata:
+      name: "${NAME}"
+      annotations:
+        description: Defines how to deploy the application server
+    spec:
+      strategy:
+        type: Rolling
+      triggers:
+        - type: ImageChange
+          imageChangeParams:
+            automatic: true
+            containerNames:
+              - dotnet-runtime-app
+            from:
+              kind: ImageStreamTag
+              namespace: "${NAMESPACE}"
+              name: "${NAME}:${TAG}"
+        - type: ConfigChange
+      replicas: 1
+      selector:
+        name: "${NAME}"
+      template:
+        metadata:
+          name: "${NAME}"
+          labels:
+            name: "${NAME}"
+        spec:
+          containers:
+            - name: dotnet-runtime-app
+              image: " "
+              ports:
+                - containerPort: 8080
+              resources:
+                limits:
+                  memory: "${MEMORY_LIMIT}"
+              env: []
+            - image: jaegertracing/jaeger-agent
+              name: jaeger-agent
+              ports:
+              - containerPort: 5775
+                protocol: UDP
+              - containerPort: 6831
+                protocol: UDP
+              - containerPort: 6832
+                protocol: UDP
+              - containerPort: 5778
+                protocol: TCP
+              args: ["--collector.host-port=jaeger-collector.jaeger-infra.svc:14267"]
+

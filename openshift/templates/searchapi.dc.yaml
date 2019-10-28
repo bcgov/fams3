@@ -99,6 +99,20 @@ objects:
                 limits:
                   memory: "${MEMORY_LIMIT}"
               env: []
+              livenessProbe:
+                httpGet:
+                  path: "/health"
+                  port: 8080
+                  scheme: HTTP
+                initialDelaySeconds: 40
+                timeoutSeconds: 15
+              readinessProbe:
+                httpGet:
+                  path: "/health"
+                  port: 8080
+                  scheme: HTTP
+                initialDelaySeconds: 10
+                timeoutSeconds: 30
             - image: jaegertracing/jaeger-agent
               name: jaeger-agent
               ports:

@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Jaeger;
 using Jaeger.Samplers;
+using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -14,6 +16,8 @@ using Microsoft.Extensions.Logging;
 using NSwag;
 using OpenTracing;
 using OpenTracing.Util;
+using SearchApi.Web.Configuration;
+using SearchApi.Web.Controllers;
 
 namespace SearchApi.Web
 {
@@ -39,6 +43,8 @@ namespace SearchApi.Web
             this.ConfigureOpenTracing(services);
 
             this.ConfigureOpenApi(services);
+
+            this.ConfigureServiceBus(services);
         }
 
         /// <summary>
@@ -87,6 +93,7 @@ namespace SearchApi.Web
 
         /// <summary>
         /// Configure Open Api using NSwag
+        /// https://github.com/RicoSuter/NSwag
         /// </summary>
         /// <param name="services"></param>
         public void ConfigureOpenApi(IServiceCollection services)
@@ -111,6 +118,42 @@ namespace SearchApi.Web
             });
 
         }
+
+        /// <summary>
+        /// Configure MassTransit Service Bus
+        /// http://masstransit-project.com/
+        /// </summary>
+        /// <param name="services"></param>
+        private void ConfigureServiceBus(IServiceCollection services)
+        {
+
+            var rabbitMqSettings = Configuration.GetSection("RabbitMq").Get<RabbitMqConfiguration>();
+            var rabbitBaseUri = $"amqp://{rabbitMqSettings.Host}:{rabbitMqSettings.Port}";
+
+            // Globally configure Execute Search Endpoint
+            EndpointConvention.Map<ExecuteSearch>(new Uri($"{rabbitBaseUri}/{nameof(ExecuteSearch)}"));
+
+            services.AddMassTransit(x =>
+            {
+
+                // Add RabbitMq Service Bus
+                x.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(cfg =>
+                {
+                    
+                    var host = cfg.Host(new Uri(rabbitBaseUri), hostConfigurator =>
+                    {
+                        hostConfigurator.Username(rabbitMqSettings.Username);
+                        hostConfigurator.Password(rabbitMqSettings.Password);
+                    });
+
+                    // Add Diagnostic context for tracing
+                    cfg.UseDiagnosticsActivity(new DiagnosticListener("open-tracing"));
+
+                }));
+            });
+
+        }
+
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

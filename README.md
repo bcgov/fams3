@@ -11,12 +11,29 @@ FAMS-search-api is a dotnet core rest service to execute people search accross m
 
 ## SearchApi
 
-### OpenApi
+### Configuration
+
+#### RabbitMq
+
+Configure RabbiMq using the following ENV variables:
+
+| Property | Required | Description |
+| --- | --- | --- |
+| RABBITMQ__HOST | no | RabbitMq Host |
+| RABBITMQ__PORT | no | RabbitMq Port |
+| RABBITMQ__USERNAME | no | RabbitMq UserName |
+| RABBITMQ__PASSWORD | no | RabbitMq Password |
+
+*Notes*
+
+> the variables key have 2 underscores
+
+#### OpenApi
 
 The Search Api uses [NSwag](https://github.com/RicoSuter/NSwag) to autogenerate api specification from the code.
 To turn on the swagger Ui, set `ASPNETCORE_ENVIRONMENT=Development` environment variable, this should not be use in `production`.
 
-### Tracing
+#### Tracing
 
 The Search Api uses [opentracing](https://opentracing.io/) instrumentation for distributed tracing.
 

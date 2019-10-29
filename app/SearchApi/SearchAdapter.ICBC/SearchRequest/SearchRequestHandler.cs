@@ -9,16 +9,17 @@ namespace SearchAdapter.ICBC.SearchRequest
     public class SearchRequestHandler : IConsumer<ExecuteSearch>
     {
 
-        private ILogger<SearchRequestHandler> _logger;
+        private readonly ILogger<SearchRequestHandler> _logger;
+
         public SearchRequestHandler(ILogger<SearchRequestHandler> logger)
         {
-            this._logger = logger;
+            _logger = logger;
         }
 
         public async Task Consume(ConsumeContext<ExecuteSearch> context)
         {
-           _logger.LogInformation($"Successfully handling new search request [{context.Message.Id}]");
-           await Task.FromResult(0);
+            _logger.LogInformation($"Successfully handling new search request [{context.Message.Id}]");
+            await Task.FromResult(0);
         }
     }
 }

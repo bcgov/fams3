@@ -1,4 +1,7 @@
 using System;
+using DynamicsAdapter.Web.Configuration;
+using DynamicsAdapter.Web.Infrastructure;
+using DynamicsAdapter.Web.SearchRequest;
 using Jaeger;
 using Jaeger.Samplers;
 using Microsoft.AspNetCore.Builder;
@@ -9,6 +12,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OpenTracing;
 using OpenTracing.Util;
+using Quartz;
+using Quartz.Impl;
+using Quartz.Spi;
 
 namespace DynamicsAdapter.Web
 {
@@ -27,7 +33,33 @@ namespace DynamicsAdapter.Web
             services.AddControllers();
 
             services.AddHealthChecks();
+            
             this.ConfigureOpenTracing(services);
+
+            this.ConfigureScheduler(services);
+        }
+
+        /// <summary>
+        /// Configures the Quartz Hosted Service.
+        /// </summary>
+        /// <param name="services"></param>
+        public void ConfigureScheduler(IServiceCollection services)
+        {
+
+            var schedulerConfiguration = Configuration.GetSection("Scheduler").Get<SchedulerConfiguration>();
+
+            //Add Quartz Service
+            services.AddSingleton<IJobFactory, SingletonJobFactory>();
+            services.AddSingleton<ISchedulerFactory, StdSchedulerFactory>();
+
+            //Add dynamics Job
+            services.AddSingleton<SearchRequestJob>();
+            services.AddSingleton(new JobSchedule(
+                jobType: typeof(SearchRequestJob),
+                cronExpression: "0/5 * * * * ?"));
+
+            //Registering the Quartz Hosted Service
+            services.AddHostedService<QuartzHostedService>();
 
         }
 

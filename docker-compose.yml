@@ -2,7 +2,7 @@ version: '3.7'
 services:
   search-api:
     build:
-      context: .
+      context: app/SearchApi
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       RABBITMQ__HOST: rabbitmq
@@ -16,6 +16,21 @@ services:
       - "5050:80"
     restart: always
     networks: 
+      - search-api-net
+
+
+  dynamics-adapter:
+    build:
+      context: app/DynamicsAdapter
+    ports:
+      - "5060:80"
+    environment:
+      JAEGER_SERVICE_NAME: dynamics-adapter
+      JAEGER_SAMPLER_TYPE: const
+      JAEGER_ENDPOINT: http://jaeger-collector:14268/api/traces
+      SCHEDULER__CRON: 0/5 * * * * ?
+    restart: always
+    networks:
       - search-api-net
     
   rabbitmq:

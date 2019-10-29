@@ -58,11 +58,11 @@ download and install [Docker](https://www.docker.com)
 Run
 
 ```shell
-cd app/SearchApi
 docker-compose up
 ```
 
-Application health can be checked [here](http://localhost:5050/health).
+SearchApi health can be checked [here](http://localhost:5050/health).
+Dynamics Adapter health can be checked [here](http://localhost:5060/health).
 SwaggerUi can be accessed [here](http://localhost:5050/swagger).
 OpenApi specification can be accessed [here](http://localhost:5050/swagger/v1/swagger.json).
 
@@ -101,19 +101,6 @@ The csharp client is set up to use [configuration via environment](https://githu
 
 > Set `JAEGER_SERVICE_NAME` if you want the tracer to ship tracing logs.  
 > Set `JAEGER_SAMPLER_TYPE=const` if you want to sample all your traces.
-
-## Run on Docker
-
-download and install [Docker](https://www.docker.com)
-
-Run
-
-```shell
-cd app/DynamicAdapter
-docker-compose up
-```
-
-Application health can be checked [here](http://localhost:5060/health).
 
 ## Run
 

@@ -45,7 +45,10 @@ namespace DynamicsAdapter.Web
 
         public void ConfigurePeopleClient(IServiceCollection services)
         {
-            services.AddHttpClient<IPeopleClient, PeopleClient>(c => c.BaseAddress = new Uri("http://localhost:5050"));
+
+            var searchApiConfiguration = Configuration.GetSection("SearchApi").Get<SearchApiConfiguration>();
+
+            services.AddHttpClient<IPeopleClient, PeopleClient>(c => c.BaseAddress = new Uri(searchApiConfiguration.BaseUrl));
         }
 
         /// <summary>

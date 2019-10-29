@@ -6,8 +6,8 @@
 
     .
     ├── app                     # Application Source Files.
-    |   ├──                     # Search API
-    |   └──                     # Dynamic Adapter
+    |   ├── SearchApi           # Search Api
+    |   └── DynamicAdapter      # Dynamic Adapter
     ├── .gitignore              # Git ignore.
     └── README.md               # This file.
     └── openshift               # Build and Deploy Configurations.
@@ -16,7 +16,6 @@
 ## SearchApi
 
 FAMS-search-api is a dotnet core rest service to execute people search accross multiple data providers.
-
 
 #### RabbitMq
 

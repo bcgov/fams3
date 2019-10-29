@@ -8,6 +8,7 @@ using Moq;
 using NUnit.Framework;
 using NUnit.Framework.Internal;
 using OpenTracing;
+using SearchApi.Core.Contracts;
 using SearchApi.Web.Controllers;
 
 namespace SearchApi.Web.Test.People

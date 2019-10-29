@@ -83,7 +83,8 @@ namespace DynamicsAdapter.Web.Infrastructure
         /// <returns></returns>
         public async Task StopAsync(CancellationToken cancellationToken)
         {
-            await Scheduler?.Shutdown(cancellationToken);
+            if(Scheduler != null)
+                await Scheduler?.Shutdown(cancellationToken);
         }
 
 

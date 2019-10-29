@@ -36,8 +36,8 @@ namespace DynamicsAdapter.Web.Test.Infrastructure
 
             await sut.StartAsync(new CancellationToken());
 
-            _schedulerMock.Verify(x => x.ScheduleJob(It.IsAny<IJobDetail>(), It.IsAny<ITrigger>(), It.IsAny<CancellationToken>()), Times.Once);
-            _schedulerMock.Verify(x => x.Start(It.IsAny<CancellationToken>()), Times.Once);
+            _schedulerMock.Verify(x => x.ScheduleJob(It.IsAny<IJobDetail>(), It.IsAny<ITrigger>(), It.IsAny<CancellationToken>()), Times.AtLeastOnce);
+            _schedulerMock.Verify(x => x.Start(It.IsAny<CancellationToken>()), Times.AtLeastOnce);
 
         }
 
@@ -45,6 +45,14 @@ namespace DynamicsAdapter.Web.Test.Infrastructure
         public async Task It_should_shut_down_jobs()
         {
             await sut.StartAsync(new CancellationToken());
+            await sut.StopAsync(new CancellationToken());
+            _schedulerMock.Verify(x => x.Shutdown(It.IsAny<CancellationToken>()), Times.Once);
+
+        }
+
+        [Test]
+        public async Task It_should_shut_down_jobs_when_Scheduler_null()
+        {
             await sut.StopAsync(new CancellationToken());
             _schedulerMock.Verify(x => x.Shutdown(It.IsAny<CancellationToken>()), Times.Once);
         }

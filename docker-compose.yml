@@ -23,8 +23,11 @@ services:
     build:
       context: app/DynamicsAdapter
     ports:
-      - "5051:80"
+      - "5060:80"
     environment:
+      JAEGER_SERVICE_NAME: dynamics-adapter
+      JAEGER_SAMPLER_TYPE: const
+      JAEGER_ENDPOINT: http://jaeger-collector:14268/api/traces
       SCHEDULER__CRON: 0/5 * * * * ?
     restart: always
     networks:

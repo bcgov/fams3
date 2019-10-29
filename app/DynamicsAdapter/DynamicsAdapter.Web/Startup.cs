@@ -37,15 +37,17 @@ namespace DynamicsAdapter.Web
             
             this.ConfigureOpenTracing(services);
 
-            this.ConfigurePeopleClient(services);
+            this.ConfigureSearchApi(services);
 
             this.ConfigureScheduler(services);
         }
 
-
-        public void ConfigurePeopleClient(IServiceCollection services)
+        /// <summary>
+        /// Configures the searchApi http client
+        /// </summary>
+        /// <param name="services"></param>
+        public void ConfigureSearchApi(IServiceCollection services)
         {
-
             var searchApiConfiguration = Configuration.GetSection("SearchApi").Get<SearchApiConfiguration>();
 
             services.AddHttpClient<IPeopleClient, PeopleClient>(c => c.BaseAddress = new Uri(searchApiConfiguration.BaseUrl));

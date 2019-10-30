@@ -32,7 +32,7 @@ namespace DynamicsAdapter.Web.SearchRequest
                 LastName = "test"
             });
 
-            _logger.LogDebug($"Successfully posted person search id:{result.Id}");
+            _logger.LogInformation($"Successfully posted person search id:{result.Id}");
 
         }
     }

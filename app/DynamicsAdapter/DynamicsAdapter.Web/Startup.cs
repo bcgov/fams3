@@ -42,7 +42,7 @@ namespace DynamicsAdapter.Web
 
             this.ConfigureSearchApi(services);
 
-            this.ConfigureScheduler(services);
+           
             this.ConfigureScheduler(services, appSettings);
         }
 

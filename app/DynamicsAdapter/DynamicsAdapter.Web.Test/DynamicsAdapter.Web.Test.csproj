@@ -19,8 +19,4 @@
     <ProjectReference Include="..\DynamicsAdapter.Web\DynamicsAdapter.Web.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Services\Dynamics\" />
-  </ItemGroup>
-
 </Project>

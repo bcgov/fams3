@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 using DynamicsAdapter.Web.Configuration;
 using Microsoft.Extensions.Logging;
@@ -44,7 +45,7 @@ namespace DynamicsAdapter.Web.Services.Dynamics
         /// Get token from dynamics
         /// </summary>
         /// <returns></returns>
-        public Task<string> GetToken()
+        public  Task<string> GetToken()
         {
             using var client = new HttpClient
             {
@@ -87,19 +88,46 @@ namespace DynamicsAdapter.Web.Services.Dynamics
         /// </summary>
         private async void RefreshToken()
         {
-            if (string.IsNullOrEmpty(AccessToken) || TokenExpiry == DateTime.MinValue || (DateTime.Now - TokenExpiry).TotalMinutes >= double.Parse(_settings.DynamicsAPI.TokenTimeout))
+            if (string.IsNullOrEmpty(AccessToken) || TokenExpiry == DateTime.MinValue || (DateTime.Now - TokenExpiry).TotalMinutes >= _settings.DynamicsAPI.TokenTimeout)
             {
                 AccessToken =  await GetToken();
             }
         }
-        public Task<HttpResponseMessage> SaveBatch(string entity)
+
+        public async Task<HttpResponseMessage> SaveBatch(string entity, MultipartContent content)
         {
-            throw new NotImplementedException();
+            RefreshToken();
+            using var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Patch,
+                new Uri(_settings.DynamicsAPI.EndPoints.Single(x => x.Entity == entity).URL));
+
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
+
+            if (content != null)
+            {
+                request.Content = content;
+            }
+
+            return await client.SendAsync(request);
         }
 
-        public Task<HttpResponseMessage> SaveEntity(string entity)
+        public async Task<HttpResponseMessage> Save(string entity, object data)
         {
-            throw new NotImplementedException();
+            RefreshToken();
+            using var client = new HttpClient {Timeout = new TimeSpan(0, _settings.DynamicsAPI.Timeout, 0)};
+
+            HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Patch, _settings.DynamicsAPI.EndPoints.Single(x => x.Entity == entity).URL)
+            {
+                Version = new Version(1, 1),
+                Content = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json")
+            };
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
+            client.DefaultRequestHeaders.Add("OData-MaxVersion", "4.0");
+            client.DefaultRequestHeaders.Add("OData-Version", "4.0");
+
+
+            return await client.SendAsync(httpRequestMessage);
+          
         }
     }
 }

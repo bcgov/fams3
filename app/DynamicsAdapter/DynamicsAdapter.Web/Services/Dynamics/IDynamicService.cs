@@ -12,8 +12,8 @@ namespace DynamicsAdapter.Web.Services.Dynamics
        Task<string> GetToken();
        Task<JObject> Get( string entity);
 
-       Task<HttpResponseMessage> SaveEntity(string entity);
-       Task<HttpResponseMessage> SaveBatch(string entity);
+       Task<HttpResponseMessage> Save(string entity, object data );
+       Task<HttpResponseMessage> SaveBatch(string entity, MultipartContent content);
 
    }
 

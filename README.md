@@ -88,6 +88,21 @@ FAMS-search-api is a dotnet core rest service to execute people search accross m
 
 FAMS-dynamic-adapter is a dotnet core rest service that polls dynamics to retrieve ready to search request and execute search using the Search API.
 
+### Configuration
+
+| Property | Required | Description |
+| --- | --- | --- |
+| RABBITMQ__HOST | no | RabbitMq Host |
+| RABBITMQ__PORT | no | RabbitMq Port |
+| RABBITMQ__USERNAME | no | RabbitMq UserName |
+| RABBITMQ__PASSWORD | no | RabbitMq Password |
+| SCHEDULER__CRON | no | a dotnet Quartz cron expression |
+| SEARCHAPI__BASEURL | yes | the base path of the search api |
+
+*Notes*
+
+> the variables key have 2 underscores
+
 ### Tracing
 
 The Dynamic Adapter uses [opentracing](https://opentracing.io/) instrumentation for distributed tracing.
@@ -101,7 +116,7 @@ The csharp client is set up to use [configuration via environment](https://githu
 > Set `JAEGER_SERVICE_NAME` if you want the tracer to ship tracing logs.  
 > Set `JAEGER_SAMPLER_TYPE=const` if you want to sample all your traces.
 
-## Run
+### Run
 
 download and install [dotnet core 3.0](https://dotnet.microsoft.com/download/dotnet-core/3.0)
 

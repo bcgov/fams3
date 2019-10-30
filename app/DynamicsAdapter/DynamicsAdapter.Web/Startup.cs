@@ -1,6 +1,7 @@
 using System;
 using DynamicsAdapter.Web.Configuration;
 using DynamicsAdapter.Web.Infrastructure;
+using DynamicsAdapter.Web.SearchApi;
 using DynamicsAdapter.Web.SearchRequest;
 using Jaeger;
 using Jaeger.Samplers;
@@ -39,6 +40,9 @@ namespace DynamicsAdapter.Web
 
             this.ConfigureOpenTracing(services);
 
+            this.ConfigureSearchApi(services);
+
+            this.ConfigureScheduler(services);
             this.ConfigureScheduler(services, appSettings);
         }
 
@@ -47,6 +51,17 @@ namespace DynamicsAdapter.Web
             var appSettingsSection = Configuration.GetSection("AppSettings");
             services.Configure<AppSettings>(appSettingsSection);
             return appSettingsSection.Get<AppSettings>();
+        }
+
+        /// <summary>
+        /// Configures the searchApi http client
+        /// </summary>
+        /// <param name="services"></param>
+        public void ConfigureSearchApi(IServiceCollection services)
+        {
+            var searchApiConfiguration = Configuration.GetSection("SearchApi").Get<SearchApiConfiguration>();
+
+            services.AddHttpClient<IPeopleClient, PeopleClient>(c => c.BaseAddress = new Uri(searchApiConfiguration.BaseUrl));
         }
 
         /// <summary>

@@ -50,6 +50,7 @@ services:
       JAEGER_SAMPLER_TYPE: const
       JAEGER_ENDPOINT: http://jaeger-collector:14268/api/traces
       SCHEDULER__CRON: 0/5 * * * * ?
+      SEARCHAPI__BASEURL: http://search-api
     restart: always
     networks:
       - search-api-net

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using DynamicsAdapter.Web.Configuration;
 using Microsoft.Extensions.Logging;
@@ -22,16 +23,32 @@ namespace DynamicsAdapter.Web.Services.Dynamics
             _settings = settings;
            
         }
-        public Task<JObject> GetEntity()
+        public async Task<JObject> Get(string entity)
         {
-            throw new NotImplementedException();
+            RefreshToken();
+            using var client = new System.Net.Http.HttpClient
+            {
+                Timeout = new TimeSpan(0, _settings.DynamicsAPI.Timeout, 0)
+            };
+            client.DefaultRequestHeaders.Add("OData-MaxVersion", "4.0");
+            client.DefaultRequestHeaders.Add("OData-Version", "4.0");
+            client.DefaultRequestHeaders.Add("Prefer", "odata.include-annotations=\"*\"");
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
+
+            var strResponse = await client.GetStringAsync(_settings.DynamicsAPI.EndPoints.Single(x => x.Entity == entity).URL);
+            return await  Task.FromResult(JObject.Parse(strResponse));
+
         }
 
+        /// <summary>
+        /// Get token from dynamics
+        /// </summary>
+        /// <returns></returns>
         public Task<string> GetToken()
         {
             using var client = new HttpClient
             {
-                Timeout = new TimeSpan(0, int.Parse(_settings.DynamicsAPI.Timeout), 0)
+                Timeout = new TimeSpan(0, _settings.DynamicsAPI.Timeout, 0)
             };
             client.DefaultRequestHeaders.Add("client-request-id", Guid.NewGuid().ToString());
             client.DefaultRequestHeaders.Add("return-client-request-id", "true");
@@ -65,19 +82,22 @@ namespace DynamicsAdapter.Web.Services.Dynamics
                 throw new APIException(System.Net.HttpStatusCode.BadRequest, e.Message + " " + _responseContent, e);
             }
         }
+        /// <summary>
+        /// Refresh Token based on set expiry in configuration
+        /// </summary>
         private async void RefreshToken()
         {
-            if (String.IsNullOrEmpty(AccessToken) || TokenExpiry == DateTime.MinValue || (DateTime.Now - TokenExpiry).TotalMinutes >= double.Parse(_settings.DynamicsAPI.TokenTimeout))
+            if (string.IsNullOrEmpty(AccessToken) || TokenExpiry == DateTime.MinValue || (DateTime.Now - TokenExpiry).TotalMinutes >= double.Parse(_settings.DynamicsAPI.TokenTimeout))
             {
                 AccessToken =  await GetToken();
             }
         }
-        public Task<HttpResponseMessage> SaveBatch()
+        public Task<HttpResponseMessage> SaveBatch(string entity)
         {
             throw new NotImplementedException();
         }
 
-        public Task<HttpResponseMessage> SaveEntity()
+        public Task<HttpResponseMessage> SaveEntity(string entity)
         {
             throw new NotImplementedException();
         }

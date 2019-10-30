@@ -14,7 +14,7 @@ namespace DynamicsAdapter.Web.Configuration
 
     public class DynamicsAPIConfig
     {
-        public string Timeout { get; set; }
+        public int Timeout { get; set; }
         public string OAuthUrl { get; set; }
         public string ResourceUrl { get; set; }
         public string ClientId { get; set; }
@@ -22,8 +22,15 @@ namespace DynamicsAdapter.Web.Configuration
         public string Username { get; set; }
         public string Password { get; set; }
         public string TokenTimeout { get; set; }
-        public string EndPoint { get; set; }
+        public List<EndPoint> EndPoints { get; set; }
 
+
+    }
+
+    public class EndPoint
+    {
+        public string Entity { get; set; }
+        public string URL { get; set; }
     }
 
     public class SchedulerConfig

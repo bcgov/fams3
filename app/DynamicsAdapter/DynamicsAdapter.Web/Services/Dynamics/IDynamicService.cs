@@ -10,10 +10,10 @@ namespace DynamicsAdapter.Web.Services.Dynamics
    public interface IDynamicService
    {
        Task<string> GetToken();
-       Task<JObject> GetEntity();
+       Task<JObject> Get( string entity);
 
-       Task<HttpResponseMessage> SaveEntity();
-       Task<HttpResponseMessage> SaveBatch();
+       Task<HttpResponseMessage> SaveEntity(string entity);
+       Task<HttpResponseMessage> SaveBatch(string entity);
 
    }
 

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SearchApi.Web.Controllers
+namespace SearchApi.Core.Contracts
 {
     public interface ExecuteSearch
     {

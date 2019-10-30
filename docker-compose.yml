@@ -3,6 +3,8 @@ services:
   search-api:
     build:
       context: app/SearchApi
+      args:
+        PROJECT_NAME: SearchApi.Web
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       RABBITMQ__HOST: rabbitmq
@@ -18,6 +20,25 @@ services:
     networks: 
       - search-api-net
 
+  adapter-icbc:
+    build:
+      context: app/SearchApi
+      args:
+        PROJECT_NAME: SearchAdapter.ICBC
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      RABBITMQ__HOST: rabbitmq
+      RABBITMQ__PORT: 5672
+      RABBITMQ__USERNAME: guest
+      RABBITMQ__PASSWORD: guest
+      JAEGER_SERVICE_NAME: icbc-adapter
+      JAEGER_SAMPLER_TYPE: const
+      JAEGER_ENDPOINT: http://jaeger-collector:14268/api/traces
+    ports:
+      - "5051:80"
+    restart: always
+    networks: 
+      - search-api-net
 
   dynamics-adapter:
     build:

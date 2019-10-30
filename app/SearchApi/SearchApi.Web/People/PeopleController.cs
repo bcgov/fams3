@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using NSwag;
 using NSwag.Annotations;
 using OpenTracing;
+using SearchApi.Core.Contracts;
 
 namespace SearchApi.Web.Controllers
 {

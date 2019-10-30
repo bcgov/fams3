@@ -3,16 +3,22 @@ WORKDIR /app
 EXPOSE 80
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.0-buster AS build
+ARG PROJECT_NAME
+
 WORKDIR /src
 COPY . .
-RUN dotnet restore "SearchApi.Web/SearchApi.Web.csproj"
-WORKDIR "/src/SearchApi.Web"
-RUN dotnet build "SearchApi.Web.csproj" -c Release -o /app/build
+RUN dotnet restore "${PROJECT_NAME}/${PROJECT_NAME}.csproj"
+
+WORKDIR "/src/${PROJECT_NAME}"
+RUN dotnet build "${PROJECT_NAME}.csproj" -c Release -o /app
 
 FROM build AS publish
-RUN dotnet publish "SearchApi.Web.csproj" -c Release -o /app/publish
+ARG PROJECT_NAME
+RUN dotnet publish "${PROJECT_NAME}.csproj" -c Release -o /app
 
 FROM base AS final
-WORKDIR /app
-COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "SearchApi.Web.dll"]
+ARG PROJECT_NAME
+ENV DLL_NAME="${PROJECT_NAME}.dll"
+COPY --from=publish /app .
+
+ENTRYPOINT ["sh","-c","dotnet ${DLL_NAME}"]

@@ -22,6 +22,8 @@ namespace DynamicsAdapter.Web.Configuration
         public string Username { get; set; }
         public string Password { get; set; }
         public string TokenTimeout { get; set; }
+        public string EndPoint { get; set; }
+
     }
 
     public class SchedulerConfig

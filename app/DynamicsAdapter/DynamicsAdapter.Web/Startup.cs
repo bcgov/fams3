@@ -39,7 +39,7 @@ namespace DynamicsAdapter.Web
 
             this.ConfigureOpenTracing(services);
 
-            this.ConfigureScheduler(services);
+            this.ConfigureScheduler(services, appSettings);
         }
 
         private AppSettings ConfigureAppSettings(IServiceCollection services)
@@ -53,7 +53,7 @@ namespace DynamicsAdapter.Web
         /// Configures the Quartz Hosted Service.
         /// </summary>
         /// <param name="services"></param>
-        public void ConfigureScheduler(IServiceCollection services)
+        public void ConfigureScheduler(IServiceCollection services, AppSettings settings)
         {
 
             var schedulerConfiguration = Configuration.GetSection("Scheduler").Get<SchedulerConfiguration>();
@@ -66,7 +66,7 @@ namespace DynamicsAdapter.Web
             services.AddSingleton<SearchRequestJob>();
             services.AddSingleton(new JobSchedule(
                 jobType: typeof(SearchRequestJob),
-                cronExpression: "0/5 * * * * ?"));
+                cronExpression: settings.Scheduler.Cron));
 
             //Registering the Quartz Hosted Service
             services.AddHostedService<QuartzHostedService>();

@@ -45,7 +45,7 @@ namespace DynamicsAdapter.Web.Services.Dynamics
         /// Get token from dynamics
         /// </summary>
         /// <returns></returns>
-        public  Task<string> GetToken()
+        public async  Task<string> GetToken()
         {
             using var client = new HttpClient
             {
@@ -68,15 +68,15 @@ namespace DynamicsAdapter.Web.Services.Dynamics
             // This will also set the content type of the request
             var content = new FormUrlEncodedContent(pairs);
           
-            var httpResponseMessage = client.PostAsync(_settings.DynamicsAPI.OAuthUrl, content).Result;
-            var _responseContent = httpResponseMessage.Content.ReadAsStringAsync().Result;
+            var httpResponseMessage =  await client.PostAsync(_settings.DynamicsAPI.OAuthUrl, content);
+            var _responseContent = await httpResponseMessage.Content.ReadAsStringAsync();
            
             try
             {
                 Dictionary<string, string> result = JsonConvert.DeserializeObject<Dictionary<string, string>>(_responseContent);
 
                 TokenExpiry = DateTime.Now;
-                return Task.FromResult(result["access_token"]);
+                return await Task.FromResult(result["access_token"]);
             }
             catch (Exception e)
             {

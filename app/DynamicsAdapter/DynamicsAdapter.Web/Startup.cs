@@ -33,10 +33,20 @@ namespace DynamicsAdapter.Web
             services.AddControllers();
 
             services.AddHealthChecks();
-            
+
+            // configure strongly typed settings objects
+            var appSettings = ConfigureAppSettings(services);
+
             this.ConfigureOpenTracing(services);
 
             this.ConfigureScheduler(services);
+        }
+
+        private AppSettings ConfigureAppSettings(IServiceCollection services)
+        {
+            var appSettingsSection = Configuration.GetSection("AppSettings");
+            services.Configure<AppSettings>(appSettingsSection);
+            return appSettingsSection.Get<AppSettings>();
         }
 
         /// <summary>

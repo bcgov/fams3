@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Quartz;
 using System.Threading.Tasks;
-using DynamicsAdapter.Web.SearchApi;
 
 namespace DynamicsAdapter.Web.SearchRequest
 {
@@ -13,12 +12,12 @@ namespace DynamicsAdapter.Web.SearchRequest
     {
         private readonly ILogger<SearchRequestJob> _logger;
 
-        private readonly IPeopleClient _peopleClient;
+        private readonly ISearchApiClient _searchApiClient;
 
-        public SearchRequestJob(IPeopleClient peopleClient, ILogger<SearchRequestJob> logger)
+        public SearchRequestJob(ISearchApiClient searchApiClient, ILogger<SearchRequestJob> logger)
         {
             _logger = logger;
-            _peopleClient = peopleClient;
+            _searchApiClient = searchApiClient;
         }
 
         public async Task Execute(IJobExecutionContext context)
@@ -27,7 +26,7 @@ namespace DynamicsAdapter.Web.SearchRequest
 
             _logger.LogDebug("Attempting to post person search");
 
-            var result = await _peopleClient.SearchAsync(new PersonSearchRequest()
+            var result = await _searchApiClient.SearchAsync(new PersonSearchRequest()
             {
                 FirstName = "bcgov",
                 LastName = "test"

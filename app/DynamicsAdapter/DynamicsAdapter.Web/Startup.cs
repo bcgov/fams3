@@ -1,7 +1,6 @@
 using System;
 using DynamicsAdapter.Web.Configuration;
 using DynamicsAdapter.Web.Infrastructure;
-using DynamicsAdapter.Web.SearchApi;
 using DynamicsAdapter.Web.SearchRequest;
 using Jaeger;
 using Jaeger.Samplers;
@@ -50,7 +49,7 @@ namespace DynamicsAdapter.Web
         {
             var searchApiConfiguration = Configuration.GetSection("SearchApi").Get<SearchApiConfiguration>();
 
-            services.AddHttpClient<IPeopleClient, PeopleClient>(c => c.BaseAddress = new Uri(searchApiConfiguration.BaseUrl));
+            services.AddHttpClient<ISearchApiClient, SearchApiClient>(c => c.BaseAddress = new Uri(searchApiConfiguration.BaseUrl));
         }
 
         /// <summary>

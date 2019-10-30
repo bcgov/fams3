@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
   <ItemGroup>
@@ -10,8 +11,31 @@
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.HealthChecks" Version="2.2.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.9.5" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="NSwag.MSBuild" Version="13.1.3">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="Quartz" Version="3.0.7" />
     <PackageReference Include="OpenTracing.Contrib.NetCore" Version="0.6.2" />
+    <DotNetCliToolReference Include="NSwag.ConsoleCore" Version="13.1.3" />
   </ItemGroup>
+
+  <Target Name="GenerateNSwagClient">
+        <PropertyGroup>
+            <InputSwagger>searchApi.openapi.json</InputSwagger>
+            <ClientName>SearchApi</ClientName>
+            <GeneratedSwaggerClientFile Condition="'$(GeneratedSwaggerClientFile)' ==''">$(IntermediateOutputPath)$(MSBuildProjectName).$(ClientName)Client.cs</GeneratedSwaggerClientFile>
+        </PropertyGroup>
+        <Copy SourceFiles="@(Reference)" DestinationFolder="$(OutDir)References" />
+        <Exec Command="$(NSwagExe_Core30) run nswag.json /variables:InputSwagger=$(InputSwagger),ClientName=$(ClientName),ClientNamespace=$(RootNamespace),GeneratedSwaggerClientFile=$(GeneratedSwaggerClientFile)" />
+        <RemoveDir Directories="$(OutDir)References" />
+    </Target>
+
+    <Target Name="IncludeNSwagClient" BeforeTargets="CoreCompile" DependsOnTargets="GenerateNSwagClient">
+        <ItemGroup Condition="Exists('$(GeneratedSwaggerClientFile)')">
+            <Compile Include="$(GeneratedSwaggerClientFile)" />
+            <FileWrites Include="$(GeneratedSwaggerClientFile)" />
+        </ItemGroup>
+    </Target>
 
 </Project>

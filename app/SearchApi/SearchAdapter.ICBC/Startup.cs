@@ -139,8 +139,6 @@ namespace SearchAdapter.ICBC
                     });
 
                     // Add Diagnostic context for tracing
-                    //cfg.UseDiagnosticsActivity(new DiagnosticListener("open-tracing"));
-
                     cfg.PropagateOpenTracingContext();
 
                 }));

@@ -18,6 +18,7 @@ using OpenTracing;
 using OpenTracing.Util;
 using SearchApi.Core.Configuration;
 using SearchApi.Core.Contracts;
+using SearchApi.Core.OpenTracing;
 using SearchApi.Web.Controllers;
 
 namespace SearchApi.Web
@@ -148,7 +149,9 @@ namespace SearchApi.Web
                     });
 
                     // Add Diagnostic context for tracing
-                    cfg.UseDiagnosticsActivity(new DiagnosticListener("open-tracing"));
+                    //cfg.UseDiagnosticsActivity(new DiagnosticListener("open-tracing"));
+
+                    cfg.PropagateOpenTracingContext();
 
                 }));
             });

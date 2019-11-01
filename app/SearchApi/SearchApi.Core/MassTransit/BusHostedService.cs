@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using MassTransit;
 using Microsoft.Extensions.Hosting;
 
-namespace SearchAdapter.ICBC.Infrastructure
+namespace SearchApi.Core.MassTransit
 {
     public class BusHostedService : IHostedService
     {

@@ -7,10 +7,10 @@ using OpenTracing.Propagation;
 
 namespace SearchApi.Core.OpenTracing
 {
-    public class MassTransitTextMapInjectSendContextAdapter : ITextMap
+    public class MassTransitPublishContextTextMapInjectAdapter : ITextMap
     {
-        private readonly SendContext _context;
-        public MassTransitTextMapInjectSendContextAdapter(SendContext context)
+        private readonly PublishContext _context;
+        public MassTransitPublishContextTextMapInjectAdapter(PublishContext context)
         {
             _context = context;
         }

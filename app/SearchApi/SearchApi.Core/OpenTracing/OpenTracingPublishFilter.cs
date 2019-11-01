@@ -27,7 +27,7 @@ namespace SearchApi.Core.OpenTracing
                 GlobalTracer.Instance.Inject(
                    GlobalTracer.Instance.ActiveSpan.Context,
                    BuiltinFormats.TextMap,
-                   new MassTransitTextMapInjectAdapter(context));
+                   new MassTransitPublishContextTextMapInjectAdapter(context));
 
                 await next.Send(context);
             }

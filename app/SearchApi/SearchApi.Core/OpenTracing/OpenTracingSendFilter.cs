@@ -30,7 +30,7 @@ namespace SearchApi.Core.OpenTracing
                 GlobalTracer.Instance.Inject(
                     GlobalTracer.Instance.ActiveSpan.Context,
                     BuiltinFormats.TextMap,
-                    new MassTransitTextMapInjectSendContextAdapter(context));
+                    new MassTransitSendContextTextMapInjectAdapter(context));
 
                 await next.Send(context);
             }

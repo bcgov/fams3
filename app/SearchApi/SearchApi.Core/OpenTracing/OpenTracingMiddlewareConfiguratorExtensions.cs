@@ -1,3 +1,5 @@
+using MassTransit;
+
 namespace SearchApi.Core.OpenTracing
 {
     public static class OpenTracingMiddlewareConfiguratorExtensions

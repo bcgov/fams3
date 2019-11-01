@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using MassTransit;
+using OpenTracing;
+using OpenTracing.Propagation;
 
 namespace SearchApi.Core.OpenTracing
 {

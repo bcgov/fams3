@@ -4,4 +4,9 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="MassTransit" Version="5.5.6" />
+    <PackageReference Include="OpenTracing" Version="0.12.1" />
+  </ItemGroup>
+
 </Project>

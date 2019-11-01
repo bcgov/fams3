@@ -1,4 +1,8 @@
 ﻿using System.Threading.Tasks;
+using GreenPipes;
+using MassTransit;
+using OpenTracing.Propagation;
+using OpenTracing.Util;
 
 namespace SearchApi.Core.OpenTracing
 {

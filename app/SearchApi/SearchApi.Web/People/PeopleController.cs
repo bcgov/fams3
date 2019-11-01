@@ -27,11 +27,16 @@ namespace SearchApi.Web.Controllers
 
         private readonly ILogger _logger;
 
-        public PeopleController(ISendEndpointProvider sendEndpointProvider, ILogger<PeopleController> logger, ITracer tracer)
+
+        private readonly IBusControl _busControl;
+
+        public PeopleController(
+            ISendEndpointProvider sendEndpointProvider, ILogger<PeopleController> logger, ITracer tracer, IBusControl busControl)
         {
             this._sendEndpointProvider = sendEndpointProvider;
             this._logger = logger;
             this._tracer = tracer;
+            this._busControl = busControl;
         }
 
         /// <summary>

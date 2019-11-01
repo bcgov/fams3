@@ -11,10 +11,10 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OpenTracing;
 using OpenTracing.Util;
-using SearchAdapter.ICBC.Infrastructure;
 using SearchAdapter.ICBC.SearchRequest;
 using SearchApi.Core.Configuration;
 using SearchApi.Core.Contracts;
+using SearchApi.Core.MassTransit;
 using SearchApi.Core.OpenTracing;
 
 namespace SearchAdapter.ICBC

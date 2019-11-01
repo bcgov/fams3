@@ -5,8 +5,9 @@ using MassTransit;
 
 namespace SearchApi.Core.OpenTracing
 {
-    public class OpenTracingPipeSpecification : IPipeSpecification<ConsumeContext>, IPipeSpecification<PublishContext>
+    public class OpenTracingPipeSpecification : IPipeSpecification<ConsumeContext>, IPipeSpecification<PublishContext>, IPipeSpecification<SendContext>
     {
+
         public IEnumerable<ValidationResult> Validate()
         {
             return Enumerable.Empty<ValidationResult>();
@@ -20,6 +21,11 @@ namespace SearchApi.Core.OpenTracing
         public void Apply(IPipeBuilder<PublishContext> builder)
         {
             builder.AddFilter(new OpenTracingPublishFilter());
+        }
+
+        public void Apply(IPipeBuilder<SendContext> builder)
+        {
+            builder.AddFilter(new OpenTracingSendFilter());
         }
     }
 }

@@ -2,6 +2,8 @@ using System;
 using DynamicsAdapter.Web.Configuration;
 using DynamicsAdapter.Web.Infrastructure;
 using DynamicsAdapter.Web.SearchRequest;
+using DynamicsAdapter.Web.Services.Dynamics;
+using DynamicsAdapter.Web.Services.Dynamics.Model;
 using Jaeger;
 using Jaeger.Samplers;
 using Microsoft.AspNetCore.Builder;
@@ -33,12 +35,23 @@ namespace DynamicsAdapter.Web
             services.AddControllers();
 
             services.AddHealthChecks();
-            
+
+            // configure strongly typed settings objects
+            var appSettings = ConfigureAppSettings(services);
+
             this.ConfigureOpenTracing(services);
 
             this.ConfigureSearchApi(services);
 
+            ConfigureDynamicsClient(services);
+
             this.ConfigureScheduler(services);
+        }
+
+        private AppSettings ConfigureAppSettings(IServiceCollection services)
+        {
+           return Configuration.GetSection("AppSettings").Get<AppSettings>(); 
+     
         }
 
         /// <summary>
@@ -52,6 +65,10 @@ namespace DynamicsAdapter.Web
             services.AddHttpClient<ISearchApiClient, SearchApiClient>(c => c.BaseAddress = new Uri(searchApiConfiguration.BaseUrl));
         }
 
+        public void ConfigureDynamicsClient(IServiceCollection services)
+        {
+            services.AddSingleton<IDynamicService<SSG_SearchRequests>>(new DynamicService(ConfigureAppSettings(services),new DynamicsHttpClient()));
+        }
         /// <summary>
         /// Configures the Quartz Hosted Service.
         /// </summary>
@@ -69,10 +86,12 @@ namespace DynamicsAdapter.Web
             services.AddSingleton<SearchRequestJob>();
             services.AddSingleton(new JobSchedule(
                 jobType: typeof(SearchRequestJob),
-                cronExpression: "0/5 * * * * ?"));
+                cronExpression: schedulerConfiguration.Cron));
 
             //Registering the Quartz Hosted Service
             services.AddHostedService<QuartzHostedService>();
+
+
 
         }
 

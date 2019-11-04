@@ -68,7 +68,7 @@ namespace DynamicsAdapter.Web
         /// Configures the Quartz Hosted Service.
         /// </summary>
         /// <param name="services"></param>
-        public void ConfigureScheduler(IServiceCollection services, AppSettings settings)
+        public void ConfigureScheduler(IServiceCollection services)
         {
 
             var schedulerConfiguration = Configuration.GetSection("Scheduler").Get<SchedulerConfiguration>();
@@ -81,7 +81,7 @@ namespace DynamicsAdapter.Web
             services.AddSingleton<SearchRequestJob>();
             services.AddSingleton(new JobSchedule(
                 jobType: typeof(SearchRequestJob),
-                cronExpression: settings.Scheduler.Cron));
+                cronExpression: schedulerConfiguration.Cron));
 
             //Registering the Quartz Hosted Service
             services.AddHostedService<QuartzHostedService>();

@@ -8,7 +8,6 @@ namespace DynamicsAdapter.Web.Configuration
 {
     public class AppSettings
     {
-        public SchedulerConfig Scheduler { get; set; }
         public DynamicsAPIConfig DynamicsAPI { get; set; }
     }
 
@@ -42,8 +41,5 @@ namespace DynamicsAdapter.Web.Configuration
         public string URL { get; set; }
     }
 
-    public class SchedulerConfig
-    {
-        public string Cron { get; set; }
-    }
+  
 }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using DynamicsAdapter.Web.Configuration;
 using DynamicsAdapter.Web.Services.Dynamics;
+using DynamicsAdapter.Web.Services.Dynamics.Model;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DynamicsAdapter.Web.Test.Services.Dynamics
@@ -28,7 +29,7 @@ namespace DynamicsAdapter.Web.Test.Services.Dynamics
             };
             ConfigureDynamicsModule.ConfigureServices(serviceCollection, appSettings);
 
-            Assert.IsTrue(serviceCollection.Any(x => x.ServiceType == typeof(IDynamicService)));
+            Assert.IsTrue(serviceCollection.Any(x => x.ServiceType == typeof(IDynamicService<SSG_SearchRequests>)));
 
         }
     }

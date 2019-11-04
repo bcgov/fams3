@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using DynamicsAdapter.Web.Configuration;
+using DynamicsAdapter.Web.Services.Dynamics.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic.CompilerServices;
 using Moq;
@@ -18,9 +19,10 @@ namespace DynamicsAdapter.Web.Test.Services.Dynamics
 {
     public class DynamicsServiceTest
     {
-        private Mock<IDynamicService> sut;
+        private Mock<IDynamicService<SSG_SearchRequests>> sut;
         private AppSettings settings;
         private string entity = "Search";
+        private string filter = "$filter=statuscode eq 867670000";
         [SetUp]
         public void Setup ()
         {
@@ -34,25 +36,26 @@ namespace DynamicsAdapter.Web.Test.Services.Dynamics
                     }
                 }
             };
-            sut = new Mock<IDynamicService>();
+            sut = new Mock<IDynamicService<SSG_SearchRequests>>();
             sut.Setup(x => x.GetToken()).Returns(Task.FromResult("123JAS-14AS123234ASD123123"));
-            sut.Setup(x => x.Get(It.IsAny<string>())).Returns(Task.FromResult(new JObject()));
-            sut.Setup(x => x.Save(It.IsAny<string>(), It.IsAny<object>())).Returns(Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)));
-            sut.Setup(x => x.SaveBatch(It.IsAny<string>(), It.IsAny<MultipartContent>())).Returns(Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)));
+            sut.Setup(x => x.Get(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(new SSG_SearchRequests()));
+            sut.Setup(x => x.Save(It.IsAny<string>(), It.IsAny<string>(),It.IsAny<SSG_SearchRequests>())).Returns(Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)));
+            sut.Setup(x => x.SaveBatch(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<MultipartContent>())).Returns(Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)));
 
         }
         [Test]
-        public async Task it_should_get_entity()
+        public async Task it_should_get_entity_search_request()
         {
-            var response =  await sut.Object.Get(entity);
-            Assert.IsInstanceOf<JObject>(response);
+            var response =  await sut.Object.Get(filter, entity);
+            Assert.IsInstanceOf<SSG_SearchRequests>(response);
 
         }
 
         [Test]
         public async Task it_should_save_entity()
         {
-            var response = await sut.Object.Save(entity, new object());
+            var response =
+                await sut.Object.Save(filter, entity, new SSG_SearchRequests {SSG_PersonGivenName = "Ranti"});
             
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
 
@@ -61,7 +64,7 @@ namespace DynamicsAdapter.Web.Test.Services.Dynamics
         [Test]
         public async Task it_should_save_batch_entity()
         {
-            var response = await sut.Object.SaveBatch(entity, new MultipartContent());
+            var response = await sut.Object.SaveBatch(filter, entity, new MultipartContent());
 
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
 

@@ -7,13 +7,13 @@ using Newtonsoft.Json.Linq;
 
 namespace DynamicsAdapter.Web.Services.Dynamics
 {
-   public interface IDynamicService
+   public interface IDynamicService<T>
    {
        Task<string> GetToken();
-       Task<JObject> Get( string entity);
+       Task<T> Get( string filter, string entity);
 
-       Task<HttpResponseMessage> Save(string entity, object data );
-       Task<HttpResponseMessage> SaveBatch(string entity, MultipartContent content);
+       Task<HttpResponseMessage> Save(string filter, string entity, T message);
+       Task<HttpResponseMessage> SaveBatch(string filter, string entity, MultipartContent content);
 
    }
 

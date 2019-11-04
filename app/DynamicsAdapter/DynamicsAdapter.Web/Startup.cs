@@ -3,6 +3,8 @@ using DynamicsAdapter.Web.Configuration;
 using DynamicsAdapter.Web.Infrastructure;
 using DynamicsAdapter.Web.SearchApi;
 using DynamicsAdapter.Web.SearchRequest;
+using DynamicsAdapter.Web.Services.Dynamics;
+using DynamicsAdapter.Web.Services.Dynamics.Model;
 using Jaeger;
 using Jaeger.Samplers;
 using Microsoft.AspNetCore.Builder;
@@ -42,15 +44,15 @@ namespace DynamicsAdapter.Web
 
             this.ConfigureSearchApi(services);
 
-           
-            this.ConfigureScheduler(services, appSettings);
+            ConfigureDynamicsClient(services);
+
+            this.ConfigureScheduler(services);
         }
 
         private AppSettings ConfigureAppSettings(IServiceCollection services)
         {
-            var appSettingsSection = Configuration.GetSection("AppSettings");
-            services.Configure<AppSettings>(appSettingsSection);
-            return appSettingsSection.Get<AppSettings>();
+           return Configuration.GetSection("AppSettings").Get<AppSettings>(); 
+     
         }
 
         /// <summary>
@@ -64,6 +66,10 @@ namespace DynamicsAdapter.Web
             services.AddHttpClient<IPeopleClient, PeopleClient>(c => c.BaseAddress = new Uri(searchApiConfiguration.BaseUrl));
         }
 
+        public void ConfigureDynamicsClient(IServiceCollection services)
+        {
+            services.AddSingleton<IDynamicService<SSG_SearchRequests>>(new DynamicService(ConfigureAppSettings(services),new DynamicsHttpClient()));
+        }
         /// <summary>
         /// Configures the Quartz Hosted Service.
         /// </summary>
@@ -85,6 +91,8 @@ namespace DynamicsAdapter.Web
 
             //Registering the Quartz Hosted Service
             services.AddHostedService<QuartzHostedService>();
+
+
 
         }
 

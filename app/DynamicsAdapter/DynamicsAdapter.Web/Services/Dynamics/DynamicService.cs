@@ -6,39 +6,32 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using DynamicsAdapter.Web.Configuration;
+using DynamicsAdapter.Web.Services.Dynamics.Model;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace DynamicsAdapter.Web.Services.Dynamics
 {
-    public class DynamicService : IDynamicService
+    public class DynamicService :  IDynamicService<SSG_SearchRequests>
     {
 
         private readonly AppSettings _settings;
+        private readonly DynamicsHttpClient _httpClient;
         private DateTime TokenExpiry;
         private string AccessToken;
        
-        public DynamicService(AppSettings settings)
+        public DynamicService(AppSettings settings, DynamicsHttpClient httpClient)
         {
             _settings = settings;
-           
+            _httpClient = httpClient;
+
         }
-        public async Task<JObject> Get(string entity)
+        public  async Task<SSG_SearchRequests> Get(string filter, string entity)
         {
             RefreshToken();
-            using var client = new System.Net.Http.HttpClient
-            {
-                Timeout = new TimeSpan(0, _settings.DynamicsAPI.Timeout, 0)
-            };
-            client.DefaultRequestHeaders.Add("OData-MaxVersion", "4.0");
-            client.DefaultRequestHeaders.Add("OData-Version", "4.0");
-            client.DefaultRequestHeaders.Add("Prefer", "odata.include-annotations=\"*\"");
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
-
-            var strResponse = await client.GetStringAsync(_settings.DynamicsAPI.EndPoints.Single(x => x.Entity == entity).URL);
-            return await  Task.FromResult(JObject.Parse(strResponse));
-
+            return await _httpClient.Get<SSG_SearchRequests>($"{_settings.DynamicsAPI.EndPoints.Single(x => x.Entity == entity).URL}/{entity}?{filter}",
+                _settings.DynamicsAPI.Timeout, AccessToken);
         }
 
         /// <summary>
@@ -94,40 +87,21 @@ namespace DynamicsAdapter.Web.Services.Dynamics
             }
         }
 
-        public async Task<HttpResponseMessage> SaveBatch(string entity, MultipartContent content)
+        public async Task<HttpResponseMessage> SaveBatch(string filter, string entity, MultipartContent content)
         {
             RefreshToken();
-            using var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Patch,
-                new Uri(_settings.DynamicsAPI.EndPoints.Single(x => x.Entity == entity).URL));
-
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
-
-            if (content != null)
-            {
-                request.Content = content;
-            }
-
-            return await client.SendAsync(request);
+            return await _httpClient.SaveBatch(
+                $"{_settings.DynamicsAPI.EndPoints.Single(x => x.Entity == entity).URL}/{entity}?{filter}", AccessToken,
+                content);
         }
 
-        public async Task<HttpResponseMessage> Save(string entity, object data)
+        public async Task<HttpResponseMessage> Save(string filter, string entity, SSG_SearchRequests message)
         {
             RefreshToken();
-            using var client = new HttpClient {Timeout = new TimeSpan(0, _settings.DynamicsAPI.Timeout, 0)};
-
-            HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Patch, _settings.DynamicsAPI.EndPoints.Single(x => x.Entity == entity).URL)
-            {
-                Version = new Version(1, 1),
-                Content = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json")
-            };
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
-            client.DefaultRequestHeaders.Add("OData-MaxVersion", "4.0");
-            client.DefaultRequestHeaders.Add("OData-Version", "4.0");
-
-
-            return await client.SendAsync(httpRequestMessage);
-          
+            return await _httpClient.Save(
+                $"{_settings.DynamicsAPI.EndPoints.Single(x => x.Entity == entity).URL}/{entity}?{filter}",
+                _settings.DynamicsAPI.Timeout,
+                AccessToken, message);
         }
     }
 }

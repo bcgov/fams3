@@ -16,15 +16,15 @@ namespace SearchAdapter.ICBC.Test.SearchRequest
     {
 
         private InMemoryTestHarness _harness;
-        private ConsumerTestHarness<SearchRequestHandler> _sut;
+        private ConsumerTestHarness<SearchRequestConsumer> _sut;
 
-        private readonly Mock<ILogger<SearchRequestHandler>> _loggerMock = new Mock<ILogger<SearchRequestHandler>>();
+        private readonly Mock<ILogger<SearchRequestConsumer>> _loggerMock = new Mock<ILogger<SearchRequestConsumer>>();
 
         [OneTimeSetUp]
         public async Task A_consumer_is_being_tested()
         {
             _harness = new InMemoryTestHarness();
-            _sut = _harness.Consumer(() => new SearchRequestHandler(_loggerMock.Object));
+            _sut = _harness.Consumer(() => new SearchRequestConsumer(_loggerMock.Object));
 
             await _harness.Start();
 

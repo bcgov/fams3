@@ -27,6 +27,7 @@ def RUN_MEMORY = "128Mi"
 
 // Function declaration
 def WaitForBuild(selector, namespace) {
+ echo "Waiting for ${selector} to be build in ${namespace}..."
  timeout(time: 10, unit: 'MINUTES') {
   openshift.withCluster() {
    openshift.withProject("${namespace}") {
@@ -45,6 +46,18 @@ def WaitForBuild(selector, namespace) {
     }
    }
   }
+ }
+}
+
+def WaitForDeploy(selector, namespace) {
+ echo "Waiting for ${selector} to be deployed in ${namespace}..."
+ timeout(time: 180, unit: 'SECONDS') {
+    openshift.withCluster() {
+     openshift.withProject("${DEV_NAMESPACE}") {
+      def dc = openshift.selector('dc', "${SEARCH_API}")
+      dc.rollout().status()
+     }
+    }
  }
 }
 
@@ -97,13 +110,13 @@ node {
   openshift.withCluster() {
    echo "Tagging images for DEV deployment"
    openshift.tag("${SEARCH_API}:latest", "${SEARCH_API}:dev")
-   openshift.tag("${RABBITMQ}:latest", "${RABBITMQ}:dev")
+   openshift.tag("${DYNAMICS_ADAPTER}:latest", "${RABBITMQ}:dev")
   }
  }
 
  stage('Deploy to DEV') {
   dir('simple_pipeline') {
-   echo "Creating DeploymentConfig in Dev"
+   echo "Deploying SearchAPI in Dev"
 
    sh "oc process -f openshift/templates/dotnet.dc.yaml \
                   -p NAME=${SEARCH_API} \
@@ -112,16 +125,8 @@ node {
                   -p NAMESPACE=${TOOLS_NAMESPACE} \
                   -p TAG=dev | oc apply -f - -n ${DEV_NAMESPACE}"
 
-   echo "Wait for service to be up"
-   timeout(time: 180, unit: 'SECONDS') {
-    openshift.withCluster() {
-     openshift.withProject("${DEV_NAMESPACE}") {
-      def dc = openshift.selector('dc', "${SEARCH_API}")
-      // this will wait until the desired replicas are available
-      dc.rollout().status()
-     }
-    }
-   }
+   WaitForDeploy(SEARCH_API, DEV_NAMESPACE)
+
   }
  }
 

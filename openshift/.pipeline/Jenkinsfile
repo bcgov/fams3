@@ -31,16 +31,11 @@ def WaitForBuild(selector, namespace) {
  timeout(time: 10, unit: 'MINUTES') {
   openshift.withCluster() {
    openshift.withProject("${namespace}") {
-    def searchapiSelector = openshift.selector("bc", selector)
-    searchapiSelector.startBuild("--wait")
-    searchapiSelector.object()
-    builds = searchapiSelector.related("builds")
-    builds.watch {
-     if (it.count() == 0) {
-      return false
-     }
-     return true
-    }
+    // Wait for build to trigger
+    sleep 10
+    def bcSelector = openshift.selector("bc", selector)
+    bcSelector.object()
+    builds = bcSelector.related("builds")
     builds.untilEach {
      return it.object().status.phase == "Complete"
     }

@@ -7,12 +7,15 @@ using SearchApi.Core.Contracts;
 
 namespace SearchAdapter.ICBC.SearchRequest
 {
-    public class SearchRequestHandler : IConsumer<ExecuteSearch>
+    /// <summary>
+    /// The SearchRequestConsumer consumes ICBC execute search commands, execute the search a publish a response back to the searchApi
+    /// </summary>
+    public class SearchRequestConsumer : IConsumer<ExecuteSearch>
     {
 
-        private readonly ILogger<SearchRequestHandler> _logger;
+        private readonly ILogger<SearchRequestConsumer> _logger;
 
-        public SearchRequestHandler(ILogger<SearchRequestHandler> logger)
+        public SearchRequestConsumer(ILogger<SearchRequestConsumer> logger)
         {
             _logger = logger;
         }

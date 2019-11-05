@@ -15,7 +15,12 @@ def DOMAIN = "pathfinder.gov.bc.ca"
 def SUBDOMAIN = "fams3"
 
 def GIT_URI = "https://github.com/bcgov/fams3.git"
-def GIT_REF = "master"
+def GIT_REF = "feature/cicd"
+
+def PRIVATE_GIT_URI = "https://github.com/bcgov-c/fams3-openshift/"
+def PRIVATE_GIT_REF = "master"
+
+// Todo: Change token to service account
 
 def BUILD_MEMORY = "1Gi"
 def RUN_MEMORY = "128Mi"
@@ -58,7 +63,7 @@ node {
     dir('simple_pipeline') {
 
      echo "Initiating SearchAPI build..."
-     sh "oc process -f openshift/templates/searchapi.bc.yaml \
+     sh "oc process -f openshift/templates/dotnet.bc.yaml \
         -p NAME=${SEARCH_API} \
         -p SOURCE_REPOSITORY_URL=${GIT_URI} \
         -p SOURCE_REPOSITORY_REF=${GIT_REF} \
@@ -68,26 +73,12 @@ node {
 
      WaitForBuild(SEARCH_API)
     }
-   // }, 'Build ICBCAdapter': {
-   //  dir('simple_pipeline') {
-
-   //   echo "Initiating Mock Service build..."
-   //   sh "oc process -f openshift/templates/icbc.adapter.bc.yaml \
-   //      -p NAME=${ICBC_ADAPTER} \
-   //      -p SOURCE_REPOSITORY_URL=${GIT_URI} \
-   //      -p SOURCE_REPOSITORY_REF=${GIT_REF} \
-   //      -p DOTNET_STARTUP_PROJECT=app/SearchApi/SearchApi.Web/SearchApi.Web.csproj \
-   //      -p MEMORY_LIMIT=${BUILD_MEMORY} \
-   //      -p NAMESPACE=${TOOLS_NAMESPACE} | oc apply -f - -n ${TOOLS_NAMESPACE}"
-
-   //   WaitForBuild(ICBC_ADAPTER)
-   //  }
-   },
+   }, 
    'Build DynamicsAdapter': {
     dir('simple_pipeline') {
 
      echo "Initiating DynamicsAdapter build..."
-     sh "oc process -f openshift/templates/searchapi.bc.yaml \
+     sh "oc process -f openshift/templates/dotnet.bc.yaml \
         -p NAME=${DYNAMICS_ADAPTER} \
         -p SOURCE_REPOSITORY_URL=${GIT_URI} \
         -p SOURCE_REPOSITORY_REF=${GIT_REF} \
@@ -106,7 +97,6 @@ node {
   openshift.withCluster() {
    echo "Tagging images for DEV deployment"
    openshift.tag("${SEARCH_API}:latest", "${SEARCH_API}:dev")
-   openshift.tag("${ICBC_ADAPTER}:latest", "${ICBC_ADAPTER}:dev")
    openshift.tag("${RABBITMQ}:latest", "${RABBITMQ}:dev")
   }
  }
@@ -115,7 +105,7 @@ node {
   dir('simple_pipeline') {
    echo "Creating DeploymentConfig in Dev"
 
-   sh "oc process -f openshift/templates/searchapi.dc.yaml \
+   sh "oc process -f openshift/templates/dotnet.dc.yaml \
                   -p NAME=${SEARCH_API} \
                   -p APPLICATION_DOMAIN=${SUBDOMAIN}-dev.${DOMAIN} \
                   -p MEMORY_LIMIT=${RUN_MEMORY} \

@@ -49,12 +49,15 @@ def WaitForBuild(selector, namespace) {
  }
 }
 
-def WaitForDeploy(selector, namespace) {
+def WaitForDeploy(selector, namespace, statefulset=false) {
+ 
+ def selectorType = 'dc'
+ if (statefulset) selectorType = 'statefulset'
  echo "Waiting for ${selector} to be deployed in ${namespace}..."
  timeout(time: 180, unit: 'SECONDS') {
   openshift.withCluster() {
    openshift.withProject("${DEV_NAMESPACE}") {
-    def dc = openshift.selector('dc', "${SEARCH_API}")
+    def dc = openshift.selector(selectorType, "${SEARCH_API}")
     dc.rollout().status()
    }
   }
@@ -118,7 +121,7 @@ node {
   parallel(
    'Deploy SearchAPI': {
     dir('simple_pipeline') {
-     echo "Deploying SearchAPI in Dev"
+     echo "Deploying SearchAPI in Dev..."
 
      sh "oc process -f openshift/templates/dotnet.dc.yaml \
                   -p NAME=${SEARCH_API} \
@@ -132,7 +135,7 @@ node {
 
    },
    'Deploy DynamicsAdapter': {
-    echo "Deploying SearchAPI in Dev"
+    echo "Deploying SearchAPI in Dev..."
 
     sh "oc process -f openshift/templates/dotnet.dc.yaml \
                   -p NAME=${DYNAMICS_ADAPTER} \
@@ -142,6 +145,15 @@ node {
                   -p TAG=dev | oc apply -f - -n ${DEV_NAMESPACE}"
 
     WaitForDeploy(DYNAMICS_ADAPTER, DEV_NAMESPACE)
+   },
+
+   'Deploy RabbitMQ':{
+
+    echo "Deploying RabbitMQ in Dev..."
+    sh "oc process -f openshift/templates/rabbitmq.dc.yaml \
+              -p CLUSTER_NAME=${RABBITMQ} \
+              -p NAMESPACE=${DEV_NAMESPACE} | oc apply -f - -n ${DEV_NAMESPACE}"
+    WaitForDeploy(RABBITMQ, DEV_NAMESPACE, true)
    }
 
   )

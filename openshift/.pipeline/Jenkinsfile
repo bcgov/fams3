@@ -31,7 +31,7 @@ def WaitForBuild(selector, namespace) {
  timeout(time: 10, unit: 'MINUTES') {
   openshift.withCluster() {
    openshift.withProject("${namespace}") {
-    def searchapiSelector = openshift.selector("bc", "${selector}-build")
+    def searchapiSelector = openshift.selector("bc", selector)
     searchapiSelector.startBuild("--wait")
     searchapiSelector.object()
     builds = searchapiSelector.related("builds")
@@ -57,7 +57,7 @@ def WaitForDeploy(selector, namespace, statefulset=false) {
  timeout(time: 180, unit: 'SECONDS') {
   openshift.withCluster() {
    openshift.withProject("${DEV_NAMESPACE}") {
-    def dc = openshift.selector(selectorType, "${SEARCH_API}")
+    def dc = openshift.selector(selectorType, selector)
     dc.rollout().status()
    }
   }
@@ -87,7 +87,7 @@ node {
         -p MEMORY_LIMIT=${BUILD_MEMORY} \
         -p NAMESPACE=${TOOLS_NAMESPACE} | oc apply -f - -n ${TOOLS_NAMESPACE}"
 
-     WaitForBuild(SEARCH_API, TOOLS_NAMESPACE)
+     WaitForBuild("${SEARCH_API}-runtime", TOOLS_NAMESPACE)
     }
    },
    'Build DynamicsAdapter': {
@@ -102,7 +102,7 @@ node {
         -p MEMORY_LIMIT=${BUILD_MEMORY} \
         -p NAMESPACE=${TOOLS_NAMESPACE} | oc apply -f - -n ${TOOLS_NAMESPACE}"
 
-     WaitForBuild(DYNAMICS_ADAPTER, TOOLS_NAMESPACE)
+     WaitForBuild("${DYNAMICS_ADAPTER}-runtime", TOOLS_NAMESPACE)
     }
    })
 

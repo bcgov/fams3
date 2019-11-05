@@ -2,10 +2,10 @@
 kind: Template
 apiVersion: v1
 metadata:
-  name: fams3-searchapi
+  name: fams3-dotnet
   annotations:
-    openshift.io/display-name: "FAMS3 SearchAPI"
-    description: The FAMS3 Search API
+    openshift.io/display-name: "FAMS3 Dotnet"
+    description: The FAMS3 Dotnet Deployment
     tags: quickstart,dotnet,.net
     iconClass: icon-dotnet
     template.openshift.io/provider-display-name: BCGov

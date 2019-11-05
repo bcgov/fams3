@@ -8,6 +8,8 @@ def PROD_NAMESPACE = "frjeow-prod"
 
 def RABBITMQ_SERVICE = "rabbitmq"
 def SEARCH_API = "searchapi"
+def ICBC_ADAPTER = "icbcmock"
+def DYNAMICS_ADAPTER = "dynadapter"
 
 def DOMAIN = "pathfinder.gov.bc.ca"
 def SUBDOMAIN = "fams3"
@@ -18,6 +20,29 @@ def GIT_REF = "master"
 def BUILD_MEMORY = "1Gi"
 def RUN_MEMORY = "128Mi"
 
+// Function declaration
+def WaitForBuild(selector) {
+ timeout(time: 10, unit: 'MINUTES') {
+  openshift.withCluster() {
+   openshift.withProject("${TOOLS_NAMESPACE}") {
+    def searchapiSelector = openshift.selector("bc", "${selector}-build")
+    searchapiSelector.startBuild("--wait")
+    searchapiSelector.object()
+    builds = searchapiSelector.related("builds")
+    builds.watch {
+     if (it.count() == 0) {
+      return false
+     }
+     return true
+    }
+    builds.untilEach {
+     return it.object().status.phase == "Complete"
+    }
+   }
+  }
+ }
+}
+
 //Pipeline
 node {
 
@@ -27,11 +52,13 @@ node {
   }
  }
 
- stage('Build SearchAPI') {
-  dir('simple_pipeline') {
-   sh "ls -lha openshift/templates"
+ stage('Build') {
+  parallel(
+   'Build SearchAPI': {
+    dir('simple_pipeline') {
 
-   sh "oc process -f openshift/templates/searchapi.bc.yaml \
+     echo "Initiating SearchAPI build..."
+     sh "oc process -f openshift/templates/searchapi.bc.yaml \
         -p NAME=${SEARCH_API} \
         -p SOURCE_REPOSITORY_URL=${GIT_URI} \
         -p SOURCE_REPOSITORY_REF=${GIT_REF} \
@@ -39,58 +66,54 @@ node {
         -p MEMORY_LIMIT=${BUILD_MEMORY} \
         -p NAMESPACE=${TOOLS_NAMESPACE} | oc apply -f - -n ${TOOLS_NAMESPACE}"
 
-   sh "echo Wait for the builds to finish"
-   timeout(time: 10, unit: 'MINUTES') {
-    openshift.withCluster() {
-     openshift.withProject("${TOOLS_NAMESPACE}") {
-      def searchapiSelector = openshift.selector("bc", "${SEARCH_API}-build")
-      searchapiSelector.startBuild("--wait")
-      searchapiSelector.object()
-      builds = searchapiSelector.related("builds")
-      builds.watch {
-       if (it.count() == 0) {
-        return false
-       }
-       return true
-      }
-      builds.untilEach {
-       return it.object().status.phase == "Complete"
-      }
-     }
+     WaitForBuild(SEARCH_API)
     }
-   }
-   sh "echo Wait for runtime build to finish"
-   timeout(time: 10, unit: 'MINUTES') {
-    openshift.withCluster() {
-     openshift.withProject("${TOOLS_NAMESPACE}") {
-      def searchapiSelector = openshift.selector("bc", "${SEARCH_API}-runtime")
-      searchapiSelector.object()
-      builds = searchapiSelector.related("builds")
-      builds.watch {
-       if (it.count() == 0) {
-        return false
-       }
-       return true
-      }
-      builds.untilEach {
-       return it.object().status.phase == "Complete"
-      }
-     }
+   // }, 'Build ICBCAdapter': {
+   //  dir('simple_pipeline') {
+
+   //   echo "Initiating Mock Service build..."
+   //   sh "oc process -f openshift/templates/icbc.adapter.bc.yaml \
+   //      -p NAME=${ICBC_ADAPTER} \
+   //      -p SOURCE_REPOSITORY_URL=${GIT_URI} \
+   //      -p SOURCE_REPOSITORY_REF=${GIT_REF} \
+   //      -p DOTNET_STARTUP_PROJECT=app/SearchApi/SearchApi.Web/SearchApi.Web.csproj \
+   //      -p MEMORY_LIMIT=${BUILD_MEMORY} \
+   //      -p NAMESPACE=${TOOLS_NAMESPACE} | oc apply -f - -n ${TOOLS_NAMESPACE}"
+
+   //   WaitForBuild(ICBC_ADAPTER)
+   //  }
+   },
+   'Build DynamicsAdapter': {
+    dir('simple_pipeline') {
+
+     echo "Initiating DynamicsAdapter build..."
+     sh "oc process -f openshift/templates/searchapi.bc.yaml \
+        -p NAME=${DYNAMICS_ADAPTER} \
+        -p SOURCE_REPOSITORY_URL=${GIT_URI} \
+        -p SOURCE_REPOSITORY_REF=${GIT_REF} \
+        -p DOTNET_STARTUP_PROJECT=app/DynamicsAdapter/DynamicsAdapter.Web/DynamicsAdapter.Web.csproj \
+        -p MEMORY_LIMIT=${BUILD_MEMORY} \
+        -p NAMESPACE=${TOOLS_NAMESPACE} | oc apply -f - -n ${TOOLS_NAMESPACE}"
+
+     WaitForBuild(DYNAMICS_ADAPTER)
     }
-   }
-  }
+   })
+
+
  }
 
  stage('Promote to DEV') {
   openshift.withCluster() {
-   sh "echo Tagging image for DEV"
+   echo "Tagging images for DEV deployment"
    openshift.tag("${SEARCH_API}:latest", "${SEARCH_API}:dev")
+   openshift.tag("${ICBC_ADAPTER}:latest", "${ICBC_ADAPTER}:dev")
+   openshift.tag("${RABBITMQ}:latest", "${RABBITMQ}:dev")
   }
  }
 
- stage('Deploy SearchAPI') {
+ stage('Deploy to DEV') {
   dir('simple_pipeline') {
-   sh "echo Creating DeploymentConfig in Dev"
+   echo "Creating DeploymentConfig in Dev"
 
    sh "oc process -f openshift/templates/searchapi.dc.yaml \
                   -p NAME=${SEARCH_API} \
@@ -99,7 +122,7 @@ node {
                   -p NAMESPACE=${TOOLS_NAMESPACE} \
                   -p TAG=dev | oc apply -f - -n ${DEV_NAMESPACE}"
 
-   sh "echo Wait for service to be up"
+   echo "Wait for service to be up"
    timeout(time: 180, unit: 'SECONDS') {
     openshift.withCluster() {
      openshift.withProject("${DEV_NAMESPACE}") {

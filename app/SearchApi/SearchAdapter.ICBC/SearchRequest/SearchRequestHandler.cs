@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using MassTransit;
 using Microsoft.Extensions.Logging;
+using SearchApi.Core.Adapters.Contracts;
 using SearchApi.Core.Contracts;
 
 namespace SearchAdapter.ICBC.SearchRequest
@@ -19,7 +20,12 @@ namespace SearchAdapter.ICBC.SearchRequest
         public async Task Consume(ConsumeContext<ExecuteSearch> context)
         {
             _logger.LogInformation($"Successfully handling new search request [{context.Message.Id}]");
-            await Task.FromResult(0);
+            
+            await context.Publish<MatchFound>(new IcbcMatchFoundBuilder()
+                .WithFirstName("firstName")
+                .WithLastName("lastName")
+                .WithDateOfBirth(new DateTime(2001, 1, 1))
+                .Build());
         }
     }
 }

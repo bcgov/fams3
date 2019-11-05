@@ -135,7 +135,8 @@ namespace SearchAdapter.ICBC
 
                     cfg.ReceiveEndpoint(host, nameof(ExecuteSearch), e =>
                     {
-                        e.Consumer(() => new SearchRequestHandler(provider.GetRequiredService<ILogger<SearchRequestHandler>>()));
+                        e.Consumer(() => new SearchRequestHandler(
+                            provider.GetRequiredService<ILogger<SearchRequestHandler>>()));
                     });
 
                     // Add Diagnostic context for tracing

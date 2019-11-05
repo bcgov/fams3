@@ -52,12 +52,12 @@ def WaitForBuild(selector, namespace) {
 def WaitForDeploy(selector, namespace) {
  echo "Waiting for ${selector} to be deployed in ${namespace}..."
  timeout(time: 180, unit: 'SECONDS') {
-    openshift.withCluster() {
-     openshift.withProject("${DEV_NAMESPACE}") {
-      def dc = openshift.selector('dc', "${SEARCH_API}")
-      dc.rollout().status()
-     }
-    }
+  openshift.withCluster() {
+   openshift.withProject("${DEV_NAMESPACE}") {
+    def dc = openshift.selector('dc', "${SEARCH_API}")
+    dc.rollout().status()
+   }
+  }
  }
 }
 
@@ -86,7 +86,7 @@ node {
 
      WaitForBuild(SEARCH_API, TOOLS_NAMESPACE)
     }
-   }, 
+   },
    'Build DynamicsAdapter': {
     dir('simple_pipeline') {
 
@@ -115,19 +115,37 @@ node {
  }
 
  stage('Deploy to DEV') {
-  dir('simple_pipeline') {
-   echo "Deploying SearchAPI in Dev"
+  parallel(
+   'Deploy SearchAPI': {
+    dir('simple_pipeline') {
+     echo "Deploying SearchAPI in Dev"
 
-   sh "oc process -f openshift/templates/dotnet.dc.yaml \
+     sh "oc process -f openshift/templates/dotnet.dc.yaml \
                   -p NAME=${SEARCH_API} \
                   -p APPLICATION_DOMAIN=${SUBDOMAIN}-dev.${DOMAIN} \
                   -p MEMORY_LIMIT=${RUN_MEMORY} \
                   -p NAMESPACE=${TOOLS_NAMESPACE} \
                   -p TAG=dev | oc apply -f - -n ${DEV_NAMESPACE}"
 
-   WaitForDeploy(SEARCH_API, DEV_NAMESPACE)
+     WaitForDeploy(SEARCH_API, DEV_NAMESPACE)
+    }
 
-  }
+   },
+   'Deploy DynamicsAdapter': {
+    echo "Deploying SearchAPI in Dev"
+
+    sh "oc process -f openshift/templates/dotnet.dc.yaml \
+                  -p NAME=${DYNAMICS_ADAPTER} \
+                  -p APPLICATION_DOMAIN=${SUBDOMAIN}-dev.${DOMAIN} \
+                  -p MEMORY_LIMIT=${RUN_MEMORY} \
+                  -p NAMESPACE=${TOOLS_NAMESPACE} \
+                  -p TAG=dev | oc apply -f - -n ${DEV_NAMESPACE}"
+
+    WaitForDeploy(DYNAMICS_ADAPTER, DEV_NAMESPACE)
+   }
+
+  )
+
  }
 
 }

@@ -26,22 +26,25 @@ def BUILD_MEMORY = "1Gi"
 def RUN_MEMORY = "128Mi"
 
 // Function declaration
-def WaitForBuild(selector, namespace) {
+def WaitForBuild(selector, namespace, trigger=false) {
  echo "Waiting for ${selector} to be build in ${namespace}..."
  timeout(time: 10, unit: 'MINUTES') {
   // Wait for build to trigger
   sleep 10
   def bcSelector = openshift.selector("bc", selector)
   bcSelector.object()
-  // bcSelector.startBuild("--wait")
   builds = bcSelector.related("builds")
 
-  // builds.watch {
-  //  if (it.count() == 0) {
-  //   return false
-  //  }
-  //  return true
-  // }
+  if(trigger){
+      bcSelector.startBuild("--wait")
+      builds.watch {
+      if (it.count() == 0) {
+       return false
+      }
+      return true
+     }
+  }
+
   builds.untilEach {
    return it.object().status.phase == "Complete"
   }
@@ -87,7 +90,7 @@ node {
         -p NAMESPACE=${TOOLS_NAMESPACE} | oc apply -f - -n ${TOOLS_NAMESPACE}"
 
        // This creates 2 seperate build configs we need to watch
-       WaitForBuild("${SEARCH_API}-build", TOOLS_NAMESPACE)
+       WaitForBuild("${SEARCH_API}-build", TOOLS_NAMESPACE, true)
        WaitForBuild("${SEARCH_API}-runtime", TOOLS_NAMESPACE)
       }
      },

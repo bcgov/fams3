@@ -38,6 +38,12 @@ parameters:
       The image tag to be deployed from the registry.
     required: true
     value: latest
+  - name: JAEGER_COLLECTOR
+    displayName: Jaeger Collector Service
+    description:
+      The name of the Jaeger collector to send traces to (port 14268)
+    required: true
+    value: jaeger-collector
 objects:
   - kind: Route
     apiVersion: v1
@@ -102,7 +108,13 @@ objects:
               resources:
                 limits:
                   memory: "${MEMORY_LIMIT}"
-              env: []
+              env: 
+                - name: JAEGER_SERVICE_NAME
+                  value: "${NAME}"
+                - name: JAEGER_SAMPLER_TYPE
+                  value: const
+                - name: JAEGER_ENDPOINT
+                  value: http://${JAEGER_COLLECTOR}:14268/api/traces
               livenessProbe:
                 httpGet:
                   path: "/health"
@@ -117,16 +129,5 @@ objects:
                   scheme: HTTP
                 initialDelaySeconds: 10
                 timeoutSeconds: 30
-            - image: jaegertracing/jaeger-agent
-              name: jaeger-agent
-              ports:
-              - containerPort: 5775
-                protocol: UDP
-              - containerPort: 6831
-                protocol: UDP
-              - containerPort: 6832
-                protocol: UDP
-              - containerPort: 5778
-                protocol: TCP
-              args: ["--collector.host-port=jaeger-collector.jaeger-infra.svc:14267"]
+
 

@@ -45,8 +45,9 @@ namespace SearchAdapter.ICBC
 
             services.AddHealthChecks();
 
+            // Configures the Provider Profile Options
             services
-                .AddOptions<ProviderProfileConfiguration>()
+                .AddOptions<ProviderProfileOptions>()
                 .Bind(Configuration.GetSection("ProviderProfile"))
                 .ValidateDataAnnotations();
 
@@ -150,7 +151,7 @@ namespace SearchAdapter.ICBC
                     });
 
                     // Add Provider profile context
-                    cfg.UseProviderProfile(provider.GetRequiredService<IOptionsMonitor<ProviderProfileConfiguration>>().CurrentValue);
+                    cfg.UseProviderProfile(provider.GetRequiredService<IOptionsMonitor<ProviderProfileOptions>>().CurrentValue);
 
                     // Add Diagnostic context for tracing
                     cfg.PropagateOpenTracingContext();

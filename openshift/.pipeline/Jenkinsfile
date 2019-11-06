@@ -28,11 +28,11 @@ def RUN_MEMORY = "128Mi"
 // Function declaration
 def WaitForBuild(selector, namespace) {
  echo "Waiting for ${selector} to be build in ${namespace}..."
+ sleep 10
  timeout(time: 10, unit: 'MINUTES') {
   openshift.withCluster() {
    openshift.withProject("${namespace}") {
     // Wait for build to trigger
-    sleep 10
     def bcSelector = openshift.selector("bc", selector)
     bcSelector.object()
     builds = bcSelector.related("builds")
@@ -82,6 +82,7 @@ node {
         -p MEMORY_LIMIT=${BUILD_MEMORY} \
         -p NAMESPACE=${TOOLS_NAMESPACE} | oc apply -f - -n ${TOOLS_NAMESPACE}"
 
+     WaitForBuild("${SEARCH_API}-build", TOOLS_NAMESPACE)
      WaitForBuild("${SEARCH_API}-runtime", TOOLS_NAMESPACE)
     }
    },
@@ -97,6 +98,7 @@ node {
         -p MEMORY_LIMIT=${BUILD_MEMORY} \
         -p NAMESPACE=${TOOLS_NAMESPACE} | oc apply -f - -n ${TOOLS_NAMESPACE}"
 
+     WaitForBuild("${DYNAMICS_ADAPTER}-build", TOOLS_NAMESPACE)
      WaitForBuild("${DYNAMICS_ADAPTER}-runtime", TOOLS_NAMESPACE)
     }
    })

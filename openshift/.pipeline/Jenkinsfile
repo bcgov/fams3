@@ -26,20 +26,19 @@ def BUILD_MEMORY = "1Gi"
 def RUN_MEMORY = "128Mi"
 
 // Function declaration
-def TriggerBuild(selector, namespace){
+def TriggerBuild(selector, namespace) {
  echo "Triggering build for ${selector} in ${namespace}"
- timeout(3)
- {
-   def bcSelector = openshift.selector("bc", selector)
-   bcSelector.object()
-   bcSelector.startBuild("--wait")
-   builds = bcSelector.related("builds")
-   builds.watch {
-    if (it.count() == 0) {
-     return false
-    }
-    return true
+ timeout(3) {
+  def bcSelector = openshift.selector("bc", selector)
+  bcSelector.object()
+  bcSelector.startBuild()
+  builds = bcSelector.related("builds")
+  builds.watch {
+   if (it.count() == 0) {
+    return false
    }
+   return true
+  }
  }
 }
 
@@ -80,79 +79,79 @@ node {
  stage('Build') {
   openshift.withCluster() {
    openshift.withProject(TOOLS_NAMESPACE) {
-      dir('simple_pipeline') {
+    dir('simple_pipeline') {
 
-       echo "Initiating SearchAPI build..."
-       sh "oc process -f openshift/templates/dotnet.bc.yaml \
+     echo "Initiating SearchAPI build..."
+     sh "oc process -f openshift/templates/dotnet.bc.yaml \
         -p NAME=${SEARCH_API} \
         -p SOURCE_REPOSITORY_URL=${GIT_URI} \
         -p SOURCE_REPOSITORY_REF=${GIT_REF} \
         -p DOTNET_STARTUP_PROJECT=app/SearchApi/SearchApi.Web/SearchApi.Web.csproj \
         -p MEMORY_LIMIT=${BUILD_MEMORY} \
         -p NAMESPACE=${TOOLS_NAMESPACE} | oc apply -f - -n ${TOOLS_NAMESPACE}"
-       TriggerBuild("${SEARCH_API}-build", TOOLS_NAMESPACE)
+     TriggerBuild("${SEARCH_API}-build", TOOLS_NAMESPACE)
 
 
 
-       echo "Initiating DynamicsAdapter build..."
-       sh "oc process -f openshift/templates/dotnet.bc.yaml \
+     echo "Initiating DynamicsAdapter build..."
+     sh "oc process -f openshift/templates/dotnet.bc.yaml \
         -p NAME=${DYNAMICS_ADAPTER} \
         -p SOURCE_REPOSITORY_URL=${GIT_URI} \
         -p SOURCE_REPOSITORY_REF=${GIT_REF} \
         -p DOTNET_STARTUP_PROJECT=app/DynamicsAdapter/DynamicsAdapter.Web/DynamicsAdapter.Web.csproj \
         -p MEMORY_LIMIT=${BUILD_MEMORY} \
         -p NAMESPACE=${TOOLS_NAMESPACE} | oc apply -f - -n ${TOOLS_NAMESPACE}"
-       TriggerBuild("${DYNAMICS_ADAPTER}-build", TOOLS_NAMESPACE)
+     TriggerBuild("${DYNAMICS_ADAPTER}-build", TOOLS_NAMESPACE)
 
 
 
-       // This creates 2 seperate build configs we need to watch
-       WaitForBuild("${SEARCH_API}-build", TOOLS_NAMESPACE)
-       WaitForBuild("${SEARCH_API}-runtime", TOOLS_NAMESPACE)
+     // This creates 2 seperate build configs we need to watch
+     WaitForBuild("${SEARCH_API}-build", TOOLS_NAMESPACE)
+     WaitForBuild("${SEARCH_API}-runtime", TOOLS_NAMESPACE)
 
-       WaitForBuild("${DYNAMICS_ADAPTER}-build", TOOLS_NAMESPACE)
-       WaitForBuild("${DYNAMICS_ADAPTER}-runtime", TOOLS_NAMESPACE)
-      }
-     }
+     WaitForBuild("${DYNAMICS_ADAPTER}-build", TOOLS_NAMESPACE)
+     WaitForBuild("${DYNAMICS_ADAPTER}-runtime", TOOLS_NAMESPACE)
+    }
    }
   }
- 
+ }
+
 
  stage('Promote to DEV') {
   openshift.withCluster() {
    openshift.withProject(TOOLS_NAMESPACE) {
-      dir('simple_pipeline') {
+    dir('simple_pipeline') {
 
-    echo 'Applying deployment configurations...'
+     echo 'Applying deployment configurations...'
 
-    echo "SearchAPI Config"
-    sh "oc process -f openshift/templates/dotnet.dc.yaml \
+     echo "SearchAPI Config"
+     sh "oc process -f openshift/templates/dotnet.dc.yaml \
                   -p NAME=${SEARCH_API} \
                   -p APPLICATION_DOMAIN=${SUBDOMAIN}-dev.${DOMAIN} \
                   -p MEMORY_LIMIT=${RUN_MEMORY} \
                   -p NAMESPACE=${TOOLS_NAMESPACE} \
                   -p TAG=dev | oc apply -f - -n ${DEV_NAMESPACE}"
 
-    echo "Dotnet Config"
-    sh "oc process -f openshift/templates/dotnet.dc.yaml \
+     echo "Dotnet Config"
+     sh "oc process -f openshift/templates/dotnet.dc.yaml \
                   -p NAME=${DYNAMICS_ADAPTER} \
                   -p APPLICATION_DOMAIN=${SUBDOMAIN}-dev.${DOMAIN} \
                   -p MEMORY_LIMIT=${RUN_MEMORY} \
                   -p NAMESPACE=${TOOLS_NAMESPACE} \
                   -p TAG=dev | oc apply -f - -n ${DEV_NAMESPACE}"
 
-    echo "RabbitMQ Config"
-    sh "oc process -f openshift/templates/rabbitmq.dc.yaml \
+     echo "RabbitMQ Config"
+     sh "oc process -f openshift/templates/rabbitmq.dc.yaml \
               -p CLUSTER_NAME=${RABBITMQ} \
               -p NAMESPACE=${DEV_NAMESPACE} | oc apply -f - -n ${DEV_NAMESPACE}"
-    
-    sleep 10
 
-    echo "Tagging images for DEV deployment..."
-    openshift.tag("${SEARCH_API}:latest", "${SEARCH_API}:dev")
-    openshift.tag("${DYNAMICS_ADAPTER}:latest", "${DYNAMICS_ADAPTER}:dev")
-    openshift.tag("${RABBITMQ}:latest", "${RABBITMQ}:dev")
-      }
+     sleep 10
+
+     echo "Tagging images for DEV deployment..."
+     openshift.tag("${SEARCH_API}:latest", "${SEARCH_API}:dev")
+     openshift.tag("${DYNAMICS_ADAPTER}:latest", "${DYNAMICS_ADAPTER}:dev")
+     openshift.tag("${RABBITMQ}:latest", "${RABBITMQ}:dev")
+    }
 
    }
   }

@@ -84,6 +84,17 @@ Application health can be checked [here](http://localhost:5000/health).
 
 FAMS-search-api is a dotnet core rest service to execute people search accross multiple data providers.
 
+## ICBCAdapter
+
+### Configuration
+
+| Property | Required | Description |
+| --- | --- | --- |
+| RABBITMQ__HOST | no | RabbitMq Host |
+| RABBITMQ__PORT | no | RabbitMq Port |
+| RABBITMQ__USERNAME | no | RabbitMq UserName |
+| RABBITMQ__PASSWORD | no | RabbitMq Password |
+
 ## DynamicAdapter
 
 FAMS-dynamic-adapter is a dotnet core rest service that polls dynamics to retrieve ready to search request and execute search using the Search API.

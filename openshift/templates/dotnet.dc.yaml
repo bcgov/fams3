@@ -115,6 +115,22 @@ objects:
                   value: const
                 - name: JAEGER_ENDPOINT
                   value: http://${JAEGER_COLLECTOR}:14268/api/traces
+                  # SearchAPI
+                - name: ASPNETCORE_ENVIRONMENT
+                  value: Development
+                - name: RABBITMQ__HOST
+                  value: rabbitmq
+                - name: RABBITMQ__PORT
+                  value: 5672
+                - name: RABBITMQ__USERNAME
+                  value: guest
+                - name: RABBITMQ__PASSWORD
+                  value: guest
+                  # DynamicsAdapter
+                - name: SCHEDULER__CRON
+                  value: 0/5 * * * * ?
+                - name: SEARCHAPI__BASEURL
+                  value: http://search-api
               livenessProbe:
                 httpGet:
                   path: "/health"

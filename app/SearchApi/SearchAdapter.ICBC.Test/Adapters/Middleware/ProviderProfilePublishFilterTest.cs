@@ -51,7 +51,6 @@ namespace SearchAdapter.ICBC.Test.Adapters.Middleware
             var providerProfile = (ProviderProfile)message?.Context.Headers.GetAll().FirstOrDefault(x => x.Key == nameof(ProviderProfile)).Value;
 
             Assert.AreEqual("ProviderA", providerProfile.Name);
-
         }
 
         public class A { }

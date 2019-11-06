@@ -28,7 +28,7 @@ def RUN_MEMORY = "128Mi"
 // Function declaration
 def WaitForBuild(selector, namespace) {
  echo "Waiting for ${selector} to be build in ${namespace}..."
- sleep 10
+ sleep 20
  timeout(time: 10, unit: 'MINUTES') {
   openshift.withCluster() {
    openshift.withProject("${namespace}") {

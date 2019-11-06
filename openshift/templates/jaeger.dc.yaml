@@ -17,6 +17,8 @@ kind: List
 items:
 - apiVersion: extensions/v1beta1
   kind: Deployment
+  selector:
+    name: jaeger-collector
   metadata:
     name: jaeger-collector
     labels:
@@ -27,8 +29,6 @@ items:
     replicas: 1
     strategy:
       type: Recreate
-    selector:
-      name: jaeger
     template:
       metadata:
         labels:

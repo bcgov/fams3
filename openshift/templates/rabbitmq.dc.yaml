@@ -145,6 +145,7 @@ objects:
       serviceName: ${CLUSTER_NAME}
       replicas: 3
       selector:
+        name: ${CLUSTER_NAME}
         matchLabels:
           app: ${CLUSTER_NAME}
       template:

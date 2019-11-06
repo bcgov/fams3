@@ -27,6 +27,8 @@ items:
     replicas: 1
     strategy:
       type: Recreate
+    selector:
+      name: jaeger
     template:
       metadata:
         labels:

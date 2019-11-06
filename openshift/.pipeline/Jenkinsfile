@@ -26,7 +26,7 @@ def BUILD_MEMORY = "1Gi"
 def RUN_MEMORY = "128Mi"
 
 // Function declaration
-def WaitForBuild(selector, namespace, trigger=false) {
+def WaitForBuild(selector, namespace, trigger = false) {
  echo "Waiting for ${selector} to be build in ${namespace}..."
  timeout(time: 10, unit: 'MINUTES') {
   // Wait for build to trigger
@@ -35,14 +35,14 @@ def WaitForBuild(selector, namespace, trigger=false) {
   bcSelector.object()
   builds = bcSelector.related("builds")
 
-  if(trigger){
-      bcSelector.startBuild("--wait")
-      builds.watch {
-      if (it.count() == 0) {
-       return false
-      }
-      return true
-     }
+  if (trigger) {
+   bcSelector.startBuild("--wait")
+   builds.watch {
+    if (it.count() == 0) {
+     return false
+    }
+    return true
+   }
   }
 
   builds.untilEach {
@@ -110,65 +110,54 @@ node {
        WaitForBuild("${DYNAMICS_ADAPTER}-runtime", TOOLS_NAMESPACE)
       }
      })
-
-
    }
   }
  }
 
  stage('Promote to DEV') {
-  echo "Promoting image tags..."
   openshift.withCluster() {
    openshift.withProject(TOOLS_NAMESPACE) {
 
-      echo 'Applying deployment configurations...'
+    echo 'Applying deployment configurations...'
 
-
-       echo "SearchAPI Config"
-
-       sh "oc process -f openshift/templates/dotnet.dc.yaml \
+    echo "SearchAPI Config"
+    sh "oc process -f openshift/templates/dotnet.dc.yaml \
                   -p NAME=${SEARCH_API} \
                   -p APPLICATION_DOMAIN=${SUBDOMAIN}-dev.${DOMAIN} \
                   -p MEMORY_LIMIT=${RUN_MEMORY} \
                   -p NAMESPACE=${TOOLS_NAMESPACE} \
                   -p TAG=dev | oc apply -f - -n ${DEV_NAMESPACE}"
 
-
-       echo "Dotnet Config"
-
-      sh "oc process -f openshift/templates/dotnet.dc.yaml \
+    echo "Dotnet Config"
+    sh "oc process -f openshift/templates/dotnet.dc.yaml \
                   -p NAME=${DYNAMICS_ADAPTER} \
                   -p APPLICATION_DOMAIN=${SUBDOMAIN}-dev.${DOMAIN} \
                   -p MEMORY_LIMIT=${RUN_MEMORY} \
                   -p NAMESPACE=${TOOLS_NAMESPACE} \
                   -p TAG=dev | oc apply -f - -n ${DEV_NAMESPACE}"
 
-     
-
-       echo "RabbitMQ Config"
-      sh "oc process -f openshift/templates/rabbitmq.dc.yaml \
+    echo "RabbitMQ Config"
+    sh "oc process -f openshift/templates/rabbitmq.dc.yaml \
               -p CLUSTER_NAME=${RABBITMQ} \
               -p NAMESPACE=${DEV_NAMESPACE} | oc apply -f - -n ${DEV_NAMESPACE}"
-     sleep 10
-   
-
-
-   
+    
+    sleep 10
 
     echo "Tagging images for DEV deployment..."
     openshift.tag("${SEARCH_API}:latest", "${SEARCH_API}:dev")
     openshift.tag("${DYNAMICS_ADAPTER}:latest", "${DYNAMICS_ADAPTER}:dev")
     openshift.tag("${RABBITMQ}:latest", "${RABBITMQ}:dev")
    }
-
-   openshift.withProject(DEV_NAMESPACE) {  
-
-      WaitForDeploy(SEARCH_API, DEV_NAMESPACE)
-      WaitForDeploy(DYNAMICS_ADAPTER, DEV_NAMESPACE)
-      WaitForDeploy(RABBITMQ, DEV_NAMESPACE, true)
-
   }
+ }
 
-  
+ stage('Wait for Dev Deployment') {
+  openshift.withCluster() {
+   openshift.withProject(DEV_NAMESPACE) {
+    WaitForDeploy(SEARCH_API, DEV_NAMESPACE)
+    WaitForDeploy(DYNAMICS_ADAPTER, DEV_NAMESPACE)
+    WaitForDeploy(RABBITMQ, DEV_NAMESPACE, true)
+   }
+  }
  }
 }

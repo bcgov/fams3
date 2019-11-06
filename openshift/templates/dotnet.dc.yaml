@@ -122,7 +122,7 @@ objects:
                 - name: RABBITMQ__HOST
                   value: rabbitmq
                 - name: RABBITMQ__PORT
-                  value: 5672
+                  value: "5672"
                 - name: RABBITMQ__USERNAME
                   value: guest
                 - name: RABBITMQ__PASSWORD

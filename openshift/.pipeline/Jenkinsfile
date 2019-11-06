@@ -41,6 +41,7 @@ def WaitForBuild(selector, namespace) {
      if (it.count() == 0) {
       return false
      }
+      echo "Detected new builds created by buildconfig: ${it.names()}"
      return true
     }
     builds.untilEach {
@@ -106,7 +107,9 @@ node {
         -p MEMORY_LIMIT=${BUILD_MEMORY} \
         -p NAMESPACE=${TOOLS_NAMESPACE} | oc apply -f - -n ${TOOLS_NAMESPACE}"
 
+     echo "Wait for build"
      WaitForBuild("${DYNAMICS_ADAPTER}-build", TOOLS_NAMESPACE)
+     echo "Wait for runtime"
      WaitForBuild("${DYNAMICS_ADAPTER}-runtime", TOOLS_NAMESPACE)
     }
    })

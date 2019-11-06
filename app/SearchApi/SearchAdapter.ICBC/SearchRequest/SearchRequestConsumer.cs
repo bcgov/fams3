@@ -25,9 +25,9 @@ namespace SearchAdapter.ICBC.SearchRequest
             _logger.LogInformation($"Successfully handling new search request [{context.Message.Id}]");
             
             await context.Publish<MatchFound>(new IcbcMatchFoundBuilder()
-                .WithFirstName("firstName")
-                .WithLastName("lastName")
-                .WithDateOfBirth(new DateTime(2001, 1, 1))
+                .WithFirstName(context.Message.FirstName)
+                .WithLastName(context.Message.LastName)
+                .WithDateOfBirth(context.Message.DateOfBirth)
                 .Build());
         }
     }

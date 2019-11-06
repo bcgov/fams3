@@ -33,16 +33,19 @@ def WaitForBuild(selector, namespace, trigger = false) {
   sleep 10
   def bcSelector = openshift.selector("bc", selector)
   bcSelector.object()
-  builds = bcSelector.related("builds")
 
   if (trigger) {
    bcSelector.startBuild("--wait")
+   builds = bcSelector.related("builds")
+
    builds.watch {
     if (it.count() == 0) {
      return false
     }
     return true
    }
+  } else {
+     builds = bcSelector.related("builds")
   }
 
   builds.untilEach {
@@ -76,8 +79,6 @@ node {
  stage('Build') {
   openshift.withCluster() {
    openshift.withProject(TOOLS_NAMESPACE) {
-    parallel(
-     'Build SearchAPI': {
       dir('simple_pipeline') {
 
        echo "Initiating SearchAPI build..."
@@ -92,10 +93,7 @@ node {
        // This creates 2 seperate build configs we need to watch
        WaitForBuild("${SEARCH_API}-build", TOOLS_NAMESPACE, true)
        WaitForBuild("${SEARCH_API}-runtime", TOOLS_NAMESPACE)
-      }
-     },
-     'Build DynamicsAdapter': {
-      dir('simple_pipeline') {
+
 
        echo "Initiating DynamicsAdapter build..."
        sh "oc process -f openshift/templates/dotnet.bc.yaml \
@@ -109,10 +107,10 @@ node {
        WaitForBuild("${DYNAMICS_ADAPTER}-build", TOOLS_NAMESPACE, true)
        WaitForBuild("${DYNAMICS_ADAPTER}-runtime", TOOLS_NAMESPACE)
       }
-     })
+     }
    }
   }
- }
+ 
 
  stage('Promote to DEV') {
   openshift.withCluster() {

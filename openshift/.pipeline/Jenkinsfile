@@ -6,7 +6,7 @@ def DEV_NAMESPACE = "frjeow-dev"
 def TEST_NAMESPACE = "frjeow-test"
 def PROD_NAMESPACE = "frjeow-prod"
 
-def RABBITMQ_SERVICE = "rabbitmq"
+def RABBITMQ = "rabbitmq"
 def SEARCH_API = "searchapi"
 def ICBC_ADAPTER = "icbcmock"
 def DYNAMICS_ADAPTER = "dynadapter"
@@ -76,45 +76,45 @@ node {
   }
  }
 
- stage('Build') {
-  openshift.withCluster() {
-   openshift.withProject(TOOLS_NAMESPACE) {
-    dir('simple_pipeline') {
+ // stage('Build') {
+ //  openshift.withCluster() {
+ //   openshift.withProject(TOOLS_NAMESPACE) {
+ //    dir('simple_pipeline') {
 
-     echo "Initiating SearchAPI build..."
-     sh "oc process -f openshift/templates/dotnet.bc.yaml \
-        -p NAME=${SEARCH_API} \
-        -p SOURCE_REPOSITORY_URL=${GIT_URI} \
-        -p SOURCE_REPOSITORY_REF=${GIT_REF} \
-        -p DOTNET_STARTUP_PROJECT=app/SearchApi/SearchApi.Web/SearchApi.Web.csproj \
-        -p MEMORY_LIMIT=${BUILD_MEMORY} \
-        -p NAMESPACE=${TOOLS_NAMESPACE} | oc apply -f - -n ${TOOLS_NAMESPACE}"
-     TriggerBuild("${SEARCH_API}-build", TOOLS_NAMESPACE)
-
-
-
-     echo "Initiating DynamicsAdapter build..."
-     sh "oc process -f openshift/templates/dotnet.bc.yaml \
-        -p NAME=${DYNAMICS_ADAPTER} \
-        -p SOURCE_REPOSITORY_URL=${GIT_URI} \
-        -p SOURCE_REPOSITORY_REF=${GIT_REF} \
-        -p DOTNET_STARTUP_PROJECT=app/DynamicsAdapter/DynamicsAdapter.Web/DynamicsAdapter.Web.csproj \
-        -p MEMORY_LIMIT=${BUILD_MEMORY} \
-        -p NAMESPACE=${TOOLS_NAMESPACE} | oc apply -f - -n ${TOOLS_NAMESPACE}"
-     TriggerBuild("${DYNAMICS_ADAPTER}-build", TOOLS_NAMESPACE)
+ //     echo "Initiating SearchAPI build..."
+ //     sh "oc process -f openshift/templates/dotnet.bc.yaml \
+ //        -p NAME=${SEARCH_API} \
+ //        -p SOURCE_REPOSITORY_URL=${GIT_URI} \
+ //        -p SOURCE_REPOSITORY_REF=${GIT_REF} \
+ //        -p DOTNET_STARTUP_PROJECT=app/SearchApi/SearchApi.Web/SearchApi.Web.csproj \
+ //        -p MEMORY_LIMIT=${BUILD_MEMORY} \
+ //        -p NAMESPACE=${TOOLS_NAMESPACE} | oc apply -f - -n ${TOOLS_NAMESPACE}"
+ //     TriggerBuild("${SEARCH_API}-build", TOOLS_NAMESPACE)
 
 
 
-     // This creates 2 seperate build configs we need to watch
-     WaitForBuild("${SEARCH_API}-build", TOOLS_NAMESPACE)
-     WaitForBuild("${SEARCH_API}-runtime", TOOLS_NAMESPACE)
+ //     echo "Initiating DynamicsAdapter build..."
+ //     sh "oc process -f openshift/templates/dotnet.bc.yaml \
+ //        -p NAME=${DYNAMICS_ADAPTER} \
+ //        -p SOURCE_REPOSITORY_URL=${GIT_URI} \
+ //        -p SOURCE_REPOSITORY_REF=${GIT_REF} \
+ //        -p DOTNET_STARTUP_PROJECT=app/DynamicsAdapter/DynamicsAdapter.Web/DynamicsAdapter.Web.csproj \
+ //        -p MEMORY_LIMIT=${BUILD_MEMORY} \
+ //        -p NAMESPACE=${TOOLS_NAMESPACE} | oc apply -f - -n ${TOOLS_NAMESPACE}"
+ //     TriggerBuild("${DYNAMICS_ADAPTER}-build", TOOLS_NAMESPACE)
 
-     WaitForBuild("${DYNAMICS_ADAPTER}-build", TOOLS_NAMESPACE)
-     WaitForBuild("${DYNAMICS_ADAPTER}-runtime", TOOLS_NAMESPACE)
-    }
-   }
-  }
- }
+
+
+ //     // This creates 2 seperate build configs we need to watch
+ //     WaitForBuild("${SEARCH_API}-build", TOOLS_NAMESPACE)
+ //     WaitForBuild("${SEARCH_API}-runtime", TOOLS_NAMESPACE)
+
+ //     WaitForBuild("${DYNAMICS_ADAPTER}-build", TOOLS_NAMESPACE)
+ //     WaitForBuild("${DYNAMICS_ADAPTER}-runtime", TOOLS_NAMESPACE)
+ //    }
+ //   }
+ //  }
+ // }
 
 
  stage('Promote to DEV') {

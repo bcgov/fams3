@@ -148,7 +148,6 @@ objects:
           name: "${NAME}-build:latest"
       triggers:
         - type: ImageChange
-        - type: ConfigChange
         - type: GitHub
           github:
             secret: "${GITHUB_WEBHOOK_SECRET}"
@@ -185,8 +184,6 @@ objects:
           kind: ImageStreamTag
           name: "${NAME}:latest"
       triggers:
-        - type: ImageChange
-        - type: ConfigChange
         - type: ImageChange
           imageChange:
             from:

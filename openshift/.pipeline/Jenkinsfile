@@ -106,7 +106,7 @@ node {
         -p MEMORY_LIMIT=${BUILD_MEMORY} \
         -p NAMESPACE=${TOOLS_NAMESPACE} | oc apply -f - -n ${TOOLS_NAMESPACE}"
 
-       WaitForBuild("${DYNAMICS_ADAPTER}-build", TOOLS_NAMESPACE)
+       WaitForBuild("${DYNAMICS_ADAPTER}-build", TOOLS_NAMESPACE, true)
        WaitForBuild("${DYNAMICS_ADAPTER}-runtime", TOOLS_NAMESPACE)
       }
      })

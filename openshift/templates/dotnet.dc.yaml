@@ -85,7 +85,6 @@ objects:
               kind: ImageStreamTag
               namespace: "${NAMESPACE}"
               name: "${NAME}:${TAG}"
-        - type: ConfigChange
       replicas: 1
       selector:
         name: "${NAME}"

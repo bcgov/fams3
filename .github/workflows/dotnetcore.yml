@@ -1,0 +1,27 @@
+name: .NET Core
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.0.100
+    - name: Build SearchApi
+      run: dotnet build --configuration Release
+      working-directory: ./app/SearchApi
+    - name: Test SearchApi
+      run: dotnet test
+      working-directory: ./app/SearchApi
+    - name: Build DynamicsAdapter
+      run: dotnet build --configuration Release
+      working-directory: ./app/DynamicsAdapter
+    - name: Test SearchApi
+      run: dotnet test
+      working-directory: ./app/DynamicsAdapter

@@ -17,7 +17,8 @@ namespace SearchApi.Web.Search
 
         public async Task Consume(ConsumeContext<MatchFound> context)
         {
-            this._logger.LogInformation($"received new {nameof(MatchFound)} event");
+            var profile = context.Headers.Get<ProviderProfile>(nameof(ProviderProfile));
+            this._logger.LogInformation($"received new {nameof(MatchFound)} event from {profile.Name}");
             await Task.FromResult(0);
         }
     }

@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using GreenPipes;
 using Jaeger;
 using Jaeger.Samplers;
 using MassTransit;
@@ -12,6 +13,8 @@ using Microsoft.Extensions.Logging;
 using OpenTracing;
 using OpenTracing.Util;
 using SearchAdapter.ICBC.SearchRequest;
+using SearchApi.Core.Adapters.Configuration;
+using SearchApi.Core.Adapters.Middleware;
 using SearchApi.Core.Configuration;
 using SearchApi.Core.Contracts;
 using SearchApi.Core.MassTransit;
@@ -118,6 +121,8 @@ namespace SearchAdapter.ICBC
         {
 
             var rabbitMqSettings = Configuration.GetSection("RabbitMq").Get<RabbitMqConfiguration>();
+            var providerProfile = Configuration.GetSection("ProviderProfile").Get<ProviderProfileConfiguration>();
+
             var rabbitBaseUri = $"amqp://{rabbitMqSettings.Host}:{rabbitMqSettings.Port}";
 
             services.AddMassTransit(x =>
@@ -138,6 +143,9 @@ namespace SearchAdapter.ICBC
                         e.Consumer(() => new SearchRequestConsumer(
                             provider.GetRequiredService<ILogger<SearchRequestConsumer>>()));
                     });
+
+                    // Add Provider profile context
+                    cfg.UseProviderProfile(providerProfile);
 
                     // Add Diagnostic context for tracing
                     cfg.PropagateOpenTracingContext();

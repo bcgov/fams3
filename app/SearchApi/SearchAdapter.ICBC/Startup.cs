@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OpenTracing;
 using OpenTracing.Util;
 using SearchAdapter.ICBC.SearchRequest;
@@ -43,6 +44,11 @@ namespace SearchAdapter.ICBC
             services.AddControllers();
 
             services.AddHealthChecks();
+
+            services
+                .AddOptions<ProviderProfileConfiguration>()
+                .Bind(Configuration.GetSection("ProviderProfile"))
+                .ValidateDataAnnotations();
 
             this.ConfigureOpenTracing(services);
 
@@ -121,7 +127,6 @@ namespace SearchAdapter.ICBC
         {
 
             var rabbitMqSettings = Configuration.GetSection("RabbitMq").Get<RabbitMqConfiguration>();
-            var providerProfile = Configuration.GetSection("ProviderProfile").Get<ProviderProfileConfiguration>();
 
             var rabbitBaseUri = $"amqp://{rabbitMqSettings.Host}:{rabbitMqSettings.Port}";
 
@@ -145,7 +150,7 @@ namespace SearchAdapter.ICBC
                     });
 
                     // Add Provider profile context
-                    cfg.UseProviderProfile(providerProfile);
+                    cfg.UseProviderProfile(provider.GetRequiredService<IOptionsMonitor<ProviderProfileConfiguration>>().CurrentValue);
 
                     // Add Diagnostic context for tracing
                     cfg.PropagateOpenTracingContext();

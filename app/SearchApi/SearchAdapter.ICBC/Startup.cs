@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using GreenPipes;
 using Jaeger;
 using Jaeger.Samplers;
 using MassTransit;
@@ -9,9 +10,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OpenTracing;
 using OpenTracing.Util;
 using SearchAdapter.ICBC.SearchRequest;
+using SearchApi.Core.Adapters.Configuration;
+using SearchApi.Core.Adapters.Middleware;
 using SearchApi.Core.Configuration;
 using SearchApi.Core.Contracts;
 using SearchApi.Core.MassTransit;
@@ -40,6 +44,12 @@ namespace SearchAdapter.ICBC
             services.AddControllers();
 
             services.AddHealthChecks();
+
+            // Configures the Provider Profile Options
+            services
+                .AddOptions<ProviderProfileOptions>()
+                .Bind(Configuration.GetSection("ProviderProfile"))
+                .ValidateDataAnnotations();
 
             this.ConfigureOpenTracing(services);
 
@@ -118,6 +128,7 @@ namespace SearchAdapter.ICBC
         {
 
             var rabbitMqSettings = Configuration.GetSection("RabbitMq").Get<RabbitMqConfiguration>();
+
             var rabbitBaseUri = $"amqp://{rabbitMqSettings.Host}:{rabbitMqSettings.Port}";
 
             services.AddMassTransit(x =>
@@ -135,8 +146,12 @@ namespace SearchAdapter.ICBC
 
                     cfg.ReceiveEndpoint(host, nameof(ExecuteSearch), e =>
                     {
-                        e.Consumer(() => new SearchRequestHandler(provider.GetRequiredService<ILogger<SearchRequestHandler>>()));
+                        e.Consumer(() => new SearchRequestConsumer(
+                            provider.GetRequiredService<ILogger<SearchRequestConsumer>>()));
                     });
+
+                    // Add Provider profile context
+                    cfg.UseProviderProfile(provider.GetRequiredService<IOptionsMonitor<ProviderProfileOptions>>().CurrentValue);
 
                     // Add Diagnostic context for tracing
                     cfg.PropagateOpenTracingContext();

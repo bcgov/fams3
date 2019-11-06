@@ -16,11 +16,13 @@ using Microsoft.Extensions.Logging;
 using NSwag;
 using OpenTracing;
 using OpenTracing.Util;
+using SearchApi.Core.Adapters.Contracts;
 using SearchApi.Core.Configuration;
 using SearchApi.Core.Contracts;
 using SearchApi.Core.MassTransit;
 using SearchApi.Core.OpenTracing;
 using SearchApi.Web.Controllers;
+using SearchApi.Web.Search;
 
 namespace SearchApi.Web
 {
@@ -151,6 +153,13 @@ namespace SearchApi.Web
 
                     // Add Diagnostic context for tracing
                     cfg.PropagateOpenTracingContext();
+
+                    // Configure MatchFound Consumer
+                    cfg.ReceiveEndpoint(host, $"{nameof(MatchFound)}_queue", e =>
+                        {
+                            e.Consumer(() =>
+                                new MatchFoundConsumer(provider.GetRequiredService<ILogger<MatchFoundConsumer>>()));
+                        });
 
                 }));
             });

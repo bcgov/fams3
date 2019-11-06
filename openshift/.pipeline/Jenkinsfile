@@ -159,15 +159,15 @@ node {
   }
  }
 
- stage('Wait for Dev Deployment') {
-  openshift.withCluster() {
-   openshift.withProject(DEV_NAMESPACE) {
-    WaitForDeploy(SEARCH_API, DEV_NAMESPACE)
-    WaitForDeploy(DYNAMICS_ADAPTER, DEV_NAMESPACE)
-    WaitForDeploy(RABBITMQ, DEV_NAMESPACE, "statefulset")
-    WaitForDeploy("jaeger-collector", DEV_NAMESPACE, "deployment")
+//  stage('Wait for Dev Deployment') {
+//   openshift.withCluster() {
+//    openshift.withProject(DEV_NAMESPACE) {
+//     WaitForDeploy(SEARCH_API, DEV_NAMESPACE)
+//     WaitForDeploy(DYNAMICS_ADAPTER, DEV_NAMESPACE)
+//     WaitForDeploy(RABBITMQ, DEV_NAMESPACE, "statefulset")
+//     WaitForDeploy("jaeger-collector", DEV_NAMESPACE, "deployment")
 
-   }
-  }
- }
+//    }
+//   }
+//  }
 }

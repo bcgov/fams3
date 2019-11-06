@@ -16,6 +16,7 @@ parameters:
 - description: The name of the storage class for the Cassandra data PVC
   displayName: Cassandra data volume Storage Class Name
   name: DATA_STORAGE_CLASS
+  value: gluster-block
 - description: Size of each Cassandra data PVC. Must end with Mi, Gi, Ti
   displayName: Cassandra data volume size
   name: DATA_STORAGE_REQUEST_SIZE
@@ -24,6 +25,7 @@ parameters:
 - description: The name of the storage class for the Cassandra logs PVC
   displayName: Cassandra logs volume Storage Class Name
   name: LOGS_STORAGE_CLASS
+  value: gluster-file
 - description: Size of each Cassandra log PVC. Must end with Mi, Gi, Ti
   displayName: Cassandra log volume size
   name: LOGS_STORAGE_REQUEST_SIZE

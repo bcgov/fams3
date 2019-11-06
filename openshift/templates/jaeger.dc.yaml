@@ -181,3 +181,24 @@ items:
       app.kubernetes.io/name: jaeger
       app.kubernetes.io/component: query
     type: LoadBalancer
+- apiVersion: v1
+  kind: ConfigMap
+  metadata:
+  name: jaeger-configuration
+  labels:
+      app: jaeger
+      jaeger-infra: configuration
+  data:
+  span-storage-type: cassandra
+  collector: |
+      collector:
+      zipkin:
+          http-port: 9411
+      cassandra:
+      servers: cassandra
+      keyspace: jaeger_v1_dc1
+  query: |
+      cassandra:
+      servers: cassandra
+      keyspace: jaeger_v1_dc1
+

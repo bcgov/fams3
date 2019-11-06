@@ -30,12 +30,18 @@ def WaitForBuild(selector, namespace) {
  echo "Waiting for ${selector} to be build in ${namespace}..."
  timeout(time: 10, unit: 'MINUTES') {
   openshift.withCluster() {
+   echo "With Cluster"
    openshift.withProject("${namespace}") {
+    echo "With project"
     // Wait for build to trigger
     def bcSelector = openshift.selector("bc", selector)
+    echo "Selector"
     bcSelector.object()
+    echo "Object"
     bcSelector.startBuild("--wait")
+    echo "Startbuild"
     builds = bcSelector.related("builds")
+    echo "Related builds"
 
     builds.watch {
      if (it.count() == 0) {

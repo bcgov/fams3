@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using DynamicsAdapter.Web.SearchApi;
+using DynamicsAdapter.Web;
 using Moq;
 using Microsoft.Extensions.Logging;
 using NUnit.Framework;
@@ -14,7 +14,7 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
      
         private readonly Mock<ILogger<SearchRequestJob>> _loggerMock = new Mock<ILogger<SearchRequestJob>>();
         private readonly Mock<IJobExecutionContext> _jobExecutionContextMock = new Mock<IJobExecutionContext>();
-        private readonly Mock<IPeopleClient> _peopleClientMock = new Mock<IPeopleClient>();
+        private readonly Mock<ISearchApiClient> _searchApiClientMock = new Mock<ISearchApiClient>();
 
         private SearchRequestJob _sut;
 
@@ -22,20 +22,21 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
         public void Setup()
         {
 
-            _peopleClientMock.Setup(x => x.SearchAsync(It.IsAny<PersonSearchRequest>())).Returns(Task.FromResult(
+            PersonSearchRequest personSearchRequest = new PersonSearchRequest();
+            _searchApiClientMock.Setup(x => x.SearchAsync(It.IsAny<PersonSearchRequest>(), default(System.Threading.CancellationToken))).Returns(Task.FromResult(
                 new PersonSearchResponse()
                 {
                     Id = Guid.NewGuid()
                 }));
 
-            _sut = new SearchRequestJob(_peopleClientMock.Object, _loggerMock.Object);
+            _sut = new SearchRequestJob(_searchApiClientMock.Object, _loggerMock.Object);
         }
 
         [Test]
         public async Task It_should_execute_the_job()
         {
             await _sut.Execute(_jobExecutionContextMock.Object);
-            _peopleClientMock.Verify(x => x.SearchAsync(It.IsAny<PersonSearchRequest>()), Times.Once);
+            _searchApiClientMock.Verify(x => x.SearchAsync(It.IsAny<PersonSearchRequest>(), default(System.Threading.CancellationToken)), Times.Once);
 
         }
 

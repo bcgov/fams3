@@ -9,9 +9,7 @@ namespace DynamicsAdapter.Web.Services.Dynamics
 {
    public interface IDynamicService<T>
    {
-       Task<string> GetToken();
        Task<T> Get( string filter, string entity);
-
        Task<HttpResponseMessage> Save(string filter, string entity, T message);
        Task<HttpResponseMessage> SaveBatch(string filter, string entity, MultipartContent content);
 

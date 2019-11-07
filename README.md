@@ -17,7 +17,7 @@
 
 Create a `.env` file from the `.env.template`
 
-Confiture the necessary variables in `.env`
+Configure the necessary variables in `.env`
 
 ```shell
 docker-compose up

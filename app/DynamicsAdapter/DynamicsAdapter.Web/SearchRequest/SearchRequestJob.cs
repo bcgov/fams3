@@ -1,6 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Threading;
+using Microsoft.Extensions.Logging;
 using Quartz;
 using System.Threading.Tasks;
+using DynamicsAdapter.Web.Auth;
 
 namespace DynamicsAdapter.Web.SearchRequest
 {
@@ -14,9 +16,14 @@ namespace DynamicsAdapter.Web.SearchRequest
 
         private readonly ISearchApiClient _searchApiClient;
 
-        public SearchRequestJob(ISearchApiClient searchApiClient, ILogger<SearchRequestJob> logger)
+        private readonly IOAuthApiClient _oAuthApiClient;
+
+        public SearchRequestJob(ISearchApiClient searchApiClient, 
+            IOAuthApiClient oAuthApiClient,
+            ILogger<SearchRequestJob> logger)
         {
             _logger = logger;
+            _oAuthApiClient = oAuthApiClient;
             _searchApiClient = searchApiClient;
         }
 
@@ -24,14 +31,17 @@ namespace DynamicsAdapter.Web.SearchRequest
         {
             _logger.LogInformation("Search Request started!");
 
-            _logger.LogDebug("Attempting to post person search");
 
+            _logger.LogDebug("Attempting to get token");
+            var token = await _oAuthApiClient.GetRefreshToken(CancellationToken.None);
+            _logger.LogInformation($"Successfully got token from provider, token expires in {token.ExpiresIn}");
+
+            _logger.LogDebug("Attempting to post person search");
             var result = await _searchApiClient.SearchAsync(new PersonSearchRequest()
             {
                 FirstName = "bcgov",
                 LastName = "test"
             });
-
             _logger.LogInformation($"Successfully posted person search id:{result.Id}");
 
         }

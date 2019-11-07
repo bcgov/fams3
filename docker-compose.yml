@@ -46,11 +46,18 @@ services:
     ports:
       - "5060:80"
     environment:
+      ASPNETCORE_ENVIRONMENT: Development
       JAEGER_SERVICE_NAME: dynamics-adapter
       JAEGER_SAMPLER_TYPE: const
       JAEGER_ENDPOINT: http://jaeger-collector:14268/api/traces
       SCHEDULER__CRON: 0/5 * * * * ?
       SEARCHAPI__BASEURL: http://search-api
+      OAUTH__OAUTHURL: ${OAUTH__OAUTHURL}
+      OAUTH__RESOURCEURL: ${OAUTH__RESOURCEURL}
+      OAUTH__CLIENTID: ${OAUTH__CLIENTID}
+      OAUTH__SECRET: ${OAUTH__SECRET}
+      OAUTH__USERNAME: ${OAUTH__USERNAME}
+      OAUTH__PASSWORD: ${OAUTH__PASSWORD}
     restart: always
     networks:
       - search-api-net

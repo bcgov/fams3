@@ -13,6 +13,16 @@
     └── openshift               # Build and Deploy Configurations.
     └── bin                     # Useful scripts.
 
+## RUN
+
+Create a `.env` file from the `.env.template`
+
+Configure the necessary variables in `.env`
+
+```shell
+docker-compose up
+```
+
 ## SearchApi
 
 FAMS-search-api is a dotnet core rest service to execute people search accross multiple data providers.
@@ -109,6 +119,12 @@ FAMS-dynamic-adapter is a dotnet core rest service that polls dynamics to retrie
 | RABBITMQ__PASSWORD | no | RabbitMq Password |
 | SCHEDULER__CRON | no | a dotnet Quartz cron expression |
 | SEARCHAPI__BASEURL | yes | the base path of the search api |
+| OAUTH__RESOURCEURL | yes | the resource URL you required the token for|
+| OAUTH__CLIENTID | yes | the Oauth Client id |
+| OAUTH__SECRET | yes | the Oauth secret |
+| OAUTH__OAUTHURL | yes | the Oauth URL |
+| OAUTH__USERNAME | yes | the Oauth username |
+| OAUTH__PASSWORD | yes | the Oauth password |
 
 *Notes*
 

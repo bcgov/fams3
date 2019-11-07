@@ -13,6 +13,16 @@
     └── openshift               # Build and Deploy Configurations.
     └── bin                     # Useful scripts.
 
+## RUN
+
+Create a `.env` file from the `.env.template`
+
+Confiture the necessary variables in `.env`
+
+```shell
+docker-compose up
+```
+
 ## SearchApi
 
 FAMS-search-api is a dotnet core rest service to execute people search accross multiple data providers.

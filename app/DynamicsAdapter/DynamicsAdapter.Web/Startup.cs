@@ -1,4 +1,5 @@
 using System;
+using DynamicsAdapter.Web.Auth;
 using DynamicsAdapter.Web.Configuration;
 using DynamicsAdapter.Web.Infrastructure;
 using DynamicsAdapter.Web.SearchRequest;
@@ -67,6 +68,14 @@ namespace DynamicsAdapter.Web
 
         public void ConfigureDynamicsClient(IServiceCollection services)
         {
+            // Bind OAuth Configuration
+            services.AddOptions<OAuthOptions>()
+                .Bind(Configuration.GetSection("OAuth"))
+                .ValidateDataAnnotations();
+
+            // Register IOAuthApiClient
+            services.AddHttpClient<IOAuthApiClient, OAuthApiClient>();
+
             services.AddSingleton<IDynamicService<SSG_SearchRequests>>(new DynamicService(ConfigureAppSettings(services),new DynamicsHttpClient()));
         }
         /// <summary>

@@ -13,7 +13,7 @@ using Newtonsoft.Json.Linq;
 
 namespace DynamicsAdapter.Web.Services.Dynamics
 {
-    public class DynamicService :  IDynamicService<SSG_SearchRequests>
+    public class DynamicService :  IDynamicService<SSG_SearchRequest>
     {
 
         private readonly AppSettings _settings;
@@ -25,9 +25,9 @@ namespace DynamicsAdapter.Web.Services.Dynamics
             _httpClient = httpClient;
 
         }
-        public  async Task<SSG_SearchRequests> Get(string filter, string entity)
+        public  async Task<SSG_SearchRequest> Get(string filter, string entity)
         {
-            return await _httpClient.Get<SSG_SearchRequests>($"{_settings.DynamicsAPI.EndPoints.Single(x => x.Entity == entity).URL}/{entity}?{filter}");
+            return await _httpClient.Get<SSG_SearchRequest>($"{_settings.DynamicsAPI.EndPoints.Single(x => x.Entity == entity).URL}/{entity}?{filter}");
         }
 
         public async Task<HttpResponseMessage> SaveBatch(string filter, string entity, MultipartContent content)
@@ -37,7 +37,7 @@ namespace DynamicsAdapter.Web.Services.Dynamics
                 content);
         }
 
-        public async Task<HttpResponseMessage> Save(string filter, string entity, SSG_SearchRequests message)
+        public async Task<HttpResponseMessage> Save(string filter, string entity, SSG_SearchRequest message)
         {
             return await _httpClient.Save(
                 $"{_settings.DynamicsAPI.EndPoints.Single(x => x.Entity == entity).URL}/{entity}?{filter}",

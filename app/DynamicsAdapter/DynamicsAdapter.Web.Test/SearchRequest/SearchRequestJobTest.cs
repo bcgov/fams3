@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using DynamicsAdapter.Web;
@@ -19,7 +20,7 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
         private readonly Mock<ILogger<SearchRequestJob>> _loggerMock = new Mock<ILogger<SearchRequestJob>>();
         private readonly Mock<IJobExecutionContext> _jobExecutionContextMock = new Mock<IJobExecutionContext>();
         private readonly Mock<ISearchApiClient> _searchApiClientMock = new Mock<ISearchApiClient>();
-        private readonly Mock<IDynamicsApiClient> _dynamicsApiMock = new Mock<IDynamicsApiClient>();
+        private readonly Mock<ISearchRequestService> _searchRequestService = new Mock<ISearchRequestService>();
 
         private SearchRequestJob _sut;
 
@@ -27,12 +28,14 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
         public void Setup()
         {
 
-            _dynamicsApiMock.Setup(x => x.Get<SSG_SearchRequests>(It.IsAny<string>()))
-                .Returns(Task.FromResult(new SSG_SearchRequests()
+            _searchRequestService.Setup(x => x.GetAllReadyForSearchAsync(CancellationToken.None))
+                .Returns(Task.FromResult<IEnumerable<SSG_SearchRequest>>(new List<SSG_SearchRequest>()
                 {
-                    SSG_PersonGivenName = "givenName",
-                    SSG_PersonBirthDate = new DateTime(2011,1,1),
-                    SSG_PersonSurname = "surName"
+                    new SSG_SearchRequest()
+                    {
+                        SSG_SearchRequestId = Guid.NewGuid(),
+                        SSG_PersonGivenName = "personGivenName"
+                    }
                 }));
 
             PersonSearchRequest personSearchRequest = new PersonSearchRequest();
@@ -42,7 +45,7 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
                     Id = Guid.NewGuid()
                 }));
 
-            _sut = new SearchRequestJob(_searchApiClientMock.Object, _dynamicsApiMock.Object, _loggerMock.Object);
+            _sut = new SearchRequestJob(_searchApiClientMock.Object, _searchRequestService.Object, _loggerMock.Object);
         }
 
         [Test]

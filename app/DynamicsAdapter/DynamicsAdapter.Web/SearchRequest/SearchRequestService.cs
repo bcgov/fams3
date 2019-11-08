@@ -6,6 +6,7 @@ using Simple.OData.Client;
 
 namespace DynamicsAdapter.Web.SearchRequest
 {
+
     public interface ISearchRequestService
     {
         Task<IEnumerable<SSG_SearchRequest>> GetAllReadyForSearchAsync(CancellationToken cancellationToken);
@@ -13,15 +14,17 @@ namespace DynamicsAdapter.Web.SearchRequest
 
     public class SearchRequestService : ISearchRequestService
     {
-        private readonly ODataClient _oDataClient;
-        public SearchRequestService(ODataClient oDataClient)
+        private const int ReadyForSearchStatus = 867670000;
+
+        private readonly IODataClient _oDataClient;
+        public SearchRequestService(IODataClient oDataClient)
         {
             this._oDataClient = oDataClient;
         }
 
         public async Task<IEnumerable<SSG_SearchRequest>> GetAllReadyForSearchAsync(CancellationToken cancellationToken)
         { 
-            return await this._oDataClient.For<SSG_SearchRequest>().FindEntriesAsync(cancellationToken);
+            return await this._oDataClient.For<SSG_SearchRequest>().Filter(x => x.StatusCode == ReadyForSearchStatus).FindEntriesAsync(cancellationToken);
         }
 
     }

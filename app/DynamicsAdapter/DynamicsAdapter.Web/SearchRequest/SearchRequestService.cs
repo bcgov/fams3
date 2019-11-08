@@ -12,6 +12,9 @@ namespace DynamicsAdapter.Web.SearchRequest
         Task<IEnumerable<SSG_SearchRequest>> GetAllReadyForSearchAsync(CancellationToken cancellationToken);
     }
 
+    /// <summary>
+    /// The SearchRequestService expose Search Request Functionality
+    /// </summary>
     public class SearchRequestService : ISearchRequestService
     {
         private const int ReadyForSearchStatus = 867670000;
@@ -22,6 +25,11 @@ namespace DynamicsAdapter.Web.SearchRequest
             this._oDataClient = oDataClient;
         }
 
+        /// <summary>
+        /// Gets all the search request in `Ready for Search` status
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         public async Task<IEnumerable<SSG_SearchRequest>> GetAllReadyForSearchAsync(CancellationToken cancellationToken)
         { 
             return await this._oDataClient.For<SSG_SearchRequest>().Filter(x => x.StatusCode == ReadyForSearchStatus).FindEntriesAsync(cancellationToken);

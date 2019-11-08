@@ -68,15 +68,29 @@ namespace DynamicsAdapter.Web
 
         public void ConfigureDynamicsClient(IServiceCollection services)
         {
+            // Adding distributed cache
+            services.AddDistributedMemoryCache();
+
             // Bind OAuth Configuration
             services.AddOptions<OAuthOptions>()
                 .Bind(Configuration.GetSection("OAuth"))
                 .ValidateDataAnnotations();
 
+            // Add OAuth Middleware
+            services.AddTransient<OAuthHandler>();
+
+            services.AddTransient<ITokenService, TokenService>();
+
             // Register IOAuthApiClient
             services.AddHttpClient<IOAuthApiClient, OAuthApiClient>();
 
-            services.AddSingleton<IDynamicService<SSG_SearchRequests>>(new DynamicService(ConfigureAppSettings(services),new DynamicsHttpClient()));
+            services
+                .AddHttpClient<IDynamicsApiClient, DynamicsApiClient>(cfg =>
+                {
+                    cfg.BaseAddress = new Uri(Configuration.GetSection("OAuth").Get<OAuthOptions>().ResourceUrl);
+                })
+                .AddHttpMessageHandler<OAuthHandler>();
+
         }
         /// <summary>
         /// Configures the Quartz Hosted Service.
@@ -92,7 +106,7 @@ namespace DynamicsAdapter.Web
             services.AddSingleton<ISchedulerFactory, StdSchedulerFactory>();
 
             //Add dynamics Job
-            services.AddSingleton<SearchRequestJob>();
+            services.AddTransient<SearchRequestJob>();
             services.AddSingleton(new JobSchedule(
                 jobType: typeof(SearchRequestJob),
                 cronExpression: schedulerConfiguration.Cron));

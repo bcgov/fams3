@@ -37,7 +37,6 @@ namespace DynamicsAdapter.Web.Test.Services.Dynamics
                 }
             };
             sut = new Mock<IDynamicService<SSG_SearchRequests>>();
-            sut.Setup(x => x.GetToken()).Returns(Task.FromResult("123JAS-14AS123234ASD123123"));
             sut.Setup(x => x.Get(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(new SSG_SearchRequests()));
             sut.Setup(x => x.Save(It.IsAny<string>(), It.IsAny<string>(),It.IsAny<SSG_SearchRequests>())).Returns(Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)));
             sut.Setup(x => x.SaveBatch(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<MultipartContent>())).Returns(Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)));

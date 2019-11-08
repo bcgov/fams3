@@ -1,8 +1,11 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using Microsoft.Extensions.Logging;
 using Quartz;
 using System.Threading.Tasks;
 using DynamicsAdapter.Web.Auth;
+using DynamicsAdapter.Web.Services.Dynamics;
+using DynamicsAdapter.Web.Services.Dynamics.Model;
 
 namespace DynamicsAdapter.Web.SearchRequest
 {
@@ -16,14 +19,14 @@ namespace DynamicsAdapter.Web.SearchRequest
 
         private readonly ISearchApiClient _searchApiClient;
 
-        private readonly IOAuthApiClient _oAuthApiClient;
+        private readonly IDynamicsApiClient _dynamicsApiClient;
 
-        public SearchRequestJob(ISearchApiClient searchApiClient, 
-            IOAuthApiClient oAuthApiClient,
+        public SearchRequestJob(ISearchApiClient searchApiClient,
+            IDynamicsApiClient dynamicsApiClient,
             ILogger<SearchRequestJob> logger)
         {
             _logger = logger;
-            _oAuthApiClient = oAuthApiClient;
+            _dynamicsApiClient = dynamicsApiClient;
             _searchApiClient = searchApiClient;
         }
 
@@ -32,15 +35,22 @@ namespace DynamicsAdapter.Web.SearchRequest
             _logger.LogInformation("Search Request started!");
 
 
-            _logger.LogDebug("Attempting to get token");
-            var token = await _oAuthApiClient.GetRefreshToken(CancellationToken.None);
-            _logger.LogInformation($"Successfully got token from provider, token expires in {token.ExpiresIn}");
+            _logger.LogDebug("Attempting to get search request from dynamics");
+            var request = await _dynamicsApiClient.Get<SSG_SearchRequests>(
+                $"ssg_searchrequests({Guid.NewGuid()})");
+            if (request == null) return;
+
+            _logger.LogInformation($"Successfully got entity from dynamics");
 
             _logger.LogDebug("Attempting to post person search");
+
+            
+
             var result = await _searchApiClient.SearchAsync(new PersonSearchRequest()
             {
-                FirstName = "bcgov",
-                LastName = "test"
+                FirstName = request.SSG_PersonGivenName,
+                LastName = request.SSG_PersonSurname,
+                DateOfBirth = request.SSG_PersonBirthDate
             });
             _logger.LogInformation($"Successfully posted person search id:{result.Id}");
 

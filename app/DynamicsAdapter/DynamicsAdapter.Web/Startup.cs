@@ -18,6 +18,7 @@ using OpenTracing.Util;
 using Quartz;
 using Quartz.Impl;
 using Quartz.Spi;
+using Simple.OData.Client;
 
 namespace DynamicsAdapter.Web
 {
@@ -79,17 +80,22 @@ namespace DynamicsAdapter.Web
             // Add OAuth Middleware
             services.AddTransient<OAuthHandler>();
 
-            services.AddTransient<ITokenService, TokenService>();
-
             // Register IOAuthApiClient
             services.AddHttpClient<IOAuthApiClient, OAuthApiClient>();
 
-            services
-                .AddHttpClient<IDynamicsApiClient, DynamicsApiClient>(cfg =>
-                {
-                    cfg.BaseAddress = new Uri(Configuration.GetSection("OAuth").Get<OAuthOptions>().ResourceUrl);
-                })
-                .AddHttpMessageHandler<OAuthHandler>();
+            // Register httpClient for OdataClient with OAuthHandler
+            services.AddHttpClient<ODataClientSettings>(cfg =>
+            {
+                cfg.BaseAddress = new Uri(Configuration.GetSection("OAuth").Get<OAuthOptions>().ResourceUrl);
+            }).AddHttpMessageHandler<OAuthHandler>();
+
+            // Register Odata client
+            services.AddTransient<IODataClient>(provider =>
+                new ODataClient(provider.GetRequiredService<ODataClientSettings>()));
+
+            // Add other Services
+            services.AddTransient<ITokenService, TokenService>();
+            services.AddTransient<ISearchRequestService, SearchRequestService>();
 
         }
         /// <summary>

@@ -85,7 +85,10 @@ namespace DynamicsAdapter.Web
             services.AddHttpClient<IOAuthApiClient, OAuthApiClient>();
 
             services
-                .AddHttpClient<IDynamicsApiClient, DynamicsApiClient>()
+                .AddHttpClient<IDynamicsApiClient, DynamicsApiClient>(cfg =>
+                {
+                    cfg.BaseAddress = new Uri(Configuration.GetSection("OAuth").Get<OAuthOptions>().ResourceUrl);
+                })
                 .AddHttpMessageHandler<OAuthHandler>();
 
         }

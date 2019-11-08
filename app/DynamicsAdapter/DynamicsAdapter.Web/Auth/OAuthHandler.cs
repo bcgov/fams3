@@ -21,7 +21,7 @@ namespace DynamicsAdapter.Web.Auth
             HttpRequestMessage request,
             CancellationToken cancellationToken)
         {
-            var token = await _tokenService.GetToken(cancellationToken);
+            var token = await _tokenService.GetTokenAsync(cancellationToken);
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token.AccessToken);
             return await base.SendAsync(request, cancellationToken);
         }

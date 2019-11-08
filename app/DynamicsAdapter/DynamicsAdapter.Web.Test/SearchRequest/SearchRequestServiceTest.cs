@@ -18,7 +18,6 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
 
         private SearchRequestService _sut;
 
-
         [SetUp]
         public void SetUp()
         {

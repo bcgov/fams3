@@ -28,7 +28,7 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
         public void Setup()
         {
 
-            _searchRequestService.Setup(x => x.GetAllReadyForSearchAsync(CancellationToken.None))
+            _searchRequestService.Setup(x => x.GetAllReadyForSearchAsync(It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<IEnumerable<SSG_SearchRequest>>(new List<SSG_SearchRequest>()
                 {
                     new SSG_SearchRequest()
@@ -39,7 +39,7 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
                 }));
 
             PersonSearchRequest personSearchRequest = new PersonSearchRequest();
-            _searchApiClientMock.Setup(x => x.SearchAsync(It.IsAny<PersonSearchRequest>(), default(System.Threading.CancellationToken))).Returns(Task.FromResult(
+            _searchApiClientMock.Setup(x => x.SearchAsync(It.IsAny<PersonSearchRequest>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(
                 new PersonSearchResponse()
                 {
                     Id = Guid.NewGuid()
@@ -52,7 +52,7 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
         public async Task It_should_execute_the_job()
         {
             await _sut.Execute(_jobExecutionContextMock.Object);
-            _searchApiClientMock.Verify(x => x.SearchAsync(It.IsAny<PersonSearchRequest>(), default(System.Threading.CancellationToken)), Times.Once);
+            _searchApiClientMock.Verify(x => x.SearchAsync(It.IsAny<PersonSearchRequest>(), It.IsAny<CancellationToken>()), Times.Once);
 
         }
 

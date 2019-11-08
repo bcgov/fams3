@@ -49,7 +49,7 @@ namespace DynamicsAdapter.Web.Services.Dynamics
                     var responseData = response.Content == null
                         ? null
                         : await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    throw new OAuthApiException(
+                    throw new DynamicsApiException(
                         "The HTTP status code of the response was not expected (" + (int)response.StatusCode + ").",
                         (int)response.StatusCode, responseData,
                         response.Headers.ToDictionary(x => x.Key, x => x.Value), null);

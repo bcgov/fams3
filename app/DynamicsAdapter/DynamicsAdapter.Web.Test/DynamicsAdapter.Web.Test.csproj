@@ -13,6 +13,7 @@
     <PackageReference Include="NUnit3TestAdapter" Version="3.13.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
     <PackageReference Include="Quartz" Version="3.0.7" />
+    <PackageReference Include="Simple.OData.V4.Client" Version="5.10.0.1" />
   </ItemGroup>
 
   <ItemGroup>

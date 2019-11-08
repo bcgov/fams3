@@ -38,9 +38,14 @@ namespace DynamicsAdapter.Web.SearchRequest
             _logger.LogDebug("Attempting to get search request from dynamics");
             var request = await _dynamicsApiClient.Get<SSG_SearchRequests>(
                 $"ssg_searchrequests({Guid.NewGuid()})");
+            if (request == null) return;
+
             _logger.LogInformation($"Successfully got entity from dynamics");
 
             _logger.LogDebug("Attempting to post person search");
+
+            
+
             var result = await _searchApiClient.SearchAsync(new PersonSearchRequest()
             {
                 FirstName = request.SSG_PersonGivenName,

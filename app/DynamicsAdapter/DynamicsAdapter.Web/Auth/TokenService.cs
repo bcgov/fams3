@@ -17,6 +17,7 @@ namespace DynamicsAdapter.Web.Auth
     /// </summary>
     public class TokenService : ITokenService
     {
+        private const int Buffer = 10;
 
         private readonly string token_key = "oauth-token";
 
@@ -57,7 +58,7 @@ namespace DynamicsAdapter.Web.Auth
         private async Task<Token> RefreshTokenAsync(CancellationToken cancellationToken)
         {
             var token = await _oAuthApiClient.GetRefreshToken(cancellationToken);
-            await _distributedCache.SetStringAsync(this.token_key, JsonConvert.SerializeObject(token), new DistributedCacheEntryOptions() { AbsoluteExpirationRelativeToNow = new TimeSpan(0, 0, token.ExpiresIn - 10) }, cancellationToken);
+            await _distributedCache.SetStringAsync(this.token_key, JsonConvert.SerializeObject(token), new DistributedCacheEntryOptions() { AbsoluteExpirationRelativeToNow = new TimeSpan(0, 0, token.ExpiresIn - Buffer) }, cancellationToken);
             return token;
         }
 

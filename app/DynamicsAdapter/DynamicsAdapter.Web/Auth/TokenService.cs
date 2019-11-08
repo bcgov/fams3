@@ -12,6 +12,9 @@ namespace DynamicsAdapter.Web.Auth
         Task<Token> GetTokenAsync(CancellationToken cancellationToken);
     }
 
+    /// <summary>
+    /// The TokenService expose services to get OAuth Tokens
+    /// </summary>
     public class TokenService : ITokenService
     {
 
@@ -26,6 +29,11 @@ namespace DynamicsAdapter.Web.Auth
             _distributedCache = distributedCache;
         }
 
+        /// <summary>
+        /// Gets a token, from the cache or the authority provider.
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         public async Task<Token> GetTokenAsync(CancellationToken cancellationToken)
         {
             return await GetOrRefreshTokenAsync(cancellationToken);

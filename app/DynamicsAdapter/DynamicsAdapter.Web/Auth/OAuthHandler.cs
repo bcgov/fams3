@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace DynamicsAdapter.Web.Auth
 {
+    /// <summary>
+    /// The OAuthHandler intercept http request and add the OAuth token
+    /// </summary>
     public class OAuthHandler : DelegatingHandler
     {
 

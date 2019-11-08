@@ -2,13 +2,10 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using DynamicsAdapter.Web;
-using DynamicsAdapter.Web.Auth;
 using Moq;
 using Microsoft.Extensions.Logging;
 using NUnit.Framework;
 using DynamicsAdapter.Web.SearchRequest;
-using DynamicsAdapter.Web.Services.Dynamics;
 using DynamicsAdapter.Web.Services.Dynamics.Model;
 using Quartz;
 

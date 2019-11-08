@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using Microsoft.Extensions.Logging;
 using Quartz;
 using System.Threading.Tasks;
-using DynamicsAdapter.Web.Auth;
-using DynamicsAdapter.Web.Services.Dynamics;
 using DynamicsAdapter.Web.Services.Dynamics.Model;
 using OpenTracing;
 

@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using Microsoft.Extensions.Logging;
 using Quartz;
 using System.Threading.Tasks;
@@ -36,7 +37,7 @@ namespace DynamicsAdapter.Web.SearchRequest
 
             _logger.LogDebug("Attempting to get search request from dynamics");
             var request = await _dynamicsApiClient.Get<SSG_SearchRequests>(
-                $"test");
+                $"ssg_searchrequests({Guid.NewGuid()})");
             _logger.LogInformation($"Successfully got entity from dynamics {request.SSG_PersonGivenName}");
 
             _logger.LogDebug("Attempting to post person search");

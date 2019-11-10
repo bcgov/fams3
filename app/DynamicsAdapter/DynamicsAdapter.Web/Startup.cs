@@ -5,9 +5,11 @@ using DynamicsAdapter.Web.Infrastructure;
 using DynamicsAdapter.Web.SearchRequest;
 using DynamicsAdapter.Web.Services.Dynamics;
 using DynamicsAdapter.Web.Services.Dynamics.Model;
+using HealthChecks.UI.Client;
 using Jaeger;
 using Jaeger.Samplers;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -183,7 +185,11 @@ namespace DynamicsAdapter.Web
             app.UseEndpoints(endpoints =>
             {
                 // registration of health endpoints see https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/health-checks
-                endpoints.MapHealthChecks("/health");
+                endpoints.MapHealthChecks("/health", new HealthCheckOptions
+                {
+                    Predicate = _ => true,
+                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                });
                 endpoints.MapControllers();
             });
         }

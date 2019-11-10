@@ -1,10 +1,12 @@
 using System;
 using System.Diagnostics;
 using GreenPipes;
+using HealthChecks.UI.Client;
 using Jaeger;
 using Jaeger.Samplers;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -114,7 +116,11 @@ namespace SearchAdapter.ICBC
             app.UseEndpoints(endpoints =>
             {
                 // registration of health endpoints see https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/health-checks
-                endpoints.MapHealthChecks("/health");
+                endpoints.MapHealthChecks("/health", new HealthCheckOptions
+                {
+                    Predicate = _ => true,
+                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                });
             });
         }
 

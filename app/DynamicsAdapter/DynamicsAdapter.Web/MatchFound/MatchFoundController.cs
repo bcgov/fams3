@@ -33,7 +33,7 @@ namespace DynamicsAdapter.Web.MatchFound
             }
 
             _logger.LogInformation("Received MatchFound response with SearchRequestId is " + id);
-            _logger.LogInformation("SearchResult is " + payload);
+
             return Ok();
         }
     }

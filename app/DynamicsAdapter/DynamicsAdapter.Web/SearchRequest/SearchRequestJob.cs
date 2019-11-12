@@ -49,7 +49,7 @@ namespace DynamicsAdapter.Web.SearchRequest
                     FirstName = ssgSearchRequest.SSG_PersonGivenName,
                     LastName = ssgSearchRequest.SSG_PersonSurname,
                     DateOfBirth = ssgSearchRequest.SSG_PersonBirthDate
-                }, cts.Token);
+                }, $"{ssgSearchRequest.SSG_SearchRequestId}", cts.Token);
                 _logger.LogInformation($"Successfully posted person search id:{result.Id}");
             }
 

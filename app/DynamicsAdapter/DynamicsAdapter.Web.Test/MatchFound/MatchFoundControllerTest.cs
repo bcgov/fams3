@@ -23,24 +23,17 @@ namespace DynamicsAdapter.Web.Test.MatchFound
         [Test]
         public void with_valid_match_found_data_should_return_ok()
         {
-            MatchFoundResponse matchFoundResponse = new MatchFoundResponse
-            {
-                SearchRequestId = "searchRequestGuid",
-                SearchResult = "searchResult"
-            };
-            IActionResult result =(OkResult) this._sut.MatchFound(matchFoundResponse).Result;
+            Guid id = new Guid();
+            Object obj = new object();
+            IActionResult result = (OkResult)this._sut.MatchFound(id.ToString(), obj).Result;
             Assert.IsNotNull(result);
         }
 
         [Test]
         public void with_invalid_match_found_data_should_return_bad_request()
         {
-            MatchFoundResponse matchFoundResponse = new MatchFoundResponse
-            {
-                SearchRequestId = "",
-                SearchResult = "searchResult"
-            };
-            IActionResult result = (BadRequestResult)this._sut.MatchFound(matchFoundResponse).Result;
+            Object obj = new object();
+            IActionResult result = (BadRequestResult)this._sut.MatchFound("", obj).Result;
             Assert.IsNotNull(result);
         }
     }

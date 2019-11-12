@@ -8,14 +8,8 @@ using Microsoft.Extensions.Logging;
 
 namespace DynamicsAdapter.Web.MatchFound
 {
-    public class MatchFoundResponse
-    { 
-        public string SearchRequestId { get; set; }
-        public string SearchResult { get; set; }
-    }
 
-
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class MatchFoundController : ControllerBase
     {
@@ -25,16 +19,21 @@ namespace DynamicsAdapter.Web.MatchFound
             _logger = logger;
         }
 
-        //POST
-        [HttpPost]
-        public async Task<IActionResult> MatchFound(MatchFoundResponse response)
-        { 
-            if(String.IsNullOrEmpty(response.SearchRequestId))
+        //POST: MatchFound/id
+        [HttpPost("{id}")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> MatchFound(string id, [FromBody]Object payload)
+        {
+            if (string.IsNullOrEmpty(id))
             {
                 return BadRequest();
             }
-            _logger.LogInformation("Received MatchFound response with SearchRequestId is " + response.SearchRequestId);
-            _logger.LogInformation("SearchResult is " + response.SearchResult);
+
+            _logger.LogInformation("Received MatchFound response with SearchRequestId is " + id);
+            _logger.LogInformation("SearchResult is " + payload);
             return Ok();
         }
     }

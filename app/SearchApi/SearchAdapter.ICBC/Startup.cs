@@ -45,7 +45,7 @@ namespace SearchAdapter.ICBC
 
             services.AddControllers();
 
-            services.AddHealthChecks();
+            this.ConfigureHealthChecks(services);
 
             // Configures the Provider Profile Options
             services
@@ -56,6 +56,18 @@ namespace SearchAdapter.ICBC
             this.ConfigureOpenTracing(services);
 
             this.ConfigureServiceBus(services);
+        }
+
+        private void ConfigureHealthChecks(IServiceCollection services)
+        {
+
+            var rabbitMqSettings = Configuration.GetSection("RabbitMq").Get<RabbitMqConfiguration>();
+            var rabbitConnectionString = $"amqp://{rabbitMqSettings.Username}:{rabbitMqSettings.Password}@{rabbitMqSettings.Host}:{rabbitMqSettings.Port}";
+
+            services
+                .AddHealthChecks()
+                .AddRabbitMQ(
+                    rabbitMQConnectionString: rabbitConnectionString);
         }
 
 

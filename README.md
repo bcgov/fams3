@@ -53,6 +53,33 @@ Configure RabbiMq using the following ENV variables:
 
 > the variables key have 2 underscores
 
+#### Match Found Notifications
+
+If the WebHooks section is configured, SearchApi automatically posts a new notification into the webhook collection.
+
+To enable MatchFound notification, they have to be configured through the SearchApi WebHooks settings.
+
+```json
+"SearchApi": {
+    "WebHooks": [
+      {
+        "Name": "Adapter1",
+        "Uri":  "http://localhost:5000" 
+      }
+    ] 
+  }
+```
+
+With this configuration the searchApi will post MatchFound to `http://localhost:5000/{id}` where {id} is a global unique identifier. the content of the payload is a MatchFound object
+
+```json
+{
+    "FistName": "firstName",
+    "LastName": "lastName",
+    "DateOfBirth": "2001-01-01"
+}
+```
+
 #### OpenApi
 
 The Search Api uses [NSwag](https://github.com/RicoSuter/NSwag) to autogenerate api specification from the code.

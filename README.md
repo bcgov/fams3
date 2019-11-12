@@ -145,7 +145,7 @@ download and install [dotnet core 3.0](https://dotnet.microsoft.com/download/dot
 
 Optionaly you can configure `jaeger` client to send traces:
 
-![asp-config](doc/images/aspnet.configuration.env.png)
+![asp-config](docs/images/aspnet.configuration.env.png)
 
 Run
 
@@ -164,5 +164,5 @@ Look at the [HealthCheck UI docker image](https://github.com/Xabaril/AspNetCore.
 
 You can find a configuration exemple in our [docker-compose.yml](docker-compose.yml) under watchdog.
 
-![healthChecksUi](docs/images/watchdog.jpg)
+![healthChecksUi](docs/images/healthcheck-ui.png)
 

@@ -96,6 +96,7 @@ namespace DynamicsAdapter.Web
             // Add other Services
             services.AddTransient<ITokenService, TokenService>();
             services.AddTransient<ISearchRequestService, SearchRequestService>();
+            services.AddTransient<IStatusReasonService, StatusReasonService>();
 
         }
         /// <summary>

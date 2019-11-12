@@ -23,12 +23,16 @@ namespace DynamicsAdapter.Web.SearchRequest
 
         private readonly ISearchRequestService _searchRequestService;
 
+        private readonly IStatusReasonService _statusReasonService;
+
         public SearchRequestJob(ISearchApiClient searchApiClient,
             ISearchRequestService searchRequestService,
-            ILogger<SearchRequestJob> logger)
+           IStatusReasonService statusReasonService,
+        ILogger<SearchRequestJob> logger)
         {
             _logger = logger;
             _searchRequestService = searchRequestService;
+            _statusReasonService = statusReasonService;
             _searchApiClient = searchApiClient;
         }
 
@@ -39,6 +43,7 @@ namespace DynamicsAdapter.Web.SearchRequest
 
             var cts = new CancellationTokenSource();
 
+            var r = _statusReasonService.GetList(cts.Token);
             foreach (var ssgSearchRequest in await GetAllReadyForSearchAsync(cts.Token))
             {
                 _logger.LogDebug(

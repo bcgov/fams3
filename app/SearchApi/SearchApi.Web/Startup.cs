@@ -23,7 +23,9 @@ using SearchApi.Core.Configuration;
 using SearchApi.Core.Contracts;
 using SearchApi.Core.MassTransit;
 using SearchApi.Core.OpenTracing;
+using SearchApi.Web.Configuration;
 using SearchApi.Web.Controllers;
+using SearchApi.Web.Notifications;
 using SearchApi.Web.Search;
 
 namespace SearchApi.Web
@@ -45,6 +47,12 @@ namespace SearchApi.Web
 
             services.AddControllers();
 
+            // Bind OAuth Configuration
+            services.AddOptions<SearchApiOptions>()
+                .Bind(Configuration.GetSection(Keys.SEARCHAPI_SECTION_SETTING_KEY));
+
+            services.AddWebHooks();
+
             this.ConfigureHealthChecks(services);
 
             this.ConfigureOpenTracing(services);
@@ -53,7 +61,6 @@ namespace SearchApi.Web
 
             this.ConfigureServiceBus(services);
         }
-
         private void ConfigureHealthChecks(IServiceCollection services)
         {
 
@@ -171,7 +178,7 @@ namespace SearchApi.Web
                     cfg.ReceiveEndpoint(host, $"{nameof(MatchFound)}_queue", e =>
                         {
                             e.Consumer(() =>
-                                new MatchFoundConsumer(provider.GetRequiredService<ILogger<MatchFoundConsumer>>()));
+                                new MatchFoundConsumer( provider.GetRequiredService<ISearchApiNotifier>(), provider.GetRequiredService<ILogger<MatchFoundConsumer>>()));
                         });
 
                 }));

@@ -1,10 +1,12 @@
 using System;
 using System.Diagnostics;
 using GreenPipes;
+using HealthChecks.UI.Client;
 using Jaeger;
 using Jaeger.Samplers;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -43,7 +45,7 @@ namespace SearchAdapter.ICBC
 
             services.AddControllers();
 
-            services.AddHealthChecks();
+            this.ConfigureHealthChecks(services);
 
             // Configures the Provider Profile Options
             services
@@ -54,6 +56,18 @@ namespace SearchAdapter.ICBC
             this.ConfigureOpenTracing(services);
 
             this.ConfigureServiceBus(services);
+        }
+
+        private void ConfigureHealthChecks(IServiceCollection services)
+        {
+
+            var rabbitMqSettings = Configuration.GetSection("RabbitMq").Get<RabbitMqConfiguration>();
+            var rabbitConnectionString = $"amqp://{rabbitMqSettings.Username}:{rabbitMqSettings.Password}@{rabbitMqSettings.Host}:{rabbitMqSettings.Port}";
+
+            services
+                .AddHealthChecks()
+                .AddRabbitMQ(
+                    rabbitMQConnectionString: rabbitConnectionString);
         }
 
 
@@ -114,7 +128,11 @@ namespace SearchAdapter.ICBC
             app.UseEndpoints(endpoints =>
             {
                 // registration of health endpoints see https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/health-checks
-                endpoints.MapHealthChecks("/health");
+                endpoints.MapHealthChecks("/health", new HealthCheckOptions
+                {
+                    Predicate = _ => true,
+                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                });
             });
         }
 

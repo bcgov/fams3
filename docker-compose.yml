@@ -114,6 +114,21 @@ services:
     networks: 
       - search-api-net
 
+  watchdog:
+    image: xabarilcoding/healthchecksui:2.2.35
+    ports:
+      - "6060:80"
+    restart: always
+    environment:
+      HealthChecksUI:HealthChecks:0:Name: Search Api
+      HealthChecksUI:HealthChecks:0:Uri: http://search-api/health
+      HealthChecksUI:HealthChecks:1:Name: Dyanmics Adpater
+      HealthChecksUI:HealthChecks:1:Uri: http://dynamics-adapter/health
+      HealthChecksUI:HealthChecks:2:Name: ICBC Adapter
+      HealthChecksUI:HealthChecks:2:Uri: http://adapter-icbc/health
+    networks: 
+      - search-api-net
+
 networks:
   search-api-net:
 

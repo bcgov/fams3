@@ -13,11 +13,11 @@ namespace SearchApi.Web.Search
 
         private readonly ILogger<MatchFoundConsumer> _logger;
 
-        private readonly ISearchApiNotifier _serSearchApiNotifier;
+        private readonly ISearchApiNotifier _searchApiNotifier;
 
-        public MatchFoundConsumer(ISearchApiNotifier serSearchApiNotifier, ILogger<MatchFoundConsumer> logger)
+        public MatchFoundConsumer(ISearchApiNotifier searchApiNotifier, ILogger<MatchFoundConsumer> logger)
         {
-            _serSearchApiNotifier = serSearchApiNotifier;
+            _searchApiNotifier = searchApiNotifier;
             _logger = logger;
         }
 
@@ -26,7 +26,7 @@ namespace SearchApi.Web.Search
             var cts = new CancellationTokenSource();
             var profile = context.Headers.Get<ProviderProfile>(nameof(ProviderProfile));
             _logger.LogInformation($"received new {nameof(MatchFound)} event from {profile.Name}");
-            await _serSearchApiNotifier.NotifyMatchFoundAsync((Guid) context.ConversationId, context.Message,
+            await _searchApiNotifier.NotifyMatchFoundAsync((Guid) context.ConversationId, context.Message,
                 cts.Token);
         }
     }

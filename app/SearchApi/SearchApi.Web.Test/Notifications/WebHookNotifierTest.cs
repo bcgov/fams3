@@ -78,6 +78,51 @@ namespace SearchApi.Web.Test.Notifications
 
         }
 
+        [Test]
+        public async Task it_should_send_notification_to_one_subscribers_with_uri_having_path()
+        {
+            var fakeMatchFound = new FakeMatchFound();
+
+            _searchApiOptionsMock.Setup(x => x.Value).Returns(new SearchApiOptions().AddWebHook("test", "http://test:1234/MatchFound"));
+
+            var handlerMock = new Mock<HttpMessageHandler>(MockBehavior.Strict);
+            handlerMock
+                .Protected()
+                // Setup the PROTECTED method to mock
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>()
+                )
+                // prepare the expected response of the mocked http call
+                .ReturnsAsync(new HttpResponseMessage()
+                {
+                    StatusCode = HttpStatusCode.OK,
+                    Content = new StringContent("worked!"),
+                })
+                .Verifiable();
+
+            var httpClient = new HttpClient(handlerMock.Object);
+            _sut = new WebHookNotifier(httpClient, _searchApiOptionsMock.Object, _loggerMock.Object);
+
+            await _sut.NotifyMatchFoundAsync(fakeMatchFound.SearchRequestId, fakeMatchFound, CancellationToken.None);
+
+            var expectedUri = new Uri($"http://test:1234/MatchFound/{fakeMatchFound.SearchRequestId}");
+
+            handlerMock.Protected().Verify(
+                "SendAsync",
+                Times.Exactly(1),
+                ItExpr.Is<HttpRequestMessage>(req =>
+                        req.Method == HttpMethod.Post
+                        && req.RequestUri == expectedUri // to this uri
+                ),
+                ItExpr.IsAny<CancellationToken>()
+            );
+
+            _loggerMock.VerifyLog(LogLevel.Information, $"The webHook MatchFound notification has executed successfully for test webHook.", "failed");
+
+        }
+
 
         [Test]
         public async Task it_should_send_notification_to_all_subscribers()

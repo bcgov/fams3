@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -85,7 +86,7 @@ namespace SearchApi.Web.Notifications
                 return false;
             }
 
-            return Uri.TryCreate(baseUri, path, out uri);
+            return Uri.TryCreate(baseUri, Path.Combine(baseUri.LocalPath, path), out uri);
         }
 
     }

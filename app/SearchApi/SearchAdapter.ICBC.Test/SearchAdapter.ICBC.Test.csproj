@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SearchAdapter.ICBC\SearchAdapter.ICBC.csproj" />
+    <ProjectReference Include="..\SearchApi.Core.Test\SearchApi.Core.Test.csproj" />
   </ItemGroup>
 
 </Project>

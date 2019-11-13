@@ -26,7 +26,7 @@ namespace SearchApi.Web.Search
             var cts = new CancellationTokenSource();
             var profile = context.Headers.Get<ProviderProfile>(nameof(ProviderProfile));
             _logger.LogInformation($"received new {nameof(MatchFound)} event from {profile.Name}");
-            await _searchApiNotifier.NotifyMatchFoundAsync((Guid) context.Message.SearchRequestId, context.Message,
+            await _searchApiNotifier.NotifyMatchFoundAsync(context.Message.SearchRequestId, context.Message,
                 cts.Token);
         }
     }

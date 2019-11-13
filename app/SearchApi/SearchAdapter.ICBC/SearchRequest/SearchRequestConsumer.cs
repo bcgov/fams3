@@ -43,7 +43,6 @@ namespace SearchAdapter.ICBC.SearchRequest
 
             return new IcbcMatchFoundBuilder(executeSearch.Id).WithPerson(person).AddPersonId(fakeIdentifier).Build();
 
-
         }
 
     }

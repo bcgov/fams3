@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SearchApi.Core.Test\SearchApi.Core.Test.csproj" />
     <ProjectReference Include="..\SearchApi.Web\SearchApi.Web.csproj" />
   </ItemGroup>
 

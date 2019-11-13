@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace DynamicsAdapter.Web.SearchRequest
 {
@@ -25,10 +26,9 @@ namespace DynamicsAdapter.Web.SearchRequest
         public async Task<StatusReason> GetList(CancellationToken cancellationToken)
         {
             string requestUrl = "EntityDefinitions(LogicalName='ssg_searchrequest')/Attributes(LogicalName='statuscode')/Microsoft.Dynamics.CRM.StatusAttributeMetadata?$select=LogicalName&$expand=OptionSet";
-
-            var res = await _httpClient.GetAsync(requestUrl, cancellationToken);
-
-            return await Task.FromResult(new StatusReason());
+            var response = await _httpClient.GetAsync(requestUrl, cancellationToken).Result.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<StatusReason> (response);
+           
         }
     }
 }

@@ -7,6 +7,7 @@ namespace SearchApi.Core.Adapters.Contracts
     /// </summary>
     public interface MatchFound
     {
+        Guid searchRequestId { get; }
         string FirstName { get; }
         string LastName { get; }
         DateTime DateOfBirth { get; }

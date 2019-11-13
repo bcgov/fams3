@@ -12,9 +12,9 @@ namespace SearchAdapter.ICBC.SearchRequest
 
         internal IcbcMatchFound _matchFound;
 
-        public IcbcMatchFoundBuilder()
+        public IcbcMatchFoundBuilder(Guid searchRequestId)
         {
-            _matchFound = new IcbcMatchFound();
+            _matchFound = new IcbcMatchFound(searchRequestId);
         }
 
         public IcbcMatchFoundBuilder WithFirstName(string firstName)
@@ -46,6 +46,13 @@ namespace SearchAdapter.ICBC.SearchRequest
    
     internal sealed class IcbcMatchFound : MatchFound
     {
+
+        public IcbcMatchFound(Guid searchRequestId)
+        {
+            this.searchRequestId = searchRequestId;
+        }
+
+        public Guid searchRequestId { get; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public DateTime DateOfBirth { get; set; }

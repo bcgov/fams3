@@ -24,7 +24,7 @@ namespace SearchAdapter.ICBC.SearchRequest
         {
             _logger.LogInformation($"Successfully handling new search request [{context.Message.Id}]");
             
-            await context.Publish<MatchFound>(new IcbcMatchFoundBuilder()
+            await context.Publish<MatchFound>(new IcbcMatchFoundBuilder(context.Message.Id)
                 .WithFirstName(context.Message.FirstName)
                 .WithLastName(context.Message.LastName)
                 .WithDateOfBirth(context.Message.DateOfBirth)

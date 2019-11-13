@@ -49,10 +49,10 @@ namespace SearchAdapter.ICBC.SearchRequest
 
         public IcbcMatchFound(Guid searchRequestId)
         {
-            this.searchRequestId = searchRequestId;
+            this.SearchRequestId = searchRequestId;
         }
 
-        public Guid searchRequestId { get; }
+        public Guid SearchRequestId { get; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public DateTime DateOfBirth { get; set; }

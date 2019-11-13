@@ -62,6 +62,7 @@ namespace SearchApi.Web.Test.Notifications
 
             await _sut.NotifyMatchFoundAsync(searchRequestId, new MatchFoundMock()
             {
+                SearchRequestId = searchRequestId,
                 FirstName = "fistName",
                 LastName = "lastName",
                 DateOfBirth = new DateTime(2011, 1, 1)
@@ -115,6 +116,7 @@ namespace SearchApi.Web.Test.Notifications
 
             await _sut.NotifyMatchFoundAsync(searchRequestId, new MatchFoundMock()
             {
+                SearchRequestId = searchRequestId,
                 FirstName = "fistName",
                 LastName = "lastName",
                 DateOfBirth = new DateTime(2011, 1, 1)
@@ -219,6 +221,7 @@ namespace SearchApi.Web.Test.Notifications
 
             await _sut.NotifyMatchFoundAsync(searchRequestId, new MatchFoundMock()
             {
+                SearchRequestId = searchRequestId,
                 FirstName = "fistName",
                 LastName = "lastName",
                 DateOfBirth = new DateTime(2011, 1, 1)
@@ -270,6 +273,7 @@ namespace SearchApi.Web.Test.Notifications
 
             await _sut.NotifyMatchFoundAsync(searchRequestId, new MatchFoundMock()
             {
+                SearchRequestId = searchRequestId,
                 FirstName = "fistName",
                 LastName = "lastName",
                 DateOfBirth = new DateTime(2011, 1, 1)
@@ -316,6 +320,7 @@ namespace SearchApi.Web.Test.Notifications
 
             await _sut.NotifyMatchFoundAsync(searchRequestId, new MatchFoundMock()
             {
+                SearchRequestId = searchRequestId,
                 FirstName = "fistName",
                 LastName = "lastName",
                 DateOfBirth = new DateTime(2011, 1, 1)
@@ -329,6 +334,7 @@ namespace SearchApi.Web.Test.Notifications
 
         public class MatchFoundMock : MatchFound
         {
+            public Guid SearchRequestId { get; set; }
             public string FirstName { get; set; }
             public string LastName { get; set; }
             public DateTime DateOfBirth { get; set; }

@@ -18,7 +18,7 @@ namespace SearchAdapter.ICBC.Test.SearchRequest
                 .WithDateOfBirth(new DateTime(2001, 1, 1))
                 .Build();
 
-            Assert.AreEqual(id, sut.searchRequestId, "searchRequestId values are not equals");
+            Assert.AreEqual(id, sut.SearchRequestId, "searchRequestId values are not equals");
             Assert.AreEqual("FirstName", sut.FirstName, "FirstName values are not equals");
             Assert.AreEqual("LastName", sut.LastName, "LastNames values are not equals");
             Assert.AreEqual(new DateTime(2001, 1,1), sut.DateOfBirth, "Date of Birth values are not equals" );

@@ -22,14 +22,14 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
         public void SetUp()
         {
 
-            odataClientMock.Setup(x => x.For<SSG_SearchRequest>(null)
-                    .Filter(x => x.StatusCode == 867670000)
+            odataClientMock.Setup(x => x.For<SSG_SearchApiRequest>(null)
+                    .Filter(x => x.StatusCode == 1)
                     .FindEntriesAsync(It.IsAny<CancellationToken>()))
-                .Returns(Task.FromResult<IEnumerable<SSG_SearchRequest>>(new List<SSG_SearchRequest>()
+                .Returns(Task.FromResult<IEnumerable<SSG_SearchApiRequest>>(new List<SSG_SearchApiRequest>()
                 {
-                    new SSG_SearchRequest()
+                    new SSG_SearchApiRequest()
                     {
-                        SSG_SearchRequestId = Guid.NewGuid(),
+                        SSG_SearchApiRequestId = Guid.NewGuid(),
                         SSG_PersonGivenName = "personGivenName"
                     }
                 }));

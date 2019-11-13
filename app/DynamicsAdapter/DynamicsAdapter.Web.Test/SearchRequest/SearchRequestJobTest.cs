@@ -26,11 +26,11 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
         {
 
             _searchRequestService.Setup(x => x.GetAllReadyForSearchAsync(It.IsAny<CancellationToken>()))
-                .Returns(Task.FromResult<IEnumerable<SSG_SearchRequest>>(new List<SSG_SearchRequest>()
+                .Returns(Task.FromResult<IEnumerable<SSG_SearchApiRequest>>(new List<SSG_SearchApiRequest>()
                 {
-                    new SSG_SearchRequest()
+                    new SSG_SearchApiRequest()
                     {
-                        SSG_SearchRequestId = Guid.NewGuid(),
+                        SSG_SearchApiRequestId = Guid.NewGuid(),
                         SSG_PersonGivenName = "personGivenName"
                     }
                 }));

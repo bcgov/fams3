@@ -3,6 +3,7 @@ using Simple.OData.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -15,17 +16,17 @@ namespace DynamicsAdapter.Web.SearchRequest
 
     public class StatusReasonService : IStatusReasonService
     {
-        private readonly IODataClient _oDataClient;
-        public StatusReasonService(IODataClient oDataClient)
+        private readonly HttpClient _httpClient;
+        public StatusReasonService(HttpClient httpClient)
         {
-            this._oDataClient = oDataClient;
+            this._httpClient = httpClient;
         }
 
         public async Task<StatusReason> GetList(CancellationToken cancellationToken)
         {
-            string commandText = "EntityDefinitions(LogicalName='ssg_searchrequest')/Attributes(LogicalName='statuscode')/Microsoft.Dynamics.CRM.StatusAttributeMetadata?$select=LogicalName&$expand=OptionSet";
-   
-            var res = await _oDataClient.FindEntriesAsync(commandText, cancellationToken);
+            string requestUrl = "EntityDefinitions(LogicalName='ssg_searchrequest')/Attributes(LogicalName='statuscode')/Microsoft.Dynamics.CRM.StatusAttributeMetadata?$select=LogicalName&$expand=OptionSet";
+
+            var res = await _httpClient.GetAsync(requestUrl, cancellationToken);
 
             return await Task.FromResult(new StatusReason());
         }

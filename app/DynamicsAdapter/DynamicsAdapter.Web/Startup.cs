@@ -89,6 +89,12 @@ namespace DynamicsAdapter.Web
                 cfg.BaseAddress = new Uri(Configuration.GetSection("OAuth").Get<OAuthOptions>().ResourceUrl);
             }).AddHttpMessageHandler<OAuthHandler>();
 
+            // Register httpClient for StatusReason Service with OAuthHandler
+            services.AddHttpClient<IStatusReasonService, StatusReasonService>(cfg =>
+            {
+                cfg.BaseAddress = new Uri(Configuration.GetSection("OAuth").Get<OAuthOptions>().ResourceUrl);
+            }).AddHttpMessageHandler<OAuthHandler>();
+
             // Register Odata client
             services.AddTransient<IODataClient>(provider =>
                 new ODataClient(provider.GetRequiredService<ODataClientSettings>()));

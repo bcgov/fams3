@@ -5,6 +5,7 @@ using NUnit.Framework;
 using Simple.OData.Client;
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,7 +14,7 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
 {
     public class StatusReasonServiceTest
     {
-        private Mock<IODataClient> odataClientMock = new Mock<IODataClient>();
+        private Mock<HttpClient> htppClientMock = new Mock<HttpClient>();
 
         private StatusReasonService _sut;
 
@@ -28,10 +29,10 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
             };
             var list = new List<IDictionary<string, object>>();
             list.Add(results);
-            odataClientMock.Setup(x => x.FindEntriesAsync(commandText, It.IsAny<CancellationToken>()))
-                .Returns(Task.FromResult<IEnumerable<IDictionary<string, object>>>(list));
+            htppClientMock.Setup(x => x.GetAsync(commandText, It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult(new HttpResponseMessage()));
 
-            _sut = new StatusReasonService(odataClientMock.Object);
+            _sut = new StatusReasonService(htppClientMock.Object);
 
         }
 

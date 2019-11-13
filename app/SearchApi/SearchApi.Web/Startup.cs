@@ -43,7 +43,10 @@ namespace SearchApi.Web
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddMvc().AddNewtonsoftJson();
+            services.AddMvc().AddNewtonsoftJson(options =>
+            {
+                options.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
+            });
 
             services.AddControllers();
 

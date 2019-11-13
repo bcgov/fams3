@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using SearchApi.Core.Contracts;
 
 namespace SearchApi.Core.Adapters.Contracts
 {
@@ -8,8 +10,10 @@ namespace SearchApi.Core.Adapters.Contracts
     public interface MatchFound
     {
         Guid SearchRequestId { get; }
-        string FirstName { get; }
-        string LastName { get; }
-        DateTime DateOfBirth { get; }
+        
+        Person Person { get; }
+
+        IEnumerable<PersonId> PersonIds { get; }
+
     }
 }

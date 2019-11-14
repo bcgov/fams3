@@ -11,7 +11,7 @@ namespace DynamicsAdapter.Web.Health
     {
         public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = new CancellationToken())
         {
-            var healthCheckResultHealthy = true;
+            var healthCheckResultHealthy = CheckStatusReason();
 
             if (healthCheckResultHealthy)
             {
@@ -21,6 +21,12 @@ namespace DynamicsAdapter.Web.Health
 
             return Task.FromResult(
                 HealthCheckResult.Unhealthy("An unhealthy result."));
+        }
+
+        bool CheckStatusReason()
+        {
+            //var statusReasonService = new StatusReasonService();
+            return true;
         }
     }
 }

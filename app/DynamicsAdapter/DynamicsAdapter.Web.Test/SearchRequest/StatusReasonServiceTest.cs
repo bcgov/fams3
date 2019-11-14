@@ -57,7 +57,7 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
 
         private StatusReasonService _sut;
         private Mock<IOptions<OAuthOptions>> _oauthOptionsMock;
-
+        private readonly Mock<ILogger<StatusReasonService>> _loggerMock = new Mock<ILogger<StatusReasonService>>();
 
 
         [SetUp]
@@ -91,7 +91,7 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
                 .Verifiable();
 
             var httpClient = new HttpClient(handlerMock.Object);
-            _sut = new StatusReasonService(httpClient, _oauthOptionsMock.Object);
+            _sut = new StatusReasonService(httpClient, _oauthOptionsMock.Object, _loggerMock.Object);
 
             await _sut.GetListAsync( CancellationToken.None);
 

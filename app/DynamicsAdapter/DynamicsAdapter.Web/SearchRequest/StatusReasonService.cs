@@ -12,6 +12,7 @@ using DynamicsAdapter.Web.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Quartz.Logging;
 
 namespace DynamicsAdapter.Web.SearchRequest
 {
@@ -24,18 +25,25 @@ namespace DynamicsAdapter.Web.SearchRequest
     {
         private readonly HttpClient _httpClient;
         private readonly OAuthOptions _oauthOptions;
- 
-        public StatusReasonService(HttpClient httpClient, IOptions<OAuthOptions> oauthOptions)
+        private readonly ILogger<StatusReasonService> _logger;
+
+        public StatusReasonService(HttpClient httpClient, IOptions<OAuthOptions> oauthOptions,ILogger<StatusReasonService> logger)
         { 
             this._httpClient = httpClient;
 
             _oauthOptions = oauthOptions.Value;
+            _logger = logger;
         }
 
         public async Task<StatusReason> GetListAsync(CancellationToken cancellationToken)
         {
 
+
             TryCreateUri(_oauthOptions.ResourceUrl, "EntityDefinitions(LogicalName='ssg_searchrequest')/Attributes(LogicalName='statuscode')/Microsoft.Dynamics.CRM.StatusAttributeMetadata?$select=LogicalName&$expand=OptionSet", out var endpoint);
+
+
+            _logger.LogDebug(
+                $"The status reason service endpoint for ssg_searchrequest {endpoint}");
             using var request = new HttpRequestMessage();
             try
             {
@@ -47,8 +55,12 @@ namespace DynamicsAdapter.Web.SearchRequest
 
                 if (!response.IsSuccessStatusCode)
                 {
+                    _logger.LogDebug(
+                        $" {endpoint} failed with status code : {response.StatusCode}");
                     return await Task.FromResult(new StatusReason());
                 }
+                _logger.LogDebug(
+                    $" {endpoint} succeeded with status code : {response.StatusCode}");
                 var responseData = await response.Content.ReadAsStringAsync();
                 return await Task.FromResult(JsonConvert.DeserializeObject<StatusReason>(responseData));
 

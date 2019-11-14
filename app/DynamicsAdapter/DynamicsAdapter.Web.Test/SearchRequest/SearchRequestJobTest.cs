@@ -18,7 +18,7 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
         private readonly Mock<IJobExecutionContext> _jobExecutionContextMock = new Mock<IJobExecutionContext>();
         private readonly Mock<ISearchApiClient> _searchApiClientMock = new Mock<ISearchApiClient>();
         private readonly Mock<ISearchRequestService> _searchRequestService = new Mock<ISearchRequestService>();
-        private readonly Mock<IStatusReasonService> _statusReasonService = new Mock<IStatusReasonService>();
+
 
         private SearchRequestJob _sut;
 
@@ -43,7 +43,7 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
                     Id = Guid.NewGuid()
                 }));
 
-            _sut = new SearchRequestJob(_searchApiClientMock.Object, _searchRequestService.Object, _statusReasonService.Object,_loggerMock.Object);
+            _sut = new SearchRequestJob(_searchApiClientMock.Object, _searchRequestService.Object,_loggerMock.Object);
         }
 
         [Test]

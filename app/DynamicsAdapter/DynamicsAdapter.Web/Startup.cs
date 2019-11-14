@@ -1,6 +1,7 @@
 using System;
 using DynamicsAdapter.Web.Auth;
 using DynamicsAdapter.Web.Configuration;
+using DynamicsAdapter.Web.Health;
 using DynamicsAdapter.Web.Infrastructure;
 using DynamicsAdapter.Web.SearchRequest;
 using DynamicsAdapter.Web.Services.Dynamics;
@@ -13,6 +14,7 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OpenTracing;
@@ -38,7 +40,7 @@ namespace DynamicsAdapter.Web
         {
             services.AddControllers();
 
-            services.AddHealthChecks();
+            services.AddHealthChecks().AddCheck<StatusReasonHealthCheck>("status_reason_health_check",failureStatus:HealthStatus.Degraded);
 
             // configure strongly typed settings objects
             var appSettings = ConfigureAppSettings(services);
@@ -187,6 +189,7 @@ namespace DynamicsAdapter.Web
                 // registration of health endpoints see https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/health-checks
                 endpoints.MapHealthChecks("/health", new HealthCheckOptions
                 {
+                    AllowCachingResponses = false,
                     Predicate = _ => true,
                     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
                 });

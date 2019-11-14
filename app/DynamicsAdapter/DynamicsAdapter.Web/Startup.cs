@@ -77,6 +77,7 @@ namespace DynamicsAdapter.Web
                 .Bind(Configuration.GetSection("OAuth"))
                 .ValidateDataAnnotations();
 
+          
             // Add OAuth Middleware
             services.AddTransient<OAuthHandler>();
 
@@ -102,7 +103,7 @@ namespace DynamicsAdapter.Web
             // Add other Services
             services.AddTransient<ITokenService, TokenService>();
             services.AddTransient<ISearchRequestService, SearchRequestService>();
-            services.AddTransient<IStatusReasonService, StatusReasonService>();
+         
 
         }
         /// <summary>

@@ -21,12 +21,14 @@ namespace DynamicsAdapter.Web.SearchRequest
 
         private readonly ISearchRequestService _searchRequestService;
 
+
         public SearchRequestJob(ISearchApiClient searchApiClient,
             ISearchRequestService searchRequestService,
             ILogger<SearchRequestJob> logger)
         {
             _logger = logger;
             _searchRequestService = searchRequestService;
+     
             _searchApiClient = searchApiClient;
         }
 
@@ -36,6 +38,7 @@ namespace DynamicsAdapter.Web.SearchRequest
             _logger.LogInformation("Search Request started!");
 
             var cts = new CancellationTokenSource();
+
 
             List<SSG_SearchApiRequest> requestList = await GetAllReadyForSearchAsync(cts.Token);
             foreach (var ssgSearchRequest in requestList)

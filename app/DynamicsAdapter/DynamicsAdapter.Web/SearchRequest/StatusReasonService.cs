@@ -39,11 +39,11 @@ namespace DynamicsAdapter.Web.SearchRequest
         {
 
 
-            TryCreateUri(_oauthOptions.ResourceUrl, "EntityDefinitions(LogicalName='ssg_searchrequest')/Attributes(LogicalName='statuscode')/Microsoft.Dynamics.CRM.StatusAttributeMetadata?$select=LogicalName&$expand=OptionSet", out var endpoint);
+            TryCreateUri(_oauthOptions.ResourceUrl, "EntityDefinitions(LogicalName='ssg_searchapirequest')/Attributes(LogicalName='statuscode')/Microsoft.Dynamics.CRM.StatusAttributeMetadata?$select=LogicalName&$expand=OptionSet", out var endpoint);
 
 
             _logger.LogDebug(
-                $"The status reason service endpoint for ssg_searchrequest {endpoint}");
+                $"The status reason service endpoint for ssg_searchapirequest {endpoint}");
             using var request = new HttpRequestMessage();
             try
             {

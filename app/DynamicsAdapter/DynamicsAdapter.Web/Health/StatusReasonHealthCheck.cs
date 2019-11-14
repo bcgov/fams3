@@ -3,29 +3,80 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using DynamicsAdapter.Web.SearchRequest;
+using DynamicsAdapter.Web.SearchRequest.Models;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace DynamicsAdapter.Web.Health
 {
     public class StatusReasonHealthCheck : IHealthCheck
     {
-        public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = new CancellationToken())
+        public StatusReasonService _statusReasonService;
+        public StatusReasonHealthCheck(StatusReasonService statusReasonService)
+        {
+            _statusReasonService = statusReasonService;
+        }
+        public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = new CancellationToken())
         {
 
-            if (CheckStatusReason())
+            if (await CheckStatusReason())
             {
-                return Task.FromResult(
+                return await Task.FromResult(
                     HealthCheckResult.Healthy("A healthy result."));
             }
 
-            return Task.FromResult(
+            return await Task.FromResult(
                 HealthCheckResult.Unhealthy("An unhealthy result."));
         }
 
-        bool CheckStatusReason()
+        async Task<bool> CheckStatusReason()
         {
-            //var statusReasonService = new StatusReasonService();
-            return true;
+            var healthy = true; 
+            var statusReasonServiceList = Enum.GetNames(typeof(StatusReasonList));
+            var statusReasonListFromDynamics = await _statusReasonService.GetListAsync(new CancellationToken());
+            var options = OptionsModified(statusReasonListFromDynamics);
+            foreach (var i in statusReasonServiceList)
+            {
+                var reason = (StatusReasonList) Enum.Parse(typeof(StatusReasonList),
+                    Enum.GetName(typeof(StatusReasonList), i));
+
+                if (!options.Contains(new Option()
+                {
+                    Value = (int) reason,
+                    Label = new Label()
+                    {
+                        UserLocalizedLabel = new UserLocalizedLabel()
+                        {
+                            Label = Enum.GetName(typeof(StatusReasonList), reason)
+                        }
+                    }
+                }))
+                {
+                    healthy = false;
+                }
+            }
+            return await Task.FromResult(healthy);
+        }
+
+        private static List<Option> OptionsModified(StatusReason statusReasonListFromDynamics)
+        {
+            var options = new List<Option>();
+            foreach (var option in statusReasonListFromDynamics.OptionSet.Options)
+            {
+                options.Add(new Option()
+                {
+                    Value = option.Value,
+                    Label = new Label()
+                    {
+                        UserLocalizedLabel = new UserLocalizedLabel()
+                        {
+                            Label = option.Label.UserLocalizedLabel.Label.Replace(" ", "")
+                        }
+                    }
+                });
+            }
+
+            return options;
         }
     }
 }

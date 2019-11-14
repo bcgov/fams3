@@ -9,7 +9,7 @@ namespace DynamicsAdapter.Web.SearchRequest
 
     public interface ISearchRequestService
     {
-        Task<IEnumerable<SSG_SearchRequest>> GetAllReadyForSearchAsync(CancellationToken cancellationToken);
+        Task<IEnumerable<SSG_SearchApiRequest>> GetAllReadyForSearchAsync(CancellationToken cancellationToken);
     }
 
     /// <summary>
@@ -17,7 +17,7 @@ namespace DynamicsAdapter.Web.SearchRequest
     /// </summary>
     public class SearchRequestService : ISearchRequestService
     {
-        private const int ReadyForSearchStatus = 867670000;
+        private const int ReadyForSearchStatus = 1;
 
         private readonly IODataClient _oDataClient;
         public SearchRequestService(IODataClient oDataClient)
@@ -30,9 +30,9 @@ namespace DynamicsAdapter.Web.SearchRequest
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<SSG_SearchRequest>> GetAllReadyForSearchAsync(CancellationToken cancellationToken)
+        public async Task<IEnumerable<SSG_SearchApiRequest>> GetAllReadyForSearchAsync(CancellationToken cancellationToken)
         { 
-            return await this._oDataClient.For<SSG_SearchRequest>().Filter(x => x.StatusCode == ReadyForSearchStatus).FindEntriesAsync(cancellationToken);
+            return await this._oDataClient.For<SSG_SearchApiRequest>().Filter(x => x.StatusCode == ReadyForSearchStatus).FindEntriesAsync(cancellationToken);
         }
 
     }

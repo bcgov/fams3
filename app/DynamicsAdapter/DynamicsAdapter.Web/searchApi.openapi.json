@@ -1,93 +1,99 @@
 {
-    "x-generator": "NSwag v13.1.3.0 (NJsonSchema v10.0.27.0 (Newtonsoft.Json v12.0.0.0))",
-    "swagger": "2.0",
-    "info": {
-      "title": "FAMS Search API",
-      "description": "For Search",
-      "version": "V0.1"
-    },
-    "host": "localhost:5050",
-    "schemes": [
-      "http"
-    ],
-    "consumes": [
-      "application/json-patch+json",
-      "application/json",
-      "text/json",
-      "application/*+json"
-    ],
-    "produces": [
-      "application/json"
-    ],
-    "paths": {
-      "/People/search": {
-        "post": {
-          "tags": [
-            "People API"
-          ],
-          "operationId": "People_Search",
-          "parameters": [
-            {
-              "name": "personSearchRequest",
-              "in": "body",
-              "required": true,
-              "schema": {
-                "$ref": "#/definitions/PersonSearchRequest"
-              },
-              "x-nullable": false
-            }
-          ],
-          "responses": {
-            "202": {
-              "x-nullable": false,
-              "description": "",
-              "schema": {
-                "$ref": "#/definitions/PersonSearchResponse"
-              }
-            }
-          }
-        }
-      }
-    },
-    "definitions": {
-      "PersonSearchResponse": {
-        "type": "object",
-        "description": "Represents the acknowledgement that the search will be conducted",
-        "required": [
-          "id"
+  "x-generator": "NSwag v13.1.3.0 (NJsonSchema v10.0.27.0 (Newtonsoft.Json v12.0.0.0))",
+  "swagger": "2.0",
+  "info": {
+    "title": "FAMS Search API",
+    "description": "For Search",
+    "version": "V0.1"
+  },
+  "host": "localhost:5050",
+  "schemes": [
+    "http"
+  ],
+  "consumes": [
+    "application/json-patch+json",
+    "application/json",
+    "text/json",
+    "application/*+json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/People/search": {
+      "post": {
+        "tags": [
+          "People API"
         ],
-        "properties": {
-          "id": {
+        "operationId": "People_Search",
+        "parameters": [
+          {
             "type": "string",
-            "description": "The unique identifier of the search request",
-            "format": "guid"
+            "name": "X-RequestId",
+            "in": "header",
+            "x-nullable": true
+          },
+          {
+            "name": "personSearchRequest",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PersonSearchRequest"
+            },
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "202": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/PersonSearchResponse"
+            }
           }
         }
-      },
-      "PersonSearchRequest": {
-        "type": "object",
-        "description": "Represents a set of information to execute a search on a person",
-        "properties": {
-          "firstName": {
-            "type": "string",
-            "description": "The first name of the subject."
-          },
-          "lastName": {
-            "type": "string",
-            "description": "The last name of the subject."
-          },
-          "dateOfBirth": {
-            "type": "string",
-            "description": "The date of birth of the subject.",
-            "format": "date-time"
-          }
+      }
+    }
+  },
+  "definitions": {
+    "PersonSearchResponse": {
+      "type": "object",
+      "description": "Represents the acknowledgement that the search will be conducted",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "The unique identifier of the search request",
+          "format": "guid"
         }
       }
     },
-    "tags": [
-      {
-        "name": "People API",
-        "description": "The FAMS People API"
+    "PersonSearchRequest": {
+      "type": "object",
+      "description": "Represents a set of information to execute a search on a person",
+      "properties": {
+        "firstName": {
+          "type": "string",
+          "description": "The first name of the subject."
+        },
+        "lastName": {
+          "type": "string",
+          "description": "The last name of the subject."
+        },
+        "dateOfBirth": {
+          "type": "string",
+          "description": "The date of birth of the subject.",
+          "format": "date-time"
+        }
       }
-    ]
-  }
+    }
+  },
+  "tags": [
+    {
+      "name": "People API",
+      "description": "The FAMS People API"
+    }
+  ]
+}

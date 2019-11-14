@@ -79,6 +79,7 @@ namespace DynamicsAdapter.Web
                 .Bind(Configuration.GetSection("OAuth"))
                 .ValidateDataAnnotations();
 
+          
             // Add OAuth Middleware
             services.AddTransient<OAuthHandler>();
 
@@ -91,6 +92,12 @@ namespace DynamicsAdapter.Web
                 cfg.BaseAddress = new Uri(Configuration.GetSection("OAuth").Get<OAuthOptions>().ResourceUrl);
             }).AddHttpMessageHandler<OAuthHandler>();
 
+            // Register httpClient for StatusReason Service with OAuthHandler
+            services.AddHttpClient<IStatusReasonService, StatusReasonService>(cfg =>
+            {
+                cfg.BaseAddress = new Uri(Configuration.GetSection("OAuth").Get<OAuthOptions>().ResourceUrl);
+            }).AddHttpMessageHandler<OAuthHandler>();
+
             // Register Odata client
             services.AddTransient<IODataClient>(provider =>
                 new ODataClient(provider.GetRequiredService<ODataClientSettings>()));
@@ -98,6 +105,7 @@ namespace DynamicsAdapter.Web
             // Add other Services
             services.AddTransient<ITokenService, TokenService>();
             services.AddTransient<ISearchRequestService, SearchRequestService>();
+         
 
         }
         /// <summary>

@@ -8,10 +8,10 @@ namespace DynamicsAdapter.Web.Extensions
 {
     public static class DynamicsAdapterExtension
     {
-        public static SearchRequestStatusReason  GetStatusReasonItem(this int reasonName)
+        public static SearchRequestStatusReason  GetStatusReasonItem(this int reasonValue)
         {
             return (SearchRequestStatusReason) Enum.Parse(typeof(SearchRequestStatusReason),
-                Enum.GetName(typeof(SearchRequestStatusReason), reasonName));
+                Enum.GetName(typeof(SearchRequestStatusReason), reasonValue));
         }
     }
 }

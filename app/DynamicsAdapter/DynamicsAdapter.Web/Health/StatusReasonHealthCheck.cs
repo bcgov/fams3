@@ -12,15 +12,15 @@ namespace DynamicsAdapter.Web.Health
 {
     public class StatusReasonHealthCheck : IHealthCheck
     {
-        public StatusReasonService _statusReasonService;
-        public StatusReasonHealthCheck(StatusReasonService statusReasonService)
+        public IStatusReasonService _statusReasonService;
+        public StatusReasonHealthCheck(IStatusReasonService statusReasonService)
         {
             _statusReasonService = statusReasonService;
         }
         public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = new CancellationToken())
         {
 
-            if (await CheckStatusReason())
+            if (await CheckStatusReason(cancellationToken))
             {
                 return await Task.FromResult(
                     HealthCheckResult.Healthy("A healthy result."));
@@ -30,13 +30,13 @@ namespace DynamicsAdapter.Web.Health
                 HealthCheckResult.Unhealthy("An unhealthy result."));
         }
 
-        async Task<bool> CheckStatusReason()
+        async Task<bool> CheckStatusReason(CancellationToken cancellationToken)
         {
             var healthy = true; 
-            var statusReasonServiceList = Enum.GetNames(typeof(SearchRequestStatusReason));
-            var statusReasonListFromDynamics = await _statusReasonService.GetListAsync(new CancellationToken());
+            var statusReasonServiceList = Enum.GetValues(typeof(SearchRequestStatusReason));
+            var statusReasonListFromDynamics = await _statusReasonService.GetListAsync(cancellationToken);
             var options = OptionsModified(statusReasonListFromDynamics);
-            foreach (var i in statusReasonServiceList)
+            foreach (int i in statusReasonServiceList)
             {
                 var reason = i.GetStatusReasonItem();
 

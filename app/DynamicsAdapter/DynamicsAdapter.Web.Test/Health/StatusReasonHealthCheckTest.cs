@@ -28,5 +28,15 @@ namespace DynamicsAdapter.Web.Test.Health
             _sut = new StatusReasonHealthCheck(_statusReasonServiceMock.Object);
 
         }
+
+        [Test]
+        public void with_success_should_return_a_collection_of_search_request()
+        {
+            var result = _sut.CheckHealthAsync(CancellationToken.None).Result;
+
+            Assert.AreEqual(1, result.Count());
+            Assert.AreEqual("personGivenName", result.FirstOrDefault().SSG_PersonGivenName);
+
+        }
     }
 }

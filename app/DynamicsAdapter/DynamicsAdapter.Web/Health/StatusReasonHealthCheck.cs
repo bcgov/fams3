@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using DynamicsAdapter.Web.Extensions;
 using DynamicsAdapter.Web.SearchRequest;
 using DynamicsAdapter.Web.SearchRequest.Models;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -32,13 +33,12 @@ namespace DynamicsAdapter.Web.Health
         async Task<bool> CheckStatusReason()
         {
             var healthy = true; 
-            var statusReasonServiceList = Enum.GetNames(typeof(StatusReasonList));
+            var statusReasonServiceList = Enum.GetNames(typeof(SearchRequestStatusReason));
             var statusReasonListFromDynamics = await _statusReasonService.GetListAsync(new CancellationToken());
             var options = OptionsModified(statusReasonListFromDynamics);
             foreach (var i in statusReasonServiceList)
             {
-                var reason = (StatusReasonList) Enum.Parse(typeof(StatusReasonList),
-                    Enum.GetName(typeof(StatusReasonList), i));
+                var reason = i.GetStatusReasonItem();
 
                 if (!options.Contains(new Option()
                 {
@@ -47,7 +47,7 @@ namespace DynamicsAdapter.Web.Health
                     {
                         UserLocalizedLabel = new UserLocalizedLabel()
                         {
-                            Label = Enum.GetName(typeof(StatusReasonList), reason)
+                            Label = reason.GetName()
                         }
                     }
                 }))

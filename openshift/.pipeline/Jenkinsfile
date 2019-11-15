@@ -101,13 +101,13 @@ node {
         -p NAMESPACE=${TOOLS_NAMESPACE} | oc apply -f - -n ${TOOLS_NAMESPACE}"
      TriggerBuild("${DYNAMICS_ADAPTER}-build", TOOLS_NAMESPACE)
 
-     echo "Initiating DynamicsAdapter build..."
+     echo "Initiating ICBCAdapter build..."
      sh "oc process -f openshift/templates/dotnet.bc.yaml \
         -p NAME=${DYNAMICS_ADAPTER} \
         -p SOURCE_REPOSITORY_URL=${PRIVATE_GIT_URI} \
         -p SOURCE_REPOSITORY_REF=${PRIVATE_GIT_REF} \
         -p SOURCE_SECRET=${PRIVATE_GIT_SECRET} \
-        -p DOTNET_STARTUP_PROJECT=app/DynamicsAdapter/DynamicsAdapter.Web/DynamicsAdapter.Web.csproj \
+        -p DOTNET_STARTUP_PROJECT=app/IcbcAdapter/Icbc.ServiceMock.Soap/Icbc.ServiceMock.Soap.csproj \
         -p MEMORY_LIMIT=${BUILD_MEMORY} \
         -p NAMESPACE=${TOOLS_NAMESPACE} | oc apply -f - -n ${TOOLS_NAMESPACE}"
      TriggerBuild("${DYNAMICS_ADAPTER}-build", TOOLS_NAMESPACE)

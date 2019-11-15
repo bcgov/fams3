@@ -22,61 +22,28 @@ namespace DynamicsAdapter.Web.Health
 
             if (await CheckStatusReason(cancellationToken))
             {
-                return await Task.FromResult(
-                    HealthCheckResult.Healthy("A healthy result."));
+                return HealthCheckResult.Healthy("All Status Reason Exists in dynamics.");
             }
 
-            return await Task.FromResult(
-                HealthCheckResult.Unhealthy("An unhealthy result."));
+            return HealthCheckResult.Unhealthy("Different Status Reason Exists in dynamics");
         }
 
-        async Task<bool> CheckStatusReason(CancellationToken cancellationToken)
+        private async Task<bool> CheckStatusReason(CancellationToken cancellationToken)
         {
-            var healthy = true; 
-            var statusReasonServiceList = Enum.GetValues(typeof(SearchRequestStatusReason));
-            var statusReasonListFromDynamics = await _statusReasonService.GetListAsync(cancellationToken);
-            var options = OptionsModified(statusReasonListFromDynamics);
-            foreach (int i in statusReasonServiceList)
-            {
-                var reason = i.GetStatusReasonItem();
 
-                if (!options.Contains(new Option()
+            var statusReasonListFromDynamics = await _statusReasonService.GetListAsync(cancellationToken);
+
+            if (statusReasonListFromDynamics?.OptionSet?.Options == null) return false;
+
+            foreach (SearchRequestStatusReason reason in Enum.GetValues(typeof(SearchRequestStatusReason)).Cast<SearchRequestStatusReason>())
+            {
+                if (!statusReasonListFromDynamics.OptionSet.Options.Any(x => x.Value == (int)reason && string.Equals(x.Label.UserLocalizedLabel.Label.Replace(" ", ""), reason.GetName(), StringComparison.OrdinalIgnoreCase)))
                 {
-                    Value = (int) reason,
-                    Label = new Label()
-                    {
-                        UserLocalizedLabel = new UserLocalizedLabel()
-                        {
-                            Label = reason.GetName()
-                        }
-                    }
-                }))
-                {
-                    healthy = false;
+                    return false;
                 }
             }
-            return await Task.FromResult(healthy);
+            return true;
         }
 
-        private static List<Option> OptionsModified(StatusReason statusReasonListFromDynamics)
-        {
-            var options = new List<Option>();
-            foreach (var option in statusReasonListFromDynamics.OptionSet.Options)
-            {
-                options.Add(new Option()
-                {
-                    Value = option.Value,
-                    Label = new Label()
-                    {
-                        UserLocalizedLabel = new UserLocalizedLabel()
-                        {
-                            Label = option.Label.UserLocalizedLabel.Label.Replace(" ", "")
-                        }
-                    }
-                });
-            }
-
-            return options;
-        }
     }
 }

@@ -49,6 +49,7 @@ parameters:
 - name: SOURCE_SECRET
   displayname: Git Source Secret
   description: Set this to the secret containing the credentials for building the dotnet image.
+  value: ""
 - name: CONTEXT_DIR
   displayName: Context Directory
   description: Set this to use a subdirectory of the source code repository

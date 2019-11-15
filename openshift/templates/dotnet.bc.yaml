@@ -45,7 +45,10 @@ parameters:
   displayName: Git Reference
   description: Set this to a branch name, tag or other ref of your repository if you
     are not using the default branch.
-  value: dotnetcore-3.0
+  value: master
+- name: SOURCE_SECRET
+  displayname: Git Source Secret
+  description: Set this to the secret containing the credentials for building the dotnet image.
 - name: CONTEXT_DIR
   displayName: Context Directory
   description: Set this to use a subdirectory of the source code repository
@@ -116,6 +119,7 @@ objects:
           uri: "${SOURCE_REPOSITORY_URL}"
           ref: "${SOURCE_REPOSITORY_REF}"
         contextDir: "${CONTEXT_DIR}"
+        sourceSecret: "${SOURCE_SECRET}"
       strategy:
         type: Source
         sourceStrategy:

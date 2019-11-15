@@ -37,11 +37,7 @@ namespace DynamicsAdapter.Web.SearchRequest
 
         public async Task<StatusReason> GetListAsync(CancellationToken cancellationToken)
         {
-
-
             TryCreateUri(_oauthOptions.ResourceUrl, "EntityDefinitions(LogicalName='ssg_searchapirequest')/Attributes(LogicalName='statuscode')/Microsoft.Dynamics.CRM.StatusAttributeMetadata?$select=LogicalName&$expand=OptionSet", out var endpoint);
-
-
             _logger.LogDebug(
                 $"The status reason service endpoint for ssg_searchapirequest {endpoint}");
             using var request = new HttpRequestMessage();

@@ -13,44 +13,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using DynamicsAdapter.Web.Auth;
 using DynamicsAdapter.Web.Configuration;
+using DynamicsAdapter.Web.Test.FakeMessages;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace DynamicsAdapter.Web.Test.SearchRequest
 {
-    public static class FakeHttpMessageResponse
-    {
-        public static  HttpResponseMessage GetList()
-        {
-            return new HttpResponseMessage
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = GetFakeStatusReasonContent()
-            };
-          
-        }
-        public static HttpContent GetFakeStatusReasonContent()
-        {
 
-            var reason = new StatusReason()
-            {
-                OptionSet = new OpionSet()
-                {
-                    Options = new List<Option>()
-                   {
-                       new Option() {
-                           Value  = 1, Label = new Label{ UserLocalizedLabel = new UserLocalizedLabel{ Label ="Ready For Search" }
-                           }
-                       }
-                   }
-                }
-
-        };
-        var json = JsonConvert.SerializeObject(reason);
-           return new StringContent(json, Encoding.UTF8, "application/json");
-        }
-
-    }
 
     public class StatusReasonServiceTest
     {

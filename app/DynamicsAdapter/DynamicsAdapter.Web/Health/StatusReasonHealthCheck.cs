@@ -22,15 +22,13 @@ namespace DynamicsAdapter.Web.Health
 
             if (await CheckStatusReason(cancellationToken))
             {
-                return await Task.FromResult(
-                    HealthCheckResult.Healthy("All Status Reason Exists in dynamics."));
+                return HealthCheckResult.Healthy("All Status Reason Exists in dynamics.");
             }
 
-            return await Task.FromResult(
-                HealthCheckResult.Unhealthy("Different Status Reason Exists in dynamics"));
+            return HealthCheckResult.Unhealthy("Different Status Reason Exists in dynamics");
         }
 
-        async Task<bool> CheckStatusReason(CancellationToken cancellationToken)
+        private async Task<bool> CheckStatusReason(CancellationToken cancellationToken)
         {
 
             var statusReasonListFromDynamics = await _statusReasonService.GetListAsync(cancellationToken);
@@ -39,10 +37,10 @@ namespace DynamicsAdapter.Web.Health
 
             foreach (SearchRequestStatusReason reason in Enum.GetValues(typeof(SearchRequestStatusReason)).Cast<SearchRequestStatusReason>())
             {
-                if(!statusReasonListFromDynamics.OptionSet.Options.Any(x => x.Value == (int)reason && string.Equals(x.Label.UserLocalizedLabel.Label.Replace(" ", ""), reason.GetName(), StringComparison.OrdinalIgnoreCase)))
-               {
-                   return false;
-               }
+                if (!statusReasonListFromDynamics.OptionSet.Options.Any(x => x.Value == (int)reason && string.Equals(x.Label.UserLocalizedLabel.Label.Replace(" ", ""), reason.GetName(), StringComparison.OrdinalIgnoreCase)))
+                {
+                    return false;
+                }
             }
             return true;
         }

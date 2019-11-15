@@ -46,9 +46,13 @@ namespace SearchApi.Web.Controllers
         [Produces("application/json")]
         [ProducesResponseType(typeof(PersonSearchResponse), StatusCodes.Status202Accepted)]
         [OpenApiTag("People API")]
-        public async Task<IActionResult> Search([FromBody]PersonSearchRequest personSearchRequest)
-        { 
-            Guid searchRequestId = Guid.NewGuid();
+        public async Task<IActionResult> Search([FromHeader(Name = "X-RequestId")] string id, [FromBody]PersonSearchRequest personSearchRequest)
+        {
+
+            if(id == null || !Guid.TryParse(id, out var searchRequestId))
+            {
+                searchRequestId = Guid.NewGuid();
+            }
 
             _logger.LogInformation($"Successfully received new search request [{searchRequestId}].");
 

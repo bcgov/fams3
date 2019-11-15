@@ -14,6 +14,8 @@ services:
       JAEGER_SERVICE_NAME: search-api
       JAEGER_SAMPLER_TYPE: const
       JAEGER_ENDPOINT: http://jaeger-collector:14268/api/traces
+      SearchApi__WebHooks__0__Name: Dynamics-Adapter
+      SearchApi__WebHooks__0__Uri: http://dynamics-adapter/MatchFound
     ports:
       - "5050:80"
     restart: always
@@ -46,11 +48,18 @@ services:
     ports:
       - "5060:80"
     environment:
+      ASPNETCORE_ENVIRONMENT: Development
       JAEGER_SERVICE_NAME: dynamics-adapter
       JAEGER_SAMPLER_TYPE: const
       JAEGER_ENDPOINT: http://jaeger-collector:14268/api/traces
       SCHEDULER__CRON: 0/5 * * * * ?
       SEARCHAPI__BASEURL: http://search-api
+      OAUTH__OAUTHURL: ${OAUTH__OAUTHURL}
+      OAUTH__RESOURCEURL: ${OAUTH__RESOURCEURL}
+      OAUTH__CLIENTID: ${OAUTH__CLIENTID}
+      OAUTH__SECRET: ${OAUTH__SECRET}
+      OAUTH__USERNAME: ${OAUTH__USERNAME}
+      OAUTH__PASSWORD: ${OAUTH__PASSWORD}
     restart: always
     networks:
       - search-api-net
@@ -104,6 +113,21 @@ services:
     image: jaegertracing/jaeger-cassandra-schema
     depends_on:
       - cassandra
+    networks: 
+      - search-api-net
+
+  watchdog:
+    image: xabarilcoding/healthchecksui:2.2.35
+    ports:
+      - "6060:80"
+    restart: always
+    environment:
+      HealthChecksUI:HealthChecks:0:Name: Search Api
+      HealthChecksUI:HealthChecks:0:Uri: http://search-api/health
+      HealthChecksUI:HealthChecks:1:Name: Dyanmics Adpater
+      HealthChecksUI:HealthChecks:1:Uri: http://dynamics-adapter/health
+      HealthChecksUI:HealthChecks:2:Name: ICBC Adapter
+      HealthChecksUI:HealthChecks:2:Uri: http://adapter-icbc/health
     networks: 
       - search-api-net
 

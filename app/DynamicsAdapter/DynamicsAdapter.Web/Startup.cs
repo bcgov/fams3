@@ -1,15 +1,20 @@
 using System;
+using DynamicsAdapter.Web.Auth;
 using DynamicsAdapter.Web.Configuration;
+using DynamicsAdapter.Web.Health;
 using DynamicsAdapter.Web.Infrastructure;
 using DynamicsAdapter.Web.SearchRequest;
 using DynamicsAdapter.Web.Services.Dynamics;
 using DynamicsAdapter.Web.Services.Dynamics.Model;
+using HealthChecks.UI.Client;
 using Jaeger;
 using Jaeger.Samplers;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OpenTracing;
@@ -17,6 +22,7 @@ using OpenTracing.Util;
 using Quartz;
 using Quartz.Impl;
 using Quartz.Spi;
+using Simple.OData.Client;
 
 namespace DynamicsAdapter.Web
 {
@@ -34,7 +40,7 @@ namespace DynamicsAdapter.Web
         {
             services.AddControllers();
 
-            services.AddHealthChecks();
+            services.AddHealthChecks().AddCheck<StatusReasonHealthCheck>("status_reason_health_check",failureStatus:HealthStatus.Degraded);
 
             // configure strongly typed settings objects
             var appSettings = ConfigureAppSettings(services);
@@ -67,7 +73,42 @@ namespace DynamicsAdapter.Web
 
         public void ConfigureDynamicsClient(IServiceCollection services)
         {
-            services.AddSingleton<IDynamicService<SSG_SearchRequests>>(new DynamicService(ConfigureAppSettings(services),new DynamicsHttpClient()));
+            // Adding distributed cache
+            services.AddDistributedMemoryCache();
+
+            // Bind OAuth Configuration
+            services.AddOptions<OAuthOptions>()
+                .Bind(Configuration.GetSection("OAuth"))
+                .ValidateDataAnnotations();
+
+          
+            // Add OAuth Middleware
+            services.AddTransient<OAuthHandler>();
+
+            // Register IOAuthApiClient
+            services.AddHttpClient<IOAuthApiClient, OAuthApiClient>();
+
+            // Register httpClient for OdataClient with OAuthHandler
+            services.AddHttpClient<ODataClientSettings>(cfg =>
+            {
+                cfg.BaseAddress = new Uri(Configuration.GetSection("OAuth").Get<OAuthOptions>().ResourceUrl);
+            }).AddHttpMessageHandler<OAuthHandler>();
+
+            // Register httpClient for StatusReason Service with OAuthHandler
+            services.AddHttpClient<IStatusReasonService, StatusReasonService>(cfg =>
+            {
+                cfg.BaseAddress = new Uri(Configuration.GetSection("OAuth").Get<OAuthOptions>().ResourceUrl);
+            }).AddHttpMessageHandler<OAuthHandler>();
+
+            // Register Odata client
+            services.AddTransient<IODataClient>(provider =>
+                new ODataClient(provider.GetRequiredService<ODataClientSettings>()));
+
+            // Add other Services
+            services.AddTransient<ITokenService, TokenService>();
+            services.AddTransient<ISearchRequestService, SearchRequestService>();
+         
+
         }
         /// <summary>
         /// Configures the Quartz Hosted Service.
@@ -83,7 +124,7 @@ namespace DynamicsAdapter.Web
             services.AddSingleton<ISchedulerFactory, StdSchedulerFactory>();
 
             //Add dynamics Job
-            services.AddSingleton<SearchRequestJob>();
+            services.AddTransient<SearchRequestJob>();
             services.AddSingleton(new JobSchedule(
                 jobType: typeof(SearchRequestJob),
                 cronExpression: schedulerConfiguration.Cron));
@@ -154,8 +195,13 @@ namespace DynamicsAdapter.Web
             app.UseEndpoints(endpoints =>
             {
                 // registration of health endpoints see https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/health-checks
-                endpoints.MapHealthChecks("/health");
-                endpoints.MapControllers();
+                endpoints.MapHealthChecks("/health", new HealthCheckOptions
+                {
+                    AllowCachingResponses = false,
+                    Predicate = _ => true,
+                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                });
+                endpoints.MapControllerRoute("matchFound", "{controller=MatchFound}/{action=MatchFound}/{id?}");
             });
         }
     }

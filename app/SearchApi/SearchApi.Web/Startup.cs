@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using HealthChecks.UI.Client;
 using Jaeger;
 using Jaeger.Samplers;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -21,7 +23,9 @@ using SearchApi.Core.Configuration;
 using SearchApi.Core.Contracts;
 using SearchApi.Core.MassTransit;
 using SearchApi.Core.OpenTracing;
+using SearchApi.Web.Configuration;
 using SearchApi.Web.Controllers;
+using SearchApi.Web.Notifications;
 using SearchApi.Web.Search;
 
 namespace SearchApi.Web
@@ -39,17 +43,37 @@ namespace SearchApi.Web
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddMvc().AddNewtonsoftJson();
+            services.AddMvc().AddNewtonsoftJson(options =>
+            {
+                options.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
+            });
 
             services.AddControllers();
 
-            services.AddHealthChecks();
+            // Bind OAuth Configuration
+            services.AddOptions<SearchApiOptions>()
+                .Bind(Configuration.GetSection(Keys.SEARCHAPI_SECTION_SETTING_KEY));
+
+            services.AddWebHooks();
+
+            this.ConfigureHealthChecks(services);
 
             this.ConfigureOpenTracing(services);
 
             this.ConfigureOpenApi(services);
 
             this.ConfigureServiceBus(services);
+        }
+        private void ConfigureHealthChecks(IServiceCollection services)
+        {
+
+            var rabbitMqSettings = Configuration.GetSection("RabbitMq").Get<RabbitMqConfiguration>();
+            var rabbitConnectionString = $"amqp://{rabbitMqSettings.Username}:{rabbitMqSettings.Password}@{rabbitMqSettings.Host}:{rabbitMqSettings.Port}";
+
+            services
+                .AddHealthChecks()
+                .AddRabbitMQ(
+                    rabbitMQConnectionString: rabbitConnectionString);
         }
 
         /// <summary>
@@ -140,7 +164,6 @@ namespace SearchApi.Web
 
             services.AddMassTransit(x =>
             {
-
                 // Add RabbitMq Service Bus
                 x.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(cfg =>
                 {
@@ -158,7 +181,7 @@ namespace SearchApi.Web
                     cfg.ReceiveEndpoint(host, $"{nameof(MatchFound)}_queue", e =>
                         {
                             e.Consumer(() =>
-                                new MatchFoundConsumer(provider.GetRequiredService<ILogger<MatchFoundConsumer>>()));
+                                new MatchFoundConsumer( provider.GetRequiredService<ISearchApiNotifier>(), provider.GetRequiredService<ILogger<MatchFoundConsumer>>()));
                         });
 
                 }));
@@ -187,7 +210,11 @@ namespace SearchApi.Web
             app.UseEndpoints(endpoints =>
             {
                 // registration of health endpoints see https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/health-checks
-                endpoints.MapHealthChecks("/health");
+                endpoints.MapHealthChecks("/health", new HealthCheckOptions
+                {
+                    Predicate = _ => true,
+                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                });
                 endpoints.MapControllers();
             });
         }

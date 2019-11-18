@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using DynamicsAdapter.Web.Extensions;
 using DynamicsAdapter.Web.SearchRequest;
-using DynamicsAdapter.Web.SearchRequest.Models;
+using Fams3Adapter.Dynamics.SearchApiRequest;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace DynamicsAdapter.Web.Health
@@ -35,9 +34,9 @@ namespace DynamicsAdapter.Web.Health
 
             if (statusReasonListFromDynamics?.OptionSet?.Options == null) return false;
 
-            foreach (SearchRequestStatusReason reason in Enum.GetValues(typeof(SearchRequestStatusReason)).Cast<SearchRequestStatusReason>())
+            foreach (SearchApiRequestStatusReason reason in Enum.GetValues(typeof(SearchApiRequestStatusReason)).Cast<SearchApiRequestStatusReason>())
             {
-                if (!statusReasonListFromDynamics.OptionSet.Options.Any(x => x.Value == (int)reason && string.Equals(x.Label.UserLocalizedLabel.Label.Replace(" ", ""), reason.GetName(), StringComparison.OrdinalIgnoreCase)))
+                if (!statusReasonListFromDynamics.OptionSet.Options.Any(x => x.Value == (int)reason && string.Equals(x.Label.UserLocalizedLabel.Label.Replace(" ", ""), reason.ToString(), StringComparison.OrdinalIgnoreCase)))
                 {
                     return false;
                 }

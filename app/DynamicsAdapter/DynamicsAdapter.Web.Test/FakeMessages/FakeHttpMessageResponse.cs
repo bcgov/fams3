@@ -1,30 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Text;
-using DynamicsAdapter.Web.SearchRequest.Models;
+using Fams3Adapter.Dynamics.OptionSets;
 using Newtonsoft.Json;
 
 namespace DynamicsAdapter.Web.Test.FakeMessages
 {
     public static class FakeHttpMessageResponse
     {
-        public static HttpResponseMessage GetList()
-        {
-            return new HttpResponseMessage
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = GetFakeStatusReasonContent()
-            };
-
-        }
 
         public static StatusReason GetFakeInvalidReason()
         {
             return new StatusReason()
             {
-                OptionSet = new OpionSet()
+                OptionSet = new OptionSet()
                 {
                     Options = new List<Option>()
                     {
@@ -42,7 +32,7 @@ namespace DynamicsAdapter.Web.Test.FakeMessages
         {
             return new StatusReason()
             {
-                OptionSet = new OpionSet()
+                OptionSet = new OptionSet()
                 {
                     Options = new List<Option>()
                     {
@@ -61,14 +51,7 @@ namespace DynamicsAdapter.Web.Test.FakeMessages
             return new StatusReason();
         }
 
-
-
-        public static HttpContent GetFakeStatusReasonContent()
-        {
-            var reason = GetFakeInvalidReason();
-            var json = JsonConvert.SerializeObject(reason);
-            return new StringContent(json, Encoding.UTF8, "application/json");
-        }
+        
 
     }
 }

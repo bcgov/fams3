@@ -23,6 +23,10 @@
     <DotNetCliToolReference Include="NSwag.ConsoleCore" Version="13.1.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Fams3Adapter.Dynamics\Fams3Adapter.Dynamics.csproj" />
+  </ItemGroup>
+
   <Target Name="GenerateNSwagClient">
         <PropertyGroup>
             <InputSwagger>searchApi.openapi.json</InputSwagger>

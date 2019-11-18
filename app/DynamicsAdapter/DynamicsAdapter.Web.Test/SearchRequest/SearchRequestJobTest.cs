@@ -6,7 +6,7 @@ using Moq;
 using Microsoft.Extensions.Logging;
 using NUnit.Framework;
 using DynamicsAdapter.Web.SearchRequest;
-using DynamicsAdapter.Web.Services.Dynamics.Model;
+using Fams3Adapter.Dynamics.SearchApiRequest;
 using Quartz;
 
 namespace DynamicsAdapter.Web.Test.SearchRequest
@@ -17,7 +17,7 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
         private readonly Mock<ILogger<SearchRequestJob>> _loggerMock = new Mock<ILogger<SearchRequestJob>>();
         private readonly Mock<IJobExecutionContext> _jobExecutionContextMock = new Mock<IJobExecutionContext>();
         private readonly Mock<ISearchApiClient> _searchApiClientMock = new Mock<ISearchApiClient>();
-        private readonly Mock<ISearchRequestService> _searchRequestService = new Mock<ISearchRequestService>();
+        private readonly Mock<ISearchApiRequestService> _searchRequestService = new Mock<ISearchApiRequestService>();
 
 
         private SearchRequestJob _sut;
@@ -31,8 +31,8 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
                 {
                     new SSG_SearchApiRequest()
                     {
-                        SSG_SearchApiRequestId = Guid.NewGuid(),
-                        SSG_PersonGivenName = "personGivenName"
+                        SearchApiRequestId = Guid.NewGuid(),
+                        PersonGivenName = "personGivenName"
                     }
                 }));
 

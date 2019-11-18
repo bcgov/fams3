@@ -26,7 +26,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchApiRequest
             _testId = Guid.NewGuid();
 
             odataClientMock.Setup(x => x.For<SSG_SearchApiRequest>(null)
-                    .Filter(x => x.StatusCode == 1)
+                    .Filter(x => x.StatusCode == SearchApiRequestStatusReason.ReadyForSearch.GetHashCode())
                     .FindEntriesAsync(It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<IEnumerable<SSG_SearchApiRequest>>(new List<SSG_SearchApiRequest>()
                 {

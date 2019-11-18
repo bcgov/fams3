@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using Fams3Adapter.Dynamics.SearchRequest;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -14,9 +16,11 @@ namespace DynamicsAdapter.Web.MatchFound
     public class MatchFoundController : ControllerBase
     {
         private readonly ILogger<MatchFoundController> _logger;
-        public MatchFoundController(ILogger<MatchFoundController> logger)
+        private ISearchRequestService _service;
+        public MatchFoundController(ILogger<MatchFoundController> logger, ISearchRequestService service)
         {
             _logger = logger;
+            _service = service;
         }
 
         //POST: MatchFound/id
@@ -33,7 +37,8 @@ namespace DynamicsAdapter.Web.MatchFound
             }
 
             _logger.LogInformation("Received MatchFound response with SearchRequestId is " + id);
-
+            var cts = new CancellationTokenSource();
+            await _service.UploadIdentifier(Guid.Parse(id), null, cts.Token);
             return Ok();
         }
     }

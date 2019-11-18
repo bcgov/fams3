@@ -1,22 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-using DynamicsAdapter.Web.SearchRequest;
-using DynamicsAdapter.Web.Services.Dynamics.Model;
+using Fams3Adapter.Dynamics.SearchApiRequest;
 using Moq;
 using NUnit.Framework;
 using Simple.OData.Client;
 
 namespace DynamicsAdapter.Web.Test.SearchRequest
 {
-    public class SearchRequestServiceTest
+    public class SearchApiRequestServiceTest
     {
         private Mock<IODataClient> odataClientMock = new Mock<IODataClient>();
 
-        private SearchRequestService _sut;
+        private SearchApiRequestService _sut;
 
         [SetUp]
         public void SetUp()
@@ -29,12 +27,12 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
                 {
                     new SSG_SearchApiRequest()
                     {
-                        SSG_SearchApiRequestId = Guid.NewGuid(),
-                        SSG_PersonGivenName = "personGivenName"
+                        SearchApiRequestId = Guid.NewGuid(),
+                        PersonGivenName = "personGivenName"
                     }
                 }));
 
-            _sut = new SearchRequestService(odataClientMock.Object);
+            _sut = new SearchApiRequestService(odataClientMock.Object);
 
         }
 
@@ -45,7 +43,7 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
             var result = _sut.GetAllReadyForSearchAsync(CancellationToken.None).Result;
 
             Assert.AreEqual(1, result.Count());
-            Assert.AreEqual("personGivenName", result.FirstOrDefault().SSG_PersonGivenName);
+            Assert.AreEqual("personGivenName", result.FirstOrDefault().PersonGivenName);
 
         }
 

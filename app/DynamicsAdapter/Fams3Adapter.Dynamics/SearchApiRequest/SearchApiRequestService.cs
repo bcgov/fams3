@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using DynamicsAdapter.Web.Services.Dynamics.Model;
 using Simple.OData.Client;
 
-namespace DynamicsAdapter.Web.SearchRequest
+namespace Fams3Adapter.Dynamics.SearchApiRequest
 {
 
-    public interface ISearchRequestService
+    public interface ISearchApiRequestService
     {
         Task<IEnumerable<SSG_SearchApiRequest>> GetAllReadyForSearchAsync(CancellationToken cancellationToken);
     }
@@ -15,12 +14,12 @@ namespace DynamicsAdapter.Web.SearchRequest
     /// <summary>
     /// The SearchRequestService expose Search Request Functionality
     /// </summary>
-    public class SearchRequestService : ISearchRequestService
+    public class SearchApiRequestService : ISearchApiRequestService
     {
         private const int ReadyForSearchStatus = 1;
 
         private readonly IODataClient _oDataClient;
-        public SearchRequestService(IODataClient oDataClient)
+        public SearchApiRequestService(IODataClient oDataClient)
         {
             this._oDataClient = oDataClient;
         }

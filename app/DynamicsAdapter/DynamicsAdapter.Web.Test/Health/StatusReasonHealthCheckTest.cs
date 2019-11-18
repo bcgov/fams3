@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO.Pipelines;
-using System.Text;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using DynamicsAdapter.Web.Health;
 using DynamicsAdapter.Web.SearchRequest;
-using DynamicsAdapter.Web.Services.Dynamics.Model;
 using DynamicsAdapter.Web.Test.FakeMessages;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Moq;

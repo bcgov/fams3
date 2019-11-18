@@ -4,7 +4,7 @@ using System.Threading;
 using Microsoft.Extensions.Logging;
 using Quartz;
 using System.Threading.Tasks;
-using DynamicsAdapter.Web.Services.Dynamics.Model;
+using Fams3Adapter.Dynamics.SearchApiRequest;
 using OpenTracing;
 
 namespace DynamicsAdapter.Web.SearchRequest
@@ -19,15 +19,15 @@ namespace DynamicsAdapter.Web.SearchRequest
 
         private readonly ISearchApiClient _searchApiClient;
 
-        private readonly ISearchRequestService _searchRequestService;
+        private readonly ISearchApiRequestService _searchApiRequestService;
 
 
         public SearchRequestJob(ISearchApiClient searchApiClient,
-            ISearchRequestService searchRequestService,
+            ISearchApiRequestService searchApiRequestService,
             ILogger<SearchRequestJob> logger)
         {
             _logger = logger;
-            _searchRequestService = searchRequestService;
+            _searchApiRequestService = searchApiRequestService;
      
             _searchApiClient = searchApiClient;
         }
@@ -44,14 +44,14 @@ namespace DynamicsAdapter.Web.SearchRequest
             foreach (var ssgSearchRequest in requestList)
             {
                 _logger.LogDebug(
-                    $"Attempting to post person search for request {ssgSearchRequest.SSG_SearchApiRequestId}");
+                    $"Attempting to post person search for request {ssgSearchRequest.SearchApiRequestId}");
 
                 var result = await _searchApiClient.SearchAsync(new PersonSearchRequest()
                 {
-                    FirstName = ssgSearchRequest.SSG_PersonGivenName,
-                    LastName = ssgSearchRequest.SSG_PersonSurname,
-                    DateOfBirth = ssgSearchRequest.SSG_PersonBirthDate
-                }, $"{ssgSearchRequest.SSG_SearchApiRequestId}", cts.Token);
+                    FirstName = ssgSearchRequest.PersonGivenName,
+                    LastName = ssgSearchRequest.PersonSurname,
+                    DateOfBirth = ssgSearchRequest.PersonBirthDate,
+                }, $"{ssgSearchRequest.SearchApiRequestId}", cts.Token);
                 _logger.LogInformation($"Successfully posted person search id:{result.Id}");
             }
 
@@ -60,7 +60,7 @@ namespace DynamicsAdapter.Web.SearchRequest
         private async Task<List<SSG_SearchApiRequest>> GetAllReadyForSearchAsync(CancellationToken cancellationToken)
         {
             _logger.LogDebug("Attempting to get search request from dynamics");
-            var request = await _searchRequestService.GetAllReadyForSearchAsync(cancellationToken);
+            var request = await _searchApiRequestService.GetAllReadyForSearchAsync(cancellationToken);
             _logger.LogInformation("Successfully retrieved search requests from dynamics");
             return request.ToList();
         }

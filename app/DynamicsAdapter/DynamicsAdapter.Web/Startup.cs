@@ -4,6 +4,7 @@ using DynamicsAdapter.Web.Configuration;
 using DynamicsAdapter.Web.Health;
 using DynamicsAdapter.Web.Infrastructure;
 using DynamicsAdapter.Web.SearchRequest;
+using Fams3Adapter.Dynamics.OptionSets;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using HealthChecks.UI.Client;
 using Jaeger;
@@ -94,7 +95,7 @@ namespace DynamicsAdapter.Web
             }).AddHttpMessageHandler<OAuthHandler>();
 
             // Register httpClient for StatusReason Service with OAuthHandler
-            services.AddHttpClient<IStatusReasonService, StatusReasonService>(cfg =>
+            services.AddHttpClient<IOptionSetService, OptionSetService>(cfg =>
             {
                 cfg.BaseAddress = new Uri(Configuration.GetSection("OAuth").Get<OAuthOptions>().ResourceUrl);
             }).AddHttpMessageHandler<OAuthHandler>();

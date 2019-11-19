@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using DynamicsAdapter.Web.SearchRequest;
+using Fams3Adapter.Dynamics.OptionSets;
+using Fams3Adapter.Dynamics.OptionSets.Models;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
@@ -11,36 +14,57 @@ namespace DynamicsAdapter.Web.Health
 {
     public class StatusReasonHealthCheck : IHealthCheck
     {
-        public IStatusReasonService _statusReasonService;
-        public StatusReasonHealthCheck(IStatusReasonService statusReasonService)
+        private readonly IOptionSetService _optionSetService;
+
+        public StatusReasonHealthCheck(IOptionSetService optionSetService)
         {
-            _statusReasonService = statusReasonService;
+            _optionSetService = optionSetService;
         }
+
         public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = new CancellationToken())
         {
 
-            if (await CheckStatusReason(cancellationToken))
+            if (!await CheckStatusReason(cancellationToken))
             {
-                return HealthCheckResult.Healthy("All Status Reason Exists in dynamics.");
+                return HealthCheckResult.Unhealthy("Different Status Reason Exists in dynamics");
             }
 
-            return HealthCheckResult.Unhealthy("Different Status Reason Exists in dynamics");
+            if (!await CheckOptionSet(cancellationToken))
+            {
+                return HealthCheckResult.Unhealthy("Different Option Sets Exists in dynamics");
+            }
+
+
+            return HealthCheckResult.Healthy("All Status Reason Exists in dynamics.");
         }
 
         private async Task<bool> CheckStatusReason(CancellationToken cancellationToken)
         {
 
-            var statusReasonListFromDynamics = await _statusReasonService.GetListAsync(cancellationToken);
-
-            if (statusReasonListFromDynamics?.OptionSet?.Options == null) return false;
+            var statusReasonListFromDynamics = await _optionSetService.GetAllStatusCode(nameof(SSG_SearchApiRequest).ToLower(), cancellationToken);
 
             foreach (SearchApiRequestStatusReason reason in Enum.GetValues(typeof(SearchApiRequestStatusReason)).Cast<SearchApiRequestStatusReason>())
             {
-                if (!statusReasonListFromDynamics.OptionSet.Options.Any(x => x.Value == (int)reason && string.Equals(x.Label.UserLocalizedLabel.Label.Replace(" ", ""), reason.ToString(), StringComparison.OrdinalIgnoreCase)))
+                if (!statusReasonListFromDynamics.Any(x => x.Value == (int)reason && string.Equals(x.Name.Replace(" ", ""), reason.ToString(), StringComparison.OrdinalIgnoreCase)))
                 {
                     return false;
                 }
             }
+            return true;
+        }
+
+
+        private async Task<bool> CheckOptionSet(CancellationToken cancellationToken)
+        {
+
+            var idTypes = await _optionSetService.GetAllOptions<IdentificationType>(cancellationToken);
+
+            foreach (var identificationType in Enumeration.GetAll<IdentificationType>())
+            {
+                if (!idTypes.Any(x => x.Equals(identificationType)))
+                    return false;
+            }
+
             return true;
         }
 

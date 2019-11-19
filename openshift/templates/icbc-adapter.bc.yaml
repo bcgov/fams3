@@ -189,9 +189,3 @@ objects:
         to:
           kind: ImageStreamTag
           name: "${NAME}:latest"
-      triggers:
-        - type: ImageChange
-          imageChange:
-            from:
-              kind: ImageStreamTag
-              name: "${NAME}-build:latest"

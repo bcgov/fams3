@@ -27,35 +27,12 @@ def PRIVATE_GIT_SECRET = "fams3-github-key"
 def BUILD_MEMORY = "1Gi"
 def RUN_MEMORY = "128Mi"
 
-// Function declaration
-def TriggerBuild(selector, namespace) {
- echo "Triggering build for ${selector} in ${namespace}"
- timeout(3) {
-  def bcSelector = openshift.selector("bc", selector)
-  bcSelector.object()
-  bcSelector.startBuild()
-  builds = bcSelector.related("builds")
-  builds.watch {
-   if (it.count() == 0) {
-    return false
-   }
-   return true
-  }
- }
+
+def StartBuildAndWait(selector, namespace) {
+ echo "Starting build for ${selector} to in ${namespace}..."
+ sh "oc start-build ${selector} -n ${namespace} --wait --follow"
+ echo "Build complete!"
 }
-
-def WaitForBuild(selector, namespace) {
- echo "Waiting for ${selector} to be build in ${namespace}..."
- timeout(time: 10, unit: 'MINUTES') {
-  def bcSelector = openshift.selector("bc", selector)
-  builds = bcSelector.related("builds")
-
-  builds.untilEach {
-   return it.object().status.phase == "Complete"
-  }
- }
-}
-
 
 def WaitForDeploy(selector, namespace, selectorType = "dc") {
 
@@ -66,8 +43,6 @@ def WaitForDeploy(selector, namespace, selectorType = "dc") {
  }
 }
 
-
-//Pipeline
 node {
 
  stage('Checkout') {
@@ -79,53 +54,57 @@ node {
  stage('Build') {
   openshift.withCluster() {
    openshift.withProject(TOOLS_NAMESPACE) {
-    dir('simple_pipeline') {
-
-     echo "Initiating SearchAPI build..."
-     sh "oc process -f openshift/templates/search-api.bc.yaml \
-        -p NAME=${SEARCH_API} \
-        -p SOURCE_REPOSITORY_URL=${GIT_URI} \
-        -p SOURCE_REPOSITORY_REF=${GIT_REF} \
-        -p DOTNET_STARTUP_PROJECT=app/SearchApi/SearchApi.Web/SearchApi.Web.csproj \
-        -p MEMORY_LIMIT=${BUILD_MEMORY} \
-        -p NAMESPACE=${TOOLS_NAMESPACE} | oc apply -f - -n ${TOOLS_NAMESPACE}"
-     TriggerBuild("${SEARCH_API}-build", TOOLS_NAMESPACE)
-
-     echo "Initiating DynamicsAdapter build..."
-     sh "oc process -f openshift/templates/dynamics-adapter.bc.yaml \
-        -p NAME=${DYNAMICS_ADAPTER} \
-        -p SOURCE_REPOSITORY_URL=${GIT_URI} \
-        -p SOURCE_REPOSITORY_REF=${GIT_REF} \
-        -p DOTNET_STARTUP_PROJECT=app/DynamicsAdapter/DynamicsAdapter.Web/DynamicsAdapter.Web.csproj \
-        -p MEMORY_LIMIT=${BUILD_MEMORY} \
-        -p NAMESPACE=${TOOLS_NAMESPACE} | oc apply -f - -n ${TOOLS_NAMESPACE}"
-     TriggerBuild("${DYNAMICS_ADAPTER}-build", TOOLS_NAMESPACE)
-
-     echo "Initiating ICBCAdapter build..."
-     sh "oc process -f openshift/templates/icbc-adapter.bc.yaml \
-        -p NAME=${ICBC_ADAPTER} \
-        -p DOTNET_BUILD_IMAGE_STREAM_TAG=dotnet:2.2 \
-        -p DOTNET_RUNTIME_IMAGE_STREAM_TAG=dotnet-runtime:2.2 \
-        -p SOURCE_REPOSITORY_URL=${PRIVATE_GIT_URI} \
-        -p SOURCE_REPOSITORY_REF=${PRIVATE_GIT_REF} \
-        -p SOURCE_SECRET=${PRIVATE_GIT_SECRET} \
-        -p DOTNET_STARTUP_PROJECT=app/IcbcAdapter/Icbc.ServiceMock.Soap/Icbc.ServiceMock.Soap.csproj \
-        -p MEMORY_LIMIT=${BUILD_MEMORY} \
-        -p NAMESPACE=${TOOLS_NAMESPACE} | oc apply -f - -n ${TOOLS_NAMESPACE}"
-     TriggerBuild("${DYNAMICS_ADAPTER}-build", TOOLS_NAMESPACE)
-
-     WaitForBuild("${SEARCH_API}-build", TOOLS_NAMESPACE)
-     WaitForBuild("${SEARCH_API}-runtime", TOOLS_NAMESPACE)
-
-     WaitForBuild("${DYNAMICS_ADAPTER}-build", TOOLS_NAMESPACE)
-     WaitForBuild("${DYNAMICS_ADAPTER}-runtime", TOOLS_NAMESPACE)
-
-     WaitForBuild("${ICBC_ADAPTER}-build", TOOLS_NAMESPACE)
-     WaitForBuild("${ICBC_ADAPTER}-runtime", TOOLS_NAMESPACE)
-    }
+      parallel(
+         'SearchApi':{
+            dir('simple_pipeline') {
+               echo "Initiating SearchAPI build..."
+               sh "oc process -f openshift/templates/search-api.bc.yaml \
+                  -p NAME=${SEARCH_API} \
+                  -p SOURCE_REPOSITORY_URL=${GIT_URI} \
+                  -p SOURCE_REPOSITORY_REF=${GIT_REF} \
+                  -p DOTNET_STARTUP_PROJECT=app/SearchApi/SearchApi.Web/SearchApi.Web.csproj \
+                  -p MEMORY_LIMIT=${BUILD_MEMORY} \
+                  -p NAMESPACE=${TOOLS_NAMESPACE} | oc apply -f - -n ${TOOLS_NAMESPACE}"
+               StartBuildAndWait("${SEARCH_API}-build", TOOLS_NAMESPACE)
+               StartBuildAndWait("${SEARCH_API}-runtime", TOOLS_NAMESPACE)
+            }
+         },
+         'DynamicsAdapter':{
+            dir('simple_pipeline') {
+               echo "Initiating DynamicsAdapter build..."
+               sh "oc process -f openshift/templates/dynamics-adapter.bc.yaml \
+                  -p NAME=${DYNAMICS_ADAPTER} \
+                  -p SOURCE_REPOSITORY_URL=${GIT_URI} \
+                  -p SOURCE_REPOSITORY_REF=${GIT_REF} \
+                  -p DOTNET_STARTUP_PROJECT=app/DynamicsAdapter/DynamicsAdapter.Web/DynamicsAdapter.Web.csproj \
+                  -p MEMORY_LIMIT=${BUILD_MEMORY} \
+                  -p NAMESPACE=${TOOLS_NAMESPACE} | oc apply -f - -n ${TOOLS_NAMESPACE}"
+               StartBuildAndWait("${DYNAMICS_ADAPTER}-build", TOOLS_NAMESPACE)
+               StartBuildAndWait("${DYNAMICS_ADAPTER}-runtime", TOOLS_NAMESPACE)
+            }
+         },
+         'ICBCAdapter':{
+            dir('simple_pipeline') {
+               echo "Initiating ICBCAdapter build..."
+               sh "oc process -f openshift/templates/icbc-adapter.bc.yaml \
+                  -p NAME=${ICBC_ADAPTER} \
+                  -p DOTNET_BUILD_IMAGE_STREAM_TAG=dotnet:2.2 \
+                  -p DOTNET_RUNTIME_IMAGE_STREAM_TAG=dotnet-runtime:2.2 \
+                  -p SOURCE_REPOSITORY_URL=${PRIVATE_GIT_URI} \
+                  -p SOURCE_REPOSITORY_REF=${PRIVATE_GIT_REF} \
+                  -p SOURCE_SECRET=${PRIVATE_GIT_SECRET} \
+                  -p DOTNET_STARTUP_PROJECT=app/IcbcAdapter/Icbc.ServiceMock.Soap/Icbc.ServiceMock.Soap.csproj \
+                  -p MEMORY_LIMIT=${BUILD_MEMORY} \
+                  -p NAMESPACE=${TOOLS_NAMESPACE} | oc apply -f - -n ${TOOLS_NAMESPACE}"
+               StartBuildAndWait("${ICBC_ADAPTER}-build", TOOLS_NAMESPACE)
+               StartBuildAndWait("${ICBC_ADAPTER}-runtime", TOOLS_NAMESPACE)
+            }
+         }
+      )
    }
   }
  }
+
 
  stage('Promote to DEV') {
   openshift.withCluster() {
@@ -179,6 +158,7 @@ node {
    }
   }
  }
+
 
 //  stage('Wait for Dev Deployment') {
 //   openshift.withCluster() {

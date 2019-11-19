@@ -37,10 +37,10 @@ def WaitForDeploy(selector, namespace) {
  sh "oc wait dc/${selector} --for=condition=Available --timeout=300s -n ${namespace}"
 }
 
-node {
+pipeline {
 
  stage('Checkout') {
-  dir('simple_pipeline') {
+  steps {
    checkout scm
   }
  }
@@ -48,7 +48,7 @@ node {
  stage('Build') {
   parallel(
    'SearchApi': {
-    dir('simple_pipeline') {
+    steps {
      echo "Initiating SearchAPI build..."
      sh "oc process -f openshift/templates/search-api.bc.yaml \
                      -p NAME=${SEARCH_API} \
@@ -62,7 +62,7 @@ node {
     }
    },
    'DynamicsAdapter': {
-    dir('simple_pipeline') {
+    steps {
      echo "Initiating DynamicsAdapter build..."
      sh "oc process -f openshift/templates/dynamics-adapter.bc.yaml \
                      -p NAME=${DYNAMICS_ADAPTER} \
@@ -76,7 +76,7 @@ node {
     }
    },
    'ICBCAdapter': {
-    dir('simple_pipeline') {
+    steps {
      echo "Initiating ICBCAdapter build..."
      sh "oc process -f openshift/templates/icbc-adapter.bc.yaml \
                   -p NAME=${ICBC_ADAPTER} \
@@ -98,7 +98,7 @@ node {
  stage('Promote to DEV') {
   parallel(
    'SearchAPI': {
-    dir('simple_pipeline') {
+    steps {
      sh "oc process -f openshift/templates/search-api.dc.yaml \
                -p NAME=${SEARCH_API} \
                -p APPLICATION_DOMAIN=${SUBDOMAIN}-dev.${DOMAIN} \
@@ -110,7 +110,7 @@ node {
     }
    },
    'DynamicsAdapter': {
-    dir('simple_pipeline') {
+    steps {
      sh "oc process -f openshift/templates/dynamics-adapter.dc.yaml \
                   -p NAME=${DYNAMICS_ADAPTER} \
                   -p APPLICATION_DOMAIN=${SUBDOMAIN}-dev.${DOMAIN} \
@@ -122,7 +122,7 @@ node {
     }
    },
    'ICBCAdapter': {
-    dir('simple_pipeline') {
+    steps {
      sh "oc process -f openshift/templates/icbc-adapter.dc.yaml \
                   -p NAME=${ICBC_ADAPTER} \
                   -p APPLICATION_DOMAIN=${SUBDOMAIN}-dev.${DOMAIN} \
@@ -135,7 +135,7 @@ node {
 
    },
    'RabbitMQ': {
-    dir('simple_pipeline') {
+    steps {
      sh "oc process -f openshift/templates/rabbitmq.dc.yaml \
                   -p CLUSTER_NAME=${RABBITMQ} \
                   -p NAMESPACE=${DEV_NAMESPACE} | oc apply -f - -n ${DEV_NAMESPACE} --wait"

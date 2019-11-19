@@ -2,9 +2,9 @@
 kind: Template
 apiVersion: v1
 metadata:
-  name: fams3-dotnet
+  name: fams3-searchapi-dc
   annotations:
-    openshift.io/display-name: "FAMS3 ICBC Adapter Dotnet"
+    openshift.io/display-name: "FAMS3 SearchAPI Dotnet"
     description: The FAMS3 Dotnet Deployment
     tags: quickstart,dotnet,.net
     iconClass: icon-dotnet
@@ -44,6 +44,13 @@ parameters:
       The name of the Jaeger collector to send traces to (port 14268)
     required: true
     value: jaeger-collector
+  - name: RABBITMQ_SERVICE
+    displayName: RabbitMQ Service
+    description:
+      The name of the RabbitMQ to connect to
+    required: true
+    value: rabbitmq
+
 objects:
   - kind: Route
     apiVersion: v1
@@ -119,7 +126,7 @@ objects:
                 - name: ASPNETCORE_ENVIRONMENT
                   value: Development
                 - name: RABBITMQ__HOST
-                  value: rabbitmq
+                  value: ${RABBITMQ_SERVICE}
                 - name: RABBITMQ__PORT
                   value: "5672"
                 - name: RABBITMQ__USERNAME

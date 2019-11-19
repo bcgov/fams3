@@ -82,7 +82,7 @@ node {
     dir('simple_pipeline') {
 
      echo "Initiating SearchAPI build..."
-     sh "oc process -f openshift/templates/dotnet.bc.yaml \
+     sh "oc process -f openshift/templates/search-api.bc.yaml \
         -p NAME=${SEARCH_API} \
         -p SOURCE_REPOSITORY_URL=${GIT_URI} \
         -p SOURCE_REPOSITORY_REF=${GIT_REF} \
@@ -92,7 +92,7 @@ node {
      TriggerBuild("${SEARCH_API}-build", TOOLS_NAMESPACE)
 
      echo "Initiating DynamicsAdapter build..."
-     sh "oc process -f openshift/templates/dotnet.bc.yaml \
+     sh "oc process -f openshift/templates/dynamics-adapter.bc.yaml \
         -p NAME=${DYNAMICS_ADAPTER} \
         -p SOURCE_REPOSITORY_URL=${GIT_URI} \
         -p SOURCE_REPOSITORY_REF=${GIT_REF} \
@@ -102,8 +102,10 @@ node {
      TriggerBuild("${DYNAMICS_ADAPTER}-build", TOOLS_NAMESPACE)
 
      echo "Initiating ICBCAdapter build..."
-     sh "oc process -f openshift/templates/dotnet.bc.yaml \
-        -p NAME=${DYNAMICS_ADAPTER} \
+     sh "oc process -f openshift/templates/icbc-adapter.bc.yaml \
+        -p NAME=${ICBC_ADAPTER} \
+        -p DOTNET_BUILD_IMAGE_STREAM_TAG=dotnet:2.2 \
+        -p DOTNET_RUNTIME_IMAGE_STREAM_TAG=dotnet-runtime:2.2 \
         -p SOURCE_REPOSITORY_URL=${PRIVATE_GIT_URI} \
         -p SOURCE_REPOSITORY_REF=${PRIVATE_GIT_REF} \
         -p SOURCE_SECRET=${PRIVATE_GIT_SECRET} \
@@ -112,26 +114,18 @@ node {
         -p NAMESPACE=${TOOLS_NAMESPACE} | oc apply -f - -n ${TOOLS_NAMESPACE}"
      TriggerBuild("${DYNAMICS_ADAPTER}-build", TOOLS_NAMESPACE)
 
-
-     // This creates 2 seperate build configs we need to watch
      WaitForBuild("${SEARCH_API}-build", TOOLS_NAMESPACE)
      WaitForBuild("${SEARCH_API}-runtime", TOOLS_NAMESPACE)
 
      WaitForBuild("${DYNAMICS_ADAPTER}-build", TOOLS_NAMESPACE)
      WaitForBuild("${DYNAMICS_ADAPTER}-runtime", TOOLS_NAMESPACE)
+
+     WaitForBuild("${ICBC_ADAPTER}-build", TOOLS_NAMESPACE)
+     WaitForBuild("${ICBC_ADAPTER}-runtime", TOOLS_NAMESPACE)
     }
    }
   }
  }
-
- stage('Unit Tests'){
-    openshift.withCluster() {
-      openshift.withProject(TOOLS_NAMESPACE) {
-        echo "Unit tests to be done here"
-      }
-    }
- }
-
 
  stage('Promote to DEV') {
   openshift.withCluster() {
@@ -148,7 +142,15 @@ node {
                   -p NAMESPACE=${TOOLS_NAMESPACE} \
                   -p TAG=dev | oc apply -f - -n ${DEV_NAMESPACE}"
 
-     echo "Dotnet Config"
+     echo "DynamicsAdapter Config"
+     sh "oc process -f openshift/templates/dotnet.dc.yaml \
+                  -p NAME=${DYNAMICS_ADAPTER} \
+                  -p APPLICATION_DOMAIN=${SUBDOMAIN}-dev.${DOMAIN} \
+                  -p MEMORY_LIMIT=${RUN_MEMORY} \
+                  -p NAMESPACE=${TOOLS_NAMESPACE} \
+                  -p TAG=dev | oc apply -f - -n ${DEV_NAMESPACE}"
+
+     echo "ICBCAdapter Config"
      sh "oc process -f openshift/templates/dotnet.dc.yaml \
                   -p NAME=${DYNAMICS_ADAPTER} \
                   -p APPLICATION_DOMAIN=${SUBDOMAIN}-dev.${DOMAIN} \
@@ -161,16 +163,17 @@ node {
               -p CLUSTER_NAME=${RABBITMQ} \
               -p NAMESPACE=${DEV_NAMESPACE} | oc apply -f - -n ${DEV_NAMESPACE}"
 
-     echo "Jaeger Config"
-     // TODO change to template
-     sh "oc apply -f openshift/templates/jaeger.dc.yaml -n ${DEV_NAMESPACE}"
-     sh "oc process -f openshift/templates/cassandra-template.yaml | oc apply -f - -n ${DEV_NAMESPACE}"
+   //   echo "Jaeger Config"
+   //   // TODO change to template
+   //   sh "oc apply -f openshift/templates/jaeger.dc.yaml -n ${DEV_NAMESPACE}"
+   //   sh "oc process -f openshift/templates/cassandra-template.yaml | oc apply -f - -n ${DEV_NAMESPACE}"
 
      sleep 10
 
      echo "Tagging images for DEV deployment..."
      openshift.tag("${SEARCH_API}:latest", "${SEARCH_API}:dev")
      openshift.tag("${DYNAMICS_ADAPTER}:latest", "${DYNAMICS_ADAPTER}:dev")
+     openshift.tag("${ICBC_ADAPTER}:latest", "${ICBC_ADAPTER}:dev")
     }
 
    }

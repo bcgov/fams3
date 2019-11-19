@@ -50,7 +50,9 @@ node {
  stage('Build') {
   parallel(
    'SearchApi': {
-    when { changeset 'app/SearchApi/**'}
+    when {
+     changeset 'app/SearchApi/**'
+    }
     dir('simple_pipeline') {
      echo "Initiating SearchAPI build..."
      sh "oc process -f openshift/templates/search-api.bc.yaml \
@@ -147,5 +149,4 @@ node {
    }
   )
  }
-}
 }

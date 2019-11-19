@@ -38,7 +38,22 @@ namespace DynamicsAdapter.Web.MatchFound
 
             _logger.LogInformation("Received MatchFound response with SearchRequestId is " + id);
             var cts = new CancellationTokenSource();
-            await _service.UploadIdentifier(Guid.Parse(id), null, cts.Token);
+
+            //todo, replaced with data from payload
+            var toBeReplaced = new SSG_Identifier()
+            {
+                SSG_Identification = "Test from dynamics adapter",
+                ssg_identificationeffectivedate = new DateTime(2014, 1, 1),
+                SSG_SearchRequest = new SSG_SearchRequest()
+                {
+                    SearchRequestId = Guid.Parse("6AE89FE6-9909-EA11-B813-00505683FBF4")
+                },
+                StateCode = 0,
+                StatusCode = 1
+            };
+            //todo
+
+            SSG_Identifier result = await _service.UploadIdentifier(toBeReplaced, cts.Token);
             return Ok();
         }
     }

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Fams3Adapter.Dynamics.OptionSets
+namespace Fams3Adapter.Dynamics.OptionSets.Models
 {
     public class OptionSet
     {
@@ -11,6 +11,7 @@ namespace Fams3Adapter.Dynamics.OptionSets
     {
         public UserLocalizedLabel UserLocalizedLabel { get; set; }
     }
+
     public class UserLocalizedLabel
     {
         public string Label { get; set; }

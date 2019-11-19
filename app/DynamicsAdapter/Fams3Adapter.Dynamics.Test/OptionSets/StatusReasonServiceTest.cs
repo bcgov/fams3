@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using DynamicsAdapter.Web.SearchRequest;
 using Fams3Adapter.Dynamics.OptionSets;
+using Fams3Adapter.Dynamics.OptionSets.Models;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Moq.Protected;
@@ -20,14 +21,15 @@ namespace Fams3Adapter.Dynamics.Test.OptionSets
     public class StatusReasonServiceTest
     {
 
-        private StatusReasonService _sut;
-        private readonly Mock<ILogger<StatusReasonService>> _loggerMock = new Mock<ILogger<StatusReasonService>>();
+        private OptionSetService _sut;
+        private readonly Mock<ILogger<OptionSetService>> _loggerMock = new Mock<ILogger<OptionSetService>>();
 
         [Test]
         public  async Task should_return_a_list_of_status_reason()
         { 
 
             var handlerMock = new Mock<HttpMessageHandler>(MockBehavior.Strict);
+            var expectedUri = new Uri($"http://test.com/");
 
             handlerMock
                 .Protected()
@@ -42,12 +44,14 @@ namespace Fams3Adapter.Dynamics.Test.OptionSets
                 .Verifiable();
 
             var httpClient = new HttpClient(handlerMock.Object);
-            httpClient.BaseAddress = new Uri("http://test.com");
-            _sut = new StatusReasonService(httpClient, _loggerMock.Object);
+            httpClient.BaseAddress = expectedUri;
+            _sut = new OptionSetService(httpClient, _loggerMock.Object);
 
-            await _sut.GetListAsync( CancellationToken.None);
+            var result = await _sut.GetAllStatusCode("testEntity", CancellationToken.None);
 
-            var expectedUri = new Uri($"http://test.com/");
+            Assert.NotNull(result);
+            Assert.AreEqual(4, result.Count());
+            Assert.IsTrue(result.All(x => !string.IsNullOrEmpty(x.Name) && x.Value > 0));
 
             handlerMock.Protected().Verify(
                 "SendAsync",
@@ -58,6 +62,7 @@ namespace Fams3Adapter.Dynamics.Test.OptionSets
                 ),
                 ItExpr.IsAny<CancellationToken>()
             );
+
         }
 
         public static HttpResponseMessage GetFakeHttpResponseMessage()

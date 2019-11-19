@@ -147,6 +147,11 @@ objects:
                     secretKeyRef:
                       key: dynamics-oauth-credentials
                       name: password
+                - name: OAUTH__SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      key: dynamics-oauth-credentials
+                      name: oauth-secret
               livenessProbe:
                 httpGet:
                   path: "/health"

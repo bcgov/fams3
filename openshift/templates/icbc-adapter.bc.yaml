@@ -49,7 +49,7 @@ parameters:
 - name: SOURCE_SECRET
   displayname: Git Source Secret
   description: Set this to the secret containing the credentials for building the dotnet image.
-  value: ""
+  required: true
 - name: CONTEXT_DIR
   displayName: Context Directory
   description: Set this to use a subdirectory of the source code repository
@@ -120,7 +120,8 @@ objects:
           uri: "${SOURCE_REPOSITORY_URL}"
           ref: "${SOURCE_REPOSITORY_REF}"
         contextDir: "${CONTEXT_DIR}"
-        sourceSecret: "${SOURCE_SECRET}"
+        sourceSecret: 
+          name: "${SOURCE_SECRET}"
       strategy:
         type: Source
         sourceStrategy:

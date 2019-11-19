@@ -22,8 +22,6 @@ def PRIVATE_GIT_URI = "git@github.com:bcgov-c/fams3-openshift.git"
 def PRIVATE_GIT_REF = "master"
 def PRIVATE_GIT_SECRET = "fams3-github-key"
 
-// Todo: Change token to service account
-
 def BUILD_MEMORY = "1Gi"
 def RUN_MEMORY = "128Mi"
 
@@ -50,9 +48,6 @@ node {
  stage('Build') {
   parallel(
    'SearchApi': {
-    when {
-     changeset 'app/SearchApi/**'
-    }
     dir('simple_pipeline') {
      echo "Initiating SearchAPI build..."
      sh "oc process -f openshift/templates/search-api.bc.yaml \

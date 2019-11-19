@@ -55,16 +55,6 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             Assert.AreEqual("test", result.SSG_Identification);
         }
 
-        [Test]
-        public void with_wrong_identifier_should_throws_exception()
-        {
-            SSG_Identifier identifier = new SSG_Identifier();
-            identifier.SSG_Identification = "exception";
-            identifier.ssg_identificationeffectivedate = DateTime.Now;
-            identifier.StateCode = 0;
-            identifier.StatusCode = 1;
-            identifier.SSG_SearchRequest = new SSG_SearchRequest() { SearchRequestId = testId };
-            Assert.ThrowsAsync<Exception>(async () => await _sut.UploadIdentifier(identifier, CancellationToken.None));
-        }
+
     }
 }

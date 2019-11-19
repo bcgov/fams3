@@ -6,6 +6,7 @@ using DynamicsAdapter.Web.Infrastructure;
 using DynamicsAdapter.Web.SearchRequest;
 using Fams3Adapter.Dynamics.OptionSets;
 using Fams3Adapter.Dynamics.SearchApiRequest;
+using Fams3Adapter.Dynamics.SearchRequest;
 using HealthChecks.UI.Client;
 using Jaeger;
 using Jaeger.Samplers;
@@ -107,7 +108,7 @@ namespace DynamicsAdapter.Web
             // Add other Services
             services.AddTransient<ITokenService, TokenService>();
             services.AddTransient<ISearchApiRequestService, SearchApiRequestService>();
-         
+            services.AddTransient<ISearchRequestService, SearchRequestService>();
 
         }
         /// <summary>

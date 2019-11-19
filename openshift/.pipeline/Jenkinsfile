@@ -48,9 +48,9 @@ pipeline {
   }
 
   stage('Build') {
-   parallel(
-    'SearchApi': {
-     steps {
+   steps {
+    parallel(
+     'SearchApi': {
       echo "Initiating SearchAPI build..."
       sh "oc process -f openshift/templates/search-api.bc.yaml \
                      -p NAME=${SEARCH_API} \
@@ -61,10 +61,8 @@ pipeline {
                      -p NAMESPACE=${TOOLS_NAMESPACE} | oc apply -f - -n ${TOOLS_NAMESPACE}"
       // StartBuildAndWait("${SEARCH_API}-build", TOOLS_NAMESPACE)
       // StartBuildAndWait("${SEARCH_API}-runtime", TOOLS_NAMESPACE)
-     }
-    },
-    'DynamicsAdapter': {
-     steps {
+     },
+     'DynamicsAdapter': {
       echo "Initiating DynamicsAdapter build..."
       sh "oc process -f openshift/templates/dynamics-adapter.bc.yaml \
                      -p NAME=${DYNAMICS_ADAPTER} \
@@ -75,10 +73,8 @@ pipeline {
                      -p NAMESPACE=${TOOLS_NAMESPACE} | oc apply -f - -n ${TOOLS_NAMESPACE}"
       // StartBuildAndWait("${DYNAMICS_ADAPTER}-build", TOOLS_NAMESPACE)
       // StartBuildAndWait("${DYNAMICS_ADAPTER}-runtime", TOOLS_NAMESPACE)
-     }
-    },
-    'ICBCAdapter': {
-     steps {
+     },
+     'ICBCAdapter': {
       echo "Initiating ICBCAdapter build..."
       sh "oc process -f openshift/templates/icbc-adapter.bc.yaml \
                   -p NAME=${ICBC_ADAPTER} \
@@ -93,14 +89,14 @@ pipeline {
       //  StartBuildAndWait("${ICBC_ADAPTER}-build", TOOLS_NAMESPACE)
       //  StartBuildAndWait("${ICBC_ADAPTER}-runtime", TOOLS_NAMESPACE)
      }
-    }
-   )
+    )
+   }
   }
 
   stage('Promote to DEV') {
-   parallel(
-    'SearchAPI': {
-     steps {
+   steps {
+    parallel(
+     'SearchAPI': {
       sh "oc process -f openshift/templates/search-api.dc.yaml \
                -p NAME=${SEARCH_API} \
                -p APPLICATION_DOMAIN=${SUBDOMAIN}-dev.${DOMAIN} \
@@ -109,10 +105,8 @@ pipeline {
                -p TAG=dev | oc apply -f - -n ${DEV_NAMESPACE}"
       sh "oc tag ${SEARCH-API}:latest ${SEARCH-API}:dev -n ${TOOLS_NAMESPACE}"
       WaitForDeploy(SEARCH_API, DEV_NAMESPACE)
-     }
-    },
-    'DynamicsAdapter': {
-     steps {
+     },
+     'DynamicsAdapter': {
       sh "oc process -f openshift/templates/dynamics-adapter.dc.yaml \
                   -p NAME=${DYNAMICS_ADAPTER} \
                   -p APPLICATION_DOMAIN=${SUBDOMAIN}-dev.${DOMAIN} \
@@ -121,10 +115,8 @@ pipeline {
                   -p TAG=dev | oc apply -f - -n ${DEV_NAMESPACE}"
       sh "oc tag ${DYNAMICS_ADAPTER}:latest ${DYNAMICS_ADAPTER}:dev -n ${TOOLS_NAMESPACE}"
       WaitForDeploy(DYNAMICS_ADAPTER, DEV_NAMESPACE)
-     }
-    },
-    'ICBCAdapter': {
-     steps {
+     },
+     'ICBCAdapter': {
       sh "oc process -f openshift/templates/icbc-adapter.dc.yaml \
                   -p NAME=${ICBC_ADAPTER} \
                   -p APPLICATION_DOMAIN=${SUBDOMAIN}-dev.${DOMAIN} \
@@ -133,18 +125,16 @@ pipeline {
                   -p TAG=dev | oc apply -f - -n ${DEV_NAMESPACE}"
       sh "oc tag ${ICBC_ADAPTER}:latest ${ICBC_ADAPTER}:dev -n ${TOOLS_NAMESPACE}"
       WaitForDeploy(ICBC_ADAPTER, DEV_NAMESPACE)
-     }
-
-    },
-    'RabbitMQ': {
-     steps {
+     },
+     'RabbitMQ': {
       sh "oc process -f openshift/templates/rabbitmq.dc.yaml \
                   -p CLUSTER_NAME=${RABBITMQ} \
                   -p NAMESPACE=${DEV_NAMESPACE} | oc apply -f - -n ${DEV_NAMESPACE} --wait"
       // WaitForDeploy(RABBITMQ, DEV_NAMESPACE)
      }
-    }
-   )
+
+    )
+   }
   }
  }
 }

@@ -104,7 +104,7 @@ pipeline {
                -p APPLICATION_DOMAIN=${SUBDOMAIN}-dev.${DOMAIN} \
                -p MEMORY_LIMIT=${RUN_MEMORY} \
                -p NAMESPACE=${TOOLS_NAMESPACE} \
-               -p TAG=dev | oc apply -f - -n ${DEV_NAMESPACE} --wait"
+               -p TAG=dev | oc apply -f - -n ${DEV_NAMESPACE}"
      sh "oc tag ${SEARCH-API}:latest ${SEARCH-API}:dev -n ${TOOLS_NAMESPACE}"
      WaitForDeploy(SEARCH_API, DEV_NAMESPACE)
     }
@@ -128,7 +128,7 @@ pipeline {
                   -p APPLICATION_DOMAIN=${SUBDOMAIN}-dev.${DOMAIN} \
                   -p MEMORY_LIMIT=${RUN_MEMORY} \
                   -p NAMESPACE=${TOOLS_NAMESPACE} \
-                  -p TAG=dev | oc apply -f - -n ${DEV_NAMESPACE} --wait"
+                  -p TAG=dev | oc apply -f - -n ${DEV_NAMESPACE}"
      sh "oc tag ${ICBC_ADAPTER}:latest ${ICBC_ADAPTER}:dev -n ${TOOLS_NAMESPACE}"
      WaitForDeploy(ICBC_ADAPTER, DEV_NAMESPACE)
     }

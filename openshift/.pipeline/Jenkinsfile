@@ -55,34 +55,38 @@ node {
       when {
         changeset "app/SearchApi/**"
       }
-      dir('simple_pipeline') {
-       echo "Initiating SearchAPI build..."
-       sh "oc process -f openshift/templates/search-api.bc.yaml \
-                  -p NAME=${SEARCH_API} \
-                  -p SOURCE_REPOSITORY_URL=${GIT_URI} \
-                  -p SOURCE_REPOSITORY_REF=${GIT_REF} \
-                  -p DOTNET_STARTUP_PROJECT=app/SearchApi/SearchApi.Web/SearchApi.Web.csproj \
-                  -p MEMORY_LIMIT=${BUILD_MEMORY} \
-                  -p NAMESPACE=${TOOLS_NAMESPACE} | oc apply -f - -n ${TOOLS_NAMESPACE}"
-       StartBuildAndWait("${SEARCH_API}-build", TOOLS_NAMESPACE)
-       StartBuildAndWait("${SEARCH_API}-runtime", TOOLS_NAMESPACE)
-      }
+      steps {
+         dir('simple_pipeline') {
+         echo "Initiating SearchAPI build..."
+         sh "oc process -f openshift/templates/search-api.bc.yaml \
+                     -p NAME=${SEARCH_API} \
+                     -p SOURCE_REPOSITORY_URL=${GIT_URI} \
+                     -p SOURCE_REPOSITORY_REF=${GIT_REF} \
+                     -p DOTNET_STARTUP_PROJECT=app/SearchApi/SearchApi.Web/SearchApi.Web.csproj \
+                     -p MEMORY_LIMIT=${BUILD_MEMORY} \
+                     -p NAMESPACE=${TOOLS_NAMESPACE} | oc apply -f - -n ${TOOLS_NAMESPACE}"
+         StartBuildAndWait("${SEARCH_API}-build", TOOLS_NAMESPACE)
+         StartBuildAndWait("${SEARCH_API}-runtime", TOOLS_NAMESPACE)
+         }
+     }
      },
      'DynamicsAdapter': {
       when {
         changeset "app/DynamicsAdapter/**"
       }
-      dir('simple_pipeline') {
-       echo "Initiating DynamicsAdapter build..."
-       sh "oc process -f openshift/templates/dynamics-adapter.bc.yaml \
-                  -p NAME=${DYNAMICS_ADAPTER} \
-                  -p SOURCE_REPOSITORY_URL=${GIT_URI} \
-                  -p SOURCE_REPOSITORY_REF=${GIT_REF} \
-                  -p DOTNET_STARTUP_PROJECT=app/DynamicsAdapter/DynamicsAdapter.Web/DynamicsAdapter.Web.csproj \
-                  -p MEMORY_LIMIT=${BUILD_MEMORY} \
-                  -p NAMESPACE=${TOOLS_NAMESPACE} | oc apply -f - -n ${TOOLS_NAMESPACE}"
-       StartBuildAndWait("${DYNAMICS_ADAPTER}-build", TOOLS_NAMESPACE)
-       StartBuildAndWait("${DYNAMICS_ADAPTER}-runtime", TOOLS_NAMESPACE)
+      steps {
+         dir('simple_pipeline') {
+            echo "Initiating DynamicsAdapter build..."
+            sh "oc process -f openshift/templates/dynamics-adapter.bc.yaml \
+                     -p NAME=${DYNAMICS_ADAPTER} \
+                     -p SOURCE_REPOSITORY_URL=${GIT_URI} \
+                     -p SOURCE_REPOSITORY_REF=${GIT_REF} \
+                     -p DOTNET_STARTUP_PROJECT=app/DynamicsAdapter/DynamicsAdapter.Web/DynamicsAdapter.Web.csproj \
+                     -p MEMORY_LIMIT=${BUILD_MEMORY} \
+                     -p NAMESPACE=${TOOLS_NAMESPACE} | oc apply -f - -n ${TOOLS_NAMESPACE}"
+            StartBuildAndWait("${DYNAMICS_ADAPTER}-build", TOOLS_NAMESPACE)
+            StartBuildAndWait("${DYNAMICS_ADAPTER}-runtime", TOOLS_NAMESPACE)
+         }
       }
      },
      'ICBCAdapter': {

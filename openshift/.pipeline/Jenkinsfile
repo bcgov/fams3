@@ -52,10 +52,6 @@ node {
    openshift.withProject(TOOLS_NAMESPACE) {
     parallel(
      'SearchApi': {
-      when {
-        changeset "app/SearchApi/**"
-      }
-      steps {
          dir('simple_pipeline') {
          echo "Initiating SearchAPI build..."
          sh "oc process -f openshift/templates/search-api.bc.yaml \
@@ -67,14 +63,9 @@ node {
                      -p NAMESPACE=${TOOLS_NAMESPACE} | oc apply -f - -n ${TOOLS_NAMESPACE}"
          StartBuildAndWait("${SEARCH_API}-build", TOOLS_NAMESPACE)
          StartBuildAndWait("${SEARCH_API}-runtime", TOOLS_NAMESPACE)
-         }
      }
      },
      'DynamicsAdapter': {
-      when {
-        changeset "app/DynamicsAdapter/**"
-      }
-      steps {
          dir('simple_pipeline') {
             echo "Initiating DynamicsAdapter build..."
             sh "oc process -f openshift/templates/dynamics-adapter.bc.yaml \
@@ -86,7 +77,6 @@ node {
                      -p NAMESPACE=${TOOLS_NAMESPACE} | oc apply -f - -n ${TOOLS_NAMESPACE}"
             StartBuildAndWait("${DYNAMICS_ADAPTER}-build", TOOLS_NAMESPACE)
             StartBuildAndWait("${DYNAMICS_ADAPTER}-runtime", TOOLS_NAMESPACE)
-         }
       }
      },
      'ICBCAdapter': {

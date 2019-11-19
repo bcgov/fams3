@@ -1,4 +1,5 @@
 ﻿using DynamicsAdapter.Web.MatchFound;
+using Fams3Adapter.Dynamics.SearchRequest;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -13,11 +14,12 @@ namespace DynamicsAdapter.Web.Test.MatchFound
     {
         private MatchFoundController _sut;
         private readonly Mock<ILogger<MatchFoundController>> _loggerMock = new Mock<ILogger<MatchFoundController>>();
+        private readonly Mock<SearchRequestService> _searchRequestServiceMock = new Mock<SearchRequestService>();
 
         [SetUp]
         public void Init()
         {
-            _sut = new MatchFoundController(_loggerMock.Object);
+            _sut = new MatchFoundController(_loggerMock.Object, _searchRequestServiceMock.Object);
         }
 
         [Test]

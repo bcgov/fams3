@@ -60,6 +60,7 @@ namespace DynamicsAdapter.Web.MatchFound
             catch (Exception e)
             {
                 _logger.LogError(e.Message);
+                return BadRequest();
             }
             return Ok();
         }

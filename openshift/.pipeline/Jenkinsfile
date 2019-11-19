@@ -61,8 +61,8 @@ node {
                      -p DOTNET_STARTUP_PROJECT=app/SearchApi/SearchApi.Web/SearchApi.Web.csproj \
                      -p MEMORY_LIMIT=${BUILD_MEMORY} \
                      -p NAMESPACE=${TOOLS_NAMESPACE} | oc apply -f - -n ${TOOLS_NAMESPACE}"
-         StartBuildAndWait("${SEARCH_API}-build", TOOLS_NAMESPACE)
-         StartBuildAndWait("${SEARCH_API}-runtime", TOOLS_NAMESPACE)
+         //StartBuildAndWait("${SEARCH_API}-build", TOOLS_NAMESPACE)
+         //StartBuildAndWait("${SEARCH_API}-runtime", TOOLS_NAMESPACE)
      }
      },
      'DynamicsAdapter': {
@@ -75,8 +75,8 @@ node {
                      -p DOTNET_STARTUP_PROJECT=app/DynamicsAdapter/DynamicsAdapter.Web/DynamicsAdapter.Web.csproj \
                      -p MEMORY_LIMIT=${BUILD_MEMORY} \
                      -p NAMESPACE=${TOOLS_NAMESPACE} | oc apply -f - -n ${TOOLS_NAMESPACE}"
-            StartBuildAndWait("${DYNAMICS_ADAPTER}-build", TOOLS_NAMESPACE)
-            StartBuildAndWait("${DYNAMICS_ADAPTER}-runtime", TOOLS_NAMESPACE)
+            //StartBuildAndWait("${DYNAMICS_ADAPTER}-build", TOOLS_NAMESPACE)
+            //StartBuildAndWait("${DYNAMICS_ADAPTER}-runtime", TOOLS_NAMESPACE)
       }
      },
      'ICBCAdapter': {
@@ -92,8 +92,8 @@ node {
                   -p DOTNET_STARTUP_PROJECT=app/IcbcAdapter/Icbc.ServiceMock.Soap/Icbc.ServiceMock.Soap.csproj \
                   -p MEMORY_LIMIT=${BUILD_MEMORY} \
                   -p NAMESPACE=${TOOLS_NAMESPACE} | oc apply -f - -n ${TOOLS_NAMESPACE}"
-       StartBuildAndWait("${ICBC_ADAPTER}-build", TOOLS_NAMESPACE)
-       StartBuildAndWait("${ICBC_ADAPTER}-runtime", TOOLS_NAMESPACE)
+       //StartBuildAndWait("${ICBC_ADAPTER}-build", TOOLS_NAMESPACE)
+       //StartBuildAndWait("${ICBC_ADAPTER}-runtime", TOOLS_NAMESPACE)
       }
      }
     )

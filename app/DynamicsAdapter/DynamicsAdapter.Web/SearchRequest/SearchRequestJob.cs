@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Microsoft.Extensions.Logging;
@@ -53,6 +54,9 @@ namespace DynamicsAdapter.Web.SearchRequest
                     DateOfBirth = ssgSearchRequest.PersonBirthDate,
                 }, $"{ssgSearchRequest.SearchApiRequestId}", cts.Token);
                 _logger.LogInformation($"Successfully posted person search id:{result.Id}");
+
+                await MarkInProgress(ssgSearchRequest, cts.Token);
+
             }
 
         }
@@ -63,6 +67,27 @@ namespace DynamicsAdapter.Web.SearchRequest
             var request = await _searchApiRequestService.GetAllReadyForSearchAsync(cancellationToken);
             _logger.LogInformation("Successfully retrieved search requests from dynamics");
             return request.ToList();
+        }
+
+        private async Task<SSG_SearchApiRequest> MarkInProgress(SSG_SearchApiRequest ssgSearchRequest,
+            CancellationToken cancellationToken)
+        {
+            try
+            {
+                _logger.LogDebug(
+                    $"Attempting to update searchRequest[{ssgSearchRequest.SearchApiRequestId}] to {SearchApiRequestStatusReason.InProgress.ToString()} status");
+                var request =
+                    await _searchApiRequestService.MarkInProgress(ssgSearchRequest.SearchApiRequestId,
+                        cancellationToken);
+                _logger.LogInformation(
+                    $"Successfully updated searchRequest[{ssgSearchRequest.SearchApiRequestId}] to {SearchApiRequestStatusReason.InProgress.ToString()} status");
+                return request;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error updated searchRequest[{ssgSearchRequest.SearchApiRequestId}] to {SearchApiRequestStatusReason.InProgress.ToString()} status", ex);
+                throw;
+            }
         }
 
     }

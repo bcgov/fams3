@@ -14,7 +14,7 @@ namespace DynamicsAdapter.Web.Test.MatchFound
     {
         private MatchFoundController _sut;
         private readonly Mock<ILogger<MatchFoundController>> _loggerMock = new Mock<ILogger<MatchFoundController>>();
-        private readonly Mock<SearchRequestService> _searchRequestServiceMock = new Mock<SearchRequestService>();
+        private readonly Mock<ISearchRequestService> _searchRequestServiceMock = new Mock<ISearchRequestService>();
 
         [SetUp]
         public void Init()

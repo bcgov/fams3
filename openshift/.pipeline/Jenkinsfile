@@ -52,6 +52,9 @@ node {
    openshift.withProject(TOOLS_NAMESPACE) {
     parallel(
      'SearchApi': {
+      when {
+        changeset "app/SearchApi/**"
+      }
       dir('simple_pipeline') {
        echo "Initiating SearchAPI build..."
        sh "oc process -f openshift/templates/search-api.bc.yaml \
@@ -66,6 +69,9 @@ node {
       }
      },
      'DynamicsAdapter': {
+      when {
+        changeset "app/DynamicsAdapter/**"
+      }
       dir('simple_pipeline') {
        echo "Initiating DynamicsAdapter build..."
        sh "oc process -f openshift/templates/dynamics-adapter.bc.yaml \

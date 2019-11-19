@@ -122,6 +122,31 @@ objects:
                   value: 0/5 * * * * ?
                 - name: SEARCHAPI__BASEURL
                   value: http://search-api
+                - name: OAUTH__RESOURCEURL
+                  valueFrom:
+                    secretKeyRef:
+                      key: dynamics-oauth-credentials
+                      name: resource-url
+                - name: OAUTH__CLIENTID
+                  valueFrom:
+                    secretKeyRef:
+                      key: dynamics-oauth-credentials
+                      name: client-id
+                - name: OAUTH__OAUTHURL
+                  valueFrom:
+                    secretKeyRef:
+                      key: dynamics-oauth-credentials
+                      name: oauth-url
+                - name: OAUTH__USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      key: dynamics-oauth-credentials
+                      name: username
+                - name: OAUTH__PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: dynamics-oauth-credentials
+                      name: password
               livenessProbe:
                 httpGet:
                   path: "/health"

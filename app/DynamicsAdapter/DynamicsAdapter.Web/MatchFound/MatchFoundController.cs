@@ -53,7 +53,14 @@ namespace DynamicsAdapter.Web.MatchFound
             };
             //todo
 
-            SSG_Identifier result = await _service.UploadIdentifier(toBeReplaced, cts.Token);
+            try
+            {
+                SSG_Identifier result = await _service.UploadIdentifier(toBeReplaced, cts.Token);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message);
+            }
             return Ok();
         }
     }

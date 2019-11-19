@@ -20,12 +20,10 @@ namespace Fams3Adapter.Dynamics.SearchRequest
     public class SearchRequestService : ISearchRequestService
     {
         private readonly IODataClient _oDataClient;
-        private readonly ILogger<SearchRequestService> _logger;
 
-        public SearchRequestService(IODataClient oDataClient, ILogger<SearchRequestService> logger)
+        public SearchRequestService(IODataClient oDataClient)
         {
             this._oDataClient = oDataClient;
-            this._logger = logger;
         }
 
         /// <summary>

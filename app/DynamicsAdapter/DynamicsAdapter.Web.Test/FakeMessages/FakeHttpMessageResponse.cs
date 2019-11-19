@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using Fams3Adapter.Dynamics.OptionSets;
+using Fams3Adapter.Dynamics.OptionSets.Models;
 using Newtonsoft.Json;
 
 namespace DynamicsAdapter.Web.Test.FakeMessages
@@ -10,48 +11,42 @@ namespace DynamicsAdapter.Web.Test.FakeMessages
     public static class FakeHttpMessageResponse
     {
 
-        public static StatusReason GetFakeInvalidReason()
+        public static IEnumerable<GenericOption> GetFakeInvalidReason()
         {
-            return new StatusReason()
+            return new List<GenericOption>()
             {
-                OptionSet = new OptionSet()
-                {
-                    Options = new List<Option>()
-                    {
-                        new Option() {
-                            Value  = 1, Label = new Label{ UserLocalizedLabel = new UserLocalizedLabel{ Label ="Ready For Search" }}
-                        }
-                    }
-                }
-
+                new GenericOption(1, "Ready For Search")
             };
         }
 
 
-        public static StatusReason GetFakeValidReason()
+        public static IEnumerable<GenericOption> GetFakeValidReason()
         {
-            return new StatusReason()
-            {
-                OptionSet = new OptionSet()
+            return new List<GenericOption>()
                 {
-                    Options = new List<Option>()
-                    {
-                        new Option() { Value  = 1, Label = new Label{ UserLocalizedLabel = new UserLocalizedLabel{ Label ="Ready For Search" }}},
-                        new Option() { Value  = 867670000, Label = new Label{ UserLocalizedLabel = new UserLocalizedLabel{ Label ="In Progress" }}},
-                        new Option() { Value  = 867670001, Label = new Label{ UserLocalizedLabel = new UserLocalizedLabel{ Label ="Complete" }}},
-                        new Option() { Value  = 2, Label = new Label{ UserLocalizedLabel = new UserLocalizedLabel{ Label ="Other" }}}
-                    }
-                }
-
+                new GenericOption(1, "Ready For Search"),
+                new GenericOption(867670000, "In Progress"),
+                new GenericOption(867670001, "Complete"),
+                new GenericOption(2, "Other"),
             };
         }
 
-        public static StatusReason GetFakeNullResult()
+        public static IEnumerable<GenericOption> GetFakeNullResult()
         {
-            return new StatusReason();
+            return new List<GenericOption>();
         }
 
-        
+        public static IEnumerable<GenericOption> GetFakeIdReason()
+        {
+            return new List<GenericOption>()
+            {
+                new GenericOption(1, "Ready For Search"),
+                new GenericOption(867670000, "In Progress"),
+                new GenericOption(867670001, "Complete"),
+                new GenericOption(2, "Other"),
+            };
+        }
+
 
     }
 }

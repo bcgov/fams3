@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using DynamicsAdapter.Web.Health;
 using DynamicsAdapter.Web.SearchRequest;
 using DynamicsAdapter.Web.Test.FakeMessages;
+using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.OptionSets;
 using Fams3Adapter.Dynamics.OptionSets.Models;
 using Microsoft.Extensions.Diagnostics.HealthChecks;

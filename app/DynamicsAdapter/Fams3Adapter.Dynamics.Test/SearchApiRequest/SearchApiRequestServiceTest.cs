@@ -26,7 +26,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchApiRequest
             _testId = Guid.NewGuid();
 
             odataClientMock.Setup(x => x.For<SSG_SearchApiRequest>(null)
-                    .Filter(x => x.StatusCode == (int)SearchApiRequestStatusReason.ReadyForSearch)
+                    .Filter(x => x.StatusCode == SearchApiRequestStatusReason.ReadyForSearch.Value)
                     .FindEntriesAsync(It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<IEnumerable<SSG_SearchApiRequest>>(new List<SSG_SearchApiRequest>()
                 {
@@ -39,13 +39,13 @@ namespace Fams3Adapter.Dynamics.Test.SearchApiRequest
 
             odataClientMock.Setup(x => x.For<SSG_SearchApiRequest>(null)
                 .Key(_testId)
-                .Set(new Dictionary<string, object>() { { Keys.DYNAMICS_STATUS_CODE_FIELD, (int)SearchApiRequestStatusReason.InProgress } })
+                .Set(new Dictionary<string, object>() { { Keys.DYNAMICS_STATUS_CODE_FIELD, SearchApiRequestStatusReason.InProgress.Value } })
                 .UpdateEntryAsync(It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<SSG_SearchApiRequest>(new SSG_SearchApiRequest()
                     {
                         SearchApiRequestId = Guid.NewGuid(),
                         PersonGivenName = "personGivenName",
-                        StatusCode = SearchApiRequestStatusReason.InProgress.GetHashCode()
+                        StatusCode = SearchApiRequestStatusReason.InProgress.Value
                     }));
 
             _sut = new SearchApiRequestService(odataClientMock.Object);
@@ -74,7 +74,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchApiRequest
         {
             var result = await _sut.MarkInProgress(_testId, CancellationToken.None);
 
-            Assert.AreEqual(SearchApiRequestStatusReason.InProgress.GetHashCode(), result.StatusCode);
+            Assert.AreEqual(SearchApiRequestStatusReason.InProgress.Value, result.StatusCode);
         }
 
 

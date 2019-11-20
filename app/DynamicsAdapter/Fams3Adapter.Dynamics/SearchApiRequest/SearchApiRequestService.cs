@@ -37,7 +37,7 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
         /// <returns></returns>
         public async Task<IEnumerable<SSG_SearchApiRequest>> GetAllReadyForSearchAsync(CancellationToken cancellationToken)
         { 
-            return await _oDataClient.For<SSG_SearchApiRequest>().Filter(x => x.StatusCode == (int)SearchApiRequestStatusReason.ReadyForSearch).FindEntriesAsync(cancellationToken);
+            return await _oDataClient.For<SSG_SearchApiRequest>().Filter(x => x.StatusCode == SearchApiRequestStatusReason.ReadyForSearch.Value).FindEntriesAsync(cancellationToken);
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
             return await _oDataClient
                 .For<SSG_SearchApiRequest>()
                 .Key(searchApiRequestId)
-                .Set(new Entry {{ Keys.DYNAMICS_STATUS_CODE_FIELD, SearchApiRequestStatusReason.InProgress.GetHashCode() }})
+                .Set(new Entry {{ Keys.DYNAMICS_STATUS_CODE_FIELD, SearchApiRequestStatusReason.InProgress.Value }})
                 .UpdateEntryAsync(cancellationToken);
         }
 

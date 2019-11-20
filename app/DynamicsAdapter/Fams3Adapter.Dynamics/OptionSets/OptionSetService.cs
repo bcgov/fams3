@@ -31,7 +31,7 @@ namespace Fams3Adapter.Dynamics.OptionSets
         public async Task<IEnumerable<GenericOption>> GetAllStatusCode(string entityName, CancellationToken cancellationToken)
         {
             var uri = new Uri(string.Format(Keys.GLOBAL_STATUS_CODE_URL_TEMPLATE, entityName), UriKind.RelativeOrAbsolute);
-            var result = JsonConvert.DeserializeObject<StatusReason>(await GetAllOptions(uri, cancellationToken));
+            var result = JsonConvert.DeserializeObject<OptionSetMetadata>(await GetAllOptions(uri, cancellationToken));
             return result?.OptionSet?.Options == null ? new List<GenericOption>() : result.OptionSet.Options.Where(x => x.Label?.UserLocalizedLabel?.Label != null).Select(x => new GenericOption(x.Value, x.Label.UserLocalizedLabel.Label));
         }
 

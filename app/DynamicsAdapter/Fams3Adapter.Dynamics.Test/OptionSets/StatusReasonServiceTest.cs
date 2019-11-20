@@ -80,9 +80,9 @@ namespace Fams3Adapter.Dynamics.Test.OptionSets
             return new StringContent(JsonConvert.SerializeObject(GetFakeValidReason()), Encoding.UTF8, "application/json");
         }
 
-        public static StatusReason GetFakeValidReason()
+        public static OptionSetMetadata GetFakeValidReason()
         {
-            return new StatusReason()
+            return new OptionSetMetadata()
             {
                 OptionSet = new OptionSet()
                 {

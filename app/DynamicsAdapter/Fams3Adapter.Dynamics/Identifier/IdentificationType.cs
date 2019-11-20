@@ -1,6 +1,6 @@
 ﻿using Fams3Adapter.Dynamics.OptionSets.Models;
 
-namespace Fams3Adapter.Dynamics.OptionSets
+namespace Fams3Adapter.Dynamics.Identifier
 {
     public class IdentificationType : Enumeration
     {

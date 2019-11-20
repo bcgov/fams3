@@ -14,7 +14,7 @@ namespace Fams3Adapter.Dynamics.OptionSets
     public interface IOptionSetService
     {
         Task<IEnumerable<GenericOption>> GetAllStatusCode(string entityName, CancellationToken cancellationToken);
-        Task<IEnumerable<T>> GetAllOptions<T>(CancellationToken cancellationToken) where T : Enumeration;
+        Task<IEnumerable<GenericOption>> GetAllOptions(string optionSetName, CancellationToken cancellationToken);
     }
 
     public class OptionSetService : IOptionSetService
@@ -30,16 +30,18 @@ namespace Fams3Adapter.Dynamics.OptionSets
 
         public async Task<IEnumerable<GenericOption>> GetAllStatusCode(string entityName, CancellationToken cancellationToken)
         {
+            if(string.IsNullOrEmpty(entityName)) throw new ArgumentNullException(nameof(entityName));
             var uri = new Uri(string.Format(Keys.GLOBAL_STATUS_CODE_URL_TEMPLATE, entityName), UriKind.RelativeOrAbsolute);
             var result = JsonConvert.DeserializeObject<OptionSetMetadata>(await GetAllOptions(uri, cancellationToken));
             return result?.OptionSet?.Options == null ? new List<GenericOption>() : result.OptionSet.Options.Where(x => x.Label?.UserLocalizedLabel?.Label != null).Select(x => new GenericOption(x.Value, x.Label.UserLocalizedLabel.Label));
         }
 
-        public async Task<IEnumerable<T>> GetAllOptions<T>(CancellationToken cancellationToken) where T : Enumeration
+        public async Task<IEnumerable<GenericOption>> GetAllOptions(string optionSetName, CancellationToken cancellationToken)
         {
-            var uri = new Uri(string.Format(Keys.GLOBAL_OPTIONS_SET_DEFINTION_URL_TEMPLATE, typeof(T).Name.ToLower()), UriKind.RelativeOrAbsolute);
+            if(string.IsNullOrWhiteSpace(optionSetName)) throw new ArgumentNullException(nameof(optionSetName));
+            var uri = new Uri(string.Format(Keys.GLOBAL_OPTIONS_SET_DEFINTION_URL_TEMPLATE, optionSetName.ToLower()), UriKind.RelativeOrAbsolute);
             var result = JsonConvert.DeserializeObject<OptionSet>(await GetAllOptions(uri, cancellationToken));
-            return result?.Options == null ? new List<T>() : result.Options.Where(x => x.Label?.UserLocalizedLabel?.Label != null).Select(x => (T)Activator.CreateInstance(typeof(T), x.Value, x.Label.UserLocalizedLabel.Label));
+            return result?.Options == null ? new List<GenericOption>() : result.Options.Where(x => x.Label?.UserLocalizedLabel?.Label != null).Select(x => new GenericOption(x.Value, x.Label.UserLocalizedLabel.Label));
         }
 
         private async Task<string> GetAllOptions(Uri relativeUri, CancellationToken cancellationToken)

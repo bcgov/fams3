@@ -16,7 +16,7 @@ namespace Fams3Adapter.Dynamics.Identifier
         public static IdentificationType Other = new IdentificationType(867670012, "Other");
         public static IdentificationType SecurityKeyword = new IdentificationType(867670013, "Security Keyword");
 
-        public IdentificationType(int value, string name) : base(value, name)
+        protected IdentificationType(int value, string name) : base(value, name)
         {
         }
     }

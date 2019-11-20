@@ -58,11 +58,11 @@ namespace DynamicsAdapter.Web.Health
         private async Task<bool> CheckOptionSet(CancellationToken cancellationToken)
         {
 
-            var idTypes = await _optionSetService.GetAllOptions<IdentificationType>(cancellationToken);
+            var idTypes = await _optionSetService.GetAllOptions("ssg_identificationtypes", cancellationToken);
 
             foreach (var identificationType in Enumeration.GetAll<IdentificationType>())
             {
-                if (!idTypes.Any(x => x.Equals(identificationType)))
+                if (!idTypes.Any(x => x.Value == identificationType.Value && string.Equals(x.Name, identificationType.Name, StringComparison.OrdinalIgnoreCase)))
                     return false;
             }
 

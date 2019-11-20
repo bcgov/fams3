@@ -131,13 +131,7 @@ pipeline {
       WaitForDeploy(ICBC_ADAPTER, DEV_NAMESPACE)
       echo 'Done'
 
-     },
-     'RabbitMQ': {
-      sh "oc process -f openshift/templates/rabbitmq.dc.yaml \
-         -p NAMESPACE=${DEV_NAMESPACE} | oc apply -f - -n ${DEV_NAMESPACE} --wait"
-      // WaitForDeploy(RABBITMQ, DEV_NAMESPACE)
      }
-
     )
    }
   }

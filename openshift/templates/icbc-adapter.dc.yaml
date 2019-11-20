@@ -119,7 +119,7 @@ objects:
                 - name: ASPNETCORE_ENVIRONMENT
                   value: Development
                 - name: RABBITMQ__HOST
-                  value: rabbitmq
+                  value: rabbitmq-cluster
                 - name: RABBITMQ__PORT
                   value: "5672"
                 - name: RABBITMQ__USERNAME

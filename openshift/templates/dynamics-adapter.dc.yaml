@@ -156,7 +156,7 @@ objects:
                   valueFrom:
                     secretKeyRef:
                       name: dynamics-oauth-credentials
-                      key: dynamics-BASEPATH
+                      key: dynamics-basepath
               livenessProbe:
                 httpGet:
                   path: "/health"

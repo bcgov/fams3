@@ -1,0 +1,11 @@
+# Add 'Seach Api' to changes in search api
+'Search Api':
+  - app/SearchApi/**/*
+
+# Add 'Dynamics Adapter' to changes in dynamics adapter
+'Dynamics Adapter':
+  - app/DynamicsAdapter/**/*
+
+# Add 'DevOps' to changes in openshift folder
+'DevOps':
+  - openshift/**/*

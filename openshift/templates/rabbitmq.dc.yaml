@@ -34,6 +34,9 @@ parameters:
 - name: VOLUME_SIZE
   description: "Size of the RabbitMQ data volume"
   value: 1Gi
+- name: RABBIT_HOST
+  description: "Host URL For RabbitMQ Console"
+  value: "<subdomain>.pathfinder.bcgov"
 
 objects:
 
@@ -158,6 +161,13 @@ objects:
               command: ["rabbitmqctl", "status"]
             initialDelaySeconds: 10
             timeoutSeconds: 10
+          resources:
+            limits:
+              cpu: '1'
+              memory: 2Gi
+            requests:
+              cpu: 200m
+              memory: 256Mi
           env:
           - name: RABBITMQ_DEFAULT_USER
             valueFrom:
@@ -218,7 +228,6 @@ objects:
 #     name: ${CLUSTER_NAME}
 #     labels:
 #       app: ${CLUSTER_NAME}
-#     name: ${CLUSTER_NAME}
 #   spec:
 #     host: ${RABBIT_HOST}
 #     port:
@@ -246,7 +255,6 @@ objects:
   kind: ServiceAccount
   metadata:
     name: ${SERVICE_ACCOUNT}
-
 - apiVersion: v1
   kind: RoleBinding
   metadata:

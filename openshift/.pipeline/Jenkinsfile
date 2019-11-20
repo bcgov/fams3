@@ -53,39 +53,39 @@ pipeline {
      'SearchApi': {
       echo "Initiating SearchAPI build..."
       sh "oc process -f openshift/templates/search-api.bc.yaml \
-                     -p NAME=${SEARCH_API} \
-                     -p SOURCE_REPOSITORY_URL=${GIT_URI} \
-                     -p SOURCE_REPOSITORY_REF=${GIT_REF} \
-                     -p DOTNET_STARTUP_PROJECT=app/SearchApi/SearchApi.Web/SearchApi.Web.csproj \
-                     -p MEMORY_LIMIT=${BUILD_MEMORY} \
-                     -p NAMESPACE=${TOOLS_NAMESPACE} | oc apply -f - -n ${TOOLS_NAMESPACE}"
+         -p NAME=${SEARCH_API} \
+         -p SOURCE_REPOSITORY_URL=${GIT_URI} \
+         -p SOURCE_REPOSITORY_REF=${GIT_REF} \
+         -p DOTNET_STARTUP_PROJECT=app/SearchApi/SearchApi.Web/SearchApi.Web.csproj \
+         -p MEMORY_LIMIT=${BUILD_MEMORY} \
+         -p NAMESPACE=${TOOLS_NAMESPACE} | oc apply -f - -n ${TOOLS_NAMESPACE}"
       // StartBuildAndWait("${SEARCH_API}-build", TOOLS_NAMESPACE)
       // StartBuildAndWait("${SEARCH_API}-runtime", TOOLS_NAMESPACE)
      },
      'DynamicsAdapter': {
       echo "Initiating DynamicsAdapter build..."
       sh "oc process -f openshift/templates/dynamics-adapter.bc.yaml \
-                     -p NAME=${DYNAMICS_ADAPTER} \
-                     -p SOURCE_REPOSITORY_URL=${GIT_URI} \
-                     -p SOURCE_REPOSITORY_REF=${GIT_REF} \
-                     -p DOTNET_STARTUP_PROJECT=app/DynamicsAdapter/DynamicsAdapter.Web/DynamicsAdapter.Web.csproj \
-                     -p MEMORY_LIMIT=${BUILD_MEMORY} \
-                     -p NAMESPACE=${TOOLS_NAMESPACE} | oc apply -f - -n ${TOOLS_NAMESPACE}"
+         -p NAME=${DYNAMICS_ADAPTER} \
+         -p SOURCE_REPOSITORY_URL=${GIT_URI} \
+         -p SOURCE_REPOSITORY_REF=${GIT_REF} \
+         -p DOTNET_STARTUP_PROJECT=app/DynamicsAdapter/DynamicsAdapter.Web/DynamicsAdapter.Web.csproj \
+         -p MEMORY_LIMIT=${BUILD_MEMORY} \
+         -p NAMESPACE=${TOOLS_NAMESPACE} | oc apply -f - -n ${TOOLS_NAMESPACE}"
       // StartBuildAndWait("${DYNAMICS_ADAPTER}-build", TOOLS_NAMESPACE)
       // StartBuildAndWait("${DYNAMICS_ADAPTER}-runtime", TOOLS_NAMESPACE)
      },
      'ICBCAdapter': {
       echo "Initiating ICBCAdapter build..."
       sh "oc process -f openshift/templates/icbc-adapter.bc.yaml \
-                  -p NAME=${ICBC_ADAPTER} \
-                  -p DOTNET_BUILD_IMAGE_STREAM_TAG=dotnet:2.2 \
-                  -p DOTNET_RUNTIME_IMAGE_STREAM_TAG=dotnet-runtime:2.2 \
-                  -p SOURCE_REPOSITORY_URL=${PRIVATE_GIT_URI} \
-                  -p SOURCE_REPOSITORY_REF=${PRIVATE_GIT_REF} \
-                  -p SOURCE_SECRET=${PRIVATE_GIT_SECRET} \
-                  -p DOTNET_STARTUP_PROJECT=app/IcbcAdapter/Icbc.ServiceMock.Soap/Icbc.ServiceMock.Soap.csproj \
-                  -p MEMORY_LIMIT=${BUILD_MEMORY} \
-                  -p NAMESPACE=${TOOLS_NAMESPACE} | oc apply -f - -n ${TOOLS_NAMESPACE}"
+         -p NAME=${ICBC_ADAPTER} \
+         -p DOTNET_BUILD_IMAGE_STREAM_TAG=dotnet:2.2 \
+         -p DOTNET_RUNTIME_IMAGE_STREAM_TAG=dotnet-runtime:2.2 \
+         -p SOURCE_REPOSITORY_URL=${PRIVATE_GIT_URI} \
+         -p SOURCE_REPOSITORY_REF=${PRIVATE_GIT_REF} \
+         -p SOURCE_SECRET=${PRIVATE_GIT_SECRET} \
+         -p DOTNET_STARTUP_PROJECT=app/IcbcAdapter/Icbc.ServiceMock.Soap/Icbc.ServiceMock.Soap.csproj \
+         -p MEMORY_LIMIT=${BUILD_MEMORY} \
+         -p NAMESPACE=${TOOLS_NAMESPACE} | oc apply -f - -n ${TOOLS_NAMESPACE}"
       //  StartBuildAndWait("${ICBC_ADAPTER}-build", TOOLS_NAMESPACE)
       //  StartBuildAndWait("${ICBC_ADAPTER}-runtime", TOOLS_NAMESPACE)
      }
@@ -99,22 +99,22 @@ pipeline {
      'SearchAPI': {
       echo 'Promoting SearchAPI'
       sh "oc process -f openshift/templates/search-api.dc.yaml \
-               -p NAME=${SEARCH_API} \
-               -p APPLICATION_DOMAIN=${SUBDOMAIN}-dev.${DOMAIN} \
-               -p MEMORY_LIMIT=${RUN_MEMORY} \
-               -p NAMESPACE=${TOOLS_NAMESPACE} \
-               -p TAG=dev | oc apply -f - -n ${DEV_NAMESPACE}"
+         -p NAME=${SEARCH_API} \
+         -p APPLICATION_DOMAIN=${SUBDOMAIN}-dev.${DOMAIN} \
+         -p MEMORY_LIMIT=${RUN_MEMORY} \
+         -p NAMESPACE=${TOOLS_NAMESPACE} \
+         -p TAG=dev | oc apply -f - -n ${DEV_NAMESPACE}"
       sh "oc tag ${SEARCH-API}:latest ${SEARCH-API}:dev -n ${TOOLS_NAMESPACE}"
       WaitForDeploy(SEARCH_API, DEV_NAMESPACE)
       echo 'Done'
      },
      'DynamicsAdapter': {
       sh "oc process -f openshift/templates/dynamics-adapter.dc.yaml \
-                  -p NAME=${DYNAMICS_ADAPTER} \
-                  -p APPLICATION_DOMAIN=${SUBDOMAIN}-dev.${DOMAIN} \
-                  -p MEMORY_LIMIT=${RUN_MEMORY} \
-                  -p NAMESPACE=${TOOLS_NAMESPACE} \
-                  -p TAG=dev | oc apply -f - -n ${DEV_NAMESPACE}"
+         -p NAME=${DYNAMICS_ADAPTER} \
+         -p APPLICATION_DOMAIN=${SUBDOMAIN}-dev.${DOMAIN} \
+         -p MEMORY_LIMIT=${RUN_MEMORY} \
+         -p NAMESPACE=${TOOLS_NAMESPACE} \
+         -p TAG=dev | oc apply -f - -n ${DEV_NAMESPACE}"
       sh "oc tag ${DYNAMICS_ADAPTER}:latest ${DYNAMICS_ADAPTER}:dev -n ${TOOLS_NAMESPACE}"
       WaitForDeploy(DYNAMICS_ADAPTER, DEV_NAMESPACE)
       echo 'Done'
@@ -122,11 +122,11 @@ pipeline {
      },
      'ICBCAdapter': {
       sh "oc process -f openshift/templates/icbc-adapter.dc.yaml \
-                  -p NAME=${ICBC_ADAPTER} \
-                  -p APPLICATION_DOMAIN=${SUBDOMAIN}-dev.${DOMAIN} \
-                  -p MEMORY_LIMIT=${RUN_MEMORY} \
-                  -p NAMESPACE=${TOOLS_NAMESPACE} \
-                  -p TAG=dev | oc apply -f - -n ${DEV_NAMESPACE}"
+         -p NAME=${ICBC_ADAPTER} \
+         -p APPLICATION_DOMAIN=${SUBDOMAIN}-dev.${DOMAIN} \
+         -p MEMORY_LIMIT=${RUN_MEMORY} \
+         -p NAMESPACE=${TOOLS_NAMESPACE} \
+         -p TAG=dev | oc apply -f - -n ${DEV_NAMESPACE}"
       sh "oc tag ${ICBC_ADAPTER}:latest ${ICBC_ADAPTER}:dev -n ${TOOLS_NAMESPACE}"
       WaitForDeploy(ICBC_ADAPTER, DEV_NAMESPACE)
       echo 'Done'
@@ -134,8 +134,7 @@ pipeline {
      },
      'RabbitMQ': {
       sh "oc process -f openshift/templates/rabbitmq.dc.yaml \
-                  -p CLUSTER_NAME=${RABBITMQ} \
-                  -p NAMESPACE=${DEV_NAMESPACE} | oc apply -f - -n ${DEV_NAMESPACE} --wait"
+         -p NAMESPACE=${DEV_NAMESPACE} | oc apply -f - -n ${DEV_NAMESPACE} --wait"
       // WaitForDeploy(RABBITMQ, DEV_NAMESPACE)
      }
 

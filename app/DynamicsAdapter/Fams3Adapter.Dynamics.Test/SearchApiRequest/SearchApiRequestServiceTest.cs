@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Fams3Adapter.Dynamics.SearchApiRequest;
@@ -25,8 +26,11 @@ namespace Fams3Adapter.Dynamics.Test.SearchApiRequest
 
             _testId = Guid.NewGuid();
 
+            int readyForSearchVAlue = SearchApiRequestStatusReason.ReadyForSearch.Value;
+            int inProgressValue = SearchApiRequestStatusReason.InProgress.Value;
+
             odataClientMock.Setup(x => x.For<SSG_SearchApiRequest>(null)
-                    .Filter(x => x.StatusCode == (int)SearchApiRequestStatusReason.ReadyForSearch)
+                    .Filter(It.IsAny<Expression<Func<SSG_SearchApiRequest, bool>>>())
                     .FindEntriesAsync(It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<IEnumerable<SSG_SearchApiRequest>>(new List<SSG_SearchApiRequest>()
                 {
@@ -39,13 +43,13 @@ namespace Fams3Adapter.Dynamics.Test.SearchApiRequest
 
             odataClientMock.Setup(x => x.For<SSG_SearchApiRequest>(null)
                 .Key(_testId)
-                .Set(new Dictionary<string, object>() { { Keys.DYNAMICS_STATUS_CODE_FIELD, (int)SearchApiRequestStatusReason.InProgress } })
+                .Set(new Dictionary<string, object>() { { Keys.DYNAMICS_STATUS_CODE_FIELD, inProgressValue } })
                 .UpdateEntryAsync(It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<SSG_SearchApiRequest>(new SSG_SearchApiRequest()
                     {
                         SearchApiRequestId = Guid.NewGuid(),
                         PersonGivenName = "personGivenName",
-                        StatusCode = SearchApiRequestStatusReason.InProgress.GetHashCode()
+                        StatusCode = SearchApiRequestStatusReason.InProgress.Value
                     }));
 
             _sut = new SearchApiRequestService(odataClientMock.Object);
@@ -57,7 +61,6 @@ namespace Fams3Adapter.Dynamics.Test.SearchApiRequest
         public void with_success_should_return_a_collection_of_search_request()
         {
             var result = _sut.GetAllReadyForSearchAsync(CancellationToken.None).Result;
-
             Assert.AreEqual(1, result.Count());
             Assert.AreEqual("personGivenName", result.FirstOrDefault().PersonGivenName);
 
@@ -74,7 +77,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchApiRequest
         {
             var result = await _sut.MarkInProgress(_testId, CancellationToken.None);
 
-            Assert.AreEqual(SearchApiRequestStatusReason.InProgress.GetHashCode(), result.StatusCode);
+            Assert.AreEqual(SearchApiRequestStatusReason.InProgress.Value, result.StatusCode);
         }
 
 

@@ -65,6 +65,38 @@ namespace Fams3Adapter.Dynamics.Test.OptionSets
 
         }
 
+        [Test]
+        public void GetAllOptions_with_null_string_it_should_throw_ArgumentNullException()
+        {
+            _sut = new OptionSetService(new HttpClient(), _loggerMock.Object);
+            Assert.ThrowsAsync<ArgumentNullException>(
+                async () => await _sut.GetAllOptions(null, CancellationToken.None));
+        }
+
+        [Test]
+        public void GetStatusCode_with_null_string_it_should_throw_ArgumentNullException()
+        {
+            _sut = new OptionSetService(new HttpClient(), _loggerMock.Object);
+            Assert.ThrowsAsync<ArgumentNullException>(async () =>
+                await _sut.GetAllStatusCode(null, CancellationToken.None));
+        }
+
+        [Test]
+        public void GetAllOptions_with_empty_string_it_should_throw_ArgumentNullException()
+        {
+            _sut = new OptionSetService(new HttpClient(), _loggerMock.Object);
+            Assert.ThrowsAsync<ArgumentNullException>(
+                async () => await _sut.GetAllOptions(string.Empty, CancellationToken.None));
+        }
+
+        [Test]
+        public void GetStatusCode_with_empty_string_it_should_throw_ArgumentNullException()
+        {
+            _sut = new OptionSetService(new HttpClient(), _loggerMock.Object);
+            Assert.ThrowsAsync<ArgumentNullException>(async () =>
+                await _sut.GetAllStatusCode(string.Empty, CancellationToken.None));
+        }
+
         public static HttpResponseMessage GetFakeHttpResponseMessage()
         {
             return new HttpResponseMessage
@@ -80,9 +112,9 @@ namespace Fams3Adapter.Dynamics.Test.OptionSets
             return new StringContent(JsonConvert.SerializeObject(GetFakeValidReason()), Encoding.UTF8, "application/json");
         }
 
-        public static StatusReason GetFakeValidReason()
+        public static OptionSetMetadata GetFakeValidReason()
         {
-            return new StatusReason()
+            return new OptionSetMetadata()
             {
                 OptionSet = new OptionSet()
                 {

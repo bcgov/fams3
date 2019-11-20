@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using DynamicsAdapter.Web.Health;
 using DynamicsAdapter.Web.SearchRequest;
 using DynamicsAdapter.Web.Test.FakeMessages;
+using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.OptionSets;
 using Fams3Adapter.Dynamics.OptionSets.Models;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -40,8 +41,8 @@ namespace DynamicsAdapter.Web.Test.Health
             var fakeIdentificationTypes = Enumeration.GetAll<IdentificationType>().ToList();
             fakeIdentificationTypes.RemoveAt(0);
             
-            _statusReasonServiceMock.Setup(x => x.GetAllOptions<IdentificationType>(CancellationToken.None))
-                .Returns(Task.FromResult(fakeIdentificationTypes.AsEnumerable()));
+            _statusReasonServiceMock.Setup(x => x.GetAllOptions("ssgidentificationtypes", CancellationToken.None))
+                .Returns(Task.FromResult(fakeIdentificationTypes.AsEnumerable().Select(x => new GenericOption(x.Value, x.Name))));
             _sut = new StatusReasonHealthCheck(_statusReasonServiceMock.Object);
 
             var result = await _sut.CheckHealthAsync(new HealthCheckContext(), CancellationToken.None);
@@ -55,8 +56,8 @@ namespace DynamicsAdapter.Web.Test.Health
 
             _statusReasonServiceMock.Setup(x => x.GetAllStatusCode(It.IsAny<string>(), CancellationToken.None))
                 .Returns(Task.FromResult(FakeHttpMessageResponse.GetFakeValidReason()));
-            _statusReasonServiceMock.Setup(x => x.GetAllOptions<IdentificationType>( CancellationToken.None))
-                .Returns(Task.FromResult(Enumeration.GetAll<IdentificationType>()));
+            _statusReasonServiceMock.Setup(x => x.GetAllOptions("ssg_identificationtypes", CancellationToken.None))
+                .Returns(Task.FromResult(Enumeration.GetAll<IdentificationType>().Select(x => new GenericOption(x.Value, x.Name))));
             _sut = new StatusReasonHealthCheck(_statusReasonServiceMock.Object);
 
             var result = await _sut.CheckHealthAsync(new HealthCheckContext(), CancellationToken.None);

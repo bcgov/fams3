@@ -124,34 +124,34 @@ objects:
                   value: http://search-api
                 - name: OAUTH__RESOURCEURL
                   valueFrom:
-                    secretKeyRef:
-                      key: dynamics-oauth-credentials
-                      name: resource-url
+                    secret_nameRef:
+                      name: dynamics-oauth-credentials
+                      key: resource-url
                 - name: OAUTH__CLIENTID
                   valueFrom:
-                    secretKeyRef:
-                      key: dynamics-oauth-credentials
-                      name: client-id
+                    secret_nameRef:
+                      name: dynamics-oauth-credentials
+                      key: client-id
                 - name: OAUTH__OAUTHURL
                   valueFrom:
-                    secretKeyRef:
-                      key: dynamics-oauth-credentials
-                      name: oauth-url
+                    secret_nameRef:
+                      name: dynamics-oauth-credentials
+                      key: oauth-url
                 - name: OAUTH__USERNAME
                   valueFrom:
-                    secretKeyRef:
-                      key: dynamics-oauth-credentials
-                      name: username
+                    secret_nameRef:
+                      name: dynamics-oauth-credentials
+                      key: username
                 - name: OAUTH__PASSWORD
                   valueFrom:
-                    secretKeyRef:
-                      key: dynamics-oauth-credentials
-                      name: password
+                    secret_nameRef:
+                      name: dynamics-oauth-credentials
+                      key: password
                 - name: OAUTH__SECRET
                   valueFrom:
-                    secretKeyRef:
-                      key: dynamics-oauth-credentials
-                      name: oauth-secret
+                    secret_nameRef:
+                      name: dynamics-oauth-credentials
+                      key: oauth-secret
               livenessProbe:
                 httpGet:
                   path: "/health"

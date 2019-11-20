@@ -126,19 +126,19 @@ objects:
                   value: guest
                 - name: RABBITMQ__PASSWORD
                   value: guest
-              livenessProbe:
-                httpGet:
-                  path: "/health"
-                  port: 8080
-                  scheme: HTTP
-                initialDelaySeconds: 40
-                timeoutSeconds: 15
-              readinessProbe:
-                httpGet:
-                  path: "/health"
-                  port: 8080
-                  scheme: HTTP
-                initialDelaySeconds: 10
-                timeoutSeconds: 30
+              # livenessProbe:
+              #   httpGet:
+              #     path: "/health"
+              #     port: 8080
+              #     scheme: HTTP
+              #   initialDelaySeconds: 40
+              #   timeoutSeconds: 15
+              # readinessProbe:
+              #   httpGet:
+              #     path: "/health"
+              #     port: 8080
+              #     scheme: HTTP
+              #   initialDelaySeconds: 10
+              #   timeoutSeconds: 30
 
 

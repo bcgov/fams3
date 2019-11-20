@@ -120,7 +120,7 @@ objects:
         terminationGracePeriodSeconds: 1800
         containers:
         - name: ${CASSANDRA_SERVICE_NAME}
-          image: cassandra:3.11
+          image: centos/cassandra-311-centos7:3.11
           command:
           - /docker-entrypoint.sh
           - "-R"

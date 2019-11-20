@@ -118,7 +118,6 @@ pipeline {
       sh "oc tag ${DYNAMICS_ADAPTER}:latest ${DYNAMICS_ADAPTER}:dev -n ${TOOLS_NAMESPACE}"
       WaitForDeploy(DYNAMICS_ADAPTER, DEV_NAMESPACE)
       echo 'Done'
-
      },
      'ICBCAdapter': {
       sh "oc process -f openshift/templates/icbc-adapter.dc.yaml \

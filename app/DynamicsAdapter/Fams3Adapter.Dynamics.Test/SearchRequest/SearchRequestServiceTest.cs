@@ -13,17 +13,19 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
 {
     public class SearchRequestServiceTest
     {
-        private Mock<IODataClient> odataClientMock = new Mock<IODataClient>();
-        private readonly Mock<ILogger<SearchRequestService>> _loggerMock = new Mock<ILogger<SearchRequestService>>();
+        private Mock<IODataClient> odataClientMock;
 
-        private Guid testId = Guid.Parse("6AE89FE6-9909-EA11-B813-00505683FBF4");
+        private readonly Guid testId = Guid.Parse("6AE89FE6-9909-EA11-B813-00505683FBF4");
 
         private SearchRequestService _sut;
 
         [SetUp]
         public void SetUp()
         {
-            odataClientMock.Setup(x => x.For<SSG_Identifier>(null).Set(It.Is<Dictionary<string, Object>>(x => x["SSG_Identification"].ToString() == "identificationtest"))
+
+            odataClientMock = new Mock<IODataClient>();
+
+            odataClientMock.Setup(x => x.For<SSG_Identifier>(null).Set(It.Is<SSG_Identifier>(x => x.SSG_Identification == "identificationtest"))
             .InsertEntryAsync(It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult(new SSG_Identifier()
             {
@@ -31,10 +33,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             })
             );
 
-            odataClientMock.Setup(x => x.For<SSG_Identifier>(null).Set(It.Is<Dictionary<string, Object>>(x => x["SSG_Identification"].ToString() == "exception"))
-            .InsertEntryAsync(It.IsAny<CancellationToken>())).Throws(new Exception());
-
-            _sut = new SearchRequestService(odataClientMock.Object, _loggerMock.Object);
+            _sut = new SearchRequestService(odataClientMock.Object);
         }
 
 

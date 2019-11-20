@@ -39,6 +39,13 @@ namespace DynamicsAdapter.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+            services.AddMvc().AddNewtonsoftJson(options =>
+            {
+                options.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
+            });
+
+
             services.AddControllers();
 
             services.AddHealthChecks().AddCheck<StatusReasonHealthCheck>("status_reason_health_check",failureStatus:HealthStatus.Degraded);

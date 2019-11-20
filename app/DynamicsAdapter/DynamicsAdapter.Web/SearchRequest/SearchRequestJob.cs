@@ -52,7 +52,7 @@ namespace DynamicsAdapter.Web.SearchRequest
                     FirstName = ssgSearchRequest.PersonGivenName,
                     LastName = ssgSearchRequest.PersonSurname,
                     DateOfBirth = ssgSearchRequest.PersonBirthDate,
-                }, $"{ssgSearchRequest.SearchApiRequestId}", cts.Token);
+                }, $"{ssgSearchRequest.SearchRequestId}", cts.Token);
                 _logger.LogInformation($"Successfully posted person search id:{result.Id}");
 
                 await MarkInProgress(ssgSearchRequest, cts.Token);

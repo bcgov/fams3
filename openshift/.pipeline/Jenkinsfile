@@ -16,7 +16,7 @@ def DOMAIN = "pathfinder.gov.bc.ca"
 def SUBDOMAIN = "fams3"
 
 def GIT_URI = "https://github.com/bcgov/fams3.git"
-def GIT_REF = "feature/cicd"
+def GIT_REF = "master"
 
 def PRIVATE_GIT_URI = "git@github.com:bcgov-c/fams3-openshift.git"
 def PRIVATE_GIT_REF = "master"
@@ -105,7 +105,7 @@ pipeline {
          -p NAMESPACE=${TOOLS_NAMESPACE} \
          -p TAG=dev | oc apply -f - -n ${DEV_NAMESPACE}"
       sh "oc tag ${SEARCH_API}:latest ${SEARCH_API}:dev -n ${TOOLS_NAMESPACE}"
-      WaitForDeploy(SEARCH_API, DEV_NAMESPACE)
+      // WaitForDeploy(SEARCH_API, DEV_NAMESPACE)
       echo 'Done'
      },
      'DynamicsAdapter': {
@@ -116,7 +116,7 @@ pipeline {
          -p NAMESPACE=${TOOLS_NAMESPACE} \
          -p TAG=dev | oc apply -f - -n ${DEV_NAMESPACE}"
       sh "oc tag ${DYNAMICS_ADAPTER}:latest ${DYNAMICS_ADAPTER}:dev -n ${TOOLS_NAMESPACE}"
-      WaitForDeploy(DYNAMICS_ADAPTER, DEV_NAMESPACE)
+      // WaitForDeploy(DYNAMICS_ADAPTER, DEV_NAMESPACE)
       echo 'Done'
      },
      'ICBCAdapter': {
@@ -127,7 +127,7 @@ pipeline {
          -p NAMESPACE=${TOOLS_NAMESPACE} \
          -p TAG=dev | oc apply -f - -n ${DEV_NAMESPACE}"
       sh "oc tag ${ICBC_ADAPTER}:latest ${ICBC_ADAPTER}:dev -n ${TOOLS_NAMESPACE}"
-      WaitForDeploy(ICBC_ADAPTER, DEV_NAMESPACE)
+      // WaitForDeploy(ICBC_ADAPTER, DEV_NAMESPACE)
       echo 'Done'
 
      }

@@ -19,6 +19,13 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             [JsonProperty("ssg_SearchRequest")]
             public virtual SSG_SearchRequest SSG_SearchRequest { get; set; }
 
+            [JsonProperty("ssg_identificationcategorytext")]
+            public int IdentifierType { get; set; }
+
+            [JsonProperty("ssg_issuedby")]
+            public string IssuedBy { get; set; }
+
+
         }
 
 }

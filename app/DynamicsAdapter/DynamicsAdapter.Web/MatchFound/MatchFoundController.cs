@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +11,37 @@ using Microsoft.Extensions.Logging;
 
 namespace DynamicsAdapter.Web.MatchFound
 {
+
+    // TODO: all classes bellow will be coming from SEARCH API CORE LIB
+    public class MatchFound
+    {
+        public Guid SearchRequestId { get; set; }
+
+        public Person Person { get; set; }
+
+        public IEnumerable<PersonId> PersonIds { get; set; }
+
+    }
+
+    public enum PersonIDKind
+    {
+        DriverLicense
+    }
+
+    public class PersonId
+    {
+        public PersonIDKind Kind { get; set; }
+        public string Issuer { get; set; }
+        public string Number { get; set; }
+    }
+
+    public class Person
+    {
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public DateTime DateOfBirth { get; set; }
+    }
+
 
     [Route("[controller]")]
     [ApiController]
@@ -29,39 +61,44 @@ namespace DynamicsAdapter.Web.MatchFound
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> MatchFound(string id, [FromBody]Object payload)
+        public async Task<IActionResult> MatchFound(Guid id, [FromBody]MatchFound matchFound)
         {
-            if (string.IsNullOrEmpty(id))
-            {
-                return BadRequest();
-            }
 
             _logger.LogInformation("Received MatchFound response with SearchRequestId is " + id);
             var cts = new CancellationTokenSource();
 
-            //todo, replaced with data from payload
-            var toBeReplaced = new SSG_Identifier()
+            foreach (var matchFoundPersonId in matchFound.PersonIds)
             {
-                SSG_Identification = "Test from dynamics adapter",
-                ssg_identificationeffectivedate = new DateTime(2014, 1, 1),
-                SSG_SearchRequest = new SSG_SearchRequest()
-                {
-                    SearchRequestId = Guid.Parse("6AE89FE6-9909-EA11-B813-00505683FBF4")
-                },
-                StateCode = 0,
-                StatusCode = 1
-            };
-            //todo
 
-            try
-            {
-                SSG_Identifier result = await _service.UploadIdentifier(toBeReplaced, cts.Token);
+                //todo, replaced with data from payload
+                var toBeReplaced = new SSG_Identifier()
+                {
+                    SSG_Identification = matchFoundPersonId.Number,
+                    ssg_identificationeffectivedate = new DateTime(2014, 1, 1),
+                    IdentifierType = IdentificationType.DriverLicense.Value,
+                    IssuedBy = "ICBC",
+                    SSG_SearchRequest = new SSG_SearchRequest()
+                    {
+                        SearchRequestId = id
+                    },
+                    StateCode = 0,
+                    StatusCode = 1
+                };
+                //todo
+
+                try
+                {
+                    SSG_Identifier result = await _service.UploadIdentifier(toBeReplaced, cts.Token);
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e.Message);
+                    return BadRequest();
+                }
+
             }
-            catch (Exception e)
-            {
-                _logger.LogError(e.Message);
-                return BadRequest();
-            }
+
+            
             return Ok();
         }
     }

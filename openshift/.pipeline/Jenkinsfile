@@ -104,7 +104,7 @@ pipeline {
          -p MEMORY_LIMIT=${RUN_MEMORY} \
          -p NAMESPACE=${TOOLS_NAMESPACE} \
          -p TAG=dev | oc apply -f - -n ${DEV_NAMESPACE}"
-      sh "oc tag ${SEARCH-API}:latest ${SEARCH-API}:dev -n ${TOOLS_NAMESPACE}"
+      sh "oc tag ${SEARCH_API}:latest ${SEARCH_API}:dev -n ${TOOLS_NAMESPACE}"
       WaitForDeploy(SEARCH_API, DEV_NAMESPACE)
       echo 'Done'
      },

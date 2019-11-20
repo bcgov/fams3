@@ -35,9 +35,13 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<SSG_SearchApiRequest>> GetAllReadyForSearchAsync(CancellationToken cancellationToken)
-        { 
-            return await _oDataClient.For<SSG_SearchApiRequest>().Filter(x => x.StatusCode == SearchApiRequestStatusReason.ReadyForSearch.Value).FindEntriesAsync(cancellationToken);
+        public async Task<IEnumerable<SSG_SearchApiRequest>> GetAllReadyForSearchAsync(
+            CancellationToken cancellationToken)
+        {
+            int statusCode = SearchApiRequestStatusReason.ReadyForSearch.Value;
+            return await _oDataClient.For<SSG_SearchApiRequest>()
+                .Filter(x => x.StatusCode == statusCode)
+                .FindEntriesAsync(cancellationToken);
         }
 
         /// <summary>
@@ -48,12 +52,12 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
         /// <returns></returns>
         public async Task<SSG_SearchApiRequest> MarkInProgress(Guid searchApiRequestId, CancellationToken cancellationToken)
         {
-            if(searchApiRequestId == default || searchApiRequestId == Guid.Empty) throw new ArgumentNullException(nameof(searchApiRequestId));
+            if (searchApiRequestId == default || searchApiRequestId == Guid.Empty) throw new ArgumentNullException(nameof(searchApiRequestId));
 
             return await _oDataClient
                 .For<SSG_SearchApiRequest>()
                 .Key(searchApiRequestId)
-                .Set(new Entry {{ Keys.DYNAMICS_STATUS_CODE_FIELD, SearchApiRequestStatusReason.InProgress.Value }})
+                .Set(new Entry { { Keys.DYNAMICS_STATUS_CODE_FIELD, SearchApiRequestStatusReason.InProgress.Value } })
                 .UpdateEntryAsync(cancellationToken);
         }
 

@@ -2,10 +2,10 @@
 kind: Template
 apiVersion: v1
 metadata:
-  name: fams3-searchapi
+  name: fams3-dotnet
   annotations:
-    openshift.io/display-name: "FAMS3 SearchAPI"
-    description: The FAMS3 Search API
+    openshift.io/display-name: "FAMS3 Dotnet"
+    description: The FAMS3 Dotnet Deployment
     tags: quickstart,dotnet,.net
     iconClass: icon-dotnet
     template.openshift.io/provider-display-name: BCGov
@@ -38,6 +38,12 @@ parameters:
       The image tag to be deployed from the registry.
     required: true
     value: latest
+  - name: JAEGER_COLLECTOR
+    displayName: Jaeger Collector Service
+    description:
+      The name of the Jaeger collector to send traces to (port 14268)
+    required: true
+    value: jaeger-collector
 objects:
   - kind: Route
     apiVersion: v1
@@ -76,6 +82,7 @@ objects:
       strategy:
         type: Rolling
       triggers:
+        - type: ConfigChange
         - type: ImageChange
           imageChangeParams:
             automatic: true
@@ -85,7 +92,6 @@ objects:
               kind: ImageStreamTag
               namespace: "${NAMESPACE}"
               name: "${NAME}:${TAG}"
-        - type: ConfigChange
       replicas: 1
       selector:
         name: "${NAME}"
@@ -103,7 +109,49 @@ objects:
               resources:
                 limits:
                   memory: "${MEMORY_LIMIT}"
-              env: []
+              env: 
+                - name: ASPNETCORE_ENVIRONMENT
+                  value: Development
+                - name: JAEGER_SERVICE_NAME
+                  value: "${NAME}"
+                - name: JAEGER_SAMPLER_TYPE
+                  value: const
+                - name: JAEGER_ENDPOINT
+                  value: http://${JAEGER_COLLECTOR}:14268/api/traces
+                - name: SCHEDULER__CRON
+                  value: 0/5 * * * * ?
+                - name: SEARCHAPI__BASEURL
+                  value: http://search-api
+                - name: OAUTH__RESOURCEURL
+                  valueFrom:
+                    secretKeyRef:
+                      name: dynamics-oauth-credentials
+                      key: resource-url
+                - name: OAUTH__CLIENTID
+                  valueFrom:
+                    secretKeyRef:
+                      name: dynamics-oauth-credentials
+                      key: client-id
+                - name: OAUTH__OAUTHURL
+                  valueFrom:
+                    secretKeyRef:
+                      name: dynamics-oauth-credentials
+                      key: oauth-url
+                - name: OAUTH__USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: dynamics-oauth-credentials
+                      key: username
+                - name: OAUTH__PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: dynamics-oauth-credentials
+                      key: password
+                - name: OAUTH__SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: dynamics-oauth-credentials
+                      key: oauth-secret
               livenessProbe:
                 httpGet:
                   path: "/health"
@@ -118,16 +166,5 @@ objects:
                   scheme: HTTP
                 initialDelaySeconds: 10
                 timeoutSeconds: 30
-            - image: jaegertracing/jaeger-agent
-              name: jaeger-agent
-              ports:
-              - containerPort: 5775
-                protocol: UDP
-              - containerPort: 6831
-                protocol: UDP
-              - containerPort: 6832
-                protocol: UDP
-              - containerPort: 5778
-                protocol: TCP
-              args: ["--collector.host-port=jaeger-collector.jaeger-infra.svc:14267"]
+
 

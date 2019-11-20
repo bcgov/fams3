@@ -2,10 +2,10 @@
 kind: Template
 apiVersion: v1
 metadata:
-  name: fams3-searchapi-build
+  name: fams3-dotnet-build
   annotations:
-    openshift.io/display-name: "FAMS3 SearchAPI Build"
-    description: The FAMS3 Search API
+    openshift.io/display-name: "FAMS3 Dotnet Build"
+    description: The FAMS3 Dotnet builder
     tags: quickstart,dotnet,.net
     iconClass: icon-dotnet
     template.openshift.io/provider-display-name: BCGov
@@ -45,7 +45,11 @@ parameters:
   displayName: Git Reference
   description: Set this to a branch name, tag or other ref of your repository if you
     are not using the default branch.
-  value: dotnetcore-3.0
+  value: master
+- name: SOURCE_SECRET
+  displayname: Git Source Secret
+  description: Set this to the secret containing the credentials for building the dotnet image.
+  required: true
 - name: CONTEXT_DIR
   displayName: Context Directory
   description: Set this to use a subdirectory of the source code repository
@@ -116,6 +120,8 @@ objects:
           uri: "${SOURCE_REPOSITORY_URL}"
           ref: "${SOURCE_REPOSITORY_REF}"
         contextDir: "${CONTEXT_DIR}"
+        sourceSecret: 
+          name: "${SOURCE_SECRET}"
       strategy:
         type: Source
         sourceStrategy:
@@ -148,7 +154,6 @@ objects:
           name: "${NAME}-build:latest"
       triggers:
         - type: ImageChange
-        - type: ConfigChange
         - type: GitHub
           github:
             secret: "${GITHUB_WEBHOOK_SECRET}"
@@ -184,11 +189,3 @@ objects:
         to:
           kind: ImageStreamTag
           name: "${NAME}:latest"
-      triggers:
-        - type: ImageChange
-        - type: ConfigChange
-        - type: ImageChange
-          imageChange:
-            from:
-              kind: ImageStreamTag
-              name: "${NAME}-build:latest"

@@ -1,11 +1,9 @@
-﻿using Fams3Adapter.Dynamics.SearchRequest;
-using Microsoft.Extensions.Logging;
+﻿using Fams3Adapter.Dynamics.Identifier;
+using Fams3Adapter.Dynamics.SearchRequest;
 using Moq;
 using NUnit.Framework;
 using Simple.OData.Client;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -25,11 +23,11 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
 
             odataClientMock = new Mock<IODataClient>();
 
-            odataClientMock.Setup(x => x.For<SSG_Identifier>(null).Set(It.Is<SSG_Identifier>(x => x.SSG_Identification == "identificationtest"))
+            odataClientMock.Setup(x => x.For<SSG_Identifier>(null).Set(It.Is<SSG_Identifier>(x => x.Identification == "identificationtest"))
             .InsertEntryAsync(It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult(new SSG_Identifier()
             {
-                SSG_Identification = "test"
+                Identification = "test"
             })
             );
 
@@ -42,8 +40,8 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         {
             var identifier = new SSG_Identifier()
             {
-                SSG_Identification = "identificationtest",
-                ssg_identificationeffectivedate = DateTime.Now,
+                Identification = "identificationtest",
+                IdentificationEffectiveDate = DateTime.Now,
                 StateCode = 0,
                 StatusCode = 1,
                 SSG_SearchRequest = new SSG_SearchRequest() { SearchRequestId = testId }
@@ -51,7 +49,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
 
             var result = await _sut.UploadIdentifier(identifier, CancellationToken.None);
 
-            Assert.AreEqual("test", result.SSG_Identification);
+            Assert.AreEqual("test", result.Identification);
         }
 
 

@@ -38,13 +38,28 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
         public async Task<IEnumerable<SSG_SearchApiRequest>> GetAllReadyForSearchAsync(
             CancellationToken cancellationToken)
         {
-            int statusCode = SearchApiRequestStatusReason.ReadyForSearch.Value;
-            return await _oDataClient.For<SSG_SearchApiRequest>()
-                .Filter(x => x.StatusCode == statusCode)
+            int readyForSearchCode = SearchApiRequestStatusReason.ReadyForSearch.Value;
+            List<SSG_SearchApiRequest> results = new List<SSG_SearchApiRequest>();
+
+            //todo: we need to change to use following code, but ODataClient 4 has problems with expand, curent implemented code is a workaround
+            //ref: https://powerusers.microsoft.com/t5/Power-Apps-Ideas/Web-API-Implement-expand-on-collections/idi-p/221291
+
+            IEnumerable<SSG_SearchApiRequest> searchApiRequests = await _oDataClient.For<SSG_SearchApiRequest>()
+                .Select(x => x.SearchApiRequestId)
+                .Filter(x => x.StatusCode == readyForSearchCode)
                 .FindEntriesAsync(cancellationToken);
+
+            foreach (SSG_SearchApiRequest request in searchApiRequests)
+            {
+                SSG_SearchApiRequest searchApiRequest = await _oDataClient.For<SSG_SearchApiRequest>()
+                    .Key(request.SearchApiRequestId)
+                    .Expand(x => x.Identifiers).FindEntryAsync(cancellationToken);
+                results.Add( searchApiRequest );
+            }
+            return results;       
         }
 
-        /// <summary>
+        /// <summary>(
         /// Marks a search request in Progress
         /// </summary>
         /// <param name="searchApiRequestId"></param>

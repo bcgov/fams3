@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Fams3Adapter.Dynamics.SearchApiRequest;
-using Microsoft.Extensions.Logging;
+using Fams3Adapter.Dynamics.Identifier;
 using Simple.OData.Client;
 
 namespace Fams3Adapter.Dynamics.SearchRequest

@@ -63,7 +63,6 @@ namespace DynamicsAdapter.Web.MatchFound
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> MatchFound(Guid id, [FromBody]MatchFound matchFound)
         {
-
             _logger.LogInformation("Received MatchFound response with SearchRequestId is " + id);
             var cts = new CancellationTokenSource();
 
@@ -73,8 +72,8 @@ namespace DynamicsAdapter.Web.MatchFound
                 //todo, replaced with data from payload
                 var toBeReplaced = new SSG_Identifier()
                 {
-                    SSG_Identification = matchFoundPersonId.Number,
-                    ssg_identificationeffectivedate = new DateTime(2014, 1, 1),
+                    Identification = matchFoundPersonId.Number,
+                    IdentificationEffectiveDate = new DateTime(2014, 1, 1),
                     IdentifierType = IdentificationType.DriverLicense.Value,
                     IssuedBy = "ICBC",
                     SSG_SearchRequest = new SSG_SearchRequest()

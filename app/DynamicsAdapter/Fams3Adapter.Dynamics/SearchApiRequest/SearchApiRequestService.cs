@@ -39,35 +39,24 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
             CancellationToken cancellationToken)
         {
             int readyForSearchCode = SearchApiRequestStatusReason.ReadyForSearch.Value;
+            List<SSG_SearchApiRequest> results = new List<SSG_SearchApiRequest>();
 
-            try
+            //todo: we need to change to use following code, but ODataClient 4 has problems with expand, curent implemented code is a workaround
+            //ref: https://powerusers.microsoft.com/t5/Power-Apps-Ideas/Web-API-Implement-expand-on-collections/idi-p/221291
+
+            IEnumerable<SSG_SearchApiRequest> searchApiRequests = await _oDataClient.For<SSG_SearchApiRequest>()
+                .Select(x => x.SearchApiRequestId)
+                .Filter(x => x.StatusCode == readyForSearchCode)
+                .FindEntriesAsync(cancellationToken);
+
+            foreach (SSG_SearchApiRequest request in searchApiRequests)
             {
-
-                //IEnumerable<SSG_SearchApiRequest> results = await _oDataClient.For<SSG_SearchApiRequest>().Filter(x => x.StatusCode == readyForSeachCode).Expand(x => x.Identifiers)
-                //    .FindEntriesAsync(cancellationToken);
-
-                //todo: we need to change to use above code, but ODataClient 4 has problems with expand, following code is a workaround
-                //ref: https://powerusers.microsoft.com/t5/Power-Apps-Ideas/Web-API-Implement-expand-on-collections/idi-p/221291
-
-                IEnumerable<SSG_SearchApiRequest> searchApiRequests = await _oDataClient.For<SSG_SearchApiRequest>()
-                    .Select(x => x.SearchApiRequestId)
-                    .Filter(x => x.StatusCode == readyForSearchCode)
-                    .FindEntriesAsync(cancellationToken);
-
-                List<SSG_SearchApiRequest> results = new List<SSG_SearchApiRequest>();
-                foreach (SSG_SearchApiRequest request in searchApiRequests)
-                {
-                    SSG_SearchApiRequest r = await _oDataClient.For<SSG_SearchApiRequest>()
-                        .Key(request.SearchApiRequestId)
-                        .Expand(x => x.Identifiers).FindEntryAsync(cancellationToken);
-                    results.Add(r);
-                }
-                return results;
+                SSG_SearchApiRequest searchApiRequest = await _oDataClient.For<SSG_SearchApiRequest>()
+                    .Key(request.SearchApiRequestId)
+                    .Expand(x => x.Identifiers).FindEntryAsync(cancellationToken);
+                results.Add( searchApiRequest );
             }
-            catch (Exception ex)
-            {
-                throw;
-            }         
+            return results;       
         }
 
         /// <summary>(

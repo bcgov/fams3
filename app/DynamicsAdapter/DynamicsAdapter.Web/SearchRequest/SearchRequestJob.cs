@@ -41,24 +41,31 @@ namespace DynamicsAdapter.Web.SearchRequest
 
             var cts = new CancellationTokenSource();
 
-            List<SSG_SearchApiRequest> requestList = await GetAllReadyForSearchAsync(cts.Token);
-            foreach (var ssgSearchRequest in requestList)
+            try
             {
-                _logger.LogDebug(
-                    $"Attempting to post person search for request {ssgSearchRequest.SearchApiRequestId}");
+                List<SSG_SearchApiRequest> requestList = await GetAllReadyForSearchAsync(cts.Token);
 
-                var result = await _searchApiClient.SearchAsync(new PersonSearchRequest()
+                foreach (var ssgSearchRequest in requestList)
                 {
-                    FirstName = ssgSearchRequest.PersonGivenName,
-                    LastName = ssgSearchRequest.PersonSurname,
-                    DateOfBirth = ssgSearchRequest.PersonBirthDate,
-                }, $"{ssgSearchRequest.SearchRequestId}", cts.Token);
-                _logger.LogInformation($"Successfully posted person search id:{result.Id}");
+                    _logger.LogDebug(
+                        $"Attempting to post person search for request {ssgSearchRequest.SearchApiRequestId}");
 
-                await MarkInProgress(ssgSearchRequest, cts.Token);
+                    var result = await _searchApiClient.SearchAsync(new PersonSearchRequest()
+                    {
+                        FirstName = ssgSearchRequest.PersonGivenName,
+                        LastName = ssgSearchRequest.PersonSurname,
+                        DateOfBirth = ssgSearchRequest.PersonBirthDate,
+                    }, $"{ssgSearchRequest.SearchRequestId}", cts.Token);
+                    _logger.LogInformation($"Successfully posted person search id:{result.Id}");
 
+                    await MarkInProgress(ssgSearchRequest, cts.Token);
+
+                }
             }
-
+            catch(Exception e) 
+            {
+                _logger.LogError(e, e.Message, null);
+            }
         }
 
         private async Task<List<SSG_SearchApiRequest>> GetAllReadyForSearchAsync(CancellationToken cancellationToken)

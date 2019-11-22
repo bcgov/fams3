@@ -17,19 +17,19 @@ namespace Fams3Adapter.Dynamics.Identifier
         public int StateCode { get; set; }
 
         [JsonProperty("ssg_identificationeffectivedate")]
-        public DateTime IdentificationEffectiveDate { get; set; }
+        public DateTime? IdentificationEffectiveDate { get; set; }
 
         [JsonProperty("ssg_identificationexpirationdate")]
-        public DateTime IdentificationExpirationDate { get; set; }
+        public DateTime? IdentificationExpirationDate { get; set; }
 
         [JsonProperty("ssg_SearchRequest")]
         public virtual SSG_SearchRequest SSG_SearchRequest { get; set; }
 
         [JsonProperty("ssg_identificationcategorytext")]
-        public int IdentifierType { get; set; }
+        public int? IdentifierType { get; set; }
 
         [JsonProperty("ssg_informationsourcetext")]
-        public int InformationSource { get; set; }
+        public int? InformationSource { get; set; }
 
         [JsonProperty("ssg_issuedby")]
         public string IssuedBy { get; set; }

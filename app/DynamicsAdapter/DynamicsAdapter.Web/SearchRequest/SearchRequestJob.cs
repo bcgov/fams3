@@ -7,6 +7,7 @@ using Quartz;
 using System.Threading.Tasks;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using OpenTracing;
+using Fams3Adapter.Dynamics.Identifier;
 
 namespace DynamicsAdapter.Web.SearchRequest
 {
@@ -39,7 +40,6 @@ namespace DynamicsAdapter.Web.SearchRequest
             _logger.LogInformation("Search Request started!");
 
             var cts = new CancellationTokenSource();
-
 
             List<SSG_SearchApiRequest> requestList = await GetAllReadyForSearchAsync(cts.Token);
             foreach (var ssgSearchRequest in requestList)

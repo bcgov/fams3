@@ -38,13 +38,39 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
         public async Task<IEnumerable<SSG_SearchApiRequest>> GetAllReadyForSearchAsync(
             CancellationToken cancellationToken)
         {
-            int statusCode = SearchApiRequestStatusReason.ReadyForSearch.Value;
-            return await _oDataClient.For<SSG_SearchApiRequest>()
-                .Filter(x => x.StatusCode == statusCode)
-                .FindEntriesAsync(cancellationToken);
+            int readyForSeachCode = SearchApiRequestStatusReason.ReadyForSearch.Value;
+
+            try
+            {
+
+                //IEnumerable<SSG_SearchApiRequest> results = await _oDataClient.For<SSG_SearchApiRequest>().Filter(x => x.StatusCode == readyForSeachCode).Expand(x => x.Identifiers)
+                //    .FindEntriesAsync(cancellationToken);
+
+                //todo: we need to change to use above code, but ODataClient 4 has problems with expand, following code is a workaround
+                //ref: https://powerusers.microsoft.com/t5/Power-Apps-Ideas/Web-API-Implement-expand-on-collections/idi-p/221291
+
+                IEnumerable<SSG_SearchApiRequest> searchApiRequests = await _oDataClient.For<SSG_SearchApiRequest>()
+                    .Select(x=>x.SearchApiRequestId)
+                    .Filter(x => x.StatusCode == readyForSeachCode)
+                    .FindEntriesAsync(cancellationToken);
+
+                List<SSG_SearchApiRequest> results = new List<SSG_SearchApiRequest>();
+                foreach (SSG_SearchApiRequest request in searchApiRequests)
+                {
+                    SSG_SearchApiRequest r = await _oDataClient.For<SSG_SearchApiRequest>()
+                        .Key(request.SearchApiRequestId)
+                        .Expand(x => x.Identifiers).FindEntryAsync();
+                    results.Add(r);
+                }
+                return results;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }         
         }
 
-        /// <summary>
+        /// <summary>(
         /// Marks a search request in Progress
         /// </summary>
         /// <param name="searchApiRequestId"></param>

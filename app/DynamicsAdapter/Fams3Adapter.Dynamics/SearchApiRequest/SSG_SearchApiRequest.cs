@@ -34,7 +34,8 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
         [JsonProperty("ssg_name")]
         public string Name { get; set; }
 
-        public ICollection<SSG_Identifier> Identifiers { get; set; }
+       [JsonProperty("ssg_ssg_identifier_ssg_searchapirequest")]
+        public SSG_Identifier[] Identifiers { get; set; }
 
     }
 }

@@ -29,18 +29,6 @@ namespace Fams3Adapter.Dynamics.Test.SearchApiRequest
             int readyForSearchVAlue = SearchApiRequestStatusReason.ReadyForSearch.Value;
             int inProgressValue = SearchApiRequestStatusReason.InProgress.Value;
 
-            //odataClientMock.Setup(x => x.For<SSG_SearchApiRequest>(null)
-            //        .Filter(It.IsAny<Expression<Func<SSG_SearchApiRequest, bool>>>())
-            //        .FindEntriesAsync(It.IsAny<CancellationToken>()))
-            //    .Returns(Task.FromResult<IEnumerable<SSG_SearchApiRequest>>(new List<SSG_SearchApiRequest>()
-            //    {
-            //        new SSG_SearchApiRequest()
-            //        {
-            //            SearchApiRequestId = Guid.NewGuid(),
-            //            PersonGivenName = "personGivenName"
-            //        }
-            //    }));
-
             odataClientMock.Setup(x => x.For<SSG_SearchApiRequest>(null)
                 .Select(x => x.SearchApiRequestId)
                 .Filter(It.IsAny<Expression<Func<SSG_SearchApiRequest, bool>>>())

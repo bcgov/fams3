@@ -38,7 +38,7 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
         public async Task<IEnumerable<SSG_SearchApiRequest>> GetAllReadyForSearchAsync(
             CancellationToken cancellationToken)
         {
-            int readyForSeachCode = SearchApiRequestStatusReason.ReadyForSearch.Value;
+            int readyForSearchCode = SearchApiRequestStatusReason.ReadyForSearch.Value;
 
             try
             {
@@ -50,8 +50,8 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
                 //ref: https://powerusers.microsoft.com/t5/Power-Apps-Ideas/Web-API-Implement-expand-on-collections/idi-p/221291
 
                 IEnumerable<SSG_SearchApiRequest> searchApiRequests = await _oDataClient.For<SSG_SearchApiRequest>()
-                    .Select(x=>x.SearchApiRequestId)
-                    .Filter(x => x.StatusCode == readyForSeachCode)
+                    .Select(x => x.SearchApiRequestId)
+                    .Filter(x => x.StatusCode == readyForSearchCode)
                     .FindEntriesAsync(cancellationToken);
 
                 List<SSG_SearchApiRequest> results = new List<SSG_SearchApiRequest>();
@@ -59,7 +59,7 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
                 {
                     SSG_SearchApiRequest r = await _oDataClient.For<SSG_SearchApiRequest>()
                         .Key(request.SearchApiRequestId)
-                        .Expand(x => x.Identifiers).FindEntryAsync();
+                        .Expand(x => x.Identifiers).FindEntryAsync(cancellationToken);
                     results.Add(r);
                 }
                 return results;

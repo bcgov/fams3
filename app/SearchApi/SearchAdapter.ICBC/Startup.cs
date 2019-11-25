@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using FluentValidation;
 using GreenPipes;
 using HealthChecks.UI.Client;
 using Jaeger;
@@ -18,6 +19,7 @@ using OpenTracing;
 using OpenTracing.Util;
 using SearchAdapter.ICBC.SearchRequest;
 using SearchApi.Core.Adapters.Configuration;
+using SearchApi.Core.Adapters.Contracts;
 using SearchApi.Core.Adapters.Middleware;
 using SearchApi.Core.Configuration;
 using SearchApi.Core.Contracts;
@@ -58,6 +60,8 @@ namespace SearchAdapter.ICBC
                 .AddOptions<ProviderProfileOptions>()
                 .Bind(Configuration.GetSection("ProviderProfile"))
                 .ValidateDataAnnotations();
+
+            this.ConfigureFluentValidation(services);
 
             this.ConfigureOpenTracing(services);
 
@@ -142,6 +146,14 @@ namespace SearchAdapter.ICBC
             });
         }
 
+        /// <summary>
+        /// Configures fluent validation see https://fluentvalidation.net/aspnet#asp-net-core
+        /// </summary>
+        private void ConfigureFluentValidation(IServiceCollection services)
+        {
+            services.AddTransient<IValidator<ExecuteSearch>, PersonSearchValidator>();
+        }
+
 
         /// <summary>
         /// Configure MassTransit Service Bus
@@ -171,6 +183,8 @@ namespace SearchAdapter.ICBC
                     cfg.ReceiveEndpoint(host, nameof(ExecuteSearch), e =>
                     {
                         e.Consumer(() => new SearchRequestConsumer(
+                            provider.GetRequiredService<IValidator<ExecuteSearch>>(),
+                            provider.GetRequiredService<IOptions<ProviderProfileOptions>>(),
                             provider.GetRequiredService<ILogger<SearchRequestConsumer>>()));
                     });
 

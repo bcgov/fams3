@@ -80,6 +80,28 @@ With this configuration the searchApi will post MatchFound to `http://localhost:
 }
 ```
 
+## Search Adapters
+
+The Search Adpaters a worker that execute a search for a specific data providers.
+
+SearchAdapter produce the following events:
+
+### MatchFound
+
+When the Adapter found a match for a particular person
+
+### Person Search Accepted
+
+When a person Search is accepted, meaning it has sufficient information to conduct a search.
+
+### Person Search Rejected
+
+When a person Search does not meet the minimal requirement for the adapter to conduct a search.
+
+### Person Search Failed
+
+When the adpater throws an unknown exception.
+
 #### OpenApi
 
 The Search Api uses [NSwag](https://github.com/RicoSuter/NSwag) to autogenerate api specification from the code.

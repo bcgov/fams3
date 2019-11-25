@@ -1,19 +1,23 @@
 ﻿using System;
+using System.Collections.Generic;
 using SearchApi.Core.Adapters.Contracts;
 
 namespace SearchApi.Core.Adapters.Models
 {
-    public class DefaultPersonSearchAccepted : PersonSearchAccepted
+    public class DefaultPersonSearchFailed : PersonSearchFailed
     {
-        public DefaultPersonSearchAccepted(Guid searchRequestId, ProviderProfile providerProfile)
+
+        public DefaultPersonSearchFailed(Guid searchRequestId, ProviderProfile providerProfile, Exception cause)
         {
-            TimeStamp = DateTime.Now;
             SearchRequestId = searchRequestId;
             ProviderProfile = providerProfile;
+            Cause = cause;
+            this.TimeStamp = DateTime.Now;
         }
 
         public Guid SearchRequestId { get; }
         public DateTime TimeStamp { get; }
         public ProviderProfile ProviderProfile { get; }
+        public Exception Cause { get; }
     }
 }

@@ -4,10 +4,8 @@ using SearchApi.Core.Adapters.Models;
 
 namespace SearchApi.Core.Adapters.Contracts
 {
-    public interface PersonSearchRejected
+    public interface PersonSearchRejected : PersonSearchEvent
     {
-        Guid SearchRequestId { get; }
-        ProviderProfile ProviderProfile { get; }
         IEnumerable<ValidationResult> Reasons { get; }
     }
 }

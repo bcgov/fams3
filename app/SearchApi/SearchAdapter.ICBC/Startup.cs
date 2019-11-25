@@ -6,6 +6,7 @@ using HealthChecks.UI.Client;
 using Jaeger;
 using Jaeger.Samplers;
 using MassTransit;
+using MassTransit.PipeConfigurators;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
@@ -167,37 +168,54 @@ namespace SearchAdapter.ICBC
 
             var rabbitBaseUri = $"amqp://{rabbitMqSettings.Host}:{rabbitMqSettings.Port}";
 
+            services.AddTransient<IConsumeMessageObserver<ExecuteSearch>, PersonSearchObserver>();
+
             services.AddMassTransit(x =>
             {
 
                 // Add RabbitMq Service Bus
-                x.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(cfg =>
+                x.AddBus(provider =>
                 {
-
-                    var host = cfg.Host(new Uri(rabbitBaseUri), hostConfigurator =>
+                    var bus = Bus.Factory.CreateUsingRabbitMq(cfg =>
                     {
-                        hostConfigurator.Username(rabbitMqSettings.Username);
-                        hostConfigurator.Password(rabbitMqSettings.Password);
+                        var host = cfg.Host(new Uri(rabbitBaseUri), hostConfigurator =>
+                        {
+                            hostConfigurator.Username(rabbitMqSettings.Username);
+                            hostConfigurator.Password(rabbitMqSettings.Password);
+                        });
+
+                        cfg.ReceiveEndpoint(host, nameof(ExecuteSearch), e =>
+                        {
+                            e.Consumer(() => new SearchRequestConsumer(
+                                provider.GetRequiredService<IValidator<ExecuteSearch>>(),
+                                provider.GetRequiredService<IOptions<ProviderProfileOptions>>(),
+                                provider.GetRequiredService<ILogger<SearchRequestConsumer>>()));
+                        });
+
+                        // Add Provider profile context
+                        cfg.UseProviderProfile(provider.GetRequiredService<IOptionsMonitor<ProviderProfileOptions>>()
+                            .CurrentValue);
+
+                        // Add Diagnostic context for tracing
+                        cfg.PropagateOpenTracingContext();
+
                     });
 
-                    cfg.ReceiveEndpoint(host, nameof(ExecuteSearch), e =>
-                    {
-                        e.Consumer(() => new SearchRequestConsumer(
-                            provider.GetRequiredService<IValidator<ExecuteSearch>>(),
-                            provider.GetRequiredService<IOptions<ProviderProfileOptions>>(),
-                            provider.GetRequiredService<ILogger<SearchRequestConsumer>>()));
-                    });
+                    bus.ConnectConsumeMessageObserver(new PersonSearchObserver(
+                        provider.GetRequiredService<IOptions<ProviderProfileOptions>>(),
+                        provider.GetRequiredService<ILogger<PersonSearchObserver>>()));
 
-                    // Add Provider profile context
-                    cfg.UseProviderProfile(provider.GetRequiredService<IOptionsMonitor<ProviderProfileOptions>>().CurrentValue);
+                    return bus;
 
-                    // Add Diagnostic context for tracing
-                    cfg.PropagateOpenTracingContext();
+                });
 
-                }));
+                
+
             });
 
             services.AddHostedService<BusHostedService>();
+
+            
 
         }
 

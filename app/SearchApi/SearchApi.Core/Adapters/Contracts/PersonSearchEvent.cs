@@ -1,7 +1,11 @@
-﻿namespace SearchApi.Core.Adapters.Contracts
+﻿using System;
+
+namespace SearchApi.Core.Adapters.Contracts
 {
-    public class PersonSearchEvent
+    public interface PersonSearchEvent
     {
-        
+        Guid SearchRequestId { get; }
+
+        ProviderProfile ProviderProfile { get; }
     }
 }

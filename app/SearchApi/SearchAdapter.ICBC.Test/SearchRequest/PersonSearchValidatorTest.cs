@@ -28,7 +28,7 @@ namespace SearchAdapter.ICBC.Test.SearchRequest
         }
 
         [Test]
-        public void When_search_is_value_should_not_have_validation_error()
+        public void When_search_is_value_should_be_valid()
         {
             var command = new ExecuteSearchCommandTest()
             {

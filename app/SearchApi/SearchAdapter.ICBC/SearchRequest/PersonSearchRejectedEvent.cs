@@ -9,7 +9,7 @@ namespace SearchAdapter.ICBC.SearchRequest
 {
     public class PersonSearchRejectedEvent : PersonSearchRejected
     {
-        public Guid RequestId { get; set; }
+        public Guid SearchRequestId { get; set; }
         public ProviderProfile ProviderProfile { get; set; }
         public IEnumerable<ValidationResult> Reasons { get; set; }
     }

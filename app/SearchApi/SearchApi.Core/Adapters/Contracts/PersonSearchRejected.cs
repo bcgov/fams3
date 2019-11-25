@@ -6,7 +6,7 @@ namespace SearchApi.Core.Adapters.Contracts
 {
     public interface PersonSearchRejected
     {
-        Guid RequestId { get; }
+        Guid SearchRequestId { get; }
         ProviderProfile ProviderProfile { get; }
         IEnumerable<ValidationResult> Reasons { get; }
     }

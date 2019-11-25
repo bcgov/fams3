@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Security.Cryptography.Xml;
 using System.Threading.Tasks;
 using FluentValidation;
 using MassTransit;
@@ -22,7 +23,7 @@ namespace SearchAdapter.ICBC.SearchRequest
         private readonly ILogger<SearchRequestConsumer> _logger;
         private readonly ProviderProfile _profile;
         private readonly IValidator<ExecuteSearch> _personSearchValidator;
-        
+
 
         public SearchRequestConsumer(
             IValidator<ExecuteSearch> personSearchValidator,
@@ -40,10 +41,23 @@ namespace SearchAdapter.ICBC.SearchRequest
 
             _logger.LogWarning("Currently under development, ICBC Adapter is generating FAKE results.");
 
+            if (await ValidatePersonSearch(context))
+            {
+                await context.Publish<SearchApi.Core.Adapters.Contracts.MatchFound>(BuildFakeResult(context.Message));
+            }
+        }
+
+        private async Task<bool> ValidatePersonSearch(ConsumeContext<ExecuteSearch> context)
+        {
+
             _logger.LogDebug("Attempting to validate the personSearch");
             var validation = _personSearchValidator.Validate(context.Message);
 
-            if (!validation.IsValid)
+            if (validation.IsValid)
+            {
+                await context.Publish<PersonSearchAccepted>(new DefaultPersonSearchAccepted(context.Message.Id, _profile));
+            }
+            else
             {
                 _logger.LogInformation("PersonSearch does not have sufficient information for the adapter to proceed the search.");
                 await context.Publish<PersonSearchRejected>(new PersonSearchRejectedEvent()
@@ -56,10 +70,10 @@ namespace SearchAdapter.ICBC.SearchRequest
                         ErrorMessage = x.ErrorMessage
                     })
                 });
-                return;
             }
 
-            await context.Publish<SearchApi.Core.Adapters.Contracts.MatchFound>(BuildFakeResult(context.Message));
+            return validation.IsValid;
+
         }
 
 

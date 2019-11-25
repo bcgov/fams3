@@ -98,12 +98,16 @@ namespace SearchAdapter.ICBC.Test.SearchRequest
             Assert.IsTrue(_harness.Published.Select<PersonSearchRejected>().Any(x => x.Context.Message.SearchRequestId == inValidGuid));
         }
 
-
         [Test]
         public void Should_send_a_match_found_event()
         {
             Assert.IsTrue(_harness.Published.Select<SearchApi.Core.Adapters.Contracts.MatchFound>().Any(x => x.Context.Message.SearchRequestId == validGuid));
         }
 
+        [Test]
+        public void Should_send_a_search_accepted_event()
+        {
+            Assert.IsTrue(_harness.Published.Select<PersonSearchAccepted>().Any(x => x.Context.Message.SearchRequestId == validGuid));
+        }
     }
 }

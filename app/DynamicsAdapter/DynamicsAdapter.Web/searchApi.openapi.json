@@ -116,6 +116,7 @@
         },
         "identifierType": {
 <<<<<<< refs/remotes/bcgov/master
+<<<<<<< refs/remotes/bcgov/master
           "type": "integer",
           "description": "The identifier type, such as driver license"
         },
@@ -128,6 +129,13 @@
         "informationSourceType": {
           "type": "int",
 >>>>>>> swagger json
+=======
+          "type": "integer",
+          "description": "The identifier type, such as driver license"
+        },
+        "informationSourceType": {
+          "type": "integer",
+>>>>>>> typing issue
           "description": "The inforation source of this identifier, such as icbc"
         },
         "issuedBy": {

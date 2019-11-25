@@ -1,0 +1,86 @@
+ <EntityType Name="ssg_identifier" BaseType="mscrm.crmbaseentity">
+                <Key>
+                    <PropertyRef Name="ssg_identifierid" />
+                </Key>
+                <Property Name="statuscode" Type="Edm.Int32" />
+                <Property Name="_ssg_confirmedprofile_value" Type="Edm.Guid" />
+                <Property Name="ssg_identificationexpirationdate" Type="Edm.DateTimeOffset" />
+                <Property Name="ssg_addedtoconfirmedprofileon" Type="Edm.DateTimeOffset" />
+                <Property Name="createdon" Type="Edm.DateTimeOffset" />
+                <Property Name="ssg_datastatus" Type="Edm.Int32" />
+                <Property Name="_owninguser_value" Type="Edm.Guid" />
+                <Property Name="_modifiedby_value" Type="Edm.Guid" />
+                <Property Name="overriddencreatedon" Type="Edm.DateTimeOffset" />
+                <Property Name="ssg_identifierid" Type="Edm.Guid" />
+                <Property Name="ssg_identificationcategorytext" Type="Edm.Int32" />
+                <Property Name="_modifiedonbehalfby_value" Type="Edm.Guid" />
+                <Property Name="ssg_identificationeffectivedate" Type="Edm.DateTimeOffset" />
+                <Property Name="_ownerid_value" Type="Edm.Guid" />
+                <Property Name="ssg_addedtocp" Type="Edm.Boolean" />
+                <Property Name="_createdonbehalfby_value" Type="Edm.Guid" />
+                <Property Name="_owningbusinessunit_value" Type="Edm.Guid" />
+                <Property Name="timezoneruleversionnumber" Type="Edm.Int32" />
+                <Property Name="_ssg_addedtoconfirmedprofileby_value" Type="Edm.Guid" />
+                <Property Name="modifiedon" Type="Edm.DateTimeOffset" />
+                <Property Name="ssg_confirmcomment" Type="Edm.String" Unicode="false" />
+                <Property Name="_createdby_value" Type="Edm.Guid" />
+                <Property Name="importsequencenumber" Type="Edm.Int32" />
+                <Property Name="ssg_identification" Type="Edm.String" Unicode="false" />
+                <Property Name="ssg_informationsourcetext" Type="Edm.Int32" />
+                <Property Name="_owningteam_value" Type="Edm.Guid" />
+                <Property Name="utcconversiontimezonecode" Type="Edm.Int32" />
+                <Property Name="statecode" Type="Edm.Int32" />
+                <Property Name="_ssg_alias_value" Type="Edm.Guid" />
+                <Property Name="versionnumber" Type="Edm.Int64" />
+                <Property Name="_ssg_searchapirequest_value" Type="Edm.Guid" />
+                <Property Name="_ssg_searchrequest_value" Type="Edm.Guid" />
+                <NavigationProperty Name="createdby" Type="mscrm.systemuser" Nullable="false" Partner="lk_ssg_identifier_createdby">
+                    <ReferentialConstraint Property="_createdby_value" ReferencedProperty="systemuserid" />
+                </NavigationProperty>
+                <NavigationProperty Name="createdonbehalfby" Type="mscrm.systemuser" Nullable="false" Partner="lk_ssg_identifier_createdonbehalfby">
+                    <ReferentialConstraint Property="_createdonbehalfby_value" ReferencedProperty="systemuserid" />
+                </NavigationProperty>
+                <NavigationProperty Name="modifiedby" Type="mscrm.systemuser" Nullable="false" Partner="lk_ssg_identifier_modifiedby">
+                    <ReferentialConstraint Property="_modifiedby_value" ReferencedProperty="systemuserid" />
+                </NavigationProperty>
+                <NavigationProperty Name="modifiedonbehalfby" Type="mscrm.systemuser" Nullable="false" Partner="lk_ssg_identifier_modifiedonbehalfby">
+                    <ReferentialConstraint Property="_modifiedonbehalfby_value" ReferencedProperty="systemuserid" />
+                </NavigationProperty>
+                <NavigationProperty Name="owninguser" Type="mscrm.systemuser" Nullable="false" Partner="user_ssg_identifier">
+                    <ReferentialConstraint Property="_owninguser_value" ReferencedProperty="systemuserid" />
+                </NavigationProperty>
+                <NavigationProperty Name="owningteam" Type="mscrm.team" Nullable="false" Partner="team_ssg_identifier">
+                    <ReferentialConstraint Property="_owningteam_value" ReferencedProperty="teamid" />
+                </NavigationProperty>
+                <NavigationProperty Name="ownerid" Type="mscrm.principal" Nullable="false" Partner="owner_ssg_identifier">
+                    <ReferentialConstraint Property="_ownerid_value" ReferencedProperty="ownerid" />
+                </NavigationProperty>
+                <NavigationProperty Name="owningbusinessunit" Type="mscrm.businessunit" Nullable="false" Partner="business_unit_ssg_identifier">
+                    <ReferentialConstraint Property="_owningbusinessunit_value" ReferencedProperty="businessunitid" />
+                </NavigationProperty>
+                <NavigationProperty Name="ssg_identifier_SyncErrors" Type="Collection(mscrm.syncerror)" Partner="regardingobjectid_ssg_identifier" />
+                <NavigationProperty Name="ssg_identifier_DuplicateMatchingRecord" Type="Collection(mscrm.duplicaterecord)" Partner="duplicaterecordid_ssg_identifier" />
+                <NavigationProperty Name="ssg_identifier_DuplicateBaseRecord" Type="Collection(mscrm.duplicaterecord)" Partner="baserecordid_ssg_identifier" />
+                <NavigationProperty Name="ssg_identifier_AsyncOperations" Type="Collection(mscrm.asyncoperation)" Partner="regardingobjectid_ssg_identifier" />
+                <NavigationProperty Name="ssg_identifier_MailboxTrackingFolders" Type="Collection(mscrm.mailboxtrackingfolder)" Partner="regardingobjectid_ssg_identifier" />
+                <NavigationProperty Name="ssg_identifier_ProcessSession" Type="Collection(mscrm.processsession)" Partner="regardingobjectid_ssg_identifier" />
+                <NavigationProperty Name="ssg_identifier_BulkDeleteFailures" Type="Collection(mscrm.bulkdeletefailure)" Partner="regardingobjectid_ssg_identifier" />
+                <NavigationProperty Name="ssg_identifier_PrincipalObjectAttributeAccesses" Type="Collection(mscrm.principalobjectattributeaccess)" Partner="objectid_ssg_identifier" />
+                <NavigationProperty Name="ssg_SearchRequest" Type="mscrm.ssg_searchrequest" Nullable="false" Partner="ssg_ssg_searchrequest_ssg_identifier_SearchRequest">
+                    <ReferentialConstraint Property="_ssg_searchrequest_value" ReferencedProperty="ssg_searchrequestid" />
+                </NavigationProperty>
+                <NavigationProperty Name="ssg_Alias" Type="mscrm.ssg_alias" Nullable="false" Partner="ssg_ssg_alias_ssg_identifier_Alias">
+                    <ReferentialConstraint Property="_ssg_alias_value" ReferencedProperty="ssg_aliasid" />
+                </NavigationProperty>
+                <NavigationProperty Name="ssg_ConfirmedProfile" Type="mscrm.ssg_confirmedprofile" Nullable="false" Partner="ssg_ssg_confirmedprofile_ssg_identifier_ConfirmedProfile">
+                    <ReferentialConstraint Property="_ssg_confirmedprofile_value" ReferencedProperty="ssg_confirmedprofileid" />
+                </NavigationProperty>
+                <NavigationProperty Name="ssg_ssg_identifier_ssg_confirmedprofile_LastBestSocialInsuranceNumber" Type="Collection(mscrm.ssg_confirmedprofile)" Partner="ssg_LastBestSocialInsuranceNumber" />
+                <NavigationProperty Name="ssg_ssg_identifier_ssg_confirmedprofile_LastBestDriversLicenseNumber" Type="Collection(mscrm.ssg_confirmedprofile)" Partner="ssg_LastBestDriversLicenseNumber" />
+                <NavigationProperty Name="ssg_AddedToConfirmedProfileBy" Type="mscrm.systemuser" Nullable="false" Partner="ssg_systemuser_ssg_identifier_AddedToConfirmedProfileBy">
+                    <ReferentialConstraint Property="_ssg_addedtoconfirmedprofileby_value" ReferencedProperty="systemuserid" />
+                </NavigationProperty>
+                <NavigationProperty Name="ssg_SearchAPIRequest" Type="mscrm.ssg_searchapirequest" Nullable="false" Partner="ssg_ssg_searchapirequest_ssg_identifier">
+                    <ReferentialConstraint Property="_ssg_searchapirequest_value" ReferencedProperty="ssg_searchapirequestid" />
+                </NavigationProperty>
+            </EntityType>

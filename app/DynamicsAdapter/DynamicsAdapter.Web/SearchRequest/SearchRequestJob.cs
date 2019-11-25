@@ -49,13 +49,11 @@ namespace DynamicsAdapter.Web.SearchRequest
                 {
                     _logger.LogDebug(
                         $"Attempting to post person search for request {ssgSearchRequest.SearchApiRequestId}");
-
-                    var result = await _searchApiClient.SearchAsync(new PersonSearchRequest()
-                    {
-                        FirstName = ssgSearchRequest.PersonGivenName,
-                        LastName = ssgSearchRequest.PersonSurname,
-                        DateOfBirth = ssgSearchRequest.PersonBirthDate,
-                    }, $"{ssgSearchRequest.SearchRequestId}", cts.Token);
+                   
+                    var result = await _searchApiClient.SearchAsync(
+                        new PersonSearchRequestBuilder().WithSearchApiRequest(ssgSearchRequest).Build(), 
+                        $"{ssgSearchRequest.SearchRequestId}", 
+                        cts.Token);
                     _logger.LogInformation($"Successfully posted person search id:{result.Id}");
 
                     await MarkInProgress(ssgSearchRequest, cts.Token);

@@ -52,9 +52,14 @@ namespace DynamicsAdapter.Web.SearchRequest
                    
                     var result = await _searchApiClient.SearchAsync(
                         new PersonSearchRequestBuilder().WithSearchApiRequest(ssgSearchRequest).Build(), 
+<<<<<<< refs/remotes/bcgov/master
                         $"{ssgSearchRequest.SearchApiRequestId}", 
                         cts.Token);
 
+=======
+                        $"{ssgSearchRequest.SearchRequestId}", 
+                        cts.Token);
+>>>>>>> Auto stash before rebase of "bcgov/master"
                     _logger.LogInformation($"Successfully posted person search id:{result.Id}");
 
                     await MarkInProgress(ssgSearchRequest, cts.Token);

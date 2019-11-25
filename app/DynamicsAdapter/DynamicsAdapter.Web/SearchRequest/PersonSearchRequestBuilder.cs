@@ -1,4 +1,8 @@
+<<<<<<< refs/remotes/bcgov/master
 using Fams3Adapter.Dynamics.Identifier;
+=======
+﻿using Fams3Adapter.Dynamics.Identifier;
+>>>>>>> Auto stash before rebase of "bcgov/master"
 using Fams3Adapter.Dynamics.OptionSets.Models;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using System;

@@ -21,6 +21,8 @@ namespace Fams3Adapter.Dynamics.Identifier
 
         protected IdentificationType(int dynamicValue, int searchApiValue, string name) : base(dynamicValue, name)
         {
+            this.DynamicValue = dynamicValue;
+            this.SearchApiValue = searchApiValue;
         }
 
 

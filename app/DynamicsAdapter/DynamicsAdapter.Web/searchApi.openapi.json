@@ -115,11 +115,11 @@
           "description": "The identification expiration date"
         },
         "identifierType": {
-          "type": "int",
+          "type": "integer",
           "description": "The identifier type, such as driver license"
         },
         "informationSourceType": {
-          "type": "int",
+          "type": "integer",
           "description": "The inforation source of this identifier, such as icbc"
         },
         "issuedBy": {

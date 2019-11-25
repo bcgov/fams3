@@ -86,6 +86,45 @@
           "type": "string",
           "description": "The date of birth of the subject.",
           "format": "date-time"
+        },
+        "identifiers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Identifier"
+          },
+          "description": "The list of exsiting identifiers of the subject"
+        }
+      }
+    },
+    "Identifier": {
+      "type": "object",
+      "description": "Identifier",
+      "properties": {
+        "identification": {
+          "type": "string",
+          "description": "The identification serial number of this identifier"
+        },
+        "identificationEffectiveDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The identification Effective Date"
+        },
+        "identificationExpirationDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The identification expiration date"
+        },
+        "identifierType": {
+          "type": "int",
+          "description": "The identifier type, such as driver license"
+        },
+        "informationSourceType": {
+          "type": "int",
+          "description": "The inforation source of this identifier, such as icbc"
+        },
+        "issuedBy": {
+          "type": "string",
+          "description": "The identifier is issued by who or which organization"
         }
       }
     }

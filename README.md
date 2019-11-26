@@ -55,14 +55,20 @@ Configure RabbiMq using the following ENV variables:
 
 If the WebHooks section is configured, SearchApi automatically posts a new notification into the webhook collection.
 
-To enable MatchFound notification, they have to be configured through the SearchApi WebHooks settings.
+To enable MatchFound notification, they have to be configured through the SearchApi WebHooks settings. Event name has been introduced to handle multiple webhook event without loosing the name of the adapter. There could be a WebHook to multiple adapter. ``PersonSearch`` Event will handle search event status such as accepted, rejected, failed, matchfound (which is different from actual match storing) and matchnotfound.
 
 ```json
 "SearchApi": {
     "WebHooks": [
       {
-        "Name": "Adapter1",
-        "Uri":  "http://localhost:5000" 
+        "Name": "dynadapter",
+        "Uri":  "http://localhost:5000",
+        "EventName" : "MatchFound"
+      },
+      {
+        "Name": "dynadapter",
+        "Uri":  "http://localhost:5000",
+        "EventName" : "PersonSearch"
       }
     ] 
   }
@@ -75,6 +81,18 @@ With this configuration the searchApi will post MatchFound to `http://localhost:
     "FistName": "firstName",
     "LastName": "lastName",
     "DateOfBirth": "2001-01-01"
+}
+```
+
+For SearchEvent configuration the searchApi will post Status to `http://localhost:5000/{id}` where {id} is a global unique identifier. the content of the payload is a ``ProviderSearchEventStatus`` object
+
+```json
+{
+    "SearchRequestId": "0123das-123asd12-asdasd-1as213",
+    "TimeStamp": "2019-02-01T23:28:56.782Z",
+    "ProviderName": "ICBC",
+    "Message" :"The status of the event and possibly failure reason",
+    "EventType" : "Event type such as Accepted, Rejected, Failed, MatchFound, MatchNotFound"
 }
 ```
 

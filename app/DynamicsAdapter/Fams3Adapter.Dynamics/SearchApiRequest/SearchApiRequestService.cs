@@ -93,5 +93,19 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
         }
 
 
+        public async Task<Guid> GetLinkedSearchRequestIdAsync(Guid searchApiRequestId,
+            CancellationToken cancellationToken)
+        {
+            if (searchApiRequestId == default || searchApiRequestId == Guid.Empty) throw new ArgumentNullException(nameof(searchApiRequestId));
+
+            var result = await _oDataClient
+                .For<SSG_SearchApiRequest>()
+                .Key(searchApiRequestId)
+                .Select(x => x.SearchRequestId)
+                .FindEntryAsync(cancellationToken);
+
+            return result.SearchRequestId;
+        }
+
     }
 }

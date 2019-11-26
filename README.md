@@ -1,7 +1,5 @@
 # FAMS3
 
-
-
 ## Project Structure
 
     .
@@ -38,7 +36,7 @@ docker-compose up
 
 FAMS-search-api is a dotnet core rest service to execute people search accross multiple data providers.
 
-#### RabbitMq
+### Configuration
 
 Configure RabbiMq using the following ENV variables:
 
@@ -53,7 +51,7 @@ Configure RabbiMq using the following ENV variables:
 
 > the variables key have 2 underscores
 
-#### Match Found Notifications
+### Match Found Notifications
 
 If the WebHooks section is configured, SearchApi automatically posts a new notification into the webhook collection.
 
@@ -80,34 +78,12 @@ With this configuration the searchApi will post MatchFound to `http://localhost:
 }
 ```
 
-## Search Adapters
-
-The Search Adpaters a worker that execute a search for a specific data providers.
-
-SearchAdapter produce the following events:
-
-### MatchFound
-
-When the Adapter found a match for a particular person
-
-### Person Search Accepted
-
-When a person Search is accepted, meaning it has sufficient information to conduct a search.
-
-### Person Search Rejected
-
-When a person Search does not meet the minimal requirement for the adapter to conduct a search.
-
-### Person Search Failed
-
-When the adpater throws an unknown exception.
-
-#### OpenApi
+### OpenApi
 
 The Search Api uses [NSwag](https://github.com/RicoSuter/NSwag) to autogenerate api specification from the code.
 To turn on the swagger Ui, set `ASPNETCORE_ENVIRONMENT=Development` environment variable, this should not be use in `production`.
 
-#### Tracing
+### Tracing
 
 The Search Api uses [opentracing](https://opentracing.io/) instrumentation for distributed tracing.
 
@@ -120,7 +96,7 @@ The csharp client is set up to use [configuration via environment](https://githu
 > Set `JAEGER_SERVICE_NAME` if you want the tracer to ship tracing logs.  
 > Set `JAEGER_SAMPLER_TYPE=const` if you want to sample all your traces.
 
-## Run
+### Run
 
 download and install [dotnet core 3.0](https://dotnet.microsoft.com/download/dotnet-core/3.0)
 
@@ -139,7 +115,9 @@ Application health can be checked [here](http://localhost:5000/health).
 
 FAMS-search-api is a dotnet core rest service to execute people search accross multiple data providers.
 
-## ICBCAdapter
+## Search Adapters
+
+The Search Adpaters a worker that execute a search for a specific data providers.
 
 ### Configuration
 
@@ -149,6 +127,24 @@ FAMS-search-api is a dotnet core rest service to execute people search accross m
 | RABBITMQ__PORT | no | RabbitMq Port |
 | RABBITMQ__USERNAME | no | RabbitMq UserName |
 | RABBITMQ__PASSWORD | no | RabbitMq Password |
+
+### Search Adapters Events
+
+#### MatchFound
+
+When the Adapter found a match for a particular person
+
+#### Person Search Accepted
+
+When a person Search is accepted, meaning it has sufficient information to conduct a search.
+
+#### Person Search Rejected
+
+When a person Search does not meet the minimal requirement for the adapter to conduct a search.
+
+#### Person Search Failed
+
+When the adpater throws an unknown exception.
 
 ## DynamicAdapter
 

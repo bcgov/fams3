@@ -55,7 +55,7 @@ namespace DynamicsAdapter.Web.SearchRequest
                         FirstName = ssgSearchRequest.PersonGivenName,
                         LastName = ssgSearchRequest.PersonSurname,
                         DateOfBirth = ssgSearchRequest.PersonBirthDate,
-                    }, $"{ssgSearchRequest.SearchRequestId}", cts.Token);
+                    }, $"{ssgSearchRequest.SearchApiRequestId}", cts.Token);
                     _logger.LogInformation($"Successfully posted person search id:{result.Id}");
 
                     await MarkInProgress(ssgSearchRequest, cts.Token);

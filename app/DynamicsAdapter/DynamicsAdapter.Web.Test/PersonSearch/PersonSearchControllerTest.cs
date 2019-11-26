@@ -35,14 +35,24 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _searchApiRequestServiceMock = new Mock<ISearchApiRequestService>();
             _searchRequestServiceMock = new Mock<ISearchRequestService>();
 
+            var validRequestId = Guid.NewGuid();
+            var invalidRequestId = Guid.NewGuid();
 
-            _searchRequestServiceMock.Setup(x => x.UploadIdentifier(It.Is<SSG_Identifier>(x => x.SSG_SearchRequest.SearchRequestId == _testGuid), It.IsAny<CancellationToken>()))
+
+            _searchApiRequestServiceMock.Setup(x => x.GetLinkedSearchRequestIdAsync(It.Is<Guid>(x => x == _testGuid), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult<Guid>(_testGuid));
+
+            _searchApiRequestServiceMock.Setup(x => x.GetLinkedSearchRequestIdAsync(It.Is<Guid>(x => x == _exceptionGuid), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult<Guid>(invalidRequestId));
+
+
+            _searchRequestServiceMock.Setup(x => x.UploadIdentifier(It.Is<SSG_Identifier>(x => x.SSG_SearchRequest.SearchRequestId == validRequestId), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<SSG_Identifier>(new SSG_Identifier()
                 {
                     Identification = "test identification"
                 }));
 
-            _searchRequestServiceMock.Setup(x => x.UploadIdentifier(It.Is<SSG_Identifier>(x => x.SSG_SearchRequest.SearchRequestId == _exceptionGuid), It.IsAny<CancellationToken>()))
+            _searchRequestServiceMock.Setup(x => x.UploadIdentifier(It.Is<SSG_Identifier>(x => x.SSG_SearchRequest.SearchRequestId == invalidRequestId), It.IsAny<CancellationToken>()))
                 .Throws(new Exception("random exception"));
 
             _searchApiRequestServiceMock.Setup(x => x.AddEventAsync(It.Is<Guid>(x => x == _testGuid),
@@ -58,6 +68,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 .Throws(new Exception("random exception"));
 
             _sut = new PersonSearchController(_searchRequestServiceMock.Object, _searchApiRequestServiceMock.Object, _loggerMock.Object);
+
         }
 
         [Test]

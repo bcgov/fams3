@@ -1,4 +1,4 @@
-﻿using Fams3Adapter.Dynamics.Identifier;
+using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.OptionSets.Models;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using System;

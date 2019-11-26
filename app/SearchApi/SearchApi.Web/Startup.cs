@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using HealthChecks.UI.Client;
+using AutoMapper;
 using Jaeger;
 using Jaeger.Samplers;
 using MassTransit;
@@ -63,8 +64,17 @@ namespace SearchApi.Web
             this.ConfigureOpenApi(services);
 
             this.ConfigureServiceBus(services);
+            this.ConfigureAutoMapper(services);
+
+
+
+
         }
-        private void ConfigureHealthChecks(IServiceCollection services)
+        public void ConfigureAutoMapper(IServiceCollection services)
+        {
+            services.AddAutoMapper(System.Reflection.Assembly.GetExecutingAssembly());
+        }
+            private void ConfigureHealthChecks(IServiceCollection services)
         {
 
             var rabbitMqSettings = Configuration.GetSection("RabbitMq").Get<RabbitMqConfiguration>();
@@ -181,8 +191,15 @@ namespace SearchApi.Web
                     cfg.ReceiveEndpoint(host, $"{nameof(MatchFound)}_queue", e =>
                         {
                             e.Consumer(() =>
-                                new MatchFoundConsumer( provider.GetRequiredService<ISearchApiNotifier>(), provider.GetRequiredService<ILogger<MatchFoundConsumer>>()));
+                                new MatchFoundConsumer( provider.GetRequiredService<ISearchApiNotifier<MatchFound>>(), provider.GetRequiredService<ILogger<MatchFoundConsumer>>()));
                         });
+
+                    // Configure MatchFound Consumer
+                    cfg.ReceiveEndpoint(host, $"{nameof(PersonSearchAccepted)}_queue", e =>
+                    {
+                        e.Consumer(() =>
+                            new PersonSearchAcceptedConsumer(provider.GetRequiredService<ISearchApiNotifier<PersonSearchAccepted>>(), provider.GetRequiredService<ILogger<PersonSearchAcceptedConsumer>>()));
+                    });
 
                 }));
             });

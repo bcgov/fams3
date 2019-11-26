@@ -12,35 +12,33 @@ using SearchApi.Web.Configuration;
 
 namespace SearchApi.Web.Notifications
 {
-    public class WebHookNotifier : ISearchApiNotifier
+    public class WebHookNotifierMatchFound : BaseApiNotifier, ISearchApiNotifier<MatchFound> 
     {
 
         private readonly HttpClient _httpClient;
         private readonly SearchApiOptions _searchApiOptions;
-        private readonly ILogger<WebHookNotifier> _logger;
+        private readonly ILogger<WebHookNotifierMatchFound> _logger;
 
-        public WebHookNotifier(HttpClient httpClient, IOptions<SearchApiOptions> searchApiOptions,
-            ILogger<WebHookNotifier> logger)
+        public WebHookNotifierMatchFound(HttpClient httpClient, IOptions<SearchApiOptions> searchApiOptions,
+            ILogger<WebHookNotifierMatchFound> logger)
         {
             _httpClient = httpClient;
             _logger = logger;
             _searchApiOptions = searchApiOptions.Value;
         }
-                                                                                                                                                                                                                                            
-        public async Task NotifyMatchFoundAsync(Guid searchRequestId, MatchFound matchFound,
-            CancellationToken cancellationToken)
+
+        public async Task NotifyEventAsync(Guid searchRequestId, MatchFound matchFound,
+           CancellationToken cancellationToken)
         {
-
-            foreach (var webHook in _searchApiOptions.WebHooks)
+            foreach (var webHook in _searchApiOptions.WebHooks.FindAll(x => x.EventName.Contains(nameof(MatchFound))))
             {
-
                 _logger.LogDebug(
-                    $"The webHook MatchFound notification is attempting to send event for {webHook.Name} webhook.");
+                   $"The webHook {nameof(MatchFound)} notification is attempting to send event for {webHook.Name} webhook.");
 
                 if (!TryCreateUri(webHook.Uri, $"{searchRequestId}", out var endpoint))
                 {
                     _logger.LogWarning(
-                        $"The webHook MatchFound notification uri is not established or is not an absolute Uri for {webHook.Name}. Set the WebHook.Uri value on SearchApi.WebHooks settings.");
+                        $"The webHook {nameof(MatchFound)} notification uri is not established or is not an absolute Uri for {webHook.Name}. Set the WebHook.Uri value on SearchApi.WebHooks settings.");
                     return;
                 }
 
@@ -61,12 +59,12 @@ namespace SearchApi.Web.Notifications
                     if (!response.IsSuccessStatusCode)
                     {
                         _logger.LogError(
-                            $"The webHook MatchFound notification has not executed successfully for {webHook.Name} webHook. The error code is {response.StatusCode.GetHashCode()}.");
+                            $"The webHook {typeof(MatchFound).Name} notification has not executed successfully for {webHook.Name} webHook. The error code is {response.StatusCode.GetHashCode()}.");
                         return;
                     }
 
                     _logger.LogInformation(
-                        $"The webHook MatchFound notification has executed successfully for {webHook.Name} webHook.");
+                        $"The webHook {typeof(MatchFound).Name} notification has executed successfully for {webHook.Name} webHook.");
 
                 }
                 catch (Exception exception)
@@ -76,18 +74,11 @@ namespace SearchApi.Web.Notifications
                 }
             }
         }
+       
 
 
-        public static bool TryCreateUri(string baseUrl, string path, out Uri uri)
-        {
-            uri = null;
-            if (!Uri.TryCreate(baseUrl, UriKind.Absolute, out var baseUri))
-            {
-                return false;
-            }
-
-            return Uri.TryCreate(baseUri, Path.Combine(baseUri.LocalPath, path), out uri);
-        }
+      
 
     }
+
 }

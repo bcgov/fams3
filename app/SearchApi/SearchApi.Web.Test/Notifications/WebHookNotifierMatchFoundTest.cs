@@ -17,19 +17,19 @@ using SearchApi.Web.Test.Utils;
 
 namespace SearchApi.Web.Test.Notifications
 {
-    public class WebHookNotifierTest
+    public class WebHookNotifierMatchFoundTest
     {
-        private WebHookNotifier _sut;
+        private WebHookNotifierMatchFound _sut;
 
         private Mock<IOptions<SearchApiOptions>> _searchApiOptionsMock;
 
-        private Mock<ILogger<WebHookNotifier>> _loggerMock;
+        private Mock<ILogger<WebHookNotifierMatchFound>> _loggerMock;
 
 
         [SetUp]
         public void SetUp()
         {
-            _loggerMock = LoggerUtils.LoggerMock<WebHookNotifier>();
+            _loggerMock = LoggerUtils.LoggerMock<WebHookNotifierMatchFound>();
             _searchApiOptionsMock = new Mock<IOptions<SearchApiOptions>>();
         }
 
@@ -38,7 +38,7 @@ namespace SearchApi.Web.Test.Notifications
         {
             var fakeMatchFound = new FakeMatchFound();
 
-            _searchApiOptionsMock.Setup(x => x.Value).Returns(new SearchApiOptions().AddWebHook("test", "http://test:1234"));
+            _searchApiOptionsMock.Setup(x => x.Value).Returns(new SearchApiOptions().AddWebHook("test", "http://test:1234","MatchFound"));
 
             var handlerMock = new Mock<HttpMessageHandler>(MockBehavior.Strict);
             handlerMock
@@ -58,9 +58,9 @@ namespace SearchApi.Web.Test.Notifications
                 .Verifiable();
 
             var httpClient = new HttpClient(handlerMock.Object);
-            _sut = new WebHookNotifier(httpClient, _searchApiOptionsMock.Object, _loggerMock.Object);
+            _sut = new WebHookNotifierMatchFound(httpClient, _searchApiOptionsMock.Object, _loggerMock.Object);
 
-            await _sut.NotifyMatchFoundAsync(fakeMatchFound.SearchRequestId, fakeMatchFound, CancellationToken.None);
+            await _sut.NotifyEventAsync(fakeMatchFound.SearchRequestId, fakeMatchFound, CancellationToken.None);
 
             var expectedUri = new Uri($"http://test:1234/{fakeMatchFound.SearchRequestId}");
 
@@ -83,7 +83,7 @@ namespace SearchApi.Web.Test.Notifications
         {
             var fakeMatchFound = new FakeMatchFound();
 
-            _searchApiOptionsMock.Setup(x => x.Value).Returns(new SearchApiOptions().AddWebHook("test", "http://test:1234/MatchFound"));
+            _searchApiOptionsMock.Setup(x => x.Value).Returns(new SearchApiOptions().AddWebHook("test", "http://test:1234/MatchFound", "MatchFound"));
 
             var handlerMock = new Mock<HttpMessageHandler>(MockBehavior.Strict);
             handlerMock
@@ -103,9 +103,9 @@ namespace SearchApi.Web.Test.Notifications
                 .Verifiable();
 
             var httpClient = new HttpClient(handlerMock.Object);
-            _sut = new WebHookNotifier(httpClient, _searchApiOptionsMock.Object, _loggerMock.Object);
+            _sut = new WebHookNotifierMatchFound(httpClient, _searchApiOptionsMock.Object, _loggerMock.Object);
 
-            await _sut.NotifyMatchFoundAsync(fakeMatchFound.SearchRequestId, fakeMatchFound, CancellationToken.None);
+            await _sut.NotifyEventAsync(fakeMatchFound.SearchRequestId, fakeMatchFound, CancellationToken.None);
 
             var expectedUri = new Uri($"http://test:1234/MatchFound/{fakeMatchFound.SearchRequestId}");
 
@@ -130,8 +130,8 @@ namespace SearchApi.Web.Test.Notifications
             var fakeMatchFound = new FakeMatchFound();
 
             _searchApiOptionsMock.Setup(x => x.Value).Returns(new SearchApiOptions()
-                .AddWebHook("test", "http://test:1234")
-                .AddWebHook("test2", "http://test:5678"));
+                .AddWebHook("test", "http://test:1234", "MatchFound")
+                .AddWebHook("test2", "http://test:5678", "MatchFound"));
 
             var handlerMock = new Mock<HttpMessageHandler>(MockBehavior.Strict);
             handlerMock
@@ -151,9 +151,9 @@ namespace SearchApi.Web.Test.Notifications
                 .Verifiable();
 
             var httpClient = new HttpClient(handlerMock.Object);
-            _sut = new WebHookNotifier(httpClient, _searchApiOptionsMock.Object, _loggerMock.Object);
+            _sut = new WebHookNotifierMatchFound(httpClient, _searchApiOptionsMock.Object, _loggerMock.Object);
 
-            await _sut.NotifyMatchFoundAsync(fakeMatchFound.SearchRequestId, fakeMatchFound, CancellationToken.None);
+            await _sut.NotifyEventAsync(fakeMatchFound.SearchRequestId, fakeMatchFound, CancellationToken.None);
 
             var expectedUri = new Uri($"http://test:1234/{fakeMatchFound.SearchRequestId}");
             var expectedUri2 = new Uri($"http://test:5678/{fakeMatchFound.SearchRequestId}");
@@ -191,7 +191,7 @@ namespace SearchApi.Web.Test.Notifications
             var fakeMatchFound = new FakeMatchFound();
 
             _searchApiOptionsMock.Setup(x => x.Value).Returns(new SearchApiOptions()
-                .AddWebHook("test", "not_uri"));
+                .AddWebHook("test", "not_uri", "MatchFound"));
 
             var handlerMock = new Mock<HttpMessageHandler>(MockBehavior.Strict);
             handlerMock
@@ -211,9 +211,9 @@ namespace SearchApi.Web.Test.Notifications
                 .Verifiable();
 
             var httpClient = new HttpClient(handlerMock.Object);
-            _sut = new WebHookNotifier(httpClient, _searchApiOptionsMock.Object, _loggerMock.Object);
+            _sut = new WebHookNotifierMatchFound(httpClient, _searchApiOptionsMock.Object, _loggerMock.Object);
 
-            await _sut.NotifyMatchFoundAsync(fakeMatchFound.SearchRequestId, fakeMatchFound, CancellationToken.None);
+            await _sut.NotifyEventAsync(fakeMatchFound.SearchRequestId, fakeMatchFound, CancellationToken.None);
 
 
             _loggerMock.VerifyLog(LogLevel.Warning, $"The webHook MatchFound notification uri is not established or is not an absolute Uri for test. Set the WebHook.Uri value on SearchApi.WebHooks settings.", "log warning failed");
@@ -225,7 +225,7 @@ namespace SearchApi.Web.Test.Notifications
         {
             var fakeMatchFound = new FakeMatchFound();
 
-            _searchApiOptionsMock.Setup(x => x.Value).Returns(new SearchApiOptions().AddWebHook("test", "http://test:1234"));
+            _searchApiOptionsMock.Setup(x => x.Value).Returns(new SearchApiOptions().AddWebHook("test", "http://test:1234", "MatchFound"));
 
             var handlerMock = new Mock<HttpMessageHandler>(MockBehavior.Strict);
             handlerMock
@@ -245,9 +245,9 @@ namespace SearchApi.Web.Test.Notifications
                 .Verifiable();
 
             var httpClient = new HttpClient(handlerMock.Object);
-            _sut = new WebHookNotifier(httpClient, _searchApiOptionsMock.Object, _loggerMock.Object);
+            _sut = new WebHookNotifierMatchFound(httpClient, _searchApiOptionsMock.Object, _loggerMock.Object);
 
-            await _sut.NotifyMatchFoundAsync(fakeMatchFound.SearchRequestId, fakeMatchFound, CancellationToken.None);
+            await _sut.NotifyEventAsync(fakeMatchFound.SearchRequestId, fakeMatchFound, CancellationToken.None);
 
             var expectedUri = new Uri($"http://test:1234/{fakeMatchFound.SearchRequestId}");
 
@@ -271,7 +271,7 @@ namespace SearchApi.Web.Test.Notifications
         {
             var fakeMatchFound = new FakeMatchFound();
 
-            _searchApiOptionsMock.Setup(x => x.Value).Returns(new SearchApiOptions().AddWebHook("test", "http://test:1234"));
+            _searchApiOptionsMock.Setup(x => x.Value).Returns(new SearchApiOptions().AddWebHook("test", "http://test:1234", "MatchFound"));
 
             var handlerMock = new Mock<HttpMessageHandler>(MockBehavior.Strict);
             handlerMock
@@ -291,9 +291,9 @@ namespace SearchApi.Web.Test.Notifications
                 .Verifiable();
 
             var httpClient = new HttpClient(handlerMock.Object);
-            _sut = new WebHookNotifier(httpClient, _searchApiOptionsMock.Object, _loggerMock.Object);
+            _sut = new WebHookNotifierMatchFound(httpClient, _searchApiOptionsMock.Object, _loggerMock.Object);
 
-            await _sut.NotifyMatchFoundAsync(fakeMatchFound.SearchRequestId, fakeMatchFound, CancellationToken.None);
+            await _sut.NotifyEventAsync(fakeMatchFound.SearchRequestId, fakeMatchFound, CancellationToken.None);
 
             var expectedUri = new Uri($"http://test:1234/{fakeMatchFound.SearchRequestId}");
 
@@ -317,7 +317,7 @@ namespace SearchApi.Web.Test.Notifications
         {
             var fakeMatchFound = new FakeMatchFound();
 
-            _searchApiOptionsMock.Setup(x => x.Value).Returns(new SearchApiOptions().AddWebHook("test", "http://test:1234"));
+            _searchApiOptionsMock.Setup(x => x.Value).Returns(new SearchApiOptions().AddWebHook("test", "http://test:1234", "MatchFound"));
 
             var handlerMock = new Mock<HttpMessageHandler>(MockBehavior.Strict);
             handlerMock
@@ -332,9 +332,9 @@ namespace SearchApi.Web.Test.Notifications
                 .Verifiable();
 
             var httpClient = new HttpClient(handlerMock.Object);
-            _sut = new WebHookNotifier(httpClient, _searchApiOptionsMock.Object, _loggerMock.Object);
+            _sut = new WebHookNotifierMatchFound(httpClient, _searchApiOptionsMock.Object, _loggerMock.Object);
 
-            await _sut.NotifyMatchFoundAsync(fakeMatchFound.SearchRequestId, new FakeMatchFound(), CancellationToken.None);
+            await _sut.NotifyEventAsync(fakeMatchFound.SearchRequestId, new FakeMatchFound(), CancellationToken.None);
 
             _loggerMock.VerifyLog(LogLevel.Error, $"The failure notification for test has not executed successfully.", "failed log error");
 

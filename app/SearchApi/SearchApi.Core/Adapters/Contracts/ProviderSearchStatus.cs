@@ -1,0 +1,19 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace SearchApi.Core.Adapters.Contracts
+{
+
+    /// <summary>
+    /// Represents a search status from a provider which could be accepted, rejected or failed
+    /// </summary>
+    public class ProviderSearchEvent
+    {
+        public Guid SearchRequestId { get; set; }
+        public DateTime TimeStamp { get; set; }
+        public string ProviderName { get; set; }
+        public string Message { get; set; }
+        public string EventType { get; set; }
+    }
+}

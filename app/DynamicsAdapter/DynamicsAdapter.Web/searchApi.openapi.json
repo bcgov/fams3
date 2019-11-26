@@ -100,43 +100,27 @@
       "type": "object",
       "description": "Identifier",
       "properties": {
-        "identification": {
+        "serialNumber": {
           "type": "string",
           "description": "The identification serial number of this identifier"
         },
-        "identificationEffectiveDate": {
+        "effectiveDate": {
           "type": "string",
           "format": "date-time",
           "description": "The identification Effective Date"
         },
-        "identificationExpirationDate": {
+        "expirationDate": {
           "type": "string",
           "format": "date-time",
           "description": "The identification expiration date"
         },
-        "identifierType": {
-<<<<<<< refs/remotes/bcgov/master
-<<<<<<< refs/remotes/bcgov/master
+        "type": {
           "type": "integer",
           "description": "The identifier type, such as driver license"
         },
-        "informationSourceType": {
-          "type": "integer",
-=======
-          "type": "int",
-          "description": "The identifier type, such as driver license"
-        },
-        "informationSourceType": {
-          "type": "int",
->>>>>>> swagger json
-=======
+        "source": {
           "type": "integer",
           "description": "The identifier type, such as driver license"
-        },
-        "informationSourceType": {
-          "type": "integer",
->>>>>>> typing issue
-          "description": "The inforation source of this identifier, such as icbc"
         },
         "issuedBy": {
           "type": "string",

@@ -100,20 +100,33 @@
       "type": "object",
       "description": "Identifier",
       "properties": {
+<<<<<<< HEAD
         "serialNumber": {
           "type": "string",
           "description": "The identification serial number of this identifier"
         },
         "effectiveDate": {
+=======
+        "identification": {
+          "type": "string",
+          "description": "The identification serial number of this identifier"
+        },
+        "identificationEffectiveDate": {
+>>>>>>> transferIdentitiesToSearchApi
           "type": "string",
           "format": "date-time",
           "description": "The identification Effective Date"
         },
+<<<<<<< HEAD
         "expirationDate": {
+=======
+        "identificationExpirationDate": {
+>>>>>>> transferIdentitiesToSearchApi
           "type": "string",
           "format": "date-time",
           "description": "The identification expiration date"
         },
+<<<<<<< HEAD
         "type": {
           "type": "integer",
           "description": "The identifier type, such as driver license"
@@ -121,6 +134,15 @@
         "source": {
           "type": "integer",
           "description": "The identifier type, such as driver license"
+=======
+        "identifierType": {
+          "type": "integer",
+          "description": "The identifier type, such as driver license"
+        },
+        "informationSourceType": {
+          "type": "integer",
+          "description": "The inforation source of this identifier, such as icbc"
+>>>>>>> transferIdentitiesToSearchApi
         },
         "issuedBy": {
           "type": "string",

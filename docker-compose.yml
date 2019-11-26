@@ -14,8 +14,8 @@ services:
       JAEGER_SERVICE_NAME: search-api
       JAEGER_SAMPLER_TYPE: const
       JAEGER_ENDPOINT: http://jaeger-collector:14268/api/traces
-      SearchApi__WebHooks__0__Name: Dynamics-Adapter
-      SearchApi__WebHooks__0__Uri: http://dynamics-adapter/MatchFound
+      SearchApi__WebHooks__0__Name: dynadapter
+      SearchApi__WebHooks__0__Uri: http://dynadapter/PersonSearch/MatchFound
     ports:
       - "5050:80"
     restart: always
@@ -42,14 +42,14 @@ services:
     networks: 
       - search-api-net
 
-  dynamics-adapter:
+  dynadapter:
     build:
       context: app/DynamicsAdapter
     ports:
       - "5060:80"
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-      JAEGER_SERVICE_NAME: dynamics-adapter
+      JAEGER_SERVICE_NAME: Dynadpater
       JAEGER_SAMPLER_TYPE: const
       JAEGER_ENDPOINT: http://jaeger-collector:14268/api/traces
       SCHEDULER__CRON: 0/5 * * * * ?
@@ -60,6 +60,7 @@ services:
       OAUTH__SECRET: ${OAUTH__SECRET}
       OAUTH__USERNAME: ${OAUTH__USERNAME}
       OAUTH__PASSWORD: ${OAUTH__PASSWORD}
+      DYNAMICS__BASEPATH: ${OAUTH__RESOURCEURL}
     restart: always
     networks:
       - search-api-net
@@ -124,8 +125,8 @@ services:
     environment:
       HealthChecksUI:HealthChecks:0:Name: Search Api
       HealthChecksUI:HealthChecks:0:Uri: http://search-api/health
-      HealthChecksUI:HealthChecks:1:Name: Dyanmics Adpater
-      HealthChecksUI:HealthChecks:1:Uri: http://dynamics-adapter/health
+      HealthChecksUI:HealthChecks:1:Name: Dynadpater
+      HealthChecksUI:HealthChecks:1:Uri: http://dynadapter/health
       HealthChecksUI:HealthChecks:2:Name: ICBC Adapter
       HealthChecksUI:HealthChecks:2:Uri: http://adapter-icbc/health
     networks: 

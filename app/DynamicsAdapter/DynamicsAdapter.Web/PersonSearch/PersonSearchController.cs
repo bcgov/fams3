@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Fams3Adapter.Dynamics.Identifier;
@@ -9,7 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace DynamicsAdapter.Web.MatchFound
+namespace DynamicsAdapter.Web.PersonSearch
 {
 
     // TODO: all classes bellow will be coming from SEARCH API CORE LIB
@@ -45,11 +44,11 @@ namespace DynamicsAdapter.Web.MatchFound
 
     [Route("[controller]")]
     [ApiController]
-    public class MatchFoundController : ControllerBase
+    public class PersonSearchController : ControllerBase
     {
-        private readonly ILogger<MatchFoundController> _logger;
+        private readonly ILogger<PersonSearchController> _logger;
         private ISearchRequestService _service;
-        public MatchFoundController(ILogger<MatchFoundController> logger, ISearchRequestService service)
+        public PersonSearchController(ILogger<PersonSearchController> logger, ISearchRequestService service)
         {
             _logger = logger;
             _service = service;
@@ -61,6 +60,7 @@ namespace DynamicsAdapter.Web.MatchFound
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Route("MatchFound/{id}")]
         public async Task<IActionResult> MatchFound(Guid id, [FromBody]MatchFound matchFound)
         {
             _logger.LogInformation("Received MatchFound response with SearchRequestId is " + id);
@@ -69,7 +69,7 @@ namespace DynamicsAdapter.Web.MatchFound
             foreach (var matchFoundPersonId in matchFound.PersonIds)
             {
 
-                //todo, replaced with data from payload
+                //TODO: replaced with data from payload
                 var toBeReplaced = new SSG_Identifier()
                 {
                     Identification = matchFoundPersonId.Number,
@@ -83,7 +83,6 @@ namespace DynamicsAdapter.Web.MatchFound
                     StateCode = 0,
                     StatusCode = 1
                 };
-                //todo
 
                 try
                 {
@@ -97,7 +96,6 @@ namespace DynamicsAdapter.Web.MatchFound
 
             }
 
-            
             return Ok();
         }
     }

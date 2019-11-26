@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
+using Fams3Adapter.Dynamics.SearchApiEvent;
+using Fams3Adapter.Dynamics.SearchRequest;
 using Simple.OData.Client;
 
 using Entry = System.Collections.Generic.Dictionary<string, object>;
@@ -16,6 +18,9 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
         Task<IEnumerable<SSG_SearchApiRequest>> GetAllReadyForSearchAsync(CancellationToken cancellationToken);
 
         Task<SSG_SearchApiRequest> MarkInProgress(Guid searchApiRequestId, CancellationToken cancellationToken);
+
+        Task<SSG_SearchApiEvent> AddEventAsync(Guid searchApiRequestId, SSG_SearchApiEvent searchApiEvent,
+            CancellationToken cancellationToken);
     }
 
     /// <summary>
@@ -59,7 +64,7 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
             return results;       
         }
 
-        /// <summary>(
+        /// <summary>
         /// Marks a search request in Progress
         /// </summary>
         /// <param name="searchApiRequestId"></param>
@@ -75,6 +80,18 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
                 .Set(new Entry { { Keys.DYNAMICS_STATUS_CODE_FIELD, SearchApiRequestStatusReason.InProgress.Value } })
                 .UpdateEntryAsync(cancellationToken);
         }
+
+
+        public async Task<SSG_SearchApiEvent> AddEventAsync(Guid searchApiRequestId, SSG_SearchApiEvent searchApiEvent,
+            CancellationToken cancellationToken)
+        {
+            if (searchApiRequestId == default || searchApiRequestId == Guid.Empty) throw new ArgumentNullException(nameof(searchApiRequestId));
+
+            searchApiEvent.SearchApiRequest = new SSG_SearchApiRequest() { SearchApiRequestId = searchApiRequestId};
+
+            return await this._oDataClient.For<SSG_SearchApiEvent>().Set(searchApiEvent).InsertEntryAsync(cancellationToken);
+        }
+
 
     }
 }

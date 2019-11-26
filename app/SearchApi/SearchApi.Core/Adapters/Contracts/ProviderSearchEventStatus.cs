@@ -8,7 +8,7 @@ namespace SearchApi.Core.Adapters.Contracts
     /// <summary>
     /// Represents a search status from a provider which could be accepted, rejected or failed
     /// </summary>
-    public class ProviderSearchEvent
+    public class ProviderSearchEventStatus
     {
         public Guid SearchRequestId { get; set; }
         public DateTime TimeStamp { get; set; }

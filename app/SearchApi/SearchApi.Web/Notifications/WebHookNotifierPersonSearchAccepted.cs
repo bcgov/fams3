@@ -23,7 +23,7 @@ namespace SearchApi.Web.Notifications
         private readonly IMapper _mapper;
 
         public WebHookNotifierPersonSearchAccepted(HttpClient httpClient, IOptions<SearchApiOptions> searchApiOptions,
-            ILogger<WebHookNotifierPersonSearchAccepted> logger, Mapper mapper)
+            ILogger<WebHookNotifierPersonSearchAccepted> logger, IMapper mapper)
         {
             _httpClient = httpClient;
             _logger = logger;
@@ -51,7 +51,7 @@ namespace SearchApi.Web.Notifications
 
                 try
                 {
-                    var providerSearchEvent = _mapper.Map<ProviderSearchEvent>(personSearchAccepted);
+                    var providerSearchEvent = _mapper.Map<ProviderSearchEventStatus>(personSearchAccepted);
                     var content = new StringContent(JsonConvert.SerializeObject(providerSearchEvent));
                     content.Headers.ContentType =
                         System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
@@ -75,7 +75,7 @@ namespace SearchApi.Web.Notifications
                 }
                 catch (Exception exception)
                 {
-                    _logger.LogError($"The failure notification for {webHook.Name}_Accepted has not executed successfully.",
+                    _logger.LogError($"The failure notification for {webHook.Name} has not executed successfully.",
                         exception);
                 }
             }

@@ -11,7 +11,7 @@ namespace SearchApi.Web.Mapping
     {
         public MappingProfile()
         {
-            CreateMap<PersonSearchAccepted, ProviderSearchEvent>()
+            CreateMap<PersonSearchAccepted, ProviderSearchEventStatus>()
                 .ForMember(dest => dest.SearchRequestId, opt => opt.MapFrom(src => src.SearchRequestId))
                 .ForMember(dest => dest.ProviderName, opt => opt.MapFrom(src => src.ProviderProfile.Name))
                 .ForMember(dest => dest.TimeStamp, opt => opt.MapFrom(src => src.TimeStamp))

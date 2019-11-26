@@ -60,16 +60,16 @@ namespace SearchAdapter.ICBC.SearchRequest
             else
             {
                 _logger.LogInformation("PersonSearch does not have sufficient information for the adapter to proceed the search.");
-                await context.Publish<PersonSearchRejected>(new PersonSearchRejectedEvent()
+
+                var rejectionEvent = new PersonSearchRejectedEvent(context.Message.Id, _profile);
+
+                validation.Errors.ToList().ForEach(x => rejectionEvent.AddValidationResult(new ValidationResult()
                 {
-                    SearchRequestId = context.Message.Id,
-                    ProviderProfile = _profile,
-                    Reasons = validation.Errors.Select(x => new ValidationResult()
-                    {
-                        PropertyName = x.PropertyName,
-                        ErrorMessage = x.ErrorMessage
-                    })
-                });
+                    PropertyName = x.PropertyName,
+                    ErrorMessage = x.ErrorMessage
+                }));
+
+                await context.Publish<PersonSearchRejected>(rejectionEvent);
             }
 
             return validation.IsValid;

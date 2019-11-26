@@ -72,34 +72,34 @@ namespace DynamicsAdapter.Web.PersonSearch
             _logger.LogInformation("Received MatchFound response with SearchRequestId is " + id);
             var cts = new CancellationTokenSource();
 
-            foreach (var matchFoundPersonId in matchFound.PersonIds)
+            try
             {
+                var searchApiRequestId = await _searchApiRequestService.GetLinkedSearchRequestIdAsync(id, cts.Token);
 
-                //TODO: replaced with data from payload
-                var toBeReplaced = new SSG_Identifier()
+                foreach (var matchFoundPersonId in matchFound.PersonIds)
                 {
-                    Identification = matchFoundPersonId.Number,
-                    IdentificationEffectiveDate = new DateTime(2014, 1, 1),
-                    IdentifierType = IdentificationType.DriverLicense.Value,
-                    IssuedBy = "ICBC",
-                    SSG_SearchRequest = new SSG_SearchRequest()
+                    //TODO: replaced with data from payload
+                    var toBeReplaced = new SSG_Identifier()
                     {
-                        SearchRequestId = id
-                    },
-                    StateCode = 0,
-                    StatusCode = 1
-                };
-
-                try
-                {
+                        Identification = matchFoundPersonId.Number,
+                        IdentificationEffectiveDate = new DateTime(2014, 1, 1),
+                        IdentifierType = IdentificationType.DriverLicense.Value,
+                        IssuedBy = "ICBC",
+                        SSG_SearchRequest = new SSG_SearchRequest()
+                        {
+                            SearchRequestId = searchApiRequestId
+                        },
+                        StateCode = 0,
+                        StatusCode = 1
+                    };
                     var result = await _searchRequestService.UploadIdentifier(toBeReplaced, cts.Token);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex.Message);
-                    return BadRequest();
-                }
 
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest();
             }
 
             return Ok();

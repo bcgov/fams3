@@ -17,10 +17,15 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
     {
         Task<IEnumerable<SSG_SearchApiRequest>> GetAllReadyForSearchAsync(CancellationToken cancellationToken);
 
+        Task<Guid> GetLinkedSearchRequestIdAsync(Guid searchApiRequestId,
+            CancellationToken cancellationToken);
+
         Task<SSG_SearchApiRequest> MarkInProgress(Guid searchApiRequestId, CancellationToken cancellationToken);
 
         Task<SSG_SearchApiEvent> AddEventAsync(Guid searchApiRequestId, SSG_SearchApiEvent searchApiEvent,
             CancellationToken cancellationToken);
+
+        
     }
 
     /// <summary>
@@ -65,6 +70,26 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
         }
 
         /// <summary>
+        /// Get the corresponding searchRequestId give a searchApiRequestId
+        /// </summary>
+        /// <param name="searchApiRequestId"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public async Task<Guid> GetLinkedSearchRequestIdAsync(Guid searchApiRequestId,
+            CancellationToken cancellationToken)
+        {
+            if (searchApiRequestId == default || searchApiRequestId == Guid.Empty) throw new ArgumentNullException(nameof(searchApiRequestId));
+
+            var result = await _oDataClient
+                .For<SSG_SearchApiRequest>()
+                .Key(searchApiRequestId)
+                .Select(x => x.SearchRequestId)
+                .FindEntryAsync(cancellationToken);
+
+            return result.SearchRequestId;
+        }
+
+        /// <summary>
         /// Marks a search request in Progress
         /// </summary>
         /// <param name="searchApiRequestId"></param>
@@ -90,21 +115,6 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
             searchApiEvent.SearchApiRequest = new SSG_SearchApiRequest() { SearchApiRequestId = searchApiRequestId};
 
             return await this._oDataClient.For<SSG_SearchApiEvent>().Set(searchApiEvent).InsertEntryAsync(cancellationToken);
-        }
-
-
-        public async Task<Guid> GetLinkedSearchRequestIdAsync(Guid searchApiRequestId,
-            CancellationToken cancellationToken)
-        {
-            if (searchApiRequestId == default || searchApiRequestId == Guid.Empty) throw new ArgumentNullException(nameof(searchApiRequestId));
-
-            var result = await _oDataClient
-                .For<SSG_SearchApiRequest>()
-                .Key(searchApiRequestId)
-                .Select(x => x.SearchRequestId)
-                .FindEntryAsync(cancellationToken);
-
-            return result.SearchRequestId;
         }
 
     }

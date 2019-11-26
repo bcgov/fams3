@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Fams3Adapter.Dynamics.Identifier;
+using Fams3Adapter.Dynamics.SearchApiEvent;
+using Fams3Adapter.Dynamics.SearchApiRequest;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -47,21 +49,25 @@ namespace DynamicsAdapter.Web.PersonSearch
     public class PersonSearchController : ControllerBase
     {
         private readonly ILogger<PersonSearchController> _logger;
-        private ISearchRequestService _service;
-        public PersonSearchController(ILogger<PersonSearchController> logger, ISearchRequestService service)
+        private readonly ISearchRequestService _searchRequestService;
+        private readonly ISearchApiRequestService _searchApiRequestService;
+
+        public PersonSearchController(ISearchRequestService searchRequestService,
+            ISearchApiRequestService searchApiRequestService, ILogger<PersonSearchController> logger)
         {
+            _searchRequestService = searchRequestService;
+            _searchApiRequestService = searchApiRequestService;
             _logger = logger;
-            _service = service;
         }
 
         //POST: MatchFound/id
-        [HttpPost("{id}")]
+        [HttpPost]
         [Consumes("application/json")]
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Route("MatchFound/{id}")]
-        public async Task<IActionResult> MatchFound(Guid id, [FromBody]MatchFound matchFound)
+        public async Task<IActionResult> MatchFound(Guid id, [FromBody] MatchFound matchFound)
         {
             _logger.LogInformation("Received MatchFound response with SearchRequestId is " + id);
             var cts = new CancellationTokenSource();
@@ -86,14 +92,52 @@ namespace DynamicsAdapter.Web.PersonSearch
 
                 try
                 {
-                    SSG_Identifier result = await _service.UploadIdentifier(toBeReplaced, cts.Token);
+                    var result = await _searchRequestService.UploadIdentifier(toBeReplaced, cts.Token);
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    _logger.LogError(e.Message);
+                    _logger.LogError(ex.Message);
                     return BadRequest();
                 }
 
+            }
+
+            return Ok();
+        }
+
+
+        [HttpPost]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Route("Event/{id}")]
+        public async Task<IActionResult> Event(Guid id, [FromBody] Object temp)
+        {
+
+            _logger.LogInformation($"Received new event for SearchApiRequest [{id}]");
+
+            var token = new CancellationTokenSource();
+
+            var searchApiEvent = new SSG_SearchApiEvent()
+            {
+                Id = Guid.NewGuid(),
+                Message = "Test Event from dynadapter",
+                ProviderName = "Dynadapter",
+                TimeStamp = DateTime.Now,
+                Type = "Test"
+            };
+
+            try
+            {
+                _logger.LogDebug($"Attempting to create a new event for SearchApiRequest [{id}]");
+                var result = await _searchApiRequestService.AddEventAsync(id, searchApiEvent, token.Token);
+                _logger.LogInformation($"Successfully created new event for SearchApiRequest [{id}]");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest();
             }
 
             return Ok();

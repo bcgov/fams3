@@ -41,7 +41,7 @@ namespace DynamicsAdapter.Web.SearchRequest
 
             var cts = new CancellationTokenSource();
 
-            try
+            try 
             {
                 List<SSG_SearchApiRequest> requestList = await GetAllReadyForSearchAsync(cts.Token);
 

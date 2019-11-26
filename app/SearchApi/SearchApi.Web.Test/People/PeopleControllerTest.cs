@@ -26,17 +26,16 @@ namespace SearchApi.Web.Test.People
 
         private Mock<ISendEndpoint> _sendEndpointMock;
 
-        private readonly Mock<ISendEndpointProvider> _sendEndPointProviderMock = new Mock<ISendEndpointProvider>();
+        private Mock<IBusControl> _busControlMock;
 
             [SetUp]
         public void Init()
         {
+            _busControlMock = new Mock<IBusControl>();
             _sendEndpointMock = new Mock<ISendEndpoint>();
-            EndpointConvention.Map<ExecuteSearch>(new Uri("http://random"));
-            _sendEndPointProviderMock.Setup(x => x.GetSendEndpoint(It.IsAny<Uri>())).Returns(Task.FromResult(_sendEndpointMock.Object));
             _spanMock.Setup(x => x.SetTag(It.IsAny<string>(), It.IsAny<string>())).Returns(_spanMock.Object);
             _tracerMock.Setup(x => x.ActiveSpan).Returns(_spanMock.Object);
-            _sut = new PeopleController(_sendEndPointProviderMock.Object, _loggerMock.Object, _tracerMock.Object);
+            _sut = new PeopleController(_busControlMock.Object, _loggerMock.Object, _tracerMock.Object);
         }
 
 

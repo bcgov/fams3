@@ -170,9 +170,6 @@ namespace SearchApi.Web
             var rabbitMqSettings = Configuration.GetSection("RabbitMq").Get<RabbitMqConfiguration>();
             var rabbitBaseUri = $"amqp://{rabbitMqSettings.Host}:{rabbitMqSettings.Port}";
 
-            // Globally configure Execute Search Endpoint
-            EndpointConvention.Map<ExecuteSearch>(new Uri($"{rabbitBaseUri}/{nameof(ExecuteSearch)}"));
-
             services.AddMassTransit(x =>
             {
                 // Add RabbitMq Service Bus

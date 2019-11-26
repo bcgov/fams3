@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using NSwag;
 using NSwag.Annotations;
 using OpenTracing;
+using SearchApi.Core.Adapters.Contracts;
 using SearchApi.Core.Contracts;
 
 namespace SearchApi.Web.Controllers
@@ -23,16 +24,15 @@ namespace SearchApi.Web.Controllers
 
         private readonly ITracer _tracer;
 
-        private readonly ISendEndpointProvider _sendEndpointProvider;
+        private readonly IBusControl _busControl;
 
         private readonly ILogger _logger;
 
-        public PeopleController(
-            ISendEndpointProvider sendEndpointProvider, ILogger<PeopleController> logger, ITracer tracer)
+        public PeopleController(IBusControl busControl, ILogger<PeopleController> logger, ITracer tracer)
         {
-            this._sendEndpointProvider = sendEndpointProvider;
             this._logger = logger;
             this._tracer = tracer;
+            _busControl = busControl;
         }
 
         /// <summary>
@@ -59,16 +59,46 @@ namespace SearchApi.Web.Controllers
             _tracer.ActiveSpan.SetTag("searchRequestId", $"{searchRequestId}");
 
             _logger.LogDebug($"Attempting to send {nameof(ExecuteSearch)} to destination queue.");
-            await this._sendEndpointProvider.Send<ExecuteSearch>(new
+
+            var executeSearch = new ExecuteSearchCommand()
             {
-                Id = searchRequestId,
-                personSearchRequest.FirstName,
-                personSearchRequest.LastName,
-                personSearchRequest.DateOfBirth
+                FirstName = personSearchRequest.FirstName,
+                LastName = personSearchRequest.LastName,
+            };
+
+            if (personSearchRequest.DateOfBirth != null)
+                executeSearch.DateOfBirth = (DateTime) personSearchRequest.DateOfBirth;
+
+
+            await _busControl.Publish<PersonSearchOrdered>(new PersonSearchOrderEvent(searchRequestId)
+            {
+                ExecuteSearch = executeSearch
             });
+
             _logger.LogInformation($"Successfully sent {nameof(ExecuteSearch)} to destination queue.");
 
             return Accepted(new PersonSearchResponse(searchRequestId));
+        }
+
+        public class PersonSearchOrderEvent : PersonSearchOrdered
+        {
+
+            public PersonSearchOrderEvent(Guid searchRequestId)
+            {
+                SearchRequestId = searchRequestId;
+                TimeStamp = DateTime.Now;
+            }
+
+            public Guid SearchRequestId { get; }
+            public DateTime TimeStamp { get; }
+            public ExecuteSearch ExecuteSearch { get; set; }
+        }
+
+        public class ExecuteSearchCommand : ExecuteSearch
+        {
+            public string FirstName { get; set; }
+            public string LastName { get; set; }
+            public DateTime DateOfBirth { get; set; }
         }
     }
 }

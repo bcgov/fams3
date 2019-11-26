@@ -168,7 +168,7 @@ namespace SearchAdapter.ICBC
 
             var rabbitBaseUri = $"amqp://{rabbitMqSettings.Host}:{rabbitMqSettings.Port}";
 
-            services.AddTransient<IConsumeMessageObserver<ExecuteSearch>, PersonSearchObserver>();
+            services.AddTransient<IConsumeMessageObserver<PersonSearchOrdered>, PersonSearchObserver>();
 
             services.AddMassTransit(x =>
             {
@@ -176,6 +176,9 @@ namespace SearchAdapter.ICBC
                 // Add RabbitMq Service Bus
                 x.AddBus(provider =>
                 {
+
+                    var providerOptions = provider.GetRequiredService<IOptions<ProviderProfileOptions>>();
+
                     var bus = Bus.Factory.CreateUsingRabbitMq(cfg =>
                     {
                         var host = cfg.Host(new Uri(rabbitBaseUri), hostConfigurator =>
@@ -184,11 +187,11 @@ namespace SearchAdapter.ICBC
                             hostConfigurator.Password(rabbitMqSettings.Password);
                         });
 
-                        cfg.ReceiveEndpoint(host, nameof(ExecuteSearch), e =>
+                        cfg.ReceiveEndpoint(host, $"{nameof(PersonSearchOrdered)}_{providerOptions.Value.Name}", e =>
                         {
                             e.Consumer(() => new SearchRequestConsumer(
                                 provider.GetRequiredService<IValidator<ExecuteSearch>>(),
-                                provider.GetRequiredService<IOptions<ProviderProfileOptions>>(),
+                                providerOptions,
                                 provider.GetRequiredService<ILogger<SearchRequestConsumer>>()));
                         });
 
@@ -209,14 +212,9 @@ namespace SearchAdapter.ICBC
 
                 });
 
-                
-
             });
 
             services.AddHostedService<BusHostedService>();
-
-            
-
         }
 
     }

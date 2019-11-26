@@ -33,7 +33,7 @@ namespace SearchAdapter.ICBC.Test.SearchRequest
         private Guid inValidGuid = Guid.NewGuid();
 
 
-            [OneTimeSetUp]
+        [OneTimeSetUp]
         public async Task A_consumer_is_being_tested()
         {
 
@@ -41,10 +41,10 @@ namespace SearchAdapter.ICBC.Test.SearchRequest
             _providerProfileMock = new Mock<IOptions<ProviderProfileOptions>>();
             _personSearchValidatorMock = new Mock<IValidator<ExecuteSearch>>();
 
-            _personSearchValidatorMock.Setup(x => x.Validate(It.Is<ExecuteSearch>(x => x.Id == validGuid)))
+            _personSearchValidatorMock.Setup(x => x.Validate(It.Is<ExecuteSearch>(executeSearch => !string.IsNullOrEmpty(executeSearch.FirstName))))
                 .Returns(new ValidationResult(Enumerable.Empty<ValidationFailure>()));
 
-            _personSearchValidatorMock.Setup(x => x.Validate(It.Is<ExecuteSearch>(x => x.Id == inValidGuid)))
+            _personSearchValidatorMock.Setup(x => x.Validate(It.Is<ExecuteSearch>(executeSearch => string.IsNullOrEmpty(executeSearch.FirstName))))
                 .Returns(new ValidationResult(new List<ValidationFailure>()
                 {
                     new ValidationFailure("firstName", "firstName is required.")

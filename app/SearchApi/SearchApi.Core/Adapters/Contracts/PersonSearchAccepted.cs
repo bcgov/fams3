@@ -1,6 +1,6 @@
 ﻿namespace SearchApi.Core.Adapters.Contracts
 {
-    public interface PersonSearchAccepted : PersonSearchEvent
+    public interface PersonSearchAccepted : PersonSearchEvent, AdapterEvent
     {
         
     }

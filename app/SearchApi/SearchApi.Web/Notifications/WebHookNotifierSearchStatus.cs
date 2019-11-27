@@ -14,36 +14,36 @@ using System.Threading.Tasks;
 namespace SearchApi.Web.Notifications
 {
 
-    public class WebHookNotifierPersonSearchAccepted : BaseApiNotifier, ISearchApiNotifier<PersonSearchAccepted>
+    public class WebHookNotifierSearchStatus : BaseApiNotifier, ISearchApiNotifier<ProviderSearchEventStatus>
     {
 
         private readonly HttpClient _httpClient;
         private readonly SearchApiOptions _searchApiOptions;
-        private readonly ILogger<WebHookNotifierPersonSearchAccepted> _logger;
-        private readonly IMapper _mapper;
+        private readonly ILogger<WebHookNotifierSearchStatus> _logger;
 
-        public WebHookNotifierPersonSearchAccepted(HttpClient httpClient, IOptions<SearchApiOptions> searchApiOptions,
-            ILogger<WebHookNotifierPersonSearchAccepted> logger, IMapper mapper)
+
+        public WebHookNotifierSearchStatus(HttpClient httpClient, IOptions<SearchApiOptions> searchApiOptions,
+            ILogger<WebHookNotifierSearchStatus> logger)
         {
             _httpClient = httpClient;
             _logger = logger;
             _searchApiOptions = searchApiOptions.Value;
-            _mapper = mapper;
+            
         }
 
-        public async Task NotifyEventAsync(Guid searchRequestId, PersonSearchAccepted personSearchAccepted,
+        public async Task NotifyEventAsync(Guid searchRequestId, ProviderSearchEventStatus eventStatus,
            CancellationToken cancellationToken)
         {
             var webHookName = "PersonSearch";
             foreach (var webHook in _searchApiOptions.WebHooks.FindAll(x => x.EventName.Contains(webHookName)))
             {
                 _logger.LogDebug(
-                   $"The webHook {webHookName}_Accepted notification is attempting to send event for {webHook.Name} webhook.");
+                   $"The webHook {webHookName} notification is attempting to send status {eventStatus.EventType} event for {webHook.Name} webhook.");
 
                 if (!TryCreateUri(webHook.Uri, $"{searchRequestId}", out var endpoint))
                 {
                     _logger.LogWarning(
-                        $"The webHook {webHookName}_Accepted notification uri is not established or is not an absolute Uri for {webHook.Name}. Set the WebHook.Uri value on SearchApi.WebHooks settings.");
+                        $"The webHook {webHookName} notification uri is not established or is not an absolute Uri for {webHook.Name}. Set the WebHook.Uri value on SearchApi.WebHooks settings.");
                     return;
                 }
 
@@ -51,8 +51,8 @@ namespace SearchApi.Web.Notifications
 
                 try
                 {
-                    var providerSearchEvent = _mapper.Map<ProviderSearchEventStatus>(personSearchAccepted);
-                    var content = new StringContent(JsonConvert.SerializeObject(providerSearchEvent));
+               ;
+                    var content = new StringContent(JsonConvert.SerializeObject(eventStatus));
                     content.Headers.ContentType =
                         System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request.Content = content;
@@ -65,12 +65,12 @@ namespace SearchApi.Web.Notifications
                     if (!response.IsSuccessStatusCode)
                     {
                         _logger.LogError(
-                            $"The webHook {webHookName}_Accepted notification has not executed successfully for {webHook.Name} webHook. The error code is {response.StatusCode.GetHashCode()}.");
+                            $"The webHook {webHookName} notification has not executed status {eventStatus.EventType} successfully for {webHook.Name} webHook. The error code is {response.StatusCode.GetHashCode()}.");
                         return;
                     }
 
                     _logger.LogInformation(
-                        $"The webHook {webHookName}_Accepted notification has executed successfully for {webHook.Name} webHook.");
+                        $"The webHook {webHookName} notification has executed status {eventStatus.EventType} successfully for {webHook.Name} webHook.");
 
                 }
                 catch (Exception exception)

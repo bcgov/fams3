@@ -6,10 +6,18 @@ using SearchApi.Core.Adapters.Contracts;
 
 namespace SearchApi.Web.Notifications
 {
+    public enum EventType
+    {
+        PersonSearchAccepted,
+        PersonSearchRejected,
+        PersonSearchMatchNotFound,
+        PersonSearchFailed,
+        PersonSearchMatchFound  
+    }
     public interface ISearchApiNotifier<T>
     {
 
-        Task NotifyEventAsync(Guid searchRequestId, T notificationData, CancellationToken cancellationToken);
+        Task NotifyEventAsync(Guid searchRequestId, T notificationStatus, CancellationToken cancellationToken);
 
     }
 

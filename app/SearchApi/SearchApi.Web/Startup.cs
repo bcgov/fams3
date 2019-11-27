@@ -198,7 +198,7 @@ namespace SearchApi.Web
                     cfg.ReceiveEndpoint(host, $"{nameof(PersonSearchAccepted)}_queue", e =>
                     {
                         e.Consumer(() =>
-                            new PersonSearchAcceptedConsumer(provider.GetRequiredService<ISearchApiNotifier<PersonSearchAccepted>>(), provider.GetRequiredService<ILogger<PersonSearchAcceptedConsumer>>()));
+                            new PersonSearchAcceptedConsumer(provider.GetRequiredService<ISearchApiNotifier<ProviderSearchEventStatus>>(), provider.GetRequiredService<ILogger<ProviderSearchEventStatus>>(), provider.GetRequiredService<IMapper>()));
                     });
 
                 }));

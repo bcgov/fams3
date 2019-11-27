@@ -22,9 +22,6 @@ namespace SearchApi.Web.People
         [Description("The identfication type,such as driver license.")]
         public IdentifierTypeEnum Type { get; set; }
 
-        [Description("The inforation source of this identifier, such as icbc.")]
-        public IdentifierSourceEnum Source { get; set; }
-
         [Description("The identifier is issued by who or which organization.")]
         public string IssuedBy { get; set; }
     }

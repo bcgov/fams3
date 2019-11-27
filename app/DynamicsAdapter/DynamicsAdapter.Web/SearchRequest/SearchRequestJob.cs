@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using OpenTracing;
 using Fams3Adapter.Dynamics.Identifier;
+using AutoMapper;
 
 namespace DynamicsAdapter.Web.SearchRequest
 {
@@ -23,15 +24,19 @@ namespace DynamicsAdapter.Web.SearchRequest
 
         private readonly ISearchApiRequestService _searchApiRequestService;
 
+        private readonly IMapper _mapper;
+
 
         public SearchRequestJob(ISearchApiClient searchApiClient,
             ISearchApiRequestService searchApiRequestService,
-            ILogger<SearchRequestJob> logger)
+            ILogger<SearchRequestJob> logger,
+            IMapper mapper)
         {
             _logger = logger;
             _searchApiRequestService = searchApiRequestService;
      
             _searchApiClient = searchApiClient;
+            _mapper = mapper;
         }
 
         public async Task Execute(IJobExecutionContext context)
@@ -49,7 +54,9 @@ namespace DynamicsAdapter.Web.SearchRequest
                 {
                     _logger.LogDebug(
                         $"Attempting to post person search for request {ssgSearchRequest.SearchApiRequestId}");
-                   
+
+                    PersonSearchRequest psr = _mapper.Map<PersonSearchRequest>(ssgSearchRequest);
+
                     var result = await _searchApiClient.SearchAsync(
                         ssgSearchRequest.ConvertToPersonSearchRequest(), 
                         $"{ssgSearchRequest.SearchApiRequestId}", 

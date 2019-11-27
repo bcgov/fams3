@@ -1,9 +1,11 @@
 using System;
+using AutoMapper;
 using DynamicsAdapter.Web.Auth;
 using DynamicsAdapter.Web.Configuration;
 using DynamicsAdapter.Web.Health;
 using DynamicsAdapter.Web.Infrastructure;
 using DynamicsAdapter.Web.SearchRequest;
+using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.OptionSets;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using Fams3Adapter.Dynamics.SearchRequest;
@@ -57,9 +59,10 @@ namespace DynamicsAdapter.Web
 
             this.ConfigureSearchApi(services);
 
-            ConfigureDynamicsClient(services);
+            this.ConfigureDynamicsClient(services);
 
             this.ConfigureScheduler(services);
+            this.ConfigureAutoMapper(services);
         }
 
         private AppSettings ConfigureAppSettings(IServiceCollection services)
@@ -68,6 +71,28 @@ namespace DynamicsAdapter.Web
      
         }
 
+        private void ConfigureAutoMapper(IServiceCollection services)
+        {
+            var configuration = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<SSG_Identifier, Identifier>()
+                    .ForMember(dest => dest.SerialNumber, opt => opt.MapFrom(src => src.Identification))
+                    .ForMember(dest => dest.EffectiveDate, opt => opt.MapFrom(src => src.IdentificationEffectiveDate))
+                    .ForMember(dest => dest.ExpirationDate, opt => opt.MapFrom(src => src.IdentificationExpirationDate))
+                    .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.IdentifierType))
+                    .ForMember(dest => dest.Source, opt => opt.MapFrom(src => src.InformationSource))
+                    .ForMember(dest => dest.IssuedBy, opt => opt.MapFrom(src => src.IssuedBy));
+
+                cfg.CreateMap<SSG_SearchApiRequest, PersonSearchRequest>()
+                    .ForMember(dest=>dest.FirstName,opt=>opt.MapFrom(src=>src.PersonGivenName))
+                    .ForMember(dest=>dest.LastName, opt=>opt.MapFrom(src=>src.PersonSurname))
+                    .ForMember(dest=>dest.DateOfBirth, opt=>opt.MapFrom(src=>src.PersonBirthDate))
+                    .ForMember(dest=>dest.Identifiers, opt=>opt.MapFrom(src=>src.Identifiers));
+            });
+            // only during development, validate your mappings; remove it before release
+            configuration.AssertConfigurationIsValid();
+            services.AddSingleton(configuration.CreateMapper());
+        }
         /// <summary>
         /// Configures the searchApi http client
         /// </summary>

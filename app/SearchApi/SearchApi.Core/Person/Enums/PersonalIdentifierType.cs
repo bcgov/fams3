@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace SearchApi.Web.People
+﻿namespace SearchApi.Core.Adapters.Models.Enums
 {
-    public enum IdentifierType
+    public enum PersonalIdentifierType
     {
         DriverLicense,
         SocialInsuranceNumber,

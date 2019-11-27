@@ -10,6 +10,7 @@ using NSwag;
 using NSwag.Annotations;
 using OpenTracing;
 using SearchApi.Core.Adapters.Contracts;
+using SearchApi.Core.Adapters.Models.Contracts;
 using SearchApi.Core.Contracts;
 
 namespace SearchApi.Web.Controllers
@@ -60,19 +61,9 @@ namespace SearchApi.Web.Controllers
 
             _logger.LogDebug($"Attempting to send {nameof(ExecuteSearch)} to destination queue.");
 
-            var executeSearch = new ExecuteSearchCommand()
-            {
-                FirstName = personSearchRequest.FirstName,
-                LastName = personSearchRequest.LastName,
-            };
-
-            if (personSearchRequest.DateOfBirth != null)
-                executeSearch.DateOfBirth = (DateTime) personSearchRequest.DateOfBirth;
-
-
             await _busControl.Publish<PersonSearchOrdered>(new PersonSearchOrderEvent(searchRequestId)
             {
-                ExecuteSearch = executeSearch
+                ExecuteSearch = personSearchRequest
             });
 
             _logger.LogInformation($"Successfully sent {nameof(ExecuteSearch)} to destination queue.");
@@ -98,7 +89,8 @@ namespace SearchApi.Web.Controllers
         {
             public string FirstName { get; set; }
             public string LastName { get; set; }
-            public DateTime DateOfBirth { get; set; }
+            public DateTime? DateOfBirth { get; set; }
+            public IEnumerable<PersonalIdentifier> Identifiers { get; }
         }
     }
 }

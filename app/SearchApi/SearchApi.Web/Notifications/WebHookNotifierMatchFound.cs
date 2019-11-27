@@ -12,7 +12,7 @@ using SearchApi.Web.Configuration;
 
 namespace SearchApi.Web.Notifications
 {
-    public class WebHookNotifierMatchFound : BaseApiNotifier, ISearchApiNotifier<MatchFound> 
+    public class WebHookNotifierMatchFound :ISearchApiNotifier<MatchFound> 
     {
 
         private readonly HttpClient _httpClient;
@@ -30,12 +30,12 @@ namespace SearchApi.Web.Notifications
         public async Task NotifyEventAsync(Guid searchRequestId, MatchFound matchFound,
            CancellationToken cancellationToken)
         {
-            foreach (var webHook in _searchApiOptions.WebHooks.FindAll(x => x.EventName.Contains(nameof(MatchFound))))
+            foreach (var webHook in _searchApiOptions.WebHooks.FindAll(x => x.EventName.Contains(nameof(MatchFound), StringComparison.OrdinalIgnoreCase)))
             {
                 _logger.LogDebug(
                    $"The webHook {nameof(MatchFound)} notification is attempting to send event for {webHook.Name} webhook.");
 
-                if (!TryCreateUri(webHook.Uri, $"{searchRequestId}", out var endpoint))
+                if (!URLHelper.TryCreateUri(webHook.Uri, $"{searchRequestId}", out var endpoint))
                 {
                     _logger.LogWarning(
                         $"The webHook {nameof(MatchFound)} notification uri is not established or is not an absolute Uri for {webHook.Name}. Set the WebHook.Uri value on SearchApi.WebHooks settings.");

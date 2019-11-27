@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace SearchApi.Web.Notifications
 {
 
-    public class WebHookNotifierSearchStatus : BaseApiNotifier, ISearchApiNotifier<ProviderSearchEventStatus>
+    public class WebHookNotifierSearchStatus :  ISearchApiNotifier<ProviderSearchEventStatus>
     {
 
         private readonly HttpClient _httpClient;
@@ -35,12 +35,12 @@ namespace SearchApi.Web.Notifications
            CancellationToken cancellationToken)
         {
             var webHookName = "PersonSearch";
-            foreach (var webHook in _searchApiOptions.WebHooks.FindAll(x => x.EventName.Contains(webHookName)))
+            foreach (var webHook in _searchApiOptions.WebHooks.FindAll(x => x.EventName.Contains(webHookName,StringComparison.OrdinalIgnoreCase)))
             {
                 _logger.LogDebug(
                    $"The webHook {webHookName} notification is attempting to send status {eventStatus.EventType} event for {webHook.Name} webhook.");
 
-                if (!TryCreateUri(webHook.Uri, $"{searchRequestId}", out var endpoint))
+                if (!URLHelper.TryCreateUri(webHook.Uri, $"{searchRequestId}", out var endpoint))
                 {
                     _logger.LogWarning(
                         $"The webHook {webHookName} notification uri is not established or is not an absolute Uri for {webHook.Name}. Set the WebHook.Uri value on SearchApi.WebHooks settings.");

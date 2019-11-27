@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 namespace SearchApi.Web.Notifications
 {
 
-    public abstract class BaseApiNotifier
+    public static class URLHelper
     {
-        protected bool TryCreateUri(string baseUrl, string path, out Uri uri)
+        public static bool TryCreateUri(string baseUrl, string path, out Uri uri)
         {
             uri = null;
             if (!Uri.TryCreate(baseUrl, UriKind.Absolute, out var baseUri))

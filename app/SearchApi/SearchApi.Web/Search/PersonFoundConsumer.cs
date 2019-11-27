@@ -1,33 +1,38 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 using SearchApi.Core.Adapters.Contracts;
+using SearchApi.Core.Adapters.Models;
 using SearchApi.Web.Notifications;
 
 namespace SearchApi.Web.Search
 {
-    public class MatchFoundConsumer : IConsumer<MatchFound>
+    public class PersonFoundConsumer : IConsumer<PersonFound>
     {
 
-        private readonly ILogger<MatchFoundConsumer> _logger;
+        private readonly ILogger<PersonFoundConsumer> _logger;
+    
 
-        private readonly ISearchApiNotifier<MatchFound> _searchApiNotifier;
+        private readonly ISearchApiNotifier<PersonFound> _searchApiNotifier;
 
-        public MatchFoundConsumer(ISearchApiNotifier<MatchFound> searchApiNotifier, ILogger<MatchFoundConsumer> logger)
+        public PersonFoundConsumer(ISearchApiNotifier<PersonFound> searchApiNotifier, ILogger<PersonFoundConsumer> logger)
         {
             _searchApiNotifier = searchApiNotifier;
             _logger = logger;
+          
         }
 
-        public async Task Consume(ConsumeContext<MatchFound> context)
+        public async Task Consume(ConsumeContext<PersonFound> context)
         {
             var cts = new CancellationTokenSource();
             var profile = context.Headers.Get<ProviderProfile>(nameof(ProviderProfile));
-            _logger.LogInformation($"received new {nameof(MatchFound)} event from {profile.Name}");
+            _logger.LogInformation($"received new {nameof(PersonFound)} event from {profile.Name}");
             await _searchApiNotifier.NotifyEventAsync(context.Message.SearchRequestId, context.Message,
                 cts.Token);
+
         }
     }
 }

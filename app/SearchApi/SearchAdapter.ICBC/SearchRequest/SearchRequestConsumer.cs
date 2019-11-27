@@ -43,7 +43,7 @@ namespace SearchAdapter.ICBC.SearchRequest
 
             if (await ValidatePersonSearch(context))
             {
-                await context.Publish<SearchApi.Core.Adapters.Contracts.MatchFound>(BuildFakeResult(context.Message));
+                await context.Publish<SearchApi.Core.Adapters.Contracts.PersonFound>(BuildFakeResult(context.Message));
             }
         }
 
@@ -77,7 +77,7 @@ namespace SearchAdapter.ICBC.SearchRequest
         }
 
 
-        public SearchApi.Core.Adapters.Contracts.MatchFound BuildFakeResult(ExecuteSearch executeSearch)
+        public SearchApi.Core.Adapters.Contracts.PersonFound BuildFakeResult(ExecuteSearch executeSearch)
         {
 
 

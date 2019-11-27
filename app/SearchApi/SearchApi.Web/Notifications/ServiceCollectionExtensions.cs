@@ -8,7 +8,7 @@ namespace SearchApi.Web.Notifications
     {
         public static void AddWebHooks(this IServiceCollection services)
         {
-            services.AddHttpClient<ISearchApiNotifier<MatchFound>, WebHookNotifierMatchFound>();
+            services.AddHttpClient<ISearchApiNotifier<PersonFound>, WebHookNotifierResultStatus>();
             services.AddHttpClient<ISearchApiNotifier<ProviderSearchEventStatus>, WebHookNotifierSearchStatus>();
         }
     }

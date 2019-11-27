@@ -13,25 +13,25 @@ using SearchApi.Web.Test.Utils;
 
 namespace SearchApi.Web.Test.Search
 {
-    public class MatchFoundConsumerTest
+    public class PersonFoundConsumerTest
     {
         private InMemoryTestHarness _harness;
-        private ConsumerTestHarness<MatchFoundConsumer> _sut;
+        private ConsumerTestHarness<PersonFoundConsumer> _sut;
 
-        private Mock<ILogger<MatchFoundConsumer>> _loggerMock;
-        private Mock<ISearchApiNotifier<MatchFound>> _searchApiNotifierMock;
+        private Mock<ILogger<PersonFoundConsumer>> _loggerMock;
+        private Mock<ISearchApiNotifier<PersonFound>> _searchApiNotifierMock;
 
         [OneTimeSetUp]
         public async Task A_consumer_is_being_tested()
         {
-            _loggerMock = LoggerUtils.LoggerMock<MatchFoundConsumer>();
-            _searchApiNotifierMock = new Mock<ISearchApiNotifier<MatchFound>>();
+            _loggerMock = LoggerUtils.LoggerMock<PersonFoundConsumer>();
+            _searchApiNotifierMock = new Mock<ISearchApiNotifier<PersonFound>>();
             _harness = new InMemoryTestHarness();
-            _sut = _harness.Consumer(() => new MatchFoundConsumer(_searchApiNotifierMock.Object, _loggerMock.Object));
+            _sut = _harness.Consumer(() => new PersonFoundConsumer(_searchApiNotifierMock.Object, _loggerMock.Object));
 
             await _harness.Start();
 
-            await _harness.BusControl.Publish<MatchFound>(new
+            await _harness.BusControl.Publish<PersonFound>(new
             {
                 FirstName = "firstName",
                 LastName = "lastName",
@@ -50,13 +50,13 @@ namespace SearchApi.Web.Test.Search
         [Test]
         public void Should_send_the_initial_message_to_the_consumer()
         {
-            Assert.IsTrue(_harness.Published.Select<MatchFound>().Any());
+            Assert.IsTrue(_harness.Published.Select<PersonFound>().Any());
         }
 
         [Test]
         public void Should_receive_the_message_type_a()
         {
-            Assert.IsTrue(_harness.Consumed.Select<MatchFound>().Any());
+            Assert.IsTrue(_harness.Consumed.Select<PersonFound>().Any());
         }
 
 

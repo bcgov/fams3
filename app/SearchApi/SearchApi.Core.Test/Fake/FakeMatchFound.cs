@@ -5,7 +5,7 @@ using SearchApi.Core.Contracts;
 
 namespace SearchApi.Core.Test.Fake
 {
-    public class FakeMatchFound : MatchFound
+    public class FakePersonFound : PersonFound
     {
         public Guid SearchRequestId { get; } = Guid.NewGuid();
 

@@ -206,7 +206,7 @@ namespace SearchApi.Web.Test.Notifications
         [Test]
         public async Task it_should_log_error_when_not_uri()
         {
-            var fakeMatchFound = new FakeMatchFound();
+            var fakeMatchFound = new FakePersonFound();
 
             _searchApiOptionsMock.Setup(x => x.Value).Returns(new SearchApiOptions()
                 .AddWebHook("test", "not_uri", "PersonSearch"));

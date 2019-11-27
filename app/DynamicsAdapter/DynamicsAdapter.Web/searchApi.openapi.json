@@ -117,10 +117,6 @@
           "type": "integer",
           "description": "The identifier type, such as driver license"
         },
-        "source": {
-          "type": "integer",
-          "description": "The identifier type, such as driver license"
-        },
         "issuedBy": {
           "type": "string",
           "description": "The identifier is issued by who or which organization"

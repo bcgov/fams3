@@ -28,9 +28,6 @@ namespace DynamicsAdapter.Web.SearchRequest
                 id.ExpirationDate = sSG_Identifier.IdentificationExpirationDate;
                 id.Type = sSG_Identifier.IdentifierType == null ? 0
                                        : Enumeration.FromValue<IdentificationType>((int)sSG_Identifier.IdentifierType).SearchApiValue;
-                id.Source = sSG_Identifier.InformationSource == null ? 0
-                                            : Enumeration.FromValue<InformationSourceType>((int)sSG_Identifier.InformationSource).SearchApiValue;
-
                 id.IssuedBy = sSG_Identifier.IssuedBy;
                 personSearchRequest.Identifiers.Add(id);
             }

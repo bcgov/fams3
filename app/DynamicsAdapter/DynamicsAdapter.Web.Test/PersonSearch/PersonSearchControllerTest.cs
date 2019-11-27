@@ -111,7 +111,14 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         [Test]
         public async Task With_valid_event_it_should_return_ok()
         {
-            var result = await _sut.Event(_testGuid, null);
+            var result = await _sut.Event(_testGuid, new ProviderSearchEventStatus()
+            {
+                SearchRequestId = _testGuid,
+                TimeStamp = DateTime.Now,
+                Message = "Test Message",
+                EventType = "Event Type",
+                ProviderName = "Provider Name"
+            });
             Assert.IsInstanceOf(typeof(OkResult), result);
         }
 

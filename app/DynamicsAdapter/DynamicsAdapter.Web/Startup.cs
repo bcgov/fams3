@@ -75,7 +75,7 @@ namespace DynamicsAdapter.Web
         {
             var configuration = new MapperConfiguration(cfg =>
             {
-                cfg.AddProfile<SearchRequestAutoMapperProfile>();
+                cfg.AddProfile<SearchRequestAutoMapperProfile>();                
             });
             // only during development, validate your mappings; remove it before release
             configuration.AssertConfigurationIsValid();

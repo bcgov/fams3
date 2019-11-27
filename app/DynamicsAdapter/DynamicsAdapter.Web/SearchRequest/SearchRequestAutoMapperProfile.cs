@@ -9,16 +9,17 @@ using System.Threading.Tasks;
 
 namespace DynamicsAdapter.Web.SearchRequest
 {
-   public class SearchRequestAutoMapperProfile : Profile
+
+    public class SearchRequestAutoMapperProfile : Profile
     {
+
         public SearchRequestAutoMapperProfile()
         {
             CreateMap<SSG_Identifier, Identifier>()
                  .ForMember(dest => dest.SerialNumber, opt => opt.MapFrom(src => src.Identification))
                  .ForMember(dest => dest.EffectiveDate, opt => opt.MapFrom(src => src.IdentificationEffectiveDate))
                  .ForMember(dest => dest.ExpirationDate, opt => opt.MapFrom(src => src.IdentificationExpirationDate))
-                 .ForMember(dest => dest.Type, opt => opt.MapFrom(src=>src.IdentifierType))
-                 //.ForMember(dest => dest.Type, opt => opt.MapFrom(src => Enumeration.FromValue<IdentificationType>((int)src.IdentifierType).SearchApiValue))
+                 .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new IdentifierTypeConverter(), src => src.IdentifierType))
                  .ForMember(dest => dest.IssuedBy, opt => opt.MapFrom(src => src.IssuedBy));
 
             CreateMap<SSG_SearchApiRequest, PersonSearchRequest>()
@@ -28,4 +29,15 @@ namespace DynamicsAdapter.Web.SearchRequest
                  .ForMember(dest => dest.Identifiers, opt => opt.MapFrom(src => src.Identifiers));
         }
     }
+
+    public class IdentifierTypeConverter : IValueConverter<int?, int?>
+    {
+        public int? Convert(int? source, ResolutionContext context)
+        {
+            if (source == null) return null;
+            else
+                return Enumeration.FromValue<IdentificationType>((int)source).SearchApiValue;
+        }
+    }
+
 }

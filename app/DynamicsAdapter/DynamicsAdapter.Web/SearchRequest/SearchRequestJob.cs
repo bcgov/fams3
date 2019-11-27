@@ -55,10 +55,8 @@ namespace DynamicsAdapter.Web.SearchRequest
                     _logger.LogDebug(
                         $"Attempting to post person search for request {ssgSearchRequest.SearchApiRequestId}");
 
-                    PersonSearchRequest psr = _mapper.Map<PersonSearchRequest>(ssgSearchRequest);
-
                     var result = await _searchApiClient.SearchAsync(
-                        ssgSearchRequest.ConvertToPersonSearchRequest(), 
+                        _mapper.Map<PersonSearchRequest>(ssgSearchRequest), 
                         $"{ssgSearchRequest.SearchApiRequestId}", 
                         cts.Token);
 

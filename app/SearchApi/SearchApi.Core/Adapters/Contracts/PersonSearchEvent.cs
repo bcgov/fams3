@@ -6,6 +6,5 @@ namespace SearchApi.Core.Adapters.Contracts
     {
         Guid SearchRequestId { get; }
         DateTime TimeStamp { get; }
-        ProviderProfile ProviderProfile { get; }
     }
 }

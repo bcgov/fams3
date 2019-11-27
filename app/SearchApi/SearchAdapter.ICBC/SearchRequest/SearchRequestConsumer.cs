@@ -17,7 +17,7 @@ namespace SearchAdapter.ICBC.SearchRequest
     /// <summary>
     /// The SearchRequestConsumer consumes ICBC execute search commands, execute the search a publish a response back to the searchApi
     /// </summary>
-    public class SearchRequestConsumer : IConsumer<ExecuteSearch>
+    public class SearchRequestConsumer : IConsumer<PersonSearchOrdered>
     {
 
         private readonly ILogger<SearchRequestConsumer> _logger;
@@ -35,33 +35,33 @@ namespace SearchAdapter.ICBC.SearchRequest
             _logger = logger;
         }
 
-        public async Task Consume(ConsumeContext<ExecuteSearch> context)
+        public async Task Consume(ConsumeContext<PersonSearchOrdered> context)
         {
-            _logger.LogInformation($"Successfully handling new search request [{context.Message.Id}]");
+            _logger.LogInformation($"Successfully handling new search request [{context.Message.ExecuteSearch}]");
 
             _logger.LogWarning("Currently under development, ICBC Adapter is generating FAKE results.");
 
             if (await ValidatePersonSearch(context))
             {
-                await context.Publish<SearchApi.Core.Adapters.Contracts.PersonFound>(BuildFakeResult(context.Message));
+                await context.Publish<SearchApi.Core.Adapters.Contracts.MatchFound>(BuildFakeResult(context.Message));
             }
         }
 
-        private async Task<bool> ValidatePersonSearch(ConsumeContext<ExecuteSearch> context)
+        private async Task<bool> ValidatePersonSearch(ConsumeContext<PersonSearchOrdered> context)
         {
 
             _logger.LogDebug("Attempting to validate the personSearch");
-            var validation = _personSearchValidator.Validate(context.Message);
+            var validation = _personSearchValidator.Validate(context.Message.ExecuteSearch);
 
             if (validation.IsValid)
             {
-                await context.Publish<PersonSearchAccepted>(new DefaultPersonSearchAccepted(context.Message.Id, _profile));
+                await context.Publish<PersonSearchAccepted>(new DefaultPersonSearchAccepted(context.Message.SearchRequestId, _profile));
             }
             else
             {
                 _logger.LogInformation("PersonSearch does not have sufficient information for the adapter to proceed the search.");
 
-                var rejectionEvent = new PersonSearchRejectedEvent(context.Message.Id, _profile);
+                var rejectionEvent = new PersonSearchRejectedEvent(context.Message.SearchRequestId, _profile);
 
                 validation.Errors.ToList().ForEach(x => rejectionEvent.AddValidationResult(new ValidationResult()
                 {
@@ -77,18 +77,15 @@ namespace SearchAdapter.ICBC.SearchRequest
         }
 
 
-        public SearchApi.Core.Adapters.Contracts.PersonFound BuildFakeResult(ExecuteSearch executeSearch)
+        public SearchApi.Core.Adapters.Contracts.MatchFound BuildFakeResult(PersonSearchOrdered personSearchOrdered)
         {
-
-
             var fakeIdentifier = new IcbcPersonIdBuilder(PersonIDKind.DriverLicense).WithIssuer("British Columbia")
                 .WithNumber("1234568").Build();
 
-            var person = new IcbcPersonBuilder().WithFirstName(executeSearch.FirstName)
-                .WithFirstName(executeSearch.FirstName).WithDateOfBirth(executeSearch.DateOfBirth).Build();
+            var person = new IcbcPersonBuilder().WithFirstName(personSearchOrdered.ExecuteSearch.FirstName)
+                .WithFirstName(personSearchOrdered.ExecuteSearch.FirstName).WithDateOfBirth(personSearchOrdered.ExecuteSearch.DateOfBirth).Build();
 
-
-            return new IcbcMatchFoundBuilder(executeSearch.Id).WithPerson(person).AddPersonId(fakeIdentifier).Build();
+            return new IcbcMatchFoundBuilder(personSearchOrdered.SearchRequestId).WithPerson(person).AddPersonId(fakeIdentifier).Build();
 
         }
 

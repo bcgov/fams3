@@ -44,6 +44,16 @@ namespace DynamicsAdapter.Web.PersonSearch
     }
 
 
+    public class ProviderSearchEventStatus
+    {
+        public Guid SearchRequestId { get; set; }
+        public DateTime TimeStamp { get; set; }
+        public string ProviderName { get; set; }
+        public string Message { get; set; }
+        public string EventType { get; set; }
+    }
+
+
     [Route("[controller]")]
     [ApiController]
     public class PersonSearchController : ControllerBase
@@ -112,24 +122,23 @@ namespace DynamicsAdapter.Web.PersonSearch
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Route("Event/{id}")]
-        public async Task<IActionResult> Event(Guid id, [FromBody] Object temp)
+        public async Task<IActionResult> Event(Guid id, [FromBody]ProviderSearchEventStatus providerSearchEventStatus)
         {
 
             _logger.LogInformation($"Received new event for SearchApiRequest [{id}]");
 
             var token = new CancellationTokenSource();
 
-            var searchApiEvent = new SSG_SearchApiEvent()
-            {
-                Id = Guid.NewGuid(),
-                Message = "Test Event from dynadapter",
-                ProviderName = "Dynadapter",
-                TimeStamp = DateTime.Now,
-                Type = "Test"
-            };
-
             try
             {
+                var searchApiEvent = new SSG_SearchApiEvent()
+                {
+                    Id = Guid.NewGuid(),
+                    Message = providerSearchEventStatus.Message,
+                    ProviderName = providerSearchEventStatus.ProviderName,
+                    TimeStamp = providerSearchEventStatus.TimeStamp,
+                    Type = providerSearchEventStatus.EventType
+                };
                 _logger.LogDebug($"Attempting to create a new event for SearchApiRequest [{id}]");
                 var result = await _searchApiRequestService.AddEventAsync(id, searchApiEvent, token.Token);
                 _logger.LogInformation($"Successfully created new event for SearchApiRequest [{id}]");

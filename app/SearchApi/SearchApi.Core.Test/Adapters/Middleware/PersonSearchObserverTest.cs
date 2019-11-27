@@ -24,6 +24,20 @@ namespace SearchAdapter.ICBC.Test.Adapters.Middleware
         private Mock<ILogger<PersonSearchObserver>> _personSearchObserver;
         private Mock<IOptions<ProviderProfileOptions>> _providerProfileOptiosnMock;
 
+        public class PersonSearchOrderedTest : PersonSearchOrdered
+        {
+            public Guid SearchRequestId { get; set; }
+            public DateTime TimeStamp { get; set; }
+            public ExecuteSearch ExecuteSearch { get; set; }
+        }
+
+        public class ExecuteSearchTest : ExecuteSearch
+        {
+            public string FirstName { get; set; }
+            public string LastName { get; set; }
+            public DateTime DateOfBirth { get; set; }
+        }
+
         [OneTimeSetUp]
         public async Task A_consumer_is_being_tested()
         {
@@ -43,12 +57,16 @@ namespace SearchAdapter.ICBC.Test.Adapters.Middleware
             _harness.Bus.ConnectConsumeMessageObserver(new PersonSearchObserver(_providerProfileOptiosnMock.Object,
                 _personSearchObserver.Object));
 
-            await _harness.InputQueueSendEndpoint.Send<ExecuteSearch>(new
+            await _harness.BusControl.Publish<PersonSearchOrdered>(new PersonSearchOrderedTest()
             {
-                Id = Guid.NewGuid(),
-                FirstName = "firstName",
-                LastName = "lastName",
-                DateOfBirth = new DateTime(2001, 1, 1)
+                SearchRequestId = Guid.NewGuid(),
+                TimeStamp = DateTime.Now,
+                ExecuteSearch = new ExecuteSearchTest()
+                {
+                    FirstName = "",
+                    LastName = "lastName",
+                    DateOfBirth = new DateTime(2001, 1, 1)
+                }
             });
         }
 
@@ -60,9 +78,9 @@ namespace SearchAdapter.ICBC.Test.Adapters.Middleware
         }
 
 
-        public class FakeFailureConsumer : IConsumer<ExecuteSearch>
+        public class FakeFailureConsumer : IConsumer<PersonSearchOrdered>
         {
-            public Task Consume(ConsumeContext<ExecuteSearch> context)
+            public Task Consume(ConsumeContext<PersonSearchOrdered> context)
             {
                 throw new Exception("Test Exception");
             }

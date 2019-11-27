@@ -20,7 +20,7 @@ namespace SearchApi.Web.People
         public DateTime? ExpirationDate { get; set; }
 
         [Description("The identfication type,such as driver license.")]
-        public IdentifierTypeEnum Type { get; set; }
+        public IdentifierType Type { get; set; }
 
         [Description("The identifier is issued by who or which organization.")]
         public string IssuedBy { get; set; }

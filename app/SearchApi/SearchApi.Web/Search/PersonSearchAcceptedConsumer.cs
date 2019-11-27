@@ -15,12 +15,12 @@ namespace SearchApi.Web.Search
     public class PersonSearchAcceptedConsumer : IConsumer<PersonSearchAccepted>
     {
 
-        private readonly ILogger<ProviderSearchEventStatus> _logger;
+        private readonly ILogger<PersonSearchAcceptedConsumer> _logger;
 
         private readonly ISearchApiNotifier<ProviderSearchEventStatus> _searchApiNotifier;
         private readonly IMapper _mapper;
 
-        public PersonSearchAcceptedConsumer(ISearchApiNotifier<ProviderSearchEventStatus> searchApiNotifier, ILogger<ProviderSearchEventStatus> logger, IMapper mapper)
+        public PersonSearchAcceptedConsumer(ISearchApiNotifier<ProviderSearchEventStatus> searchApiNotifier, ILogger<PersonSearchAcceptedConsumer> logger, IMapper mapper)
         {
             _searchApiNotifier = searchApiNotifier;
             _logger = logger;

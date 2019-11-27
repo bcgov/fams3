@@ -3,6 +3,7 @@ using MassTransit.Testing;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
+using SearchApi.Core.Adapters.Contracts;
 using SearchApi.Core.Adapters.Models;
 using SearchApi.Web.Notifications;
 using SearchApi.Web.Search;
@@ -20,28 +21,42 @@ namespace SearchApi.Web.Test.Search
         private InMemoryTestHarness _harness;
         private ConsumerTestHarness<PersonSearchAcceptedConsumer> _sut;
 
-        private Mock<ILogger<ProviderSearchEventStatus>> _loggerMock;
+        private Mock<ILogger<PersonSearchAcceptedConsumer>> _loggerMock;
         private Mock<ISearchApiNotifier<ProviderSearchEventStatus>> _searchApiNotifierMock;
         private Mock<IMapper> _mapper;
 
         [OneTimeSetUp]
         public async Task A_consumer_is_being_tested()
         {
-            _loggerMock = LoggerUtils.LoggerMock<ProviderSearchEventStatus>();
+            _loggerMock = LoggerUtils.LoggerMock<PersonSearchAcceptedConsumer>();
             _searchApiNotifierMock = new Mock<ISearchApiNotifier<ProviderSearchEventStatus>>();
             _harness = new InMemoryTestHarness();
             _mapper = new Mock<IMapper>();
+
+            var fakePersonSearchStatus = new ProviderSearchEventStatus
+
+            {
+                EventType = "PersonSearchAccepted",
+                Message = "Ok",
+                ProviderName = "ICBC",
+                SearchRequestId = Guid.NewGuid(),
+                TimeStamp = DateTime.Now
+            };
+
+            _mapper.Setup(m => m.Map<ProviderSearchEventStatus>(It.IsAny<PersonSearchAccepted>()))
+                                .Returns(fakePersonSearchStatus);
+
             _sut = _harness.Consumer(() => new PersonSearchAcceptedConsumer(_searchApiNotifierMock.Object, _loggerMock.Object, _mapper.Object));
 
             await _harness.Start();
 
             await _harness.BusControl.Publish<ProviderSearchEventStatus>(new
             {
-                SearchRequestId = Guid.NewGuid(),
-                TimeStamp = DateTime.Now,
-                ProviderName = "WorksafeBC",
-                Message = "Successful",
-                EventType = "Accepted"
+
+
+                FirstName = "firstName",
+                LastName = "lastName",
+                DateOfBirth = new DateTime(2001, 1, 1)
             }) ;
 
         }
@@ -58,10 +73,5 @@ namespace SearchApi.Web.Test.Search
             Assert.IsTrue(_harness.Published.Select<ProviderSearchEventStatus>().Any());
         }
 
-        [Test]
-        public void Should_receive_the_message_type_a()
-        {
-            Assert.IsTrue(_harness.Consumed.Select<ProviderSearchEventStatus>().Any());
-        }
     }
 }

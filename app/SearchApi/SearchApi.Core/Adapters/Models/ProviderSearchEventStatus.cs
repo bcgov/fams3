@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SearchApi.Core.Adapters.Contracts
+namespace SearchApi.Core.Adapters.Models
 {
 
     /// <summary>

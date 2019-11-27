@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SearchApi.Core.Adapters.Contracts;
+using SearchApi.Core.Adapters.Models;
 
 namespace SearchApi.Web.Notifications
 {

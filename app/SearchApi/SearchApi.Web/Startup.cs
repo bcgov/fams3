@@ -28,6 +28,7 @@ using SearchApi.Web.Configuration;
 using SearchApi.Web.Controllers;
 using SearchApi.Web.Notifications;
 using SearchApi.Web.Search;
+using SearchApi.Core.Adapters.Models;
 
 namespace SearchApi.Web
 {

@@ -11,6 +11,7 @@ using Moq;
 using Moq.Protected;
 using NUnit.Framework;
 using SearchApi.Core.Adapters.Contracts;
+using SearchApi.Core.Adapters.Models;
 using SearchApi.Core.OpenTracing;
 using SearchApi.Core.Test.Fake;
 using SearchApi.Web.Configuration;

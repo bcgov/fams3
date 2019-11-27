@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using SearchApi.Core.Adapters.Contracts;
+using SearchApi.Core.Adapters.Models;
 using SearchApi.Web.Configuration;
 using System;
 using System.Collections.Generic;

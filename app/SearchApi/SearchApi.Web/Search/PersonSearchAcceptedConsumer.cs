@@ -2,6 +2,7 @@
 using MassTransit;
 using Microsoft.Extensions.Logging;
 using SearchApi.Core.Adapters.Contracts;
+using SearchApi.Core.Adapters.Models;
 using SearchApi.Web.Notifications;
 using System;
 using System.Collections.Generic;

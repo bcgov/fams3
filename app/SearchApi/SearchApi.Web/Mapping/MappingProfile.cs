@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using SearchApi.Core.Adapters.Contracts;
+using SearchApi.Core.Adapters.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

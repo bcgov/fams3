@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace SearchApi.Web.People
 {
-    public enum IdentifierTypeEnum
+    public enum IdentifierType
     {
         DriverLicense,
         SocialInsuranceNumber,

@@ -1,4 +1,5 @@
 using System;
+using AutoMapper;
 using DynamicsAdapter.Web.Auth;
 using DynamicsAdapter.Web.Configuration;
 using DynamicsAdapter.Web.Health;
@@ -57,15 +58,27 @@ namespace DynamicsAdapter.Web
 
             this.ConfigureSearchApi(services);
 
-            ConfigureDynamicsClient(services);
+            this.ConfigureDynamicsClient(services);
 
             this.ConfigureScheduler(services);
+            this.ConfigureAutoMapper(services);
         }
 
         private AppSettings ConfigureAppSettings(IServiceCollection services)
         {
            return Configuration.GetSection("AppSettings").Get<AppSettings>(); 
      
+        }
+
+        private void ConfigureAutoMapper(IServiceCollection services)
+        {
+            var configuration = new MapperConfiguration(cfg =>
+            {
+                cfg.AddProfile<SearchRequestAutoMapperProfile>();                
+            });
+            // only during development, validate your mappings; remove it before release
+            configuration.AssertConfigurationIsValid();
+            services.AddSingleton(configuration.CreateMapper());
         }
 
         /// <summary>

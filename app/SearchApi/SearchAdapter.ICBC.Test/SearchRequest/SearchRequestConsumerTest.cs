@@ -32,6 +32,19 @@ namespace SearchAdapter.ICBC.Test.SearchRequest
         private Guid validGuid = Guid.NewGuid();
         private Guid inValidGuid = Guid.NewGuid();
 
+        public class PersonSearchOrderedTest : PersonSearchOrdered
+        {
+            public Guid SearchRequestId { get; set; }
+            public DateTime TimeStamp { get; set; }
+            public ExecuteSearch ExecuteSearch { get; set; }
+        }
+        
+        public class ExecuteSearchTest : ExecuteSearch
+        {
+            public string FirstName { get; set; }
+            public string LastName { get; set; }
+            public DateTime DateOfBirth { get; set; }
+        }
 
         [OneTimeSetUp]
         public async Task A_consumer_is_being_tested()
@@ -55,20 +68,28 @@ namespace SearchAdapter.ICBC.Test.SearchRequest
 
             await _harness.Start();
 
-            await _harness.InputQueueSendEndpoint.Send<ExecuteSearch>(new
+            await _harness.BusControl.Publish<PersonSearchOrdered>(new PersonSearchOrderedTest()
             {
-                Id = validGuid,
-                FirstName = "firstName",
-                LastName = "lastName",
-                DateOfBirth = new DateTime(2001, 1, 1)
+                SearchRequestId = validGuid,
+                TimeStamp = DateTime.Now,
+                ExecuteSearch = new ExecuteSearchTest()
+                {
+                    FirstName = "firstName",
+                    LastName = "lastName",
+                    DateOfBirth = new DateTime(2001, 1, 1)
+                }
             });
 
-            await _harness.InputQueueSendEndpoint.Send<ExecuteSearch>(new
+            await _harness.BusControl.Publish<PersonSearchOrdered>(new PersonSearchOrderedTest()
             {
-                Id = inValidGuid,
-                FirstName = "",
-                LastName = "lastName",
-                DateOfBirth = new DateTime(2001, 1, 1)
+                SearchRequestId = inValidGuid,
+                TimeStamp = DateTime.Now,
+                ExecuteSearch = new ExecuteSearchTest()
+                {
+                    FirstName = "",
+                    LastName = "lastName",
+                    DateOfBirth = new DateTime(2001, 1, 1)
+                }
             });
 
         }
@@ -83,13 +104,13 @@ namespace SearchAdapter.ICBC.Test.SearchRequest
         [Test]
         public void Should_send_the_initial_message_to_the_consumer()
         {
-            Assert.IsTrue(_harness.Sent.Select<ExecuteSearch>().Any());
+            Assert.IsTrue(_harness.Published.Select<PersonSearchOrdered>().Any());
         }
 
         [Test]
         public void Should_receive_the_message_type_a()
         {
-            Assert.IsTrue(_harness.Consumed.Select<ExecuteSearch>().Any());
+            Assert.IsTrue(_harness.Consumed.Select<PersonSearchOrdered>().Any());
         }
 
         [Test]

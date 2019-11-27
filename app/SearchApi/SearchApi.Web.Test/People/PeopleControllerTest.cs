@@ -8,6 +8,7 @@ using Moq;
 using NUnit.Framework;
 using NUnit.Framework.Internal;
 using OpenTracing;
+using SearchApi.Core.Adapters.Contracts;
 using SearchApi.Core.Contracts;
 using SearchApi.Web.Controllers;
 
@@ -24,19 +25,15 @@ namespace SearchApi.Web.Test.People
 
         private readonly Mock<ILogger<PeopleController>> _loggerMock = new Mock<ILogger<PeopleController>>();
 
-        private Mock<ISendEndpoint> _sendEndpointMock;
-
-        private readonly Mock<ISendEndpointProvider> _sendEndPointProviderMock = new Mock<ISendEndpointProvider>();
+        private Mock<IBusControl> _busControlMock;
 
             [SetUp]
         public void Init()
         {
-            _sendEndpointMock = new Mock<ISendEndpoint>();
-            EndpointConvention.Map<ExecuteSearch>(new Uri("http://random"));
-            _sendEndPointProviderMock.Setup(x => x.GetSendEndpoint(It.IsAny<Uri>())).Returns(Task.FromResult(_sendEndpointMock.Object));
+            _busControlMock = new Mock<IBusControl>();
             _spanMock.Setup(x => x.SetTag(It.IsAny<string>(), It.IsAny<string>())).Returns(_spanMock.Object);
             _tracerMock.Setup(x => x.ActiveSpan).Returns(_spanMock.Object);
-            _sut = new PeopleController(_sendEndPointProviderMock.Object, _loggerMock.Object, _tracerMock.Object);
+            _sut = new PeopleController(_busControlMock.Object, _loggerMock.Object, _tracerMock.Object);
         }
 
 
@@ -48,7 +45,7 @@ namespace SearchApi.Web.Test.People
             Assert.IsInstanceOf<PersonSearchResponse>(result.Value);
             Assert.IsNotNull(((PersonSearchResponse)result.Value).Id);
             _spanMock.Verify(x => x.SetTag("searchRequestId", $"{((PersonSearchResponse)result.Value).Id}"), Times.Once);
-            _sendEndpointMock.Verify(x => x.Send(It.IsAny<ExecuteSearch>(), It.IsAny<CancellationToken>()), Times.Once);
+            _busControlMock.Verify(x => x.Publish(It.IsAny<PersonSearchOrdered>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Test]
@@ -61,7 +58,7 @@ namespace SearchApi.Web.Test.People
             Assert.IsInstanceOf<PersonSearchResponse>(result.Value);
             Assert.AreEqual( expectedId, ((PersonSearchResponse)result.Value).Id);
             _spanMock.Verify(x => x.SetTag("searchRequestId", $"{((PersonSearchResponse)result.Value).Id}"), Times.Once);
-            _sendEndpointMock.Verify(x => x.Send(It.IsAny<ExecuteSearch>(), It.IsAny<CancellationToken>()), Times.Once);
+            _busControlMock.Verify(x => x.Publish(It.IsAny<PersonSearchOrdered>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
     }

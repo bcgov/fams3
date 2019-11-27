@@ -45,17 +45,16 @@ namespace DynamicsAdapter.Web.SearchRequest
             {
                 List<SSG_SearchApiRequest> requestList = await GetAllReadyForSearchAsync(cts.Token);
 
-                foreach (var ssgSearchRequest in requestList)
+                foreach (SSG_SearchApiRequest ssgSearchRequest in requestList)
                 {
                     _logger.LogDebug(
                         $"Attempting to post person search for request {ssgSearchRequest.SearchApiRequestId}");
+                   
+                    var result = await _searchApiClient.SearchAsync(
+                        ssgSearchRequest.ConvertToPersonSearchRequest(), 
+                        $"{ssgSearchRequest.SearchApiRequestId}", 
+                        cts.Token);
 
-                    var result = await _searchApiClient.SearchAsync(new PersonSearchRequest()
-                    {
-                        FirstName = ssgSearchRequest.PersonGivenName,
-                        LastName = ssgSearchRequest.PersonSurname,
-                        DateOfBirth = ssgSearchRequest.PersonBirthDate,
-                    }, $"{ssgSearchRequest.SearchApiRequestId}", cts.Token);
                     _logger.LogInformation($"Successfully posted person search id:{result.Id}");
 
                     await MarkInProgress(ssgSearchRequest, cts.Token);

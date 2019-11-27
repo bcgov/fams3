@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using Newtonsoft.Json;
 using NSwag;
+using SearchApi.Web.People;
 
 namespace SearchApi.Web.Controllers
 {
@@ -25,5 +27,6 @@ namespace SearchApi.Web.Controllers
         public string LastName { get; }
         [Description("The date of birth of the subject.")]
         public DateTime? DateOfBirth { get; }
+        public List<Identifier> Identifiers { get; set; }
     }
 }

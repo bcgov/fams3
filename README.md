@@ -62,7 +62,7 @@ To enable Person Search notification, configure the SearchApi WebHooks settings.
     "WebHooks": [
       {
         "Name": "dynadapter",
-        "Uri":  "http://localhost:5000",
+        "Uri":  "http://localhost:5000/PersonSearch",
       }
     ] 
   }

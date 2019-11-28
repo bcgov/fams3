@@ -72,44 +72,70 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         }
 
         [Test]
-        public async Task With_valid_match_found_data_should_return_ok()
+        public async Task With_valid_completed_event_it_should_return_ok()
         {
-            var result = await _sut.MatchFound(_testGuid, new MatchFound()
-            {
-                PersonIds = new List<PersonId>()
+            var result = await _sut.Completed(_testGuid, new PersonSearchController.PersonCompletedEvent()
                 {
-                    new PersonId()
+                    SearchRequestId = Guid.NewGuid(),
+                    TimeStamp = DateTime.Now,
+                    ProviderProfile = new PersonSearchController.ProviderProfile()
                     {
-                        Issuer = "test",
-                        Number = "test",
-                        Kind = PersonIDKind.DriverLicense
-                    }
+                        Name = "TEST PROVIDER"
+                    },
+                    MatchFound = new MatchFound()
+                    {
+                        SearchRequestId = Guid.NewGuid(),
+                        Person = new Person() { },
+                        PersonIds = new List<PersonId>()
+                        {
+                            new PersonId()
+                            {
+                                Issuer = "test",
+                                Number = "test",
+                                Kind = PersonIDKind.DriverLicense
+                            }
+                        }
+                    } 
                 }
-            });
+            );
+            _searchRequestServiceMock
+                .Verify(x => x.UploadIdentifier(It.IsAny<SSG_Identifier>(), It.IsAny<CancellationToken>()), Times.Once);
+            _searchApiRequestServiceMock
+                .Verify(x => x.AddEventAsync(It.Is<Guid>(x => x == _testGuid), It.IsAny<SSG_SearchApiEvent>(), It.IsAny<CancellationToken>()), Times.Once);
             Assert.IsInstanceOf(typeof(OkResult), result);
-
         }
 
         [Test]
-        public async Task With_exception_match_found_data_should_return_badrequest()
+        public async Task With_exception_completed_event_should_return_badrequest()
         {
-            var result = await _sut.MatchFound(_exceptionGuid, new MatchFound()
+            var result = await _sut.Completed(_exceptionGuid, new PersonSearchController.PersonCompletedEvent()
             {
-                PersonIds = new List<PersonId>()
+                SearchRequestId = Guid.NewGuid(),
+                TimeStamp = DateTime.Now,
+                ProviderProfile = new PersonSearchController.ProviderProfile()
                 {
-                    new PersonId()
-                    {
-                        Issuer = "test",
-                        Number = "test",
-                        Kind = PersonIDKind.DriverLicense
-                    }
+                    Name = "TEST PROVIDER"
+                },
+                MatchFound = new MatchFound()
+                {
+                    SearchRequestId = Guid.NewGuid(),
+                    Person = new Person() { },
+                    PersonIds = new List<PersonId>()
+                        {
+                            new PersonId()
+                            {
+                                Issuer = "exception",
+                                Number = "exception",
+                                Kind = PersonIDKind.DriverLicense
+                            }
+                        }
                 }
             });
             Assert.IsInstanceOf(typeof(BadRequestResult), result);
         }
 
         [Test]
-        public async Task With_valid_event_it_should_return_ok()
+        public async Task With_valid_accepted_event_it_should_return_ok()
         {
             var result = await _sut.Accepted(_testGuid, new PersonSearchController.PersonAcceptedEvent()
             {

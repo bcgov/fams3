@@ -193,7 +193,7 @@ namespace SearchApi.Web
                             new PersonSearchAcceptedConsumer(provider.GetRequiredService<ISearchApiNotifier<PersonSearchAdapterEvent>>(), provider.GetRequiredService<ILogger<PersonSearchAcceptedConsumer>>()));
                     });
                     // Configure Person Search Accepted Consumer Consumer
-                    cfg.ReceiveEndpoint(host, $"{nameof(PersonSearchAccepted)}_queue", e =>
+                    cfg.ReceiveEndpoint(host, $"{nameof(PersonSearchCompleted)}_queue", e =>
                     {
                         e.Consumer(() =>
                             new PersonSearchCompletedConsumer(provider.GetRequiredService<ISearchApiNotifier<PersonSearchAdapterEvent>>(), provider.GetRequiredService<ILogger<PersonSearchCompletedConsumer>>()));

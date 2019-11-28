@@ -185,18 +185,18 @@ namespace SearchApi.Web
                     // Add Diagnostic context for tracing
                     cfg.PropagateOpenTracingContext();
 
-                    // Configure MatchFound Consumer
-                    //cfg.ReceiveEndpoint(host, $"{nameof(PersonFound)}_queue", e =>
-                    //    {
-                    //        e.Consumer(() =>
-                    //            new PersonEventConsumer( provider.GetRequiredService<ISearchApiNotifier<PersonSearchAdapterEvent>>(), provider.GetRequiredService<ILogger<PersonEventConsumer>>()));
-                    //    });
 
-                    // Configure MatchFound Consumer
+                    // Configure Person Search Accepted Consumer Consumer
                     cfg.ReceiveEndpoint(host, $"{nameof(PersonSearchAccepted)}_queue", e =>
                     {
                         e.Consumer(() =>
                             new PersonSearchAcceptedConsumer(provider.GetRequiredService<ISearchApiNotifier<PersonSearchAdapterEvent>>(), provider.GetRequiredService<ILogger<PersonSearchAcceptedConsumer>>()));
+                    });
+                    // Configure Person Search Accepted Consumer Consumer
+                    cfg.ReceiveEndpoint(host, $"{nameof(PersonSearchAccepted)}_queue", e =>
+                    {
+                        e.Consumer(() =>
+                            new PersonSearchCompletedConsumer(provider.GetRequiredService<ISearchApiNotifier<PersonSearchAdapterEvent>>(), provider.GetRequiredService<ILogger<PersonSearchCompletedConsumer>>()));
                     });
 
                 }));

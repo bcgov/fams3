@@ -53,48 +53,79 @@ Configure RabbiMq using the following ENV variables:
 
 ### Match Found Notifications
 
-If the WebHooks section is configured, SearchApi automatically posts a new notification into the webhook collection.
-
-To enable MatchFound notification, they have to be configured through the SearchApi WebHooks settings. Event name has been introduced to handle multiple webhook event without loosing the name of the adapter. There could be a WebHook to multiple adapter. ``PersonSearch`` Event will handle search event status such as accepted, rejected, failed, matchfound (which is different from actual match storing) and matchnotfound.
+If the WebHooks section is configured, SearchApi automatically posts a new notification into the webhook collection. The WebHook configuraton in SearchApi is
 
 ```json
 "SearchApi": {
     "WebHooks": [
       {
         "Name": "dynadapter",
-        "Uri":  "http://localhost:5000",
-        "EventName" : "MatchFound"
-      },
-      {
-        "Name": "dynadapter",
-        "Uri":  "http://localhost:5000",
+        "Uri":  "http://localhost:5000/PersonSearch",
         "EventName" : "PersonSearch"
       }
     ] 
   }
 ```
 
-With this configuration the searchApi will post MatchFound to `http://localhost:5000/{id}` where {id} is a global unique identifier. the content of the payload is a MatchFound object
+With this configuration the searchApi will post Event to `http://localhost:5000/PersonSearch/{EventName}/{id}` where {id} is a global unique identifier for the search request . the content of the payload is  dependent on the event.
+
+### Search Adapters Events
+
+
+#### Person Search Completed
+
+When the Adapter finds a match for a particular person, it raises an event that post search completed to dynadapter with the result message.
 
 ```json
 {
-    "FistName": "firstName",
-    "LastName": "lastName",
-    "DateOfBirth": "2001-01-01"
+	"person": {
+		"firstName": "My name is first",
+		"lastName": "My name is last",
+		"dateOfBirth": "0001-01-01T00:00:00"
+	},
+	"personIds": [{
+		"kind": "DriversLicense",
+		"issuer": "BC Province",
+		"number": "123123123"
+	}, {
+		"kind": "DriversLicense",
+		"issuer": "AB Province",
+		"number": "123123123"
+	}],
+	"searchRequestId": "00000000-0000-0000-0000-000000000000",
+	"timeStamp": "0001-01-01T00:00:00",
+	"providerProfile": {
+		"name": "ICBC"
+	}
 }
 ```
+DynAdapter endpoint will be dynamically generated based on event and posted to the ``PersonSearchController`` at the URI --> /PersonSerach/Completed/{searchRequestId}
 
-For SearchEvent configuration the searchApi will post Status to `http://localhost:5000/{id}` where {id} is a global unique identifier. the content of the payload is a ``ProviderSearchEventStatus`` object
+#### Person Search Accepted
+
+When a person Search is accepted by data provider, meaning it has sufficient information to conduct a search. An event is raised and posted to dynadapter.
 
 ```json
 {
-    "SearchRequestId": "0123das-123asd12-asdasd-1as213",
-    "TimeStamp": "2019-02-01T23:28:56.782Z",
-    "ProviderName": "ICBC",
-    "Message" :"The status of the event and possibly failure reason",
-    "EventType" : "Event type such as Accepted, Rejected, Failed, MatchFound, MatchNotFound"
+	
+	"searchRequestId": "00000000-0000-0000-0000-000000000000",
+	"timeStamp": "0001-01-01T00:00:00",
+	"providerProfile": {
+		"name": "ICBC"
+	}
 }
 ```
+DynAdapter endpoint will be dynamically generated based on event and posted to the ``PersonSearchController`` at the URI --> /PersonSerach/Accepted/{searchRequestId}
+
+#### Person Search Rejected
+
+When a person Search does not meet the minimal requirement for the adapter to conduct a search.
+
+#### Person Search Failed
+
+When the adpater throws an unknown exception.
+
+
 
 ### OpenApi
 
@@ -146,23 +177,6 @@ The Search Adpaters a worker that execute a search for a specific data providers
 | RABBITMQ__USERNAME | no | RabbitMq UserName |
 | RABBITMQ__PASSWORD | no | RabbitMq Password |
 
-### Search Adapters Events
-
-#### MatchFound
-
-When the Adapter found a match for a particular person
-
-#### Person Search Accepted
-
-When a person Search is accepted, meaning it has sufficient information to conduct a search.
-
-#### Person Search Rejected
-
-When a person Search does not meet the minimal requirement for the adapter to conduct a search.
-
-#### Person Search Failed
-
-When the adpater throws an unknown exception.
 
 ## DynamicAdapter
 

@@ -89,7 +89,7 @@ namespace SearchApi.Web.Search
 
         public async Task Consume(ConsumeContext<PersonSearchRejected> context)
         {
-            await base.Consume(context, "Completed");
+            await base.Consume(context, "Rejected");
         }
 
     }

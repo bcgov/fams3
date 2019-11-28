@@ -111,14 +111,20 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         [Test]
         public async Task With_valid_event_it_should_return_ok()
         {
-            var result = await _sut.Event(_testGuid, new ProviderSearchEventStatus()
+            var result = await _sut.Accepted(_testGuid, new PersonSearchController.PersonAcceptedEvent()
             {
-                SearchRequestId = _testGuid,
+                SearchRequestId = Guid.NewGuid(),
                 TimeStamp = DateTime.Now,
-                Message = "Test Message",
-                EventType = "Event Type",
-                ProviderName = "Provider Name"
+                ProviderProfile = new PersonSearchController.ProviderProfile()
+                {
+                    Name = "TEST PROVIDER"
+                }
             });
+
+
+            _searchApiRequestServiceMock
+                .Verify(x => x.AddEventAsync(It.Is<Guid>(x => x == _testGuid), It.IsAny<SSG_SearchApiEvent>(), It.IsAny<CancellationToken>()), Times.Once);
+
             Assert.IsInstanceOf(typeof(OkResult), result);
         }
 
@@ -126,7 +132,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         [Test]
         public async Task With_exception_event_it_should_return_badrequest()
         {
-            var result = await _sut.Event(_exceptionGuid, null);
+            var result = await _sut.Accepted(_exceptionGuid, null);
             Assert.IsInstanceOf(typeof(BadRequestResult), result);
         }
 

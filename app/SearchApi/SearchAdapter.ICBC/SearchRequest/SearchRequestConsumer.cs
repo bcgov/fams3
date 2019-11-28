@@ -43,7 +43,7 @@ namespace SearchAdapter.ICBC.SearchRequest
 
             if (await ValidatePersonSearch(context))
             {
-                await context.Publish<SearchApi.Core.Adapters.Contracts.PersonFound>(BuildFakeResult(context.Message));
+                await context.Publish<PersonSearchCompleted>(BuildFakeResult(context.Message));
             }
         }
 
@@ -77,7 +77,7 @@ namespace SearchAdapter.ICBC.SearchRequest
         }
 
 
-        public SearchApi.Core.Adapters.Contracts.PersonFound BuildFakeResult(PersonSearchOrdered personSearchOrdered)
+        public PersonSearchCompleted BuildFakeResult(PersonSearchOrdered personSearchOrdered)
         {
             var fakeIdentifier = new IcbcPersonIdBuilder(PersonIDKind.DriverLicense).WithIssuer("British Columbia")
                 .WithNumber("1234568").Build();

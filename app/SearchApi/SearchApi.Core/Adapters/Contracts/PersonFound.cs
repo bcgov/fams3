@@ -7,7 +7,7 @@ namespace SearchApi.Core.Adapters.Contracts
     /// <summary>
     /// Represents a match in a provider data set.
     /// </summary>
-    public interface MatchFound
+    public interface PersonFound
     {
         Guid SearchRequestId { get; }
         

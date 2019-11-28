@@ -12,33 +12,33 @@ using SearchApi.Web.Configuration;
 
 namespace SearchApi.Web.Notifications
 {
-    public class WebHookNotifierMatchFound :ISearchApiNotifier<MatchFound> 
+    public class WebHookNotifierResultStatus :ISearchApiNotifier<PersonFound> 
     {
 
         private readonly HttpClient _httpClient;
         private readonly SearchApiOptions _searchApiOptions;
-        private readonly ILogger<WebHookNotifierMatchFound> _logger;
+        private readonly ILogger<WebHookNotifierResultStatus> _logger;
 
-        public WebHookNotifierMatchFound(HttpClient httpClient, IOptions<SearchApiOptions> searchApiOptions,
-            ILogger<WebHookNotifierMatchFound> logger)
+        public WebHookNotifierResultStatus(HttpClient httpClient, IOptions<SearchApiOptions> searchApiOptions,
+            ILogger<WebHookNotifierResultStatus> logger)
         {
             _httpClient = httpClient;
             _logger = logger;
             _searchApiOptions = searchApiOptions.Value;
         }
 
-        public async Task NotifyEventAsync(Guid searchRequestId, MatchFound matchFound,
+        public async Task NotifyEventAsync(Guid searchRequestId, PersonFound matchFound,
            CancellationToken cancellationToken)
         {
-            foreach (var webHook in _searchApiOptions.WebHooks.FindAll(x => x.EventName.Contains(nameof(MatchFound), StringComparison.OrdinalIgnoreCase)))
+            foreach (var webHook in _searchApiOptions.WebHooks.FindAll(x => x.EventName.Contains(nameof(PersonFound), StringComparison.OrdinalIgnoreCase)))
             {
                 _logger.LogDebug(
-                   $"The webHook {nameof(MatchFound)} notification is attempting to send event for {webHook.Name} webhook.");
+                   $"The webHook {nameof(PersonFound)} notification is attempting to send event for {webHook.Name} webhook.");
 
                 if (!URLHelper.TryCreateUri(webHook.Uri, $"{searchRequestId}", out var endpoint))
                 {
                     _logger.LogWarning(
-                        $"The webHook {nameof(MatchFound)} notification uri is not established or is not an absolute Uri for {webHook.Name}. Set the WebHook.Uri value on SearchApi.WebHooks settings.");
+                        $"The webHook {nameof(PersonFound)} notification uri is not established or is not an absolute Uri for {webHook.Name}. Set the WebHook.Uri value on SearchApi.WebHooks settings.");
                     return;
                 }
 
@@ -59,12 +59,12 @@ namespace SearchApi.Web.Notifications
                     if (!response.IsSuccessStatusCode)
                     {
                         _logger.LogError(
-                            $"The webHook {typeof(MatchFound).Name} notification has not executed successfully for {webHook.Name} webHook. The error code is {response.StatusCode.GetHashCode()}.");
+                            $"The webHook {typeof(PersonFound).Name} notification has not executed successfully for {webHook.Name} webHook. The error code is {response.StatusCode.GetHashCode()}.");
                         return;
                     }
 
                     _logger.LogInformation(
-                        $"The webHook {typeof(MatchFound).Name} notification has executed successfully for {webHook.Name} webHook.");
+                        $"The webHook {typeof(PersonFound).Name} notification has executed successfully for {webHook.Name} webHook.");
 
                 }
                 catch (Exception exception)

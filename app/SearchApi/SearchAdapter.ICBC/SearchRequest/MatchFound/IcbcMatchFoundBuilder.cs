@@ -30,7 +30,7 @@ namespace SearchAdapter.ICBC.SearchRequest
             return this;
         }
 
-        public SearchApi.Core.Adapters.Contracts.MatchFound Build()
+        public SearchApi.Core.Adapters.Contracts.PersonFound Build()
         {
             return this._matchFound;
         }
@@ -38,7 +38,7 @@ namespace SearchAdapter.ICBC.SearchRequest
     }
 
    
-    public sealed class IcbcMatchFound : SearchApi.Core.Adapters.Contracts.MatchFound
+    public sealed class IcbcMatchFound : SearchApi.Core.Adapters.Contracts.PersonFound
     {
 
         private readonly List<PersonId> _personIds = new List<PersonId>();

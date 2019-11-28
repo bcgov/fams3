@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using NUnit.Framework;
 using SearchApi.Web.Controllers;
 
@@ -10,7 +11,7 @@ namespace SearchApi.Web.Test.People
         public void With_args_it_should_create()
         {
 
-            var sut = new PersonSearchRequest("firstName", "lastName", new DateTime(2001, 1, 12));
+            var sut = new PersonSearchRequest("firstName", "lastName", new DateTime(2001, 1, 12), new List<SearchApiPersonalIdentifier>());
 
             Assert.AreEqual("firstName", sut.FirstName);
             Assert.AreEqual("lastName", sut.LastName);

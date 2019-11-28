@@ -15,6 +15,7 @@ using NUnit.Framework;
 using SearchAdapter.ICBC.SearchRequest;
 using SearchApi.Core.Adapters.Configuration;
 using SearchApi.Core.Adapters.Contracts;
+using SearchApi.Core.Adapters.Models.Contracts;
 using SearchApi.Core.Contracts;
 
 namespace SearchAdapter.ICBC.Test.SearchRequest
@@ -43,7 +44,8 @@ namespace SearchAdapter.ICBC.Test.SearchRequest
         {
             public string FirstName { get; set; }
             public string LastName { get; set; }
-            public DateTime DateOfBirth { get; set; }
+            public DateTime? DateOfBirth { get; set; }
+            public IEnumerable<PersonalIdentifier> Identifiers { get; }
         }
 
         [OneTimeSetUp]

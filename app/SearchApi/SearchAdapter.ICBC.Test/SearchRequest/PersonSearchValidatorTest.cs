@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using FluentValidation;
 using FluentValidation.TestHelper;
 using NUnit.Framework;
 using SearchAdapter.ICBC.SearchRequest;
+using SearchApi.Core.Adapters.Models.Contracts;
 using SearchApi.Core.Contracts;
 
 namespace SearchAdapter.ICBC.Test.SearchRequest
@@ -15,10 +17,10 @@ namespace SearchAdapter.ICBC.Test.SearchRequest
 
         public class ExecuteSearchCommandTest : ExecuteSearch
         {
-            public Guid Id { get; set; }
             public string FirstName { get; set; }
             public string LastName { get; set; }
-            public DateTime DateOfBirth { get; set; }
+            public DateTime? DateOfBirth { get; set; }
+            public IEnumerable<PersonalIdentifier> Identifiers { get; }
         }
 
         [SetUp]

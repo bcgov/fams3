@@ -22,9 +22,10 @@ namespace SearchAdapter.ICBC.SearchRequest.MatchFound
             return this;
         }
 
-        public IcbcPersonBuilder WithDateOfBirth(DateTime dateOfBirth)
+        public IcbcPersonBuilder WithDateOfBirth(DateTime? dateOfBirth)
         {
-            _icbcPerson.DateOfBirth = dateOfBirth;
+            if (dateOfBirth == null) return this;
+            _icbcPerson.DateOfBirth = (DateTime)dateOfBirth;
             return this;
         }
 

@@ -133,7 +133,21 @@ When a person Search does not meet the minimal requirement for the adapter to co
 
 #### Person Search Failed
 
-When the adpater throws an unknown exception.
+When the adpater throws an unknown exception. An event is raised and posted to dynadapter.
+
+##### PayLoad
+```json
+{
+	"cause": {
+		"message": "We are unable to proceed"
+	},
+	"searchRequestId": "00000000-0000-0000-0000-000000000000",
+	"timeStamp": "0001-01-01T00:00:00",
+	"providerProfile": {
+		"name": "ICBC"
+	}
+}
+```
 
 
 

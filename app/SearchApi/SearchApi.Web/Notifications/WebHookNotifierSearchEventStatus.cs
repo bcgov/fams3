@@ -32,17 +32,17 @@ namespace SearchApi.Web.Notifications
             
         }
 
-        public async Task NotifyEventAsync(Guid searchRequestId, PersonSearchAdapterEvent eventStatus,
+        public async Task NotifyEventAsync(Guid searchRequestId, PersonSearchAdapterEvent eventStatus, string eventName,
            CancellationToken cancellationToken)
         {
             var webHookName = "PersonSearch";
-            var eventName = eventStatus.GetType().Name;
+         
             foreach (var webHook in _searchApiOptions.WebHooks)
             {
                 _logger.LogDebug(
                    $"The webHook {webHookName} notification is attempting to send status {eventName} event for {webHook.Name} webhook.");
 
-                if (!URLHelper.TryCreateUri(webHook.Uri, eventName.Replace(webHookName,""), $"{searchRequestId}", out var endpoint))
+                if (!URLHelper.TryCreateUri(webHook.Uri, eventName, $"{searchRequestId}", out var endpoint))
                 {
                     _logger.LogWarning(
                         $"The webHook {webHookName} notification uri is not established or is not an absolute Uri for {webHook.Name}. Set the WebHook.Uri value on SearchApi.WebHooks settings.");
@@ -67,12 +67,12 @@ namespace SearchApi.Web.Notifications
                     if (!response.IsSuccessStatusCode)
                     {
                         _logger.LogError(
-                            $"The webHook {webHookName} notification has not executed status {nameof(eventStatus)} successfully for {webHook.Name} webHook. The error code is {response.StatusCode.GetHashCode()}.");
+                            $"The webHook {webHookName} notification has not executed status {eventName} successfully for {webHook.Name} webHook. The error code is {response.StatusCode.GetHashCode()}.");
                         return;
                     }
 
                     _logger.LogInformation(
-                        $"The webHook {webHookName} notification has executed status {nameof(eventStatus)} successfully for {webHook.Name} webHook.");
+                        $"The webHook {webHookName} notification has executed status {eventName} successfully for {webHook.Name} webHook.");
 
                 }
                 catch (Exception exception)

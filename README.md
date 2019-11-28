@@ -68,16 +68,7 @@ To enable Person Search notification, configure the SearchApi WebHooks settings.
   }
 ```
 
-Search Api Post events to the following routes schema host/PersonSearch/{event}/{searchRequestId}.
-
-| --- | --- | --- |
-| Event | URL | Description |
-| Completed | host/PersonSearch/Completed/{searchRequestId} | Occurs when an adapter has completed a search. the payload might contains additional information ont the person |
-| Accepted | host/PersonSearch/Accepted/{searchRequestId} | Occurs when an adapter has accepted a search |
-| Rejected | host/PersonSearch/Rejected/{searchRequestId} | Occurs when an adapter has rejected a search |
-| Failed | host/PersonSearch/Failed/{searchRequestId} | Occurs when an adapter has failed on executing a search |
-
-With this configuration the searchApi will post Event to `http://localhost:5000/PersonSearch/{EventName}/{id}` where {id} is a global unique identifier for the search request . the content of the payload is  dependent on the event.
+With this configuration the searchApi will post Event to `http://localhost:5000/PersonSearch/{event}/{id}` where {id} is a global unique identifier for the search request . the content of the payload is  dependent on the event.
 
 ### Search Adapters Events
 
@@ -85,6 +76,8 @@ With this configuration the searchApi will post Event to `http://localhost:5000/
 #### Person Search Completed
 
 When the Adapter finds a match for a particular person, it raises an event that post search completed to dynadapter with the result message.
+
+##### PayLoad
 
 ```json
 {
@@ -109,11 +102,12 @@ When the Adapter finds a match for a particular person, it raises an event that 
 	}
 }
 ```
-DynAdapter endpoint will be dynamically generated based on event and posted to the ``PersonSearchController`` at the URI --> /PersonSerach/Completed/{searchRequestId}
 
 #### Person Search Accepted
 
 When a person Search is accepted by data provider, meaning it has sufficient information to conduct a search. An event is raised and posted to dynadapter.
+
+##### PayLoad
 
 ```json
 {
@@ -125,17 +119,46 @@ When a person Search is accepted by data provider, meaning it has sufficient inf
 	}
 }
 ```
-DynAdapter endpoint will be dynamically generated based on event and posted to the ``PersonSearchController`` at the URI --> /PersonSerach/Accepted/{searchRequestId}
+
 
 #### Person Search Rejected
 
-When a person Search does not meet the minimal requirement for the adapter to conduct a search.
+When a person Search does not meet the minimal requirement for the adapter to conduct a search.  An event is raised and posted to dynadapter.
+
+##### PayLoad
+
+```json
+{
+
+	"reasons": [{
+		"propertyname": "FirstName",
+		"errormessage": "firstName is required"
+	}, {
+		"propertyname": "LastName",
+		"errormessage": "LastName is required"
+	}],
+	"searchRequestId": "00000000-0000-0000-0000-000000000000",
+	"timeStamp": "0001-01-01T00:00:00",
+	"providerProfile": {
+		"name": "ICBC"
+	}
+}
+```
 
 #### Person Search Failed
 
 When the adpater throws an unknown exception.
 
 
+#### Person Search Event List and Routes
+Search Api Post events to the following routes schema host/PersonSearch/{event}/{searchRequestId}.
+
+| Event | URL |
+| --- | --- |
+| Completed | host/PersonSearch/Completed/{searchRequestId}
+| Accepted | host/PersonSearch/Accepted/{searchRequestId}
+| Rejected | host/PersonSearch/Rejected/{searchRequestId}
+| Failed | host/PersonSearch/Failed/{searchRequestId}
 
 ### OpenApi
 

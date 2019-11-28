@@ -124,7 +124,7 @@ namespace SearchAdapter.ICBC.Test.SearchRequest
         [Test]
         public void Should_send_a_match_found_event()
         {
-            Assert.IsTrue(_harness.Published.Select<SearchApi.Core.Adapters.Contracts.PersonFound>().Any(x => x.Context.Message.SearchRequestId == validGuid));
+            Assert.IsTrue(_harness.Published.Select<PersonSearchAccepted>().Any(x => x.Context.Message.SearchRequestId == validGuid));
         }
 
         [Test]

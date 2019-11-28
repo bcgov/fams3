@@ -30,7 +30,7 @@ namespace SearchAdapter.ICBC.SearchRequest
             return this;
         }
 
-        public SearchApi.Core.Adapters.Contracts.PersonFound Build()
+        public SearchApi.Core.Adapters.Contracts.PersonSearchCompleted Build()
         {
             return this._matchFound;
         }
@@ -38,17 +38,19 @@ namespace SearchAdapter.ICBC.SearchRequest
     }
 
    
-    public sealed class IcbcMatchFound : SearchApi.Core.Adapters.Contracts.PersonFound
+    public sealed class IcbcMatchFound : PersonSearchCompleted
     {
 
         private readonly List<PersonId> _personIds = new List<PersonId>();
 
         public IcbcMatchFound(Guid searchRequestId)
         {
-            this.SearchRequestId = searchRequestId;
+            SearchRequestId = searchRequestId;
+            TimeStamp = DateTime.Now;
         }
 
         public Guid SearchRequestId { get; }
+        public DateTime TimeStamp { get; }
         public Person Person { get; set; }
         public IEnumerable<PersonId> PersonIds => _personIds;
 
@@ -57,5 +59,6 @@ namespace SearchAdapter.ICBC.SearchRequest
             this._personIds.Add(personId);
         }
 
+        public ProviderProfile ProviderProfile { get; }
     }
 }

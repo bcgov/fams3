@@ -28,8 +28,7 @@ namespace SearchApi.Web.Search
         public async Task Consume(ConsumeContext<PersonSearchAdapterEvent> context)
         {
             var cts = new CancellationTokenSource();
-            var profile = context.Headers.Get<ProviderProfile>(nameof(ProviderProfile));
-            _logger.LogInformation($"received new {nameof(PersonFound)} event from {profile.Name}");
+            _logger.LogInformation($"received new {nameof(PersonFound)} event from {context.Message.ProviderProfile?.Name}");
             await _searchApiNotifier.NotifyEventAsync(context.Message.SearchRequestId, context.Message,
                 cts.Token);
 

@@ -32,7 +32,7 @@ namespace SearchApi.Web.Test.Notifications
 
             private Mock<IMapper> _mapper;
 
-            FakePersonSearchAdapterEvent fakePersonSearchStatus;
+            FakePersonSearchAccepted fakePersonSearchStatus;
 
             [SetUp]
             public void SetUp()
@@ -40,16 +40,13 @@ namespace SearchApi.Web.Test.Notifications
                 _loggerMock = LoggerUtils.LoggerMock<WebHookNotifierSearchEventStatus>();
                 _searchApiOptionsMock = new Mock<IOptions<SearchApiOptions>>();
                 _mapper = new Mock<IMapper>();
-                fakePersonSearchStatus = new FakePersonSearchAdapterEvent
-
+                fakePersonSearchStatus = new FakePersonSearchAccepted()
                 {
 
                     SearchRequestId = Guid.NewGuid(),
                     TimeStamp = DateTime.Now
                 };
 
-                //_mapper.Setup(m => m.Map<ProviderSearchEventStatus>(It.IsAny<PersonSearchAccepted>()))
-                //                    .Returns(fakePersonSearchStatus);
             }
 
             [Test]
@@ -81,7 +78,7 @@ namespace SearchApi.Web.Test.Notifications
 
                 await _sut.NotifyEventAsync(fakePersonSearchStatus.SearchRequestId, fakePersonSearchStatus, CancellationToken.None);
 
-                var expectedUri = new Uri($"http://test:1234/{fakePersonSearchStatus.SearchRequestId}");
+                var expectedUri = new Uri($"http://test:1234/FakeAccepted/{fakePersonSearchStatus.SearchRequestId}");
 
                 handlerMock.Protected().Verify(
                     "SendAsync",

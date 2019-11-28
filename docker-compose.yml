@@ -15,11 +15,8 @@ services:
       JAEGER_SAMPLER_TYPE: const
       JAEGER_ENDPOINT: http://jaeger-collector:14268/api/traces
       SearchApi__WebHooks__0__Name: dynadapter
-      SearchApi__WebHooks__0__Uri: http://dynadapter/PersonSearch/MatchFound
+      SearchApi__WebHooks__0__Uri: http://dynadapter/PersonSearch
       SearchApi__WebHooks__0__EventName: MatchFound
-      SearchApi__WebHooks__1__Name: dynadapter
-      SearchApi__WebHooks__1__Uri: http://dynadapter/PersonSearch/Event
-      SearchApi__WebHooks__1__EventName: PersonSearch
     ports:
       - "5050:80"
     restart: always

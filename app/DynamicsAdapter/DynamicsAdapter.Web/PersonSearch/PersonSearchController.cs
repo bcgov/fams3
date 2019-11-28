@@ -116,13 +116,25 @@ namespace DynamicsAdapter.Web.PersonSearch
         }
 
 
+        public class PersonAcceptedEvent
+        {
+            public Guid SearchRequestId { get; set; }
+            public DateTime TimeStamp { get; set; }
+            public ProviderProfile ProviderProfile { get; set; }
+        }
+
+        public class ProviderProfile
+        {
+            public string Name { get; set; }
+        }
+
         [HttpPost]
         [Consumes("application/json")]
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Route("Event/{id}")]
-        public async Task<IActionResult> Event(Guid id, [FromBody]ProviderSearchEventStatus providerSearchEventStatus)
+        [Route("Accepted/{id}")]
+        public async Task<IActionResult> Accepted(Guid id, [FromBody]PersonAcceptedEvent personAcceptedEvent)
         {
 
             _logger.LogInformation($"Received new event for SearchApiRequest [{id}]");
@@ -134,10 +146,11 @@ namespace DynamicsAdapter.Web.PersonSearch
                 var searchApiEvent = new SSG_SearchApiEvent()
                 {
                     Id = Guid.NewGuid(),
-                    Message = providerSearchEventStatus.Message,
-                    ProviderName = providerSearchEventStatus.ProviderName,
-                    TimeStamp = providerSearchEventStatus.TimeStamp,
-                    Type = providerSearchEventStatus.EventType
+                    Name = "PersonSearchAccepted",
+                    Message = "PersonSearch Accepted",
+                    ProviderName = personAcceptedEvent.ProviderProfile?.Name,
+                    TimeStamp = personAcceptedEvent.TimeStamp,
+                    Type = "Accepted"
                 };
                 _logger.LogDebug($"Attempting to create a new event for SearchApiRequest [{id}]");
                 var result = await _searchApiRequestService.AddEventAsync(id, searchApiEvent, token.Token);

@@ -70,20 +70,36 @@ namespace DynamicsAdapter.Web.PersonSearch
             _logger = logger;
         }
 
-        //POST: MatchFound/id
+        //POST: Completed/id
         [HttpPost]
         [Consumes("application/json")]
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Route("MatchFound/{id}")]
-        public async Task<IActionResult> MatchFound(Guid id, [FromBody] MatchFound matchFound)
+        [Route("Completed/{id}")]
+        public async Task<IActionResult> Completed(Guid id, [FromBody]PersonCompletedEvent personCompletedEvent)
         {
-            _logger.LogInformation("Received MatchFound response with SearchRequestId is " + id);
+            _logger.LogInformation("Received Persone search completed event with SearchRequestId is " + id);
             var cts = new CancellationTokenSource();
 
             try
             {
+                //update event to dynamic search api
+                var searchApiEvent = new SSG_SearchApiEvent()
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "PersonSearchCompleted",
+                    Message = "PersonSearch Completed",
+                    ProviderName = personCompletedEvent.ProviderProfile?.Name,
+                    TimeStamp = personCompletedEvent.TimeStamp,
+                    Type = "Completed"
+                };
+                _logger.LogDebug($"Attempting to create a new event for SearchApiRequest [{id}]");
+                var result = await _searchApiRequestService.AddEventAsync(id, searchApiEvent, cts.Token);
+                 _logger.LogInformation($"Successfully created new event for SearchApiRequest [{id}]");
+
+                //upload search result to dynamic search api
+                MatchFound matchFound = personCompletedEvent.MatchFound;
                 var searchApiRequestId = await _searchApiRequestService.GetLinkedSearchRequestIdAsync(id, cts.Token);
 
                 foreach (var matchFoundPersonId in matchFound.PersonIds)
@@ -102,8 +118,8 @@ namespace DynamicsAdapter.Web.PersonSearch
                         StateCode = 0,
                         StatusCode = 1
                     };
-                    var result = await _searchRequestService.UploadIdentifier(toBeReplaced, cts.Token);
 
+                    var identifer = await _searchRequestService.UploadIdentifier(toBeReplaced, cts.Token);
                 }
             }
             catch (Exception ex)
@@ -121,6 +137,14 @@ namespace DynamicsAdapter.Web.PersonSearch
             public Guid SearchRequestId { get; set; }
             public DateTime TimeStamp { get; set; }
             public ProviderProfile ProviderProfile { get; set; }
+        }
+
+        public class PersonCompletedEvent
+        {
+            public Guid SearchRequestId { get; set; }
+            public DateTime TimeStamp { get; set; }
+            public ProviderProfile ProviderProfile { get; set; }
+            public MatchFound MatchFound { get; set; }
         }
 
         public class ProviderProfile

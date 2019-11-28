@@ -53,7 +53,6 @@ namespace SearchApi.Web.Notifications
 
                 try
                 {
-               ;
                     var content = new StringContent(JsonConvert.SerializeObject(eventStatus));
                     content.Headers.ContentType =
                         System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");

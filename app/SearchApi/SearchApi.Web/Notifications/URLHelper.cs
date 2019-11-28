@@ -9,7 +9,7 @@ namespace SearchApi.Web.Notifications
 
     public static class URLHelper
     {
-        public static bool TryCreateUri(string baseUrl, string path, out Uri uri)
+        public static bool TryCreateUri(string baseUrl,  string path, string searchRequestId, out Uri uri)
         {
             uri = null;
             if (!Uri.TryCreate(baseUrl, UriKind.Absolute, out var baseUri))
@@ -17,7 +17,7 @@ namespace SearchApi.Web.Notifications
                 return false;
             }
 
-            return Uri.TryCreate(baseUri, Path.Combine(baseUri.LocalPath, path), out uri);
+            return Uri.TryCreate(baseUri, Path.Combine(baseUri.LocalPath, path,searchRequestId), out uri);
         }
     }
 }

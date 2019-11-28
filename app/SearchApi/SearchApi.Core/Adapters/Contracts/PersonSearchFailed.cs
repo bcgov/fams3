@@ -2,7 +2,7 @@
 
 namespace SearchApi.Core.Adapters.Contracts
 {
-    public interface PersonSearchFailed : PersonSearchEvent, AdapterEvent
+    public interface PersonSearchFailed : PersonSearchAdapterEvent
     {
         Exception Cause { get; }
     }

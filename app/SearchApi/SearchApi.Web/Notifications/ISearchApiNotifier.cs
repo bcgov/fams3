@@ -10,7 +10,7 @@ namespace SearchApi.Web.Notifications
     public interface ISearchApiNotifier<T>
     {
 
-        Task NotifyEventAsync(Guid searchRequestId, T notificationStatus, CancellationToken cancellationToken);
+        Task NotifyEventAsync(Guid searchRequestId, T notificationStatus,string eventName, CancellationToken cancellationToken);
 
     }
 

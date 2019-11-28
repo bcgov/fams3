@@ -28,7 +28,7 @@ namespace SearchApi.Web.Search
         public async Task Consume(ConsumeContext<PersonSearchAdapterEvent> context, string eventName)
         {
             var cts = new CancellationTokenSource();
-            _logger.LogInformation($"received new {nameof(PersonFound)} event from {context.Message.ProviderProfile?.Name}");
+            _logger.LogInformation($"received new {nameof(PersonSearchAdapterEvent)} event from {context.Message.ProviderProfile?.Name}");
             await _searchApiNotifier.NotifyEventAsync(context.Message.SearchRequestId, context.Message, eventName,
                 cts.Token);
 
@@ -52,6 +52,25 @@ namespace SearchApi.Web.Search
         public async Task Consume(ConsumeContext<PersonSearchAccepted> context)
         {
             await base.Consume(context, "Accepted");
+        }
+
+    }
+
+    public class PersonSearchCompletedConsumer : PersonEventConsumer, IConsumer<PersonSearchCompleted>
+    {
+        private readonly ILogger<PersonSearchCompletedConsumer> _logger;
+        private readonly ISearchApiNotifier<PersonSearchAdapterEvent> _searchApiNotifier;
+
+        public PersonSearchCompletedConsumer(ISearchApiNotifier<PersonSearchAdapterEvent> searchApiNotifier, ILogger<PersonSearchCompletedConsumer> logger) : base(searchApiNotifier, logger)
+        {
+            _searchApiNotifier = searchApiNotifier;
+            _logger = logger;
+
+        }
+
+        public async Task Consume(ConsumeContext<PersonSearchCompleted> context)
+        {
+            await base.Consume(context, "Completed");
         }
 
     }

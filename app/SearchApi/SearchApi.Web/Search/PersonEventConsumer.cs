@@ -14,7 +14,7 @@ namespace SearchApi.Web.Search
     {
 
         private readonly ILogger<PersonEventConsumer> _logger;
-    
+
 
         private readonly ISearchApiNotifier<PersonSearchAdapterEvent> _searchApiNotifier;
 
@@ -22,7 +22,7 @@ namespace SearchApi.Web.Search
         {
             _searchApiNotifier = searchApiNotifier;
             _logger = logger;
-          
+
         }
 
         public async Task Consume(ConsumeContext<PersonSearchAdapterEvent> context, string eventName)
@@ -42,7 +42,7 @@ namespace SearchApi.Web.Search
         private readonly ILogger<PersonSearchAcceptedConsumer> _logger;
         private readonly ISearchApiNotifier<PersonSearchAdapterEvent> _searchApiNotifier;
 
-        public PersonSearchAcceptedConsumer(ISearchApiNotifier<PersonSearchAdapterEvent> searchApiNotifier, ILogger<PersonSearchAcceptedConsumer> logger ) : base( searchApiNotifier, logger)
+        public PersonSearchAcceptedConsumer(ISearchApiNotifier<PersonSearchAdapterEvent> searchApiNotifier, ILogger<PersonSearchAcceptedConsumer> logger) : base(searchApiNotifier, logger)
         {
             _searchApiNotifier = searchApiNotifier;
             _logger = logger;
@@ -74,4 +74,24 @@ namespace SearchApi.Web.Search
         }
 
     }
+
+    public class PersonSearchRejectedConsumer : PersonEventConsumer, IConsumer<PersonSearchRejected>
+    {
+        private readonly ILogger<PersonSearchRejectedConsumer> _logger;
+        private readonly ISearchApiNotifier<PersonSearchAdapterEvent> _searchApiNotifier;
+
+        public PersonSearchRejectedConsumer(ISearchApiNotifier<PersonSearchAdapterEvent> searchApiNotifier, ILogger<PersonSearchRejectedConsumer> logger) : base(searchApiNotifier, logger)
+        {
+            _searchApiNotifier = searchApiNotifier;
+            _logger = logger;
+
+        }
+
+        public async Task Consume(ConsumeContext<PersonSearchRejected> context)
+        {
+            await base.Consume(context, "Rejected");
+        }
+
+    }
 }
+    

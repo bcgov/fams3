@@ -53,7 +53,7 @@ namespace SearchApi.Web.Test.Notifications
             public async Task it_should_send_notification_to_one_subscribers()
             {
 
-                _searchApiOptionsMock.Setup(x => x.Value).Returns(new SearchApiOptions().AddWebHook("test", "http://test:1234", "PersonSearch"));
+                _searchApiOptionsMock.Setup(x => x.Value).Returns(new SearchApiOptions().AddWebHook("test", "http://test:1234"));
 
                 var handlerMock = new Mock<HttpMessageHandler>(MockBehavior.Strict);
                 handlerMock
@@ -98,7 +98,7 @@ namespace SearchApi.Web.Test.Notifications
             {
 
 
-                _searchApiOptionsMock.Setup(x => x.Value).Returns(new SearchApiOptions().AddWebHook("test", "http://test:1234/Event", "PersonSearch"));
+                _searchApiOptionsMock.Setup(x => x.Value).Returns(new SearchApiOptions().AddWebHook("test", "http://test:1234/Event"));
 
                 var handlerMock = new Mock<HttpMessageHandler>(MockBehavior.Strict);
                 handlerMock
@@ -145,8 +145,8 @@ namespace SearchApi.Web.Test.Notifications
 
 
                 _searchApiOptionsMock.Setup(x => x.Value).Returns(new SearchApiOptions()
-                    .AddWebHook("test", "http://test:1234", "PersonSearch")
-                    .AddWebHook("test2", "http://test:5678", "PersonSearch"));
+                    .AddWebHook("test", "http://test:1234")
+                    .AddWebHook("test2", "http://test:5678"));
 
                 var handlerMock = new Mock<HttpMessageHandler>(MockBehavior.Strict);
                 handlerMock
@@ -206,7 +206,7 @@ namespace SearchApi.Web.Test.Notifications
                 var fakeMatchFound = new FakePersonFound();
 
                 _searchApiOptionsMock.Setup(x => x.Value).Returns(new SearchApiOptions()
-                    .AddWebHook("test", "not_uri", "PersonSearch"));
+                    .AddWebHook("test", "not_uri"));
 
                 var handlerMock = new Mock<HttpMessageHandler>(MockBehavior.Strict);
                 handlerMock
@@ -239,7 +239,7 @@ namespace SearchApi.Web.Test.Notifications
             {
 
 
-                _searchApiOptionsMock.Setup(x => x.Value).Returns(new SearchApiOptions().AddWebHook("test", "http://test:1234", "PersonSearch"));
+                _searchApiOptionsMock.Setup(x => x.Value).Returns(new SearchApiOptions().AddWebHook("test", "http://test:1234"));
 
                 var handlerMock = new Mock<HttpMessageHandler>(MockBehavior.Strict);
                 handlerMock
@@ -284,7 +284,7 @@ namespace SearchApi.Web.Test.Notifications
             {
 
 
-                _searchApiOptionsMock.Setup(x => x.Value).Returns(new SearchApiOptions().AddWebHook("test", "http://test:1234", "PersonSearch"));
+                _searchApiOptionsMock.Setup(x => x.Value).Returns(new SearchApiOptions().AddWebHook("test", "http://test:1234"));
 
                 var handlerMock = new Mock<HttpMessageHandler>(MockBehavior.Strict);
                 handlerMock
@@ -329,7 +329,7 @@ namespace SearchApi.Web.Test.Notifications
             {
 
 
-                _searchApiOptionsMock.Setup(x => x.Value).Returns(new SearchApiOptions().AddWebHook("test", "http://test:1234", "PersonSearch"));
+                _searchApiOptionsMock.Setup(x => x.Value).Returns(new SearchApiOptions().AddWebHook("test", "http://test:1234"));
 
                 var handlerMock = new Mock<HttpMessageHandler>(MockBehavior.Strict);
                 handlerMock

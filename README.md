@@ -55,17 +55,27 @@ Configure RabbiMq using the following ENV variables:
 
 If the WebHooks section is configured, SearchApi automatically posts a new notification into the webhook collection. The WebHook configuraton in SearchApi is
 
+To enable Person Search notification, configure the SearchApi WebHooks settings.
+
 ```json
 "SearchApi": {
     "WebHooks": [
       {
         "Name": "dynadapter",
         "Uri":  "http://localhost:5000/PersonSearch",
-        "EventName" : "PersonSearch"
       }
     ] 
   }
 ```
+
+Search Api Post events to the following routes schema host/PersonSearch/{event}/{searchRequestId}.
+
+| --- | --- | --- |
+| Event | URL | Description |
+| Completed | host/PersonSearch/Completed/{searchRequestId} | Occurs when an adapter has completed a search. the payload might contains additional information ont the person |
+| Accepted | host/PersonSearch/Accepted/{searchRequestId} | Occurs when an adapter has accepted a search |
+| Rejected | host/PersonSearch/Rejected/{searchRequestId} | Occurs when an adapter has rejected a search |
+| Failed | host/PersonSearch/Failed/{searchRequestId} | Occurs when an adapter has failed on executing a search |
 
 With this configuration the searchApi will post Event to `http://localhost:5000/PersonSearch/{EventName}/{id}` where {id} is a global unique identifier for the search request . the content of the payload is  dependent on the event.
 

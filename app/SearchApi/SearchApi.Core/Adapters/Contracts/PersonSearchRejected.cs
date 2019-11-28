@@ -4,7 +4,7 @@ using SearchApi.Core.Adapters.Models;
 
 namespace SearchApi.Core.Adapters.Contracts
 {
-    public interface PersonSearchRejected : PersonSearchEvent, AdapterEvent
+    public interface PersonSearchRejected : PersonSearchAdapterEvent
     {
         IEnumerable<ValidationResult> Reasons { get; }
     }

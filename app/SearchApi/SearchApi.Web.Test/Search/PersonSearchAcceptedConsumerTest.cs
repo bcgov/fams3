@@ -5,6 +5,7 @@ using Moq;
 using NUnit.Framework;
 using SearchApi.Core.Adapters.Contracts;
 using SearchApi.Core.Adapters.Models;
+using SearchApi.Core.Test.Fake;
 using SearchApi.Web.Notifications;
 using SearchApi.Web.Search;
 using SearchApi.Web.Test.Utils;
@@ -12,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SearchApi.Web.Test.Search
@@ -22,42 +24,31 @@ namespace SearchApi.Web.Test.Search
         private ConsumerTestHarness<PersonSearchAcceptedConsumer> _sut;
 
         private Mock<ILogger<PersonSearchAcceptedConsumer>> _loggerMock;
-        private Mock<ISearchApiNotifier<ProviderSearchEventStatus>> _searchApiNotifierMock;
-        private Mock<IMapper> _mapper;
+        private Mock<ISearchApiNotifier<PersonSearchAdapterEvent>> _searchApiNotifierMock;
+
+        private Guid _requestId;
+      
 
         [OneTimeSetUp]
         public async Task A_consumer_is_being_tested()
         {
             _loggerMock = LoggerUtils.LoggerMock<PersonSearchAcceptedConsumer>();
-            _searchApiNotifierMock = new Mock<ISearchApiNotifier<ProviderSearchEventStatus>>();
+            _searchApiNotifierMock = new Mock<ISearchApiNotifier<PersonSearchAdapterEvent>>();
             _harness = new InMemoryTestHarness();
-            _mapper = new Mock<IMapper>();
+            _requestId = Guid.NewGuid();
 
-            var fakePersonSearchStatus = new ProviderSearchEventStatus
-
+            var fakePersonSearchStatus = new FakePersonSearchAccepted
             {
-                EventType = "PersonSearchAccepted",
-                Message = "Ok",
-                ProviderName = "ICBC",
-                SearchRequestId = Guid.NewGuid(),
+                SearchRequestId = _requestId,
                 TimeStamp = DateTime.Now
             };
 
-            _mapper.Setup(m => m.Map<ProviderSearchEventStatus>(It.IsAny<PersonSearchAccepted>()))
-                                .Returns(fakePersonSearchStatus);
 
-            _sut = _harness.Consumer(() => new PersonSearchAcceptedConsumer(_searchApiNotifierMock.Object, _loggerMock.Object, _mapper.Object));
+            _sut = _harness.Consumer(() => new PersonSearchAcceptedConsumer(_searchApiNotifierMock.Object, _loggerMock.Object));
 
             await _harness.Start();
 
-            await _harness.BusControl.Publish<ProviderSearchEventStatus>(new
-            {
-
-
-                FirstName = "firstName",
-                LastName = "lastName",
-                DateOfBirth = new DateTime(2001, 1, 1)
-            }) ;
+            await _harness.BusControl.Publish<PersonSearchAccepted>(fakePersonSearchStatus) ;
 
         }
 
@@ -70,8 +61,9 @@ namespace SearchApi.Web.Test.Search
         [Test]
         public void Should_send_the_initial_message_to_the_consumer()
         {
-            Assert.IsTrue(_harness.Published.Select<ProviderSearchEventStatus>().Any());
+            Assert.IsTrue(_harness.Published.Select<PersonSearchAccepted>().Any());
         }
+
 
     }
 }

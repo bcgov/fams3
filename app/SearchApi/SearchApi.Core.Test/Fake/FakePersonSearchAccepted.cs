@@ -7,10 +7,12 @@ namespace SearchApi.Core.Test.Fake
 {
     public class FakePersonSearchAccepted : PersonSearchAccepted
     {
-        public Guid SearchRequestId { get; } = Guid.NewGuid();
+      
+            public Guid SearchRequestId { get; set; }
 
-        public DateTime TimeStamp { get; } = DateTime.Now;
+            public DateTime TimeStamp { get; set; }
 
-        public ProviderProfile ProviderProfile { get; } = new FakeProviderProfile();
+            public ProviderProfile ProviderProfile { get; set; }
+        
     }
 }

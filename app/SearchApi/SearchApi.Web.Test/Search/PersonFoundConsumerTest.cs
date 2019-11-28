@@ -16,18 +16,18 @@ namespace SearchApi.Web.Test.Search
     public class PersonFoundConsumerTest
     {
         private InMemoryTestHarness _harness;
-        private ConsumerTestHarness<PersonFoundConsumer> _sut;
+        private ConsumerTestHarness<PersonSearchAcceptedConsumer> _sut;
 
-        private Mock<ILogger<PersonFoundConsumer>> _loggerMock;
-        private Mock<ISearchApiNotifier<PersonFound>> _searchApiNotifierMock;
+        private Mock<ILogger<PersonSearchAcceptedConsumer>> _loggerMock;
+        private Mock<ISearchApiNotifier<PersonSearchAdapterEvent>> _searchApiNotifierMock;
 
         [OneTimeSetUp]
         public async Task A_consumer_is_being_tested()
         {
-            _loggerMock = LoggerUtils.LoggerMock<PersonFoundConsumer>();
-            _searchApiNotifierMock = new Mock<ISearchApiNotifier<PersonFound>>();
+            _loggerMock = LoggerUtils.LoggerMock<PersonSearchAcceptedConsumer>();
+            _searchApiNotifierMock = new Mock<ISearchApiNotifier<PersonSearchAdapterEvent>>();
             _harness = new InMemoryTestHarness();
-            _sut = _harness.Consumer(() => new PersonFoundConsumer(_searchApiNotifierMock.Object, _loggerMock.Object));
+            _sut = _harness.Consumer(() => new PersonSearchAcceptedConsumer(_searchApiNotifierMock.Object, _loggerMock.Object));
 
             await _harness.Start();
 

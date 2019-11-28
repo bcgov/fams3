@@ -93,5 +93,28 @@ namespace SearchApi.Web.Search
         }
 
     }
-}
+
     
+    
+
+
+
+    public class PersonSearchFailedConsumer : PersonEventConsumer, IConsumer<PersonSearchFailed>
+    {
+        private readonly ILogger<PersonSearchFailedConsumer> _logger;
+        private readonly ISearchApiNotifier<PersonSearchAdapterEvent> _searchApiNotifier;
+
+        public PersonSearchFailedConsumer(ISearchApiNotifier<PersonSearchAdapterEvent> searchApiNotifier, ILogger<PersonSearchFailedConsumer> logger) : base(searchApiNotifier, logger)
+        {
+            _searchApiNotifier = searchApiNotifier;
+            _logger = logger;
+
+        }
+
+        public async Task Consume(ConsumeContext<PersonSearchFailed> context)
+        {
+            await base.Consume(context, "Failed");
+        }
+
+    }
+}

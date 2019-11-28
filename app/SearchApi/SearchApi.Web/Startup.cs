@@ -206,6 +206,13 @@ namespace SearchApi.Web
                             new PersonSearchRejectedConsumer(provider.GetRequiredService<ISearchApiNotifier<PersonSearchAdapterEvent>>(), provider.GetRequiredService<ILogger<PersonSearchRejectedConsumer>>()));
                     });
 
+                    // Configure Person Search Failed Consumer Consumer
+                    cfg.ReceiveEndpoint(host, $"{nameof(PersonSearchFailed)}_queue", e =>
+                    {
+                        e.Consumer(() =>
+                            new PersonSearchFailedConsumer(provider.GetRequiredService<ISearchApiNotifier<PersonSearchAdapterEvent>>(), provider.GetRequiredService<ILogger<PersonSearchFailedConsumer>>()));
+                    });
+
                 }));
             });
 

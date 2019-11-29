@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentValidation;
@@ -43,7 +44,7 @@ namespace SearchAdapter.Sample.SearchRequest
 
             if (await ValidatePersonSearch(context))
             {
-                await context.Publish<PersonSearchCompleted>(BuildFakeResult(context.Message));
+                await context.Publish<PersonSearchCompleted>(BuildFakePersonSearchCompleted(context.Message));
             }
         }
 
@@ -76,24 +77,32 @@ namespace SearchAdapter.Sample.SearchRequest
 
         }
 
-        public PersonSearchCompleted BuildFakeResult(PersonSearchOrdered personSearchOrdered)
+        public PersonSearchCompleted BuildFakePersonSearchCompleted(PersonSearchOrdered personSearchOrdered)
         {
 
-            var person = new PersonBuilder()
-                .WithFirstName(personSearchOrdered.Person.FirstName)
-                .WithLastName(personSearchOrdered.Person.LastName)
-                .WithDateOfBirth(personSearchOrdered.Person.DateOfBirth)
-                .AddIdentifier(new ICBCIdentifier()
+            return new PersonSearchCompletedSample()
+            {
+                ProviderProfile = _profile,
+                SearchRequestId = personSearchOrdered.SearchRequestId,
+                TimeStamp = DateTime.Now,
+                MatchedPerson = new PersonSample()
                 {
-                    Type = PersonalIdentifierType.DriverLicense,
-                    EffectiveDate = DateTime.Now.AddDays(-365),
-                    ExpirationDate = DateTime.Now.AddDays(365),
-                    IssuedBy = "British Columbia",
-                    SerialNumber = new Random().Next(0, 50000).ToString()
-                })
-                .Build();
-
-            return new MatchFoundBuilder(personSearchOrdered.SearchRequestId).WithPerson(person).Build();
+                    FirstName = personSearchOrdered.Person.FirstName,
+                    LastName = personSearchOrdered.Person.LastName,
+                    DateOfBirth = personSearchOrdered.Person.DateOfBirth,
+                    Identifiers = new List<PersonalIdentifierSample>()
+                    {
+                        new PersonalIdentifierSample()
+                        {
+                            Type = PersonalIdentifierType.DriverLicense,
+                            EffectiveDate = DateTime.Now.AddDays(-365),
+                            ExpirationDate = DateTime.Now.AddDays(365),
+                            IssuedBy = "British Columbia",
+                            SerialNumber = new Random().Next(0, 50000).ToString()
+                        }
+                    }
+                }
+            };
 
         }
 

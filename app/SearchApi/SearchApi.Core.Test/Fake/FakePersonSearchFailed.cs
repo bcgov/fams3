@@ -7,7 +7,7 @@ namespace SearchApi.Core.Test.Fake
 {
     public class FakePersonSearchFailed : PersonSearchFailed
     {
-        public Exception Cause { get; set; }
+        public string Cause { get; set; }
 
         public Guid SearchRequestId { get; set; }
 

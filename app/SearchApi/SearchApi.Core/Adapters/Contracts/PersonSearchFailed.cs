@@ -4,6 +4,6 @@ namespace SearchApi.Core.Adapters.Contracts
 {
     public interface PersonSearchFailed : PersonSearchAdapterEvent
     {
-        Exception Cause { get; }
+        string Cause { get; }
     }
 }

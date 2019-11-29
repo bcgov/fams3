@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using DynamicsAdapter.Web.PersonSearch;
+using DynamicsAdapter.Web.PersonSearch.Models;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.SearchApiEvent;
 using Fams3Adapter.Dynamics.SearchApiRequest;
@@ -24,6 +25,8 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         private Mock<ILogger<PersonSearchController>> _loggerMock ;
         private Mock<ISearchRequestService> _searchRequestServiceMock;
         private Mock<ISearchApiRequestService> _searchApiRequestServiceMock;
+        PersonCompletedEvent fakePersonCompletedEvent;
+        PersonAcceptedEvent fakePersonAcceptedEvent;
 
         [SetUp]
         public void Init()
@@ -38,6 +41,41 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             var validRequestId = Guid.NewGuid();
             var invalidRequestId = Guid.NewGuid();
 
+            fakePersonAcceptedEvent = new PersonAcceptedEvent()
+            {
+                SearchRequestId = Guid.NewGuid(),
+                TimeStamp = DateTime.Now,
+                ProviderProfile = new ProviderProfile()
+                {
+                    Name = "TEST PROVIDER"
+                }
+            };
+
+            fakePersonCompletedEvent = new PersonCompletedEvent()
+            {
+                SearchRequestId = Guid.NewGuid(),
+                TimeStamp = DateTime.Now,
+                ProviderProfile = new ProviderProfile()
+                {
+                    Name = "TEST PROVIDER"
+                },
+                PersonIds = new List<PersonId>()
+                        {
+                            new PersonId()
+                            {
+                                Issuer = "test",
+                                Number = "test",
+                                Kind = PersonIDKind.DriverLicense
+                            }
+                        },
+                Person = new Person()
+                {
+                    DateOfBirth = DateTime.Now,
+                    FirstName = "TEST1",
+                    LastName = "TEST2"
+
+                }
+            };
 
             _searchApiRequestServiceMock.Setup(x => x.GetLinkedSearchRequestIdAsync(It.Is<Guid>(x => x == _testGuid), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<Guid>(_testGuid));
@@ -74,30 +112,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         [Test]
         public async Task With_valid_completed_event_it_should_return_ok()
         {
-            var result = await _sut.Completed(_testGuid, new PersonSearchController.PersonCompletedEvent()
-                {
-                    SearchRequestId = Guid.NewGuid(),
-                    TimeStamp = DateTime.Now,
-                    ProviderProfile = new PersonSearchController.ProviderProfile()
-                    {
-                        Name = "TEST PROVIDER"
-                    },
-                    MatchFound = new MatchFound()
-                    {
-                        SearchRequestId = Guid.NewGuid(),
-                        Person = new Person() { },
-                        PersonIds = new List<PersonId>()
-                        {
-                            new PersonId()
-                            {
-                                Issuer = "test",
-                                Number = "test",
-                                Kind = PersonIDKind.DriverLicense
-                            }
-                        }
-                    } 
-                }
-            );
+            var result = await _sut.Completed(_testGuid, fakePersonCompletedEvent);
             _searchRequestServiceMock
                 .Verify(x => x.UploadIdentifier(It.IsAny<SSG_Identifier>(), It.IsAny<CancellationToken>()), Times.Once);
             _searchApiRequestServiceMock
@@ -108,44 +123,14 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         [Test]
         public async Task With_exception_completed_event_should_return_badrequest()
         {
-            var result = await _sut.Completed(_exceptionGuid, new PersonSearchController.PersonCompletedEvent()
-            {
-                SearchRequestId = Guid.NewGuid(),
-                TimeStamp = DateTime.Now,
-                ProviderProfile = new PersonSearchController.ProviderProfile()
-                {
-                    Name = "TEST PROVIDER"
-                },
-                MatchFound = new MatchFound()
-                {
-                    SearchRequestId = Guid.NewGuid(),
-                    Person = new Person() { },
-                    PersonIds = new List<PersonId>()
-                        {
-                            new PersonId()
-                            {
-                                Issuer = "exception",
-                                Number = "exception",
-                                Kind = PersonIDKind.DriverLicense
-                            }
-                        }
-                }
-            });
+            var result = await _sut.Completed(_exceptionGuid, fakePersonCompletedEvent);
             Assert.IsInstanceOf(typeof(BadRequestResult), result);
         }
 
         [Test]
         public async Task With_valid_accepted_event_it_should_return_ok()
         {
-            var result = await _sut.Accepted(_testGuid, new PersonSearchController.PersonAcceptedEvent()
-            {
-                SearchRequestId = Guid.NewGuid(),
-                TimeStamp = DateTime.Now,
-                ProviderProfile = new PersonSearchController.ProviderProfile()
-                {
-                    Name = "TEST PROVIDER"
-                }
-            });
+            var result = await _sut.Accepted(_testGuid, fakePersonAcceptedEvent);
 
 
             _searchApiRequestServiceMock

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using DynamicsAdapter.Web.PersonSearch.Models;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.SearchApiEvent;
 using Fams3Adapter.Dynamics.SearchApiRequest;
@@ -13,45 +14,8 @@ using Microsoft.Extensions.Logging;
 namespace DynamicsAdapter.Web.PersonSearch
 {
 
-    // TODO: all classes bellow will be coming from SEARCH API CORE LIB
-    public class MatchFound
-    {
-        public Guid SearchRequestId { get; set; }
+   
 
-        public Person Person { get; set; }
-
-        public IEnumerable<PersonId> PersonIds { get; set; }
-
-    }
-
-    public enum PersonIDKind
-    {
-        DriverLicense
-    }
-
-    public class PersonId
-    {
-        public PersonIDKind Kind { get; set; }
-        public string Issuer { get; set; }
-        public string Number { get; set; }
-    }
-
-    public class Person
-    {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public DateTime DateOfBirth { get; set; }
-    }
-
-
-    public class ProviderSearchEventStatus
-    {
-        public Guid SearchRequestId { get; set; }
-        public DateTime TimeStamp { get; set; }
-        public string ProviderName { get; set; }
-        public string Message { get; set; }
-        public string EventType { get; set; }
-    }
 
 
     [Route("[controller]")]
@@ -99,10 +63,10 @@ namespace DynamicsAdapter.Web.PersonSearch
                  _logger.LogInformation($"Successfully created new event for SearchApiRequest [{id}]");
 
                 //upload search result to dynamic search api
-                MatchFound matchFound = personCompletedEvent.MatchFound;
+                var personIds = personCompletedEvent.PersonIds;
                 var searchApiRequestId = await _searchApiRequestService.GetLinkedSearchRequestIdAsync(id, cts.Token);
 
-                foreach (var matchFoundPersonId in matchFound.PersonIds)
+                foreach (var matchFoundPersonId in personIds)
                 {
                     //TODO: replaced with data from payload
                     var toBeReplaced = new SSG_Identifier()
@@ -132,25 +96,11 @@ namespace DynamicsAdapter.Web.PersonSearch
         }
 
 
-        public class PersonAcceptedEvent
-        {
-            public Guid SearchRequestId { get; set; }
-            public DateTime TimeStamp { get; set; }
-            public ProviderProfile ProviderProfile { get; set; }
-        }
+      
 
-        public class PersonCompletedEvent
-        {
-            public Guid SearchRequestId { get; set; }
-            public DateTime TimeStamp { get; set; }
-            public ProviderProfile ProviderProfile { get; set; }
-            public MatchFound MatchFound { get; set; }
-        }
+      
 
-        public class ProviderProfile
-        {
-            public string Name { get; set; }
-        }
+      
 
         [HttpPost]
         [Consumes("application/json")]

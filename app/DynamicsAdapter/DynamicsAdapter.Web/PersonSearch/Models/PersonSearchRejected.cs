@@ -7,7 +7,7 @@ namespace DynamicsAdapter.Web.PersonSearch.Models
 {
     public class PersonSearchRejected : PersonSearchStatus
     {
-        public IEnumerable<ValidationResult> Reasons { get; }
+        public IEnumerable<ValidationResult> Reasons { get; set; }
     }
 
     public class ValidationResult

@@ -121,7 +121,7 @@ objects:
                 - name: SCHEDULER__CRON
                   value: 0/5 * * * * ?
                 - name: SEARCHAPI__BASEURL
-                  value: http://search-api
+                  value: http://searchapi:8080
                 - name: OAUTH__RESOURCEURL
                   valueFrom:
                     secretKeyRef:

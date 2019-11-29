@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace SearchApi.Core.Person.Contracts
 {
@@ -7,5 +8,6 @@ namespace SearchApi.Core.Person.Contracts
         string FirstName { get; }
         string LastName { get; }
         DateTime? DateOfBirth { get; }
+        IEnumerable<PersonalIdentifier> Identifiers { get; }
     }
 }

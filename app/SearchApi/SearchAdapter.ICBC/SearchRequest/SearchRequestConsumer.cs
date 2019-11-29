@@ -11,6 +11,7 @@ using SearchApi.Core.Adapters.Configuration;
 using SearchApi.Core.Adapters.Contracts;
 using SearchApi.Core.Adapters.Models;
 using SearchApi.Core.Person.Contracts;
+using SearchApi.Core.Person.Enums;
 
 namespace SearchAdapter.ICBC.SearchRequest
 {
@@ -76,14 +77,24 @@ namespace SearchAdapter.ICBC.SearchRequest
 
         }
 
-
         public PersonSearchCompleted BuildFakeResult(PersonSearchOrdered personSearchOrdered)
         {
             var fakeIdentifier = new IcbcPersonIdBuilder(PersonIDKind.DriverLicense).WithIssuer("British Columbia")
                 .WithNumber("1234568").Build();
 
-            var person = new IcbcPersonBuilder().WithFirstName(personSearchOrdered.ExecuteSearch.FirstName)
-                .WithFirstName(personSearchOrdered.ExecuteSearch.FirstName).WithDateOfBirth(personSearchOrdered.ExecuteSearch.DateOfBirth).Build();
+            var person = new IcbcPersonBuilder()
+                .WithFirstName(personSearchOrdered.ExecuteSearch.FirstName)
+                .WithLastName(personSearchOrdered.ExecuteSearch.LastName)
+                .WithDateOfBirth(personSearchOrdered.ExecuteSearch.DateOfBirth)
+                .AddIdentifier(new ICBCIdentifier()
+                {
+                    Type = PersonalIdentifierType.DriverLicense,
+                    EffectiveDate = DateTime.Now.AddDays(-365),
+                    ExpirationDate = DateTime.Now.AddDays(365),
+                    IssuedBy = "British Columbia",
+                    SerialNumber = new Random().Next(0, 50000).ToString()
+                })
+                .Build();
 
             return new IcbcMatchFoundBuilder(personSearchOrdered.SearchRequestId).WithPerson(person).AddPersonId(fakeIdentifier).Build();
 

@@ -75,15 +75,14 @@ pipeline {
       StartBuildAndWait("${DYNAMICS_ADAPTER}-runtime", TOOLS_NAMESPACE)
      },
      'ICBCAdapter': {
-      echo "Initiating ICBCAdapter build..."
-      sh "oc process -f openshift/templates/icbc-adapter.bc.yaml \
+      echo "Initiating SampleAdapter build..."
+      sh "oc process -f openshift/templates/sample-adapter.bc.yaml \
          -p NAME=${ICBC_ADAPTER} \
          -p DOTNET_BUILD_IMAGE_STREAM_TAG=dotnet:2.2 \
          -p DOTNET_RUNTIME_IMAGE_STREAM_TAG=dotnet-runtime:2.2 \
-         -p SOURCE_REPOSITORY_URL=${PRIVATE_GIT_URI} \
-         -p SOURCE_REPOSITORY_REF=${PRIVATE_GIT_REF} \
-         -p SOURCE_SECRET=${PRIVATE_GIT_SECRET} \
-         -p DOTNET_STARTUP_PROJECT=app/IcbcAdapter/Icbc.ServiceMock.Soap/Icbc.ServiceMock.Soap.csproj \
+         -p SOURCE_REPOSITORY_URL=${GIT_URI} \
+         -p SOURCE_REPOSITORY_REF=${GIT_REF} \
+         -p DOTNET_STARTUP_PROJECT=app/SearchApi/SearchAdapter.ICBC/SearchAdapter.ICBC.csproj \
          -p MEMORY_LIMIT=${BUILD_MEMORY} \
          -p NAMESPACE=${TOOLS_NAMESPACE} | oc apply -f - -n ${TOOLS_NAMESPACE}"
       StartBuildAndWait("${ICBC_ADAPTER}-build", TOOLS_NAMESPACE)
@@ -120,7 +119,7 @@ pipeline {
       echo 'Done'
      },
      'ICBCAdapter': {
-      sh "oc process -f openshift/templates/icbc-adapter.dc.yaml \
+      sh "oc process -f openshift/templates/sample-adapter.dc.yaml \
          -p NAME=${ICBC_ADAPTER} \
          -p APPLICATION_DOMAIN=${SUBDOMAIN}-dev.${DOMAIN} \
          -p MEMORY_LIMIT=${RUN_MEMORY} \

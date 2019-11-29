@@ -51,7 +51,7 @@ Configure RabbiMq using the following ENV variables:
 
 > the variables key have 2 underscores
 
-### Match Found Notifications
+### Search Event Notifications
 
 If the WebHooks section is configured, SearchApi automatically posts a new notification into the webhook collection. The WebHook configuraton in SearchApi is
 

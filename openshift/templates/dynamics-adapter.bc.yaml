@@ -49,16 +49,6 @@ parameters:
 - name: CONTEXT_DIR
   displayName: Context Directory
   description: Set this to use a subdirectory of the source code repository
-- name: GITHUB_WEBHOOK_SECRET
-  displayName: GitHub Webhook Secret
-  description: A secret string used to configure the GitHub webhook.
-  generate: expression
-  from: "[a-zA-Z0-9]{40}"
-- name: GENERIC_WEBHOOK_SECRET
-  displayName: Generic Webhook Secret
-  description: A secret string used to configure the Generic webhook.
-  generate: expression
-  from: "[a-zA-Z0-9]{40}"
 - name: DOTNET_STARTUP_PROJECT
   displayName: Startup Project
   description: Set this to a project file (e.g. csproj) or a folder containing a single
@@ -148,12 +138,6 @@ objects:
           name: "${NAME}-build:latest"
       triggers:
         - type: ImageChange
-        - type: GitHub
-          github:
-            secret: "${GITHUB_WEBHOOK_SECRET}"
-        - type: Generic
-          generic:
-            secret: "${GENERIC_WEBHOOK_SECRET}"
   - kind: BuildConfig
     apiVersion: v1
     metadata:

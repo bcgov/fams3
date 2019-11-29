@@ -226,7 +226,7 @@ namespace DynamicsAdapter.Web
                     Predicate = _ => true,
                     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
                 });
-                endpoints.MapControllerRoute("matchFound", "{controller=MatchFound}/{action=MatchFound}/{id?}");
+    
             });
         }
     }

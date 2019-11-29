@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using FluentValidation;
-using FluentValidation.TestHelper;
 using NUnit.Framework;
-using SearchAdapter.ICBC.SearchRequest;
+using SearchAdapter.Sample.SearchRequest;
 using SearchApi.Core.Person.Contracts;
 
-namespace SearchAdapter.ICBC.Test.SearchRequest
+namespace SearchAdapter.Sample.Test
 {
     public class PersonSearchValidatorTest
     {

@@ -10,7 +10,7 @@ using SearchAdapter.ICBC.SearchRequest.MatchFound;
 using SearchApi.Core.Adapters.Configuration;
 using SearchApi.Core.Adapters.Contracts;
 using SearchApi.Core.Adapters.Models;
-using SearchApi.Core.Contracts;
+using SearchApi.Core.Person.Contracts;
 
 namespace SearchAdapter.ICBC.SearchRequest
 {

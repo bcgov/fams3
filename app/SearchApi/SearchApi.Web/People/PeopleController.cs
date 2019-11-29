@@ -10,8 +10,7 @@ using NSwag;
 using NSwag.Annotations;
 using OpenTracing;
 using SearchApi.Core.Adapters.Contracts;
-using SearchApi.Core.Adapters.Models.Contracts;
-using SearchApi.Core.Contracts;
+using SearchApi.Core.Person.Contracts;
 
 namespace SearchApi.Web.Controllers
 {

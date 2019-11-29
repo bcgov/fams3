@@ -1,4 +1,4 @@
-﻿using SearchApi.Core.Contracts;
+﻿using SearchApi.Core.Person.Contracts;
 
 namespace SearchAdapter.ICBC.SearchRequest.MatchFound
 {

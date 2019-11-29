@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SearchApi.Core.Contracts;
+using SearchApi.Core.Person.Contracts;
 
 namespace SearchAdapter.ICBC.SearchRequest.MatchFound
 {
@@ -41,6 +41,6 @@ namespace SearchAdapter.ICBC.SearchRequest.MatchFound
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public DateTime DateOfBirth { get; set; }
+        public DateTime? DateOfBirth { get; set; }
     }
 }

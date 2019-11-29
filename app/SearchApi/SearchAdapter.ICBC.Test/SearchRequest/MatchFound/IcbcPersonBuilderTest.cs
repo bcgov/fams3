@@ -15,9 +15,9 @@ namespace SearchAdapter.ICBC.Test.SearchRequest.MatchFound
 
             Assert.AreEqual("FirstName", sut.FirstName);
             Assert.AreEqual("LastName", sut.LastName);
-            Assert.AreEqual(2001, sut.DateOfBirth.Year);
-            Assert.AreEqual(1, sut.DateOfBirth.Month);
-            Assert.AreEqual(2, sut.DateOfBirth.Day);
+            Assert.AreEqual(2001, ((DateTime)sut.DateOfBirth).Year);
+            Assert.AreEqual(1, ((DateTime)sut.DateOfBirth).Month);
+            Assert.AreEqual(2, ((DateTime)sut.DateOfBirth).Day);
 
         }
 

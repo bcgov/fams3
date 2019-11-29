@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SearchApi.Core.Adapters.Contracts;
-using SearchApi.Core.Contracts;
+using SearchApi.Core.Person.Contracts;
 
 namespace SearchAdapter.ICBC.SearchRequest
 {

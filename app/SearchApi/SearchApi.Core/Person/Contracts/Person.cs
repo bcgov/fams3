@@ -1,11 +1,11 @@
 ﻿using System;
 
-namespace SearchApi.Core.Contracts
+namespace SearchApi.Core.Person.Contracts
 {
     public interface Person
     {
         string FirstName { get; }
         string LastName { get; }
-        DateTime DateOfBirth { get; }
+        DateTime? DateOfBirth { get; }
     }
 }

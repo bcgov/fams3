@@ -70,7 +70,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                         Identification = matchFoundPersonId.Number,
                         IdentificationEffectiveDate = new DateTime(2014, 1, 1),
                         IdentifierType = IdentificationType.DriverLicense.Value,
-                        IssuedBy = "ICBC",
+                        IssuedBy = "SampleAdapter",
                         SSG_SearchRequest = new SSG_SearchRequest()
                         {
                             SearchRequestId = searchApiRequestId

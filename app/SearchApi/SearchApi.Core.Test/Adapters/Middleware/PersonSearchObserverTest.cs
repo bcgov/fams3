@@ -8,13 +8,12 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using NUnit.Framework;
-using OpenTracing.Mock;
 using SearchApi.Core.Adapters.Configuration;
 using SearchApi.Core.Adapters.Contracts;
 using SearchApi.Core.Adapters.Middleware;
 using SearchApi.Core.Person.Contracts;
 
-namespace SearchAdapter.ICBC.Test.Adapters.Middleware
+namespace SearchApi.Core.Test.Adapters.Middleware
 {
 
     public class PersonSearchObserverTest
@@ -28,10 +27,10 @@ namespace SearchAdapter.ICBC.Test.Adapters.Middleware
         {
             public Guid SearchRequestId { get; set; }
             public DateTime TimeStamp { get; set; }
-            public Person Person { get; set; }
+            public Person.Contracts.Person Person { get; set; }
         }
 
-        public class FakePerson : Person
+        public class FakePerson : Person.Contracts.Person
         {
             public string FirstName { get; set; }
             public string LastName { get; set; }

@@ -152,7 +152,7 @@ namespace SearchAdapter.ICBC
         /// </summary>
         private void ConfigureFluentValidation(IServiceCollection services)
         {
-            services.AddTransient<IValidator<ExecuteSearch>, PersonSearchValidator>();
+            services.AddTransient<IValidator<Person>, PersonSearchValidator>();
         }
 
 
@@ -190,7 +190,7 @@ namespace SearchAdapter.ICBC
                         cfg.ReceiveEndpoint(host, $"{nameof(PersonSearchOrdered)}_{providerOptions.Value.Name}", e =>
                         {
                             e.Consumer(() => new SearchRequestConsumer(
-                                provider.GetRequiredService<IValidator<ExecuteSearch>>(),
+                                provider.GetRequiredService<IValidator<Person>>(),
                                 providerOptions,
                                 provider.GetRequiredService<ILogger<SearchRequestConsumer>>()));
                         });

@@ -6,7 +6,7 @@ namespace SearchAdapter.ICBC.SearchRequest
     /// <summary>
     /// Validates a person search
     /// </summary>
-    public class PersonSearchValidator : AbstractValidator<ExecuteSearch>
+    public class PersonSearchValidator : AbstractValidator<Person>
     {
         public PersonSearchValidator()
         {

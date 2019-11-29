@@ -27,7 +27,7 @@ namespace SearchAdapter.ICBC.Test.SearchRequest
 
         private Mock<ILogger<SearchRequestConsumer>> _loggerMock;
         private Mock<IOptions<ProviderProfileOptions>> _providerProfileMock;
-        private Mock<IValidator<ExecuteSearch>> _personSearchValidatorMock;
+        private Mock<IValidator<Person>> _personSearchValidatorMock;
 
         private Guid validGuid = Guid.NewGuid();
         private Guid inValidGuid = Guid.NewGuid();
@@ -36,10 +36,10 @@ namespace SearchAdapter.ICBC.Test.SearchRequest
         {
             public Guid SearchRequestId { get; set; }
             public DateTime TimeStamp { get; set; }
-            public ExecuteSearch ExecuteSearch { get; set; }
+            public Person Person { get; set; }
         }
         
-        public class ExecuteSearchTest : ExecuteSearch
+        public class ExecuteSearchTest : Person
         {
             public string FirstName { get; set; }
             public string LastName { get; set; }
@@ -53,12 +53,12 @@ namespace SearchAdapter.ICBC.Test.SearchRequest
 
             _loggerMock = new Mock<ILogger<SearchRequestConsumer>>();
             _providerProfileMock = new Mock<IOptions<ProviderProfileOptions>>();
-            _personSearchValidatorMock = new Mock<IValidator<ExecuteSearch>>();
+            _personSearchValidatorMock = new Mock<IValidator<Person>>();
 
-            _personSearchValidatorMock.Setup(x => x.Validate(It.Is<ExecuteSearch>(executeSearch => !string.IsNullOrEmpty(executeSearch.FirstName))))
+            _personSearchValidatorMock.Setup(x => x.Validate(It.Is<Person>(person => !string.IsNullOrEmpty(person.FirstName))))
                 .Returns(new ValidationResult(Enumerable.Empty<ValidationFailure>()));
 
-            _personSearchValidatorMock.Setup(x => x.Validate(It.Is<ExecuteSearch>(executeSearch => string.IsNullOrEmpty(executeSearch.FirstName))))
+            _personSearchValidatorMock.Setup(x => x.Validate(It.Is<Person>(person => string.IsNullOrEmpty(person.FirstName))))
                 .Returns(new ValidationResult(new List<ValidationFailure>()
                 {
                     new ValidationFailure("firstName", "firstName is required.")
@@ -73,7 +73,7 @@ namespace SearchAdapter.ICBC.Test.SearchRequest
             {
                 SearchRequestId = validGuid,
                 TimeStamp = DateTime.Now,
-                ExecuteSearch = new ExecuteSearchTest()
+                Person = new ExecuteSearchTest()
                 {
                     FirstName = "firstName",
                     LastName = "lastName",
@@ -85,7 +85,7 @@ namespace SearchAdapter.ICBC.Test.SearchRequest
             {
                 SearchRequestId = inValidGuid,
                 TimeStamp = DateTime.Now,
-                ExecuteSearch = new ExecuteSearchTest()
+                Person = new ExecuteSearchTest()
                 {
                     FirstName = "",
                     LastName = "lastName",

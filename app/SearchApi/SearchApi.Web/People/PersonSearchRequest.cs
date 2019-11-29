@@ -13,7 +13,7 @@ namespace SearchApi.Web.Controllers
     /// The PersonSearchRequest represents the information known about a subject before executing a search.
     /// </summary>
     [Description("Represents a set of information to execute a search on a person")]
-    public class PersonSearchRequest : ExecuteSearch
+    public class PersonSearchRequest : Person
     {
 
         [JsonConstructor]

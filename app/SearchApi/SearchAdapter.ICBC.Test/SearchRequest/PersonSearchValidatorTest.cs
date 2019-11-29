@@ -14,7 +14,7 @@ namespace SearchAdapter.ICBC.Test.SearchRequest
 
         private PersonSearchValidator _sut;
 
-        public class ExecuteSearchCommandTest : ExecuteSearch
+        public class PersonTest : Person
         {
             public string FirstName { get; set; }
             public string LastName { get; set; }
@@ -31,7 +31,7 @@ namespace SearchAdapter.ICBC.Test.SearchRequest
         [Test]
         public void When_search_is_value_should_be_valid()
         {
-            var command = new ExecuteSearchCommandTest()
+            var command = new PersonTest()
             {
                 FirstName = "fistName",
                 LastName = "lastName"
@@ -45,7 +45,7 @@ namespace SearchAdapter.ICBC.Test.SearchRequest
         [Test]
         public void When_first_name_is_null_should_have_validation_error()
         {
-            var command = new ExecuteSearchCommandTest()
+            var command = new PersonTest()
             {
                 FirstName = null,
                 LastName = "lastName"
@@ -61,7 +61,7 @@ namespace SearchAdapter.ICBC.Test.SearchRequest
         [Test]
         public void When_first_name_is_empty_should_have_validation_error()
         {
-            var command = new ExecuteSearchCommandTest()
+            var command = new PersonTest()
             {
                 FirstName = "",
                 LastName = "lastName"
@@ -77,7 +77,7 @@ namespace SearchAdapter.ICBC.Test.SearchRequest
         [Test]
         public void When_first_name_is_white_space_should_have_validation_error()
         {
-            var command = new ExecuteSearchCommandTest()
+            var command = new PersonTest()
             {
                 FirstName = "  ",
                 LastName = "lastName"
@@ -93,7 +93,7 @@ namespace SearchAdapter.ICBC.Test.SearchRequest
         [Test]
         public void When_last_name_is_null_should_have_validation_error()
         {
-            var command = new ExecuteSearchCommandTest()
+            var command = new PersonTest()
             {
                 FirstName = "fisrtName",
                 LastName = null
@@ -109,7 +109,7 @@ namespace SearchAdapter.ICBC.Test.SearchRequest
         [Test]
         public void When_last_name_is_empty_should_have_validation_error()
         {
-            var command = new ExecuteSearchCommandTest()
+            var command = new PersonTest()
             {
                 FirstName = "firstNAme",
                 LastName = ""
@@ -125,7 +125,7 @@ namespace SearchAdapter.ICBC.Test.SearchRequest
         [Test]
         public void When_last_name_is_white_space_should_have_validation_error()
         {
-            var command = new ExecuteSearchCommandTest()
+            var command = new PersonTest()
             {
                 FirstName = "firstName",
                 LastName = "  "

@@ -7,8 +7,6 @@ namespace SearchApi.Core.Adapters.Contracts
 {
    public  interface PersonSearchCompleted  : PersonSearchAdapterEvent
     {
-        Person.Contracts.Person Person { get; }
-
-        IEnumerable<PersonId> PersonIds { get; }
+        Person.Contracts.Person MatchedPerson { get; }
     }
 }

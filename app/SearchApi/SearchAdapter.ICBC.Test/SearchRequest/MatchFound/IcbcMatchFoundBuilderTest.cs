@@ -16,16 +16,10 @@ namespace SearchAdapter.ICBC.Test.SearchRequest.MatchFound
 
             var sut = new IcbcMatchFoundBuilder(id)
                 .WithPerson(new FakePerson())
-                .AddPersonId(new FakePersonId())
                 .Build();
 
-            Assert.AreEqual("FirstName", sut.Person.FirstName);
-            Assert.AreEqual("LastName", sut.Person.LastName);
-            
-            Assert.AreEqual(1, sut.PersonIds.ToList().Count);
-
-            Assert.AreEqual("Issuer", sut.PersonIds.ToList().FirstOrDefault().Issuer);
-
+            Assert.AreEqual("FirstName", sut.MatchedPerson.FirstName);
+            Assert.AreEqual("LastName", sut.MatchedPerson.LastName);
 
         }
 

@@ -8,9 +8,7 @@ namespace SearchApi.Core.Test.Fake
 {
     public class FakePersonSearchCompleted : PersonSearchCompleted
     {
-        public Person.Contracts.Person Person { get; set; }
-
-        public IEnumerable<PersonId> PersonIds { get; set; }
+        public Person.Contracts.Person MatchedPerson { get; set; }
 
         public Guid SearchRequestId { get; set; }
 

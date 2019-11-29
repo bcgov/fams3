@@ -20,13 +20,7 @@ namespace SearchAdapter.ICBC.SearchRequest
 
         public IcbcMatchFoundBuilder WithPerson(Person person)
         {
-            this._matchFound.Person = person;
-            return this;
-        }
-
-        public IcbcMatchFoundBuilder AddPersonId(PersonId personId)
-        {
-            this._matchFound.AddPersonId(personId);
+            this._matchFound.MatchedPerson = person;
             return this;
         }
 
@@ -41,8 +35,6 @@ namespace SearchAdapter.ICBC.SearchRequest
     public sealed class IcbcMatchFound : PersonSearchCompleted
     {
 
-        private readonly List<PersonId> _personIds = new List<PersonId>();
-
         public IcbcMatchFound(Guid searchRequestId)
         {
             SearchRequestId = searchRequestId;
@@ -51,14 +43,7 @@ namespace SearchAdapter.ICBC.SearchRequest
 
         public Guid SearchRequestId { get; }
         public DateTime TimeStamp { get; }
-        public Person Person { get; set; }
-        public IEnumerable<PersonId> PersonIds => _personIds;
-
-        public void AddPersonId(PersonId personId)
-        {
-            this._personIds.Add(personId);
-        }
-
+        public Person MatchedPerson { get; set; }
         public ProviderProfile ProviderProfile { get; }
     }
 }

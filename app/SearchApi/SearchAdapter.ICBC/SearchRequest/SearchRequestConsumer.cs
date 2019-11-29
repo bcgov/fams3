@@ -23,11 +23,11 @@ namespace SearchAdapter.ICBC.SearchRequest
 
         private readonly ILogger<SearchRequestConsumer> _logger;
         private readonly ProviderProfile _profile;
-        private readonly IValidator<ExecuteSearch> _personSearchValidator;
+        private readonly IValidator<Person> _personSearchValidator;
 
 
         public SearchRequestConsumer(
-            IValidator<ExecuteSearch> personSearchValidator,
+            IValidator<Person> personSearchValidator,
             IOptions<ProviderProfileOptions> profile,
             ILogger<SearchRequestConsumer> logger)
         {
@@ -38,7 +38,7 @@ namespace SearchAdapter.ICBC.SearchRequest
 
         public async Task Consume(ConsumeContext<PersonSearchOrdered> context)
         {
-            _logger.LogInformation($"Successfully handling new search request [{context.Message.ExecuteSearch}]");
+            _logger.LogInformation($"Successfully handling new search request [{context.Message.Person}]");
 
             _logger.LogWarning("Currently under development, ICBC Adapter is generating FAKE results.");
 
@@ -52,7 +52,7 @@ namespace SearchAdapter.ICBC.SearchRequest
         {
 
             _logger.LogDebug("Attempting to validate the personSearch");
-            var validation = _personSearchValidator.Validate(context.Message.ExecuteSearch);
+            var validation = _personSearchValidator.Validate(context.Message.Person);
 
             if (validation.IsValid)
             {
@@ -79,13 +79,11 @@ namespace SearchAdapter.ICBC.SearchRequest
 
         public PersonSearchCompleted BuildFakeResult(PersonSearchOrdered personSearchOrdered)
         {
-            var fakeIdentifier = new IcbcPersonIdBuilder(PersonIDKind.DriverLicense).WithIssuer("British Columbia")
-                .WithNumber("1234568").Build();
 
             var person = new IcbcPersonBuilder()
-                .WithFirstName(personSearchOrdered.ExecuteSearch.FirstName)
-                .WithLastName(personSearchOrdered.ExecuteSearch.LastName)
-                .WithDateOfBirth(personSearchOrdered.ExecuteSearch.DateOfBirth)
+                .WithFirstName(personSearchOrdered.Person.FirstName)
+                .WithLastName(personSearchOrdered.Person.LastName)
+                .WithDateOfBirth(personSearchOrdered.Person.DateOfBirth)
                 .AddIdentifier(new ICBCIdentifier()
                 {
                     Type = PersonalIdentifierType.DriverLicense,
@@ -96,7 +94,7 @@ namespace SearchAdapter.ICBC.SearchRequest
                 })
                 .Build();
 
-            return new IcbcMatchFoundBuilder(personSearchOrdered.SearchRequestId).WithPerson(person).AddPersonId(fakeIdentifier).Build();
+            return new IcbcMatchFoundBuilder(personSearchOrdered.SearchRequestId).WithPerson(person).Build();
 
         }
 

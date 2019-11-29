@@ -226,7 +226,7 @@ namespace DynamicsAdapter.Web
                     Predicate = _ => true,
                     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
                 });
-    
+                endpoints.MapControllerRoute("Default", "{controller=PersonSearch}/{action=Completed}/{id?}");
             });
         }
     }

@@ -27,7 +27,7 @@ docker-compose up
 | Search API OpenApi Specification | [http://localhost:5050/swagger/v1/swagger.json](http://localhost:5050/swagger/v1/swagger.json) |
 | Search API Health | [http://localhost:5060/health](http://localhost:5060/health) |
 | Dynamics Adapter Health | [http://localhost:5060/health](http://localhost:5060/health) |
-| ICBC Adatpter Health | [http://localhost:5051/health](http://localhost:5060/health) |
+| Sample Adatpter Health | [http://localhost:5052/health](http://localhost:5060/health) |
 | RabbitMq Management Console | [http://localhost:15672/](http://localhost:15672) |
 | Jaeger OpenTrace Monitoring | [http://localhost:16686/search](http://localhost:16686/search) |
 | HealthChecks UI | [http://localhost:6060/healthchecks-ui](http://localhost:6060/healthchecks-ui) |
@@ -98,7 +98,7 @@ When the Adapter finds a match for a particular person, it raises an event that 
 	"searchRequestId": "00000000-0000-0000-0000-000000000000",
 	"timeStamp": "0001-01-01T00:00:00",
 	"providerProfile": {
-		"name": "ICBC"
+		"name": "Provider"
 	}
 }
 ```
@@ -115,7 +115,7 @@ When a person Search is accepted by data provider, meaning it has sufficient inf
 	"searchRequestId": "00000000-0000-0000-0000-000000000000",
 	"timeStamp": "0001-01-01T00:00:00",
 	"providerProfile": {
-		"name": "ICBC"
+		"name": "Provider"
 	}
 }
 ```
@@ -140,7 +140,7 @@ When a person Search does not meet the minimal requirement for the adapter to co
 	"searchRequestId": "00000000-0000-0000-0000-000000000000",
 	"timeStamp": "0001-01-01T00:00:00",
 	"providerProfile": {
-		"name": "ICBC"
+		"name": "Provider"
 	}
 }
 ```
@@ -158,7 +158,7 @@ When the adpater throws an unknown exception. An event is raised and posted to d
 	"searchRequestId": "00000000-0000-0000-0000-000000000000",
 	"timeStamp": "0001-01-01T00:00:00",
 	"providerProfile": {
-		"name": "ICBC"
+		"name": "Provider"
 	}
 }
 ```

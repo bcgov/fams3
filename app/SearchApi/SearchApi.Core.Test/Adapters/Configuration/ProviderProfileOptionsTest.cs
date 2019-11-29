@@ -3,7 +3,7 @@ using Microsoft.Extensions.Options;
 using NUnit.Framework;
 using SearchApi.Core.Adapters.Configuration;
 
-namespace SearchAdapter.ICBC.Test.Adapters.Configuration
+namespace SearchApi.Core.Test.Adapters.Configuration
 {
     public class ProviderProfileOptionsTest
     {

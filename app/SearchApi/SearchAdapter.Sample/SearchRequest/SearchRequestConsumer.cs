@@ -6,7 +6,6 @@ using FluentValidation;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using SearchAdapter.Sample.SearchRequest.MatchFound;
 using SearchApi.Core.Adapters.Configuration;
 using SearchApi.Core.Adapters.Contracts;
 using SearchApi.Core.Adapters.Models;
@@ -16,7 +15,7 @@ using SearchApi.Core.Person.Enums;
 namespace SearchAdapter.Sample.SearchRequest
 {
     /// <summary>
-    /// The SearchRequestConsumer consumes ICBC execute search commands, execute the search a publish a response back to the searchApi
+    /// The SearchRequestConsumer consumes search ordered events, execute the search a publish a response back to the searchApi
     /// </summary>
     public class SearchRequestConsumer : IConsumer<PersonSearchOrdered>
     {
@@ -40,7 +39,7 @@ namespace SearchAdapter.Sample.SearchRequest
         {
             _logger.LogInformation($"Successfully handling new search request [{context.Message.Person}]");
 
-            _logger.LogWarning("Currently under development, ICBC Adapter is generating FAKE results.");
+            _logger.LogWarning("Sample Adapter, do not use in PRODUCTION.");
 
             if (await ValidatePersonSearch(context))
             {

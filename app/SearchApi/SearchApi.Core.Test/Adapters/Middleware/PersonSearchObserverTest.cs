@@ -75,7 +75,7 @@ namespace SearchAdapter.ICBC.Test.Adapters.Middleware
         public void With_failure_should_send_personSearchFailureEvent()
         {
             Assert.IsTrue(_harness.Published.Select<PersonSearchFailed>()
-                .Any(x => x.Context.Message.Cause.Message == "Test Exception"));
+                .Any(x => x.Context.Message.Cause == "Test Exception"));
         }
 
 

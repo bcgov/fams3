@@ -38,7 +38,7 @@ namespace SearchApi.Core.Adapters.Middleware
         public async Task ConsumeFault(ConsumeContext<PersonSearchOrdered> context, Exception exception)
         {
             _logger.LogError(exception, "Adapter Failed to execute person search.");
-            await context.Publish<PersonSearchFailed>(new DefaultPersonSearchFailed(context.Message.SearchRequestId, _providerProfile, exception));
+            await context.Publish<PersonSearchFailed>(new DefaultPersonSearchFailed(context.Message.SearchRequestId, _providerProfile, exception.Message));
         }
     }
 }

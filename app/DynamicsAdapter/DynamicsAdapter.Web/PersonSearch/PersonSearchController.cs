@@ -92,12 +92,6 @@ namespace DynamicsAdapter.Web.PersonSearch
         }
 
 
-      
-
-      
-
-      
-
         [HttpPost]
         [Consumes("application/json")]
         [Produces("application/json")]
@@ -150,6 +144,38 @@ namespace DynamicsAdapter.Web.PersonSearch
                 _logger.LogDebug($"Attempting to create a new event for SearchApiRequest [{id}]");
                 var result = await _searchApiRequestService.AddEventAsync(id, searchApiEvent, token.Token);
                 _logger.LogInformation($"Successfully created failed event for SearchApiRequest [{id}]");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest();
+            }
+
+            return Ok();
+        }
+
+
+        [HttpPost]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Route("Rejected/{id}")]
+        public async Task<IActionResult> Rejected(Guid id, [FromBody]PersonSearchRejected personRejectedEvent)
+        {
+
+            _logger.LogInformation($"Received new event for SearchApiRequest [{id}]");
+
+            var token = new CancellationTokenSource();
+
+            try
+            {
+
+
+                var searchApiEvent = _mapper.Map<SSG_SearchApiEvent>(personRejectedEvent);
+                _logger.LogDebug($"Attempting to create a new event for SearchApiRequest [{id}]");
+                var result = await _searchApiRequestService.AddEventAsync(id, searchApiEvent, token.Token);
+                _logger.LogInformation($"Successfully created rejected event for SearchApiRequest [{id}]");
             }
             catch (Exception ex)
             {

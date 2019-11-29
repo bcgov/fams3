@@ -1,7 +1,7 @@
 ﻿using System;
-using SearchApi.Core.Adapters.Models.Enums;
+using SearchApi.Core.Person.Enums;
 
-namespace SearchApi.Core.Adapters.Models.Contracts
+namespace SearchApi.Core.Person.Contracts
 {
     public interface PersonalIdentifier
     {

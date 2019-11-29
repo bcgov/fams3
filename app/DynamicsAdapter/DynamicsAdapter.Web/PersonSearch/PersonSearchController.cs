@@ -13,47 +13,6 @@ using Microsoft.Extensions.Logging;
 namespace DynamicsAdapter.Web.PersonSearch
 {
 
-    // TODO: all classes bellow will be coming from SEARCH API CORE LIB
-    public class MatchFound
-    {
-        public Guid SearchRequestId { get; set; }
-
-        public Person Person { get; set; }
-
-        public IEnumerable<PersonId> PersonIds { get; set; }
-
-    }
-
-    public enum PersonIDKind
-    {
-        DriverLicense
-    }
-
-    public class PersonId
-    {
-        public PersonIDKind Kind { get; set; }
-        public string Issuer { get; set; }
-        public string Number { get; set; }
-    }
-
-    public class Person
-    {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public DateTime DateOfBirth { get; set; }
-    }
-
-
-    public class ProviderSearchEventStatus
-    {
-        public Guid SearchRequestId { get; set; }
-        public DateTime TimeStamp { get; set; }
-        public string ProviderName { get; set; }
-        public string Message { get; set; }
-        public string EventType { get; set; }
-    }
-
-
     [Route("[controller]")]
     [ApiController]
     public class PersonSearchController : ControllerBase
@@ -98,19 +57,17 @@ namespace DynamicsAdapter.Web.PersonSearch
                 var result = await _searchApiRequestService.AddEventAsync(id, searchApiEvent, cts.Token);
                  _logger.LogInformation($"Successfully created new event for SearchApiRequest [{id}]");
 
-                //upload search result to dynamic search api
-                MatchFound matchFound = personCompletedEvent.MatchFound;
                 var searchApiRequestId = await _searchApiRequestService.GetLinkedSearchRequestIdAsync(id, cts.Token);
 
-                foreach (var matchFoundPersonId in matchFound.PersonIds)
+                foreach (var identifier in personCompletedEvent.MatchedPerson.Identifiers)
                 {
                     //TODO: replaced with data from payload
                     var toBeReplaced = new SSG_Identifier()
                     {
-                        Identification = matchFoundPersonId.Number,
-                        IdentificationEffectiveDate = new DateTime(2014, 1, 1),
+                        Identification = identifier.SerialNumber,
+                        IdentificationEffectiveDate = identifier.EffectiveDate,
                         IdentifierType = IdentificationType.DriverLicense.Value,
-                        IssuedBy = "ICBC",
+                        IssuedBy = identifier.IssuedBy,
                         SSG_SearchRequest = new SSG_SearchRequest()
                         {
                             SearchRequestId = searchApiRequestId
@@ -129,27 +86,6 @@ namespace DynamicsAdapter.Web.PersonSearch
             }
 
             return Ok();
-        }
-
-
-        public class PersonAcceptedEvent
-        {
-            public Guid SearchRequestId { get; set; }
-            public DateTime TimeStamp { get; set; }
-            public ProviderProfile ProviderProfile { get; set; }
-        }
-
-        public class PersonCompletedEvent
-        {
-            public Guid SearchRequestId { get; set; }
-            public DateTime TimeStamp { get; set; }
-            public ProviderProfile ProviderProfile { get; set; }
-            public MatchFound MatchFound { get; set; }
-        }
-
-        public class ProviderProfile
-        {
-            public string Name { get; set; }
         }
 
         [HttpPost]
@@ -188,5 +124,57 @@ namespace DynamicsAdapter.Web.PersonSearch
 
             return Ok();
         }
+    }
+
+    // TODO: all classes bellow will be coming from SEARCH API CORE LIB
+    public class PersonAcceptedEvent
+    {
+        public Guid SearchRequestId { get; set; }
+        public DateTime TimeStamp { get; set; }
+        public ProviderProfile ProviderProfile { get; set; }
+    }
+
+    public class PersonCompletedEvent
+    {
+        public Guid SearchRequestId { get; set; }
+        public DateTime TimeStamp { get; set; }
+        public ProviderProfile ProviderProfile { get; set; }
+        public Person MatchedPerson { get; set; }
+    }
+
+    public class Person
+    {
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public DateTime? DateOfBirth { get; set; }
+        public IEnumerable<PersonalIdentifier> Identifiers { get; set; }
+    }
+
+    public class PersonalIdentifier
+    {
+        public string SerialNumber { get; set; }
+        public DateTime? EffectiveDate { get; set; }
+        public DateTime? ExpirationDate { get; set; }
+        public PersonalIdentifierType Type { get; set; }
+        public string IssuedBy { get; set; }
+    }
+
+    public enum PersonalIdentifierType
+    {
+        DriverLicense,
+        SocialInsuranceNumber,
+        PersonalHealthNumber,
+        BirthCertificate,
+        CorrectionsId,
+        NativeStatusCard,
+        Passport,
+        WcbClaim,
+        Other,
+        SecurityKeyword
+    }
+
+    public class ProviderProfile
+    {
+        public string Name { get; set; }
     }
 }

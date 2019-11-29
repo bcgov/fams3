@@ -6,7 +6,6 @@ using Microsoft.Extensions.Options;
 using SearchApi.Core.Adapters.Configuration;
 using SearchApi.Core.Adapters.Contracts;
 using SearchApi.Core.Adapters.Models;
-using SearchApi.Core.Contracts;
 
 namespace SearchApi.Core.Adapters.Middleware
 {

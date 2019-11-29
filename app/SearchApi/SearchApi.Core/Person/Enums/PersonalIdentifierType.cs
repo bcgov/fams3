@@ -1,4 +1,4 @@
-﻿namespace SearchApi.Core.Adapters.Models.Enums
+﻿namespace SearchApi.Core.Person.Enums
 {
     public enum PersonalIdentifierType
     {

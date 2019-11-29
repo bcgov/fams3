@@ -4,9 +4,8 @@ using System.ComponentModel;
 using Newtonsoft.Json;
 using NSwag;
 using SearchApi.Core.Adapters.Models;
-using SearchApi.Core.Adapters.Models.Contracts;
-using SearchApi.Core.Adapters.Models.Enums;
-using SearchApi.Core.Contracts;
+using SearchApi.Core.Person.Contracts;
+using SearchApi.Core.Person.Enums;
 
 namespace SearchApi.Web.Controllers
 {
@@ -14,7 +13,7 @@ namespace SearchApi.Web.Controllers
     /// The PersonSearchRequest represents the information known about a subject before executing a search.
     /// </summary>
     [Description("Represents a set of information to execute a search on a person")]
-    public class PersonSearchRequest : ExecuteSearch
+    public class PersonSearchRequest : Person
     {
 
         [JsonConstructor]

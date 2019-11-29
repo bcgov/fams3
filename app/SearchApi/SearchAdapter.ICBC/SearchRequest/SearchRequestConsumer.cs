@@ -10,7 +10,8 @@ using SearchAdapter.ICBC.SearchRequest.MatchFound;
 using SearchApi.Core.Adapters.Configuration;
 using SearchApi.Core.Adapters.Contracts;
 using SearchApi.Core.Adapters.Models;
-using SearchApi.Core.Contracts;
+using SearchApi.Core.Person.Contracts;
+using SearchApi.Core.Person.Enums;
 
 namespace SearchAdapter.ICBC.SearchRequest
 {
@@ -22,11 +23,11 @@ namespace SearchAdapter.ICBC.SearchRequest
 
         private readonly ILogger<SearchRequestConsumer> _logger;
         private readonly ProviderProfile _profile;
-        private readonly IValidator<ExecuteSearch> _personSearchValidator;
+        private readonly IValidator<Person> _personSearchValidator;
 
 
         public SearchRequestConsumer(
-            IValidator<ExecuteSearch> personSearchValidator,
+            IValidator<Person> personSearchValidator,
             IOptions<ProviderProfileOptions> profile,
             ILogger<SearchRequestConsumer> logger)
         {
@@ -37,7 +38,7 @@ namespace SearchAdapter.ICBC.SearchRequest
 
         public async Task Consume(ConsumeContext<PersonSearchOrdered> context)
         {
-            _logger.LogInformation($"Successfully handling new search request [{context.Message.ExecuteSearch}]");
+            _logger.LogInformation($"Successfully handling new search request [{context.Message.Person}]");
 
             _logger.LogWarning("Currently under development, ICBC Adapter is generating FAKE results.");
 
@@ -51,7 +52,7 @@ namespace SearchAdapter.ICBC.SearchRequest
         {
 
             _logger.LogDebug("Attempting to validate the personSearch");
-            var validation = _personSearchValidator.Validate(context.Message.ExecuteSearch);
+            var validation = _personSearchValidator.Validate(context.Message.Person);
 
             if (validation.IsValid)
             {
@@ -76,16 +77,24 @@ namespace SearchAdapter.ICBC.SearchRequest
 
         }
 
-
         public PersonSearchCompleted BuildFakeResult(PersonSearchOrdered personSearchOrdered)
         {
-            var fakeIdentifier = new IcbcPersonIdBuilder(PersonIDKind.DriverLicense).WithIssuer("British Columbia")
-                .WithNumber("1234568").Build();
 
-            var person = new IcbcPersonBuilder().WithFirstName(personSearchOrdered.ExecuteSearch.FirstName)
-                .WithFirstName(personSearchOrdered.ExecuteSearch.FirstName).WithDateOfBirth(personSearchOrdered.ExecuteSearch.DateOfBirth).Build();
+            var person = new IcbcPersonBuilder()
+                .WithFirstName(personSearchOrdered.Person.FirstName)
+                .WithLastName(personSearchOrdered.Person.LastName)
+                .WithDateOfBirth(personSearchOrdered.Person.DateOfBirth)
+                .AddIdentifier(new ICBCIdentifier()
+                {
+                    Type = PersonalIdentifierType.DriverLicense,
+                    EffectiveDate = DateTime.Now.AddDays(-365),
+                    ExpirationDate = DateTime.Now.AddDays(365),
+                    IssuedBy = "British Columbia",
+                    SerialNumber = new Random().Next(0, 50000).ToString()
+                })
+                .Build();
 
-            return new IcbcMatchFoundBuilder(personSearchOrdered.SearchRequestId).WithPerson(person).AddPersonId(fakeIdentifier).Build();
+            return new IcbcMatchFoundBuilder(personSearchOrdered.SearchRequestId).WithPerson(person).Build();
 
         }
 

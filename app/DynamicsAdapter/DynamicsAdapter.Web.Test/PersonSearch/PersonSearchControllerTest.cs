@@ -74,25 +74,28 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         [Test]
         public async Task With_valid_completed_event_it_should_return_ok()
         {
-            var result = await _sut.Completed(_testGuid, new PersonSearchController.PersonCompletedEvent()
+            var result = await _sut.Completed(_testGuid, new PersonCompletedEvent()
                 {
                     SearchRequestId = Guid.NewGuid(),
                     TimeStamp = DateTime.Now,
-                    ProviderProfile = new PersonSearchController.ProviderProfile()
+                    ProviderProfile = new ProviderProfile()
                     {
                         Name = "TEST PROVIDER"
                     },
-                    MatchFound = new MatchFound()
+                    MatchedPerson = new Person()
                     {
-                        SearchRequestId = Guid.NewGuid(),
-                        Person = new Person() { },
-                        PersonIds = new List<PersonId>()
+                        DateOfBirth = new DateTime(2001,1,1),
+                        LastName = "lastName",
+                        FirstName = "fistName",
+                        Identifiers = new List<PersonalIdentifier>()
                         {
-                            new PersonId()
+                            new PersonalIdentifier()
                             {
-                                Issuer = "test",
-                                Number = "test",
-                                Kind = PersonIDKind.DriverLicense
+                                IssuedBy = "Test",
+                                EffectiveDate = new DateTime(2001,1,1),
+                                SerialNumber = "1234",
+                                Type = PersonalIdentifierType.BirthCertificate,
+                                ExpirationDate = new DateTime(2001,1,1)
                             }
                         }
                     } 
@@ -108,27 +111,30 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         [Test]
         public async Task With_exception_completed_event_should_return_badrequest()
         {
-            var result = await _sut.Completed(_exceptionGuid, new PersonSearchController.PersonCompletedEvent()
+            var result = await _sut.Completed(_exceptionGuid, new PersonCompletedEvent()
             {
                 SearchRequestId = Guid.NewGuid(),
                 TimeStamp = DateTime.Now,
-                ProviderProfile = new PersonSearchController.ProviderProfile()
+                ProviderProfile = new ProviderProfile()
                 {
                     Name = "TEST PROVIDER"
                 },
-                MatchFound = new MatchFound()
+                MatchedPerson = new Person()
                 {
-                    SearchRequestId = Guid.NewGuid(),
-                    Person = new Person() { },
-                    PersonIds = new List<PersonId>()
+                    DateOfBirth = new DateTime(2001, 1, 1),
+                    LastName = "exception",
+                    FirstName = "exception",
+                    Identifiers = new List<PersonalIdentifier>()
+                    {
+                        new PersonalIdentifier()
                         {
-                            new PersonId()
-                            {
-                                Issuer = "exception",
-                                Number = "exception",
-                                Kind = PersonIDKind.DriverLicense
-                            }
+                            IssuedBy = "exception",
+                            EffectiveDate = new DateTime(2001,1,1),
+                            SerialNumber = "exception",
+                            Type = PersonalIdentifierType.BirthCertificate,
+                            ExpirationDate = new DateTime(2001,1,1)
                         }
+                    }
                 }
             });
             Assert.IsInstanceOf(typeof(BadRequestResult), result);
@@ -137,11 +143,11 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         [Test]
         public async Task With_valid_accepted_event_it_should_return_ok()
         {
-            var result = await _sut.Accepted(_testGuid, new PersonSearchController.PersonAcceptedEvent()
+            var result = await _sut.Accepted(_testGuid, new PersonAcceptedEvent()
             {
                 SearchRequestId = Guid.NewGuid(),
                 TimeStamp = DateTime.Now,
-                ProviderProfile = new PersonSearchController.ProviderProfile()
+                ProviderProfile = new ProviderProfile()
                 {
                     Name = "TEST PROVIDER"
                 }

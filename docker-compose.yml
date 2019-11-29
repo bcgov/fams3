@@ -127,8 +127,6 @@ services:
       HealthChecksUI:HealthChecks:0:Uri: http://search-api/health
       HealthChecksUI:HealthChecks:1:Name: Dynadpater
       HealthChecksUI:HealthChecks:1:Uri: http://dynadapter/health
-      HealthChecksUI:HealthChecks:2:Name: ICBC Adapter
-      HealthChecksUI:HealthChecks:2:Uri: http://adapter-icbc/health
       HealthChecksUI:HealthChecks:3:Name: Sample Adapter
       HealthChecksUI:HealthChecks:3:Uri: http://sample-adapter/health
     networks: 

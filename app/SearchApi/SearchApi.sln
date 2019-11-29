@@ -15,9 +15,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SearchAdapter.ICBC", "Searc
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SearchApi.Core", "SearchApi.Core\SearchApi.Core.csproj", "{6F4F4616-FE52-4DC8-A714-DE46B576EC6E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SearchApi.Core.Test", "SearchApi.Core.Test\SearchApi.Core.Test.csproj", "{F659BDC0-CD7C-447F-BC62-017C09401F73}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SearchApi.Core.Test", "SearchApi.Core.Test\SearchApi.Core.Test.csproj", "{F659BDC0-CD7C-447F-BC62-017C09401F73}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SearchAdapter.ICBC.Test", "SearchAdapter.ICBC.Test\SearchAdapter.ICBC.Test.csproj", "{D5FB680B-8F11-42A8-845C-B8A33033D588}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SearchAdapter.ICBC.Test", "SearchAdapter.ICBC.Test\SearchAdapter.ICBC.Test.csproj", "{D5FB680B-8F11-42A8-845C-B8A33033D588}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sample", "sample", "{B1BD0ABB-E9FC-4006-832C-C54D858160C5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SearchAdapter.Sample", "SearchAdapter.Sample\SearchAdapter.Sample.csproj", "{1451DA83-325B-4F9E-8E88-92B678AB2187}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,6 +53,10 @@ Global
 		{D5FB680B-8F11-42A8-845C-B8A33033D588}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D5FB680B-8F11-42A8-845C-B8A33033D588}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D5FB680B-8F11-42A8-845C-B8A33033D588}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1451DA83-325B-4F9E-8E88-92B678AB2187}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1451DA83-325B-4F9E-8E88-92B678AB2187}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1451DA83-325B-4F9E-8E88-92B678AB2187}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1451DA83-325B-4F9E-8E88-92B678AB2187}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -60,6 +68,7 @@ Global
 		{6F4F4616-FE52-4DC8-A714-DE46B576EC6E} = {B95A3792-2D10-4413-9E36-A4724231C3C7}
 		{F659BDC0-CD7C-447F-BC62-017C09401F73} = {93BFFE80-5160-4C9C-95DD-FF4F8AFFC10A}
 		{D5FB680B-8F11-42A8-845C-B8A33033D588} = {93BFFE80-5160-4C9C-95DD-FF4F8AFFC10A}
+		{1451DA83-325B-4F9E-8E88-92B678AB2187} = {B1BD0ABB-E9FC-4006-832C-C54D858160C5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EBAF0841-1352-4312-9DA4-74AC4AD9CE04}

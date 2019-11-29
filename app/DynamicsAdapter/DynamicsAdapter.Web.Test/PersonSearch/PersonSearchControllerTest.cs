@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
 using DynamicsAdapter.Web.PersonSearch;
 using DynamicsAdapter.Web.PersonSearch.Models;
 using Fams3Adapter.Dynamics.Identifier;
@@ -25,8 +26,10 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         private Mock<ILogger<PersonSearchController>> _loggerMock ;
         private Mock<ISearchRequestService> _searchRequestServiceMock;
         private Mock<ISearchApiRequestService> _searchApiRequestServiceMock;
-        PersonCompletedEvent fakePersonCompletedEvent;
-        PersonAcceptedEvent fakePersonAcceptedEvent;
+        PersonSearchCompleted fakePersonCompletedEvent;
+        PersonSearchAccepted fakePersonAcceptedEvent;
+        SSG_SearchApiEvent fakeSearchApiEvent;
+        private Mock<IMapper> _mapper;
 
         [SetUp]
         public void Init()
@@ -37,11 +40,13 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _loggerMock = new Mock<ILogger<PersonSearchController>>();
             _searchApiRequestServiceMock = new Mock<ISearchApiRequestService>();
             _searchRequestServiceMock = new Mock<ISearchRequestService>();
-
+            _mapper = new Mock<IMapper>();
             var validRequestId = Guid.NewGuid();
             var invalidRequestId = Guid.NewGuid();
 
-            fakePersonAcceptedEvent = new PersonAcceptedEvent()
+            fakeSearchApiEvent = new SSG_SearchApiEvent { };
+
+            fakePersonAcceptedEvent = new PersonSearchAccepted()
             {
                 SearchRequestId = Guid.NewGuid(),
                 TimeStamp = DateTime.Now,
@@ -51,7 +56,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 }
             };
 
-            fakePersonCompletedEvent = new PersonCompletedEvent()
+            fakePersonCompletedEvent = new PersonSearchCompleted()
             {
                 SearchRequestId = Guid.NewGuid(),
                 TimeStamp = DateTime.Now,
@@ -76,6 +81,18 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
 
                 }
             };
+
+            _mapper.Setup(m => m.Map<SSG_SearchApiEvent>(It.IsAny<PersonSearchAccepted>()))
+                                .Returns(fakeSearchApiEvent);
+
+            _mapper.Setup(m => m.Map<SSG_SearchApiEvent>(It.IsAny<PersonSearchRejected>()))
+                               .Returns(fakeSearchApiEvent);
+
+            _mapper.Setup(m => m.Map<SSG_SearchApiEvent>(It.IsAny<PersonSearchFailed>()))
+                               .Returns(fakeSearchApiEvent);
+
+            _mapper.Setup(m => m.Map<SSG_SearchApiEvent>(It.IsAny<PersonSearchCompleted>()))
+                               .Returns(fakeSearchApiEvent);
 
             _searchApiRequestServiceMock.Setup(x => x.GetLinkedSearchRequestIdAsync(It.Is<Guid>(x => x == _testGuid), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<Guid>(_testGuid));
@@ -105,7 +122,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                     It.IsAny<SSG_SearchApiEvent>(), It.IsAny<CancellationToken>()))
                 .Throws(new Exception("random exception"));
 
-            _sut = new PersonSearchController(_searchRequestServiceMock.Object, _searchApiRequestServiceMock.Object, _loggerMock.Object);
+            _sut = new PersonSearchController(_searchRequestServiceMock.Object, _searchApiRequestServiceMock.Object, _loggerMock.Object,_mapper.Object);
 
         }
 

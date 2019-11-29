@@ -5,11 +5,9 @@ using System.Threading.Tasks;
 
 namespace DynamicsAdapter.Web.PersonSearch.Models
 {
-    public class PersonCompletedEvent
+    public class PersonSearchCompleted : PersonSearchStatus
     {
-        public Guid SearchRequestId { get; set; }
-        public DateTime TimeStamp { get; set; }
-        public ProviderProfile ProviderProfile { get; set; }
+
         public Person Person { get; set; }
 
         public IEnumerable<PersonId> PersonIds { get; set; }

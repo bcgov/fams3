@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
 using DynamicsAdapter.Web.PersonSearch.Models;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.SearchApiEvent;
@@ -25,13 +26,15 @@ namespace DynamicsAdapter.Web.PersonSearch
         private readonly ILogger<PersonSearchController> _logger;
         private readonly ISearchRequestService _searchRequestService;
         private readonly ISearchApiRequestService _searchApiRequestService;
+        private readonly IMapper _mapper;
 
         public PersonSearchController(ISearchRequestService searchRequestService,
-            ISearchApiRequestService searchApiRequestService, ILogger<PersonSearchController> logger)
+            ISearchApiRequestService searchApiRequestService, ILogger<PersonSearchController> logger,  IMapper mapper)
         {
             _searchRequestService = searchRequestService;
             _searchApiRequestService = searchApiRequestService;
             _logger = logger;
+            _mapper = mapper;
         }
 
         //POST: Completed/id
@@ -41,23 +44,16 @@ namespace DynamicsAdapter.Web.PersonSearch
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Route("Completed/{id}")]
-        public async Task<IActionResult> Completed(Guid id, [FromBody]PersonCompletedEvent personCompletedEvent)
+        public async Task<IActionResult> Completed(Guid id, [FromBody]PersonSearchCompleted personCompletedEvent)
         {
             _logger.LogInformation("Received Persone search completed event with SearchRequestId is " + id);
             var cts = new CancellationTokenSource();
 
             try
             {
-                //update event to dynamic search api
-                var searchApiEvent = new SSG_SearchApiEvent()
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "PersonSearchCompleted",
-                    Message = "PersonSearch Completed",
-                    ProviderName = personCompletedEvent.ProviderProfile?.Name,
-                    TimeStamp = personCompletedEvent.TimeStamp,
-                    Type = "Completed"
-                };
+                
+                var searchApiEvent = _mapper.Map<SSG_SearchApiEvent>(personCompletedEvent);
+
                 _logger.LogDebug($"Attempting to create a new event for SearchApiRequest [{id}]");
                 var result = await _searchApiRequestService.AddEventAsync(id, searchApiEvent, cts.Token);
                  _logger.LogInformation($"Successfully created new event for SearchApiRequest [{id}]");
@@ -65,7 +61,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                 //upload search result to dynamic search api
                 var personIds = personCompletedEvent.PersonIds;
                 var searchApiRequestId = await _searchApiRequestService.GetLinkedSearchRequestIdAsync(id, cts.Token);
-
+                //TODO: Replace this with automapper
                 foreach (var matchFoundPersonId in personIds)
                 {
                     //TODO: replaced with data from payload
@@ -108,7 +104,7 @@ namespace DynamicsAdapter.Web.PersonSearch
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Route("Accepted/{id}")]
-        public async Task<IActionResult> Accepted(Guid id, [FromBody]PersonAcceptedEvent personAcceptedEvent)
+        public async Task<IActionResult> Accepted(Guid id, [FromBody]PersonSearchAccepted personAcceptedEvent)
         {
 
             _logger.LogInformation($"Received new event for SearchApiRequest [{id}]");
@@ -117,15 +113,9 @@ namespace DynamicsAdapter.Web.PersonSearch
 
             try
             {
-                var searchApiEvent = new SSG_SearchApiEvent()
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "PersonSearchAccepted",
-                    Message = "PersonSearch Accepted",
-                    ProviderName = personAcceptedEvent.ProviderProfile?.Name,
-                    TimeStamp = personAcceptedEvent.TimeStamp,
-                    Type = "Accepted"
-                };
+           
+
+                var searchApiEvent = _mapper.Map<SSG_SearchApiEvent>(personAcceptedEvent);
                 _logger.LogDebug($"Attempting to create a new event for SearchApiRequest [{id}]");
                 var result = await _searchApiRequestService.AddEventAsync(id, searchApiEvent, token.Token);
                 _logger.LogInformation($"Successfully created new event for SearchApiRequest [{id}]");

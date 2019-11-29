@@ -78,8 +78,6 @@ pipeline {
       echo "Initiating SampleAdapter build..."
       sh "oc process -f openshift/templates/sample-adapter.bc.yaml \
          -p NAME=${ICBC_ADAPTER} \
-         -p DOTNET_BUILD_IMAGE_STREAM_TAG=dotnet:2.2 \
-         -p DOTNET_RUNTIME_IMAGE_STREAM_TAG=dotnet-runtime:2.2 \
          -p SOURCE_REPOSITORY_URL=${GIT_URI} \
          -p SOURCE_REPOSITORY_REF=${GIT_REF} \
          -p DOTNET_STARTUP_PROJECT=app/SearchApi/SearchAdapter.ICBC/SearchAdapter.ICBC.csproj \

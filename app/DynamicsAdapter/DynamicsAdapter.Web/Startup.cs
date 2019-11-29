@@ -70,17 +70,20 @@ namespace DynamicsAdapter.Web
      
         }
 
-        private void ConfigureAutoMapper(IServiceCollection services)
+        //private void ConfigureAutoMapper(IServiceCollection services)
+        //{
+        //    var configuration = new MapperConfiguration(cfg =>
+        //    {
+        //        cfg.AddProfile<SearchRequestAutoMapperProfile>();                
+        //    });
+        //    // only during development, validate your mappings; remove it before release
+        //    configuration.AssertConfigurationIsValid();
+        //    services.AddSingleton(configuration.CreateMapper());
+        //}
+        public void ConfigureAutoMapper(IServiceCollection services)
         {
-            var configuration = new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile<SearchRequestAutoMapperProfile>();                
-            });
-            // only during development, validate your mappings; remove it before release
-            configuration.AssertConfigurationIsValid();
-            services.AddSingleton(configuration.CreateMapper());
+            services.AddAutoMapper(System.Reflection.Assembly.GetExecutingAssembly());
         }
-
         /// <summary>
         /// Configures the searchApi http client
         /// </summary>
@@ -223,7 +226,7 @@ namespace DynamicsAdapter.Web
                     Predicate = _ => true,
                     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
                 });
-                endpoints.MapControllerRoute("matchFound", "{controller=MatchFound}/{action=MatchFound}/{id?}");
+    
             });
         }
     }

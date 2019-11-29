@@ -14,11 +14,6 @@ using Microsoft.Extensions.Logging;
 
 namespace DynamicsAdapter.Web.PersonSearch
 {
-
-   
-
-
-
     [Route("[controller]")]
     [ApiController]
     public class PersonSearchController : ControllerBase
@@ -51,15 +46,14 @@ namespace DynamicsAdapter.Web.PersonSearch
 
             try
             {
-                
+                //update completed event
                 var searchApiEvent = _mapper.Map<SSG_SearchApiEvent>(personCompletedEvent);
-
                 _logger.LogDebug($"Attempting to create a new event for SearchApiRequest [{id}]");
                 var result = await _searchApiRequestService.AddEventAsync(id, searchApiEvent, cts.Token);
                  _logger.LogInformation($"Successfully created completed event for SearchApiRequest [{id}]");
 
                 //upload search result to dynamic search api
-                var personIds = personCompletedEvent.PersonIds;
+                var personIds = personCompletedEvent.Person.Identifiers;
                 var searchApiRequestId = await _searchApiRequestService.GetLinkedSearchRequestIdAsync(id, cts.Token);
                 //TODO: Replace this with automapper
                 foreach (var matchFoundPersonId in personIds)
@@ -67,7 +61,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                     //TODO: replaced with data from payload
                     var toBeReplaced = new SSG_Identifier()
                     {
-                        Identification = matchFoundPersonId.Number,
+                        Identification = matchFoundPersonId.SerialNumber,
                         IdentificationEffectiveDate = new DateTime(2014, 1, 1),
                         IdentifierType = IdentificationType.DriverLicense.Value,
                         IssuedBy = "SampleAdapter",
@@ -138,8 +132,6 @@ namespace DynamicsAdapter.Web.PersonSearch
 
             try
             {
-
-
                 var searchApiEvent = _mapper.Map<SSG_SearchApiEvent>(personFailedEvent);
                 _logger.LogDebug($"Attempting to create a new event for SearchApiRequest [{id}]");
                 var result = await _searchApiRequestService.AddEventAsync(id, searchApiEvent, token.Token);

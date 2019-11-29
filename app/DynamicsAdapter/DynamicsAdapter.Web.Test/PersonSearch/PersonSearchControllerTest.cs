@@ -68,21 +68,20 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 {
                     Name = "TEST PROVIDER"
                 },
-                PersonIds = new List<PersonId>()
-                        {
-                            new PersonId()
-                            {
-                                Issuer = "test",
-                                Number = "test",
-                                Kind = PersonIDKind.DriverLicense
-                            }
-                        },
                 Person = new Person()
                 {
                     DateOfBirth = DateTime.Now,
                     FirstName = "TEST1",
-                    LastName = "TEST2"
-
+                    LastName = "TEST2",
+                    Identifiers = new List<PersonalIdentifier>()
+                        {
+                            new PersonalIdentifier()
+                            {
+                               SerialNumber  = "test",
+                               IssuedBy = "test",
+                               Type = PersonalIdentifierType.DriverLicense
+                            }
+                        }
                 }
             };
 

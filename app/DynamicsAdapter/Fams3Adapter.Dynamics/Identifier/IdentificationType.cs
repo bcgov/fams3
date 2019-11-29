@@ -7,7 +7,7 @@ namespace Fams3Adapter.Dynamics.Identifier
 
         public static IdentificationType DriverLicense = new IdentificationType(867670000, 0, "Driver's License");
         public static IdentificationType SocialInsuranceNumber = new IdentificationType(867670006, 1, "Social Insurance Number");
-        public static IdentificationType PersonalHealthNumber = new IdentificationType(867670001, 2,  "Personal Health Number");
+        public static IdentificationType PersonalHealthNumber = new IdentificationType(867670001, 2, "Personal Health Number");
         public static IdentificationType BirthCertificate = new IdentificationType(867670008, 3, "Birth Certificate");
         public static IdentificationType CorrectionsId = new IdentificationType(867670009, 4, "Corrections ID");
         public static IdentificationType NativeStatusCard = new IdentificationType(867670011, 5, "Native Status Card");
@@ -27,4 +27,5 @@ namespace Fams3Adapter.Dynamics.Identifier
 
 
     }
+
 }

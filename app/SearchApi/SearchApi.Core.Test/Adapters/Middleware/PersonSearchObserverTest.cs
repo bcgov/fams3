@@ -12,8 +12,7 @@ using OpenTracing.Mock;
 using SearchApi.Core.Adapters.Configuration;
 using SearchApi.Core.Adapters.Contracts;
 using SearchApi.Core.Adapters.Middleware;
-using SearchApi.Core.Adapters.Models.Contracts;
-using SearchApi.Core.Contracts;
+using SearchApi.Core.Person.Contracts;
 
 namespace SearchAdapter.ICBC.Test.Adapters.Middleware
 {

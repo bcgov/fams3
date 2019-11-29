@@ -5,8 +5,7 @@ using FluentValidation;
 using FluentValidation.TestHelper;
 using NUnit.Framework;
 using SearchAdapter.ICBC.SearchRequest;
-using SearchApi.Core.Adapters.Models.Contracts;
-using SearchApi.Core.Contracts;
+using SearchApi.Core.Person.Contracts;
 
 namespace SearchAdapter.ICBC.Test.SearchRequest
 {

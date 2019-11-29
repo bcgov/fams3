@@ -1,4 +1,4 @@
-﻿namespace SearchApi.Core.Contracts
+﻿namespace SearchApi.Core.Person.Contracts
 {
 
     public enum PersonIDKind

@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 using SearchAdapter.ICBC.SearchRequest.MatchFound;
-using SearchApi.Core.Contracts;
+using SearchApi.Core.Person.Contracts;
 
 namespace SearchAdapter.ICBC.Test.SearchRequest.MatchFound
 {

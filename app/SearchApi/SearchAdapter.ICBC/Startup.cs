@@ -23,9 +23,9 @@ using SearchApi.Core.Adapters.Configuration;
 using SearchApi.Core.Adapters.Contracts;
 using SearchApi.Core.Adapters.Middleware;
 using SearchApi.Core.Configuration;
-using SearchApi.Core.Contracts;
 using SearchApi.Core.MassTransit;
 using SearchApi.Core.OpenTracing;
+using SearchApi.Core.Person.Contracts;
 
 namespace SearchAdapter.ICBC
 {

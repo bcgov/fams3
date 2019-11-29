@@ -56,7 +56,7 @@ namespace DynamicsAdapter.Web.PersonSearch
 
                 _logger.LogDebug($"Attempting to create a new event for SearchApiRequest [{id}]");
                 var result = await _searchApiRequestService.AddEventAsync(id, searchApiEvent, cts.Token);
-                 _logger.LogInformation($"Successfully created new event for SearchApiRequest [{id}]");
+                 _logger.LogInformation($"Successfully created completed event for SearchApiRequest [{id}]");
 
                 //upload search result to dynamic search api
                 var personIds = personCompletedEvent.PersonIds;
@@ -118,7 +118,38 @@ namespace DynamicsAdapter.Web.PersonSearch
                 var searchApiEvent = _mapper.Map<SSG_SearchApiEvent>(personAcceptedEvent);
                 _logger.LogDebug($"Attempting to create a new event for SearchApiRequest [{id}]");
                 var result = await _searchApiRequestService.AddEventAsync(id, searchApiEvent, token.Token);
-                _logger.LogInformation($"Successfully created new event for SearchApiRequest [{id}]");
+                _logger.LogInformation($"Successfully created accepted event for SearchApiRequest [{id}]");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest();
+            }
+
+            return Ok();
+        }
+
+        [HttpPost]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Route("Failed/{id}")]
+        public async Task<IActionResult> Failed(Guid id, [FromBody]PersonSearchFailed personFailedEvent)
+        {
+
+            _logger.LogInformation($"Received new event for SearchApiRequest [{id}]");
+
+            var token = new CancellationTokenSource();
+
+            try
+            {
+
+
+                var searchApiEvent = _mapper.Map<SSG_SearchApiEvent>(personFailedEvent);
+                _logger.LogDebug($"Attempting to create a new event for SearchApiRequest [{id}]");
+                var result = await _searchApiRequestService.AddEventAsync(id, searchApiEvent, token.Token);
+                _logger.LogInformation($"Successfully created failed event for SearchApiRequest [{id}]");
             }
             catch (Exception ex)
             {

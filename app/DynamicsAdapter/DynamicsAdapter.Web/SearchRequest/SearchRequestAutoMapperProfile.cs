@@ -37,7 +37,7 @@ namespace DynamicsAdapter.Web.SearchRequest
               .ForMember(dest => dest.ProviderName, opt => opt.MapFrom(src => src.ProviderProfile.Name))
               .ForMember(dest => dest.TimeStamp, opt => opt.MapFrom(src => src.TimeStamp))
               .ForMember(dest => dest.EventType, opt => opt.MapFrom(src =>"Accepted"))
-               .ForMember(dest => dest.Name, opt => opt.MapFrom(src => "Person Search Status"))
+               .ForMember(dest => dest.Name, opt => opt.MapFrom(src => Keys.SEARCH_API_EVENT_NAME))
               .ForMember(dest => dest.Message, opt => opt.MapFrom(src => "Search requested accepted by provider"))
               .ReverseMap();
 
@@ -45,7 +45,7 @@ namespace DynamicsAdapter.Web.SearchRequest
               .ForMember(dest => dest.Id, opt => opt.MapFrom(src => Guid.NewGuid()))
               .ForMember(dest => dest.ProviderName, opt => opt.MapFrom(src => src.ProviderProfile.Name))
               .ForMember(dest => dest.TimeStamp, opt => opt.MapFrom(src => src.TimeStamp))
-               .ForMember(dest => dest.Name, opt => opt.MapFrom(src => "Person Search Status"))
+               .ForMember(dest => dest.Name, opt => opt.MapFrom(src => Keys.SEARCH_API_EVENT_NAME))
               .ForMember(dest => dest.EventType, opt => opt.MapFrom(src => "Rejected"))
               .ForMember(dest => dest.Message, opt => opt.MapFrom(src => "Search requested rejected by provider. Reasons: " + string.Join(", ", src.Reasons.Select(x => $"{x.PropertyName} : {x.ErrorMessage}"))))
               .ReverseMap();
@@ -54,10 +54,19 @@ namespace DynamicsAdapter.Web.SearchRequest
              .ForMember(dest => dest.Id, opt => opt.MapFrom(src => Guid.NewGuid()))
              .ForMember(dest => dest.ProviderName, opt => opt.MapFrom(src => src.ProviderProfile.Name))
              .ForMember(dest => dest.TimeStamp, opt => opt.MapFrom(src => src.TimeStamp))
-              .ForMember(dest => dest.Name, opt => opt.MapFrom(src => "Person Search Status"))
+              .ForMember(dest => dest.Name, opt => opt.MapFrom(src => Keys.SEARCH_API_EVENT_NAME))
              .ForMember(dest => dest.EventType, opt => opt.MapFrom(src => "Failed"))
-             .ForMember(dest => dest.Message, opt => opt.MapFrom(src => "Search requested failed. Reason: " + src.Cause.Message))
+             .ForMember(dest => dest.Message, opt => opt.MapFrom(src => "Search requested failed. Reason: " + src.Cause))
              .ReverseMap();
+
+            CreateMap<PersonSearchCompleted, SSG_SearchApiEvent>()
+           .ForMember(dest => dest.Id, opt => opt.MapFrom(src => Guid.NewGuid()))
+           .ForMember(dest => dest.ProviderName, opt => opt.MapFrom(src => src.ProviderProfile.Name))
+           .ForMember(dest => dest.TimeStamp, opt => opt.MapFrom(src => src.TimeStamp))
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => Keys.SEARCH_API_EVENT_NAME))
+           .ForMember(dest => dest.EventType, opt => opt.MapFrom(src => "Completed"))
+           .ForMember(dest => dest.Message, opt => opt.MapFrom(src => "Search requested completed"))
+           .ReverseMap();
         }
     }
 

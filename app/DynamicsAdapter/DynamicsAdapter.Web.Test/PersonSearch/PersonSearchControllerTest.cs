@@ -28,7 +28,9 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         private Mock<ISearchApiRequestService> _searchApiRequestServiceMock;
         PersonSearchCompleted fakePersonCompletedEvent;
         PersonSearchAccepted fakePersonAcceptedEvent;
+        PersonSearchFailed fakePersonFailedEvent;
         SSG_SearchApiEvent fakeSearchApiEvent;
+
         private Mock<IMapper> _mapper;
 
         [SetUp]
@@ -80,6 +82,17 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                     LastName = "TEST2"
 
                 }
+            };
+
+            fakePersonFailedEvent = new PersonSearchFailed()
+            {
+                SearchRequestId = Guid.NewGuid(),
+                TimeStamp = DateTime.Now,
+                ProviderProfile = new ProviderProfile()
+                {
+                    Name = "TEST PROVIDER"
+                },
+                Cause = "Unable to proceed"
             };
 
             _mapper.Setup(m => m.Map<SSG_SearchApiEvent>(It.IsAny<PersonSearchAccepted>()))
@@ -161,6 +174,27 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         public async Task With_exception_event_it_should_return_badrequest()
         {
             var result = await _sut.Accepted(_exceptionGuid, null);
+            Assert.IsInstanceOf(typeof(BadRequestResult), result);
+        }
+
+
+        [Test]
+        public async Task With_valid_failed_event_it_should_return_ok()
+        {
+            var result = await _sut.Failed(_testGuid, fakePersonFailedEvent);
+
+
+            _searchApiRequestServiceMock
+                .Verify(x => x.AddEventAsync(It.Is<Guid>(x => x == _testGuid), It.IsAny<SSG_SearchApiEvent>(), It.IsAny<CancellationToken>()), Times.Once);
+
+            Assert.IsInstanceOf(typeof(OkResult), result);
+        }
+
+
+        [Test]
+        public async Task With_exception_failed_event_it_should_return_badrequest()
+        {
+            var result = await _sut.Failed(_exceptionGuid, null);
             Assert.IsInstanceOf(typeof(BadRequestResult), result);
         }
 

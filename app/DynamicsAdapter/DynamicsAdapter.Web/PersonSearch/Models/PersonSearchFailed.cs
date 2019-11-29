@@ -7,6 +7,6 @@ namespace DynamicsAdapter.Web.PersonSearch.Models
 {
     public class PersonSearchFailed : PersonSearchStatus
     {
-        public Exception Cause { get; }
+        public string Cause { get; set; }
     }
 }

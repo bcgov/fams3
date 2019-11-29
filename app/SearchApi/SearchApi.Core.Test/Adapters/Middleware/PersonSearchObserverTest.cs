@@ -12,8 +12,7 @@ using OpenTracing.Mock;
 using SearchApi.Core.Adapters.Configuration;
 using SearchApi.Core.Adapters.Contracts;
 using SearchApi.Core.Adapters.Middleware;
-using SearchApi.Core.Adapters.Models.Contracts;
-using SearchApi.Core.Contracts;
+using SearchApi.Core.Person.Contracts;
 
 namespace SearchAdapter.ICBC.Test.Adapters.Middleware
 {
@@ -29,10 +28,10 @@ namespace SearchAdapter.ICBC.Test.Adapters.Middleware
         {
             public Guid SearchRequestId { get; set; }
             public DateTime TimeStamp { get; set; }
-            public ExecuteSearch ExecuteSearch { get; set; }
+            public Person Person { get; set; }
         }
 
-        public class ExecuteSearchTest : ExecuteSearch
+        public class FakePerson : Person
         {
             public string FirstName { get; set; }
             public string LastName { get; set; }
@@ -63,7 +62,7 @@ namespace SearchAdapter.ICBC.Test.Adapters.Middleware
             {
                 SearchRequestId = Guid.NewGuid(),
                 TimeStamp = DateTime.Now,
-                ExecuteSearch = new ExecuteSearchTest()
+                Person = new FakePerson()
                 {
                     FirstName = "",
                     LastName = "lastName",

@@ -21,7 +21,6 @@ using OpenTracing;
 using OpenTracing.Util;
 using SearchApi.Core.Adapters.Contracts;
 using SearchApi.Core.Configuration;
-using SearchApi.Core.Contracts;
 using SearchApi.Core.MassTransit;
 using SearchApi.Core.OpenTracing;
 using SearchApi.Web.Configuration;

@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SearchApi.Core.Contracts;
+using SearchApi.Core.Person.Contracts;
+using SearchApi.Core.Person.Enums;
 
 namespace SearchAdapter.ICBC.SearchRequest.MatchFound
 {
@@ -10,6 +11,7 @@ namespace SearchAdapter.ICBC.SearchRequest.MatchFound
     {
         private readonly IcbcPerson _icbcPerson = new IcbcPerson();
 
+        private List<PersonalIdentifier> personalIdentifiers = new List<PersonalIdentifier>();
         public IcbcPersonBuilder WithFirstName(string firstName)
         {
             _icbcPerson.FirstName = firstName;
@@ -29,11 +31,17 @@ namespace SearchAdapter.ICBC.SearchRequest.MatchFound
             return this;
         }
 
-        public IcbcPerson Build()
+        public IcbcPersonBuilder AddIdentifier(PersonalIdentifier personalIdentifier)
         {
-            return _icbcPerson;
+            personalIdentifiers.Add(personalIdentifier);
+            return this;
         }
 
+        public IcbcPerson Build()
+        {
+            _icbcPerson.Identifiers = personalIdentifiers;
+            return _icbcPerson;
+        }
     }
 
 
@@ -41,6 +49,17 @@ namespace SearchAdapter.ICBC.SearchRequest.MatchFound
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public DateTime DateOfBirth { get; set; }
+        public DateTime? DateOfBirth { get; set; }
+        public IEnumerable<PersonalIdentifier> Identifiers { get; set; }
+    }
+
+
+    public sealed class ICBCIdentifier : PersonalIdentifier
+    {
+        public string SerialNumber { get; set; }
+        public DateTime? EffectiveDate { get; set; }
+        public DateTime? ExpirationDate { get; set; }
+        public PersonalIdentifierType Type { get; set; }
+        public string IssuedBy { get; set; }
     }
 }

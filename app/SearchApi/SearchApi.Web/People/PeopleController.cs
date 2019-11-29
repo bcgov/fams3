@@ -10,8 +10,7 @@ using NSwag;
 using NSwag.Annotations;
 using OpenTracing;
 using SearchApi.Core.Adapters.Contracts;
-using SearchApi.Core.Adapters.Models.Contracts;
-using SearchApi.Core.Contracts;
+using SearchApi.Core.Person.Contracts;
 
 namespace SearchApi.Web.Controllers
 {
@@ -59,14 +58,14 @@ namespace SearchApi.Web.Controllers
 
             _tracer.ActiveSpan.SetTag("searchRequestId", $"{searchRequestId}");
 
-            _logger.LogDebug($"Attempting to send {nameof(ExecuteSearch)} to destination queue.");
+            _logger.LogDebug($"Attempting to publish ${nameof(PersonSearchOrdered)} to destination queue.");
 
             await _busControl.Publish<PersonSearchOrdered>(new PersonSearchOrderEvent(searchRequestId)
             {
-                ExecuteSearch = personSearchRequest
+                Person = personSearchRequest
             });
 
-            _logger.LogInformation($"Successfully sent {nameof(ExecuteSearch)} to destination queue.");
+            _logger.LogInformation($"Successfully published ${nameof(PersonSearchOrdered)} to destination queue.");
 
             return Accepted(new PersonSearchResponse(searchRequestId));
         }
@@ -82,10 +81,10 @@ namespace SearchApi.Web.Controllers
 
             public Guid SearchRequestId { get; }
             public DateTime TimeStamp { get; }
-            public ExecuteSearch ExecuteSearch { get; set; }
+            public Person Person { get; set; }
         }
 
-        public class ExecuteSearchCommand : ExecuteSearch
+        public class ExecuteSearchCommand : Person
         {
             public string FirstName { get; set; }
             public string LastName { get; set; }

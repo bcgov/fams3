@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using SearchApi.Core.Adapters.Models.Contracts;
 
-namespace SearchApi.Core.Contracts
+namespace SearchApi.Core.Person.Contracts
 {
-    public interface ExecuteSearch
+    public interface Person
     {
         string FirstName { get; }
         string LastName { get; }
         DateTime? DateOfBirth { get; }
-
         IEnumerable<PersonalIdentifier> Identifiers { get; }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using SearchApi.Core.Person.Contracts;
 
-namespace SearchAdapter.ICBC.SearchRequest
+namespace SearchAdapter.Sample.SearchRequest
 {
     /// <summary>
     /// Validates a person search

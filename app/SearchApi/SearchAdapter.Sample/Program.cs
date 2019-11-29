@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace SearchAdapter.ICBC
+namespace SearchAdapter.Sample
 {
     public class Program
     {

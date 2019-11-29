@@ -1,22 +1,21 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.Xml;
 using System.Threading.Tasks;
 using FluentValidation;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using SearchAdapter.ICBC.SearchRequest.MatchFound;
 using SearchApi.Core.Adapters.Configuration;
 using SearchApi.Core.Adapters.Contracts;
 using SearchApi.Core.Adapters.Models;
 using SearchApi.Core.Person.Contracts;
 using SearchApi.Core.Person.Enums;
 
-namespace SearchAdapter.ICBC.SearchRequest
+namespace SearchAdapter.Sample.SearchRequest
 {
     /// <summary>
-    /// The SearchRequestConsumer consumes ICBC execute search commands, execute the search a publish a response back to the searchApi
+    /// The SearchRequestConsumer consumes search ordered events, execute the search a publish a response back to the searchApi
     /// </summary>
     public class SearchRequestConsumer : IConsumer<PersonSearchOrdered>
     {
@@ -40,11 +39,11 @@ namespace SearchAdapter.ICBC.SearchRequest
         {
             _logger.LogInformation($"Successfully handling new search request [{context.Message.Person}]");
 
-            _logger.LogWarning("Currently under development, ICBC Adapter is generating FAKE results.");
+            _logger.LogWarning("Sample Adapter, do not use in PRODUCTION.");
 
             if (await ValidatePersonSearch(context))
             {
-                await context.Publish<PersonSearchCompleted>(BuildFakeResult(context.Message));
+                await context.Publish<PersonSearchCompleted>(BuildFakePersonSearchCompleted(context.Message));
             }
         }
 
@@ -77,24 +76,32 @@ namespace SearchAdapter.ICBC.SearchRequest
 
         }
 
-        public PersonSearchCompleted BuildFakeResult(PersonSearchOrdered personSearchOrdered)
+        public PersonSearchCompleted BuildFakePersonSearchCompleted(PersonSearchOrdered personSearchOrdered)
         {
 
-            var person = new IcbcPersonBuilder()
-                .WithFirstName(personSearchOrdered.Person.FirstName)
-                .WithLastName(personSearchOrdered.Person.LastName)
-                .WithDateOfBirth(personSearchOrdered.Person.DateOfBirth)
-                .AddIdentifier(new ICBCIdentifier()
+            return new PersonSearchCompletedSample()
+            {
+                ProviderProfile = _profile,
+                SearchRequestId = personSearchOrdered.SearchRequestId,
+                TimeStamp = DateTime.Now,
+                MatchedPerson = new PersonSample()
                 {
-                    Type = PersonalIdentifierType.DriverLicense,
-                    EffectiveDate = DateTime.Now.AddDays(-365),
-                    ExpirationDate = DateTime.Now.AddDays(365),
-                    IssuedBy = "British Columbia",
-                    SerialNumber = new Random().Next(0, 50000).ToString()
-                })
-                .Build();
-
-            return new IcbcMatchFoundBuilder(personSearchOrdered.SearchRequestId).WithPerson(person).Build();
+                    FirstName = personSearchOrdered.Person.FirstName,
+                    LastName = personSearchOrdered.Person.LastName,
+                    DateOfBirth = personSearchOrdered.Person.DateOfBirth,
+                    Identifiers = new List<PersonalIdentifierSample>()
+                    {
+                        new PersonalIdentifierSample()
+                        {
+                            Type = PersonalIdentifierType.DriverLicense,
+                            EffectiveDate = DateTime.Now.AddDays(-365),
+                            ExpirationDate = DateTime.Now.AddDays(365),
+                            IssuedBy = "British Columbia",
+                            SerialNumber = new Random().Next(0, 50000).ToString()
+                        }
+                    }
+                }
+            };
 
         }
 

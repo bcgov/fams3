@@ -1,12 +1,9 @@
 using System;
-using System.Diagnostics;
 using FluentValidation;
-using GreenPipes;
 using HealthChecks.UI.Client;
 using Jaeger;
 using Jaeger.Samplers;
 using MassTransit;
-using MassTransit.PipeConfigurators;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
@@ -15,10 +12,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using OpenTracing;
 using OpenTracing.Util;
-using SearchAdapter.ICBC.SearchRequest;
+using SearchAdapter.Sample.SearchRequest;
 using SearchApi.Core.Adapters.Configuration;
 using SearchApi.Core.Adapters.Contracts;
 using SearchApi.Core.Adapters.Middleware;
@@ -27,7 +23,7 @@ using SearchApi.Core.MassTransit;
 using SearchApi.Core.OpenTracing;
 using SearchApi.Core.Person.Contracts;
 
-namespace SearchAdapter.ICBC
+namespace SearchAdapter.Sample
 {
     public class Startup
     {

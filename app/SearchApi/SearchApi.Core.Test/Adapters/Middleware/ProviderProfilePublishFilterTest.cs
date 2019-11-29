@@ -1,13 +1,12 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using MassTransit;
 using MassTransit.Testing;
 using NUnit.Framework;
 using SearchApi.Core.Adapters.Configuration;
 using SearchApi.Core.Adapters.Contracts;
 using SearchApi.Core.Adapters.Middleware;
 
-namespace SearchAdapter.ICBC.Test.Adapters.Middleware
+namespace SearchApi.Core.Test.Adapters.Middleware
 {
     public class ProviderProfilePublishFilterTest
     {

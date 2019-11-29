@@ -80,7 +80,7 @@ pipeline {
          -p NAME=${SAMPLE_ADAPTER} \
          -p SOURCE_REPOSITORY_URL=${GIT_URI} \
          -p SOURCE_REPOSITORY_REF=${GIT_REF} \
-         -p DOTNET_STARTUP_PROJECT=app/SearchApi/SearchAdapter.ICBC/SearchAdapter.ICBC.csproj \
+         -p DOTNET_STARTUP_PROJECT=app/SearchApi/SearchAdapter.Sample/SearchAdapter.Sample.csproj \
          -p MEMORY_LIMIT=${BUILD_MEMORY} \
          -p NAMESPACE=${TOOLS_NAMESPACE} | oc apply -f - -n ${TOOLS_NAMESPACE}"
       StartBuildAndWait("${SAMPLE_ADAPTER}-build", TOOLS_NAMESPACE)

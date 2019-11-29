@@ -1,23 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using FluentValidation;
 using FluentValidation.Results;
-using MassTransit;
-using MassTransit.Context;
 using MassTransit.Testing;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using NUnit.Framework;
-using SearchAdapter.ICBC.SearchRequest;
+using SearchAdapter.Sample.SearchRequest;
 using SearchApi.Core.Adapters.Configuration;
 using SearchApi.Core.Adapters.Contracts;
 using SearchApi.Core.Person.Contracts;
 
-namespace SearchAdapter.ICBC.Test.SearchRequest
+namespace SearchAdapter.Sample.Test
 {
     public class SearchRequestHandlerTest
     {

@@ -8,7 +8,7 @@ def PROD_NAMESPACE = "frjeow-prod"
 
 def RABBITMQ = "rabbitmq"
 def SEARCH_API = "searchapi"
-def ICBC_ADAPTER = "icbcmock"
+def SAMPLE_ADAPTER = "sample-adapter"
 def DYNAMICS_ADAPTER = "dynadapter"
 def JAEGER = "jaeger"
 
@@ -77,14 +77,14 @@ pipeline {
      'ICBCAdapter': {
       echo "Initiating SampleAdapter build..."
       sh "oc process -f openshift/templates/sample-adapter.bc.yaml \
-         -p NAME=${ICBC_ADAPTER} \
+         -p NAME=${SAMPLE_ADAPTER} \
          -p SOURCE_REPOSITORY_URL=${GIT_URI} \
          -p SOURCE_REPOSITORY_REF=${GIT_REF} \
          -p DOTNET_STARTUP_PROJECT=app/SearchApi/SearchAdapter.ICBC/SearchAdapter.ICBC.csproj \
          -p MEMORY_LIMIT=${BUILD_MEMORY} \
          -p NAMESPACE=${TOOLS_NAMESPACE} | oc apply -f - -n ${TOOLS_NAMESPACE}"
-      StartBuildAndWait("${ICBC_ADAPTER}-build", TOOLS_NAMESPACE)
-      StartBuildAndWait("${ICBC_ADAPTER}-runtime", TOOLS_NAMESPACE)
+      StartBuildAndWait("${SAMPLE_ADAPTER}-build", TOOLS_NAMESPACE)
+      StartBuildAndWait("${SAMPLE_ADAPTER}-runtime", TOOLS_NAMESPACE)
      }
     )
    }
@@ -116,14 +116,14 @@ pipeline {
       // WaitForDeploy(DYNAMICS_ADAPTER, DEV_NAMESPACE)
       echo 'Done'
      },
-     'ICBCAdapter': {
+     'Sample Adapter': {
       sh "oc process -f openshift/templates/sample-adapter.dc.yaml \
-         -p NAME=${ICBC_ADAPTER} \
+         -p NAME=${SAMPLE_ADAPTER} \
          -p APPLICATION_DOMAIN=${SUBDOMAIN}-dev.${DOMAIN} \
          -p MEMORY_LIMIT=${RUN_MEMORY} \
          -p NAMESPACE=${TOOLS_NAMESPACE} \
          -p TAG=dev | oc apply -f - -n ${DEV_NAMESPACE}"
-      sh "oc tag ${ICBC_ADAPTER}:latest ${ICBC_ADAPTER}:dev -n ${TOOLS_NAMESPACE}"
+      sh "oc tag ${SAMPLE_ADAPTER}:latest ${SAMPLE_ADAPTER}:dev -n ${TOOLS_NAMESPACE}"
       // WaitForDeploy(ICBC_ADAPTER, DEV_NAMESPACE)
       echo 'Done'
 

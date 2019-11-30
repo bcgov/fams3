@@ -54,15 +54,13 @@ namespace DynamicsAdapter.Web.PersonSearch
 
                 //upload search result to dynamic search api
                 var personIds = personCompletedEvent.Person.Identifiers;
-                var searchApiRequestId = await _searchApiRequestService.GetLinkedSearchRequestIdAsync(id, cts.Token);
+                var searchRequestId = await _searchApiRequestService.GetLinkedSearchRequestIdAsync(id, cts.Token);
                 foreach (var matchFoundPersonId in personIds)
                 {
                     SSG_Identifier identifier = _mapper.Map<SSG_Identifier>(matchFoundPersonId);
-                    identifier.StateCode = 0;
-                    identifier.StatusCode = 1;
                     identifier.SSG_SearchRequest = new SSG_SearchRequest()
                     {
-                        SearchRequestId = searchApiRequestId
+                        SearchRequestId = searchRequestId
                     };
                     var identifer = await _searchRequestService.UploadIdentifier(identifier, cts.Token);
                 }

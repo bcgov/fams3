@@ -71,7 +71,9 @@ namespace DynamicsAdapter.Web.SearchRequest
                  .ForMember(dest => dest.IdentificationEffectiveDate, opt => opt.MapFrom(src => src.EffectiveDate))
                  .ForMember(dest => dest.IdentificationExpirationDate, opt => opt.MapFrom(src => src.ExpirationDate))
                  .ForMember(dest => dest.IdentifierType, opt => opt.ConvertUsing(new PersonalIdentifierTypeConverter(), src => src.Type))
-                 .ForMember(dest => dest.IssuedBy, opt => opt.MapFrom(src => src.IssuedBy));
+                 .ForMember(dest => dest.IssuedBy, opt => opt.MapFrom(src => src.IssuedBy))
+                 .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => 0))
+                 .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1));
         }
     }
 

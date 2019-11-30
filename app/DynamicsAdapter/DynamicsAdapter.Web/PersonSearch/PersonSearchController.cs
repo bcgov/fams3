@@ -55,25 +55,16 @@ namespace DynamicsAdapter.Web.PersonSearch
                 //upload search result to dynamic search api
                 var personIds = personCompletedEvent.Person.Identifiers;
                 var searchApiRequestId = await _searchApiRequestService.GetLinkedSearchRequestIdAsync(id, cts.Token);
-                //TODO: Replace this with automapper
                 foreach (var matchFoundPersonId in personIds)
                 {
-                    //TODO: replaced with data from payload
-                    var toBeReplaced = new SSG_Identifier()
+                    SSG_Identifier identifier = _mapper.Map<SSG_Identifier>(matchFoundPersonId);
+                    identifier.StateCode = 0;
+                    identifier.StatusCode = 1;
+                    identifier.SSG_SearchRequest = new SSG_SearchRequest()
                     {
-                        Identification = matchFoundPersonId.SerialNumber,
-                        IdentificationEffectiveDate = new DateTime(2014, 1, 1),
-                        IdentifierType = IdentificationType.DriverLicense.Value,
-                        IssuedBy = "SampleAdapter",
-                        SSG_SearchRequest = new SSG_SearchRequest()
-                        {
-                            SearchRequestId = searchApiRequestId
-                        },
-                        StateCode = 0,
-                        StatusCode = 1
+                        SearchRequestId = searchApiRequestId
                     };
-
-                    var identifer = await _searchRequestService.UploadIdentifier(toBeReplaced, cts.Token);
+                    var identifer = await _searchRequestService.UploadIdentifier(identifier, cts.Token);
                 }
             }
             catch (Exception ex)

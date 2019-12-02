@@ -26,12 +26,12 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         private Mock<ILogger<PersonSearchController>> _loggerMock ;
         private Mock<ISearchRequestService> _searchRequestServiceMock;
         private Mock<ISearchApiRequestService> _searchApiRequestServiceMock;
-        PersonSearchCompleted fakePersonCompletedEvent;
-        PersonSearchAccepted fakePersonAcceptedEvent;
-        PersonSearchFailed fakePersonFailedEvent;
-        PersonSearchRejected fakePersonRejectEvent;
-        SSG_SearchApiEvent fakeSearchApiEvent;
-
+        private PersonSearchCompleted fakePersonCompletedEvent;
+        private PersonSearchAccepted fakePersonAcceptedEvent;
+        private PersonSearchFailed fakePersonFailedEvent;
+        private PersonSearchRejected fakePersonRejectEvent;
+        private SSG_SearchApiEvent fakeSearchApiEvent;
+        private SSG_Identifier _fakePersoneIdentifier;
 
         private Mock<IMapper> _mapper;
 
@@ -49,6 +49,13 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             var invalidRequestId = Guid.NewGuid();
 
             fakeSearchApiEvent = new SSG_SearchApiEvent { };
+
+            _fakePersoneIdentifier = new SSG_Identifier {
+                SSG_SearchRequest = new SSG_SearchRequest
+                {
+                    SearchRequestId = validRequestId
+                }
+            };
 
             fakePersonAcceptedEvent = new PersonSearchAccepted()
             {
@@ -107,6 +114,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 Reasons = new List<ValidationResult> { }
             };
 
+            
             _mapper.Setup(m => m.Map<SSG_SearchApiEvent>(It.IsAny<PersonSearchAccepted>()))
                                 .Returns(fakeSearchApiEvent);
 
@@ -118,6 +126,9 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
 
             _mapper.Setup(m => m.Map<SSG_SearchApiEvent>(It.IsAny<PersonSearchCompleted>()))
                                .Returns(fakeSearchApiEvent);
+
+            _mapper.Setup(m => m.Map<SSG_Identifier>(It.IsAny<PersonalIdentifier>()))
+                               .Returns(_fakePersoneIdentifier);
 
             _searchApiRequestServiceMock.Setup(x => x.GetLinkedSearchRequestIdAsync(It.Is<Guid>(x => x == _testGuid), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<Guid>(_testGuid));

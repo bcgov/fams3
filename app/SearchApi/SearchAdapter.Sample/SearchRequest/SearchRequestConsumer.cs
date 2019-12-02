@@ -43,6 +43,10 @@ namespace SearchAdapter.Sample.SearchRequest
 
             if (await ValidatePersonSearch(context))
             {
+
+                if(string.Equals(context.Message.Person.FirstName, "exception", StringComparison.InvariantCultureIgnoreCase))
+                    throw new Exception("Exception from Sample Adapter, Your name is no exception");
+
                 await context.Publish<PersonSearchCompleted>(BuildFakePersonSearchCompleted(context.Message));
             }
         }

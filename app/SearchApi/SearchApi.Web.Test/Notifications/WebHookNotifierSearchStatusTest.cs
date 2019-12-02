@@ -347,7 +347,7 @@ namespace SearchApi.Web.Test.Notifications
 
                 await _sut.NotifyEventAsync(fakePersonSearchStatus.SearchRequestId, new FakePersonSearchAdapterEvent(), "Accepted",CancellationToken.None);
 
-                _loggerMock.VerifyLog(LogLevel.Error, $"The failure notification for test has not executed successfully.", "failed log error");
+                _loggerMock.VerifyLog(LogLevel.Error, "The webHook PersonSearch notification failed for status Accepted for test webHook. [unknown error]", "failed log error");
 
             }
 

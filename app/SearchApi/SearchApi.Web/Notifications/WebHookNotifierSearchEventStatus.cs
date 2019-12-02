@@ -76,8 +76,7 @@ namespace SearchApi.Web.Notifications
                 }
                 catch (Exception exception)
                 {
-                    _logger.LogError($"The failure notification for {webHook.Name} has not executed successfully.",
-                        exception);
+                    _logger.LogError($"The webHook {webHookName} notification failed for status {eventName} for {webHook.Name} webHook. [{exception.Message}]");
                 }
             }
 

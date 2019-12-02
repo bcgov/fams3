@@ -53,7 +53,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                  _logger.LogInformation($"Successfully created completed event for SearchApiRequest [{id}]");
 
                 //upload search result to dynamic search api
-                var personIds = personCompletedEvent.Person.Identifiers;
+                var personIds = personCompletedEvent.MatchedPerson.Identifiers;
                 var searchRequestId = await _searchApiRequestService.GetLinkedSearchRequestIdAsync(id, cts.Token);
                 foreach (var matchFoundPersonId in personIds)
                 {

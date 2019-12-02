@@ -75,7 +75,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 {
                     Name = "TEST PROVIDER"
                 },
-                Person = new Person()
+                MatchedPerson = new Person()
                 {
                     DateOfBirth = DateTime.Now,
                     FirstName = "TEST1",

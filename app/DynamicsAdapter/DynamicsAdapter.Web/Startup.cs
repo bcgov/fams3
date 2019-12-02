@@ -70,16 +70,6 @@ namespace DynamicsAdapter.Web
      
         }
 
-        //private void ConfigureAutoMapper(IServiceCollection services)
-        //{
-        //    var configuration = new MapperConfiguration(cfg =>
-        //    {
-        //        cfg.AddProfile<SearchRequestAutoMapperProfile>();                
-        //    });
-        //    // only during development, validate your mappings; remove it before release
-        //    configuration.AssertConfigurationIsValid();
-        //    services.AddSingleton(configuration.CreateMapper());
-        //}
         public void ConfigureAutoMapper(IServiceCollection services)
         {
             services.AddAutoMapper(System.Reflection.Assembly.GetExecutingAssembly());

@@ -14,11 +14,6 @@ using Microsoft.Extensions.Logging;
 
 namespace DynamicsAdapter.Web.PersonSearch
 {
-
-   
-
-
-
     [Route("[controller]")]
     [ApiController]
     public class PersonSearchController : ControllerBase
@@ -51,35 +46,23 @@ namespace DynamicsAdapter.Web.PersonSearch
 
             try
             {
-                
+                //update completed event
                 var searchApiEvent = _mapper.Map<SSG_SearchApiEvent>(personCompletedEvent);
-
                 _logger.LogDebug($"Attempting to create a new event for SearchApiRequest [{id}]");
                 var result = await _searchApiRequestService.AddEventAsync(id, searchApiEvent, cts.Token);
                  _logger.LogInformation($"Successfully created completed event for SearchApiRequest [{id}]");
 
                 //upload search result to dynamic search api
-                var personIds = personCompletedEvent.PersonIds;
-                var searchApiRequestId = await _searchApiRequestService.GetLinkedSearchRequestIdAsync(id, cts.Token);
-                //TODO: Replace this with automapper
+                var personIds = personCompletedEvent.Person.Identifiers;
+                var searchRequestId = await _searchApiRequestService.GetLinkedSearchRequestIdAsync(id, cts.Token);
                 foreach (var matchFoundPersonId in personIds)
                 {
-                    //TODO: replaced with data from payload
-                    var toBeReplaced = new SSG_Identifier()
+                    SSG_Identifier identifier = _mapper.Map<SSG_Identifier>(matchFoundPersonId);
+                    identifier.SSG_SearchRequest = new SSG_SearchRequest()
                     {
-                        Identification = matchFoundPersonId.Number,
-                        IdentificationEffectiveDate = new DateTime(2014, 1, 1),
-                        IdentifierType = IdentificationType.DriverLicense.Value,
-                        IssuedBy = "SampleAdapter",
-                        SSG_SearchRequest = new SSG_SearchRequest()
-                        {
-                            SearchRequestId = searchApiRequestId
-                        },
-                        StateCode = 0,
-                        StatusCode = 1
+                        SearchRequestId = searchRequestId
                     };
-
-                    var identifer = await _searchRequestService.UploadIdentifier(toBeReplaced, cts.Token);
+                    var identifer = await _searchRequestService.UploadIdentifier(identifier, cts.Token);
                 }
             }
             catch (Exception ex)
@@ -138,8 +121,6 @@ namespace DynamicsAdapter.Web.PersonSearch
 
             try
             {
-
-
                 var searchApiEvent = _mapper.Map<SSG_SearchApiEvent>(personFailedEvent);
                 _logger.LogDebug($"Attempting to create a new event for SearchApiRequest [{id}]");
                 var result = await _searchApiRequestService.AddEventAsync(id, searchApiEvent, token.Token);

@@ -104,25 +104,25 @@ namespace DynamicsAdapter.Web.SearchRequest
             switch (value)
             {
                 case PersonalIdentifierType.DriverLicense:
-                    return IdentificationType.DriverLicense.DynamicValue;
+                    return IdentificationType.DriverLicense.Value;
                 case PersonalIdentifierType.SocialInsuranceNumber:
-                    return (int)IdentificationType.SocialInsuranceNumber.DynamicValue;
+                    return IdentificationType.SocialInsuranceNumber.Value;
                 case PersonalIdentifierType.PersonalHealthNumber:
-                    return (int)IdentificationType.PersonalHealthNumber.DynamicValue;
+                    return IdentificationType.PersonalHealthNumber.Value;
                 case PersonalIdentifierType.BirthCertificate:
-                    return (int)IdentificationType.BirthCertificate.DynamicValue;
+                    return IdentificationType.BirthCertificate.Value;
                 case PersonalIdentifierType.CorrectionsId:
-                    return (int)IdentificationType.CorrectionsId.DynamicValue;
+                    return IdentificationType.CorrectionsId.Value;
                 case PersonalIdentifierType.NativeStatusCard:
-                    return (int)IdentificationType.NativeStatusCard.DynamicValue;
+                    return IdentificationType.NativeStatusCard.Value;
                 case PersonalIdentifierType.Passport:
-                    return (int)IdentificationType.Passport.DynamicValue;
+                    return IdentificationType.Passport.Value;
                 case PersonalIdentifierType.WcbClaim:
-                    return (int)IdentificationType.WcbClaim.DynamicValue;
+                    return IdentificationType.WcbClaim.Value;
                 case PersonalIdentifierType.Other:
-                    return (int)IdentificationType.Other.DynamicValue;
+                    return IdentificationType.Other.Value;
                 case PersonalIdentifierType.SecurityKeyword:
-                    return (int)IdentificationType.SecurityKeyword.DynamicValue;
+                    return IdentificationType.SecurityKeyword.Value;
                 default:
                     return null;
             }

@@ -16,12 +16,12 @@ namespace Fams3Adapter.Dynamics.Identifier
         public static IdentificationType Other = new IdentificationType(867670012, 8, "Other");
         public static IdentificationType SecurityKeyword = new IdentificationType(867670013, 9, "Security Keyword");
 
-        public int DynamicValue { get; private set; }
+        public int DynamicsValue { get; private set; }
         public int SearchApiValue { get; private set; }
 
-        protected IdentificationType(int dynamicValue, int searchApiValue, string name) : base(dynamicValue, name)
+        protected IdentificationType(int dynamicsValue, int searchApiValue, string name) : base(dynamicsValue, name)
         {
-            this.DynamicValue = dynamicValue;
+            this.DynamicsValue = dynamicsValue;
             this.SearchApiValue = searchApiValue;
         }
 

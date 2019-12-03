@@ -152,11 +152,11 @@ objects:
                     secretKeyRef:
                       name: dynamics-oauth-credentials
                       key: oauth-secret
-                - name: DYNAMICS__BASEPATH
+                - name: APIGATEWAY__BASEPATH
                   valueFrom:
                     secretKeyRef:
                       name: dynamics-oauth-credentials
-                      key: dynamics-basepath
+                      key: apigateway-basepath
               livenessProbe:
                 httpGet:
                   path: "/health"

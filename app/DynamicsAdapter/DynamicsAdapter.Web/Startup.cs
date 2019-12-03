@@ -95,7 +95,9 @@ namespace DynamicsAdapter.Web
                 .Bind(Configuration.GetSection("OAuth"))
                 .ValidateDataAnnotations();
 
-            var dynamicsApiOptions = Configuration.GetSection(Keys.DYNAMICS_CONFIGURATION_KEY).Get<DynamicsApiOptions>();
+            var oAuthOptions = Configuration.GetSection("OAuth").Get<OAuthOptions>();
+
+            var apiGatewayOptions = Configuration.GetSection(Keys.API_GATEWAY_CONFIGURATION_KEY).Get<ApiGatewayOptions>();
           
             // Add OAuth Middleware
             services.AddTransient<OAuthHandler>();
@@ -106,13 +108,13 @@ namespace DynamicsAdapter.Web
             // Register httpClient for OdataClient with OAuthHandler
             services.AddHttpClient<ODataClientSettings>(cfg =>
             {
-                cfg.BaseAddress = new Uri(dynamicsApiOptions.BasePath);
+                cfg.BaseAddress = new Uri(oAuthOptions.ResourceUrl);
             }).AddHttpMessageHandler<OAuthHandler>();
 
             // Register httpClient for StatusReason Service with OAuthHandler
             services.AddHttpClient<IOptionSetService, OptionSetService>(cfg =>
             {
-                cfg.BaseAddress = new Uri(dynamicsApiOptions.BasePath);
+                cfg.BaseAddress = new Uri(oAuthOptions.ResourceUrl);
             }).AddHttpMessageHandler<OAuthHandler>();
 
             // Register Odata client

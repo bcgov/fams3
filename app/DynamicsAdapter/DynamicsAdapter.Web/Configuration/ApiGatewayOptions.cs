@@ -1,6 +1,6 @@
 ﻿namespace DynamicsAdapter.Web.Configuration
 {
-    public class DynamicsApiOptions
+    public class ApiGatewayOptions
     {
         public string BasePath { get; set; }
     }

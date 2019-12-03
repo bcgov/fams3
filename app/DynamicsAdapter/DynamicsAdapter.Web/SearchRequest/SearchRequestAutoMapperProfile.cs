@@ -77,14 +77,14 @@ namespace DynamicsAdapter.Web.SearchRequest
         }
     }
 
-    public class IssueByTypeConverter : IValueConverter<int?, int?>
+    public class IssueByTypeConverter : IValueConverter<int?, string>
     {
-        public int? Convert(int? source, ResolutionContext context)
+        public string Convert(int? source, ResolutionContext context)
         {
-            if (source == InformationSourceType.Request.Value) return (int)IssuedBy.Request;
-            else if (source == InformationSourceType.Employer.Value) return (int)IssuedBy.Employer;
-            else if (source == InformationSourceType.Other.Value) return (int)IssuedBy.Other;
-            else if (source == InformationSourceType.ICBC.Value) return (int)IssuedBy.ICBC;
+            if (source == InformationSourceType.ICBC.Value) return InformationSourceType.ICBC.Name;
+            else if (source == InformationSourceType.Employer.Value) return InformationSourceType.Employer.Name;
+            else if (source == InformationSourceType.Other.Value) return InformationSourceType.Other.Name;
+            else if (source == InformationSourceType.Request.Value) return InformationSourceType.Request.Name;
             else return null;
         }
     }

@@ -21,15 +21,6 @@ namespace DynamicsAdapter.Web.PersonSearch.Models
         SecurityKeyword
     }
 
-    public enum IssuedBy
-    {
-        Request,
-        Employer,
-        Other,
-        ICBC
-    }
-
-
     public class PersonalIdentifier
     {
         public string SerialNumber { get; set; }

@@ -36,7 +36,7 @@ namespace DynamicsAdapter.Web.SearchRequest
               .ForMember(dest => dest.TimeStamp, opt => opt.MapFrom(src => src.TimeStamp))
               .ForMember(dest => dest.EventType, opt => opt.MapFrom(src =>"Accepted"))
                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => Keys.SEARCH_API_EVENT_NAME))
-              .ForMember(dest => dest.Message, opt => opt.MapFrom(src => "Search requested accepted by provider"))
+              .ForMember(dest => dest.Message, opt => opt.MapFrom(src => "Auto search has been accepted for processing"))
               .ReverseMap();
 
             CreateMap<PersonSearchRejected, SSG_SearchApiEvent>()
@@ -45,7 +45,7 @@ namespace DynamicsAdapter.Web.SearchRequest
               .ForMember(dest => dest.TimeStamp, opt => opt.MapFrom(src => src.TimeStamp))
                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => Keys.SEARCH_API_EVENT_NAME))
               .ForMember(dest => dest.EventType, opt => opt.MapFrom(src => "Rejected"))
-              .ForMember(dest => dest.Message, opt => opt.MapFrom(src => "Search requested rejected by provider. Reasons: " + string.Join(", ", src.Reasons.Select(x => $"{x.PropertyName} : {x.ErrorMessage}"))))
+              .ForMember(dest => dest.Message, opt => opt.MapFrom(src => "Auto search has been rejected. Reasons: " + string.Join(", ", src.Reasons.Select(x => $"{x.PropertyName} : {x.ErrorMessage}"))))
               .ReverseMap();
 
             CreateMap<PersonSearchFailed, SSG_SearchApiEvent>()
@@ -54,7 +54,7 @@ namespace DynamicsAdapter.Web.SearchRequest
              .ForMember(dest => dest.TimeStamp, opt => opt.MapFrom(src => src.TimeStamp))
               .ForMember(dest => dest.Name, opt => opt.MapFrom(src => Keys.SEARCH_API_EVENT_NAME))
              .ForMember(dest => dest.EventType, opt => opt.MapFrom(src => "Failed"))
-             .ForMember(dest => dest.Message, opt => opt.MapFrom(src => "Search requested failed. Reason: " + src.Cause))
+             .ForMember(dest => dest.Message, opt => opt.MapFrom(src => "Auto search processing failed. Reason: " + src.Cause))
              .ReverseMap();
 
             CreateMap<PersonSearchCompleted, SSG_SearchApiEvent>()
@@ -63,7 +63,7 @@ namespace DynamicsAdapter.Web.SearchRequest
                .ForMember(dest => dest.TimeStamp, opt => opt.MapFrom(src => src.TimeStamp))
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => Keys.SEARCH_API_EVENT_NAME))
                .ForMember(dest => dest.EventType, opt => opt.MapFrom(src => "Completed"))
-               .ForMember(dest => dest.Message, opt => opt.MapFrom(src => "Search requested completed"))
+               .ForMember(dest => dest.Message, opt => opt.MapFrom(src => $"Auto search processing completed successfully. {src.MatchedPerson.Identifiers.Count()} results found."))
                .ReverseMap();
 
             CreateMap<PersonalIdentifier, SSG_Identifier>()

@@ -81,11 +81,7 @@ namespace DynamicsAdapter.Web.SearchRequest
     {
         public string Convert(int? source, ResolutionContext context)
         {
-            if (source == InformationSourceType.ICBC.Value) return InformationSourceType.ICBC.Name;
-            else if (source == InformationSourceType.Employer.Value) return InformationSourceType.Employer.Name;
-            else if (source == InformationSourceType.Other.Value) return InformationSourceType.Other.Name;
-            else if (source == InformationSourceType.Request.Value) return InformationSourceType.Request.Name;
-            else return null;
+            return Enumeration.GetAll<InformationSourceType>().FirstOrDefault(m => m.Value == source)?.Name;
         }
     }
     public class IdentifierTypeConverter : IValueConverter<int?, int?>

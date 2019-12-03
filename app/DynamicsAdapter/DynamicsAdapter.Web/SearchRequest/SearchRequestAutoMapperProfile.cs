@@ -22,7 +22,7 @@ namespace DynamicsAdapter.Web.SearchRequest
                  .ForMember(dest => dest.EffectiveDate, opt => opt.MapFrom(src => src.IdentificationEffectiveDate))
                  .ForMember(dest => dest.ExpirationDate, opt => opt.MapFrom(src => src.IdentificationExpirationDate))
                  .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new IdentifierTypeConverter(), src => src.IdentifierType))
-                 .ForMember(dest => dest.IssuedBy, opt => opt.ConvertUsing(new IssueByTypeConverter(), src => src.InformationSource));
+                 .ForMember(dest => dest.IssuedBy, opt => opt.ConvertUsing(new InformationSourceConverter(), src => src.InformationSource));
 
             CreateMap<SSG_SearchApiRequest, PersonSearchRequest>()
                  .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.PersonGivenName))
@@ -71,19 +71,28 @@ namespace DynamicsAdapter.Web.SearchRequest
                  .ForMember(dest => dest.IdentificationEffectiveDate, opt => opt.MapFrom(src => src.EffectiveDate))
                  .ForMember(dest => dest.IdentificationExpirationDate, opt => opt.MapFrom(src => src.ExpirationDate))
                  .ForMember(dest => dest.IdentifierType, opt => opt.ConvertUsing(new PersonalIdentifierTypeConverter(), src => src.Type))
-                 .ForMember(dest => dest.IssuedBy, opt => opt.MapFrom(src => src.IssuedBy))
+                 .ForMember(dest => dest.InformationSource, opt => opt.ConvertUsing(new IssuedByTypeConverter(), src=>src.IssuedBy))
                  .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => 0))
                  .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1));
         }
     }
 
-    public class IssueByTypeConverter : IValueConverter<int?, string>
+    public class InformationSourceConverter : IValueConverter<int?, string>
     {
         public string Convert(int? source, ResolutionContext context)
         {
             return Enumeration.GetAll<InformationSourceType>().FirstOrDefault(m => m.Value == source)?.Name;
         }
     }
+
+    public class IssuedByTypeConverter : IValueConverter<string, int?>
+    {
+        public int? Convert(string source, ResolutionContext context)
+        {
+            return Enumeration.GetAll<InformationSourceType>().FirstOrDefault(m => m.Name == source)?.Value;
+        }
+    }
+
     public class IdentifierTypeConverter : IValueConverter<int?, int?>
     {
         public int? Convert(int? source, ResolutionContext context)

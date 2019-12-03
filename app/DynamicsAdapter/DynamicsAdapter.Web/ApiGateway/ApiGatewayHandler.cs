@@ -24,7 +24,9 @@ namespace DynamicsAdapter.Web.ApiGateway
         {
             if(string.IsNullOrEmpty(_apiGatewayOptions.BasePath)) return await base.SendAsync(request, cancellationToken);
 
-            if (Uri.TryCreate(CombineUrls(_apiGatewayOptions.BasePath, request.RequestUri.AbsolutePath),  UriKind.Absolute, out var path))
+
+
+            if (Uri.TryCreate(CombineUrls(_apiGatewayOptions.BasePath, request.RequestUri.PathAndQuery),  UriKind.Absolute, out var path))
             {
                 request.RequestUri = path;
             }

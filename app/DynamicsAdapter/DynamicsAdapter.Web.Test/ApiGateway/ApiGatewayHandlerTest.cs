@@ -201,4 +201,91 @@ namespace DynamicsAdapter.Web.Test.ApiGateway
             var result = await invoker.SendAsync(httpRequestMessage, new CancellationToken());
         }
     }
+
+    public class WithApiGatewayUrlAndQueryStringConfiguration
+    {
+
+        private ApiGatewayHandler _sut;
+        private Mock<IOptions<ApiGatewayOptions>> _apiGatewayOptionsMock;
+
+        [SetUp]
+        public void SetUp()
+        {
+
+            _apiGatewayOptionsMock = new Mock<IOptions<ApiGatewayOptions>>();
+
+            _apiGatewayOptionsMock.Setup(x => x.Value).Returns(new ApiGatewayOptions()
+            {
+                BasePath = "http://apigateway"
+            });
+
+            _sut = new ApiGatewayHandler(_apiGatewayOptionsMock.Object)
+            {
+                InnerHandler = new TestHandler()
+            };
+        }
+
+        public class TestHandler : DelegatingHandler
+        {
+            protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
+                CancellationToken cancellationToken)
+            {
+                Assert.AreEqual("http://apigateway/path?test=test", request.RequestUri.AbsoluteUri);
+                return await Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK));
+            }
+        }
+
+        [Test]
+        public async Task Execute()
+        {
+            // in your test class method
+            var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, "http://foo.com/path?test=test");
+            var invoker = new HttpMessageInvoker(_sut);
+            var result = await invoker.SendAsync(httpRequestMessage, new CancellationToken());
+        }
+    }
+
+
+    public class WithApiGatewayUrlWithPathAndQueryStringConfiguration
+    {
+
+        private ApiGatewayHandler _sut;
+        private Mock<IOptions<ApiGatewayOptions>> _apiGatewayOptionsMock;
+
+        [SetUp]
+        public void SetUp()
+        {
+
+            _apiGatewayOptionsMock = new Mock<IOptions<ApiGatewayOptions>>();
+
+            _apiGatewayOptionsMock.Setup(x => x.Value).Returns(new ApiGatewayOptions()
+            {
+                BasePath = "http://apigateway/test"
+            });
+
+            _sut = new ApiGatewayHandler(_apiGatewayOptionsMock.Object)
+            {
+                InnerHandler = new TestHandler()
+            };
+        }
+
+        public class TestHandler : DelegatingHandler
+        {
+            protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
+                CancellationToken cancellationToken)
+            {
+                Assert.AreEqual("http://apigateway/test/path?test=test", request.RequestUri.AbsoluteUri);
+                return await Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK));
+            }
+        }
+
+        [Test]
+        public async Task Execute()
+        {
+            // in your test class method
+            var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, "http://foo.com/path?test=test");
+            var invoker = new HttpMessageInvoker(_sut);
+            var result = await invoker.SendAsync(httpRequestMessage, new CancellationToken());
+        }
+    }
 }

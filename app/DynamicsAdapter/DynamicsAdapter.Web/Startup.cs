@@ -1,5 +1,6 @@
 using System;
 using AutoMapper;
+using DynamicsAdapter.Web.ApiGateway;
 using DynamicsAdapter.Web.Auth;
 using DynamicsAdapter.Web.Configuration;
 using DynamicsAdapter.Web.Health;
@@ -95,27 +96,31 @@ namespace DynamicsAdapter.Web
                 .Bind(Configuration.GetSection("OAuth"))
                 .ValidateDataAnnotations();
 
+            services.AddOptions<ApiGatewayOptions>()
+                .Bind(Configuration.GetSection(Keys.API_GATEWAY_CONFIGURATION_KEY))
+                .ValidateDataAnnotations();
+
             var oAuthOptions = Configuration.GetSection("OAuth").Get<OAuthOptions>();
 
-            var apiGatewayOptions = Configuration.GetSection(Keys.API_GATEWAY_CONFIGURATION_KEY).Get<ApiGatewayOptions>();
-          
+            
             // Add OAuth Middleware
             services.AddTransient<OAuthHandler>();
+
+            // Add Api Gateway Middleware
+            services.AddTransient<ApiGatewayHandler>();
 
             // Register IOAuthApiClient
             services.AddHttpClient<IOAuthApiClient, OAuthApiClient>();
 
             // Register httpClient for OdataClient with OAuthHandler
-            services.AddHttpClient<ODataClientSettings>(cfg =>
-            {
-                cfg.BaseAddress = new Uri(oAuthOptions.ResourceUrl);
-            }).AddHttpMessageHandler<OAuthHandler>();
+            services.AddHttpClient<ODataClientSettings>(cfg => { cfg.BaseAddress = new Uri(oAuthOptions.ResourceUrl); })
+                .AddHttpMessageHandler<OAuthHandler>()
+                .AddHttpMessageHandler<ApiGatewayHandler>();
 
             // Register httpClient for StatusReason Service with OAuthHandler
-            services.AddHttpClient<IOptionSetService, OptionSetService>(cfg =>
-            {
-                cfg.BaseAddress = new Uri(oAuthOptions.ResourceUrl);
-            }).AddHttpMessageHandler<OAuthHandler>();
+            services.AddHttpClient<IOptionSetService, OptionSetService>(cfg => { cfg.BaseAddress = new Uri(oAuthOptions.ResourceUrl); })
+                .AddHttpMessageHandler<OAuthHandler>()
+                .AddHttpMessageHandler<ApiGatewayHandler>();
 
             // Register Odata client
             services.AddTransient<IODataClient>(provider =>

@@ -66,7 +66,7 @@ namespace DynamicsAdapter.Web.SearchRequest
                .ForMember(dest => dest.Message, opt => opt.MapFrom(src => "Search requested completed"))
                .ReverseMap();
 
-            CreateMap<PersonalIdentifier, SSG_Identifier > ()
+            CreateMap<PersonalIdentifier, SSG_Identifier>()
                  .ForMember(dest => dest.Identification, opt => opt.MapFrom(src => src.SerialNumber))
                  .ForMember(dest => dest.IdentificationEffectiveDate, opt => opt.MapFrom(src => src.EffectiveDate))
                  .ForMember(dest => dest.IdentificationExpirationDate, opt => opt.MapFrom(src => src.ExpirationDate))
@@ -81,9 +81,17 @@ namespace DynamicsAdapter.Web.SearchRequest
     {
         public int? Convert(int? source, ResolutionContext context)
         {
-            if (source == null) return null;
-            else
-                return Enumeration.FromValue<IdentificationType>((int)source).SearchApiValue;
+            if (source == IdentificationType.DriverLicense.Value) return (int)PersonalIdentifierType.DriverLicense;
+            else if (source == IdentificationType.SocialInsuranceNumber.Value) return (int)PersonalIdentifierType.SocialInsuranceNumber;
+            else if (source == IdentificationType.PersonalHealthNumber.Value) return (int)PersonalIdentifierType.PersonalHealthNumber;
+            else if (source == IdentificationType.BirthCertificate.Value) return (int)PersonalIdentifierType.BirthCertificate;
+            else if (source == IdentificationType.CorrectionsId.Value) return (int)PersonalIdentifierType.CorrectionsId;
+            else if (source == IdentificationType.NativeStatusCard.Value) return (int)PersonalIdentifierType.NativeStatusCard;
+            else if (source == IdentificationType.Passport.Value) return (int)PersonalIdentifierType.Passport;
+            else if (source == IdentificationType.WcbClaim.Value) return (int)PersonalIdentifierType.WcbClaim;
+            else if (source == IdentificationType.Other.Value) return (int)PersonalIdentifierType.Other;
+            else if (source == IdentificationType.SecurityKeyword.Value) return (int)PersonalIdentifierType.SecurityKeyword;
+            else return null;
         }
     }
 

@@ -89,7 +89,7 @@ namespace DynamicsAdapter.Web.SearchRequest
     {
         public int? Convert(string source, ResolutionContext context)
         {
-            return Enumeration.GetAll<InformationSourceType>().FirstOrDefault(m => m.Name == source)?.Value;
+            return Enumeration.GetAll<InformationSourceType>().FirstOrDefault(m => m.Name.Equals(source, StringComparison.OrdinalIgnoreCase))?.Value;
         }
     }
 

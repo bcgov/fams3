@@ -20,7 +20,7 @@ namespace DynamicsAdapter.Web.PersonSearch.Models
         Other,
         SecurityKeyword
     }
- 
+
     public class PersonalIdentifier
     {
         public string SerialNumber { get; set; }

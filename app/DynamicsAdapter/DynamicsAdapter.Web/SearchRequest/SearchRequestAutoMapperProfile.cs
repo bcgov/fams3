@@ -22,7 +22,7 @@ namespace DynamicsAdapter.Web.SearchRequest
                  .ForMember(dest => dest.EffectiveDate, opt => opt.MapFrom(src => src.IdentificationEffectiveDate))
                  .ForMember(dest => dest.ExpirationDate, opt => opt.MapFrom(src => src.IdentificationExpirationDate))
                  .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new IdentifierTypeConverter(), src => src.IdentifierType))
-                 .ForMember(dest => dest.IssuedBy, opt => opt.MapFrom(src => src.IssuedBy));
+                 .ForMember(dest => dest.IssuedBy, opt => opt.ConvertUsing(new IssueByTypeConverter(), src => src.InformationSource));
 
             CreateMap<SSG_SearchApiRequest, PersonSearchRequest>()
                  .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.PersonGivenName))
@@ -77,6 +77,13 @@ namespace DynamicsAdapter.Web.SearchRequest
         }
     }
 
+    public class IssueByTypeConverter : IValueConverter<int?, string>
+    {
+        public string Convert(int? source, ResolutionContext context)
+        {
+            return Enumeration.GetAll<InformationSourceType>().FirstOrDefault(m => m.Value == source)?.Name;
+        }
+    }
     public class IdentifierTypeConverter : IValueConverter<int?, int?>
     {
         public int? Convert(int? source, ResolutionContext context)

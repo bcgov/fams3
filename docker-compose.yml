@@ -60,7 +60,7 @@ services:
       OAUTH__SECRET: ${OAUTH__SECRET}
       OAUTH__USERNAME: ${OAUTH__USERNAME}
       OAUTH__PASSWORD: ${OAUTH__PASSWORD}
-      DYNAMICS__BASEPATH: ${OAUTH__RESOURCEURL}
+      APIGATEWAY__BASEPATH: ${APIGATEWAY__BASEPATH}
     restart: always
     networks:
       - search-api-net

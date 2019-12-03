@@ -19,12 +19,6 @@ namespace Fams3Adapter.Dynamics.OptionSets.Models
 
         public override string ToString() => Name;
 
-
-        public static T FromValue<T>(int value) where T : Enumeration
-        {
-            return GetAll<T>().First(x => x.Value == value);
-        }
-
         public static IEnumerable<T> GetAll<T>() where T : Enumeration
         {
             var fields = typeof(T).GetFields(BindingFlags.Public |

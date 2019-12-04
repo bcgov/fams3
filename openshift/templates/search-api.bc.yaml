@@ -20,7 +20,7 @@ parameters:
   displayName: Memory Limit
   description: Maximum amount of memory the container can use.
   required: true
-  value: 128Mi
+  value: 512Mi
 - name: DOTNET_RUNTIME_IMAGE_STREAM_TAG
   displayName: ".NET Runtime Imagestream Tag"
   description: The image stream tag which is used to run the application.

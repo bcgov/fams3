@@ -23,7 +23,7 @@ def PRIVATE_GIT_REF = "master"
 def PRIVATE_GIT_SECRET = "fams3-github-key"
 
 def BUILD_MEMORY = "1Gi"
-def RUN_MEMORY = "128Mi"
+def RUN_MEMORY = "512Mi"
 
 
 def StartBuildAndWait(selector, namespace) {

@@ -100,7 +100,7 @@ namespace SearchAdapter.Sample.SearchRequest
                             Type = PersonalIdentifierType.DriverLicense,
                             EffectiveDate = DateTime.Now.AddDays(-365),
                             ExpirationDate = DateTime.Now.AddDays(365),
-                            IssuedBy = "British Columbia",
+                            IssuedBy = "ICBC",
                             SerialNumber = new Random().Next(0, 50000).ToString()
                         }
                     }

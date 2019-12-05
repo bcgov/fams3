@@ -74,7 +74,7 @@ pipeline {
       StartBuildAndWait("${DYNAMICS_ADAPTER}-build", TOOLS_NAMESPACE)
       StartBuildAndWait("${DYNAMICS_ADAPTER}-runtime", TOOLS_NAMESPACE)
      },
-     'ICBCAdapter': {
+     'SampleAdapter': {
       echo "Initiating SampleAdapter build..."
       sh "oc process -f openshift/templates/sample-adapter.bc.yaml \
          -p NAME=${SAMPLE_ADAPTER} \
@@ -94,7 +94,6 @@ pipeline {
    steps {
     parallel(
      'SearchAPI': {
-      echo 'Promoting SearchAPI'
       sh "oc process -f openshift/templates/search-api.dc.yaml \
          -p NAME=${SEARCH_API} \
          -p APPLICATION_DOMAIN=${SUBDOMAIN}-dev.${DOMAIN} \
@@ -103,7 +102,6 @@ pipeline {
          -p TAG=dev | oc apply -f - -n ${DEV_NAMESPACE}"
       sh "oc tag ${SEARCH_API}:latest ${SEARCH_API}:dev -n ${TOOLS_NAMESPACE}"
       // WaitForDeploy(SEARCH_API, DEV_NAMESPACE)
-      echo 'Done'
      },
      'DynamicsAdapter': {
       sh "oc process -f openshift/templates/dynamics-adapter.dc.yaml \
@@ -114,7 +112,6 @@ pipeline {
          -p TAG=dev | oc apply -f - -n ${DEV_NAMESPACE}"
       sh "oc tag ${DYNAMICS_ADAPTER}:latest ${DYNAMICS_ADAPTER}:dev -n ${TOOLS_NAMESPACE}"
       // WaitForDeploy(DYNAMICS_ADAPTER, DEV_NAMESPACE)
-      echo 'Done'
      },
      'Sample Adapter': {
       sh "oc process -f openshift/templates/sample-adapter.dc.yaml \
@@ -125,11 +122,46 @@ pipeline {
          -p TAG=dev | oc apply -f - -n ${DEV_NAMESPACE}"
       sh "oc tag ${SAMPLE_ADAPTER}:latest ${SAMPLE_ADAPTER}:dev -n ${TOOLS_NAMESPACE}"
       // WaitForDeploy(ICBC_ADAPTER, DEV_NAMESPACE)
-      echo 'Done'
-
      }
     )
    }
   }
+
+  stage('Promote to TEST') {
+   steps {
+    parallel(
+     'SearchAPI': {
+      sh "oc process -f openshift/templates/search-api.dc.yaml \
+         -p NAME=${SEARCH_API} \
+         -p APPLICATION_DOMAIN=${SUBDOMAIN}-test.${DOMAIN} \
+         -p MEMORY_LIMIT=${RUN_MEMORY} \
+         -p NAMESPACE=${TOOLS_NAMESPACE} \
+         -p TAG=dev | oc apply -f - -n ${TEST_NAMESPACE}"
+      sh "oc tag ${SEARCH_API}:dev ${SEARCH_API}:test -n ${TOOLS_NAMESPACE}"
+      // WaitForDeploy(SEARCH_API, DEV_NAMESPACE)
+     },
+     'DynamicsAdapter': {
+      sh "oc process -f openshift/templates/dynamics-adapter.dc.yaml \
+         -p NAME=${DYNAMICS_ADAPTER} \
+         -p APPLICATION_DOMAIN=${SUBDOMAIN}-test.${DOMAIN} \
+         -p MEMORY_LIMIT=${RUN_MEMORY} \
+         -p NAMESPACE=${TOOLS_NAMESPACE} \
+         -p TAG=dev | oc apply -f - -n ${TEST_NAMESPACE}"
+      sh "oc tag ${DYNAMICS_ADAPTER}:dev ${DYNAMICS_ADAPTER}:test -n ${TOOLS_NAMESPACE}"
+      // WaitForDeploy(DYNAMICS_ADAPTER, DEV_NAMESPACE)
+     },
+     'Sample Adapter': {
+      sh "oc process -f openshift/templates/sample-adapter.dc.yaml \
+         -p NAME=${SAMPLE_ADAPTER} \
+         -p APPLICATION_DOMAIN=${SUBDOMAIN}-test.${DOMAIN} \
+         -p MEMORY_LIMIT=${RUN_MEMORY} \
+         -p NAMESPACE=${TOOLS_NAMESPACE} \
+         -p TAG=dev | oc apply -f - -n ${TEST_NAMESPACE}"
+      sh "oc tag ${SAMPLE_ADAPTER}:dev ${SAMPLE_ADAPTER}:test -n ${TOOLS_NAMESPACE}"
+      // WaitForDeploy(ICBC_ADAPTER, DEV_NAMESPACE)
+     }
+    )
+   }
+  } 
  }
 }

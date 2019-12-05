@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.Identifier;
 using Simple.OData.Client;
 
@@ -11,6 +12,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
     public interface ISearchRequestService
     {
         Task<SSG_Identifier> UploadIdentifier(SSG_Identifier identifier, CancellationToken cancellationToken);
+        Task<SSG_Address> UploadAddress(SSG_Address address, CancellationToken cancellationToken);
     }
 
     /// <summary>
@@ -35,5 +37,9 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             return await this._oDataClient.For<SSG_Identifier>().Set(identifier).InsertEntryAsync(cancellationToken);
         }
 
+        public async Task<SSG_Address> UploadAddress(SSG_Address address, CancellationToken cancellationToken)
+        {
+            return await this._oDataClient.For<SSG_Address>().Set(address).InsertEntryAsync(cancellationToken);
+        }
     }
 }

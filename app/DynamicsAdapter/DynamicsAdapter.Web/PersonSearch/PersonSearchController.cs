@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using DynamicsAdapter.Web.PersonSearch.Models;
+using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.SearchApiEvent;
 using Fams3Adapter.Dynamics.SearchApiRequest;
@@ -52,18 +53,12 @@ namespace DynamicsAdapter.Web.PersonSearch
                 var result = await _searchApiRequestService.AddEventAsync(id, searchApiEvent, cts.Token);
                  _logger.LogInformation($"Successfully created completed event for SearchApiRequest [{id}]");
 
-                //upload search result to dynamic search api
-                var personIds = personCompletedEvent.MatchedPerson.Identifiers;
                 var searchRequestId = await _searchApiRequestService.GetLinkedSearchRequestIdAsync(id, cts.Token);
-                foreach (var matchFoundPersonId in personIds)
-                {
-                    SSG_Identifier identifier = _mapper.Map<SSG_Identifier>(matchFoundPersonId);
-                    identifier.SSG_SearchRequest = new SSG_SearchRequest()
-                    {
-                        SearchRequestId = searchRequestId
-                    };
-                    var identifer = await _searchRequestService.UploadIdentifier(identifier, cts.Token);
-                }
+                //upload search result to dynamic search api
+                await UploadIdentifiers(searchRequestId, personCompletedEvent, cts.Token);
+                await UploadAddresses(searchRequestId, personCompletedEvent, cts.Token);
+
+
             }
             catch (Exception ex)
             {
@@ -165,6 +160,34 @@ namespace DynamicsAdapter.Web.PersonSearch
             }
 
             return Ok();
+        }
+
+        private async Task<bool> UploadIdentifiers(Guid searchRequestId, PersonSearchCompleted personCompletedEvent, CancellationToken concellationToken)
+        {
+            foreach (var matchFoundPersonId in personCompletedEvent.MatchedPerson.Identifiers)
+            {
+                SSG_Identifier identifier = _mapper.Map<SSG_Identifier>(matchFoundPersonId);
+                identifier.SSG_SearchRequest = new SSG_SearchRequest()
+                {
+                    SearchRequestId = searchRequestId
+                };
+                var identifer = await _searchRequestService.UploadIdentifier(identifier, concellationToken);
+            }
+            return true;
+        }
+
+        private async Task<bool> UploadAddresses(Guid searchRequestId, PersonSearchCompleted personCompletedEvent, CancellationToken concellationToken)
+        {
+            foreach (var address in personCompletedEvent.MatchedPerson.Addresses)
+            {
+                SSG_Address addr = _mapper.Map<SSG_Address>(address);
+                addr.SearchRequest = new SSG_SearchRequest()
+                {
+                    SearchRequestId = searchRequestId
+                };
+                var uploadedAddr = await _searchRequestService.UploadAddress(addr, concellationToken);
+            }
+            return true;
         }
     }
 }

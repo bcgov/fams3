@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Fams3Adapter.Dynamics
 {
-    public class DynamicsEntity
+    public abstract class DynamicsEntity
     {
         [JsonProperty("statecode")]
         public int StateCode { get; set; }

@@ -6,10 +6,10 @@ namespace Fams3Adapter.Dynamics.Address
     public class SSG_Address : DynamicsEntity
     {
         [JsonProperty("ssg_addressfulltext")]
-        public string AddressFullText { get; set; }
+        public string FullText { get; set; }
 
         [JsonProperty("ssg_addresscategorytext")]
-        public int AddressCategory { get; set; }
+        public int Category { get; set; }
 
         [JsonProperty("ssg_address")]
         public string AddressLine1 { get; set; }
@@ -24,7 +24,7 @@ namespace Fams3Adapter.Dynamics.Address
         public string City { get; set; }
 
         [JsonProperty("ssg_locationcountry")]
-        public int SSG_Country { get; set; }
+        public SSG_Country Country { get; set; }
 
         [JsonProperty("ssg_locationname")]
         public string Name { get; set; }
@@ -36,7 +36,7 @@ namespace Fams3Adapter.Dynamics.Address
         public string NonCanadianState { get; set; }
 
         [JsonProperty("ssg_SearchRequest")]
-        public virtual SSG_SearchRequest SSG_SearchRequest { get; set; }
+        public virtual SSG_SearchRequest SearchRequest { get; set; }
 
         [JsonProperty("ssg_informationsourcetext")]
         public int? InformationSource { get; set; }

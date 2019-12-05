@@ -8,7 +8,7 @@ namespace DynamicsAdapter.Web.PersonSearch.Models
 {
     public class Address 
     {
-        public string AddressType { get; set; }
+        public string Type { get; set; }
         public string AddressLine1 { get; set; }
         public string AddressLine2 { get; set; }
         public string Province { get; set; }

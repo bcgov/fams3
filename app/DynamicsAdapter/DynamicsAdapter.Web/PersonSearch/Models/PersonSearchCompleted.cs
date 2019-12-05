@@ -8,5 +8,6 @@ namespace DynamicsAdapter.Web.PersonSearch.Models
     public class PersonSearchCompleted : PersonSearchStatus
     {
         public Person MatchedPerson { get; set; }
+
     }
 }

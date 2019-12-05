@@ -1,20 +1,14 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using System;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 
 namespace Fams3Adapter.Dynamics.Identifier
 {
-    public class SSG_Identifier
+    public class SSG_Identifier : DynamicsEntity
     {
         [JsonProperty("ssg_identification")]
         public string Identification { get; set; }
-
-        [JsonProperty("statuscode")]
-        public int StatusCode { get; set; }
-
-        [JsonProperty("statecode")]
-        public int StateCode { get; set; }
 
         [JsonProperty("ssg_identificationeffectivedate")]
         public DateTime? IdentificationEffectiveDate { get; set; }

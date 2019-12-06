@@ -42,7 +42,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             string countryName = address.Country.Name;
             var country = await _oDataClient.For<SSG_Country>()
                                          .Filter(x => x.Name == countryName)
-                                         .FindEntryAsync();
+                                         .FindEntryAsync(cancellationToken);
 
             address.Country = country;
             return await this._oDataClient.For<SSG_Address>().Set(address).InsertEntryAsync(cancellationToken);

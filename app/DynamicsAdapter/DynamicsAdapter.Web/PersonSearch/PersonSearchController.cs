@@ -162,6 +162,7 @@ namespace DynamicsAdapter.Web.PersonSearch
 
         private async Task<bool> UploadIdentifiers(Guid searchRequestId, PersonSearchCompleted personCompletedEvent, CancellationToken concellationToken)
         {
+            if (personCompletedEvent.MatchedPerson.Identifiers == null) return true;
             foreach (var matchFoundPersonId in personCompletedEvent.MatchedPerson.Identifiers)
             {
                 SSG_Identifier identifier = _mapper.Map<SSG_Identifier>(matchFoundPersonId);
@@ -176,6 +177,7 @@ namespace DynamicsAdapter.Web.PersonSearch
 
         private async Task<bool> UploadAddresses(Guid searchRequestId, PersonSearchCompleted personCompletedEvent, CancellationToken concellationToken)
         {
+            if (personCompletedEvent.MatchedPerson.Addresses == null) return true;
             foreach (var address in personCompletedEvent.MatchedPerson.Addresses)
             {
                 SSG_Address addr = _mapper.Map<SSG_Address>(address);

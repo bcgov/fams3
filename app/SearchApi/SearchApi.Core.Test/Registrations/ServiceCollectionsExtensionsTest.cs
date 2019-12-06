@@ -10,7 +10,9 @@ using SearchAdapter.Sample.SearchRequest;
 using SearchApi.Core.Adapters.Configuration;
 using SearchApi.Core.MassTransit;
 using SearchApi.Core.Registrations;
+using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace SearchApi.Core.Test.Registrations
 {
@@ -21,15 +23,20 @@ namespace SearchApi.Core.Test.Registrations
         IConfiguration configuration;
         IConfigurationBuilder configurationBuilder;
 
+        string settings = string.Empty;
+
 
 
 
         [SetUp]
         public void SetUp()
         {
+            settings = "{\"Logging\":{\"LogLevel\":{\"Default\": \"Information\",\"Microsoft\": \"Warning\",\"Microsoft.Hosting.Lifetime\": \"Information\"}},\"AllowedHosts\": \"*\",\"RabbitMq\": {\"Host\": \"localhost\",\"Port\": 5672,\"Username\": \"guest\",\"Password\": \"guest\"},\"ProviderProfile\": {\"Name\": \"Sample\"}}";
             services = new ServiceCollection();
             configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddJsonFile(@"Settings\appsettings.json");
+            configurationBuilder.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(settings)));
+           // configurationBuilder.AddJsonStream(@"\Settings\appsettings.json");
+            //configurationBuilder.AddJsonFile(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName + @"\Settings\appsettings.json");
             configuration = configurationBuilder.Build();
 
         }

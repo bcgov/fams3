@@ -23,8 +23,8 @@ namespace Fams3Adapter.Dynamics.Address
         [JsonProperty("ssg_locationcityname")]
         public string City { get; set; }
 
-        [JsonProperty("ssg_locationcountry")]
-        public SSG_Country Country { get; set; }
+        [JsonProperty("ssg_LocationCountry")]
+        public virtual SSG_Country Country { get; set; }
 
         [JsonProperty("ssg_locationname")]
         public string Name { get; set; }

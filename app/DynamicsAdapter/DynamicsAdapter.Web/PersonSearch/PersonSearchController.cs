@@ -57,8 +57,6 @@ namespace DynamicsAdapter.Web.PersonSearch
                 //upload search result to dynamic search api
                 await UploadIdentifiers(searchRequestId, personCompletedEvent, cts.Token);
                 await UploadAddresses(searchRequestId, personCompletedEvent, cts.Token);
-
-
             }
             catch (Exception ex)
             {

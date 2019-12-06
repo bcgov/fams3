@@ -39,6 +39,12 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
         public async Task<SSG_Address> UploadAddress(SSG_Address address, CancellationToken cancellationToken)
         {
+            string countryName = address.Country.Name;
+            var country = await _oDataClient.For<SSG_Country>()
+                                         .Filter(x => x.Name == countryName)
+                                         .FindEntryAsync();
+
+            address.Country = country;
             return await this._oDataClient.For<SSG_Address>().Set(address).InsertEntryAsync(cancellationToken);
         }
     }

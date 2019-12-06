@@ -151,6 +151,17 @@ namespace DynamicsAdapter.Web.SearchRequest
         }
     }
 
+    public class CountryConverter : IValueConverter<string, SSG_Country?>
+    {
+        public SSG_Country Convert(string source, ResolutionContext context)
+        {
+            return new SSG_Country() { 
+                Name = source
+            };
+        }
+    }
+    
+
     public class FullTextResolver : IValueResolver<Address, SSG_Address, string>
     {
         public string Resolve(Address source, SSG_Address dest,  string fullText, ResolutionContext context)

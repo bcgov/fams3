@@ -17,7 +17,7 @@ namespace SearchApi.Core.Registrations
     public static class IServiceCollectionExtensions
     {
      
-       public static void AddProvider(this IServiceCollection services, IConfiguration configuration, IConsumer<PersonSearchOrdered> consumer)
+       public static void AddProvider(this IServiceCollection services, IConfiguration configuration, Func<IServiceProvider, IConsumer<PersonSearchOrdered>> function)
         {
 
             var rabbitMqSettings = configuration.GetSection("RabbitMq").Get<RabbitMqConfiguration>();
@@ -45,7 +45,7 @@ namespace SearchApi.Core.Registrations
 
                         cfg.ReceiveEndpoint(host, $"{nameof(PersonSearchOrdered)}_{providerOptions.Value.Name}", e =>
                         {
-                            e.Consumer(() => consumer);
+                            e.Consumer(() => function.Invoke(provider));
                         });
 
                         // Add Provider profile context

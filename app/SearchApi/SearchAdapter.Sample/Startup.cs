@@ -169,12 +169,12 @@ namespace SearchAdapter.Sample
             services.AddMassTransit(x =>
             {
 
-                // Add RabbitMq Service Bus
+                // Add RabbitMq Service
                 x.AddBus(provider =>
                 {
 
                     var providerOptions = provider.GetRequiredService<IOptions<ProviderProfileOptions>>();
-
+                    
                     var bus = Bus.Factory.CreateUsingRabbitMq(cfg =>
                     {
                         var host = cfg.Host(new Uri(rabbitBaseUri), hostConfigurator =>

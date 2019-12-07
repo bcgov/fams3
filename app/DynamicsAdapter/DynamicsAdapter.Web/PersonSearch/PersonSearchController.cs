@@ -54,9 +54,13 @@ namespace DynamicsAdapter.Web.PersonSearch
                  _logger.LogInformation($"Successfully created completed event for SearchApiRequest [{id}]");
 
                 var searchRequestId = await _searchApiRequestService.GetLinkedSearchRequestIdAsync(id, cts.Token);
+                SSG_SearchRequest searchRequest = new SSG_SearchRequest()
+                {
+                    SearchRequestId = searchRequestId
+                };
                 //upload search result to dynamic search api
-                await UploadIdentifiers(searchRequestId, personCompletedEvent, cts.Token);
-                await UploadAddresses(searchRequestId, personCompletedEvent, cts.Token);
+                await UploadIdentifiers(searchRequest, personCompletedEvent, cts.Token);
+                await UploadAddresses(searchRequest, personCompletedEvent, cts.Token);
             }
             catch (Exception ex)
             {
@@ -160,31 +164,25 @@ namespace DynamicsAdapter.Web.PersonSearch
             return Ok();
         }
 
-        private async Task<bool> UploadIdentifiers(Guid searchRequestId, PersonSearchCompleted personCompletedEvent, CancellationToken concellationToken)
+        private async Task<bool> UploadIdentifiers(SSG_SearchRequest request, PersonSearchCompleted personCompletedEvent, CancellationToken concellationToken)
         {
             if (personCompletedEvent.MatchedPerson.Identifiers == null) return true;
             foreach (var matchFoundPersonId in personCompletedEvent.MatchedPerson.Identifiers)
             {
                 SSG_Identifier identifier = _mapper.Map<SSG_Identifier>(matchFoundPersonId);
-                identifier.SSG_SearchRequest = new SSG_SearchRequest()
-                {
-                    SearchRequestId = searchRequestId
-                };
+                identifier.SSG_SearchRequest = request;
                 var identifer = await _searchRequestService.UploadIdentifier(identifier, concellationToken);
             }
             return true;
         }
 
-        private async Task<bool> UploadAddresses(Guid searchRequestId, PersonSearchCompleted personCompletedEvent, CancellationToken concellationToken)
+        private async Task<bool> UploadAddresses(SSG_SearchRequest request, PersonSearchCompleted personCompletedEvent, CancellationToken concellationToken)
         {
             if (personCompletedEvent.MatchedPerson.Addresses == null) return true;
             foreach (var address in personCompletedEvent.MatchedPerson.Addresses)
             {
                 SSG_Address addr = _mapper.Map<SSG_Address>(address);
-                addr.SearchRequest = new SSG_SearchRequest()
-                {
-                    SearchRequestId = searchRequestId
-                };
+                addr.SearchRequest = request;
                 var uploadedAddr = await _searchRequestService.UploadAddress(addr, concellationToken);
             }
             return true;

@@ -33,7 +33,7 @@ namespace DynamicsAdapter.Web.Mapping
               .ForMember(dest => dest.Id, opt => opt.MapFrom(src => Guid.NewGuid()))
               .ForMember(dest => dest.ProviderName, opt => opt.MapFrom(src => src.ProviderProfile.Name))
               .ForMember(dest => dest.TimeStamp, opt => opt.MapFrom(src => src.TimeStamp))
-              .ForMember(dest => dest.EventType, opt => opt.MapFrom(src => "Accepted"))
+              .ForMember(dest => dest.EventType, opt => opt.MapFrom(src => Keys.EVENT_ACCEPTED))
               .ForMember(dest => dest.Name, opt => opt.MapFrom(src => Keys.SEARCH_API_EVENT_NAME))
               .ForMember(dest => dest.Message, opt => opt.MapFrom(src => "Auto search has been accepted for processing"))
               .ReverseMap();
@@ -43,7 +43,7 @@ namespace DynamicsAdapter.Web.Mapping
               .ForMember(dest => dest.ProviderName, opt => opt.MapFrom(src => src.ProviderProfile.Name))
               .ForMember(dest => dest.TimeStamp, opt => opt.MapFrom(src => src.TimeStamp))
               .ForMember(dest => dest.Name, opt => opt.MapFrom(src => Keys.SEARCH_API_EVENT_NAME))
-              .ForMember(dest => dest.EventType, opt => opt.MapFrom(src => "Rejected"))
+              .ForMember(dest => dest.EventType, opt => opt.MapFrom(src => Keys.EVENT_REJECTED))
               .ForMember(dest => dest.Message, opt => opt.MapFrom(src => src.Reasons==null? "Auto search has been rejected." : "Auto search has been rejected. Reasons: " + string.Join(", ", src.Reasons.Select(x => $"{x.PropertyName} : {x.ErrorMessage}"))))
               .ReverseMap();
 
@@ -52,7 +52,7 @@ namespace DynamicsAdapter.Web.Mapping
              .ForMember(dest => dest.ProviderName, opt => opt.MapFrom(src => src.ProviderProfile.Name))
              .ForMember(dest => dest.TimeStamp, opt => opt.MapFrom(src => src.TimeStamp))
               .ForMember(dest => dest.Name, opt => opt.MapFrom(src => Keys.SEARCH_API_EVENT_NAME))
-             .ForMember(dest => dest.EventType, opt => opt.MapFrom(src => "Failed"))
+             .ForMember(dest => dest.EventType, opt => opt.MapFrom(src => Keys.EVENT_FAILED))
              .ForMember(dest => dest.Message, opt => opt.MapFrom(src => "Auto search processing failed. Reason: " + src.Cause))
              .ReverseMap();
 
@@ -61,7 +61,7 @@ namespace DynamicsAdapter.Web.Mapping
                .ForMember(dest => dest.ProviderName, opt => opt.MapFrom(src => src.ProviderProfile.Name))
                .ForMember(dest => dest.TimeStamp, opt => opt.MapFrom(src => src.TimeStamp))
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => Keys.SEARCH_API_EVENT_NAME))
-               .ForMember(dest => dest.EventType, opt => opt.MapFrom(src => "Completed"))
+               .ForMember(dest => dest.EventType, opt => opt.MapFrom(src => Keys.EVENT_COMPLETED))
                .ForMember(dest => dest.Message, 
                           opt => opt.MapFrom(
                               src => $"Auto search processing completed successfully. {(src.MatchedPerson.Identifiers==null? 0: src.MatchedPerson.Identifiers.Count())} identifiers found.  {(src.MatchedPerson.Addresses == null ? 0 : src.MatchedPerson.Addresses.Count())} addresses found."

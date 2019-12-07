@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace Fams3Adapter.Dynamics.SearchApiRequest
 {
-    public class SSG_SearchApiRequest
+    public class SSG_SearchApiRequest : DynamicsEntity
     {
         [JsonProperty("ssg_searchapirequestid")]
         public Guid SearchApiRequestId { get; set; }
@@ -27,9 +27,6 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
 
         [JsonProperty("_ssg_searchrequest_value")]
         public Guid SearchRequestId { get; set; }
-
-        [JsonProperty(Keys.DYNAMICS_STATUS_CODE_FIELD)]
-        public int StatusCode { get; set; }
 
         [JsonProperty("ssg_name")]
         public string Name { get; set; }

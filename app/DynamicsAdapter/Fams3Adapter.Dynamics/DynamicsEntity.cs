@@ -7,10 +7,10 @@ namespace Fams3Adapter.Dynamics
 {
     public abstract class DynamicsEntity
     {
-        [JsonProperty("statecode")]
+        [JsonProperty(Keys.DYNAMICS_STATUS_CODE_FIELD)]
         public int StateCode { get; set; }
 
-        [JsonProperty("statuscode")]
+        [JsonProperty(Keys.DYNAMICS_STATUS_CODE_FIELD)]
         public int StatusCode { get; set; }
     }
 }

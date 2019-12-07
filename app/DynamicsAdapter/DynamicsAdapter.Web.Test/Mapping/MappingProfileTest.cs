@@ -42,11 +42,11 @@ namespace DynamicsAdapter.Web.Test.Mapping
 
             };
             Identifier identifier = _mapper.Map<Identifier>(sSG_Identifier);
-            Assert.AreEqual(identifier.SerialNumber, "testIdentification");
-            Assert.AreEqual(identifier.EffectiveDate, new DateTime(2001, 1, 1));
-            Assert.AreEqual(identifier.ExpirationDate, new DateTime(2001, 1, 1));
-            Assert.AreEqual(identifier.Type,(int)PersonalIdentifierType.SocialInsuranceNumber);
-            Assert.AreEqual(identifier.IssuedBy,InformationSourceType.Employer.Name);
+            Assert.AreEqual("testIdentification", identifier.SerialNumber);
+            Assert.AreEqual(new DateTime(2001, 1, 1), identifier.EffectiveDate );
+            Assert.AreEqual(new DateTimeOffset(2001, 1, 1,0,0,0, new TimeSpan(-8,0,0)), identifier.ExpirationDate);
+            Assert.AreEqual((int)PersonalIdentifierType.SocialInsuranceNumber, identifier.Type);
+            Assert.AreEqual(InformationSourceType.Employer.Name, identifier.IssuedBy);
         }
 
         [Test]
@@ -64,10 +64,10 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 }
             };
             PersonSearchRequest personSearchRequest = _mapper.Map<PersonSearchRequest>(sSG_SearchApiRequest);
-            Assert.AreEqual(personSearchRequest.FirstName, "firstName");
-            Assert.AreEqual(personSearchRequest.LastName, "lastName");
-            Assert.AreEqual(personSearchRequest.DateOfBirth, new DateTime(2002, 2, 2));
-            Assert.AreEqual(personSearchRequest.Identifiers.Count, 2);
+            Assert.AreEqual("firstName", personSearchRequest.FirstName );
+            Assert.AreEqual("lastName", personSearchRequest.LastName );
+            Assert.AreEqual(new DateTimeOffset(2002, 2, 2,0,0,0, new TimeSpan(-8, 0, 0)), personSearchRequest.DateOfBirth );
+            Assert.AreEqual(2, personSearchRequest.Identifiers.Count);
         }
 
         [Test]
@@ -85,17 +85,17 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 SuppliedBy = "Employer"
             };
             SSG_Address ssg_addr = _mapper.Map<SSG_Address>(address);
-            Assert.AreEqual(ssg_addr.AddressLine1, "AddressLine1");
-            Assert.AreEqual(ssg_addr.AddressLine2, "AddressLine2");
-            Assert.AreEqual(ssg_addr.Province, CanadianProvinceType.Manitoba.Value);
-            Assert.AreEqual(ssg_addr.City, "testCity");
-            Assert.AreEqual(ssg_addr.Country.Name, "canada");
-            Assert.AreEqual(ssg_addr.Category, LocationType.Residence.Value);
-            Assert.AreEqual(ssg_addr.PostalCode, "p3p3p3");
-            Assert.AreEqual(ssg_addr.InformationSource, (int)InformationSourceType.Employer.Value);
-            Assert.AreEqual(ssg_addr.FullText, "AddressLine1 AddressLine2 testCity Manitoba canada p3p3p3");
-            Assert.AreEqual(ssg_addr.StatusCode, 1);
-            Assert.AreEqual(ssg_addr.StateCode, 0);
+            Assert.AreEqual("AddressLine1", ssg_addr.AddressLine1);
+            Assert.AreEqual("AddressLine2", ssg_addr.AddressLine2);
+            Assert.AreEqual(CanadianProvinceType.Manitoba.Value, ssg_addr.Province);
+            Assert.AreEqual("testCity", ssg_addr.City );
+            Assert.AreEqual("canada", ssg_addr.Country.Name);
+            Assert.AreEqual(LocationType.Residence.Value, ssg_addr.Category);
+            Assert.AreEqual("p3p3p3", ssg_addr.PostalCode);
+            Assert.AreEqual((int)InformationSourceType.Employer.Value, ssg_addr.InformationSource );
+            Assert.AreEqual("AddressLine1 AddressLine2 testCity Manitoba canada p3p3p3", ssg_addr.FullText);
+            Assert.AreEqual(1, ssg_addr.StatusCode);
+            Assert.AreEqual(0, ssg_addr.StateCode);
         }
 
         [Test]
@@ -110,11 +110,11 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 }
             };
             SSG_SearchApiEvent searchEvent = _mapper.Map<SSG_SearchApiEvent>(accepted);
-            Assert.AreEqual(searchEvent.ProviderName, "acceptedProfile");
-            Assert.AreEqual(searchEvent.TimeStamp, new DateTime(2003, 3, 3));
-            Assert.AreEqual(searchEvent.EventType, "Accepted");
-            Assert.AreEqual(searchEvent.Name, "Person Search");
-            Assert.AreEqual(searchEvent.Message, "Auto search has been accepted for processing");
+            Assert.AreEqual("acceptedProfile", searchEvent.ProviderName);
+            Assert.AreEqual(new DateTime(2003, 3, 3), searchEvent.TimeStamp );
+            Assert.AreEqual(Keys.EVENT_ACCEPTED, searchEvent.EventType);
+            Assert.AreEqual(Keys.EVENT_NAME, searchEvent.Name);
+            Assert.AreEqual("Auto search has been accepted for processing", searchEvent.Message);
         }
 
         [Test]
@@ -140,11 +140,11 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 }
             };
             SSG_SearchApiEvent searchEvent = _mapper.Map<SSG_SearchApiEvent>(rejected);
-            Assert.AreEqual(searchEvent.ProviderName, "rejectedProfile");
-            Assert.AreEqual(searchEvent.TimeStamp, new DateTime(2003, 3, 3));
-            Assert.AreEqual(searchEvent.EventType, "Rejected");
-            Assert.AreEqual(searchEvent.Name, "Person Search");
-            Assert.AreEqual(searchEvent.Message, "Auto search has been rejected. Reasons: property1 : errMsg1, property2 : errMsg2");
+            Assert.AreEqual("rejectedProfile", searchEvent.ProviderName);
+            Assert.AreEqual(new DateTime(2003, 3, 3), searchEvent.TimeStamp );
+            Assert.AreEqual(Keys.EVENT_REJECTED, searchEvent.EventType);
+            Assert.AreEqual(Keys.EVENT_NAME, searchEvent.Name);
+            Assert.AreEqual("Auto search has been rejected. Reasons: property1 : errMsg1, property2 : errMsg2", searchEvent.Message );
         }
 
         [Test]
@@ -161,11 +161,11 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 Reasons = null
             };
             SSG_SearchApiEvent searchEvent = _mapper.Map<SSG_SearchApiEvent>(rejected);
-            Assert.AreEqual(searchEvent.ProviderName, "rejectedProfile");
-            Assert.AreEqual(searchEvent.TimeStamp, new DateTime(2003, 3, 3));
-            Assert.AreEqual(searchEvent.EventType, "Rejected");
-            Assert.AreEqual(searchEvent.Name, "Person Search");
-            Assert.AreEqual(searchEvent.Message, "Auto search has been rejected.");
+            Assert.AreEqual("rejectedProfile", searchEvent.ProviderName);
+            Assert.AreEqual(new DateTime(2003, 3, 3), searchEvent.TimeStamp );
+            Assert.AreEqual(Keys.EVENT_REJECTED, searchEvent.EventType);
+            Assert.AreEqual(Keys.EVENT_NAME, searchEvent.Name);
+            Assert.AreEqual("Auto search has been rejected.", searchEvent.Message);
         }
 
         [Test]
@@ -182,11 +182,11 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 Cause="failedCause"
             };
             SSG_SearchApiEvent searchEvent = _mapper.Map<SSG_SearchApiEvent>(failed);
-            Assert.AreEqual(searchEvent.ProviderName, "failedProfile");
-            Assert.AreEqual(searchEvent.TimeStamp, new DateTime(2003, 3, 3));
-            Assert.AreEqual(searchEvent.EventType, "Failed");
-            Assert.AreEqual(searchEvent.Name, "Person Search");
-            Assert.AreEqual(searchEvent.Message, "Auto search processing failed. Reason: failedCause");
+            Assert.AreEqual("failedProfile", searchEvent.ProviderName);
+            Assert.AreEqual(new DateTime(2003, 3, 3), searchEvent.TimeStamp);
+            Assert.AreEqual(Keys.EVENT_FAILED, searchEvent.EventType);
+            Assert.AreEqual(Keys.EVENT_NAME, searchEvent.Name);
+            Assert.AreEqual("Auto search processing failed. Reason: failedCause", searchEvent.Message );
         }
 
         [Test]
@@ -218,11 +218,11 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 }
             };
             SSG_SearchApiEvent searchEvent = _mapper.Map<SSG_SearchApiEvent>(completed);
-            Assert.AreEqual(searchEvent.ProviderName, "completedProfile");
-            Assert.AreEqual(searchEvent.TimeStamp, new DateTime(2003, 3, 3));
-            Assert.AreEqual(searchEvent.EventType, "Completed");
-            Assert.AreEqual(searchEvent.Name, "Person Search");
-            Assert.AreEqual(searchEvent.Message, "Auto search processing completed successfully. 2 identifiers found.  2 addresses found.");
+            Assert.AreEqual("completedProfile", searchEvent.ProviderName );
+            Assert.AreEqual(new DateTime(2003, 3, 3), searchEvent.TimeStamp);
+            Assert.AreEqual(Keys.EVENT_COMPLETED, searchEvent.EventType);
+            Assert.AreEqual(Keys.EVENT_NAME, searchEvent.Name);
+            Assert.AreEqual("Auto search processing completed successfully. 2 identifiers found.  2 addresses found.", searchEvent.Message);
         }
 
         [Test]
@@ -250,11 +250,11 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 }
             };
             SSG_SearchApiEvent searchEvent = _mapper.Map<SSG_SearchApiEvent>(completed);
-            Assert.AreEqual(searchEvent.ProviderName, "completedProfile");
-            Assert.AreEqual(searchEvent.TimeStamp, new DateTime(2003, 3, 3));
-            Assert.AreEqual(searchEvent.EventType, "Completed");
-            Assert.AreEqual(searchEvent.Name, "Person Search");
-            Assert.AreEqual(searchEvent.Message, "Auto search processing completed successfully. 2 identifiers found.  0 addresses found.");
+            Assert.AreEqual("completedProfile", searchEvent.ProviderName );
+            Assert.AreEqual(new DateTime(2003, 3, 3), searchEvent.TimeStamp );
+            Assert.AreEqual(Keys.EVENT_COMPLETED, searchEvent.EventType);
+            Assert.AreEqual(Keys.EVENT_NAME, searchEvent.Name );
+            Assert.AreEqual("Auto search processing completed successfully. 2 identifiers found.  0 addresses found.",searchEvent.Message);
         }
 
         [Test]
@@ -269,13 +269,13 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 IssuedBy = "ICBC"
             };
             SSG_Identifier sSG_Identifier = _mapper.Map<SSG_Identifier>(identifier);
-            Assert.AreEqual(sSG_Identifier.Identification, "1111111");
-            Assert.AreEqual(sSG_Identifier.IdentificationEffectiveDate, new DateTime(2002, 2, 2));
-            Assert.AreEqual(sSG_Identifier.IdentificationExpirationDate, new DateTime(2003, 3, 3));
-            Assert.AreEqual(sSG_Identifier.IdentifierType, IdentificationType.DriverLicense.Value);
-            Assert.AreEqual(sSG_Identifier.InformationSource, InformationSourceType.ICBC.Value);
-            Assert.AreEqual(sSG_Identifier.StatusCode, 1);
-            Assert.AreEqual(sSG_Identifier.StateCode, 0);
+            Assert.AreEqual("1111111", sSG_Identifier.Identification);
+            Assert.AreEqual(new DateTime(2002, 2, 2), sSG_Identifier.IdentificationEffectiveDate );
+            Assert.AreEqual(new DateTime(2003, 3, 3), sSG_Identifier.IdentificationExpirationDate );
+            Assert.AreEqual(IdentificationType.DriverLicense.Value, sSG_Identifier.IdentifierType);
+            Assert.AreEqual(InformationSourceType.ICBC.Value, sSG_Identifier.InformationSource);
+            Assert.AreEqual(1, sSG_Identifier.StatusCode);
+            Assert.AreEqual(0, sSG_Identifier.StateCode);
         }
     }
 }

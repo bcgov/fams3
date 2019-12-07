@@ -32,7 +32,7 @@ namespace SearchApi.Web.Controllers
         [Description("The date of birth of the subject.")]
         public DateTime? DateOfBirth { get; }
 
-        public IEnumerable<SearchApiPersonalIdentifier> Identifiers { get; set; }
+        public IEnumerable<PersonalIdentifier> Identifiers { get; set; }
     }
 
 

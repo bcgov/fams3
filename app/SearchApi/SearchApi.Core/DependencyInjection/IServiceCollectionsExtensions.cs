@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using SearchApi.Core.OpenTracing;
 
-namespace SearchApi.Core.Registrations
+namespace SearchApi.Core.DependencyInjection
 {
     public static class IServiceCollectionExtensions
     {

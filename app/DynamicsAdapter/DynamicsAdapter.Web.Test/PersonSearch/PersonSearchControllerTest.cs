@@ -165,16 +165,16 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 .Returns(Task.FromResult<Guid>(invalidRequestId));
 
 
-            _searchRequestServiceMock.Setup(x => x.UploadIdentifier(It.Is<SSG_Identifier>(x => x.SSG_SearchRequest.SearchRequestId == validRequestId), It.IsAny<CancellationToken>()))
+            _searchRequestServiceMock.Setup(x => x.CreateIdentifier(It.Is<SSG_Identifier>(x => x.SSG_SearchRequest.SearchRequestId == validRequestId), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<SSG_Identifier>(new SSG_Identifier()
                 {
                     Identification = "test identification"
                 }));
 
-            _searchRequestServiceMock.Setup(x => x.UploadIdentifier(It.Is<SSG_Identifier>(x => x.SSG_SearchRequest.SearchRequestId == invalidRequestId), It.IsAny<CancellationToken>()))
+            _searchRequestServiceMock.Setup(x => x.CreateIdentifier(It.Is<SSG_Identifier>(x => x.SSG_SearchRequest.SearchRequestId == invalidRequestId), It.IsAny<CancellationToken>()))
                 .Throws(new Exception("random exception"));
 
-            _searchRequestServiceMock.Setup(x => x.UploadAddress(It.Is<SSG_Address>(x => x.SearchRequest.SearchRequestId == validRequestId), It.IsAny<CancellationToken>()))
+            _searchRequestServiceMock.Setup(x => x.CreateAddress(It.Is<SSG_Address>(x => x.SearchRequest.SearchRequestId == validRequestId), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<SSG_Address>(new SSG_Address()
                 {
                     FullText = "test full line"
@@ -201,9 +201,9 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         {
             var result = await _sut.Completed(_testGuid, _fakePersonCompletedEvent);
             _searchRequestServiceMock
-                .Verify(x => x.UploadIdentifier(It.IsAny<SSG_Identifier>(), It.IsAny<CancellationToken>()), Times.Once);
+                .Verify(x => x.CreateIdentifier(It.IsAny<SSG_Identifier>(), It.IsAny<CancellationToken>()), Times.Once);
             _searchRequestServiceMock
-                 .Verify(x => x.UploadAddress(It.IsAny<SSG_Address>(), It.IsAny<CancellationToken>()), Times.Once);
+                 .Verify(x => x.CreateAddress(It.IsAny<SSG_Address>(), It.IsAny<CancellationToken>()), Times.Once);
             _searchApiRequestServiceMock
                 .Verify(x => x.AddEventAsync(It.Is<Guid>(x => x == _testGuid), It.IsAny<SSG_SearchApiEvent>(), It.IsAny<CancellationToken>()), Times.Once);
             Assert.IsInstanceOf(typeof(OkResult), result);

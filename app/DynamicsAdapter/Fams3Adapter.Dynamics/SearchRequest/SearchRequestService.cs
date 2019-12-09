@@ -11,8 +11,8 @@ namespace Fams3Adapter.Dynamics.SearchRequest
     using Entry = System.Collections.Generic.Dictionary<string, object>;
     public interface ISearchRequestService
     {
-        Task<SSG_Identifier> UploadIdentifier(SSG_Identifier identifier, CancellationToken cancellationToken);
-        Task<SSG_Address> UploadAddress(SSG_Address address, CancellationToken cancellationToken);
+        Task<SSG_Identifier> CreateIdentifier(SSG_Identifier identifier, CancellationToken cancellationToken);
+        Task<SSG_Address> CreateAddress(SSG_Address address, CancellationToken cancellationToken);
     }
 
     /// <summary>
@@ -32,12 +32,12 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public async Task<SSG_Identifier> UploadIdentifier(SSG_Identifier identifier, CancellationToken cancellationToken)
+        public async Task<SSG_Identifier> CreateIdentifier(SSG_Identifier identifier, CancellationToken cancellationToken)
         {
             return await this._oDataClient.For<SSG_Identifier>().Set(identifier).InsertEntryAsync(cancellationToken);
         }
 
-        public async Task<SSG_Address> UploadAddress(SSG_Address address, CancellationToken cancellationToken)
+        public async Task<SSG_Address> CreateAddress(SSG_Address address, CancellationToken cancellationToken)
         {
             string countryName = address.Country.Name;
             var country = await _oDataClient.For<SSG_Country>()

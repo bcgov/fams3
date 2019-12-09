@@ -169,7 +169,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             {
                 SSG_Identifier identifier = _mapper.Map<SSG_Identifier>(matchFoundPersonId);
                 identifier.SSG_SearchRequest = request;
-                var identifer = await _searchRequestService.UploadIdentifier(identifier, concellationToken);
+                var identifer = await _searchRequestService.CreateIdentifier(identifier, concellationToken);
             }
             return true;
         }
@@ -181,7 +181,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             {
                 SSG_Address addr = _mapper.Map<SSG_Address>(address);
                 addr.SearchRequest = request;
-                var uploadedAddr = await _searchRequestService.UploadAddress(addr, concellationToken);
+                var uploadedAddr = await _searchRequestService.CreateAddress(addr, concellationToken);
             }
             return true;
         }

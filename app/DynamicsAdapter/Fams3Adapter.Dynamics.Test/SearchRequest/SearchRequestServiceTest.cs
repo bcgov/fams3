@@ -65,7 +65,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
                 SSG_SearchRequest = new SSG_SearchRequest() { SearchRequestId = testId }
             };
 
-            var result = await _sut.UploadIdentifier(identifier, CancellationToken.None);
+            var result = await _sut.CreateIdentifier(identifier, CancellationToken.None);
 
             Assert.AreEqual("test", result.Identification);
         }
@@ -80,7 +80,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
                 SearchRequest = new SSG_SearchRequest() { SearchRequestId = testId }
             };
 
-            var result = await _sut.UploadAddress(address, CancellationToken.None);
+            var result = await _sut.CreateAddress(address, CancellationToken.None);
 
             Assert.AreEqual("test", result.FullText);
         }

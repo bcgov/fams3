@@ -34,8 +34,6 @@ namespace SearchApi.Core.Test.DependencyInjection
             services = new ServiceCollection();
             configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(settings)));
-           // configurationBuilder.AddJsonStream(@"\Settings\appsettings.json");
-            //configurationBuilder.AddJsonFile(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName + @"\Settings\appsettings.json");
             configuration = configurationBuilder.Build();
 
         }

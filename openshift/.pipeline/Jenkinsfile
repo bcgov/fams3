@@ -51,7 +51,7 @@ pipeline {
   stage('Build') {
    steps {
     parallel(
-     'SearchApi': {
+     'Search API': {
       echo "Initiating SearchAPI build..."
       sh "oc process -f openshift/templates/search-api.bc.yaml \
          -p NAME=${SEARCH_API} \
@@ -63,7 +63,7 @@ pipeline {
       StartBuildAndWait("${SEARCH_API}-build", TOOLS_NAMESPACE)
       StartBuildAndWait("${SEARCH_API}-runtime", TOOLS_NAMESPACE)
      },
-     'DynamicsAdapter': {
+     'Dynamics Adapter': {
       echo "Initiating DynamicsAdapter build..."
       sh "oc process -f openshift/templates/dynamics-adapter.bc.yaml \
          -p NAME=${DYNAMICS_ADAPTER} \
@@ -75,7 +75,7 @@ pipeline {
       StartBuildAndWait("${DYNAMICS_ADAPTER}-build", TOOLS_NAMESPACE)
       StartBuildAndWait("${DYNAMICS_ADAPTER}-runtime", TOOLS_NAMESPACE)
      },
-     'SampleAdapter': {
+     'Sample Adapter': {
       echo "Initiating SampleAdapter build..."
       sh "oc process -f openshift/templates/sample-adapter.bc.yaml \
          -p NAME=${SAMPLE_ADAPTER} \
@@ -87,7 +87,7 @@ pipeline {
       StartBuildAndWait("${SAMPLE_ADAPTER}-build", TOOLS_NAMESPACE)
       StartBuildAndWait("${SAMPLE_ADAPTER}-runtime", TOOLS_NAMESPACE)
      },
-     'ICBCAdapter': {
+     'ICBC Rest Adapter': {
       echo "Initiating ICBCAdapter build..."
       sh "oc process -f openshift/templates/icbc-adapter.bc.yaml \
          -p NAME=${ICBC_REST_ADAPTER} \
@@ -107,7 +107,7 @@ pipeline {
   stage('Promote to DEV') {
    steps {
     parallel(
-     'SearchAPI': {
+     'Search API': {
       sh "oc process -f openshift/templates/search-api.dc.yaml \
          -p NAME=${SEARCH_API} \
          -p APPLICATION_DOMAIN=${SUBDOMAIN}-dev.${DOMAIN} \
@@ -117,7 +117,7 @@ pipeline {
       sh "oc tag ${SEARCH_API}:latest ${SEARCH_API}:dev -n ${TOOLS_NAMESPACE}"
       WaitForDeploy(SEARCH_API, DEV_NAMESPACE)
      },
-     'DynamicsAdapter': {
+     'Dynamics Adapter': {
       sh "oc process -f openshift/templates/dynamics-adapter.dc.yaml \
          -p NAME=${DYNAMICS_ADAPTER} \
          -p APPLICATION_DOMAIN=${SUBDOMAIN}-dev.${DOMAIN} \
@@ -154,7 +154,7 @@ pipeline {
   stage('Promote to TEST') {
    steps {
     parallel(
-     'SearchAPI': {
+     'Search API': {
       sh "oc process -f openshift/templates/search-api.dc.yaml \
          -p NAME=${SEARCH_API} \
          -p APPLICATION_DOMAIN=${SUBDOMAIN}-test.${DOMAIN} \
@@ -164,7 +164,7 @@ pipeline {
       sh "oc tag ${SEARCH_API}:dev ${SEARCH_API}:test -n ${TOOLS_NAMESPACE}"
       WaitForDeploy(SEARCH_API, TEST_NAMESPACE)
      },
-     'DynamicsAdapter': {
+     'Dynamics Adapter': {
       sh "oc process -f openshift/templates/dynamics-adapter.dc.yaml \
          -p NAME=${DYNAMICS_ADAPTER} \
          -p APPLICATION_DOMAIN=${SUBDOMAIN}-test.${DOMAIN} \
@@ -174,7 +174,7 @@ pipeline {
       sh "oc tag ${DYNAMICS_ADAPTER}:dev ${DYNAMICS_ADAPTER}:test -n ${TOOLS_NAMESPACE}"
       WaitForDeploy(DYNAMICS_ADAPTER, TEST_NAMESPACE)
      },
-     'SampleAdapter': {
+     'Sample Adapter': {
       sh "oc process -f openshift/templates/sample-adapter.dc.yaml \
          -p NAME=${SAMPLE_ADAPTER} \
          -p APPLICATION_DOMAIN=${SUBDOMAIN}-test.${DOMAIN} \
@@ -184,7 +184,7 @@ pipeline {
       sh "oc tag ${SAMPLE_ADAPTER}:dev ${SAMPLE_ADAPTER}:test -n ${TOOLS_NAMESPACE}"
       WaitForDeploy(SAMPLE_ADAPTER, TEST_NAMESPACE)
      },
-     'ICBCAdapter': {
+     'ICBC Rest Adapter': {
       sh "oc process -f openshift/templates/icbc-adapter.dc.yaml \
          -p NAME=${ICBC_REST_ADAPTER} \
          -p APPLICATION_DOMAIN=${SUBDOMAIN}-test.${DOMAIN} \

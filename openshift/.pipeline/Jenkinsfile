@@ -115,7 +115,7 @@ pipeline {
          -p NAMESPACE=${TOOLS_NAMESPACE} \
          -p TAG=dev | oc apply -f - -n ${DEV_NAMESPACE}"
       sh "oc tag ${SEARCH_API}:latest ${SEARCH_API}:dev -n ${TOOLS_NAMESPACE}"
-      // WaitForDeploy(SEARCH_API, DEV_NAMESPACE)
+      WaitForDeploy(SEARCH_API, DEV_NAMESPACE)
      },
      'DynamicsAdapter': {
       sh "oc process -f openshift/templates/dynamics-adapter.dc.yaml \
@@ -125,7 +125,7 @@ pipeline {
          -p NAMESPACE=${TOOLS_NAMESPACE} \
          -p TAG=dev | oc apply -f - -n ${DEV_NAMESPACE}"
       sh "oc tag ${DYNAMICS_ADAPTER}:latest ${DYNAMICS_ADAPTER}:dev -n ${TOOLS_NAMESPACE}"
-      // WaitForDeploy(DYNAMICS_ADAPTER, DEV_NAMESPACE)
+      WaitForDeploy(DYNAMICS_ADAPTER, DEV_NAMESPACE)
      },
      'Sample Adapter': {
       sh "oc process -f openshift/templates/sample-adapter.dc.yaml \
@@ -135,7 +135,7 @@ pipeline {
          -p NAMESPACE=${TOOLS_NAMESPACE} \
          -p TAG=dev | oc apply -f - -n ${DEV_NAMESPACE}"
       sh "oc tag ${SAMPLE_ADAPTER}:latest ${SAMPLE_ADAPTER}:dev -n ${TOOLS_NAMESPACE}"
-      // WaitForDeploy(ICBC_ADAPTER, DEV_NAMESPACE)
+      WaitForDeploy(SAMPLE_ADAPTER, DEV_NAMESPACE)
      },
      'ICBC Adapter': {
       sh "oc process -f openshift/templates/icbc-adapter.dc.yaml \
@@ -145,7 +145,7 @@ pipeline {
          -p NAMESPACE=${TOOLS_NAMESPACE} \
          -p TAG=dev | oc apply -f - -n ${DEV_NAMESPACE}"
       sh "oc tag ${ICBC_ADAPTER}:latest ${ICBC_ADAPTER}:dev -n ${TOOLS_NAMESPACE}"
-      // WaitForDeploy(ICBC_ADAPTER, DEV_NAMESPACE)
+      WaitForDeploy(ICBC_ADAPTER, DEV_NAMESPACE)
      }
     )
    }
@@ -162,7 +162,7 @@ pipeline {
          -p NAMESPACE=${TOOLS_NAMESPACE} \
          -p TAG=test | oc apply -f - -n ${TEST_NAMESPACE}"
       sh "oc tag ${SEARCH_API}:dev ${SEARCH_API}:test -n ${TOOLS_NAMESPACE}"
-      // WaitForDeploy(SEARCH_API, DEV_NAMESPACE)
+      WaitForDeploy(SEARCH_API, TEST_NAMESPACE)
      },
      'DynamicsAdapter': {
       sh "oc process -f openshift/templates/dynamics-adapter.dc.yaml \
@@ -172,7 +172,7 @@ pipeline {
          -p NAMESPACE=${TOOLS_NAMESPACE} \
          -p TAG=test | oc apply -f - -n ${TEST_NAMESPACE}"
       sh "oc tag ${DYNAMICS_ADAPTER}:dev ${DYNAMICS_ADAPTER}:test -n ${TOOLS_NAMESPACE}"
-      // WaitForDeploy(DYNAMICS_ADAPTER, DEV_NAMESPACE)
+      WaitForDeploy(DYNAMICS_ADAPTER, TEST_NAMESPACE)
      },
      'SampleAdapter': {
       sh "oc process -f openshift/templates/sample-adapter.dc.yaml \
@@ -182,7 +182,7 @@ pipeline {
          -p NAMESPACE=${TOOLS_NAMESPACE} \
          -p TAG=test | oc apply -f - -n ${TEST_NAMESPACE}"
       sh "oc tag ${SAMPLE_ADAPTER}:dev ${SAMPLE_ADAPTER}:test -n ${TOOLS_NAMESPACE}"
-      // WaitForDeploy(ICBC_ADAPTER, DEV_NAMESPACE)
+      WaitForDeploy(SAMPLE_ADAPTER, TEST_NAMESPACE)
      },
      'ICBCAdapter': {
       sh "oc process -f openshift/templates/icbc-adapter.dc.yaml \
@@ -192,7 +192,7 @@ pipeline {
          -p NAMESPACE=${TOOLS_NAMESPACE} \
          -p TAG=test | oc apply -f - -n ${TEST_NAMESPACE}"
       sh "oc tag ${ICBC_ADAPTER}:dev ${ICBC_ADAPTER}:test -n ${TOOLS_NAMESPACE}"
-      // WaitForDeploy(ICBC_ADAPTER, DEV_NAMESPACE)
+      WaitForDeploy(ICBC_ADAPTER, TEST_NAMESPACE)
      }
     )
    }

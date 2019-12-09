@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using DynamicsAdapter.Web.PersonSearch.Models;
+using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.SearchApiEvent;
 using Fams3Adapter.Dynamics.SearchApiRequest;
@@ -53,17 +54,13 @@ namespace DynamicsAdapter.Web.PersonSearch
                  _logger.LogInformation($"Successfully created completed event for SearchApiRequest [{id}]");
 
                 //upload search result to dynamic search api
-                var personIds = personCompletedEvent.MatchedPerson.Identifiers;
                 var searchRequestId = await _searchApiRequestService.GetLinkedSearchRequestIdAsync(id, cts.Token);
-                foreach (var matchFoundPersonId in personIds)
+                SSG_SearchRequest searchRequest = new SSG_SearchRequest()
                 {
-                    SSG_Identifier identifier = _mapper.Map<SSG_Identifier>(matchFoundPersonId);
-                    identifier.SSG_SearchRequest = new SSG_SearchRequest()
-                    {
-                        SearchRequestId = searchRequestId
-                    };
-                    var identifer = await _searchRequestService.UploadIdentifier(identifier, cts.Token);
-                }
+                    SearchRequestId = searchRequestId
+                };
+                await UploadIdentifiers(searchRequest, personCompletedEvent, cts.Token);
+                await UploadAddresses(searchRequest, personCompletedEvent, cts.Token);
             }
             catch (Exception ex)
             {
@@ -89,9 +86,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             var token = new CancellationTokenSource();
 
             try
-            {
-           
-
+            {          
                 var searchApiEvent = _mapper.Map<SSG_SearchApiEvent>(personAcceptedEvent);
                 _logger.LogDebug($"Attempting to create a new event for SearchApiRequest [{id}]");
                 var result = await _searchApiRequestService.AddEventAsync(id, searchApiEvent, token.Token);
@@ -165,6 +160,30 @@ namespace DynamicsAdapter.Web.PersonSearch
             }
 
             return Ok();
+        }
+
+        private async Task<bool> UploadIdentifiers(SSG_SearchRequest request, PersonSearchCompleted personCompletedEvent, CancellationToken concellationToken)
+        {
+            if (personCompletedEvent.MatchedPerson.Identifiers == null) return true;
+            foreach (var matchFoundPersonId in personCompletedEvent.MatchedPerson.Identifiers)
+            {
+                SSG_Identifier identifier = _mapper.Map<SSG_Identifier>(matchFoundPersonId);
+                identifier.SSG_SearchRequest = request;
+                var identifer = await _searchRequestService.UploadIdentifier(identifier, concellationToken);
+            }
+            return true;
+        }
+
+        private async Task<bool> UploadAddresses(SSG_SearchRequest request, PersonSearchCompleted personCompletedEvent, CancellationToken concellationToken)
+        {
+            if (personCompletedEvent.MatchedPerson.Addresses == null) return true;
+            foreach (var address in personCompletedEvent.MatchedPerson.Addresses)
+            {
+                SSG_Address addr = _mapper.Map<SSG_Address>(address);
+                addr.SearchRequest = request;
+                var uploadedAddr = await _searchRequestService.UploadAddress(addr, concellationToken);
+            }
+            return true;
         }
     }
 }

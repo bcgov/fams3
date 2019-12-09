@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using DynamicsAdapter.Web.PersonSearch.Models;
+using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.OptionSets.Models;
 using Fams3Adapter.Dynamics.SearchApiEvent;
@@ -66,6 +67,20 @@ namespace DynamicsAdapter.Web.SearchRequest
                .ForMember(dest => dest.Message, opt => opt.MapFrom(src => $"Auto search processing completed successfully. {src.MatchedPerson.Identifiers.Count()} results found."))
                .ReverseMap();
 
+            CreateMap<Address, SSG_Address>()
+                 .ForMember(dest => dest.AddressLine1, opt => opt.MapFrom(src => src.AddressLine1))
+                 .ForMember(dest => dest.AddressLine2, opt => opt.MapFrom(src => src.AddressLine2))
+                 .ForMember(dest => dest.Province, opt => opt.ConvertUsing(new ProvinceConverter(), src => src.Province))
+                 .ForMember(dest => dest.InformationSource, opt => opt.ConvertUsing(new IssuedByTypeConverter(), src => src.SuppliedBy))
+                 .ForMember(dest => dest.City, opt => opt.MapFrom(src => src.City))
+                 .ForMember(dest => dest.Country, opt => opt.ConvertUsing(new CountryConverter(), src => src.Country))
+                 .ForMember(dest => dest.Category, opt => opt.ConvertUsing(new AddressTypeConverter(), src => src.Type))
+                 .ForMember(dest => dest.NonCanadianState, opt => opt.MapFrom(src => src.NonCanadianState))
+                 .ForMember(dest => dest.FullText, opt => opt.MapFrom<FullTextResolver>())
+                 .ForMember(dest => dest.PostalCode, opt => opt.MapFrom(src => src.PostalCode))
+                 .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => 0))
+                 .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1));
+
             CreateMap<PersonalIdentifier, SSG_Identifier>()
                  .ForMember(dest => dest.Identification, opt => opt.MapFrom(src => src.SerialNumber))
                  .ForMember(dest => dest.IdentificationEffectiveDate, opt => opt.MapFrom(src => src.EffectiveDate))
@@ -120,7 +135,40 @@ namespace DynamicsAdapter.Web.SearchRequest
         }
     }
 
+    public class ProvinceConverter : IValueConverter<string, int?>
+    {
+        public int? Convert(string source, ResolutionContext context)
+        {
+            return Enumeration.GetAll<CanadianProvinceType>().FirstOrDefault(m => m.Name.Equals(source, StringComparison.OrdinalIgnoreCase))?.Value;
+        }
+    }
 
+    public class AddressTypeConverter : IValueConverter<string, int?>
+    {
+        public int? Convert(string source, ResolutionContext context)
+        {
+            return Enumeration.GetAll<LocationType>().FirstOrDefault(m => m.Name.Equals(source, StringComparison.OrdinalIgnoreCase))?.Value;
+        }
+    }
+
+    public class CountryConverter : IValueConverter<string, SSG_Country?>
+    {
+        public SSG_Country Convert(string source, ResolutionContext context)
+        {
+            return new SSG_Country()
+            {
+                Name = source
+            };
+        }
+    }
+
+    public class FullTextResolver : IValueResolver<Address, SSG_Address, string>
+    {
+        public string Resolve(Address source, SSG_Address dest, string fullText, ResolutionContext context)
+        {
+            return $"{source.AddressLine1} {source.AddressLine2} {source.City} {source.Province} {source.Country} {source.PostalCode}";
+        }
+    }
 
     public static class SearchApiIdentifierType
     {

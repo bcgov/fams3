@@ -9,7 +9,7 @@ namespace Fams3Adapter.Dynamics.Address
         public string FullText { get; set; }
 
         [JsonProperty("ssg_addresscategorytext")]
-        public int Category { get; set; }
+        public int? Category { get; set; }
 
         [JsonProperty("ssg_address")]
         public string AddressLine1 { get; set; }
@@ -18,13 +18,13 @@ namespace Fams3Adapter.Dynamics.Address
         public string AddressLine2 { get; set; }
 
         [JsonProperty("ssg_locationcanadianprovincecode")]
-        public int Province { get; set; }
+        public int? Province { get; set; }
 
         [JsonProperty("ssg_locationcityname")]
         public string City { get; set; }
 
-        [JsonProperty("ssg_locationcountry")]
-        public SSG_Country Country { get; set; }
+        [JsonProperty("ssg_LocationCountry")]
+        public virtual SSG_Country Country { get; set; }
 
         [JsonProperty("ssg_locationname")]
         public string Name { get; set; }

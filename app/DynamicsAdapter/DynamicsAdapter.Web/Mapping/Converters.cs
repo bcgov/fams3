@@ -75,7 +75,7 @@ namespace DynamicsAdapter.Web.Mapping
         }
     }
 
-    public class CountryConverter : IValueConverter<string, SSG_Country?>
+    public class CountryConverter : IValueConverter<string, SSG_Country>
     {
         public SSG_Country Convert(string source, ResolutionContext context)
         {

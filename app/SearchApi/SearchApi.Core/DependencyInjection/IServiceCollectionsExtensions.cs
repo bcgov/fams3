@@ -12,12 +12,19 @@ using Microsoft.Extensions.Logging;
 using System;
 using SearchApi.Core.OpenTracing;
 
-namespace SearchApi.Core.Registrations
+namespace SearchApi.Core.DependencyInjection
 {
     public static class IServiceCollectionExtensions
     {
-     
-       public static void AddProvider(this IServiceCollection services, IConfiguration configuration, Func<IServiceProvider, IConsumer<PersonSearchOrdered>> function)
+        /// <summary>
+        /// Configure MassTransit Service Bus
+        /// http://masstransit-project.com/
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="configuration"></param>
+        /// <param name="function"></param>
+
+        public static void AddProvider(this IServiceCollection services, IConfiguration configuration, Func<IServiceProvider, IConsumer<PersonSearchOrdered>> function)
         {
 
             var rabbitMqSettings = configuration.GetSection("RabbitMq").Get<RabbitMqConfiguration>();
@@ -69,5 +76,7 @@ namespace SearchApi.Core.Registrations
 
             services.AddHostedService<BusHostedService>();
         }
+
+       
     }
 }

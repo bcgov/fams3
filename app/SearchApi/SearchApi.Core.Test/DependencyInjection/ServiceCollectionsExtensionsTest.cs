@@ -8,13 +8,12 @@ using Microsoft.Extensions.Options;
 using NUnit.Framework;
 using SearchAdapter.Sample.SearchRequest;
 using SearchApi.Core.Adapters.Configuration;
-using SearchApi.Core.MassTransit;
-using SearchApi.Core.Registrations;
+using SearchApi.Core.DependencyInjection;
 using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace SearchApi.Core.Test.Registrations
+namespace SearchApi.Core.Test.DependencyInjection
 {
 
     public class ServiceCollectionsExtensionsTest
@@ -35,8 +34,6 @@ namespace SearchApi.Core.Test.Registrations
             services = new ServiceCollection();
             configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(settings)));
-           // configurationBuilder.AddJsonStream(@"\Settings\appsettings.json");
-            //configurationBuilder.AddJsonFile(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName + @"\Settings\appsettings.json");
             configuration = configurationBuilder.Build();
 
         }

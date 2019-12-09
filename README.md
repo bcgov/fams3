@@ -290,3 +290,18 @@ You can find a configuration exemple in our [docker-compose.yml](docker-compose.
 
 ![healthChecksUi](docs/images/healthcheck-ui.png)
 
+## Search API Core Library
+The Adapters for data providers will be created in a private repository and would require interaction with search api core library. The Library has been refactored so that it can be injected into with minimal line of code.
+
+To implement the library, Adatpers should include
+
+```using SearchApi.Core.DependencyInjection;```
+
+To register the messaging services for search api, see sample below (C#)
+
+```
+services.AddProvider(Configuration, (provider) => new SearchRequestConsumer(provider.GetRequiredService<IValidator<Person>>(),
+                                  provider.GetRequiredService<IOptions<ProviderProfileOptions>>(),
+                                  provider.GetRequiredService<ILogger<SearchRequestConsumer>>()));
+```
+

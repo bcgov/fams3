@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Registrations\appsettings.Development.json" />
-    <None Remove="Registrations\appsettings.json" />
+    <None Remove="DependencyInjection\appsettings.Development.json" />
+    <None Remove="DependencyInjection\appsettings.json" />
   </ItemGroup>
 
   <ItemGroup>

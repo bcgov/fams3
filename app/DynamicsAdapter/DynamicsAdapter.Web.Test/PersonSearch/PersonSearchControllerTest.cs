@@ -92,7 +92,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                     LastName = "TEST2",
                     Identifiers = new List<PersonalIdentifier>()
                         {
-                            new PersonalIdentifier()
+                            new PersonalIdentifierConcrete()
                             {
                                SerialNumber  = "test",
                                IssuedBy = "test",

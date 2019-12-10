@@ -38,10 +38,15 @@ namespace SearchApi.Web.Controllers
 
     public class SearchApiPersonalIdentifier : PersonalIdentifier
     {
+        [Description("The serial number of the identifier.")]
         public string SerialNumber { get; set; }
+        [Description("The effective date of the identifier.")]
         public DateTime? EffectiveDate { get; set; }
+        [Description("The expiration date of the identifier.")]
         public DateTime? ExpirationDate { get; set; }
+        [Description("The type of the identifier.")]
         public PersonalIdentifierType Type { get; set; }
+        [Description("The issuer of the identifier.")]
         public string IssuedBy { get; set; }
     }
 }

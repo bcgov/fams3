@@ -90,38 +90,64 @@
         "identifiers": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/Identifier"
-          },
-          "description": "The list of exsiting identifiers of the subject"
+            "$ref": "#/definitions/PersonalIdentifier"
+          }
         }
       }
     },
-    "Identifier": {
+    "PersonalIdentifier": {
       "type": "object",
-      "description": "Identifier",
+      "x-abstract": true,
+      "required": [
+        "type"
+      ],
       "properties": {
         "serialNumber": {
-          "type": "string",
-          "description": "The identification serial number of this identifier"
+          "type": "string"
         },
         "effectiveDate": {
-          "format": "date-time",
-          "description": "The identification Effective Date"
+          "type": "string",
+          "format": "date-time"
         },
         "expirationDate": {
           "type": "string",
-          "format": "date-time",
-          "description": "The identification expiration date"
+          "format": "date-time"
         },
         "type": {
-          "type": "integer",
-          "description": "The identifier type, such as driver license"
+          "$ref": "#/definitions/PersonalIdentifierType"
         },
         "issuedBy": {
-          "type": "string",
-          "description": "The identifier is issued by who or which organization"
+          "type": "string"
         }
       }
+    },
+    "PersonalIdentifierType": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "DriverLicense",
+        "SocialInsuranceNumber",
+        "PersonalHealthNumber",
+        "BirthCertificate",
+        "CorrectionsId",
+        "NativeStatusCard",
+        "Passport",
+        "WcbClaim",
+        "Other",
+        "SecurityKeyword"
+      ],
+      "enum": [
+        "DriverLicense",
+        "SocialInsuranceNumber",
+        "PersonalHealthNumber",
+        "BirthCertificate",
+        "CorrectionsId",
+        "NativeStatusCard",
+        "Passport",
+        "WcbClaim",
+        "Other",
+        "SecurityKeyword"
+      ]
     }
   },
   "tags": [

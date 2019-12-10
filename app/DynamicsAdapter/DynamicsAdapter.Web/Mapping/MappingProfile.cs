@@ -15,10 +15,10 @@ namespace  DynamicsAdapter.Web.Mapping
 
     public class MappingProfile : Profile
     {
-
         public MappingProfile()
         {
-            CreateMap<SSG_Identifier, Identifier>()
+            CreateMap<SSG_Identifier, PersonalIdentifier>()
+                 .ConstructUsing( m => new PersonalIdentifierConcrete(){})
                  .ForMember(dest => dest.SerialNumber, opt => opt.MapFrom(src => src.Identification))
                  .ForMember(dest => dest.EffectiveDate, opt => opt.MapFrom(src => src.IdentificationEffectiveDate))
                  .ForMember(dest => dest.ExpirationDate, opt => opt.MapFrom(src => src.IdentificationExpirationDate))
@@ -87,10 +87,10 @@ namespace  DynamicsAdapter.Web.Mapping
 
             CreateMap<PersonalIdentifier, SSG_Identifier>()
                  .ForMember(dest => dest.Identification, opt => opt.MapFrom(src => src.SerialNumber))
-                 .ForMember(dest => dest.IdentificationEffectiveDate, opt => opt.MapFrom(src => src.EffectiveDate))
-                 .ForMember(dest => dest.IdentificationExpirationDate, opt => opt.MapFrom(src => src.ExpirationDate))
+                 .ForMember(dest => dest.IdentificationEffectiveDate, opt => opt.ConvertUsing(new DateTimeOffsetConverter(), src => src.EffectiveDate)) 
+                 .ForMember(dest => dest.IdentificationExpirationDate, opt => opt.ConvertUsing(new DateTimeOffsetConverter(), src => src.ExpirationDate))
                  .ForMember(dest => dest.IdentifierType, opt => opt.ConvertUsing(new PersonalIdentifierTypeConverter(), src => src.Type))
-                 .ForMember(dest => dest.InformationSource, opt => opt.ConvertUsing(new IssuedByTypeConverter(), src=>src.IssuedBy))
+                 .ForMember(dest => dest.InformationSource, opt => opt.ConvertUsing(new IssuedByTypeConverter(), src => src.IssuedBy))
                  .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => 0))
                  .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1));
         }

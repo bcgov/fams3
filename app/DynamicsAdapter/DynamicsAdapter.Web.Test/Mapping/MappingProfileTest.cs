@@ -207,7 +207,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                     FirstName = "firstName",
                     LastName = "lastName",
                     DateOfBirth = new DateTime(2019, 3, 5),
-                    Identifiers = new PersonalIdentifier[]
+                    Identifiers = new PersonalIdentifierConcrete[]
                     {
                         new PersonalIdentifierConcrete(){ },
                         new PersonalIdentifierConcrete(){ }
@@ -243,7 +243,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                     FirstName = "firstName",
                     LastName = "lastName",
                     DateOfBirth = new DateTime(2019, 3, 5),
-                    Identifiers = new PersonalIdentifier[]
+                    Identifiers = new PersonalIdentifierConcrete[]
                     {
                         new PersonalIdentifierConcrete(){ },
                         new PersonalIdentifierConcrete(){ }

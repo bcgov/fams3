@@ -63,7 +63,6 @@ namespace DynamicsAdapter.Web.SearchRequest
                     _logger.LogInformation($"Successfully posted person search id:{result.Id}");
 
                     await MarkInProgress(ssgSearchRequest, cts.Token);
-
                 }
             }
             catch(Exception e) 

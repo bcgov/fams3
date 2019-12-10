@@ -43,11 +43,11 @@ namespace DynamicsAdapter.Web.Mapping
         };
     }
 
-    public class IdentifierTypeConverter : IValueConverter<int?, int?>
+    public class IdentifierTypeConverter : IValueConverter<int?, PersonalIdentifierType>
     {      
-        public int? Convert(int? source, ResolutionContext context)
+        public PersonalIdentifierType Convert(int? source, ResolutionContext context)
         {
-            return source==null? null : (int?)IDType.IDTypeDictionary[(int)source];
+            return source==null? PersonalIdentifierType.Other : IDType.IDTypeDictionary[(int)source];
         }
     }
 
@@ -72,6 +72,14 @@ namespace DynamicsAdapter.Web.Mapping
         public int? Convert(string source, ResolutionContext context)
         {
             return Enumeration.GetAll<LocationType>().FirstOrDefault(m => m.Name.Equals(source, StringComparison.OrdinalIgnoreCase))?.Value;
+        }
+    }
+
+    public class DateTimeOffsetConverter : IValueConverter<DateTimeOffset?, DateTime?>
+    {
+        public DateTime? Convert(DateTimeOffset? source, ResolutionContext context)
+        {
+            return source ==null? null : (DateTime?)(((DateTimeOffset)source).DateTime);
         }
     }
 

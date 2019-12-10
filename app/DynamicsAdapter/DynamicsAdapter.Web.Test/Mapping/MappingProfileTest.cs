@@ -31,7 +31,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
         }
 
         [Test]
-        public void SSG_Identifier_should_map_to_Identifier_correctly()
+        public void SSG_Identifier_should_map_to_PersonalIdentifier_correctly()
         {
             SSG_Identifier sSG_Identifier = new SSG_Identifier()
             {
@@ -42,11 +42,11 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 InformationSource = InformationSourceType.Employer.Value
 
             };
-            Identifier identifier = _mapper.Map<Identifier>(sSG_Identifier);
+            PersonalIdentifier identifier = _mapper.Map<PersonalIdentifier>(sSG_Identifier);
             Assert.AreEqual("testIdentification", identifier.SerialNumber);
-            Assert.AreEqual(new DateTime(2001, 1, 1), identifier.EffectiveDate);
+            Assert.AreEqual(new DateTimeOffset(new DateTime(2001, 1, 1)), identifier.EffectiveDate);
             Assert.AreEqual(new DateTimeOffset(new DateTime(2001, 1, 1)), identifier.ExpirationDate);
-            Assert.AreEqual((int)PersonalIdentifierType.SocialInsuranceNumber, identifier.Type);
+            Assert.AreEqual(PersonalIdentifierType.SocialInsuranceNumber, identifier.Type);
             Assert.AreEqual(InformationSourceType.Employer.Name, identifier.IssuedBy);
         }
 
@@ -207,10 +207,10 @@ namespace DynamicsAdapter.Web.Test.Mapping
                     FirstName = "firstName",
                     LastName = "lastName",
                     DateOfBirth = new DateTime(2019, 3, 5),
-                    Identifiers = new PersonalIdentifier[]
+                    Identifiers = new PersonalIdentifierConcrete[]
                     {
-                        new PersonalIdentifier(){ },
-                        new PersonalIdentifier(){ }
+                        new PersonalIdentifierConcrete(){ },
+                        new PersonalIdentifierConcrete(){ }
                     },
                     Addresses = new Address[]
                     {
@@ -243,10 +243,10 @@ namespace DynamicsAdapter.Web.Test.Mapping
                     FirstName = "firstName",
                     LastName = "lastName",
                     DateOfBirth = new DateTime(2019, 3, 5),
-                    Identifiers = new PersonalIdentifier[]
+                    Identifiers = new PersonalIdentifierConcrete[]
                     {
-                        new PersonalIdentifier(){ },
-                        new PersonalIdentifier(){ }
+                        new PersonalIdentifierConcrete(){ },
+                        new PersonalIdentifierConcrete(){ }
                     },
                     Addresses = null
                 }
@@ -262,11 +262,11 @@ namespace DynamicsAdapter.Web.Test.Mapping
         [Test]
         public void PersonalIdentifier_should_map_to_SSG_Identifier_correctly()
         {
-            PersonalIdentifier identifier = new PersonalIdentifier()
+            PersonalIdentifier identifier = new PersonalIdentifierConcrete()
             {
                 SerialNumber = "1111111",
-                ExpirationDate = new DateTime(2003, 3, 3),
-                EffectiveDate = new DateTime(2002, 2, 2),
+                ExpirationDate = new DateTimeOffset(new DateTime(2003, 3, 3)),
+                EffectiveDate = new DateTimeOffset(new DateTime(2002, 2, 2)),
                 Type = PersonalIdentifierType.DriverLicense,
                 IssuedBy = "ICBC"
             };

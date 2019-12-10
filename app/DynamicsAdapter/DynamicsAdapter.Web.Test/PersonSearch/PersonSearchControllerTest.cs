@@ -90,9 +90,9 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                     DateOfBirth = DateTime.Now,
                     FirstName = "TEST1",
                     LastName = "TEST2",
-                    Identifiers = new List<PersonalIdentifier>()
+                    Identifiers = new List<PersonalIdentifierConcrete>()
                         {
-                            new PersonalIdentifier()
+                            new PersonalIdentifierConcrete()
                             {
                                SerialNumber  = "test",
                                IssuedBy = "test",

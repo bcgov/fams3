@@ -21,6 +21,7 @@ namespace SearchAdapter.Sample.SearchRequest
         public string LastName { get; set; }
         public DateTime? DateOfBirth { get; set; }
         public IEnumerable<PersonalIdentifier> Identifiers { get; set; }
+        public IEnumerable<PersonalAddress> Addresses { get; set; }
     }
 
     public class PersonalIdentifierSample : PersonalIdentifier
@@ -30,6 +31,19 @@ namespace SearchAdapter.Sample.SearchRequest
         public DateTime? ExpirationDate { get; set; }
         public PersonalIdentifierType Type { get; set; }
         public string IssuedBy { get; set; }
+    }
+
+    public class PersonaAddressSample : PersonalAddress
+    {
+        public string Type { get; set; }
+        public string AddressLine1 { get; set; }
+        public string AddressLine2 { get; set; }
+        public string Province { get; set; }
+        public string City { get; set; }
+        public string Country { get; set; }
+        public string PostalCode { get; set; }
+        public string NonCanadianState { get; set; }
+        public string SuppliedBy { get; set; }
     }
 
     public class PersonSearchRejectedEvent : PersonSearchRejected

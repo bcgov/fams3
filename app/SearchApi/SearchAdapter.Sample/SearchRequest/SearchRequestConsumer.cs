@@ -103,6 +103,33 @@ namespace SearchAdapter.Sample.SearchRequest
                             IssuedBy = "ICBC",
                             SerialNumber = new Random().Next(0, 50000).ToString()
                         }
+                    },
+                    Addresses = new List<PersonaAddressSample>() 
+                    {
+                        new PersonaAddressSample()
+                        {
+                            Type = "mailing",
+                            AddressLine1 = "address in line 1",
+                            AddressLine2 = "address in line 2",
+                            Province = "British Columbia",
+                            City = "victoria" ,
+                            Country="canada",
+                            PostalCode = "t4t4t4",
+                            NonCanadianState="",
+                            SuppliedBy = "ICBC"
+                        },
+                         new PersonaAddressSample()
+                        {
+                            Type = "residence",
+                            AddressLine1 = "residence address in line 1",
+                            AddressLine2 = "residence address in line 2",
+                            Province = "British Columbia",
+                            City = "vancouver" ,
+                            Country="canada",
+                            PostalCode = "5r5r5r",
+                            NonCanadianState="",
+                            SuppliedBy = "employer"
+                        }
                     }
                 }
             };

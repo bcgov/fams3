@@ -9,5 +9,6 @@ namespace SearchApi.Core.Person.Contracts
         string LastName { get; }
         DateTime? DateOfBirth { get; }
         IEnumerable<PersonalIdentifier> Identifiers { get; }
+        IEnumerable<PersonalAddress> Addresses { get; }
     }
 }

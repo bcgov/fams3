@@ -33,6 +33,7 @@ namespace SearchApi.Web.Controllers
         public DateTime? DateOfBirth { get; }
 
         public IEnumerable<PersonalIdentifier> Identifiers { get; set; }
+        public IEnumerable<PersonalAddress> Addresses { get; set; }
     }
 
 

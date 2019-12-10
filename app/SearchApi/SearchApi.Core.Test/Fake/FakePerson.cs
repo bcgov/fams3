@@ -10,5 +10,6 @@ namespace SearchApi.Core.Test.Fake
         public string LastName { get; } = nameof(LastName);
         public DateTime? DateOfBirth { get; } = new DateTime(2001, 1, 1);
         public IEnumerable<PersonalIdentifier> Identifiers { get; set; }
+        public IEnumerable<PersonalAddress> Addresses { get; set; }
     }
 }

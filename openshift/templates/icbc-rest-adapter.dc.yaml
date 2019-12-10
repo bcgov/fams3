@@ -118,14 +118,21 @@ objects:
                   value: http://${JAEGER_COLLECTOR}:14268/api/traces
                 - name: ASPNETCORE_ENVIRONMENT
                   value: Development
-                - name: RABBITMQ__HOST
-                  value: rabbitmq-cluster
-                - name: RABBITMQ__PORT
-                  value: "5672"
-                - name: RABBITMQ__USERNAME
-                  value: guest
-                - name: RABBITMQ__PASSWORD
-                  value: guest
+                - name: ICBCSOAPAPI__BASEADDRESS
+                  valueFrom:
+                    secretKeyRef:
+                      name: icbc-soap-api-configuration
+                      key: base-address
+                - name: ICBCSOAPAPI__USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: icbc-soap-api-configuration
+                      key: username
+                - name: ICBCSOAPAPI__PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: icbc-soap-api-configuration
+                      key: password
               # livenessProbe:
               #   httpGet:
               #     path: "/health"

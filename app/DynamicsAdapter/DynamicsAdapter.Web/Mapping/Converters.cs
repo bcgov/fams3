@@ -4,7 +4,7 @@ using System.Linq;
 using AutoMapper;
 using DynamicsAdapter.Web.PersonSearch.Models;
 using Fams3Adapter.Dynamics.Address;
-using Fams3Adapter.Dynamics.Identifier;
+using Fams3Adapter.Dynamics.Types;
 using Fams3Adapter.Dynamics.OptionSets.Models;
 
 namespace DynamicsAdapter.Web.Mapping

@@ -5,7 +5,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using DynamicsAdapter.Web.SearchRequest;
-using Fams3Adapter.Dynamics.Identifier;
+using Fams3Adapter.Dynamics.Types;
 using Fams3Adapter.Dynamics.OptionSets;
 using Fams3Adapter.Dynamics.OptionSets.Models;
 using Fams3Adapter.Dynamics.SearchApiRequest;
@@ -30,7 +30,7 @@ namespace DynamicsAdapter.Web.Health
                 return HealthCheckResult.Unhealthy("Different Status Reason Exists in dynamics");
             }
 
-            if (!await CheckOptionSet(cancellationToken))
+            if (!await CheckOptionSet(cancellationToken, TypeService.TypeList))
             {
                 return HealthCheckResult.Unhealthy("Different Option Sets Exists in dynamics");
             }
@@ -55,18 +55,23 @@ namespace DynamicsAdapter.Web.Health
         }
 
 
-        private async Task<bool> CheckOptionSet(CancellationToken cancellationToken)
+        private async Task<bool> CheckOptionSet(CancellationToken cancellationToken, List<string> optionTypes)
         {
 
-            var idTypes = await _optionSetService.GetAllOptions("ssg_identificationtypes", cancellationToken);
-
-            foreach (var identificationType in Enumeration.GetAll<IdentificationType>())
+            foreach (var optionType in optionTypes)
             {
-                if (!idTypes.Any(x => x.Value == identificationType.Value && string.Equals(x.Name, identificationType.Name, StringComparison.OrdinalIgnoreCase)))
-                    return false;
-            }
+                
+                var idTypes = await _optionSetService.GetAllOptions(optionType, cancellationToken);
+                foreach (var identificationType in Enumeration.GetAll<Enumeration> ())
+                {
+                    if (!idTypes.Any(x => x.Value == identificationType.Value && string.Equals(x.Name, identificationType.Name, StringComparison.OrdinalIgnoreCase)))
+                        return false;
+                }
+               
 
+            }
             return true;
+
         }
 
     }

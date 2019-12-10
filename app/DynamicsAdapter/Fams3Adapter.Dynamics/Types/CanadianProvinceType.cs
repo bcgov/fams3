@@ -3,8 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Fams3Adapter.Dynamics.Address
+namespace Fams3Adapter.Dynamics.Types
 {
+    //ssg_canadianprovincecodesimpletype
     public class CanadianProvinceType : Enumeration
     {
         public static CanadianProvinceType Alberta = new CanadianProvinceType(867670000, "Alberta");
@@ -20,7 +21,7 @@ namespace Fams3Adapter.Dynamics.Address
         public static CanadianProvinceType Quebec = new CanadianProvinceType(867670010, "Quebec");
         public static CanadianProvinceType Saskatchewan = new CanadianProvinceType(867670011, "Saskatchewan");
         public static CanadianProvinceType Yukon = new CanadianProvinceType(867670012, "Yukon");
-        protected CanadianProvinceType(int value, string name) : base(value, name)
+        public CanadianProvinceType(int value, string name) : base(value, name)
         {
         }
 

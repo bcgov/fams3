@@ -1,7 +1,8 @@
 ﻿using Fams3Adapter.Dynamics.OptionSets.Models;
 
-namespace Fams3Adapter.Dynamics.Identifier
+namespace Fams3Adapter.Dynamics.Types
 {
+    //ssg_identificationtypes
     public class IdentificationType : Enumeration
     {
         public static IdentificationType DriverLicense = new IdentificationType(867670000, "Driver's License");
@@ -15,7 +16,7 @@ namespace Fams3Adapter.Dynamics.Identifier
         public static IdentificationType Other = new IdentificationType(867670012,  "Other");
         public static IdentificationType SecurityKeyword = new IdentificationType(867670013, "Security Keyword");
 
-        protected IdentificationType(int value, string name) : base(value, name)
+        public IdentificationType(int value, string name) : base(value, name)
         {
         }
 

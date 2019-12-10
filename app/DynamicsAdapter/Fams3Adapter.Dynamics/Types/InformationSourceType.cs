@@ -1,7 +1,9 @@
 ﻿using Fams3Adapter.Dynamics.OptionSets.Models;
 
-namespace Fams3Adapter.Dynamics.Identifier
+namespace Fams3Adapter.Dynamics.Types
+
 {
+    //ssg_informationsourcecodes
     public class InformationSourceType : Enumeration
     {
 
@@ -10,7 +12,7 @@ namespace Fams3Adapter.Dynamics.Identifier
         public static InformationSourceType Employer = new InformationSourceType(867670002,  "Employer");
         public static InformationSourceType Other = new InformationSourceType(867670003, "Other");
 
-        protected InformationSourceType(int value, string name) : base(value, name)
+        public InformationSourceType(int value, string name) : base(value, name)
         {
         }
     }

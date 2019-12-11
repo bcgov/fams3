@@ -50,7 +50,7 @@ namespace DynamicsAdapter.Web
 
             services.AddControllers();
 
-            services.AddHealthChecks().AddCheck<StatusReasonHealthCheck>("status_reason_health_check",failureStatus:HealthStatus.Degraded);
+            services.AddHealthChecks().AddCheck<DynamicsHealthCheck>("status_reason_health_check",failureStatus:HealthStatus.Degraded);
 
             // configure strongly typed settings objects
             var appSettings = ConfigureAppSettings(services);

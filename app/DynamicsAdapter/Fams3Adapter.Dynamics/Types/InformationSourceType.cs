@@ -1,7 +1,9 @@
 ﻿using Fams3Adapter.Dynamics.OptionSets.Models;
 
-namespace Fams3Adapter.Dynamics.Identifier
+namespace Fams3Adapter.Dynamics.Types
+
 {
+    
     public class InformationSourceType : Enumeration
     {
 

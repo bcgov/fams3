@@ -3,8 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Fams3Adapter.Dynamics.Address
+namespace Fams3Adapter.Dynamics.Types
 {
+    
     public class LocationType : Enumeration
     {
         public static LocationType Residence = new LocationType(867670001, "Residence");

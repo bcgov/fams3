@@ -3,8 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Fams3Adapter.Dynamics.Address
+namespace Fams3Adapter.Dynamics.Types
 {
+    
     public class CanadianProvinceType : Enumeration
     {
         public static CanadianProvinceType Alberta = new CanadianProvinceType(867670000, "Alberta");

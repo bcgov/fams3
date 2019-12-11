@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 using DynamicsAdapter.Web.Health;
 using DynamicsAdapter.Web.SearchRequest;
 using DynamicsAdapter.Web.Test.FakeMessages;
-using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.OptionSets;
 using Fams3Adapter.Dynamics.OptionSets.Models;
+using Fams3Adapter.Dynamics.Types;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Moq;
 using NUnit.Framework;
@@ -58,6 +58,19 @@ namespace DynamicsAdapter.Web.Test.Health
                 .Returns(Task.FromResult(FakeHttpMessageResponse.GetFakeValidReason()));
             _statusReasonServiceMock.Setup(x => x.GetAllOptions("ssg_identificationtypes", CancellationToken.None))
                 .Returns(Task.FromResult(Enumeration.GetAll<IdentificationType>().Select(x => new GenericOption(x.Value, x.Name))));
+
+            _statusReasonServiceMock.Setup(x => x.GetAllOptions("ssg_canadianprovincecodesimpletype", CancellationToken.None))
+      .Returns(Task.FromResult(Enumeration.GetAll<CanadianProvinceType>().Select(x => new GenericOption(x.Value, x.Name))));
+
+            _statusReasonServiceMock.Setup(x => x.GetAllOptions("ssg_informationsourcecodes", CancellationToken.None))
+      .Returns(Task.FromResult(Enumeration.GetAll<InformationSourceType>().Select(x => new GenericOption(x.Value, x.Name))));
+
+            _statusReasonServiceMock.Setup(x => x.GetAllOptions("ssg_addresscategorycodes", CancellationToken.None))
+      .Returns(Task.FromResult(Enumeration.GetAll<LocationType>().Select(x => new GenericOption(x.Value, x.Name))));
+
+            _statusReasonServiceMock.Setup(x => x.GetAllOptions("ssg_telephonenumbercategorycodes", CancellationToken.None))
+      .Returns(Task.FromResult(Enumeration.GetAll<TelephoneNumberType>().Select(x => new GenericOption(x.Value, x.Name))));
+
             _sut = new StatusReasonHealthCheck(_statusReasonServiceMock.Object);
 
             var result = await _sut.CheckHealthAsync(new HealthCheckContext(), CancellationToken.None);

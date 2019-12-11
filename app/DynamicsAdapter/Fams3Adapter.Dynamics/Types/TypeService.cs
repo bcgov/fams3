@@ -10,11 +10,14 @@ namespace Fams3Adapter.Dynamics.Types
 
         public static readonly List<string> TypeList = new List<string>()
         {
-            {"ssg_canadianprovincecodesimpletype" },
-            {"ssg_identificationtypes" },
-            {"ssg_informationsourcecodes"},
-            {"ssg_addresscategorycodes" },
-           
+            "ssg_canadianprovincecodesimpletype" ,
+            "ssg_identificationtypes" ,
+            "ssg_informationsourcecodes",
+            "ssg_addresscategorycodes" ,
+            "ssg_telephonenumbercategorycodes"
+
         };
+
+       
     }
 }

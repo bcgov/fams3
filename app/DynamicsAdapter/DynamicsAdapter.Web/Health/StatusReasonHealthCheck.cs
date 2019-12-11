@@ -54,21 +54,44 @@ namespace DynamicsAdapter.Web.Health
             return true;
         }
 
+        private IEnumerable<Enumeration> GetListOfOptions (string entityName)
+        {
+            IEnumerable<Enumeration> optionsList;
+            switch (entityName)
+            {
+                case "ssg_canadianprovincecodesimpletype":
+                    optionsList= Enumeration.GetAll<CanadianProvinceType>();
+                    break;
+                case "ssg_identificationtypes":
+                    optionsList = Enumeration.GetAll<IdentificationType>();
+                    break;
+                case "ssg_informationsourcecodes":
+                    optionsList = Enumeration.GetAll<InformationSourceType>();
+                    break;
+                case "ssg_addresscategorycodes":
+                    optionsList = Enumeration.GetAll<LocationType>();
+                    break;
+                case "ssg_telephonenumbercategorycodes":
+                    optionsList = Enumeration.GetAll<TelephoneNumberType>();
+                    break;
+                default:
+                    optionsList= Enumeration.GetAll<IdentificationType>();
+                    break;
+            }
+            return optionsList;
+        }
 
         private async Task<bool> CheckOptionSet(CancellationToken cancellationToken, List<string> optionTypes)
         {
 
             foreach (var optionType in optionTypes)
             {
-                
-                var idTypes = await _optionSetService.GetAllOptions(optionType, cancellationToken);
-                foreach (var identificationType in Enumeration.GetAll<Enumeration> ())
+                var types = await _optionSetService.GetAllOptions(optionType, cancellationToken);
+                foreach (var entityType in GetListOfOptions(optionType))
                 {
-                    if (!idTypes.Any(x => x.Value == identificationType.Value && string.Equals(x.Name, identificationType.Name, StringComparison.OrdinalIgnoreCase)))
+                    if (!types.Any(x => x.Value == entityType.Value && string.Equals(x.Name, entityType.Name, StringComparison.OrdinalIgnoreCase)))
                         return false;
                 }
-               
-
             }
             return true;
 

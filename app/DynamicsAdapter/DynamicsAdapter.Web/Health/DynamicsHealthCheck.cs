@@ -14,12 +14,12 @@ using Microsoft.Extensions.Logging;
 
 namespace DynamicsAdapter.Web.Health
 {
-    public class StatusReasonHealthCheck : IHealthCheck
+    public class DynamicsHealthCheck : IHealthCheck
     {
         private readonly IOptionSetService _optionSetService;
-        private readonly ILogger<StatusReasonHealthCheck> _logger;
+        private readonly ILogger<DynamicsHealthCheck> _logger;
 
-        public StatusReasonHealthCheck(IOptionSetService optionSetService, ILogger<StatusReasonHealthCheck> logger)
+        public DynamicsHealthCheck(IOptionSetService optionSetService, ILogger<DynamicsHealthCheck> logger)
         {
             _optionSetService = optionSetService;
             _logger = logger;

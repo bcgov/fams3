@@ -8,6 +8,7 @@ using DynamicsAdapter.Web.PersonSearch;
 using DynamicsAdapter.Web.PersonSearch.Models;
 using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.Identifier;
+using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.SearchApiEvent;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using Fams3Adapter.Dynamics.SearchRequest;
@@ -75,7 +76,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
         [Test]
         public void Address_should_map_to_SSG_Address_correctly()
         {
-            Address address = new Address()
+            var address = new PersonalAddressActual()
             {
                 AddressLine1 = "AddressLine1",
                 AddressLine2 = "AddressLine2",
@@ -208,15 +209,20 @@ namespace DynamicsAdapter.Web.Test.Mapping
                     FirstName = "firstName",
                     LastName = "lastName",
                     DateOfBirth = new DateTime(2019, 3, 5),
-                    Identifiers = new PersonalIdentifierConcrete[]
+                    Identifiers = new PersonalIdentifierActual[]
                     {
-                        new PersonalIdentifierConcrete(){ },
-                        new PersonalIdentifierConcrete(){ }
+                        new PersonalIdentifierActual(){ },
+                        new PersonalIdentifierActual(){ }
                     },
-                    Addresses = new Address[]
+                    Addresses = new PersonalAddressActual[]
                     {
-                        new Address(){ },
-                        new Address(){ }
+                        new PersonalAddressActual(){ },
+                        new PersonalAddressActual(){ }
+                    },
+                    PhoneNumbers = new PersonalPhoneNumberActual[]
+                    {
+                        new PersonalPhoneNumberActual(){ },
+                        new PersonalPhoneNumberActual(){ }
                     }
                 }
             };
@@ -225,7 +231,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(new DateTime(2003, 3, 3), searchEvent.TimeStamp);
             Assert.AreEqual(Keys.EVENT_COMPLETED, searchEvent.EventType);
             Assert.AreEqual(Keys.SEARCH_API_EVENT_NAME, searchEvent.Name);
-            Assert.AreEqual("Auto search processing completed successfully. 2 identifiers found.  2 addresses found.", searchEvent.Message);
+            Assert.AreEqual("Auto search processing completed successfully. 2 identifier(s) found.  2 addresses found. 2 phone number(s) found.", searchEvent.Message);
         }
 
         [Test]
@@ -244,10 +250,10 @@ namespace DynamicsAdapter.Web.Test.Mapping
                     FirstName = "firstName",
                     LastName = "lastName",
                     DateOfBirth = new DateTime(2019, 3, 5),
-                    Identifiers = new PersonalIdentifierConcrete[]
+                    Identifiers = new PersonalIdentifierActual[]
                     {
-                        new PersonalIdentifierConcrete(){ },
-                        new PersonalIdentifierConcrete(){ }
+                        new PersonalIdentifierActual(){ },
+                        new PersonalIdentifierActual(){ }
                     },
                     Addresses = null
                 }
@@ -257,13 +263,13 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(new DateTime(2003, 3, 3), searchEvent.TimeStamp);
             Assert.AreEqual(Keys.EVENT_COMPLETED, searchEvent.EventType);
             Assert.AreEqual(Keys.SEARCH_API_EVENT_NAME, searchEvent.Name);
-            Assert.AreEqual("Auto search processing completed successfully. 2 identifiers found.  0 addresses found.", searchEvent.Message);
+            Assert.AreEqual("Auto search processing completed successfully. 2 identifier(s) found.  0 addresses found. 0 phone number(s) found.", searchEvent.Message);
         }
 
         [Test]
         public void PersonalIdentifier_should_map_to_SSG_Identifier_correctly()
         {
-            PersonalIdentifier identifier = new PersonalIdentifierConcrete()
+            PersonalIdentifier identifier = new PersonalIdentifierActual()
             {
                 SerialNumber = "1111111",
                 ExpirationDate = new DateTimeOffset(new DateTime(2003, 3, 3)),
@@ -279,6 +285,48 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(InformationSourceType.ICBC.Value, sSG_Identifier.InformationSource);
             Assert.AreEqual(1, sSG_Identifier.StatusCode);
             Assert.AreEqual(0, sSG_Identifier.StateCode);
+        }
+
+        [Test]
+        public void PersonalPhoneNumber_should_map_to_SSG_PhoneNumber_correctly()
+        {
+            PersonalPhoneNumber phoneNumber = new PersonalPhoneNumberActual()
+            {
+               
+                Date = new DateTimeOffset(new DateTime(2003, 3, 3)),
+                PhoneNumber = "6904005678",
+                DateType = "Effective Date",
+                PhoneNumberType = "Home",
+                SuppliedBy = "ICBC"
+            };
+            SSG_PhoneNumber sSG_PhoneNumber = _mapper.Map<SSG_PhoneNumber>(phoneNumber);
+            Assert.AreEqual("6904005678", sSG_PhoneNumber.TelePhoneNumber);
+            Assert.AreEqual(TelephoneNumberType.Home.Value, sSG_PhoneNumber.TelephoneNumberType);
+            Assert.AreEqual(new DateTime(2003, 3, 3), sSG_PhoneNumber.DateData);
+            Assert.AreEqual("Effective Date", sSG_PhoneNumber.DateType);
+            Assert.AreEqual(InformationSourceType.ICBC.Value, sSG_PhoneNumber.InformationSource);
+            Assert.AreEqual(1, sSG_PhoneNumber.StatusCode);
+            Assert.AreEqual(0, sSG_PhoneNumber.StateCode);
+        }
+
+        [Test]
+        public void SSG_PhoneNumber_should_map_to_PersonalPhoneNumber_correctly()
+        {
+            SSG_PhoneNumber ssg_PhoneNumber = new SSG_PhoneNumber()
+            {
+                
+                DateData = new DateTime(2001, 1, 1),
+                DateType = "Effective Date",
+                TelePhoneNumber  = "6504005678",
+                TelephoneNumberType = TelephoneNumberType.Cell.Value,
+                InformationSource = InformationSourceType.ICBC.Value
+
+            };
+            PersonalPhoneNumber phoneNumber = _mapper.Map<PersonalPhoneNumber>(ssg_PhoneNumber);
+            Assert.AreEqual("Effective Date", phoneNumber.DateType);
+            Assert.AreEqual(new DateTimeOffset(new DateTime(2001, 1, 1)), phoneNumber.Date);
+            Assert.AreEqual(InformationSourceType.ICBC.Name, phoneNumber.SuppliedBy);
+            Assert.AreEqual(TelephoneNumberType.Cell.Name, phoneNumber.PhoneNumberType);
         }
     }
 }

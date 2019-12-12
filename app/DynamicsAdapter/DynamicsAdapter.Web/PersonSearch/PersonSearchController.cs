@@ -6,6 +6,7 @@ using AutoMapper;
 using DynamicsAdapter.Web.PersonSearch.Models;
 using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.Identifier;
+using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.SearchApiEvent;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using Fams3Adapter.Dynamics.SearchRequest;
@@ -42,7 +43,7 @@ namespace DynamicsAdapter.Web.PersonSearch
         [Route("Completed/{id}")]
         public async Task<IActionResult> Completed(Guid id, [FromBody]PersonSearchCompleted personCompletedEvent)
         {
-            _logger.LogInformation("Received Persone search completed event with SearchRequestId is " + id);
+            _logger.LogInformation("Received Person search completed event with SearchRequestId is " + id);
             var cts = new CancellationTokenSource();
 
             try
@@ -61,6 +62,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                 };
                 await UploadIdentifiers(searchRequest, personCompletedEvent, cts.Token);
                 await UploadAddresses(searchRequest, personCompletedEvent, cts.Token);
+                await UploadPhoneNumbers(searchRequest, personCompletedEvent, cts.Token);
             }
             catch (Exception ex)
             {
@@ -185,5 +187,19 @@ namespace DynamicsAdapter.Web.PersonSearch
             }
             return true;
         }
+
+        private async Task<bool> UploadPhoneNumbers(SSG_SearchRequest request, PersonSearchCompleted personCompletedEvent, CancellationToken concellationToken)
+        {
+            if (personCompletedEvent.MatchedPerson.PhoneNumbers == null) return true;
+            foreach (var phone in personCompletedEvent.MatchedPerson.PhoneNumbers)
+            {
+                SSG_PhoneNumber ph = _mapper.Map<SSG_PhoneNumber>(phone);
+                ph.SearchRequest = request;
+                await _searchRequestService.CreatePhoneNumber(ph, concellationToken);
+            }
+            return true;
+        }
+
+
     }
 }

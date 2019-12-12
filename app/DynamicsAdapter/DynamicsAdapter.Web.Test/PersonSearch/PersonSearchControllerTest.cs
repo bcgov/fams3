@@ -7,6 +7,7 @@ using DynamicsAdapter.Web.PersonSearch;
 using DynamicsAdapter.Web.PersonSearch.Models;
 using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.Identifier;
+using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.SearchApiEvent;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using Fams3Adapter.Dynamics.SearchRequest;
@@ -34,6 +35,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         private SSG_SearchApiEvent fakeSearchApiEvent;
         private SSG_Identifier _fakePersoneIdentifier;
         private SSG_Address _fakePersonAddress;
+        private SSG_PhoneNumber _fakePersonPhoneNumber;
 
         private Mock<IMapper> _mapper;
 
@@ -67,6 +69,14 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 }
             };
 
+            _fakePersonPhoneNumber = new SSG_PhoneNumber
+            {
+                SearchRequest = new SSG_SearchRequest
+                {
+                    SearchRequestId = validRequestId
+                }
+            };
+
             fakePersonAcceptedEvent = new PersonSearchAccepted()
             {
                 SearchRequestId = Guid.NewGuid(),
@@ -90,18 +100,18 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                     DateOfBirth = DateTime.Now,
                     FirstName = "TEST1",
                     LastName = "TEST2",
-                    Identifiers = new List<PersonalIdentifierConcrete>()
+                    Identifiers = new List<PersonalIdentifierActual>()
                         {
-                            new PersonalIdentifierConcrete()
+                            new PersonalIdentifierActual()
                             {
                                SerialNumber  = "test",
                                IssuedBy = "test",
                                Type = PersonalIdentifierType.DriverLicense
                             }
                         },
-                    Addresses = new List<Address>()
+                    Addresses = new List<PersonalAddressActual>()
                         {
-                            new Address()
+                            new PersonalAddressActual()
                             {
                                 AddressLine1 = "AddressLine1",
                                 AddressLine2 = "AddressLine2",
@@ -112,7 +122,15 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                                 PostalCode = "p3p3p3",
                                 SuppliedBy = "Employer"
                             }
+                        },
+                    PhoneNumbers = new List<PersonalPhoneNumberActual>()
+                    {
+                        new PersonalPhoneNumberActual ()
+                        {
+                            PhoneNumber = "4005678900"
                         }
+                    }
+                    
                 }
             };
 
@@ -154,7 +172,10 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _mapper.Setup(m => m.Map<SSG_Identifier>(It.IsAny<PersonalIdentifier>()))
                                .Returns(_fakePersoneIdentifier);
 
-            _mapper.Setup(m => m.Map<SSG_Address>(It.IsAny<Address>()))
+            _mapper.Setup(m => m.Map<SSG_PhoneNumber>(It.IsAny<PersonalPhoneNumber>()))
+                             .Returns(_fakePersonPhoneNumber);
+
+            _mapper.Setup(m => m.Map<SSG_Address>(It.IsAny<PersonalAddress>()))
                               .Returns(_fakePersonAddress);
 
 
@@ -180,6 +201,12 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                     FullText = "test full line"
                 }));
 
+            _searchRequestServiceMock.Setup(x => x.CreatePhoneNumber(It.Is<SSG_PhoneNumber>(x => x.SearchRequest.SearchRequestId == validRequestId), It.IsAny<CancellationToken>()))
+              .Returns(Task.FromResult<SSG_PhoneNumber>(new SSG_PhoneNumber()
+              {
+                  TelePhoneNumber = "4007678231"
+              }));
+
             _searchApiRequestServiceMock.Setup(x => x.AddEventAsync(It.Is<Guid>(x => x == _testGuid),
                     It.IsAny<SSG_SearchApiEvent>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<SSG_SearchApiEvent>(new SSG_SearchApiEvent()
@@ -204,6 +231,10 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 .Verify(x => x.CreateIdentifier(It.IsAny<SSG_Identifier>(), It.IsAny<CancellationToken>()), Times.Once);
             _searchRequestServiceMock
                  .Verify(x => x.CreateAddress(It.IsAny<SSG_Address>(), It.IsAny<CancellationToken>()), Times.Once);
+
+            _searchRequestServiceMock
+                .Verify(x => x.CreatePhoneNumber(It.IsAny<SSG_PhoneNumber>(), It.IsAny<CancellationToken>()), Times.Once);
+
             _searchApiRequestServiceMock
                 .Verify(x => x.AddEventAsync(It.Is<Guid>(x => x == _testGuid), It.IsAny<SSG_SearchApiEvent>(), It.IsAny<CancellationToken>()), Times.Once);
             Assert.IsInstanceOf(typeof(OkResult), result);

@@ -1,5 +1,6 @@
 ﻿using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.Identifier;
+using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Moq;
 using NUnit.Framework;
@@ -49,6 +50,14 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             })
             );
 
+            odataClientMock.Setup(x => x.For<SSG_PhoneNumber>(null).Set(It.Is<SSG_PhoneNumber>(x => x.TelePhoneNumber == "4007678231"))
+           .InsertEntryAsync(It.IsAny<CancellationToken>()))
+           .Returns(Task.FromResult(new SSG_PhoneNumber()
+           {
+               TelePhoneNumber = "4007678231"
+           })
+           );
+
             _sut = new SearchRequestService(odataClientMock.Object);
         }
 
@@ -69,7 +78,26 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
 
             Assert.AreEqual("test", result.Identification);
         }
-        
+
+        [Test]
+        public async Task with_correct_searchRequestid_upload_phone_number_should_success()
+        {
+            var phone = new SSG_PhoneNumber()
+            {
+              
+                DateData = DateTime.Now,
+                DateType = "Effective Date",
+                TelePhoneNumber = "4007678231",
+                StateCode = 0,
+                StatusCode = 1,
+                SearchRequest = new SSG_SearchRequest() { SearchRequestId = testId }
+            };
+
+            var result = await _sut.CreatePhoneNumber(phone, CancellationToken.None);
+
+            Assert.AreEqual("4007678231", result.TelePhoneNumber);
+        }
+
         [Test]
         public async Task with_correct_searchRequestid_upload_address_should_success()
         {

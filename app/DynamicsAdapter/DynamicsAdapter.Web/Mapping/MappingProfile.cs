@@ -3,6 +3,7 @@ using DynamicsAdapter.Web.PersonSearch.Models;
 using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.OptionSets.Models;
+using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.SearchApiEvent;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using System;
@@ -18,7 +19,7 @@ namespace  DynamicsAdapter.Web.Mapping
         public MappingProfile()
         {
             CreateMap<SSG_Identifier, PersonalIdentifier>()
-                 .ConstructUsing( m => new PersonalIdentifierConcrete(){})
+                 .ConstructUsing( m => new PersonalIdentifierActual(){})
                  .ForMember(dest => dest.SerialNumber, opt => opt.MapFrom(src => src.Identification))
                  .ForMember(dest => dest.EffectiveDate, opt => opt.MapFrom(src => src.IdentificationEffectiveDate))
                  .ForMember(dest => dest.ExpirationDate, opt => opt.MapFrom(src => src.IdentificationExpirationDate))
@@ -66,12 +67,12 @@ namespace  DynamicsAdapter.Web.Mapping
                .ForMember(dest => dest.EventType, opt => opt.MapFrom(src => Keys.EVENT_COMPLETED))
                .ForMember(dest => dest.Message,
                           opt => opt.MapFrom(
-                              src => $"Auto search processing completed successfully. {(src.MatchedPerson.Identifiers == null ? 0 : src.MatchedPerson.Identifiers.Count())} identifiers found.  {(src.MatchedPerson.Addresses == null ? 0 : src.MatchedPerson.Addresses.Count())} addresses found."
+                              src => $"Auto search processing completed successfully. {(src.MatchedPerson.Identifiers == null ? 0 : src.MatchedPerson.Identifiers.Count())} identifier(s) found.  {(src.MatchedPerson.Addresses == null ? 0 : src.MatchedPerson.Addresses.Count())} addresses found. {(src.MatchedPerson.PhoneNumbers == null ? 0 : src.MatchedPerson.PhoneNumbers.Count())} phone number(s) found."
                               )
                           )
                .ReverseMap();
 
-            CreateMap<Address, SSG_Address>()
+            CreateMap<PersonalAddress, SSG_Address>()
                  .ForMember(dest => dest.AddressLine1, opt => opt.MapFrom(src => src.AddressLine1))
                  .ForMember(dest => dest.AddressLine2, opt => opt.MapFrom(src => src.AddressLine2))
                  .ForMember(dest => dest.Province, opt => opt.ConvertUsing(new ProvinceConverter(), src => src.Province))
@@ -85,6 +86,18 @@ namespace  DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => 0))
                  .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1));
 
+            CreateMap<SSG_Address, PersonalAddress>()
+        .ConstructUsing(m => new PersonalAddressActual() { })
+                .ForMember(dest => dest.AddressLine1, opt => opt.MapFrom(src => src.AddressLine1))
+                 .ForMember(dest => dest.AddressLine2, opt => opt.MapFrom(src => src.AddressLine2))
+                 .ForMember(dest => dest.Province, opt => opt.ConvertUsing(new ProvinceValueConverter(), src => src.Province))
+                 .ForMember(dest => dest.SuppliedBy, opt => opt.ConvertUsing(new IssuedByTypeValueConverter(), src => src.InformationSource))
+                 .ForMember(dest => dest.City, opt => opt.MapFrom(src => src.City))
+                 .ForMember(dest => dest.Country, opt => opt.MapFrom(src => src.Country.Name))
+                 .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new AddressTypeValueConverter(), src => src.Category))
+                 .ForMember(dest => dest.NonCanadianState, opt => opt.MapFrom(src => src.NonCanadianState))
+                 .ForMember(dest => dest.PostalCode, opt => opt.MapFrom(src => src.PostalCode));
+
             CreateMap<PersonalIdentifier, SSG_Identifier>()
                  .ForMember(dest => dest.Identification, opt => opt.MapFrom(src => src.SerialNumber))
                  .ForMember(dest => dest.IdentificationEffectiveDate, opt => opt.ConvertUsing(new DateTimeOffsetConverter(), src => src.EffectiveDate)) 
@@ -93,6 +106,25 @@ namespace  DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.InformationSource, opt => opt.ConvertUsing(new IssuedByTypeConverter(), src => src.IssuedBy))
                  .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => 0))
                  .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1));
+
+            CreateMap<PersonalPhoneNumber, SSG_PhoneNumber>()
+                .ForMember(dest => dest.TelePhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
+                .ForMember(dest => dest.DateType, opt => opt.MapFrom(src => src.DateType))
+                .ForMember(dest => dest.DateData, opt => opt.ConvertUsing(new DateTimeOffsetConverter(), src => src.Date))
+                .ForMember(dest => dest.TelephoneNumberType, opt => opt.ConvertUsing(new TelephoneNumberIdConverter(), src => src.PhoneNumberType))
+                .ForMember(dest => dest.InformationSource, opt => opt.ConvertUsing(new SuppliedByTypeConverter(), src => src.SuppliedBy))
+                .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => 0))
+                .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1));
+
+            CreateMap<SSG_PhoneNumber, PersonalPhoneNumber>()
+                .ConstructUsing(m => new PersonalPhoneNumberActual() { })
+                .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.TelePhoneNumber))
+                .ForMember(dest => dest.DateType, opt => opt.MapFrom(src => src.DateType))
+                .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.DateData)) 
+                .ForMember(dest => dest.PhoneNumberType, opt => opt.ConvertUsing(new TelephoneNumberValueConverter(), src => src.TelephoneNumberType))
+                .ForMember(dest => dest.SuppliedBy, opt => opt.ConvertUsing(new InformationSourceConverter(), src => src.InformationSource));
+
+
         }
     }
 

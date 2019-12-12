@@ -10,5 +10,7 @@ namespace SearchApi.Core.Person.Contracts
         DateTime? DateOfBirth { get; }
         IEnumerable<PersonalIdentifier> Identifiers { get; }
         IEnumerable<PersonalAddress> Addresses { get; }
+
+        IEnumerable<PersonalPhoneNumber> PhoneNumbers { get; }
     }
 }

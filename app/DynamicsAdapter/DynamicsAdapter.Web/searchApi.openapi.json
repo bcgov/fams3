@@ -6,7 +6,7 @@
     "description": "For Search",
     "version": "V0.1"
   },
-  "host": "localhost:5050",
+  "host": "localhost:64834",
   "schemes": [
     "http"
   ],
@@ -92,6 +92,18 @@
           "items": {
             "$ref": "#/definitions/PersonalIdentifier"
           }
+        },
+        "addresses": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PersonalAddress"
+          }
+        },
+        "phoneNumbers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PersonalPhoneNumber"
+          }
         }
       }
     },
@@ -148,6 +160,61 @@
         "Other",
         "SecurityKeyword"
       ]
+    },
+    "PersonalAddress": {
+      "type": "object",
+      "x-abstract": true,
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "addressLine1": {
+          "type": "string"
+        },
+        "addressLine2": {
+          "type": "string"
+        },
+        "province": {
+          "type": "string"
+        },
+        "city": {
+          "type": "string"
+        },
+        "country": {
+          "type": "string"
+        },
+        "postalCode": {
+          "type": "string"
+        },
+        "nonCanadianState": {
+          "type": "string"
+        },
+        "suppliedBy": {
+          "type": "string"
+        }
+      }
+    },
+    "PersonalPhoneNumber": {
+      "type": "object",
+      "x-abstract": true,
+      "properties": {
+        "suppliedBy": {
+          "type": "string"
+        },
+        "date": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "dateType": {
+          "type": "string"
+        },
+        "phoneNumber": {
+          "type": "string"
+        },
+        "phoneNumberType": {
+          "type": "string"
+        }
+      }
     }
   },
   "tags": [

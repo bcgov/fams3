@@ -22,6 +22,7 @@ namespace SearchAdapter.Sample.SearchRequest
         public DateTime? DateOfBirth { get; set; }
         public IEnumerable<PersonalIdentifier> Identifiers { get; set; }
         public IEnumerable<PersonalAddress> Addresses { get; set; }
+        public IEnumerable<PersonalPhoneNumber> PhoneNumbers { get; set; }
     }
 
     public class PersonalIdentifierSample : PersonalIdentifier
@@ -33,7 +34,7 @@ namespace SearchAdapter.Sample.SearchRequest
         public string IssuedBy { get; set; }
     }
 
-    public class PersonaAddressSample : PersonalAddress
+    public class PersonalAddressSample : PersonalAddress
     {
         public string Type { get; set; }
         public string AddressLine1 { get; set; }
@@ -44,6 +45,20 @@ namespace SearchAdapter.Sample.SearchRequest
         public string PostalCode { get; set; }
         public string NonCanadianState { get; set; }
         public string SuppliedBy { get; set; }
+    }
+
+    public class PersonalPhoneNumberSample : PersonalPhoneNumber
+    {
+
+        public string PhoneNumber { get; set; }
+
+        public string PhoneNumberType { get; set; }
+
+        public string SuppliedBy { get; set; }
+
+        public DateTime? Date { get; set; }
+
+        public string DateType { get; set; }
     }
 
     public class PersonSearchRejectedEvent : PersonSearchRejected

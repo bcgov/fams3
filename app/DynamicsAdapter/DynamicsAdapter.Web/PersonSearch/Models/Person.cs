@@ -13,6 +13,9 @@ namespace DynamicsAdapter.Web.PersonSearch.Models
     public class PersonalPhoneNumberActual : PersonalPhoneNumber
     { }
 
+    public class PersonalAddressActual : PersonalAddress
+    { }
+
     public class Person
     {
         public string FirstName { get; set; }
@@ -21,7 +24,7 @@ namespace DynamicsAdapter.Web.PersonSearch.Models
         public IEnumerable<PersonalIdentifierActual> Identifiers { get; set; }
 
         public IEnumerable<PersonalPhoneNumberActual> PhoneNumbers { get; set; }
-        public IEnumerable<Address> Addresses { get; set; }
+        public IEnumerable<PersonalAddressActual> Addresses { get; set; }
 
     }
 }

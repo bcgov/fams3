@@ -76,7 +76,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
         [Test]
         public void Address_should_map_to_SSG_Address_correctly()
         {
-            Address address = new Address()
+            var address = new PersonalAddressActual()
             {
                 AddressLine1 = "AddressLine1",
                 AddressLine2 = "AddressLine2",
@@ -214,10 +214,15 @@ namespace DynamicsAdapter.Web.Test.Mapping
                         new PersonalIdentifierActual(){ },
                         new PersonalIdentifierActual(){ }
                     },
-                    Addresses = new Address[]
+                    Addresses = new PersonalAddressActual[]
                     {
-                        new Address(){ },
-                        new Address(){ }
+                        new PersonalAddressActual(){ },
+                        new PersonalAddressActual(){ }
+                    },
+                    PhoneNumbers = new PersonalPhoneNumberActual[]
+                    {
+                        new PersonalPhoneNumberActual(){ },
+                        new PersonalPhoneNumberActual(){ }
                     }
                 }
             };
@@ -226,7 +231,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(new DateTime(2003, 3, 3), searchEvent.TimeStamp);
             Assert.AreEqual(Keys.EVENT_COMPLETED, searchEvent.EventType);
             Assert.AreEqual(Keys.SEARCH_API_EVENT_NAME, searchEvent.Name);
-            Assert.AreEqual("Auto search processing completed successfully. 2 identifiers found.  2 addresses found.", searchEvent.Message);
+            Assert.AreEqual("Auto search processing completed successfully. 2 identifier(s) found.  2 addresses found. 2 phone number(s) found.", searchEvent.Message);
         }
 
         [Test]
@@ -258,7 +263,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(new DateTime(2003, 3, 3), searchEvent.TimeStamp);
             Assert.AreEqual(Keys.EVENT_COMPLETED, searchEvent.EventType);
             Assert.AreEqual(Keys.SEARCH_API_EVENT_NAME, searchEvent.Name);
-            Assert.AreEqual("Auto search processing completed successfully. 2 identifiers found.  0 addresses found.", searchEvent.Message);
+            Assert.AreEqual("Auto search processing completed successfully. 2 identifier(s) found.  0 addresses found. 0 phone number(s) found.", searchEvent.Message);
         }
 
         [Test]

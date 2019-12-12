@@ -27,6 +27,15 @@ namespace DynamicsAdapter.Web.Mapping
         }
     }
 
+    public class IssuedByTypeValueConverter : IValueConverter<int?, string>
+    {
+        public string Convert(int? source, ResolutionContext context)
+        {
+            InformationSourceType sourceType = Enumeration.GetAll<InformationSourceType>().FirstOrDefault(m => m.Value == source);
+            return (sourceType == null) ? InformationSourceType.Other.Name : sourceType.Name;
+        }
+    }
+
     public class SuppliedByTypeConverter : IValueConverter<string, int?>
     {
         public int? Convert(string source, ResolutionContext context)
@@ -92,11 +101,27 @@ namespace DynamicsAdapter.Web.Mapping
         }
     }
 
+    public class ProvinceValueConverter : IValueConverter<int?, string>
+    {
+        public string Convert(int? source, ResolutionContext context)
+        {
+            return Enumeration.GetAll<CanadianProvinceType>().FirstOrDefault(m => m.Value == source)?.Name;
+        }
+    }
+
     public class AddressTypeConverter : IValueConverter<string, int?>
     {
         public int? Convert(string source, ResolutionContext context)
         {
             return Enumeration.GetAll<LocationType>().FirstOrDefault(m => m.Name.Equals(source, StringComparison.OrdinalIgnoreCase))?.Value;
+        }
+    }
+
+    public class AddressTypeValueConverter : IValueConverter<int?, string>
+    {
+        public string Convert(int? source, ResolutionContext context)
+        {
+            return Enumeration.GetAll<LocationType>().FirstOrDefault(m => m.Value == source)?.Name;
         }
     }
 
@@ -116,6 +141,14 @@ namespace DynamicsAdapter.Web.Mapping
             {
                 Name = source
             };
+        }
+    }
+
+    public class CountryValueConverter : IValueConverter<int?, string>
+    {
+        public string Convert(int? source, ResolutionContext context)
+        {
+            return Enumeration.GetAll<LocationType>().FirstOrDefault(m => m.Value == source)?.Name;
         }
     }
 }

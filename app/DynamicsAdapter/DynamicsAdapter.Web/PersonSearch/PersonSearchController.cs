@@ -43,7 +43,7 @@ namespace DynamicsAdapter.Web.PersonSearch
         [Route("Completed/{id}")]
         public async Task<IActionResult> Completed(Guid id, [FromBody]PersonSearchCompleted personCompletedEvent)
         {
-            _logger.LogInformation("Received Persone search completed event with SearchRequestId is " + id);
+            _logger.LogInformation("Received Person search completed event with SearchRequestId is " + id);
             var cts = new CancellationTokenSource();
 
             try

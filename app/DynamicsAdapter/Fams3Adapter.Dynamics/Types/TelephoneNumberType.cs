@@ -12,6 +12,7 @@ namespace Fams3Adapter.Dynamics.Types
         public static TelephoneNumberType Home = new TelephoneNumberType(867670001, "Home");
         protected TelephoneNumberType(int value, string name) : base(value, name)
         {
+
         }
     }
 }

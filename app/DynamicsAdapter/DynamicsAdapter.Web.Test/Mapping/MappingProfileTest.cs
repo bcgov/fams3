@@ -8,6 +8,7 @@ using DynamicsAdapter.Web.PersonSearch;
 using DynamicsAdapter.Web.PersonSearch.Models;
 using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.Identifier;
+using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.SearchApiEvent;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using Fams3Adapter.Dynamics.SearchRequest;
@@ -279,6 +280,28 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(InformationSourceType.ICBC.Value, sSG_Identifier.InformationSource);
             Assert.AreEqual(1, sSG_Identifier.StatusCode);
             Assert.AreEqual(0, sSG_Identifier.StateCode);
+        }
+
+        [Test]
+        public void PersonalPhoneNumber_should_map_to_SSG_PhoneNumber_correctly()
+        {
+            PersonalPhoneNumber phoneNumber = new PersonalPhoneNumberActual()
+            {
+               
+                Date = new DateTimeOffset(new DateTime(2003, 3, 3)),
+                PhoneNumber = "6904005678",
+                DateType = "Effective Date",
+                PhoneNumberType = "Home",
+                SuppliedBy = "ICBC"
+            };
+            SSG_PhoneNumber sSG_PhoneNumber = _mapper.Map<SSG_PhoneNumber>(phoneNumber);
+            Assert.AreEqual("6904005678", sSG_PhoneNumber.TelePhoneNumber);
+            Assert.AreEqual(TelephoneNumberType.Home.Value, sSG_PhoneNumber.TelephoneNumberType);
+            Assert.AreEqual(new DateTime(2003, 3, 3), sSG_PhoneNumber.DateData);
+            Assert.AreEqual("Effective Date", sSG_PhoneNumber.DateType);
+            Assert.AreEqual(InformationSourceType.ICBC.Value, sSG_PhoneNumber.InformationSource);
+            Assert.AreEqual(1, sSG_PhoneNumber.StatusCode);
+            Assert.AreEqual(0, sSG_PhoneNumber.StateCode);
         }
     }
 }

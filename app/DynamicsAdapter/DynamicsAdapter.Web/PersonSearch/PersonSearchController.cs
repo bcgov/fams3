@@ -6,6 +6,7 @@ using AutoMapper;
 using DynamicsAdapter.Web.PersonSearch.Models;
 using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.Identifier;
+using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.SearchApiEvent;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using Fams3Adapter.Dynamics.SearchRequest;
@@ -182,6 +183,18 @@ namespace DynamicsAdapter.Web.PersonSearch
                 SSG_Address addr = _mapper.Map<SSG_Address>(address);
                 addr.SearchRequest = request;
                 var uploadedAddr = await _searchRequestService.CreateAddress(addr, concellationToken);
+            }
+            return true;
+        }
+
+        private async Task<bool> UploadPhoneNumbers(SSG_SearchRequest request, PersonSearchCompleted personCompletedEvent, CancellationToken concellationToken)
+        {
+            if (personCompletedEvent.MatchedPerson.PhoneNumbers == null) return true;
+            foreach (var phone in personCompletedEvent.MatchedPerson.PhoneNumbers)
+            {
+                SSG_PhoneNumber ph = _mapper.Map<SSG_PhoneNumber>(phone);
+                ph.SearchRequest = request;
+                var uploadedAddr = await _searchRequestService.CreateAddress(ph, concellationToken);
             }
             return true;
         }

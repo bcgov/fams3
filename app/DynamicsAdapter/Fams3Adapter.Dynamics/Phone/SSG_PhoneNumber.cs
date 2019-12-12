@@ -9,7 +9,7 @@ namespace Fams3Adapter.Dynamics.PhoneNumber
     public class SSG_PhoneNumber : DynamicsEntity
     {
         [JsonProperty("ssg_SearchRequest")]
-        public virtual SSG_SearchRequest SSG_SearchRequest { get; set; }
+        public virtual SSG_SearchRequest SearchRequest { get; set; }
 
         [JsonProperty("ssg_informationsourcetext")]
         public int? InformationSource { get; set; }

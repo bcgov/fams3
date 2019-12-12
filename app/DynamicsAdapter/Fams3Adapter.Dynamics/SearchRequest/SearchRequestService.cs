@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.Identifier;
+using Fams3Adapter.Dynamics.PhoneNumber;
 using Simple.OData.Client;
 
 namespace Fams3Adapter.Dynamics.SearchRequest
@@ -13,6 +14,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
     {
         Task<SSG_Identifier> CreateIdentifier(SSG_Identifier identifier, CancellationToken cancellationToken);
         Task<SSG_Address> CreateAddress(SSG_Address address, CancellationToken cancellationToken);
+        Task<SSG_PhoneNumber> CreatePhoneNumber(SSG_PhoneNumber phoneNumber, CancellationToken cancellationToken);
     }
 
     /// <summary>
@@ -35,6 +37,11 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         public async Task<SSG_Identifier> CreateIdentifier(SSG_Identifier identifier, CancellationToken cancellationToken)
         {
             return await this._oDataClient.For<SSG_Identifier>().Set(identifier).InsertEntryAsync(cancellationToken);
+        }
+
+        public async Task<SSG_PhoneNumber> CreatePhoneNumber(SSG_PhoneNumber phone, CancellationToken cancellationToken)
+        {
+            return await this._oDataClient.For<SSG_PhoneNumber>().Set(phone).InsertEntryAsync(cancellationToken);
         }
 
         public async Task<SSG_Address> CreateAddress(SSG_Address address, CancellationToken cancellationToken)

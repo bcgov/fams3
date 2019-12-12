@@ -303,6 +303,26 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(1, sSG_PhoneNumber.StatusCode);
             Assert.AreEqual(0, sSG_PhoneNumber.StateCode);
         }
+
+        [Test]
+        public void SSG_PhoneNumber_should_map_to_PersonalPhoneNumber_correctly()
+        {
+            SSG_PhoneNumber ssg_PhoneNumber = new SSG_PhoneNumber()
+            {
+                
+                DateData = new DateTime(2001, 1, 1),
+                DateType = "Effective Date",
+                TelePhoneNumber  = "6504005678",
+                TelephoneNumberType = TelephoneNumberType.Cell.Value,
+                InformationSource = InformationSourceType.ICBC.Value
+
+            };
+            PersonalPhoneNumber phoneNumber = _mapper.Map<PersonalPhoneNumber>(ssg_PhoneNumber);
+            Assert.AreEqual("Effective Date", phoneNumber.DateType);
+            Assert.AreEqual(new DateTimeOffset(new DateTime(2001, 1, 1)), phoneNumber.Date);
+            Assert.AreEqual(InformationSourceType.ICBC.Name, phoneNumber.SuppliedBy);
+            Assert.AreEqual(TelephoneNumberType.Cell.Name, phoneNumber.PhoneNumberType);
+        }
     }
 }
 

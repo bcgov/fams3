@@ -67,11 +67,19 @@ namespace DynamicsAdapter.Web.Mapping
             return IDType.IDTypeDictionary.FirstOrDefault(m => m.Value == source).Key;
         }
     }
-    public class TelephoneNumberTypeConverter : IValueConverter<string, int?>
+    public class TelephoneNumberIdConverter : IValueConverter<string, int?>
     {
         public int? Convert(string source, ResolutionContext context)
         {
             return Enumeration.GetAll<TelephoneNumberType>().FirstOrDefault(m => m.Name.Equals(source, StringComparison.OrdinalIgnoreCase))?.Value;
+        }
+    }
+
+    public class TelephoneNumberValueConverter : IValueConverter<int?, string>
+    {
+        public string Convert(int? source, ResolutionContext context)
+        {
+            return Enumeration.GetAll<TelephoneNumberType>().FirstOrDefault(m => m.Value == source)?.Name;
         }
     }
 

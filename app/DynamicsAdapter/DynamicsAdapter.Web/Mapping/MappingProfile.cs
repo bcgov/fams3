@@ -99,10 +99,18 @@ namespace  DynamicsAdapter.Web.Mapping
                 .ForMember(dest => dest.TelePhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
                 .ForMember(dest => dest.DateType, opt => opt.MapFrom(src => src.DateType))
                 .ForMember(dest => dest.DateData, opt => opt.ConvertUsing(new DateTimeOffsetConverter(), src => src.Date))
-                .ForMember(dest => dest.TelephoneNumberType, opt => opt.ConvertUsing(new TelephoneNumberTypeConverter(), src => src.PhoneNumberType))
+                .ForMember(dest => dest.TelephoneNumberType, opt => opt.ConvertUsing(new TelephoneNumberIdConverter(), src => src.PhoneNumberType))
                 .ForMember(dest => dest.InformationSource, opt => opt.ConvertUsing(new SuppliedByTypeConverter(), src => src.SuppliedBy))
                 .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => 0))
                 .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1));
+
+            CreateMap<SSG_PhoneNumber, PersonalPhoneNumber>()
+                .ConstructUsing(m => new PersonalPhoneNumberActual() { })
+                .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.TelePhoneNumber))
+                .ForMember(dest => dest.DateType, opt => opt.MapFrom(src => src.DateType))
+                .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.DateData)) 
+                .ForMember(dest => dest.PhoneNumberType, opt => opt.ConvertUsing(new TelephoneNumberValueConverter(), src => src.TelephoneNumberType))
+                .ForMember(dest => dest.SuppliedBy, opt => opt.ConvertUsing(new InformationSourceConverter(), src => src.InformationSource));
 
 
         }

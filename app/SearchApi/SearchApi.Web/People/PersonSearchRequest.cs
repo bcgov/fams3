@@ -34,6 +34,10 @@ namespace SearchApi.Web.Controllers
 
         public IEnumerable<PersonalIdentifier> Identifiers { get; set; }
         public IEnumerable<PersonalAddress> Addresses { get; set; }
+
+        public IEnumerable<PersonalPhoneNumber> PhoneNumbers { get; set; }
+
+
     }
 
 

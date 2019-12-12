@@ -11,6 +11,6 @@ namespace SearchApi.Core.Person.Contracts
         IEnumerable<PersonalIdentifier> Identifiers { get; }
         IEnumerable<PersonalAddress> Addresses { get; }
 
-        IEnumerable<PersonPhoneNumber> PhoneNumbers { get; }
+        IEnumerable<PersonalPhoneNumber> PhoneNumbers { get; }
     }
 }

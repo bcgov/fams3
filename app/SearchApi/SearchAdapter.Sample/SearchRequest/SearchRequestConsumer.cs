@@ -104,9 +104,9 @@ namespace SearchAdapter.Sample.SearchRequest
                             SerialNumber = new Random().Next(0, 50000).ToString()
                         }
                     },
-                    Addresses = new List<PersonaAddressSample>() 
+                    Addresses = new List<PersonalAddressSample>() 
                     {
-                        new PersonaAddressSample()
+                        new PersonalAddressSample()
                         {
                             Type = "mailing",
                             AddressLine1 = "address in line 1",
@@ -118,7 +118,7 @@ namespace SearchAdapter.Sample.SearchRequest
                             NonCanadianState="",
                             SuppliedBy = "ICBC"
                         },
-                         new PersonaAddressSample()
+                         new PersonalAddressSample()
                         {
                             Type = "residence",
                             AddressLine1 = "residence address in line 1",

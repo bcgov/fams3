@@ -37,6 +37,8 @@ namespace SearchApi.Core.Test.Adapters.Middleware
             public DateTime? DateOfBirth { get; set; }
             public IEnumerable<PersonalIdentifier> Identifiers { get; }
             public IEnumerable<PersonalAddress> Addresses { get; set; }
+
+            public IEnumerable<PersonalPhoneNumber> PhoneNumbers { get; set; }
         }
 
         [OneTimeSetUp]

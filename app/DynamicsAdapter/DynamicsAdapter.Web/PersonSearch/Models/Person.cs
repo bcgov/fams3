@@ -16,7 +16,7 @@ namespace DynamicsAdapter.Web.PersonSearch.Models
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public DateTime? DateOfBirth { get; set; }
-        public IEnumerable<PersonalIdentifierConcrete> Identifiers { get; set; }
+        public IEnumerable<PersonalIdentifier> Identifiers { get; set; }
         public IEnumerable<Address> Addresses { get; set; }
     }
 }

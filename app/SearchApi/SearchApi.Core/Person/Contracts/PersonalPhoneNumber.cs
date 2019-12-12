@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SearchApi.Core.Person.Contracts
 {
-    public interface PersonPhoneNumber
+    public interface PersonalPhoneNumber
     {
         string SuppliedBy { get; }
 

@@ -93,6 +93,8 @@ namespace  DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.InformationSource, opt => opt.ConvertUsing(new IssuedByTypeConverter(), src => src.IssuedBy))
                  .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => 0))
                  .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1));
+
+            
         }
     }
 

@@ -8,7 +8,7 @@ namespace SearchApi.Core.Person.Contracts
     {
         string SuppliedBy { get; }
 
-        DateTimeOffset Date { get; }
+        DateTime? Date { get; }
 
         string DateType { get; }
 

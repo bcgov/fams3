@@ -49,15 +49,16 @@ namespace SearchAdapter.Sample.SearchRequest
 
     public class PersonalPhoneNumberSample : PersonalPhoneNumber
     {
-        public string EffectiveDate { get; set; }
-
-        public string EffectiveDateType { get; set; }
 
         public string PhoneNumber { get; set; }
 
         public string PhoneNumberType { get; set; }
 
         public string SuppliedBy { get; set; }
+
+        public DateTime? Date { get; set; }
+
+        public string DateType { get; set; }
     }
 
     public class PersonSearchRejectedEvent : PersonSearchRejected

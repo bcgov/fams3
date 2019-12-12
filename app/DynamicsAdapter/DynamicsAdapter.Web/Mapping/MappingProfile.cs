@@ -3,6 +3,7 @@ using DynamicsAdapter.Web.PersonSearch.Models;
 using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.OptionSets.Models;
+using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.SearchApiEvent;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using System;
@@ -18,7 +19,7 @@ namespace  DynamicsAdapter.Web.Mapping
         public MappingProfile()
         {
             CreateMap<SSG_Identifier, PersonalIdentifier>()
-                 .ConstructUsing( m => new PersonalIdentifierConcrete(){})
+                 .ConstructUsing( m => new PersonalIdentifierActual(){})
                  .ForMember(dest => dest.SerialNumber, opt => opt.MapFrom(src => src.Identification))
                  .ForMember(dest => dest.EffectiveDate, opt => opt.MapFrom(src => src.IdentificationEffectiveDate))
                  .ForMember(dest => dest.ExpirationDate, opt => opt.MapFrom(src => src.IdentificationExpirationDate))
@@ -94,7 +95,16 @@ namespace  DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => 0))
                  .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1));
 
-            
+            CreateMap<PersonalPhoneNumber, SSG_PhoneNumber>()
+                .ForMember(dest => dest.TelePhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
+                .ForMember(dest => dest.DateType, opt => opt.MapFrom(src => src.DateType))
+                .ForMember(dest => dest.DateData, opt => opt.ConvertUsing(new DateTimeOffsetConverter(), src => src.Date))
+                .ForMember(dest => dest.TelephoneNumberType, opt => opt.ConvertUsing(new TelephoneNumberTypeConverter(), src => src.PhoneNumberType))
+                .ForMember(dest => dest.InformationSource, opt => opt.ConvertUsing(new SuppliedByTypeConverter(), src => src.SuppliedBy))
+                .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => 0))
+                .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1));
+
+
         }
     }
 

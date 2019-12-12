@@ -18,7 +18,7 @@ namespace Fams3Adapter.Dynamics.PhoneNumber
         public string DateType { get; set; }
 
         [JsonProperty("ssg_datadate")]
-        public DateTime DataDate { get; set; }
+        public DateTime? DateData { get; set; }
 
         [JsonProperty("ssg_telephonenumber")]
         public string TelePhoneNumber { get; set; }

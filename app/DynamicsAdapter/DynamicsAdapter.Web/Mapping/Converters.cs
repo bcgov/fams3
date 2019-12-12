@@ -26,6 +26,15 @@ namespace DynamicsAdapter.Web.Mapping
         }
     }
 
+    public class SuppliedByTypeConverter : IValueConverter<string, int?>
+    {
+        public int? Convert(string source, ResolutionContext context)
+        {
+            InformationSourceType sourceType = Enumeration.GetAll<InformationSourceType>().FirstOrDefault(m => m.Name.Equals(source, StringComparison.OrdinalIgnoreCase));
+            return (sourceType == null) ? InformationSourceType.Other.Value : sourceType.Value;
+        }
+    }
+
     public class IDType
     {
         public static readonly IDictionary<int, PersonalIdentifierType> IDTypeDictionary = new Dictionary<int, PersonalIdentifierType>
@@ -56,6 +65,13 @@ namespace DynamicsAdapter.Web.Mapping
         public int? Convert(PersonalIdentifierType source, ResolutionContext context)
         {
             return IDType.IDTypeDictionary.FirstOrDefault(m => m.Value == source).Key;
+        }
+    }
+    public class TelephoneNumberTypeConverter : IValueConverter<string, int?>
+    {
+        public int? Convert(string source, ResolutionContext context)
+        {
+            return Enumeration.GetAll<TelephoneNumberType>().FirstOrDefault(m => m.Name.Equals(source, StringComparison.OrdinalIgnoreCase))?.Value;
         }
     }
 

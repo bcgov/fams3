@@ -208,10 +208,10 @@ namespace DynamicsAdapter.Web.Test.Mapping
                     FirstName = "firstName",
                     LastName = "lastName",
                     DateOfBirth = new DateTime(2019, 3, 5),
-                    Identifiers = new PersonalIdentifierConcrete[]
+                    Identifiers = new PersonalIdentifierActual[]
                     {
-                        new PersonalIdentifierConcrete(){ },
-                        new PersonalIdentifierConcrete(){ }
+                        new PersonalIdentifierActual(){ },
+                        new PersonalIdentifierActual(){ }
                     },
                     Addresses = new Address[]
                     {
@@ -244,10 +244,10 @@ namespace DynamicsAdapter.Web.Test.Mapping
                     FirstName = "firstName",
                     LastName = "lastName",
                     DateOfBirth = new DateTime(2019, 3, 5),
-                    Identifiers = new PersonalIdentifierConcrete[]
+                    Identifiers = new PersonalIdentifierActual[]
                     {
-                        new PersonalIdentifierConcrete(){ },
-                        new PersonalIdentifierConcrete(){ }
+                        new PersonalIdentifierActual(){ },
+                        new PersonalIdentifierActual(){ }
                     },
                     Addresses = null
                 }
@@ -263,7 +263,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
         [Test]
         public void PersonalIdentifier_should_map_to_SSG_Identifier_correctly()
         {
-            PersonalIdentifier identifier = new PersonalIdentifierConcrete()
+            PersonalIdentifier identifier = new PersonalIdentifierActual()
             {
                 SerialNumber = "1111111",
                 ExpirationDate = new DateTimeOffset(new DateTime(2003, 3, 3)),

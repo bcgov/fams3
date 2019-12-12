@@ -7,9 +7,11 @@ using System.Threading.Tasks;
 namespace DynamicsAdapter.Web.PersonSearch.Models
 {
     // TODO: all classes bellow will be coming from SEARCH API CORE LIB
-    public class PersonalIdentifierConcrete : PersonalIdentifier
+    public class PersonalIdentifierActual : PersonalIdentifier
     {
     }
+    public class PersonalPhoneNumberActual : PersonalPhoneNumber
+    { }
 
     public class Person
     {

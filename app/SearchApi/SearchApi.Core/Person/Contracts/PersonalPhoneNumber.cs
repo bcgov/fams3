@@ -8,9 +8,9 @@ namespace SearchApi.Core.Person.Contracts
     {
         string SuppliedBy { get; }
 
-        string EffectiveDate { get; }
+        DateTimeOffset Date { get; }
 
-        string EffectiveDateType { get; }
+        string DateType { get; }
 
         string PhoneNumber { get; }
 

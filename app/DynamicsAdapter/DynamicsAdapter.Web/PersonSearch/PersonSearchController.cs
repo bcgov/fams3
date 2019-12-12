@@ -62,6 +62,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                 };
                 await UploadIdentifiers(searchRequest, personCompletedEvent, cts.Token);
                 await UploadAddresses(searchRequest, personCompletedEvent, cts.Token);
+                await UploadPhoneNumbers(searchRequest, personCompletedEvent, cts.Token);
             }
             catch (Exception ex)
             {
@@ -194,7 +195,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             {
                 SSG_PhoneNumber ph = _mapper.Map<SSG_PhoneNumber>(phone);
                 ph.SearchRequest = request;
-                var uploadedAddr = await _searchRequestService.CreateAddress(ph, concellationToken);
+                await _searchRequestService.CreatePhoneNumber(ph, concellationToken);
             }
             return true;
         }

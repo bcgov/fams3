@@ -26,7 +26,8 @@ namespace BcGov.Fams3.SearchApi.Core.DependencyInjection
         public static void AddProvider(this IServiceCollection services, IConfiguration configuration, Func<IServiceProvider, IConsumer<PersonSearchOrdered>> function)
         {
 
-            var rabbitMqSettings = configuration.GetSection("RabbitMq").Get<RabbitMqConfiguration>();
+            var rabbitMqSettings = configuration.GetSection(Keys.RABBITMQ_SECTION_SETTING_KEY).Get<RabbitMqConfiguration>();
+            var providerConfiguration = configuration.GetSection(Keys.PROVIDER_SECTION_SETTING_KEY).Get<ProviderProfileOptions>();
 
             var rabbitBaseUri = $"amqp://{rabbitMqSettings.Host}:{rabbitMqSettings.Port}";
 
@@ -39,8 +40,6 @@ namespace BcGov.Fams3.SearchApi.Core.DependencyInjection
                 x.AddBus(provider =>
                 {
 
-                    var providerOptions = provider.GetRequiredService<IOptions<ProviderProfileOptions>>();
-
                     var bus = Bus.Factory.CreateUsingRabbitMq(cfg =>
                     {
                         var host = cfg.Host(new Uri(rabbitBaseUri), hostConfigurator =>
@@ -49,7 +48,7 @@ namespace BcGov.Fams3.SearchApi.Core.DependencyInjection
                             hostConfigurator.Password(rabbitMqSettings.Password);
                         });
 
-                        cfg.ReceiveEndpoint(host, $"{nameof(PersonSearchOrdered)}_{providerOptions.Value.Name}", e =>
+                        cfg.ReceiveEndpoint(host, $"{nameof(PersonSearchOrdered)}_{providerConfiguration.Name}", e =>
                         {
                             e.Consumer(() => function.Invoke(provider));
                         });

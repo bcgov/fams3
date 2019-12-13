@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using NUnit.Framework;
-using SearchApi.Core.Adapters.Configuration;
+using BcGov.Fams3.SearchApi.Core.Adapters.Configuration;
 
 namespace SearchApi.Core.Test.Adapters.Configuration
 {

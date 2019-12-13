@@ -9,8 +9,8 @@ using Microsoft.Extensions.Logging;
 using NSwag;
 using NSwag.Annotations;
 using OpenTracing;
-using SearchApi.Core.Adapters.Contracts;
-using SearchApi.Core.Person.Contracts;
+using BcGov.Fams3.SearchApi.Core.Adapters.Contracts;
+using BcGov.Fams3.SearchApi.Core.Person.Contracts;
 
 namespace SearchApi.Web.Controllers
 {

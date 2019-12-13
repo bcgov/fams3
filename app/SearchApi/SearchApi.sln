@@ -11,15 +11,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{93BFFE80-5
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SearchApi.Web.Test", "SearchApi.Web.Test\SearchApi.Web.Test.csproj", "{84D635D5-44E0-4A16-A59D-995F3DA2F815}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SearchApi.Core", "SearchApi.Core\SearchApi.Core.csproj", "{6F4F4616-FE52-4DC8-A714-DE46B576EC6E}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SearchApi.Core.Test", "SearchApi.Core.Test\SearchApi.Core.Test.csproj", "{F659BDC0-CD7C-447F-BC62-017C09401F73}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sample", "sample", "{B1BD0ABB-E9FC-4006-832C-C54D858160C5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SearchAdapter.Sample", "SearchAdapter.Sample\SearchAdapter.Sample.csproj", "{1451DA83-325B-4F9E-8E88-92B678AB2187}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SearchAdapter.Sample", "SearchAdapter.Sample\SearchAdapter.Sample.csproj", "{1451DA83-325B-4F9E-8E88-92B678AB2187}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SearchAdapter.Sample.Test", "SearchAdapter.Sample.Test\SearchAdapter.Sample.Test.csproj", "{2D7F9201-CD7A-4148-BEE9-64F0BE1FF4FC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SearchAdapter.Sample.Test", "SearchAdapter.Sample.Test\SearchAdapter.Sample.Test.csproj", "{2D7F9201-CD7A-4148-BEE9-64F0BE1FF4FC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BcGov.Fams3.SearchApi.Core", "BcGov.Fams3.SearchApi.Core\BcGov.Fams3.SearchApi.Core.csproj", "{0CF6FF1B-21D7-4C8B-AF45-E9197D776A26}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,10 +35,6 @@ Global
 		{84D635D5-44E0-4A16-A59D-995F3DA2F815}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{84D635D5-44E0-4A16-A59D-995F3DA2F815}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{84D635D5-44E0-4A16-A59D-995F3DA2F815}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6F4F4616-FE52-4DC8-A714-DE46B576EC6E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6F4F4616-FE52-4DC8-A714-DE46B576EC6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6F4F4616-FE52-4DC8-A714-DE46B576EC6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6F4F4616-FE52-4DC8-A714-DE46B576EC6E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F659BDC0-CD7C-447F-BC62-017C09401F73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F659BDC0-CD7C-447F-BC62-017C09401F73}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F659BDC0-CD7C-447F-BC62-017C09401F73}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -51,6 +47,10 @@ Global
 		{2D7F9201-CD7A-4148-BEE9-64F0BE1FF4FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2D7F9201-CD7A-4148-BEE9-64F0BE1FF4FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2D7F9201-CD7A-4148-BEE9-64F0BE1FF4FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0CF6FF1B-21D7-4C8B-AF45-E9197D776A26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CF6FF1B-21D7-4C8B-AF45-E9197D776A26}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CF6FF1B-21D7-4C8B-AF45-E9197D776A26}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CF6FF1B-21D7-4C8B-AF45-E9197D776A26}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -58,10 +58,10 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{DD1D6EB6-1BF7-4D1E-A5B1-29811FE6EA6D} = {B95A3792-2D10-4413-9E36-A4724231C3C7}
 		{84D635D5-44E0-4A16-A59D-995F3DA2F815} = {93BFFE80-5160-4C9C-95DD-FF4F8AFFC10A}
-		{6F4F4616-FE52-4DC8-A714-DE46B576EC6E} = {B95A3792-2D10-4413-9E36-A4724231C3C7}
 		{F659BDC0-CD7C-447F-BC62-017C09401F73} = {93BFFE80-5160-4C9C-95DD-FF4F8AFFC10A}
 		{1451DA83-325B-4F9E-8E88-92B678AB2187} = {B1BD0ABB-E9FC-4006-832C-C54D858160C5}
 		{2D7F9201-CD7A-4148-BEE9-64F0BE1FF4FC} = {93BFFE80-5160-4C9C-95DD-FF4F8AFFC10A}
+		{0CF6FF1B-21D7-4C8B-AF45-E9197D776A26} = {B95A3792-2D10-4413-9E36-A4724231C3C7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EBAF0841-1352-4312-9DA4-74AC4AD9CE04}

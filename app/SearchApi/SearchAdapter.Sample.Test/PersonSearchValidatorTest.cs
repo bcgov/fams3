@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using SearchAdapter.Sample.SearchRequest;
-using SearchApi.Core.Person.Contracts;
+using BcGov.Fams3.SearchApi.Core.Person.Contracts;
 
 namespace SearchAdapter.Sample.Test
 {

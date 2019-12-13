@@ -15,14 +15,14 @@ using Microsoft.Extensions.Options;
 using OpenTracing;
 using OpenTracing.Util;
 using SearchAdapter.Sample.SearchRequest;
-using SearchApi.Core.Adapters.Configuration;
-using SearchApi.Core.Adapters.Contracts;
-using SearchApi.Core.Adapters.Middleware;
-using SearchApi.Core.Configuration;
-using SearchApi.Core.DependencyInjection;
-using SearchApi.Core.MassTransit;
-using SearchApi.Core.OpenTracing;
-using SearchApi.Core.Person.Contracts;
+using BcGov.Fams3.SearchApi.Core.Adapters.Configuration;
+using BcGov.Fams3.SearchApi.Core.Adapters.Contracts;
+using BcGov.Fams3.SearchApi.Core.Adapters.Middleware;
+using BcGov.Fams3.SearchApi.Core.Configuration;
+using BcGov.Fams3.SearchApi.Core.DependencyInjection;
+using BcGov.Fams3.SearchApi.Core.MassTransit;
+using BcGov.Fams3.SearchApi.Core.OpenTracing;
+using BcGov.Fams3.SearchApi.Core.Person.Contracts;
 
 namespace SearchAdapter.Sample
 {

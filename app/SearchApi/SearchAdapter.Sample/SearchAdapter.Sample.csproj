@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SearchApi.Core\SearchApi.Core.csproj" />
+    <ProjectReference Include="..\BcGov.Fams3.SearchApi.Core\BcGov.Fams3.SearchApi.Core.csproj" />
   </ItemGroup>
 
 </Project>

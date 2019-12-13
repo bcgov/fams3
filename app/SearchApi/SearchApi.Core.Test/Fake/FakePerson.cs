@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using SearchApi.Core.Person.Contracts;
+using BcGov.Fams3.SearchApi.Core.Person.Contracts;
 
 namespace SearchApi.Core.Test.Fake
 {
-    public class FakePerson : Person.Contracts.Person
+    public class FakePerson : Person
     {
         public string FirstName { get; } = nameof(FirstName);
         public string LastName { get; } = nameof(LastName);

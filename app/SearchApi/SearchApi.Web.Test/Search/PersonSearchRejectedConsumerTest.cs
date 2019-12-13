@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
-using SearchApi.Core.Adapters.Contracts;
+using BcGov.Fams3.SearchApi.Core.Adapters.Contracts;
 using SearchApi.Core.Test.Fake;
 using SearchApi.Web.Notifications;
 using SearchApi.Web.Search;

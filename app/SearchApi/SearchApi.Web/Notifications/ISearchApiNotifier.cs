@@ -2,7 +2,7 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using SearchApi.Core.Adapters.Contracts;
+using BcGov.Fams3.SearchApi.Core.Adapters.Contracts;
 
 namespace SearchApi.Web.Notifications
 {

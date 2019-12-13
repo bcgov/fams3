@@ -19,15 +19,15 @@ using Microsoft.Extensions.Logging;
 using NSwag;
 using OpenTracing;
 using OpenTracing.Util;
-using SearchApi.Core.Adapters.Contracts;
-using SearchApi.Core.Configuration;
-using SearchApi.Core.MassTransit;
-using SearchApi.Core.OpenTracing;
+using BcGov.Fams3.SearchApi.Core.Adapters.Contracts;
+using BcGov.Fams3.SearchApi.Core.Configuration;
+using BcGov.Fams3.SearchApi.Core.MassTransit;
+using BcGov.Fams3.SearchApi.Core.OpenTracing;
 using SearchApi.Web.Configuration;
 using SearchApi.Web.Controllers;
 using SearchApi.Web.Notifications;
 using SearchApi.Web.Search;
-using SearchApi.Core.Adapters.Models;
+using BcGov.Fams3.SearchApi.Core.Adapters.Models;
 
 namespace SearchApi.Web
 {

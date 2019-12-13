@@ -1,4 +1,4 @@
-﻿using SearchApi.Core.Adapters.Contracts;
+﻿using BcGov.Fams3.SearchApi.Core.Adapters.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Text;

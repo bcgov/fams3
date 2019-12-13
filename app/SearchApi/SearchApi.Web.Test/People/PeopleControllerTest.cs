@@ -9,7 +9,7 @@ using Moq;
 using NUnit.Framework;
 using NUnit.Framework.Internal;
 using OpenTracing;
-using SearchApi.Core.Adapters.Contracts;
+using BcGov.Fams3.SearchApi.Core.Adapters.Contracts;
 using SearchApi.Web.Controllers;
 
 namespace SearchApi.Web.Test.People

@@ -1,5 +1,5 @@
 ﻿using NUnit.Framework;
-using SearchApi.Core.Configuration;
+using BcGov.Fams3.SearchApi.Core.Configuration;
 
 namespace SearchApi.Core.Test.Configuration
 {

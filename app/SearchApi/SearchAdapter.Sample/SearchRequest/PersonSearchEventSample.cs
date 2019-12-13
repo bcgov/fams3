@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using SearchApi.Core.Adapters.Contracts;
-using SearchApi.Core.Adapters.Models;
-using SearchApi.Core.Person.Contracts;
-using SearchApi.Core.Person.Enums;
+using BcGov.Fams3.SearchApi.Core.Adapters.Contracts;
+using BcGov.Fams3.SearchApi.Core.Adapters.Models;
+using BcGov.Fams3.SearchApi.Core.Person.Contracts;
+using BcGov.Fams3.SearchApi.Core.Person.Enums;
 
 namespace SearchAdapter.Sample.SearchRequest
 {

@@ -2,9 +2,9 @@
 using System.Threading.Tasks;
 using MassTransit.Testing;
 using NUnit.Framework;
-using SearchApi.Core.Adapters.Configuration;
-using SearchApi.Core.Adapters.Contracts;
-using SearchApi.Core.Adapters.Middleware;
+using BcGov.Fams3.SearchApi.Core.Adapters.Configuration;
+using BcGov.Fams3.SearchApi.Core.Adapters.Contracts;
+using BcGov.Fams3.SearchApi.Core.Adapters.Middleware;
 
 namespace SearchApi.Core.Test.Adapters.Middleware
 {

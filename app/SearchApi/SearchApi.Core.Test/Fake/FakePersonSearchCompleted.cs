@@ -1,14 +1,14 @@
-﻿using SearchApi.Core.Adapters.Contracts;
+﻿using BcGov.Fams3.SearchApi.Core.Adapters.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using SearchApi.Core.Person.Contracts;
+using BcGov.Fams3.SearchApi.Core.Person.Contracts;
 
 namespace SearchApi.Core.Test.Fake
 {
     public class FakePersonSearchCompleted : PersonSearchCompleted
     {
-        public Person.Contracts.Person MatchedPerson { get; set; }
+        public Person MatchedPerson { get; set; }
 
         public Guid SearchRequestId { get; set; }
 

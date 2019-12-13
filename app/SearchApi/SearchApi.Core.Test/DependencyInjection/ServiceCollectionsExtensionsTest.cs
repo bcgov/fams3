@@ -7,11 +7,12 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NUnit.Framework;
 using SearchAdapter.Sample.SearchRequest;
-using SearchApi.Core.Adapters.Configuration;
-using SearchApi.Core.DependencyInjection;
+using BcGov.Fams3.SearchApi.Core.Adapters.Configuration;
+using BcGov.Fams3.SearchApi.Core.DependencyInjection;
 using System.IO;
 using System.Linq;
 using System.Text;
+using BcGov.Fams3.SearchApi.Core.Person.Contracts;
 
 namespace SearchApi.Core.Test.DependencyInjection
 {
@@ -42,7 +43,7 @@ namespace SearchApi.Core.Test.DependencyInjection
         public void should_register_services()
         {
 
-            services.AddProvider(configuration, (provider) => new SearchRequestConsumer(provider.GetRequiredService<IValidator<Person.Contracts.Person>>(),
+            services.AddProvider(configuration, (provider) => new SearchRequestConsumer(provider.GetRequiredService<IValidator<Person>>(),
                                  provider.GetRequiredService<IOptions<ProviderProfileOptions>>(),
                                  provider.GetRequiredService<ILogger<SearchRequestConsumer>>()));
 
@@ -56,7 +57,7 @@ namespace SearchApi.Core.Test.DependencyInjection
         public void should_register_service_bus()
         {
 
-            services.AddProvider(configuration, (provider) => new SearchRequestConsumer(provider.GetRequiredService<IValidator<Person.Contracts.Person>>(),
+            services.AddProvider(configuration, (provider) => new SearchRequestConsumer(provider.GetRequiredService<IValidator<Person>>(),
                                  provider.GetRequiredService<IOptions<ProviderProfileOptions>>(),
                                  provider.GetRequiredService<ILogger<SearchRequestConsumer>>()));
 

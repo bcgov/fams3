@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using Newtonsoft.Json;
 using NSwag;
-using SearchApi.Core.Adapters.Models;
-using SearchApi.Core.Person.Contracts;
-using SearchApi.Core.Person.Enums;
+using BcGov.Fams3.SearchApi.Core.Adapters.Models;
+using BcGov.Fams3.SearchApi.Core.Person.Contracts;
+using BcGov.Fams3.SearchApi.Core.Person.Enums;
 
 namespace SearchApi.Web.Controllers
 {

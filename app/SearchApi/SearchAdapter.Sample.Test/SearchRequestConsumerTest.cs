@@ -10,9 +10,9 @@ using Microsoft.Extensions.Options;
 using Moq;
 using NUnit.Framework;
 using SearchAdapter.Sample.SearchRequest;
-using SearchApi.Core.Adapters.Configuration;
-using SearchApi.Core.Adapters.Contracts;
-using SearchApi.Core.Person.Contracts;
+using BcGov.Fams3.SearchApi.Core.Adapters.Configuration;
+using BcGov.Fams3.SearchApi.Core.Adapters.Contracts;
+using BcGov.Fams3.SearchApi.Core.Person.Contracts;
 
 namespace SearchAdapter.Sample.Test
 {

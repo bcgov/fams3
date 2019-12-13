@@ -2,6 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>PathFinder</Authors>
+    <Company>BcGov</Company>
+    <Description>A core Librairy for BCGOV SearchApi Related Products</Description>
   </PropertyGroup>
 
   <ItemGroup>

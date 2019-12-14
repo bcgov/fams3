@@ -29,6 +29,14 @@ namespace BcGov.Fams3.SearchApi.Core.DependencyInjection
             var rabbitMqSettings = configuration.GetSection(Keys.RABBITMQ_SECTION_SETTING_KEY).Get<RabbitMqConfiguration>();
             var providerConfiguration = configuration.GetSection(Keys.PROVIDER_SECTION_SETTING_KEY).Get<ProviderProfileOptions>();
 
+
+            // Configures the Provider Profile Options
+            services
+                .AddOptions<ProviderProfileOptions>()
+                .Bind(configuration.GetSection(Keys.PROVIDER_SECTION_SETTING_KEY))
+                .ValidateDataAnnotations();
+
+
             var rabbitBaseUri = $"amqp://{rabbitMqSettings.Host}:{rabbitMqSettings.Port}";
 
             services.AddTransient<IConsumeMessageObserver<PersonSearchOrdered>, PersonSearchObserver>();

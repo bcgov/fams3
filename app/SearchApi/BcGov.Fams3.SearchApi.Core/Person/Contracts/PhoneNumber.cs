@@ -2,7 +2,7 @@
 
 namespace BcGov.Fams3.SearchApi.Core.Person.Contracts
 {
-    public interface PersonalPhoneNumber
+    public interface PhoneNumber
     {
         string SuppliedBy { get; }
 

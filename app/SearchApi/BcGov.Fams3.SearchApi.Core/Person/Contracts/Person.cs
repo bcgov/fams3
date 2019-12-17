@@ -9,8 +9,8 @@ namespace BcGov.Fams3.SearchApi.Core.Person.Contracts
         string LastName { get; }
         DateTime? DateOfBirth { get; }
         IEnumerable<PersonalIdentifier> Identifiers { get; }
-        IEnumerable<PersonalAddress> Addresses { get; }
+        IEnumerable<Address> Addresses { get; }
 
-        IEnumerable<PersonalPhoneNumber> PhoneNumbers { get; }
+        IEnumerable<PhoneNumber> PhoneNumbers { get; }
     }
 }

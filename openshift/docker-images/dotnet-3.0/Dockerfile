@@ -9,3 +9,5 @@ RUN curl -sLo /tmp/sonar-scanner-cli.zip https://dl.bintray.com/sonarsource/Sona
     chmod -R 755 ${APP_ROOT}/sonar-scanner-cli
 
 # Install private dependencies
+RUN dotnet nuget sources add -Name artficatory -Source ${NUGET_REPO} 
+RUN dotnet nuget setapikey ${NUGET_CREDENTIALS} -Source artifactory

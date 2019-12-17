@@ -33,9 +33,9 @@ namespace SearchApi.Web.Controllers
         public DateTime? DateOfBirth { get; }
 
         public IEnumerable<PersonalIdentifier> Identifiers { get; set; }
-        public IEnumerable<PersonalAddress> Addresses { get; set; }
+        public IEnumerable<Address> Addresses { get; set; }
 
-        public IEnumerable<PersonalPhoneNumber> PhoneNumbers { get; set; }
+        public IEnumerable<PhoneNumber> PhoneNumbers { get; set; }
 
 
     }

@@ -21,8 +21,8 @@ namespace SearchAdapter.Sample.SearchRequest
         public string LastName { get; set; }
         public DateTime? DateOfBirth { get; set; }
         public IEnumerable<PersonalIdentifier> Identifiers { get; set; }
-        public IEnumerable<PersonalAddress> Addresses { get; set; }
-        public IEnumerable<PersonalPhoneNumber> PhoneNumbers { get; set; }
+        public IEnumerable<Address> Addresses { get; set; }
+        public IEnumerable<PhoneNumber> PhoneNumbers { get; set; }
     }
 
     public class PersonalIdentifierSample : PersonalIdentifier
@@ -34,7 +34,7 @@ namespace SearchAdapter.Sample.SearchRequest
         public string IssuedBy { get; set; }
     }
 
-    public class PersonalAddressSample : PersonalAddress
+    public class AddressSample : Address
     {
         public string Type { get; set; }
         public string AddressLine1 { get; set; }
@@ -47,7 +47,7 @@ namespace SearchAdapter.Sample.SearchRequest
         public string SuppliedBy { get; set; }
     }
 
-    public class PersonalPhoneNumberSample : PersonalPhoneNumber
+    public class PhoneNumberSample : PhoneNumber
     {
 
         public string PhoneNumber { get; set; }

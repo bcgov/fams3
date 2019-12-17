@@ -90,9 +90,9 @@ namespace SearchApi.Web.Controllers
             public string LastName { get; set; }
             public DateTime? DateOfBirth { get; set; }
             public IEnumerable<PersonalIdentifier> Identifiers { get; }
-            public IEnumerable<PersonalAddress> Addresses { get; }
+            public IEnumerable<Address> Addresses { get; }
 
-            public IEnumerable<PersonalPhoneNumber> PhoneNumbers { get; }
+            public IEnumerable<PhoneNumber> PhoneNumbers { get; }
         }
     }
 }

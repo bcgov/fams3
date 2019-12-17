@@ -1,6 +1,6 @@
 ﻿namespace BcGov.Fams3.SearchApi.Core.Person.Contracts
 {
-    public interface PersonalAddress
+    public interface Address
     {
         string Type { get; }
         string AddressLine1 { get; }

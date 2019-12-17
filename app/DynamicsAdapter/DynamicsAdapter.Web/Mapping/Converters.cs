@@ -56,9 +56,9 @@ namespace DynamicsAdapter.Web.Mapping
             { IdentificationType.CorrectionsId.Value, PersonalIdentifierType.CorrectionsId },
             { IdentificationType.NativeStatusCard.Value, PersonalIdentifierType.NativeStatusCard },
             { IdentificationType.Passport.Value, PersonalIdentifierType.Passport },
-            { IdentificationType.WcbClaim.Value, PersonalIdentifierType.WcbClaim },
+            { IdentificationType.WorkSafeBCCCN.Value, PersonalIdentifierType.WcbClaim },
             { IdentificationType.Other.Value, PersonalIdentifierType.Other },
-            { IdentificationType.SecurityKeyword.Value, PersonalIdentifierType.SecurityKeyword }
+           
         };
     }
 

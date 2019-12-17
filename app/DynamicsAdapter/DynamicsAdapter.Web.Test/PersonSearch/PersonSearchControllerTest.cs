@@ -109,9 +109,9 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                                Type = PersonalIdentifierType.DriverLicense
                             }
                         },
-                    Addresses = new List<PersonalAddressActual>()
+                    Addresses = new List<AddressActual>()
                         {
-                            new PersonalAddressActual()
+                            new AddressActual()
                             {
                                 AddressLine1 = "AddressLine1",
                                 AddressLine2 = "AddressLine2",
@@ -123,11 +123,11 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                                 SuppliedBy = "Employer"
                             }
                         },
-                    PhoneNumbers = new List<PersonalPhoneNumberActual>()
+                    PhoneNumbers = new List<PhoneNumberActual>()
                     {
-                        new PersonalPhoneNumberActual ()
+                        new PhoneNumberActual ()
                         {
-                            PhoneNumber = "4005678900"
+                            PhoneNumber1 = "4005678900"
                         }
                     }
                     
@@ -172,10 +172,10 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _mapper.Setup(m => m.Map<SSG_Identifier>(It.IsAny<PersonalIdentifier>()))
                                .Returns(_fakePersoneIdentifier);
 
-            _mapper.Setup(m => m.Map<SSG_PhoneNumber>(It.IsAny<PersonalPhoneNumber>()))
+            _mapper.Setup(m => m.Map<SSG_PhoneNumber>(It.IsAny<PhoneNumber>()))
                              .Returns(_fakePersonPhoneNumber);
 
-            _mapper.Setup(m => m.Map<SSG_Address>(It.IsAny<PersonalAddress>()))
+            _mapper.Setup(m => m.Map<SSG_Address>(It.IsAny<Web.Address>()))
                               .Returns(_fakePersonAddress);
 
 

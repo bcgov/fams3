@@ -10,7 +10,6 @@ namespace BcGov.Fams3.SearchApi.Core.Person.Contracts
         DateTime? DateOfBirth { get; }
         IEnumerable<PersonalIdentifier> Identifiers { get; }
         IEnumerable<Address> Addresses { get; }
-
         IEnumerable<PhoneNumber> PhoneNumbers { get; }
     }
 }

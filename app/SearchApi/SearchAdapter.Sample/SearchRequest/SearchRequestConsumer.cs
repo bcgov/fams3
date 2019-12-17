@@ -113,9 +113,8 @@ namespace SearchAdapter.Sample.SearchRequest
                             AddressLine2 = "address in line 2",
                             Province = "British Columbia",
                             City = "victoria" ,
-                            Country="canada",
-                            PostalCode = "t4t4t4",
-                            NonCanadianState="",
+                            CountryRegion= "canada",
+                            ZipPostalCode = "t4t4t4",
                             SuppliedBy = "ICBC"
                         },
                          new AddressSample()
@@ -125,9 +124,8 @@ namespace SearchAdapter.Sample.SearchRequest
                             AddressLine2 = "residence address in line 2",
                             Province = "British Columbia",
                             City = "vancouver" ,
-                            Country="canada",
-                            PostalCode = "5r5r5r",
-                            NonCanadianState="",
+                            CountryRegion="canada",
+                            ZipPostalCode = "5r5r5r",
                             SuppliedBy = "employer"
                         }
                     }

@@ -34,7 +34,7 @@ namespace SearchAdapter.Sample.SearchRequest
         public string IssuedBy { get; set; }
     }
 
-    public class PersonalAddressSample : Address
+    public class AddressSample : Address
     {
         public string Type { get; set; }
         public string AddressLine1 { get; set; }
@@ -47,7 +47,7 @@ namespace SearchAdapter.Sample.SearchRequest
         public string SuppliedBy { get; set; }
     }
 
-    public class PersonalPhoneNumberSample : PhoneNumber
+    public class PhoneNumberSample : PhoneNumber
     {
 
         public string PhoneNumber { get; set; }

@@ -75,14 +75,13 @@ namespace  DynamicsAdapter.Web.Mapping
             CreateMap<Address, SSG_Address>()
                  .ForMember(dest => dest.AddressLine1, opt => opt.MapFrom(src => src.AddressLine1))
                  .ForMember(dest => dest.AddressLine2, opt => opt.MapFrom(src => src.AddressLine2))
-                 .ForMember(dest => dest.Province, opt => opt.ConvertUsing(new ProvinceConverter(), src => src.Province))
+                 .ForMember(dest => dest.Province, opt => opt.ConvertUsing(new ProvinceConverter(), src => src.StateProvince))
                  .ForMember(dest => dest.InformationSource, opt => opt.ConvertUsing(new IssuedByTypeConverter(), src => src.SuppliedBy))
                  .ForMember(dest => dest.City, opt => opt.MapFrom(src => src.City))
-                 .ForMember(dest => dest.Country, opt => opt.ConvertUsing(new CountryConverter(), src => src.Country))
+                 .ForMember(dest => dest.Country, opt => opt.ConvertUsing(new CountryConverter(), src => src.CountryRegion))
                  .ForMember(dest => dest.Category, opt => opt.ConvertUsing(new AddressTypeConverter(), src => src.Type))
-                 .ForMember(dest => dest.NonCanadianState, opt => opt.MapFrom(src => src.NonCanadianState))
                  .ForMember(dest => dest.FullText, opt => opt.MapFrom<FullTextResolver>())
-                 .ForMember(dest => dest.PostalCode, opt => opt.MapFrom(src => src.PostalCode))
+                 .ForMember(dest => dest.PostalCode, opt => opt.MapFrom(src => src.ZipPostalCode))
                  .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => 0))
                  .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1));
 
@@ -90,13 +89,12 @@ namespace  DynamicsAdapter.Web.Mapping
         .ConstructUsing(m => new AddressActual() { })
                 .ForMember(dest => dest.AddressLine1, opt => opt.MapFrom(src => src.AddressLine1))
                  .ForMember(dest => dest.AddressLine2, opt => opt.MapFrom(src => src.AddressLine2))
-                 .ForMember(dest => dest.Province, opt => opt.ConvertUsing(new ProvinceValueConverter(), src => src.Province))
+                 .ForMember(dest => dest.StateProvince, opt => opt.ConvertUsing(new ProvinceValueConverter(), src => src.Province))
                  .ForMember(dest => dest.SuppliedBy, opt => opt.ConvertUsing(new IssuedByTypeValueConverter(), src => src.InformationSource))
                  .ForMember(dest => dest.City, opt => opt.MapFrom(src => src.City))
-                 .ForMember(dest => dest.Country, opt => opt.MapFrom(src => src.Country.Name))
+                 .ForMember(dest => dest.CountryRegion, opt => opt.MapFrom(src => src.Country.Name))
                  .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new AddressTypeValueConverter(), src => src.Category))
-                 .ForMember(dest => dest.NonCanadianState, opt => opt.MapFrom(src => src.NonCanadianState))
-                 .ForMember(dest => dest.PostalCode, opt => opt.MapFrom(src => src.PostalCode));
+        .ForMember(dest => dest.ZipPostalCode, opt => opt.MapFrom(src => src.PostalCode));
 
             CreateMap<PersonalIdentifier, SSG_Identifier>()
                  .ForMember(dest => dest.Identification, opt => opt.MapFrom(src => src.SerialNumber))

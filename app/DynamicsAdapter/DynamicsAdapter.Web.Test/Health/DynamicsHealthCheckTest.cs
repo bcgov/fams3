@@ -73,6 +73,9 @@ namespace DynamicsAdapter.Web.Test.Health
             _statusReasonServiceMock.Setup(x => x.GetAllOptions("ssg_telephonenumbercategorycodes", CancellationToken.None))
       .Returns(Task.FromResult(Enumeration.GetAll<TelephoneNumberType>().Select(x => new GenericOption(x.Value, x.Name))));
 
+            _statusReasonServiceMock.Setup(x => x.GetAllOptions("ssg_personnamecategorycodes", CancellationToken.None))
+.Returns(Task.FromResult(Enumeration.GetAll<PersonNameCategory>().Select(x => new GenericOption(x.Value, x.Name))));
+
             _sut = new DynamicsHealthCheck(_statusReasonServiceMock.Object, _statusReasonServiceLogger.Object);
 
             var result = await _sut.CheckHealthAsync(new HealthCheckContext(), CancellationToken.None);

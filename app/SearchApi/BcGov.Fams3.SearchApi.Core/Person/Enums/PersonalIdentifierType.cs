@@ -9,8 +9,10 @@
         CorrectionsId,
         NativeStatusCard,
         Passport,
-        WcbClaim,
+        WorkSafeBCCCN,
         Other,
-        SecurityKeyword
+        BCID,
+        BCHydroBP
+        
     }
 }

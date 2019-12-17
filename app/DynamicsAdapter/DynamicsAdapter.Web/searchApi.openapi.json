@@ -76,33 +76,36 @@
       "properties": {
         "firstName": {
           "type": "string",
-          "description": "The first name of the subject."
+          "description": "The first name of the subject"
         },
         "lastName": {
           "type": "string",
-          "description": "The last name of the subject."
+          "description": "The last name of the subject"
         },
         "dateOfBirth": {
           "type": "string",
-          "description": "The date of birth of the subject.",
+          "description": "The date of birth of the subject",
           "format": "date-time"
         },
         "identifiers": {
           "type": "array",
+          "description": "A collection of Personal Identifiers",
           "items": {
             "$ref": "#/definitions/PersonalIdentifier"
           }
         },
         "addresses": {
           "type": "array",
+          "description": "A collection of addresses",
           "items": {
-            "$ref": "#/definitions/PersonalAddress"
+            "$ref": "#/definitions/Address"
           }
         },
         "phoneNumbers": {
           "type": "array",
+          "description": "A collection of phone numbers",
           "items": {
-            "$ref": "#/definitions/PersonalPhoneNumber"
+            "$ref": "#/definitions/PhoneNumber"
           }
         }
       }
@@ -144,9 +147,10 @@
         "CorrectionsId",
         "NativeStatusCard",
         "Passport",
-        "WcbClaim",
+        "WorkSafeBCCCN",
         "Other",
-        "SecurityKeyword"
+        "BCID",
+        "BCHydroBP"
       ],
       "enum": [
         "DriverLicense",
@@ -156,12 +160,13 @@
         "CorrectionsId",
         "NativeStatusCard",
         "Passport",
-        "WcbClaim",
+        "WorkSafeBCCCN",
         "Other",
-        "SecurityKeyword"
+        "BCID",
+        "BCHydroBP"
       ]
     },
-    "PersonalAddress": {
+    "Address": {
       "type": "object",
       "x-abstract": true,
       "properties": {
@@ -194,7 +199,7 @@
         }
       }
     },
-    "PersonalPhoneNumber": {
+    "PhoneNumber": {
       "type": "object",
       "x-abstract": true,
       "properties": {

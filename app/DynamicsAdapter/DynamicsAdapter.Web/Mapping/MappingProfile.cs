@@ -72,7 +72,7 @@ namespace  DynamicsAdapter.Web.Mapping
                           )
                .ReverseMap();
 
-            CreateMap<PersonalAddress, SSG_Address>()
+            CreateMap<Address, SSG_Address>()
                  .ForMember(dest => dest.AddressLine1, opt => opt.MapFrom(src => src.AddressLine1))
                  .ForMember(dest => dest.AddressLine2, opt => opt.MapFrom(src => src.AddressLine2))
                  .ForMember(dest => dest.Province, opt => opt.ConvertUsing(new ProvinceConverter(), src => src.Province))
@@ -86,8 +86,8 @@ namespace  DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => 0))
                  .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1));
 
-            CreateMap<SSG_Address, PersonalAddress>()
-        .ConstructUsing(m => new PersonalAddressActual() { })
+            CreateMap<SSG_Address, Address>()
+        .ConstructUsing(m => new AddressActual() { })
                 .ForMember(dest => dest.AddressLine1, opt => opt.MapFrom(src => src.AddressLine1))
                  .ForMember(dest => dest.AddressLine2, opt => opt.MapFrom(src => src.AddressLine2))
                  .ForMember(dest => dest.Province, opt => opt.ConvertUsing(new ProvinceValueConverter(), src => src.Province))
@@ -107,8 +107,8 @@ namespace  DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => 0))
                  .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1));
 
-            CreateMap<PersonalPhoneNumber, SSG_PhoneNumber>()
-                .ForMember(dest => dest.TelePhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
+            CreateMap<PhoneNumber, SSG_PhoneNumber>()
+                .ForMember(dest => dest.TelePhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber1))
                 .ForMember(dest => dest.DateType, opt => opt.MapFrom(src => src.DateType))
                 .ForMember(dest => dest.DateData, opt => opt.ConvertUsing(new DateTimeOffsetConverter(), src => src.Date))
                 .ForMember(dest => dest.TelephoneNumberType, opt => opt.ConvertUsing(new TelephoneNumberIdConverter(), src => src.PhoneNumberType))
@@ -116,9 +116,9 @@ namespace  DynamicsAdapter.Web.Mapping
                 .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => 0))
                 .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1));
 
-            CreateMap<SSG_PhoneNumber, PersonalPhoneNumber>()
-                .ConstructUsing(m => new PersonalPhoneNumberActual() { })
-                .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.TelePhoneNumber))
+            CreateMap<SSG_PhoneNumber, PhoneNumber>()
+                .ConstructUsing(m => new PhoneNumberActual() { })
+                .ForMember(dest => dest.PhoneNumber1, opt => opt.MapFrom(src => src.TelePhoneNumber))
                 .ForMember(dest => dest.DateType, opt => opt.MapFrom(src => src.DateType))
                 .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.DateData)) 
                 .ForMember(dest => dest.PhoneNumberType, opt => opt.ConvertUsing(new TelephoneNumberValueConverter(), src => src.TelephoneNumberType))

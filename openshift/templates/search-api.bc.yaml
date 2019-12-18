@@ -136,10 +136,6 @@ objects:
               value: "${DOTNET_TOOLS}"
             - name: DOTNET_INCREMENTAL
               value: "true"
-            - name: DOTNET_SSL_DIRS
-              value: /etc/ssl/certs
-            - name: SSL_CERT_DIR
-              value: /etc/ssl/certs
       output:
         to:
           kind: ImageStreamTag

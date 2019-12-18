@@ -80,11 +80,11 @@ namespace DynamicsAdapter.Web.Test.Mapping
             {
                 AddressLine1 = "AddressLine1",
                 AddressLine2 = "AddressLine2",
-                Province = "Manitoba",
+                StateProvince = "Manitoba",
                 City = "testCity",
                 Type = "residence",
-                Country = "canada",
-                PostalCode = "p3p3p3",
+                CountryRegion = "canada",
+                ZipPostalCode = "p3p3p3",
                 SuppliedBy = "Employer"
             };
             SSG_Address ssg_addr = _mapper.Map<SSG_Address>(address);

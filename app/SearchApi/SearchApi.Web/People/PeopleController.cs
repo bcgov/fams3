@@ -91,7 +91,6 @@ namespace SearchApi.Web.Controllers
             public DateTime? DateOfBirth { get; set; }
             public IEnumerable<PersonalIdentifier> Identifiers { get; }
             public IEnumerable<Address> Addresses { get; }
-
             public IEnumerable<PhoneNumber> PhoneNumbers { get; }
         }
     }

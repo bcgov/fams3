@@ -6,7 +6,7 @@
     "description": "For Search",
     "version": "V0.1"
   },
-  "host": "localhost:64834",
+  "host": "localhost:5050",
   "schemes": [
     "http"
   ],
@@ -118,21 +118,30 @@
       ],
       "properties": {
         "serialNumber": {
-          "type": "string"
+          "type": "string",
+          "description": "The serial number of the identifier"
         },
         "effectiveDate": {
           "type": "string",
+          "description": "The effective date of the identifier",
           "format": "date-time"
         },
         "expirationDate": {
           "type": "string",
+          "description": "The expiration date of the identifier",
           "format": "date-time"
         },
         "type": {
-          "$ref": "#/definitions/PersonalIdentifierType"
+          "description": "The type of the identifier",
+          "allOf": [
+            {
+              "$ref": "#/definitions/PersonalIdentifierType"
+            }
+          ]
         },
         "issuedBy": {
-          "type": "string"
+          "type": "string",
+          "description": "The issuer of the identifier"
         }
       }
     },
@@ -171,31 +180,50 @@
       "x-abstract": true,
       "properties": {
         "type": {
-          "type": "string"
+          "type": "string",
+          "description": "The type of address"
         },
         "addressLine1": {
-          "type": "string"
+          "type": "string",
+          "description": "The Address Line 1"
         },
         "addressLine2": {
-          "type": "string"
+          "type": "string",
+          "description": "The Address Line 2"
         },
-        "province": {
-          "type": "string"
+        "addressLine3": {
+          "type": "string",
+          "description": "The Address Line 2"
+        },
+        "stateProvince": {
+          "type": "string",
+          "description": "The Address Province or state"
         },
         "city": {
-          "type": "string"
+          "type": "string",
+          "description": "The Address City"
         },
-        "country": {
-          "type": "string"
+        "countryRegion": {
+          "type": "string",
+          "description": "The Address Country"
         },
-        "postalCode": {
-          "type": "string"
-        },
-        "nonCanadianState": {
-          "type": "string"
+        "zipPostalCode": {
+          "type": "string",
+          "description": "The Address Zip or Postal Code"
         },
         "suppliedBy": {
-          "type": "string"
+          "type": "string",
+          "description": "Information on who supplied"
+        },
+        "effectiveDate": {
+          "type": "string",
+          "description": "The Address Efective Date",
+          "format": "date-time"
+        },
+        "endDate": {
+          "type": "string",
+          "description": "The Address End Date",
+          "format": "date-time"
         }
       }
     },
@@ -204,20 +232,25 @@
       "x-abstract": true,
       "properties": {
         "suppliedBy": {
-          "type": "string"
+          "type": "string",
+          "description": "Supply "
         },
         "date": {
           "type": "string",
+          "description": "A Date",
           "format": "date-time"
         },
         "dateType": {
-          "type": "string"
+          "type": "string",
+          "description": "The Date type of the supplied Date"
         },
         "phoneNumber": {
-          "type": "string"
+          "type": "string",
+          "description": "The Phone number"
         },
         "phoneNumberType": {
-          "type": "string"
+          "type": "string",
+          "description": "The phone number type"
         }
       }
     }

@@ -51,50 +51,36 @@ namespace SearchApi.Web.Controllers
 
     public class SearchApiPersonalIdentifier : PersonalIdentifier
     {
-        [Description("The serial number of the identifier")]
         public string SerialNumber { get; set; }
-        [Description("The effective date of the identifier")]
         public DateTime? EffectiveDate { get; set; }
-        [Description("The expiration date of the identifier")]
         public DateTime? ExpirationDate { get; set; }
-        [Description("The type of the identifier")]
         public PersonalIdentifierType Type { get; set; }
-        [Description("The issuer of the identifier")]
         public string IssuedBy { get; set; }
     }
 
 
     public class SearchApiAddress : Address
     {
-        [Description("The type of address")]
         public string Type { get; }
-        [Description("The Address Line 1")]
         public string AddressLine1 { get; }
-        [Description("The Address Line 2")]
         public string AddressLine2 { get; }
-        [Description("The Address Province or state")]
-        public string Province { get; }
-        [Description("The Address City")]
+        public string AddressLine3 { get; }
+        public string StateProvince { get; }
         public string City { get; }
-        [Description("The Address Country")]
-        public string Country { get; }
-        [Description("The Address Zip or Postal Code")]
-        public string PostalCode { get; }
-        public string NonCanadianState { get; }
+        public string CountryRegion { get; }
+        public string ZipPostalCode { get; }
         public string SuppliedBy { get; }
+        public DateTime? EffectiveDate { get; }
+        public DateTime? EndDate { get; }
     }
 
 
     public class SearchApiPhoneNumber : PhoneNumber
     {
         public string SuppliedBy { get; }
-        [Description("A Date")]
         public DateTime? Date { get; }
-        [Description("The Date type of the supplied Date")]
         public string DateType { get; }
-        [Description("The Phone number")]
         public string PhoneNumber { get; }
-        [Description("The phone number type")]
         public string PhoneNumberType { get; }
     }
 }

@@ -332,4 +332,4 @@ ASALocalRun/
 .env
 
 # s2i
-!.s2i/bin
+!.s2i/bin/

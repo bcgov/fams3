@@ -80,7 +80,7 @@ parameters:
 - name: DOTNET_RESTORE_CONFIGFILE
   displayName: NuGet.Config file
   description: Set this to a Nuget.Config file. Cannot be combined with DOTNET_RESTORE_SOURCES.
-  value: nuget.config
+  value: /opt/nuget.config
 objects: 
   - kind: ImageStream
     apiVersion: v1
@@ -110,6 +110,7 @@ objects:
         configMaps:
           - configMap:
               name: dotnet-artifactory-configuration
+            destinationDir: /opt
       strategy:
         type: Source
         sourceStrategy:

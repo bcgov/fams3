@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ln -s /usr/local/ssl/certs /etc/ssl/certs
+ln -s /etc/ssl/certs /usr/local/ssl/certs
 /usr/libexec/s2i/assemble
 rc=$?
 

@@ -138,8 +138,8 @@ objects:
               value: "true"
             - name: DOTNET_SSL_DIRS
               value: /etc/ssl/certs
-            - name: SSL_CERT_FILE
-              value: /etc/ssl/certs/ca-certificates.crt
+            - name: SSL_CERT_DIR
+              value: /etc/ssl/certs
       output:
         to:
           kind: ImageStreamTag

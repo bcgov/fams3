@@ -10,10 +10,10 @@ namespace DynamicsAdapter.Web.PersonSearch.Models
     public class PersonalIdentifierActual : PersonalIdentifier
     {
     }
-    public class PersonalPhoneNumberActual : PersonalPhoneNumber
+    public class PhoneNumberActual : PhoneNumber
     { }
 
-    public class PersonalAddressActual : PersonalAddress
+    public class AddressActual : Web.Address
     { }
 
     public class Person
@@ -23,8 +23,8 @@ namespace DynamicsAdapter.Web.PersonSearch.Models
         public DateTime? DateOfBirth { get; set; }
         public IEnumerable<PersonalIdentifierActual> Identifiers { get; set; }
 
-        public IEnumerable<PersonalPhoneNumberActual> PhoneNumbers { get; set; }
-        public IEnumerable<PersonalAddressActual> Addresses { get; set; }
+        public IEnumerable<PhoneNumberActual> PhoneNumbers { get; set; }
+        public IEnumerable<AddressActual> Addresses { get; set; }
 
     }
 }

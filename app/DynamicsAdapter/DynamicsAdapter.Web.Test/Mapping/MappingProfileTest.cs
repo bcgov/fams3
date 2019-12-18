@@ -76,15 +76,15 @@ namespace DynamicsAdapter.Web.Test.Mapping
         [Test]
         public void Address_should_map_to_SSG_Address_correctly()
         {
-            var address = new PersonalAddressActual()
+            var address = new AddressActual()
             {
                 AddressLine1 = "AddressLine1",
                 AddressLine2 = "AddressLine2",
-                Province = "Manitoba",
+                StateProvince = "Manitoba",
                 City = "testCity",
                 Type = "residence",
-                Country = "canada",
-                PostalCode = "p3p3p3",
+                CountryRegion = "canada",
+                ZipPostalCode = "p3p3p3",
                 SuppliedBy = "Employer"
             };
             SSG_Address ssg_addr = _mapper.Map<SSG_Address>(address);
@@ -214,15 +214,15 @@ namespace DynamicsAdapter.Web.Test.Mapping
                         new PersonalIdentifierActual(){ },
                         new PersonalIdentifierActual(){ }
                     },
-                    Addresses = new PersonalAddressActual[]
+                    Addresses = new AddressActual[]
                     {
-                        new PersonalAddressActual(){ },
-                        new PersonalAddressActual(){ }
+                        new AddressActual(){ },
+                        new AddressActual(){ }
                     },
-                    PhoneNumbers = new PersonalPhoneNumberActual[]
+                    PhoneNumbers = new PhoneNumberActual[]
                     {
-                        new PersonalPhoneNumberActual(){ },
-                        new PersonalPhoneNumberActual(){ }
+                        new PhoneNumberActual(){ },
+                        new PhoneNumberActual(){ }
                     }
                 }
             };
@@ -290,11 +290,11 @@ namespace DynamicsAdapter.Web.Test.Mapping
         [Test]
         public void PersonalPhoneNumber_should_map_to_SSG_PhoneNumber_correctly()
         {
-            PersonalPhoneNumber phoneNumber = new PersonalPhoneNumberActual()
+            PhoneNumber phoneNumber = new PhoneNumberActual()
             {
                
                 Date = new DateTimeOffset(new DateTime(2003, 3, 3)),
-                PhoneNumber = "6904005678",
+                PhoneNumber1 = "6904005678",
                 DateType = "Effective Date",
                 PhoneNumberType = "Home",
                 SuppliedBy = "ICBC"
@@ -322,7 +322,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 InformationSource = InformationSourceType.ICBC.Value
 
             };
-            PersonalPhoneNumber phoneNumber = _mapper.Map<PersonalPhoneNumber>(ssg_PhoneNumber);
+            PhoneNumber phoneNumber = _mapper.Map<PhoneNumber>(ssg_PhoneNumber);
             Assert.AreEqual("Effective Date", phoneNumber.DateType);
             Assert.AreEqual(new DateTimeOffset(new DateTime(2001, 1, 1)), phoneNumber.Date);
             Assert.AreEqual(InformationSourceType.ICBC.Name, phoneNumber.SuppliedBy);

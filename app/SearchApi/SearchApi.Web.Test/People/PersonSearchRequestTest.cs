@@ -11,7 +11,7 @@ namespace SearchApi.Web.Test.People
         public void With_args_it_should_create()
         {
 
-            var sut = new PersonSearchRequest("firstName", "lastName", new DateTime(2001, 1, 12), new List<SearchApiPersonalIdentifier>());
+            var sut = new PersonSearchRequest("firstName", "lastName", new DateTime(2001, 1, 12), new List<SearchApiPersonalIdentifier>(), new List<SearchApiAddress>(), new List<SearchApiPhoneNumber>() );
 
             Assert.AreEqual("firstName", sut.FirstName);
             Assert.AreEqual("lastName", sut.LastName);

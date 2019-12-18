@@ -77,8 +77,11 @@ namespace DynamicsAdapter.Web.Health
                 case "ssg_telephonenumbercategorycodes":
                     optionsList = Enumeration.GetAll<TelephoneNumberType>();
                     break;
+                case "ssg_personnamecategorycodes":
+                    optionsList = Enumeration.GetAll<PersonNameCategory>();
+                    break;
                 default:
-                    optionsList= Enumeration.GetAll<IdentificationType>();
+                    optionsList= Enumeration.GetAll<TelephoneNumberType>();
                     break;
             }
             return optionsList;

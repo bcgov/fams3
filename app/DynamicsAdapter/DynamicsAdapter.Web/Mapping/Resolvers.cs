@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace DynamicsAdapter.Web.Mapping
 {
-    public class FullTextResolver : IValueResolver<PersonalAddress, SSG_Address, string>
+    public class FullTextResolver : IValueResolver<Address, SSG_Address, string>
     {
-        public string Resolve(PersonalAddress source, SSG_Address dest, string fullText, ResolutionContext context)
+        public string Resolve(Address source, SSG_Address dest, string fullText, ResolutionContext context)
         {
-            return $"{source.AddressLine1} {source.AddressLine2} {source.City} {source.Province} {source.Country} {source.PostalCode}";
+            return $"{source.AddressLine1} {source.AddressLine2} {source.City} {source.StateProvince} {source.CountryRegion} {source.ZipPostalCode}";
         }
     }
 }

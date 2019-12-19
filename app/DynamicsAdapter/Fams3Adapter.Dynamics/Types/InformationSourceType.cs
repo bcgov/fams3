@@ -1,4 +1,6 @@
 ﻿using Fams3Adapter.Dynamics.OptionSets.Models;
+using System;
+using System.Linq;
 
 namespace Fams3Adapter.Dynamics.Types
 
@@ -14,6 +16,20 @@ namespace Fams3Adapter.Dynamics.Types
 
         protected InformationSourceType(int value, string name) : base(value, name)
         {
+        }
+    }
+    public static class StringExtension
+    {
+        public static int? SuppliedByID (this string source )
+        {
+         return  Enumeration.GetAll<InformationSourceType>().FirstOrDefault(m => m.Name.Equals(source, StringComparison.OrdinalIgnoreCase))?.Value;
+        
+        }
+
+        public static string SuppliedByValue(this int source)
+        {
+            return Enumeration.GetAll<InformationSourceType>().FirstOrDefault(m => m.Value == source).Name;
+         
         }
     }
 }

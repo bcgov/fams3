@@ -13,6 +13,7 @@ using Fams3Adapter.Dynamics.SearchRequest;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Fams3Adapter.Dynamics.Types;
 
 namespace DynamicsAdapter.Web.PersonSearch
 {
@@ -171,6 +172,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             {
                 SSG_Identifier identifier = _mapper.Map<SSG_Identifier>(matchFoundPersonId);
                 identifier.SSG_SearchRequest = request;
+                identifier.InformationSource = personCompletedEvent.ProviderProfile.Name.SuppliedByID();
                 var identifer = await _searchRequestService.CreateIdentifier(identifier, concellationToken);
             }
             return true;
@@ -183,6 +185,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             {
                 SSG_Address addr = _mapper.Map<SSG_Address>(address);
                 addr.SearchRequest = request;
+               addr.InformationSource = personCompletedEvent.ProviderProfile.Name.SuppliedByID();
                 var uploadedAddr = await _searchRequestService.CreateAddress(addr, concellationToken);
             }
             return true;
@@ -195,6 +198,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             {
                 SSG_PhoneNumber ph = _mapper.Map<SSG_PhoneNumber>(phone);
                 ph.SearchRequest = request;
+                ph.InformationSource = personCompletedEvent.ProviderProfile.Name.SuppliedByID();
                 await _searchRequestService.CreatePhoneNumber(ph, concellationToken);
             }
             return true;

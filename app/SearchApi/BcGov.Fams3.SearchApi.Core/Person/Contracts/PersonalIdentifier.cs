@@ -16,5 +16,6 @@ namespace BcGov.Fams3.SearchApi.Core.Person.Contracts
         PersonalIdentifierType Type { get; }
         [Description("The issuer of the identifier")]
         string IssuedBy { get; }
+
     }
 }

@@ -19,12 +19,21 @@ namespace  DynamicsAdapter.Web.Mapping
         public MappingProfile()
         {
             CreateMap<SSG_Identifier, PersonalIdentifier>()
-                 .ConstructUsing( m => new PersonalIdentifierActual(){})
+                 .ConstructUsing(m => new PersonalIdentifierActual() { })
                  .ForMember(dest => dest.SerialNumber, opt => opt.MapFrom(src => src.Identification))
                  .ForMember(dest => dest.EffectiveDate, opt => opt.MapFrom(src => src.IdentificationEffectiveDate))
                  .ForMember(dest => dest.ExpirationDate, opt => opt.MapFrom(src => src.IdentificationExpirationDate))
-                 .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new IdentifierTypeConverter(), src => src.IdentifierType))
-                 .ForMember(dest => dest.IssuedBy, opt => opt.ConvertUsing(new InformationSourceConverter(), src => src.InformationSource));
+                 .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new IdentifierTypeConverter(), src => src.IdentifierType));
+                
+
+            CreateMap<PersonalIdentifier, SSG_Identifier>()
+               .ForMember(dest => dest.Identification, opt => opt.MapFrom(src => src.SerialNumber))
+               .ForMember(dest => dest.IdentificationEffectiveDate, opt => opt.ConvertUsing(new DateTimeOffsetConverter(), src => src.EffectiveDate))
+               .ForMember(dest => dest.IdentificationExpirationDate, opt => opt.ConvertUsing(new DateTimeOffsetConverter(), src => src.ExpirationDate))
+               .ForMember(dest => dest.IdentifierType, opt => opt.ConvertUsing(new PersonalIdentifierTypeConverter(), src => src.Type))
+               .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => 0))
+               .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1));
+
 
             CreateMap<SSG_SearchApiRequest, PersonSearchRequest>()
                  .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.PersonGivenName))
@@ -76,7 +85,7 @@ namespace  DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.AddressLine1, opt => opt.MapFrom(src => src.AddressLine1))
                  .ForMember(dest => dest.AddressLine2, opt => opt.MapFrom(src => src.AddressLine2))
                  .ForMember(dest => dest.Province, opt => opt.ConvertUsing(new ProvinceConverter(), src => src.StateProvince))
-                 .ForMember(dest => dest.InformationSource, opt => opt.ConvertUsing(new IssuedByTypeConverter(), src => src.SuppliedBy))
+                 .ForMember(dest => dest.InformationSource, opt => opt.ConvertUsing(new SuppliedByValueConverter(), src => src.SuppliedBy))
                  .ForMember(dest => dest.City, opt => opt.MapFrom(src => src.City))
                  .ForMember(dest => dest.Country, opt => opt.ConvertUsing(new CountryConverter(), src => src.CountryRegion))
                  .ForMember(dest => dest.Category, opt => opt.ConvertUsing(new AddressTypeConverter(), src => src.Type))
@@ -90,27 +99,20 @@ namespace  DynamicsAdapter.Web.Mapping
                 .ForMember(dest => dest.AddressLine1, opt => opt.MapFrom(src => src.AddressLine1))
                  .ForMember(dest => dest.AddressLine2, opt => opt.MapFrom(src => src.AddressLine2))
                  .ForMember(dest => dest.StateProvince, opt => opt.ConvertUsing(new ProvinceValueConverter(), src => src.Province))
-                 .ForMember(dest => dest.SuppliedBy, opt => opt.ConvertUsing(new IssuedByTypeValueConverter(), src => src.InformationSource))
+                 .ForMember(dest => dest.SuppliedBy, opt => opt.ConvertUsing(new SuppliedByIDConverter(), src => src.InformationSource))
                  .ForMember(dest => dest.City, opt => opt.MapFrom(src => src.City))
                  .ForMember(dest => dest.CountryRegion, opt => opt.MapFrom(src => src.Country.Name))
                  .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new AddressTypeValueConverter(), src => src.Category))
         .ForMember(dest => dest.ZipPostalCode, opt => opt.MapFrom(src => src.PostalCode));
 
-            CreateMap<PersonalIdentifier, SSG_Identifier>()
-                 .ForMember(dest => dest.Identification, opt => opt.MapFrom(src => src.SerialNumber))
-                 .ForMember(dest => dest.IdentificationEffectiveDate, opt => opt.ConvertUsing(new DateTimeOffsetConverter(), src => src.EffectiveDate)) 
-                 .ForMember(dest => dest.IdentificationExpirationDate, opt => opt.ConvertUsing(new DateTimeOffsetConverter(), src => src.ExpirationDate))
-                 .ForMember(dest => dest.IdentifierType, opt => opt.ConvertUsing(new PersonalIdentifierTypeConverter(), src => src.Type))
-                 .ForMember(dest => dest.InformationSource, opt => opt.ConvertUsing(new IssuedByTypeConverter(), src => src.IssuedBy))
-                 .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => 0))
-                 .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1));
+          
 
             CreateMap<PhoneNumber, SSG_PhoneNumber>()
                 .ForMember(dest => dest.TelePhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber1))
                 .ForMember(dest => dest.DateType, opt => opt.MapFrom(src => src.DateType))
                 .ForMember(dest => dest.DateData, opt => opt.ConvertUsing(new DateTimeOffsetConverter(), src => src.Date))
                 .ForMember(dest => dest.TelephoneNumberType, opt => opt.ConvertUsing(new TelephoneNumberIdConverter(), src => src.PhoneNumberType))
-                .ForMember(dest => dest.InformationSource, opt => opt.ConvertUsing(new SuppliedByTypeConverter(), src => src.SuppliedBy))
+                .ForMember(dest => dest.InformationSource, opt => opt.ConvertUsing(new SuppliedByValueConverter(), src => src.SuppliedBy))
                 .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => 0))
                 .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1));
 
@@ -120,7 +122,7 @@ namespace  DynamicsAdapter.Web.Mapping
                 .ForMember(dest => dest.DateType, opt => opt.MapFrom(src => src.DateType))
                 .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.DateData)) 
                 .ForMember(dest => dest.PhoneNumberType, opt => opt.ConvertUsing(new TelephoneNumberValueConverter(), src => src.TelephoneNumberType))
-                .ForMember(dest => dest.SuppliedBy, opt => opt.ConvertUsing(new InformationSourceConverter(), src => src.InformationSource));
+                .ForMember(dest => dest.SuppliedBy, opt => opt.ConvertUsing(new SuppliedByIDConverter(), src => src.InformationSource));
 
 
         }

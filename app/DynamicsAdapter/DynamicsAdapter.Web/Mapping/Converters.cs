@@ -27,7 +27,7 @@ namespace DynamicsAdapter.Web.Mapping
         }
     }
 
-    public class IssuedByTypeValueConverter : IValueConverter<int?, string>
+    public class SuppliedByIDConverter : IValueConverter<int?, string>
     {
         public string Convert(int? source, ResolutionContext context)
         {
@@ -36,7 +36,7 @@ namespace DynamicsAdapter.Web.Mapping
         }
     }
 
-    public class SuppliedByTypeConverter : IValueConverter<string, int?>
+    public class SuppliedByValueConverter : IValueConverter<string, int?>
     {
         public int? Convert(string source, ResolutionContext context)
         {

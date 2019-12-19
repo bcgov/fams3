@@ -1,4 +1,6 @@
 ﻿using Fams3Adapter.Dynamics.OptionSets.Models;
+using System;
+using System.Linq;
 
 namespace Fams3Adapter.Dynamics.Types
 
@@ -16,4 +18,5 @@ namespace Fams3Adapter.Dynamics.Types
         {
         }
     }
+   
 }

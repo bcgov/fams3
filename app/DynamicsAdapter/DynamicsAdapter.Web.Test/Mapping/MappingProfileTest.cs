@@ -49,7 +49,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(new DateTimeOffset(new DateTime(2001, 1, 1)), identifier.EffectiveDate);
             Assert.AreEqual(new DateTimeOffset(new DateTime(2001, 1, 1)), identifier.ExpirationDate);
             Assert.AreEqual(PersonalIdentifierType.SocialInsuranceNumber, identifier.Type);
-            Assert.AreEqual(InformationSourceType.Employer.Name, identifier.IssuedBy);
+           
         }
 
         [Test]
@@ -282,7 +282,6 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(new DateTime(2002, 2, 2), sSG_Identifier.IdentificationEffectiveDate);
             Assert.AreEqual(new DateTime(2003, 3, 3), sSG_Identifier.IdentificationExpirationDate);
             Assert.AreEqual(IdentificationType.DriverLicense.Value, sSG_Identifier.IdentifierType);
-            Assert.AreEqual(InformationSourceType.ICBC.Value, sSG_Identifier.InformationSource);
             Assert.AreEqual(1, sSG_Identifier.StatusCode);
             Assert.AreEqual(0, sSG_Identifier.StateCode);
         }

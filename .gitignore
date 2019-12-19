@@ -20,7 +20,8 @@
 x64/
 x86/
 bld/
-[Bb]in/
+app/*[Bb]in/
+bin/
 [Oo]bj/
 [Ll]og/
 
@@ -330,3 +331,6 @@ ASALocalRun/
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
 .env
+
+# s2i
+!.s2i/bin/

@@ -114,7 +114,7 @@ objects:
         configMaps:
           - configMap:
               name: dotnet-artifactory-configuration
-              destination: /opt
+            destinationDir: /opt
         sourceSecret: 
           name: "${SOURCE_SECRET}"
       strategy:

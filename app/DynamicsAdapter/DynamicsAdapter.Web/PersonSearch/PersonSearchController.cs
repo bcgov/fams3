@@ -172,7 +172,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             {
                 SSG_Identifier identifier = _mapper.Map<SSG_Identifier>(matchFoundPersonId);
                 identifier.SSG_SearchRequest = request;
-                identifier.InformationSource = personCompletedEvent.ProviderProfile.Name.SuppliedByID();
+                identifier.InformationSource = personCompletedEvent.ProviderProfile.DynamicsID();
                 var identifer = await _searchRequestService.CreateIdentifier(identifier, concellationToken);
             }
             return true;
@@ -185,7 +185,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             {
                 SSG_Address addr = _mapper.Map<SSG_Address>(address);
                 addr.SearchRequest = request;
-               addr.InformationSource = personCompletedEvent.ProviderProfile.Name.SuppliedByID();
+               addr.InformationSource = personCompletedEvent.ProviderProfile.DynamicsID();
                 var uploadedAddr = await _searchRequestService.CreateAddress(addr, concellationToken);
             }
             return true;
@@ -198,7 +198,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             {
                 SSG_PhoneNumber ph = _mapper.Map<SSG_PhoneNumber>(phone);
                 ph.SearchRequest = request;
-                ph.InformationSource = personCompletedEvent.ProviderProfile.Name.SuppliedByID();
+                ph.InformationSource = personCompletedEvent.ProviderProfile.DynamicsID();
                 await _searchRequestService.CreatePhoneNumber(ph, concellationToken);
             }
             return true;

@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 namespace DynamicsAdapter.Web.PersonSearch.Models
 {
-    // TODO: all classes bellow will be coming from SEARCH API CORE LIB
     public class PersonalIdentifierActual : PersonalIdentifier
     {
     }

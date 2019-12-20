@@ -25,6 +25,12 @@ namespace DynamicsAdapter.Web.Health
             _logger = logger;
         }
 
+        /// <summary>
+        /// Check if all defined Enumerations can be mapped to Dynamics Option/Entiy correctly.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = new CancellationToken())
         {
 

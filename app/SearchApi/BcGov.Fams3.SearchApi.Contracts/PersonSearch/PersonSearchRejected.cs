@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using BcGov.Fams3.SearchApi.Core.Adapters.Models;
 
-namespace BcGov.Fams3.SearchApi.Core.Adapters.Contracts
+namespace BcGov.Fams3.SearchApi.Contracts.PersonSearch
 {
     public interface PersonSearchRejected : PersonSearchAdapterEvent
     {

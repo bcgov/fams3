@@ -1,11 +1,8 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
-using AutoMapper;
+using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 using MassTransit;
 using Microsoft.Extensions.Logging;
-using BcGov.Fams3.SearchApi.Core.Adapters.Contracts;
-using BcGov.Fams3.SearchApi.Core.Adapters.Models;
 using SearchApi.Web.Notifications;
 
 namespace SearchApi.Web.Search

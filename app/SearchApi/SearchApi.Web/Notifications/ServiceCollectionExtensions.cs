@@ -1,6 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using BcGov.Fams3.SearchApi.Core.Adapters.Contracts;
-using BcGov.Fams3.SearchApi.Core.Adapters.Models;
+﻿using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace SearchApi.Web.Notifications
 {

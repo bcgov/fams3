@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using BcGov.Fams3.SearchApi.Core.Person.Contracts;
+using BcGov.Fams3.SearchApi.Contracts.Person;
 
 namespace SearchApi.Core.Test.Fake
 {

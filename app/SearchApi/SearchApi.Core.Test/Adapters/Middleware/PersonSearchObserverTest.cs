@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BcGov.Fams3.SearchApi.Contracts.Person;
+using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 using MassTransit;
 using MassTransit.Testing;
 using Microsoft.Extensions.Logging;
@@ -9,9 +11,7 @@ using Microsoft.Extensions.Options;
 using Moq;
 using NUnit.Framework;
 using BcGov.Fams3.SearchApi.Core.Adapters.Configuration;
-using BcGov.Fams3.SearchApi.Core.Adapters.Contracts;
 using BcGov.Fams3.SearchApi.Core.Adapters.Middleware;
-using BcGov.Fams3.SearchApi.Core.Person.Contracts;
 
 namespace SearchApi.Core.Test.Adapters.Middleware
 {

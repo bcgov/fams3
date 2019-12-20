@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using BcGov.Fams3.SearchApi.Core.Adapters.Contracts;
+using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 using GreenPipes;
 using MassTransit;
+using ValidationResult = GreenPipes.ValidationResult;
 
 namespace BcGov.Fams3.SearchApi.Core.Adapters.Middleware
 {

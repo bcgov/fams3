@@ -1,17 +1,14 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 using HealthChecks.UI.Client;
 using AutoMapper;
+using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 using Jaeger;
 using Jaeger.Samplers;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -19,15 +16,12 @@ using Microsoft.Extensions.Logging;
 using NSwag;
 using OpenTracing;
 using OpenTracing.Util;
-using BcGov.Fams3.SearchApi.Core.Adapters.Contracts;
 using BcGov.Fams3.SearchApi.Core.Configuration;
 using BcGov.Fams3.SearchApi.Core.MassTransit;
 using BcGov.Fams3.SearchApi.Core.OpenTracing;
 using SearchApi.Web.Configuration;
-using SearchApi.Web.Controllers;
 using SearchApi.Web.Notifications;
 using SearchApi.Web.Search;
-using BcGov.Fams3.SearchApi.Core.Adapters.Models;
 
 namespace SearchApi.Web
 {

@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using BcGov.Fams3.SearchApi.Core.Adapters.Contracts;
+using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 
 namespace BcGov.Fams3.SearchApi.Core.Adapters.Configuration
 {

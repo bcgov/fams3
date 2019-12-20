@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
+using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 using BcGov.Fams3.SearchApi.Core.Adapters.Configuration;
-using BcGov.Fams3.SearchApi.Core.Adapters.Contracts;
 using BcGov.Fams3.SearchApi.Core.Adapters.Models;
 using MassTransit;
 using Microsoft.Extensions.Logging;

@@ -1,4 +1,4 @@
-﻿using BcGov.Fams3.SearchApi.Core.Adapters.Contracts;
+﻿using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 using MassTransit;
 
 namespace BcGov.Fams3.SearchApi.Core.Adapters.Middleware

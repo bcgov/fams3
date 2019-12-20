@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BcGov.Fams3.SearchApi.Core.Adapters.Contracts
+namespace BcGov.Fams3.SearchApi.Contracts.PersonSearch
 {
     public interface PersonSearchEvent
     {

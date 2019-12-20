@@ -1,5 +1,5 @@
-﻿using FluentValidation;
-using BcGov.Fams3.SearchApi.Core.Person.Contracts;
+﻿using BcGov.Fams3.SearchApi.Contracts.Person;
+using FluentValidation;
 
 namespace SearchAdapter.Sample.SearchRequest
 {

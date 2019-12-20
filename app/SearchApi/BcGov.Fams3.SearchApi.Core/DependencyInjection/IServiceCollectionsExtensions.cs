@@ -1,6 +1,6 @@
 ﻿using System;
+using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 using BcGov.Fams3.SearchApi.Core.Adapters.Configuration;
-using BcGov.Fams3.SearchApi.Core.Adapters.Contracts;
 using BcGov.Fams3.SearchApi.Core.Adapters.Middleware;
 using BcGov.Fams3.SearchApi.Core.Configuration;
 using BcGov.Fams3.SearchApi.Core.MassTransit;

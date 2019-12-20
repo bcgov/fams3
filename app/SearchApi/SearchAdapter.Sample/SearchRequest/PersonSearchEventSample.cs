@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using BcGov.Fams3.SearchApi.Core.Adapters.Contracts;
+using BcGov.Fams3.SearchApi.Contracts.Person;
+using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 using BcGov.Fams3.SearchApi.Core.Adapters.Models;
-using BcGov.Fams3.SearchApi.Core.Person.Contracts;
-using BcGov.Fams3.SearchApi.Core.Person.Enums;
 
 namespace SearchAdapter.Sample.SearchRequest
 {
@@ -67,7 +66,7 @@ namespace SearchAdapter.Sample.SearchRequest
     public class PersonSearchRejectedEvent : PersonSearchRejected
     {
 
-        private readonly List<ValidationResult> _validationResults = new List<ValidationResult>();
+        private readonly List<DefaultValidationResult> _validationResults = new List<DefaultValidationResult>();
 
         public PersonSearchRejectedEvent(Guid searchRequestId, ProviderProfile providerProfile)
         {
@@ -76,7 +75,7 @@ namespace SearchAdapter.Sample.SearchRequest
             ProviderProfile = providerProfile;
         }
 
-        public void AddValidationResult(ValidationResult validationResult)
+        public void AddValidationResult(DefaultValidationResult validationResult)
         {
             _validationResults.Add(validationResult);
         }

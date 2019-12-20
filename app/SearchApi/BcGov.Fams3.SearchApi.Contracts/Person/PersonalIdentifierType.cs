@@ -1,4 +1,4 @@
-﻿namespace BcGov.Fams3.SearchApi.Core.Person.Enums
+﻿namespace BcGov.Fams3.SearchApi.Contracts.Person
 {
     public enum PersonalIdentifierType
     {

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Net;
 using System.Net.Http;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -10,9 +9,6 @@ using Microsoft.Extensions.Options;
 using Moq;
 using Moq.Protected;
 using NUnit.Framework;
-using BcGov.Fams3.SearchApi.Core.Adapters.Contracts;
-using BcGov.Fams3.SearchApi.Core.Adapters.Models;
-using BcGov.Fams3.SearchApi.Core.OpenTracing;
 using SearchApi.Core.Test.Fake;
 using SearchApi.Web.Configuration;
 using SearchApi.Web.Notifications;

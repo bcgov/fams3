@@ -1,16 +1,12 @@
-﻿using AutoMapper;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using BcGov.Fams3.SearchApi.Core.Adapters.Contracts;
-using BcGov.Fams3.SearchApi.Core.Adapters.Models;
 using SearchApi.Web.Configuration;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 
 namespace SearchApi.Web.Notifications
 {

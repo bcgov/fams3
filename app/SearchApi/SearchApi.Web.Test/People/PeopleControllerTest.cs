@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-using System.Threading.Tasks;
+using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
-using NUnit.Framework.Internal;
 using OpenTracing;
-using BcGov.Fams3.SearchApi.Core.Adapters.Contracts;
 using SearchApi.Web.Controllers;
 
 namespace SearchApi.Web.Test.People

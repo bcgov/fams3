@@ -1,7 +1,5 @@
-﻿using BcGov.Fams3.SearchApi.Core.Adapters.Contracts;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
+using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 
 namespace SearchApi.Core.Test.Fake
 {

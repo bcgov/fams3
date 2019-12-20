@@ -38,7 +38,7 @@ namespace BcGov.Fams3.SearchApi.Core.OpenTracing
                     await next.Send(context);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 await next.Send(context);
             }

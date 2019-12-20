@@ -2,15 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BcGov.Fams3.SearchApi.Contracts.Person;
+using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 using FluentValidation;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using BcGov.Fams3.SearchApi.Core.Adapters.Configuration;
-using BcGov.Fams3.SearchApi.Core.Adapters.Contracts;
 using BcGov.Fams3.SearchApi.Core.Adapters.Models;
-using BcGov.Fams3.SearchApi.Core.Person.Contracts;
-using BcGov.Fams3.SearchApi.Core.Person.Enums;
 
 namespace SearchAdapter.Sample.SearchRequest
 {
@@ -67,7 +66,7 @@ namespace SearchAdapter.Sample.SearchRequest
 
                 var rejectionEvent = new PersonSearchRejectedEvent(context.Message.SearchRequestId, _profile);
 
-                validation.Errors.ToList().ForEach(x => rejectionEvent.AddValidationResult(new ValidationResult()
+                validation.Errors.ToList().ForEach(x => rejectionEvent.AddValidationResult(new DefaultValidationResult()
                 {
                     PropertyName = x.PropertyName,
                     ErrorMessage = x.ErrorMessage

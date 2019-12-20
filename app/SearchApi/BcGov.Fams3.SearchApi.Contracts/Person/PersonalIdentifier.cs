@@ -1,8 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
-using BcGov.Fams3.SearchApi.Core.Person.Enums;
 
-namespace BcGov.Fams3.SearchApi.Core.Person.Contracts
+namespace BcGov.Fams3.SearchApi.Contracts.Person
 {
     public interface PersonalIdentifier
     {

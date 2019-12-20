@@ -1,8 +1,6 @@
 ﻿using System;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using BcGov.Fams3.SearchApi.Core.Adapters.Contracts;
 
 namespace SearchApi.Web.Notifications
 {

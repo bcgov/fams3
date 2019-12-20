@@ -12,7 +12,7 @@ using BcGov.Fams3.SearchApi.Core.DependencyInjection;
 using System.IO;
 using System.Linq;
 using System.Text;
-using BcGov.Fams3.SearchApi.Core.Person.Contracts;
+using BcGov.Fams3.SearchApi.Contracts.Person;
 
 namespace SearchApi.Core.Test.DependencyInjection
 {

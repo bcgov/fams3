@@ -2,17 +2,15 @@
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
-using BcGov.Fams3.SearchApi.Core.Adapters.Contracts;
 using SearchApi.Core.Test.Fake;
 using SearchApi.Web.Notifications;
 using SearchApi.Web.Search;
 using SearchApi.Web.Test.Utils;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 
 namespace SearchApi.Web.Test.Search
 {

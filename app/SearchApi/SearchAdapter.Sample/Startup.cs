@@ -1,9 +1,9 @@
 using System;
+using BcGov.Fams3.SearchApi.Contracts.Person;
 using FluentValidation;
 using HealthChecks.UI.Client;
 using Jaeger;
 using Jaeger.Samplers;
-using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
@@ -16,13 +16,8 @@ using OpenTracing;
 using OpenTracing.Util;
 using SearchAdapter.Sample.SearchRequest;
 using BcGov.Fams3.SearchApi.Core.Adapters.Configuration;
-using BcGov.Fams3.SearchApi.Core.Adapters.Contracts;
-using BcGov.Fams3.SearchApi.Core.Adapters.Middleware;
 using BcGov.Fams3.SearchApi.Core.Configuration;
 using BcGov.Fams3.SearchApi.Core.DependencyInjection;
-using BcGov.Fams3.SearchApi.Core.MassTransit;
-using BcGov.Fams3.SearchApi.Core.OpenTracing;
-using BcGov.Fams3.SearchApi.Core.Person.Contracts;
 
 namespace SearchAdapter.Sample
 {

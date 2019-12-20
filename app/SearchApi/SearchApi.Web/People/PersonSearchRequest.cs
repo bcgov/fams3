@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using BcGov.Fams3.SearchApi.Contracts.Person;
 using Newtonsoft.Json;
-using NSwag;
-using BcGov.Fams3.SearchApi.Core.Adapters.Models;
-using BcGov.Fams3.SearchApi.Core.Person.Contracts;
-using BcGov.Fams3.SearchApi.Core.Person.Enums;
 
 namespace SearchApi.Web.Controllers
 {

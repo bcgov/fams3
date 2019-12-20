@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace BcGov.Fams3.SearchApi.Core.Person.Contracts
+namespace BcGov.Fams3.SearchApi.Contracts.Person
 {
     public interface Person
     {

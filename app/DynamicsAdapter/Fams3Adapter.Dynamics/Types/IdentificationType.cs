@@ -14,8 +14,7 @@ namespace Fams3Adapter.Dynamics.Types
         public static IdentificationType Passport = new IdentificationType(867670002,  "Passport");
         public static IdentificationType WorkSafeBCCCN = new IdentificationType(867670015, "WorkSafeBC CCN");
         public static IdentificationType BCID = new IdentificationType(867670003, "BCID");
-        public static IdentificationType BCHydroBP = new IdentificationType(867670004, "BC Hydro BP");
-        
+        public static IdentificationType BCHydroBP = new IdentificationType(867670004, "BC Hydro BP");      
         public static IdentificationType Other = new IdentificationType(867670012,  "Other");
 
 

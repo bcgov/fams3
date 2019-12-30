@@ -10,7 +10,7 @@ def RABBITMQ = "rabbitmq"
 def SEARCH_API = "searchapi"
 def SAMPLE_ADAPTER = "sample-adapter"
 def ICBC_REST_ADAPTER = "icbc-rest-adapter"
-def ICBC_WEB_ADAPTER = "icbc-web_adapter"
+def ICBC_WEB_ADAPTER = "icbc-web-adapter"
 def DYNAMICS_ADAPTER = "dynadapter"
 def JAEGER = "jaeger"
 

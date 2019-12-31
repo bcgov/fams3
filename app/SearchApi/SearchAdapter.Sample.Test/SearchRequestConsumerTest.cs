@@ -46,6 +46,7 @@ namespace SearchAdapter.Sample.Test
             public IEnumerable<Address> Addresses { get; }
 
             public IEnumerable<PhoneNumber> PhoneNumbers { get; }
+            public IEnumerable<Name> Names { get; set; }
         }
 
         [OneTimeSetUp]

@@ -20,13 +20,15 @@ namespace SearchApi.Web.Controllers
             DateTime? dateOfBirth, 
             IEnumerable<SearchApiPersonalIdentifier> identifiers,
             IEnumerable<SearchApiAddress> addresses,
-            IEnumerable<SearchApiPhoneNumber> phoneNumbers)
+            IEnumerable<SearchApiPhoneNumber> phoneNumbers,
+            IEnumerable<Name> names )
         {
             this.FirstName = firstName;
             this.LastName = lastName;
             this.DateOfBirth = dateOfBirth;
             this.Identifiers = identifiers;
             this.PhoneNumbers = phoneNumbers;
+            this.Names = names;
         }
 
         [Description("The first name of the subject")]
@@ -41,8 +43,8 @@ namespace SearchApi.Web.Controllers
         public IEnumerable<Address> Addresses { get; set; }
         [Description("A collection of phone numbers")]
         public IEnumerable<PhoneNumber> PhoneNumbers { get; set; }
-
-
+        [Description("A collection of names")]
+        public IEnumerable<Name> Names { get; set; }
     }
 
 
@@ -79,5 +81,22 @@ namespace SearchApi.Web.Controllers
         public string DateType { get; }
         public string PhoneNumber { get; }
         public string PhoneNumberType { get; }
+    }
+
+    public class SearchApiName : Name
+    {
+        public string FirstName { get; }
+
+        public string LastName { get; }
+
+        public string MiddleName { get; }
+
+        public string Type { get; }
+
+        public DateTime? EffectiveDate { get; }
+
+        public DateTime? EndDate { get; }
+
+        public string Description { get; }
     }
 }

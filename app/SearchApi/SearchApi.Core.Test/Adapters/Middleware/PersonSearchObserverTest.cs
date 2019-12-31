@@ -39,6 +39,7 @@ namespace SearchApi.Core.Test.Adapters.Middleware
             public IEnumerable<Address> Addresses { get; set; }
 
             public IEnumerable<PhoneNumber> PhoneNumbers { get; set; }
+            public IEnumerable<Name> Names { get; set; }
         }
 
         [OneTimeSetUp]

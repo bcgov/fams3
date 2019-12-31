@@ -90,6 +90,7 @@ namespace SearchApi.Web.Controllers
             public IEnumerable<PersonalIdentifier> Identifiers { get; }
             public IEnumerable<Address> Addresses { get; }
             public IEnumerable<PhoneNumber> PhoneNumbers { get; }
+            public IEnumerable<Name> Names { get; }
         }
     }
 }

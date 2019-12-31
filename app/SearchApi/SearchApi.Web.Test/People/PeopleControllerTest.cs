@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using BcGov.Fams3.SearchApi.Contracts.Person;
 using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
@@ -39,7 +40,7 @@ namespace SearchApi.Web.Test.People
         public void With_valid_payload_should_return_created()
         {
             var result =
-                (AcceptedResult) this._sut.Search(null, new PersonSearchRequest("firstName", "lastName", null, new List<SearchApiPersonalIdentifier>(), new List<SearchApiAddress>(), new List<SearchApiPhoneNumber>())).Result;
+                (AcceptedResult) this._sut.Search(null, new PersonSearchRequest("firstName", "lastName", null, new List<SearchApiPersonalIdentifier>(), new List<SearchApiAddress>(), new List<SearchApiPhoneNumber>(), new List<SearchApiName>())).Result;
             Assert.IsInstanceOf<PersonSearchResponse>(result.Value);
             Assert.IsNotNull(((PersonSearchResponse)result.Value).Id);
             _spanMock.Verify(x => x.SetTag("searchRequestId", $"{((PersonSearchResponse)result.Value).Id}"), Times.Once);
@@ -52,7 +53,7 @@ namespace SearchApi.Web.Test.People
             var expectedId = Guid.NewGuid();
 
             var result =
-                (AcceptedResult)this._sut.Search($"{expectedId}", new PersonSearchRequest("firstName", "lastName", null, new List<SearchApiPersonalIdentifier>(), new List<SearchApiAddress>(), new List<SearchApiPhoneNumber>())).Result;
+                (AcceptedResult)this._sut.Search($"{expectedId}", new PersonSearchRequest("firstName", "lastName", null, new List<SearchApiPersonalIdentifier>(), new List<SearchApiAddress>(), new List<SearchApiPhoneNumber>(), new List<SearchApiName>())).Result;
             Assert.IsInstanceOf<PersonSearchResponse>(result.Value);
             Assert.AreEqual( expectedId, ((PersonSearchResponse)result.Value).Id);
             _spanMock.Verify(x => x.SetTag("searchRequestId", $"{((PersonSearchResponse)result.Value).Id}"), Times.Once);

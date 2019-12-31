@@ -22,6 +22,7 @@ namespace SearchAdapter.Sample.SearchRequest
         public IEnumerable<PersonalIdentifier> Identifiers { get; set; }
         public IEnumerable<Address> Addresses { get; set; }
         public IEnumerable<PhoneNumber> PhoneNumbers { get; set; }
+        public IEnumerable<Name> Names { get; set; }
     }
 
     public class PersonalIdentifierSample : PersonalIdentifier

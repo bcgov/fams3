@@ -45,8 +45,8 @@ namespace SearchAdapter.Sample.SearchRequest
         public string CountryRegion { get; set; }
         public string ZipPostalCode { get; set; }
         public string SuppliedBy { get; set; }
-        public DateTime? EffectiveDate { get; }
-        public DateTime? EndDate { get; }
+        public DateTime? EffectiveDate { get; set; }
+        public DateTime? EndDate { get; set; }
     }
 
     public class PhoneNumberSample : PhoneNumber

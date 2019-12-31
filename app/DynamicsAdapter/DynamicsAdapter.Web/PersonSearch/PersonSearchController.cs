@@ -185,7 +185,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             {
                 SSG_Address addr = _mapper.Map<SSG_Address>(address);
                 addr.SearchRequest = request;
-               addr.InformationSource = personCompletedEvent.ProviderProfile.DynamicsID();
+                addr.InformationSource = personCompletedEvent.ProviderProfile.DynamicsID();
                 var uploadedAddr = await _searchRequestService.CreateAddress(addr, concellationToken);
             }
             return true;

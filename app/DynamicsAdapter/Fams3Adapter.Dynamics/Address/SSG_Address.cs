@@ -17,7 +17,10 @@ namespace Fams3Adapter.Dynamics.Address
         [JsonProperty("ssg_addresssecondaryunittext")]
         public string AddressLine2 { get; set; }
 
-        [JsonProperty("ssg_locationcanadianprovincecode")]
+        [JsonProperty("ssg_addresslinethree")]
+        public string AddressLine3 { get; set; }
+
+        [JsonProperty("ssg_countrysubdivision")]
         public int? Province { get; set; }
 
         [JsonProperty("ssg_locationcityname")]
@@ -32,13 +35,22 @@ namespace Fams3Adapter.Dynamics.Address
         [JsonProperty("ssg_locationpostalcode")]
         public string PostalCode { get; set; }
 
-        [JsonProperty("ssg_locationstatename")]
-        public string NonCanadianState { get; set; }
-
         [JsonProperty("ssg_SearchRequest")]
         public virtual SSG_SearchRequest SearchRequest { get; set; }
 
         [JsonProperty("ssg_informationsourcetext")]
         public int? InformationSource { get; set; }
+
+        [JsonProperty("ssg_datadate")]
+        public System.DateTime? EffectiveDate { get; set; }
+
+        [JsonProperty("ssg_datadatelabel")]
+        public string EffectiveDateLabel { get; set; }
+
+        [JsonProperty("ssg_datadate2")]
+        public System.DateTime? EndDate { get; set; }
+
+        [JsonProperty("ssg_datadatelabel2")]
+        public string EndDateLabel { get; set; }
     }
 }

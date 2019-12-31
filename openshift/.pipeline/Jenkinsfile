@@ -198,16 +198,6 @@ pipeline {
       sh "oc tag ${DYNAMICS_ADAPTER}:dev ${DYNAMICS_ADAPTER}:test -n ${TOOLS_NAMESPACE}"
       WaitForDeploy(DYNAMICS_ADAPTER, TEST_NAMESPACE)
      },
-     'Sample Adapter': {
-      sh "oc process -f openshift/templates/sample-adapter.dc.yaml \
-         -p NAME=${SAMPLE_ADAPTER} \
-         -p APPLICATION_DOMAIN=${SUBDOMAIN}-test.${DOMAIN} \
-         -p MEMORY_LIMIT=${RUN_MEMORY} \
-         -p NAMESPACE=${TOOLS_NAMESPACE} \
-         -p TAG=test | oc apply -f - -n ${TEST_NAMESPACE}"
-      sh "oc tag ${SAMPLE_ADAPTER}:dev ${SAMPLE_ADAPTER}:test -n ${TOOLS_NAMESPACE}"
-      WaitForDeploy(SAMPLE_ADAPTER, TEST_NAMESPACE)
-     },
      'ICBC Rest Adapter': {
       sh "oc process -f openshift/templates/icbc-rest-adapter.dc.yaml \
          -p NAME=${ICBC_REST_ADAPTER} \

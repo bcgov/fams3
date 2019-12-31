@@ -110,53 +110,37 @@ objects:
                 limits:
                   memory: "${MEMORY_LIMIT}"
               env: 
-                - name: ASPNETCORE_ENVIRONMENT
-                  value: Development
                 - name: JAEGER_SERVICE_NAME
                   value: "${NAME}"
                 - name: JAEGER_SAMPLER_TYPE
                   value: const
                 - name: JAEGER_ENDPOINT
                   value: http://${JAEGER_COLLECTOR}:14268/api/traces
-                - name: SCHEDULER__CRON
-                  value: 0/5 * * * * ?
-                - name: SEARCHAPI__BASEURL
-                  value: http://searchapi:8080
-                - name: OAUTH__RESOURCEURL
+                - name: ASPNETCORE_ENVIRONMENT
+                  value: Development
+                - name: RABBITMQ__HOST
+                  value: rabbitmq-cluster
+                - name: RABBITMQ__PORT
+                  value: "5672"
+                - name: RABBITMQ__USERNAME
+                  value: guest
+                - name: RABBITMQ__PASSWORD
+                  value: guest
+                - name: ICBCSOAPAPI__BASEADDRESS
                   valueFrom:
                     secretKeyRef:
-                      name: dynamics-oauth-credentials
-                      key: resource-url
-                - name: OAUTH__CLIENTID
+                      name: icbc-soap-api-configuration
+                      key: base-address
+                - name: ICBCSOAPAPI__USERNAME
                   valueFrom:
                     secretKeyRef:
-                      name: dynamics-oauth-credentials
-                      key: client-id
-                - name: OAUTH__OAUTHURL
-                  valueFrom:
-                    secretKeyRef:
-                      name: dynamics-oauth-credentials
-                      key: oauth-url
-                - name: OAUTH__USERNAME
-                  valueFrom:
-                    secretKeyRef:
-                      name: dynamics-oauth-credentials
+                      name: icbc-soap-api-configuration
                       key: username
-                - name: OAUTH__PASSWORD
+                - name: ICBCSOAPAPI__PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: dynamics-oauth-credentials
+                      name: icbc-soap-api-configuration
                       key: password
-                - name: OAUTH__SECRET
-                  valueFrom:
-                    secretKeyRef:
-                      name: dynamics-oauth-credentials
-                      key: oauth-secret
-                - name: APIGATEWAY__BASEPATH
-                  valueFrom:
-                    secretKeyRef:
-                      name: dynamics-oauth-credentials
-                      key: apigateway-basepath
               livenessProbe:
                 httpGet:
                   path: "/health"
@@ -171,5 +155,3 @@ objects:
                   scheme: HTTP
                 initialDelaySeconds: 10
                 timeoutSeconds: 30
-
-

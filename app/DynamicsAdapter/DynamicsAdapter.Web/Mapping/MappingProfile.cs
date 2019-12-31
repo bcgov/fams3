@@ -31,7 +31,7 @@ namespace  DynamicsAdapter.Web.Mapping
                .ForMember(dest => dest.IdentificationEffectiveDate, opt => opt.ConvertUsing(new DateTimeOffsetConverter(), src => src.EffectiveDate))
                .ForMember(dest => dest.IdentificationExpirationDate, opt => opt.ConvertUsing(new DateTimeOffsetConverter(), src => src.ExpirationDate))
                .ForMember(dest => dest.IdentifierType, opt => opt.ConvertUsing(new PersonalIdentifierTypeConverter(), src => src.Type))
-               .ForMember(dest => dest.IssuedBy, opt=>opt.MapFrom(src => 1))
+               .ForMember(dest => dest.IssuedBy, opt=>opt.ConvertUsing( new IssuedByConverter(), src => src.IssuedBy))
                .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => 0))
                .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1));
 

@@ -283,7 +283,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 ExpirationDate = new DateTimeOffset(new DateTime(2003, 3, 3)),
                 EffectiveDate = new DateTimeOffset(new DateTime(2002, 2, 2)),
                 Type = PersonalIdentifierType.DriverLicense,
-                IssuedBy = "ICBC"
+                IssuedBy = "BC"
             };
             SSG_Identifier sSG_Identifier = _mapper.Map<SSG_Identifier>(identifier);
             Assert.AreEqual("1111111", sSG_Identifier.Identification);

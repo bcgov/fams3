@@ -80,25 +80,33 @@ namespace DynamicsAdapter.Web.Test.Mapping
             {
                 AddressLine1 = "AddressLine1",
                 AddressLine2 = "AddressLine2",
+                AddressLine3 = "AddressLine3",
                 StateProvince = "Manitoba",
                 City = "testCity",
                 Type = "residence",
                 CountryRegion = "canada",
                 ZipPostalCode = "p3p3p3",
-                SuppliedBy = "Employer"
+                SuppliedBy = "Employer",
+                EffectiveDate = new DateTimeOffset(new DateTime(2001,1,1)),
+                EndDate= new DateTimeOffset(new DateTime(2002,2,1))
             };
             SSG_Address ssg_addr = _mapper.Map<SSG_Address>(address);
             Assert.AreEqual("AddressLine1", ssg_addr.AddressLine1);
             Assert.AreEqual("AddressLine2", ssg_addr.AddressLine2);
+            Assert.AreEqual("AddressLine3", ssg_addr.AddressLine3);
             Assert.AreEqual(CanadianProvinceType.Manitoba.Value, ssg_addr.Province);
             Assert.AreEqual("testCity", ssg_addr.City);
             Assert.AreEqual("canada", ssg_addr.Country.Name);
             Assert.AreEqual(LocationType.Residence.Value, ssg_addr.Category);
             Assert.AreEqual("p3p3p3", ssg_addr.PostalCode);
             Assert.AreEqual((int)InformationSourceType.Employer.Value, ssg_addr.InformationSource);
-            Assert.AreEqual("AddressLine1 AddressLine2 testCity Manitoba canada p3p3p3", ssg_addr.FullText);
+            Assert.AreEqual("AddressLine1 AddressLine2 AddressLine3 testCity Manitoba canada p3p3p3", ssg_addr.FullText);
             Assert.AreEqual(1, ssg_addr.StatusCode);
             Assert.AreEqual(0, ssg_addr.StateCode);
+            Assert.AreEqual(new DateTime(2001, 1, 1), ssg_addr.EffectiveDate);
+            Assert.AreEqual(new DateTime(2002, 2, 1), ssg_addr.EndDate);
+            Assert.AreEqual("Effective Date", ssg_addr.EffectiveDateLabel);
+            Assert.AreEqual("End Date", ssg_addr.EndDateLabel);
         }
 
         [Test]
@@ -275,7 +283,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 ExpirationDate = new DateTimeOffset(new DateTime(2003, 3, 3)),
                 EffectiveDate = new DateTimeOffset(new DateTime(2002, 2, 2)),
                 Type = PersonalIdentifierType.DriverLicense,
-                IssuedBy = "ICBC"
+                IssuedBy = "BC"
             };
             SSG_Identifier sSG_Identifier = _mapper.Map<SSG_Identifier>(identifier);
             Assert.AreEqual("1111111", sSG_Identifier.Identification);

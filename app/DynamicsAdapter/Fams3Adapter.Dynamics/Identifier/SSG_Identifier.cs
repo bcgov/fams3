@@ -25,8 +25,8 @@ namespace Fams3Adapter.Dynamics.Identifier
         [JsonProperty("ssg_informationsourcetext")]
         public int? InformationSource { get; set; }
 
-        [JsonProperty("ssg_issuedby")]
-        public string IssuedBy { get; set; }
+        [JsonProperty("ssg_identifierissuerid")]
+        public int? IssuedBy { get; set; }
 
 
         }

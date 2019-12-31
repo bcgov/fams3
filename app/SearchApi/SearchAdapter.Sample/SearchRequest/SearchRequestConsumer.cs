@@ -103,13 +103,16 @@ namespace SearchAdapter.Sample.SearchRequest
                             SerialNumber = new Random().Next(0, 50000).ToString()
                         }
                     },
-                    Addresses = new List<AddressSample>() 
+                    Addresses = new List<AddressSample>()
                     {
                         new AddressSample()
                         {
                             Type = "mailing",
                             AddressLine1 = "address in line 1",
                             AddressLine2 = "address in line 2",
+                            AddressLine3 = "address in line 3",
+                            EffectiveDate = new DateTime(2000,1,1),
+                            EndDate = new DateTime(2009,12,31),
                             Province = "British Columbia",
                             City = "victoria" ,
                             CountryRegion= "canada",

@@ -115,6 +115,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                             {
                                 AddressLine1 = "AddressLine1",
                                 AddressLine2 = "AddressLine2",
+                                AddressLine3 = "AddressLine3",
                                 StateProvince = "Manitoba",
                                 City = "testCity",
                                 Type = "residence",

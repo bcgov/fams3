@@ -79,6 +79,15 @@ namespace DynamicsAdapter.Web.Mapping
             return IDType.IDTypeDictionary.FirstOrDefault(m => m.Value == source).Key;
         }
     }
+
+    public class IssuedByConverter : IValueConverter<string, int?>
+    {
+        public int? Convert(string source, ResolutionContext context)
+        {
+            return null;
+        }
+    }
+
     public class TelephoneNumberIdConverter : IValueConverter<string, int?>
     {
         public int? Convert(string source, ResolutionContext context)

@@ -4,11 +4,12 @@
 
     .
     ├── app                     # Application Source Files.
-    |   ├── SearchApi           # Search Api
-    |   └── DynamicAdapter      # Dynamic Adapter
+    |   ├── SearchApi           # Search Api.
+    |   └── DynamicAdapter      # Dynamic Adapter.
     ├── .gitignore              # Git ignore.
-    └── README.md               # This file.
-    └── openshift               # Build and Deploy Configurations.
+    ├── README.md               # This file.
+    ├── openshift               # Build and Deploy Configurations.
+	├── test					# Integration test resources.
     └── bin                     # Useful scripts.
 
 ## RUN

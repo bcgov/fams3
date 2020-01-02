@@ -15,8 +15,7 @@ Based on the statistics provided, there are an average of 70 incoming search req
 **Method:** Simple
 
     Virtual Users: 25 (Number of Virtual Users)
-    Iterations: 120 (Each vu will make 120 requests)
-    Total Requests for 2 minutes: 3000 requests (Actual Number of requests per day: 70)
+    Iterations: 3000 (Each vu will make 3000/25=120 requests)
     
 **Method:** Burst
    

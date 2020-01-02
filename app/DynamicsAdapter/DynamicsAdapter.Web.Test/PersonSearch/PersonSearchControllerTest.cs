@@ -109,7 +109,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                     DateOfBirth = DateTime.Now,
                     FirstName = "TEST1",
                     LastName = "TEST2",
-                    Identifiers = new List<PersonalIdentifier>()
+                    Identifiers = new List<PersonalIdentifierActual>()
                         {
                             new PersonalIdentifierActual()
                             {
@@ -118,7 +118,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                                Type = PersonalIdentifierType.DriverLicense
                             }
                         },
-                    Addresses = new List<Address>()
+                    Addresses = new List<AddressActual>()
                         {
                             new AddressActual()
                             {
@@ -133,14 +133,14 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                                 SuppliedBy = "Employer"
                             }
                         },
-                    PhoneNumbers = new List<PhoneNumber>()
+                    PhoneNumbers = new List<PhoneNumberActual>()
                     {
                         new PhoneNumberActual ()
                         {
                             PhoneNumber1 = "4005678900"
                         }
                     },
-                    Names = new List<Name>()
+                    Names = new List<NameActual>()
                     {
                         new NameActual ()
                         {

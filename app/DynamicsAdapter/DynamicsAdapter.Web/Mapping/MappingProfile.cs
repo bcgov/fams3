@@ -2,6 +2,7 @@
 using DynamicsAdapter.Web.PersonSearch.Models;
 using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.Identifier;
+using Fams3Adapter.Dynamics.Name;
 using Fams3Adapter.Dynamics.OptionSets.Models;
 using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.SearchApiEvent;
@@ -101,17 +102,16 @@ namespace  DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1));
 
             CreateMap<SSG_Address, Address>()
-        .ConstructUsing(m => new AddressActual() { })
-                .ForMember(dest => dest.AddressLine1, opt => opt.MapFrom(src => src.AddressLine1))
+                 .ConstructUsing(m => new AddressActual() { })
+                 .ForMember(dest => dest.AddressLine1, opt => opt.MapFrom(src => src.AddressLine1))
                  .ForMember(dest => dest.AddressLine2, opt => opt.MapFrom(src => src.AddressLine2))
                  .ForMember(dest => dest.StateProvince, opt => opt.ConvertUsing(new ProvinceValueConverter(), src => src.Province))
                  .ForMember(dest => dest.SuppliedBy, opt => opt.ConvertUsing(new SuppliedByIDConverter(), src => src.InformationSource))
                  .ForMember(dest => dest.City, opt => opt.MapFrom(src => src.City))
                  .ForMember(dest => dest.CountryRegion, opt => opt.MapFrom(src => src.Country.Name))
                  .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new AddressTypeValueConverter(), src => src.Category))
-        .ForMember(dest => dest.ZipPostalCode, opt => opt.MapFrom(src => src.PostalCode));
+                 .ForMember(dest => dest.ZipPostalCode, opt => opt.MapFrom(src => src.PostalCode));
 
-          
 
             CreateMap<PhoneNumber, SSG_PhoneNumber>()
                 .ForMember(dest => dest.TelePhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber1))
@@ -130,7 +130,18 @@ namespace  DynamicsAdapter.Web.Mapping
                 .ForMember(dest => dest.PhoneNumberType, opt => opt.ConvertUsing(new TelephoneNumberValueConverter(), src => src.TelephoneNumberType))
                 .ForMember(dest => dest.SuppliedBy, opt => opt.ConvertUsing(new SuppliedByIDConverter(), src => src.InformationSource));
 
-
+            CreateMap<Name, SSG_Name>()
+                 .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
+                 .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
+                 .ForMember(dest => dest.MiddleName, opt => opt.MapFrom(src => src.MiddleName))
+                 .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new NameCategoryConverter(), src => src.Type))
+                 .ForMember(dest => dest.EffectiveDate, opt => opt.ConvertUsing(new DateTimeOffsetConverter(), src => src.EffectiveDate))
+                 .ForMember(dest => dest.EndDate, opt => opt.ConvertUsing(new DateTimeOffsetConverter(), src => src.EndDate))
+                 .ForMember(dest => dest.EffectiveDateLabel, opt => opt.MapFrom(src => "Effective Date"))
+                 .ForMember(dest => dest.EndDateLabel, opt => opt.MapFrom(src => "End Date"))
+                 .ForMember(dest => dest.Comments, opt => opt.MapFrom(src => src.Description))
+                 .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => 0))
+                 .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1));
         }
     }
 

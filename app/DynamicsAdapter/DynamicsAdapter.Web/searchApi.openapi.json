@@ -107,6 +107,13 @@
           "items": {
             "$ref": "#/definitions/PhoneNumber"
           }
+        },
+        "names": {
+          "type": "array",
+          "description": "A collection of names",
+          "items": {
+            "$ref": "#/definitions/Name"
+          }
         }
       }
     },
@@ -251,6 +258,42 @@
         "phoneNumberType": {
           "type": "string",
           "description": "The phone number type"
+        }
+      }
+    },
+    "Name": {
+      "type": "object",
+      "x-abstract": true,
+      "properties": {
+        "firstName": {
+          "type": "string",
+          "description": "The first name"
+        },
+        "lastName": {
+          "type": "string",
+          "description": "The last name"
+        },
+        "middleName": {
+          "type": "string",
+          "description": "The middle name"
+        },
+        "type": {
+          "type": "string",
+          "description": "the type of the names"
+        },
+        "effectiveDate": {
+          "type": "string",
+          "description": "the name effective date",
+          "format": "date-time"
+        },
+        "endDate": {
+          "type": "string",
+          "description": "The name end date",
+          "format": "date-time"
+        },
+        "description": {
+          "type": "string",
+          "description": "The name description"
         }
       }
     }

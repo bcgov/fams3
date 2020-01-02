@@ -130,6 +130,19 @@ namespace SearchAdapter.Sample.SearchRequest
                             ZipPostalCode = "5r5r5r",
                             SuppliedBy = "employer"
                         }
+                    },
+                    Names = new List<NameSample>()
+                    {
+                        new NameSample()
+                        {
+                            Type = "legal name",
+                            FirstName = "firstName",
+                            LastName = "LastName",
+                            MiddleName = "MiddleName",
+                            EffectiveDate = new DateTime(2000,1,1),
+                            EndDate = new DateTime(2009,12,31),
+                            Description = "Sample Name"
+                        }
                     }
                 }
             };

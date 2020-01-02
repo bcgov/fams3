@@ -162,4 +162,12 @@ namespace DynamicsAdapter.Web.Mapping
             return Enumeration.GetAll<LocationType>().FirstOrDefault(m => m.Value == source)?.Name;
         }
     }
+
+    public class NameCategoryConverter : IValueConverter<string, int?>
+    {
+        public int? Convert(string source, ResolutionContext context)
+        {
+            return Enumeration.GetAll<PersonNameCategory>().FirstOrDefault(m => m.Name.Equals(source, StringComparison.OrdinalIgnoreCase))?.Value;
+        }
+    }
 }

@@ -7,6 +7,7 @@ using DynamicsAdapter.Web.PersonSearch;
 using DynamicsAdapter.Web.PersonSearch.Models;
 using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.Identifier;
+using Fams3Adapter.Dynamics.Name;
 using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.SearchApiEvent;
 using Fams3Adapter.Dynamics.SearchApiRequest;
@@ -36,13 +37,13 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         private SSG_Identifier _fakePersoneIdentifier;
         private SSG_Address _fakePersonAddress;
         private SSG_PhoneNumber _fakePersonPhoneNumber;
+        private SSG_Name _fakeName;
 
         private Mock<IMapper> _mapper;
 
         [SetUp]
         public void Init()
         {
-
             _testGuid = Guid.NewGuid();
             _exceptionGuid = Guid.NewGuid();
             _loggerMock = new Mock<ILogger<PersonSearchController>>();
@@ -70,6 +71,14 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             };
 
             _fakePersonPhoneNumber = new SSG_PhoneNumber
+            {
+                SearchRequest = new SSG_SearchRequest
+                {
+                    SearchRequestId = validRequestId
+                }
+            };
+
+            _fakeName = new SSG_Name
             {
                 SearchRequest = new SSG_SearchRequest
                 {
@@ -130,8 +139,15 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                         {
                             PhoneNumber1 = "4005678900"
                         }
+                    },
+                    Names = new List<NameActual>()
+                    {
+                        new NameActual ()
+                        {
+                            FirstName = "firstName"
+                        }
                     }
-                    
+
                 }
             };
 
@@ -179,6 +195,9 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _mapper.Setup(m => m.Map<SSG_Address>(It.IsAny<Web.Address>()))
                               .Returns(_fakePersonAddress);
 
+            _mapper.Setup(m => m.Map<SSG_Name>(It.IsAny<Name>()))
+                  .Returns(_fakeName);
+
 
             _searchApiRequestServiceMock.Setup(x => x.GetLinkedSearchRequestIdAsync(It.Is<Guid>(x => x == _testGuid), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<Guid>(_testGuid));
@@ -208,6 +227,12 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                   TelePhoneNumber = "4007678231"
               }));
 
+            _searchRequestServiceMock.Setup(x => x.CreateName(It.Is<SSG_Name>(x => x.SearchRequest.SearchRequestId == validRequestId), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult<SSG_Name>(new SSG_Name()
+                {
+                    FirstName = "firstName"
+                }));
+
             _searchApiRequestServiceMock.Setup(x => x.AddEventAsync(It.Is<Guid>(x => x == _testGuid),
                     It.IsAny<SSG_SearchApiEvent>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<SSG_SearchApiEvent>(new SSG_SearchApiEvent()
@@ -230,11 +255,15 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             var result = await _sut.Completed(_testGuid, _fakePersonCompletedEvent);
             _searchRequestServiceMock
                 .Verify(x => x.CreateIdentifier(It.IsAny<SSG_Identifier>(), It.IsAny<CancellationToken>()), Times.Once);
+
             _searchRequestServiceMock
                  .Verify(x => x.CreateAddress(It.IsAny<SSG_Address>(), It.IsAny<CancellationToken>()), Times.Once);
 
             _searchRequestServiceMock
                 .Verify(x => x.CreatePhoneNumber(It.IsAny<SSG_PhoneNumber>(), It.IsAny<CancellationToken>()), Times.Once);
+
+            _searchRequestServiceMock
+                .Verify(x => x.CreateName(It.IsAny<SSG_Name>(), It.IsAny<CancellationToken>()), Times.Once);
 
             _searchApiRequestServiceMock
                 .Verify(x => x.AddEventAsync(It.Is<Guid>(x => x == _testGuid), It.IsAny<SSG_SearchApiEvent>(), It.IsAny<CancellationToken>()), Times.Once);

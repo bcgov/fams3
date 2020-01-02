@@ -8,6 +8,7 @@ using DynamicsAdapter.Web.PersonSearch;
 using DynamicsAdapter.Web.PersonSearch.Models;
 using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.Identifier;
+using Fams3Adapter.Dynamics.Name;
 using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.SearchApiEvent;
 using Fams3Adapter.Dynamics.SearchApiRequest;
@@ -334,6 +335,33 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(new DateTimeOffset(new DateTime(2001, 1, 1)), phoneNumber.Date);
             Assert.AreEqual(InformationSourceType.ICBC.Name, phoneNumber.SuppliedBy);
             Assert.AreEqual(TelephoneNumberType.Cell.Name, phoneNumber.PhoneNumberType);
+        }
+
+        [Test]
+        public void Name_should_map_to_SSG_Name_correctly()
+        {
+            var name = new NameActual()
+            {
+                FirstName = "FirstName",
+                LastName = "LastName",
+                MiddleName = "MiddleName",
+                Type = "Legal Name",
+                EffectiveDate = new DateTimeOffset(new DateTime(2001, 1, 1)),
+                EndDate = new DateTimeOffset(new DateTime(2002, 2, 1)),
+                Description = "test name"
+            };
+            SSG_Name ssg_name = _mapper.Map<SSG_Name>(name);
+            Assert.AreEqual("FirstName", ssg_name.FirstName);
+            Assert.AreEqual("LastName", ssg_name.LastName);
+            Assert.AreEqual("MiddleName", ssg_name.MiddleName);
+            Assert.AreEqual(PersonNameCategory.LegalName.Value, ssg_name.Type);
+            Assert.AreEqual("test name", ssg_name.Comments);
+            Assert.AreEqual(1, ssg_name.StatusCode);
+            Assert.AreEqual(0, ssg_name.StateCode);
+            Assert.AreEqual(new DateTime(2001, 1, 1), ssg_name.EffectiveDate);
+            Assert.AreEqual(new DateTime(2002, 2, 1), ssg_name.EndDate);
+            Assert.AreEqual("Effective Date", ssg_name.EffectiveDateLabel);
+            Assert.AreEqual("End Date", ssg_name.EndDateLabel);
         }
     }
 }

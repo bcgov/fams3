@@ -7,12 +7,15 @@ using System.Threading.Tasks;
 namespace DynamicsAdapter.Web.PersonSearch.Models
 {
     public class PersonalIdentifierActual : PersonalIdentifier
-    {
-    }
+    { }
+
     public class PhoneNumberActual : PhoneNumber
     { }
 
     public class AddressActual : Web.Address
+    { }
+
+    public class NameActual : Name
     { }
 
     public class Person
@@ -24,6 +27,6 @@ namespace DynamicsAdapter.Web.PersonSearch.Models
 
         public IEnumerable<PhoneNumberActual> PhoneNumbers { get; set; }
         public IEnumerable<AddressActual> Addresses { get; set; }
-
+        public IEnumerable<NameActual> Names { get; set; }
     }
 }

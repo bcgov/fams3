@@ -44,7 +44,6 @@ namespace SearchAdapter.Sample.Test
             public DateTime? DateOfBirth { get; set; }
             public IEnumerable<PersonalIdentifier> Identifiers { get; }
             public IEnumerable<Address> Addresses { get; }
-
             public IEnumerable<PhoneNumber> PhoneNumbers { get; }
             public IEnumerable<Name> Names { get; set; }
         }

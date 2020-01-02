@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.Identifier;
+using Fams3Adapter.Dynamics.Name;
 using Fams3Adapter.Dynamics.PhoneNumber;
 using Simple.OData.Client;
 
@@ -15,6 +16,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         Task<SSG_Identifier> CreateIdentifier(SSG_Identifier identifier, CancellationToken cancellationToken);
         Task<SSG_Address> CreateAddress(SSG_Address address, CancellationToken cancellationToken);
         Task<SSG_PhoneNumber> CreatePhoneNumber(SSG_PhoneNumber phoneNumber, CancellationToken cancellationToken);
+        Task<SSG_Name> CreateName(SSG_Name name, CancellationToken cancellationToken);
     }
 
     /// <summary>
@@ -52,6 +54,11 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                                          .FindEntryAsync(cancellationToken);
             address.Country = country;
             return await this._oDataClient.For<SSG_Address>().Set(address).InsertEntryAsync(cancellationToken);
+        }
+
+        public async Task<SSG_Name> CreateName(SSG_Name name, CancellationToken cancellationToken)
+        {
+            return null;
         }
     }
 }

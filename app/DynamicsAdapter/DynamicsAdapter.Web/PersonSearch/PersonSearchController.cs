@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Fams3Adapter.Dynamics.Types;
+using Fams3Adapter.Dynamics.Name;
 
 namespace DynamicsAdapter.Web.PersonSearch
 {
@@ -64,6 +65,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                 await UploadIdentifiers(searchRequest, personCompletedEvent, cts.Token);
                 await UploadAddresses(searchRequest, personCompletedEvent, cts.Token);
                 await UploadPhoneNumbers(searchRequest, personCompletedEvent, cts.Token);
+                await UploadNames(searchRequest, personCompletedEvent, cts.Token);
             }
             catch (Exception ex)
             {
@@ -149,8 +151,6 @@ namespace DynamicsAdapter.Web.PersonSearch
 
             try
             {
-
-
                 var searchApiEvent = _mapper.Map<SSG_SearchApiEvent>(personRejectedEvent);
                 _logger.LogDebug($"Attempting to create a new event for SearchApiRequest [{id}]");
                 var result = await _searchApiRequestService.AddEventAsync(id, searchApiEvent, token.Token);
@@ -204,6 +204,17 @@ namespace DynamicsAdapter.Web.PersonSearch
             return true;
         }
 
-
+        private async Task<bool> UploadNames(SSG_SearchRequest request, PersonSearchCompleted personCompletedEvent, CancellationToken concellationToken)
+        {
+            if (personCompletedEvent.MatchedPerson.Names == null) return true;
+            foreach (var name in personCompletedEvent.MatchedPerson.Names)
+            {
+                SSG_Name n = _mapper.Map<SSG_Name>(name);
+                n.SearchRequest = request;
+                n.InformationSource = personCompletedEvent.ProviderProfile.DynamicsID();
+                await _searchRequestService.CreateName(n, concellationToken);
+            }
+            return true;
+        }
     }
 }

@@ -1,10 +1,10 @@
-#Load Testing for Search API
+# Load Testing for Search API
 
-###Daily Usage Limit:
+### Daily Usage Limit:
 
 Based on the statistics provided, there are an average of 70 incoming search requests per day. Hence Load Testing inputs are designed assuming that all the requests/day are done simultaneously.
 
-###Load Testing Inputs
+### Load Testing Inputs
 
 **Base Url:** searchapi-fams3-dev.pathfinder.gov.bc.ca
 

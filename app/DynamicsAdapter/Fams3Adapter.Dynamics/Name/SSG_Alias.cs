@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Fams3Adapter.Dynamics.Name
 {
-    public class SSG_Alias : DynamicsEntity
+    public class SSG_Aliase : DynamicsEntity
     {
         [JsonProperty("ssg_informationsourcetext")]
         public int? InformationSource { get; set; }

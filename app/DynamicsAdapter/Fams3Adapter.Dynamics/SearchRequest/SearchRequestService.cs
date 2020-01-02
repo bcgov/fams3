@@ -16,7 +16,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         Task<SSG_Identifier> CreateIdentifier(SSG_Identifier identifier, CancellationToken cancellationToken);
         Task<SSG_Address> CreateAddress(SSG_Address address, CancellationToken cancellationToken);
         Task<SSG_PhoneNumber> CreatePhoneNumber(SSG_PhoneNumber phoneNumber, CancellationToken cancellationToken);
-        Task<SSG_Name> CreateName(SSG_Name name, CancellationToken cancellationToken);
+        Task<SSG_Alias> CreateName(SSG_Alias name, CancellationToken cancellationToken);
     }
 
     /// <summary>
@@ -56,9 +56,9 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             return await this._oDataClient.For<SSG_Address>().Set(address).InsertEntryAsync(cancellationToken);
         }
 
-        public async Task<SSG_Name> CreateName(SSG_Name name, CancellationToken cancellationToken)
+        public async Task<SSG_Alias> CreateName(SSG_Alias name, CancellationToken cancellationToken)
         {
-            return null;
+            return await this._oDataClient.For<SSG_Alias>().Set(name).InsertEntryAsync(cancellationToken);
         }
     }
 }

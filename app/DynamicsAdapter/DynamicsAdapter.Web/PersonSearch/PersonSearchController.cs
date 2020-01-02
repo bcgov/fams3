@@ -209,9 +209,16 @@ namespace DynamicsAdapter.Web.PersonSearch
             if (personCompletedEvent.MatchedPerson.Names == null) return true;
             foreach (var name in personCompletedEvent.MatchedPerson.Names)
             {
-                SSG_Name n = _mapper.Map<SSG_Name>(name);
+                //SSG_Alias n = _mapper.Map<SSG_Alias>(name);
+                SSG_Alias n = new SSG_Alias()
+                {
+                    FullName = "hahaha from Peggy",
+                    FirstName = "firstname",
+                    StateCode = 0,
+                    StatusCode = 1
+                };
                 n.SearchRequest = request;
-                n.InformationSource = personCompletedEvent.ProviderProfile.DynamicsID();
+                //n.InformationSource = personCompletedEvent.ProviderProfile.DynamicsID();
                 await _searchRequestService.CreateName(n, concellationToken);
             }
             return true;

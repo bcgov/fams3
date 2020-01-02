@@ -350,7 +350,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 EndDate = new DateTimeOffset(new DateTime(2002, 2, 1)),
                 Description = "test name"
             };
-            SSG_Name ssg_name = _mapper.Map<SSG_Name>(name);
+            SSG_Alias ssg_name = _mapper.Map<SSG_Alias>(name);
             Assert.AreEqual("FirstName", ssg_name.FirstName);
             Assert.AreEqual("LastName", ssg_name.LastName);
             Assert.AreEqual("MiddleName", ssg_name.MiddleName);

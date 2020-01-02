@@ -37,7 +37,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         private SSG_Identifier _fakePersoneIdentifier;
         private SSG_Address _fakePersonAddress;
         private SSG_PhoneNumber _fakePersonPhoneNumber;
-        private SSG_Name _fakeName;
+        private SSG_Alias _fakeName;
 
         private Mock<IMapper> _mapper;
 
@@ -78,7 +78,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 }
             };
 
-            _fakeName = new SSG_Name
+            _fakeName = new SSG_Alias
             {
                 SearchRequest = new SSG_SearchRequest
                 {
@@ -195,7 +195,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _mapper.Setup(m => m.Map<SSG_Address>(It.IsAny<Web.Address>()))
                               .Returns(_fakePersonAddress);
 
-            _mapper.Setup(m => m.Map<SSG_Name>(It.IsAny<Name>()))
+            _mapper.Setup(m => m.Map<SSG_Alias>(It.IsAny<Name>()))
                   .Returns(_fakeName);
 
 
@@ -227,8 +227,8 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                   TelePhoneNumber = "4007678231"
               }));
 
-            _searchRequestServiceMock.Setup(x => x.CreateName(It.Is<SSG_Name>(x => x.SearchRequest.SearchRequestId == validRequestId), It.IsAny<CancellationToken>()))
-                .Returns(Task.FromResult<SSG_Name>(new SSG_Name()
+            _searchRequestServiceMock.Setup(x => x.CreateName(It.Is<SSG_Alias>(x => x.SearchRequest.SearchRequestId == validRequestId), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult<SSG_Alias>(new SSG_Alias()
                 {
                     FirstName = "firstName"
                 }));
@@ -263,7 +263,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 .Verify(x => x.CreatePhoneNumber(It.IsAny<SSG_PhoneNumber>(), It.IsAny<CancellationToken>()), Times.Once);
 
             _searchRequestServiceMock
-                .Verify(x => x.CreateName(It.IsAny<SSG_Name>(), It.IsAny<CancellationToken>()), Times.Once);
+                .Verify(x => x.CreateName(It.IsAny<SSG_Alias>(), It.IsAny<CancellationToken>()), Times.Once);
 
             _searchApiRequestServiceMock
                 .Verify(x => x.AddEventAsync(It.Is<Guid>(x => x == _testGuid), It.IsAny<SSG_SearchApiEvent>(), It.IsAny<CancellationToken>()), Times.Once);

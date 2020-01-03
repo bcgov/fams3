@@ -1,7 +1,9 @@
 ﻿using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.Identifier;
+using Fams3Adapter.Dynamics.Name;
 using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.SearchRequest;
+using Fams3Adapter.Dynamics.Types;
 using Moq;
 using NUnit.Framework;
 using Simple.OData.Client;
@@ -58,6 +60,14 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
            })
            );
 
+            odataClientMock.Setup(x => x.For<SSG_Aliase>(null).Set(It.Is<SSG_Aliase>(x => x.FirstName == "firstName"))
+            .InsertEntryAsync(It.IsAny<CancellationToken>()))
+            .Returns(Task.FromResult(new SSG_Aliase()
+            {
+               FullName = "firstName middleName lastName"
+            })
+            );
+
             _sut = new SearchRequestService(odataClientMock.Object);
         }
 
@@ -111,6 +121,25 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             var result = await _sut.CreateAddress(address, CancellationToken.None);
 
             Assert.AreEqual("test", result.FullText);
+        }
+
+        [Test]
+        public async Task with_correct_searchRequestid_upload_name_should_success()
+        {
+            var name = new SSG_Aliase()
+            {
+                FirstName = "firstName",
+                LastName = "lastName",
+                MiddleName = "middleName",
+                FullName = "firstName middleName lastName",
+                Comments = "testComments",
+                Type = PersonNameCategory.MaidenName.Value,
+                SearchRequest = new SSG_SearchRequest() { SearchRequestId = testId }
+            };
+
+            var result = await _sut.CreateName(name, CancellationToken.None);
+
+            Assert.AreEqual("firstName middleName lastName", result.FullName);
         }
     }
 }

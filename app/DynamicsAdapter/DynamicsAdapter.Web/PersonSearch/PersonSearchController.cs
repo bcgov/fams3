@@ -209,7 +209,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             if (personCompletedEvent.MatchedPerson.Names == null) return true;
             foreach (var name in personCompletedEvent.MatchedPerson.Names)
             {
-                SSG_Name n = _mapper.Map<SSG_Name>(name);
+                SSG_Aliase n = _mapper.Map<SSG_Aliase>(name);
                 n.SearchRequest = request;
                 n.InformationSource = personCompletedEvent.ProviderProfile.DynamicsID();
                 await _searchRequestService.CreateName(n, concellationToken);

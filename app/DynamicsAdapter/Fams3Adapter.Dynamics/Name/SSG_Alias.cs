@@ -6,8 +6,10 @@ using System.Text;
 
 namespace Fams3Adapter.Dynamics.Name
 {
-    [JsonObject("ssg_alias")]
-    public class SSG_Name : DynamicsEntity
+    //We have to use SSG_Aliase 
+    //if we use SSG_Alias, as Simple.OData.Client will use url "ssg_alias". If we use SSG_Aliase, Simple.OData.Client will visit url ssg_aliases.
+    //while Dynamics needs url /api/data/v9.0/ssg_aliases
+    public class SSG_Aliase : DynamicsEntity
     {
         [JsonProperty("ssg_informationsourcetext")]
         public int? InformationSource { get; set; }

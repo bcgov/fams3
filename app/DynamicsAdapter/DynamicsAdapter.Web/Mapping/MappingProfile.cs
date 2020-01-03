@@ -130,10 +130,11 @@ namespace  DynamicsAdapter.Web.Mapping
                 .ForMember(dest => dest.PhoneNumberType, opt => opt.ConvertUsing(new TelephoneNumberValueConverter(), src => src.TelephoneNumberType))
                 .ForMember(dest => dest.SuppliedBy, opt => opt.ConvertUsing(new SuppliedByIDConverter(), src => src.InformationSource));
 
-            CreateMap<Name, SSG_Name>()
+            CreateMap<Name, SSG_Aliase>()
                  .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
                  .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
                  .ForMember(dest => dest.MiddleName, opt => opt.MapFrom(src => src.MiddleName))
+                 .ForMember(dest => dest.FullName, opt => opt.MapFrom<FullNameResolver>())
                  .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new NameCategoryConverter(), src => src.Type))
                  .ForMember(dest => dest.EffectiveDate, opt => opt.ConvertUsing(new DateTimeOffsetConverter(), src => src.EffectiveDate))
                  .ForMember(dest => dest.EndDate, opt => opt.ConvertUsing(new DateTimeOffsetConverter(), src => src.EndDate))

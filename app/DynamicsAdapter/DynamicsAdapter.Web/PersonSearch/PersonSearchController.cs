@@ -210,13 +210,6 @@ namespace DynamicsAdapter.Web.PersonSearch
             foreach (var name in personCompletedEvent.MatchedPerson.Names)
             {
                 SSG_Aliase n = _mapper.Map<SSG_Aliase>(name);
-                //SSG_Aliase n = new SSG_Aliase()
-                //{
-                //    FullName = "hahaha from Peggy",
-                //    FirstName = "firstname",
-                //    StateCode = 0,
-                //    StatusCode = 1
-                //};
                 n.SearchRequest = request;
                 n.InformationSource = personCompletedEvent.ProviderProfile.DynamicsID();
                 await _searchRequestService.CreateName(n, concellationToken);

@@ -354,6 +354,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual("FirstName", ssg_name.FirstName);
             Assert.AreEqual("LastName", ssg_name.LastName);
             Assert.AreEqual("MiddleName", ssg_name.MiddleName);
+            Assert.AreEqual("FirstName MiddleName LastName", ssg_name.FullName);
             Assert.AreEqual(PersonNameCategory.LegalName.Value, ssg_name.Type);
             Assert.AreEqual("test name", ssg_name.Comments);
             Assert.AreEqual(1, ssg_name.StatusCode);

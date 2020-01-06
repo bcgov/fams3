@@ -1,0 +1,23 @@
+name: Sonar Scan
+
+on: [pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Start job
+        run: pwd && ls -ll
+      - uses: actions/checkout@v1
+      - name: Setup sonarqube
+        uses: warchant/setup-sonar-scanner@v1
+      - name: Run sonarqube
+        env:
+          # to get access to secrets.SONAR_TOKEN, provide GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: pwd && ls -ll && sonar-scanner 
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+            -Dsonar.verbose=true
+            -Dsonar.sources=app
+            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }}
+            -Dsonar.projectKey=${{secrets.SONAR_PROJECT_KEY }}

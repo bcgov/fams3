@@ -126,21 +126,11 @@ objects:
                   value: guest
                 - name: RABBITMQ__PASSWORD
                   value: guest
-                - name: ICBCSOAPAPI__BASEADDRESS
+                - name: ICBCRESTADAPTER__BASEURL
                   valueFrom:
                     secretKeyRef:
-                      name: icbc-soap-api-configuration
-                      key: base-address
-                - name: ICBCSOAPAPI__USERNAME
-                  valueFrom:
-                    secretKeyRef:
-                      name: icbc-soap-api-configuration
-                      key: username
-                - name: ICBCSOAPAPI__PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: icbc-soap-api-configuration
-                      key: password
+                      name: icbc-rest-adapter-configuration
+                      key: base-url
               livenessProbe:
                 httpGet:
                   path: "/health"

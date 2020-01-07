@@ -170,6 +170,9 @@ pipeline {
          -p TAG=dev | oc apply -f - -n ${DEV_NAMESPACE}"
       sh "oc tag ${ICBC_WEB_ADAPTER}:latest ${ICBC_WEB_ADAPTER}:dev -n ${TOOLS_NAMESPACE}"
       WaitForDeploy(ICBC_WEB_ADAPTER, DEV_NAMESPACE)
+     },
+     'Jaeger':{
+        sh "oc process -f openshift/templates/jaeger-aio.dc.yaml | oc apply -f - -n ${DEV_NAMESPACE}"
      }
     )
    }
@@ -217,6 +220,9 @@ pipeline {
          -p TAG=test | oc apply -f - -n ${TEST_NAMESPACE}"
       sh "oc tag ${ICBC_WEB_ADAPTER}:dev ${ICBC_WEB_ADAPTER}:test -n ${TOOLS_NAMESPACE}"
       WaitForDeploy(ICBC_WEB_ADAPTER, TEST_NAMESPACE)
+     },
+     'Jaeger':{
+        sh "oc process -f openshift/templates/jaeger-aio.dc.yaml | oc apply -f - -n ${TEST_NAMESPACE}"
      }
     )
    }

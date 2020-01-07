@@ -131,16 +131,6 @@ objects:
                     secretKeyRef:
                       name: icbc-rest-adapter-configuration
                       key: base-url
-                - name: ICBCRESTADAPTER__USERNAME
-                  valueFrom:
-                    secretKeyRef:
-                      name: icbc-rest-adapter-configuration
-                      key: username
-                - name: ICBCRESTADAPTER__PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: icbc-rest-adapter-configuration
-                      key: password
               livenessProbe:
                 httpGet:
                   path: "/health"

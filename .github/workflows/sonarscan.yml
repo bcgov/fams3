@@ -9,10 +9,16 @@ jobs:
       - name: Start job
         run: pwd && ls -ll
       - uses: actions/checkout@v1
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 3.0.100
       - name: Setup dotnet tool 
         run: dotnet tool install --global dotnet-sonarscanner --version 4.7.1
+      - name: Reload Shell
+        run: source ~/.bashrc 
       - name: Run sonarqube
         env:
           # to get access to secrets.SONAR_TOKEN, provide GITHUB_TOKEN
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: source ~/.bashrc && cd app/DynamicsAdapter && ls -ll && dotnet sonarscanner begin /key:"{{secrets.SONAR_PROJECT_KEY }}" && dotnet build && dotnet sonarscanner end || exit 1
+        run: cd app/DynamicsAdapter && ls -ll && dotnet sonarscanner begin /key:"{{secrets.SONAR_PROJECT_KEY }}" && dotnet build && dotnet sonarscanner end || exit 1

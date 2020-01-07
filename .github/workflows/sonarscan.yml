@@ -17,10 +17,10 @@ jobs:
         env:
           # to get access to secrets.SONAR_TOKEN, provide GITHUB_TOKEN
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: sonar-scanner 
+        run: cd app/DynamicsAdapter && sonar-scanner 
             -Dsonar.login=${{ secrets.SONAR_TOKEN }}
             -Dsonar.verbose=true
             -Dsonar.sources=app
             -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }}
-            -Dsonar.projectKey=${{secrets.SONAR_PROJECT_KEY }}
-        run: cd app/DynamicsAdapter && dotnet sonarscanner begin /key:"{{secrets.SONAR_PROJECT_KEY }}" && dotnet build && dotnet sonarscanner end || exit 1
+            -Dsonar.projectKey=${{secrets.SONAR_PROJECT_KEY }} && 
+            dotnet sonarscanner begin /key:"{{secrets.SONAR_PROJECT_KEY }}" && dotnet build && dotnet sonarscanner end || exit 1

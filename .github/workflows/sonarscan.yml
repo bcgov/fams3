@@ -15,4 +15,4 @@ jobs:
         env:
           # to get access to secrets.SONAR_TOKEN, provide GITHUB_TOKEN
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: cd app/DynamicsAdapter && dotnet sonarscanner begin /key:"{{secrets.SONAR_PROJECT_KEY }}" && dotnet build && dotnet sonarscanner end || exit 1
+        run: source ~/.bashrc && cd app/DynamicsAdapter && ls -ll && dotnet sonarscanner begin /key:"{{secrets.SONAR_PROJECT_KEY }}" && dotnet build && dotnet sonarscanner end || exit 1

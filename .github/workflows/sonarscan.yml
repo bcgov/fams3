@@ -18,4 +18,4 @@ jobs:
         env:
           # to get access to secrets.SONAR_TOKEN, provide GITHUB_TOKEN
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: cd app/SearchApi && ls -ll && dotnet sonarscanner begin /k:"${{ secrets.SONAR_PROJECT_KEY_SEARCH_API }}" /d:sonar.login=${{ secrets.SONAR_TOKEN }} /d:sonar.host.url=${{ secrets.SONAR_HOST_URL }}  && dotnet build && dotnet sonarscanner end /d:sonar.login=${{ secrets.SONAR_TOKEN }} || exit 1
+        run: dotnet tool install --global dotnet-sonarscanner && source /etc/profile && cd app/SearchApi && ls -ll && dotnet sonarscanner begin /k:"${{ secrets.SONAR_PROJECT_KEY_SEARCH_API }}" /d:sonar.login=${{ secrets.SONAR_TOKEN }} /d:sonar.host.url=${{ secrets.SONAR_HOST_URL }}  && dotnet build && dotnet sonarscanner end /d:sonar.login=${{ secrets.SONAR_TOKEN }} || exit 1

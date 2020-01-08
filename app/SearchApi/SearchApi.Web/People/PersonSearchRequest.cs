@@ -68,7 +68,7 @@ namespace SearchApi.Web.Controllers
         public string City { get; }
         public string CountryRegion { get; }
         public string ZipPostalCode { get; }
-        public string SuppliedBy { get; }
+        public string Description { get; }
         public DateTime? EffectiveDate { get; }
         public DateTime? EndDate { get; }
     }
@@ -76,10 +76,11 @@ namespace SearchApi.Web.Controllers
 
     public class SearchApiPhoneNumber : PhoneNumber
     {
-        public string SuppliedBy { get; }
-        public DateTime? Date { get; }
-        public string DateType { get; }
+        public string Description { get; }
+        public DateTime? EndDate { get; }
+        public DateTime? EffectiveDate { get; }
         public string PhoneNumber { get; }
+        public string Extension { get; }
         public string PhoneNumberType { get; }
     }
 

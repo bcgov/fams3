@@ -45,7 +45,7 @@ namespace SearchAdapter.Sample.SearchRequest
         public string City { get; set; }
         public string CountryRegion { get; set; }
         public string ZipPostalCode { get; set; }
-        public string SuppliedBy { get; set; }
+        public string Description { get; set; }
         public DateTime? EffectiveDate { get; set; }
         public DateTime? EndDate { get; set; }
     }
@@ -57,11 +57,13 @@ namespace SearchAdapter.Sample.SearchRequest
 
         public string PhoneNumberType { get; set; }
 
-        public string SuppliedBy { get; set; }
+        public string Description { get; set; }
 
-        public DateTime? Date { get; set; }
+        public DateTime? EffectiveDate { get; }
 
-        public string DateType { get; set; }
+        public DateTime? EndDate { get; }
+
+        public string Extension { get; }
     }
 
     public class NameSample : Name

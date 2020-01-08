@@ -21,9 +21,9 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         string CountryRegion { get; }
         [Description("The Address Zip or Postal Code")]
         string ZipPostalCode { get; }
-        [Description("Information on who supplied")]
-        string SuppliedBy { get; }
-        [Description("The Address Efective Date")]
+        [Description("The Address Description")]
+        string Description { get; }
+        [Description("The Address Effective Date")]
         DateTime? EffectiveDate { get; }
         [Description("The Address End Date")]
         DateTime? EndDate { get; }

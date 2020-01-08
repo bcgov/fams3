@@ -117,7 +117,7 @@ namespace SearchAdapter.Sample.SearchRequest
                             City = "victoria" ,
                             CountryRegion= "canada",
                             ZipPostalCode = "t4t4t4",
-                            SuppliedBy = "ICBC"
+                            Description = "a unit testing address"
                         },
                          new AddressSample()
                         {
@@ -128,7 +128,7 @@ namespace SearchAdapter.Sample.SearchRequest
                             City = "vancouver" ,
                             CountryRegion="canada",
                             ZipPostalCode = "5r5r5r",
-                            SuppliedBy = "employer"
+                            Description = "another unit testing address"
                         }
                     },
                     Names = new List<NameSample>()

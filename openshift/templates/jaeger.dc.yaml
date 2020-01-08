@@ -1,22 +1,59 @@
----
-kind: Template
+#
+# Copyright 2017-2018 The Jaeger Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+# in compliance with the License. You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed under the License
+# is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+# or implied. See the License for the specific language governing permissions and limitations under
+# the License.
+#
+
+parameters:
+- description: The name of the Jaeger Service.
+  displayName: Jaeger Service Name
+  name: JAEGER_SERVICE_NAME
+  required: true
+  value: jaeger
+- description: The Jaeger image version to use
+  displayName: Image version
+  name: IMAGE_VERSION
+  required: false
+  value: "1.8"
+- description: The name of the Jaeger Zipkin Service.
+  displayName: Jaeger Zipkin Service Name
+  name: JAEGER_ZIPKIN_SERVICE_NAME
+  required: true
+  value: zipkin
+
 apiVersion: v1
+kind: Template
+labels:
+  app: jaeger
+  template: jaeger-template
+  jaeger-infra: template
 metadata:
-  name: fams3-jaeger-dc
+  name: jaeger-template
   annotations:
-    openshift.io/display-name: "FAMS3 Jaeger DeploymentConfig"
-    description: FAMS3 Jaeger DeploymentConfig
+    description: Jaeger Distributed Tracing Server
+    iconClass: icon-go-gopher
+    openshift.io/display-name: Jaeger (production)
+    tags: instant-app,tracing,opentracing,jaeger
+  labels:
+    app: jaeger
+    name: jaeger-infra
+    jaeger-infra: template-production
 objects:
 - apiVersion: extensions/v1beta1
   kind: Deployment
-  selector:
-    name: jaeger-collector
   metadata:
-    name: jaeger-collector
+    name: ${JAEGER_SERVICE_NAME}-collector
     labels:
       app: jaeger
-      app.kubernetes.io/name: jaeger
-      app.kubernetes.io/component: collector
+      jaeger-infra: collector-deployment
   spec:
     replicas: 1
     strategy:
@@ -25,17 +62,18 @@ objects:
       metadata:
         labels:
           app: jaeger
-          app.kubernetes.io/name: jaeger
-          app.kubernetes.io/component: collector
+          jaeger-infra: collector-pod
         annotations:
           prometheus.io/scrape: "true"
           prometheus.io/port: "14268"
       spec:
         containers:
-        - image: jaegertracing/jaeger-collector:1.9.0
-          name: jaeger-collector
+        - image: jaegertracing/jaeger-collector:${IMAGE_VERSION}
+          name: ${JAEGER_SERVICE_NAME}-collector
           args: ["--config-file=/conf/collector.yaml"]
           ports:
+          - containerPort: 14250
+            protocol: TCP
           - containerPort: 14267
             protocol: TCP
           - containerPort: 14268
@@ -65,13 +103,16 @@ objects:
 - apiVersion: v1
   kind: Service
   metadata:
-    name: jaeger-collector
+    name: ${JAEGER_SERVICE_NAME}-collector
     labels:
       app: jaeger
-      app.kubernetes.io/name: jaeger
-      app.kubernetes.io/component: collector
+      jaeger-infra: collector-service
   spec:
     ports:
+    - name: jaeger-collector-grpc
+      port: 14250
+      protocol: TCP
+      targetPort: 14250
     - name: jaeger-collector-tchannel
       port: 14267
       protocol: TCP
@@ -85,35 +126,31 @@ objects:
       protocol: TCP
       targetPort: 9411
     selector:
-      app.kubernetes.io/name: jaeger
-      app.kubernetes.io/component: collector
+      jaeger-infra: collector-pod
     type: ClusterIP
 - apiVersion: v1
   kind: Service
   metadata:
-    name: zipkin
+    name: ${JAEGER_ZIPKIN_SERVICE_NAME}
     labels:
       app: jaeger
-      app.kubernetes.io/name: jaeger
-      app.kubernetes.io/component: zipkin
+      jaeger-infra: zipkin-service
   spec:
     ports:
-    - name: jaeger-collector-zipkin
+    - name: jaeger-zipkin-http
       port: 9411
       protocol: TCP
       targetPort: 9411
     selector:
-      app.kubernetes.io/name: jaeger
-      app.kubernetes.io/component: collector
+      jaeger-infra: collector-pod
     type: ClusterIP
 - apiVersion: extensions/v1beta1
   kind: Deployment
   metadata:
-    name: jaeger-query
+    name: ${JAEGER_SERVICE_NAME}-query
     labels:
       app: jaeger
-      app.kubernetes.io/name: jaeger
-      app.kubernetes.io/component: query
+      jaeger-infra: query-deployment
   spec:
     replicas: 1
     strategy:
@@ -122,14 +159,13 @@ objects:
       metadata:
         labels:
           app: jaeger
-          app.kubernetes.io/name: jaeger
-          app.kubernetes.io/component: query
+          jaeger-infra: query-pod
         annotations:
           prometheus.io/scrape: "true"
           prometheus.io/port: "16686"
       spec:
         containers:
-        - image: jaegertracing/jaeger-query:1.9.0
+        - image: jaegertracing/jaeger-query:${IMAGE_VERSION}
           name: jaeger-query
           args: ["--config-file=/conf/query.yaml"]
           ports:
@@ -148,6 +184,12 @@ objects:
               configMapKeyRef:
                 name: jaeger-configuration
                 key: span-storage-type
+        - image: jaegertracing/jaeger-agent:${IMAGE_VERSION}
+          name: jaeger-agent
+          args: ["--reporter.tchannel.host-port=jaeger-collector:14267"]
+          ports:
+          - containerPort: 6831
+            protocol: UDP
         volumes:
           - configMap:
               name: jaeger-configuration
@@ -158,11 +200,10 @@ objects:
 - apiVersion: v1
   kind: Service
   metadata:
-    name: jaeger-query
+    name: ${JAEGER_SERVICE_NAME}-query
     labels:
       app: jaeger
-      app.kubernetes.io/name: jaeger
-      app.kubernetes.io/component: query
+      jaeger-infra: query-service
   spec:
     ports:
     - name: jaeger-query
@@ -170,30 +211,19 @@ objects:
       protocol: TCP
       targetPort: 16686
     selector:
-      app.kubernetes.io/name: jaeger
-      app.kubernetes.io/component: query
+      jaeger-infra: query-pod
     type: LoadBalancer
 - apiVersion: v1
-  kind: ConfigMap
+  kind: Route
   metadata:
-    name: jaeger-configuration
+    name: ${JAEGER_SERVICE_NAME}-query
     labels:
       app: jaeger
-      app.kubernetes.io/name: jaeger
-  data:
-    span-storage-type: cassandra
-    collector: |
-      collector:
-        zipkin:
-          http-port: 9411
-      cassandra:
-        servers: cassandra
-        keyspace: jaeger_v1_dc1
-    query: |
-      cassandra:
-        servers: cassandra
-        keyspace: jaeger_v1_dc1
-    agent: |
-      collector:
-        host-port: "jaeger-collector:14267"
-
+      jaeger-infra: query-route
+  spec:
+    tls:
+      insecureEdgeTerminationPolicy: Allow
+      termination: edge
+    to:
+      kind: Service
+      name: ${JAEGER_SERVICE_NAME}-query

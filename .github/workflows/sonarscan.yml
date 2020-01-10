@@ -1,0 +1,26 @@
+name: Sonar Scan
+
+on: [pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Start job
+        run: pwd && ls -ll
+      - uses: actions/checkout@v1
+      - name: Run sonarqube FAMS3-DynamicsAdapter
+        env:
+          # to get access to secrets.SONAR_TOKEN, provide GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          dotnet tool install --global dotnet-sonarscanner
+          source /etc/profile
+          cd app/DynamicsAdapter
+          dotnet sonarscanner begin /k:"${{ secrets.SONAR_PROJECT_KEY_DYNAMICS_ADAPTER }}" /d:sonar.login=${{ secrets.SONAR_TOKEN }} /d:sonar.host.url=${{ secrets.SONAR_HOST_URL }}
+          dotnet build
+          dotnet sonarscanner end /d:sonar.login=${{ secrets.SONAR_TOKEN }}
+          cd ../SearchApi
+          dotnet sonarscanner begin /k:"${{ secrets.SONAR_PROJECT_KEY_SEARCH_API }}" /d:sonar.login=${{ secrets.SONAR_TOKEN }} /d:sonar.host.url=${{ secrets.SONAR_HOST_URL }}
+          dotnet build
+          dotnet sonarscanner end /d:sonar.login=${{ secrets.SONAR_TOKEN }}

@@ -63,8 +63,6 @@ namespace Fams3Adapter.Dynamics.OptionSets
                     null);
             }
 
-            _logger.LogInformation($"{request.RequestUri} succeeded with status code : {response.StatusCode}");
-
             return await response.Content.ReadAsStringAsync();
             
         }

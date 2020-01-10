@@ -44,6 +44,12 @@ parameters:
       The name of the Jaeger collector to send traces to (port 14268)
     required: true
     value: jaeger-collector
+  - name: ICBC_REST_URL
+    displayName: ICBC rest adapter base url
+    description:
+      ICBC rest adapter base url for ICBC Web Adapter send search request to
+    required: true
+    value: http://icbc-rest-adapter:8080
 objects:
   - kind: Route
     apiVersion: v1
@@ -127,10 +133,7 @@ objects:
                 - name: RABBITMQ__PASSWORD
                   value: guest
                 - name: ICBCRESTADAPTER__BASEURL
-                  valueFrom:
-                    secretKeyRef:
-                      name: icbc-rest-adapter-configuration
-                      key: base-url
+                  value: "${ICBC_REST_URL}"
               livenessProbe:
                 httpGet:
                   path: "/health"

@@ -101,7 +101,7 @@ namespace SearchAdapter.Sample.SearchRequest
                             EffectiveDate = DateTime.Now.AddDays(-365),
                             ExpirationDate = DateTime.Now.AddDays(365),
                             IssuedBy = "ICBC",
-                            SerialNumber = new Random().Next(0, 50000).ToString()
+                            Value = new Random().Next(0, 50000).ToString()
                         }
                     },
                     Addresses = new List<AddressSample>()

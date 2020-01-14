@@ -113,7 +113,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                         {
                             new PersonalIdentifierActual()
                             {
-                               SerialNumber  = "test",
+                               Value  = "test",
                                IssuedBy = "test",
                                Type = PersonalIdentifierType.DriverLicense
                             }

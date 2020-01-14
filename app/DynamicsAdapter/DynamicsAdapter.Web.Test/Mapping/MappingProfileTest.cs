@@ -46,7 +46,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
 
             };
             PersonalIdentifier identifier = _mapper.Map<PersonalIdentifier>(sSG_Identifier);
-            Assert.AreEqual("testIdentification", identifier.SerialNumber);
+            Assert.AreEqual("testIdentification", identifier.Value);
             Assert.AreEqual(new DateTimeOffset(new DateTime(2001, 1, 1)), identifier.EffectiveDate);
             Assert.AreEqual(new DateTimeOffset(new DateTime(2001, 1, 1)), identifier.ExpirationDate);
             Assert.AreEqual(PersonalIdentifierType.SocialInsuranceNumber, identifier.Type);
@@ -280,7 +280,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
         {
             PersonalIdentifier identifier = new PersonalIdentifierActual()
             {
-                SerialNumber = "1111111",
+                Value = "1111111",
                 ExpirationDate = new DateTimeOffset(new DateTime(2003, 3, 3)),
                 EffectiveDate = new DateTimeOffset(new DateTime(2002, 2, 2)),
                 Type = PersonalIdentifierType.DriverLicense,

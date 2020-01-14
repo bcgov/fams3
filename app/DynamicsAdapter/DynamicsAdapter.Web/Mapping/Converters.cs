@@ -11,6 +11,7 @@ namespace DynamicsAdapter.Web.Mapping
 {
     public class InformationSourceConverter : IValueConverter<int?, string>
     {
+
         public string Convert(int? source, ResolutionContext context)
         {
             return Enumeration.GetAll<InformationSourceType>().FirstOrDefault(m => m.Value == source)?.Name;

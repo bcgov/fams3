@@ -97,10 +97,15 @@ namespace SearchAdapter.Sample.SearchRequest
                         new PersonalIdentifierSample()
                         {
                             Type = PersonalIdentifierType.DriverLicense,
-                            EffectiveDate = DateTime.Now.AddDays(-365),
-                            ExpirationDate = DateTime.Now.AddDays(365),
-                            IssuedBy = "ICBC",
-                            Value = new Random().Next(0, 50000).ToString()
+                            TypeCode = "BCDL",
+                            Description = "Sample Identifier Description",
+                            Notes = "Sample Identifier Notes",
+                            IssuedBy = "BC",
+                            Value = new Random().Next(0, 50000).ToString(),
+                            ReferenceDates = new List<ReferenceDate>(){ 
+                                new ReferenceDateSample(){ Index=0, Key="Effective Date", Value=new DateTime(2019,9,1) },
+                                new ReferenceDateSample(){ Index=1, Key="Expiration Date", Value=new DateTime(2020,9,1) }
+                            }
                         }
                     },
                     Addresses = new List<AddressSample>()

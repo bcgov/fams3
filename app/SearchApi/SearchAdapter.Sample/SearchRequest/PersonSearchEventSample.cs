@@ -27,7 +27,7 @@ namespace SearchAdapter.Sample.SearchRequest
 
     public class PersonalIdentifierSample : PersonalIdentifier
     {
-        public string SerialNumber { get; set; }
+        public string Value { get; set; }
         public DateTime? EffectiveDate { get; set; }
         public DateTime? ExpirationDate { get; set; }
         public PersonalIdentifierType Type { get; set; }

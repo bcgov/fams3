@@ -94,6 +94,7 @@ namespace SearchAdapter.Sample.SearchRequest
                     DateOfBirth = personSearchOrdered.Person.DateOfBirth,
                     Identifiers = new List<PersonalIdentifierSample>()
                     {
+
                         new PersonalIdentifierSample()
                         {
                             Type = PersonalIdentifierType.DriverLicense,

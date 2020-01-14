@@ -15,6 +15,7 @@ namespace DynamicsAdapter.Web.Mapping
         {
             return Enumeration.GetAll<InformationSourceType>().FirstOrDefault(m => m.Value == source)?.Name;
         }
+
     }
 
 

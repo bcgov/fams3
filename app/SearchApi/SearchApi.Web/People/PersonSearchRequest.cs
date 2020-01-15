@@ -51,12 +51,20 @@ namespace SearchApi.Web.Controllers
     public class SearchApiPersonalIdentifier : PersonalIdentifier
     {
         public string Value { get; set; }
-        public DateTime? EffectiveDate { get; set; }
-        public DateTime? ExpirationDate { get; set; }
         public PersonalIdentifierType Type { get; set; }
+        public string TypeCode { get; set; }
         public string IssuedBy { get; set; }
+        public string Description { get; set; }
+        public string Notes { get; set; }
+        public IEnumerable<ReferenceDate> ReferenceDates { get; }
     }
 
+    public class SearchApiReferenceDateSample : ReferenceDate
+    {
+        public int Index { get; set; }
+        public string Key { get; set; }
+        public DateTime Value { get; set; }
+    }
 
     public class SearchApiAddress : Address
     {

@@ -94,13 +94,14 @@ namespace SearchAdapter.Sample.SearchRequest
                     DateOfBirth = personSearchOrdered.Person.DateOfBirth,
                     Identifiers = new List<PersonalIdentifierSample>()
                     {
+
                         new PersonalIdentifierSample()
                         {
                             Type = PersonalIdentifierType.DriverLicense,
                             EffectiveDate = DateTime.Now.AddDays(-365),
                             ExpirationDate = DateTime.Now.AddDays(365),
                             IssuedBy = "ICBC",
-                            SerialNumber = new Random().Next(0, 50000).ToString()
+                            Value = new Random().Next(0, 50000).ToString()
                         }
                     },
                     Addresses = new List<AddressSample>()

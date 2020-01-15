@@ -124,9 +124,9 @@
         "type"
       ],
       "properties": {
-        "serialNumber": {
+        "value": {
           "type": "string",
-          "description": "The serial number of the identifier"
+          "description": "The value of the identifier"
         },
         "effectiveDate": {
           "type": "string",

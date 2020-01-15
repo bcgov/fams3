@@ -50,7 +50,7 @@ namespace SearchApi.Web.Controllers
 
     public class SearchApiPersonalIdentifier : PersonalIdentifier
     {
-        public string SerialNumber { get; set; }
+        public string Value { get; set; }
         public DateTime? EffectiveDate { get; set; }
         public DateTime? ExpirationDate { get; set; }
         public PersonalIdentifierType Type { get; set; }

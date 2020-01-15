@@ -10,7 +10,7 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         [Description("The index of this date, for dynamics mapping")]
         int Index { get; }
 
-        [Description("The key of this date, mainly the description of the date")]
+        [Description("The name of this date, mainly the description of the date")]
         string Name { get; }
 
         [Description("The date value")]

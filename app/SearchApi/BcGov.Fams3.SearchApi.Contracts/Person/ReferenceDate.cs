@@ -11,7 +11,7 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         int Index { get; }
 
         [Description("The key of this date, mainly the description of the date")]
-        string Key { get; }
+        string Name { get; }
 
         [Description("The date value")]
         DateTime Value { get; }

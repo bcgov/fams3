@@ -104,8 +104,8 @@ namespace SearchAdapter.Sample.SearchRequest
                             IssuedBy = "BC",
                             Value = new Random().Next(0, 50000).ToString(),
                             ReferenceDates = new List<ReferenceDate>(){ 
-                                new ReferenceDateSample(){ Index=0, Key="Effective Date", Value=new DateTime(2019,9,1) },
-                                new ReferenceDateSample(){ Index=1, Key="Expiration Date", Value=new DateTime(2020,9,1) }
+                                new ReferenceDateSample(){ Index=0, Name="Effective Date", Value=new DateTime(2019,9,1) },
+                                new ReferenceDateSample(){ Index=1, Name="Expiration Date", Value=new DateTime(2020,9,1) }
                             }
                         }
                     },

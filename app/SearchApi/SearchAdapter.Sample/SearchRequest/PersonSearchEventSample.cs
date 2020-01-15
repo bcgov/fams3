@@ -39,7 +39,7 @@ namespace SearchAdapter.Sample.SearchRequest
     public class ReferenceDateSample : ReferenceDate
     {
         public int Index { get; set; }
-        public string Name { get; set; }
+        public string Key { get; set; }
         public DateTime Value { get; set; }
     }
 

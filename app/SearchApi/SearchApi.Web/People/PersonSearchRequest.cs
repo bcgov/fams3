@@ -21,7 +21,7 @@ namespace SearchApi.Web.Controllers
             IEnumerable<SearchApiPersonalIdentifier> identifiers,
             IEnumerable<SearchApiAddress> addresses,
             IEnumerable<SearchApiPhoneNumber> phoneNumbers,
-            IEnumerable<Name> names )
+            IEnumerable<SearchApiName> names )
         {
             this.FirstName = firstName;
             this.LastName = lastName;

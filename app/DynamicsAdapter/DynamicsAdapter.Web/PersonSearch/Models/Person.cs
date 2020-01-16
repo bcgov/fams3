@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 namespace DynamicsAdapter.Web.PersonSearch.Models
 {
     public class PersonalIdentifierActual : PersonalIdentifier
-    { }
+    {
+        public new IEnumerable<ReferenceDateActual> ReferenceDates { get; set; }
+    }
 
     public class PhoneNumberActual : PhoneNumber
     { }
@@ -16,6 +18,9 @@ namespace DynamicsAdapter.Web.PersonSearch.Models
     { }
 
     public class NameActual : Name
+    { }
+
+    public class ReferenceDateActual : ReferenceDate
     { }
 
     public class Person

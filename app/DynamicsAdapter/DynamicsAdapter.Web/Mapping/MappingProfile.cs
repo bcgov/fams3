@@ -22,15 +22,15 @@ namespace  DynamicsAdapter.Web.Mapping
             CreateMap<SSG_Identifier, PersonalIdentifier>()
                  .ConstructUsing(m => new PersonalIdentifierActual() { })
                  .ForMember(dest => dest.Value, opt => opt.MapFrom(src => src.Identification))
-                 .ForMember(dest => dest.EffectiveDate, opt => opt.MapFrom(src => src.IdentificationEffectiveDate))
-                 .ForMember(dest => dest.ExpirationDate, opt => opt.MapFrom(src => src.IdentificationExpirationDate))
+                 //.ForMember(dest => dest.EffectiveDate, opt => opt.MapFrom(src => src.IdentificationEffectiveDate))
+                 //.ForMember(dest => dest.ExpirationDate, opt => opt.MapFrom(src => src.IdentificationExpirationDate))
                  .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new IdentifierTypeConverter(), src => src.IdentifierType));
                 
 
             CreateMap<PersonalIdentifier, SSG_Identifier>()
                .ForMember(dest => dest.Identification, opt => opt.MapFrom(src => src.Value))
-               .ForMember(dest => dest.IdentificationEffectiveDate, opt => opt.ConvertUsing(new DateTimeOffsetConverter(), src => src.EffectiveDate))
-               .ForMember(dest => dest.IdentificationExpirationDate, opt => opt.ConvertUsing(new DateTimeOffsetConverter(), src => src.ExpirationDate))
+               //.ForMember(dest => dest.IdentificationEffectiveDate, opt => opt.ConvertUsing(new DateTimeOffsetConverter(), src => src.EffectiveDate))
+               //.ForMember(dest => dest.IdentificationExpirationDate, opt => opt.ConvertUsing(new DateTimeOffsetConverter(), src => src.ExpirationDate))
                .ForMember(dest => dest.IdentifierType, opt => opt.ConvertUsing(new PersonalIdentifierTypeConverter(), src => src.Type))
                .ForMember(dest => dest.IssuedBy, opt=>opt.ConvertUsing( new IssuedByConverter(), src => src.IssuedBy))
                .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => 0))

@@ -39,8 +39,8 @@ namespace DynamicsAdapter.Web.Test.Mapping
             SSG_Identifier sSG_Identifier = new SSG_Identifier()
             {
                 Identification = "testIdentification",
-                IdentificationEffectiveDate = new DateTime(2001, 1, 1),
-                IdentificationExpirationDate = new DateTime(2001, 1, 1),
+                //IdentificationEffectiveDate = new DateTime(2001, 1, 1),
+                //IdentificationExpirationDate = new DateTime(2001, 1, 1),
                 IdentifierType = IdentificationType.SocialInsuranceNumber.Value,
                 InformationSource = InformationSourceType.Employer.Value
 
@@ -288,8 +288,8 @@ namespace DynamicsAdapter.Web.Test.Mapping
             };
             SSG_Identifier sSG_Identifier = _mapper.Map<SSG_Identifier>(identifier);
             Assert.AreEqual("1111111", sSG_Identifier.Identification);
-            Assert.AreEqual(new DateTime(2002, 2, 2), sSG_Identifier.IdentificationEffectiveDate);
-            Assert.AreEqual(new DateTime(2003, 3, 3), sSG_Identifier.IdentificationExpirationDate);
+            //Assert.AreEqual(new DateTime(2002, 2, 2), sSG_Identifier.IdentificationEffectiveDate);
+            //Assert.AreEqual(new DateTime(2003, 3, 3), sSG_Identifier.IdentificationExpirationDate);
             Assert.AreEqual(IdentificationType.DriverLicense.Value, sSG_Identifier.IdentifierType);
             Assert.AreEqual(1, sSG_Identifier.StatusCode);
             Assert.AreEqual(0, sSG_Identifier.StateCode);

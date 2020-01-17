@@ -29,10 +29,15 @@ namespace  DynamicsAdapter.Web.Mapping
 
             CreateMap<PersonalIdentifierActual, SSG_Identifier>()
                .ForMember(dest => dest.Identification, opt => opt.MapFrom(src => src.Value))
-               //.ForMember(dest => dest.IdentificationEffectiveDate, opt => opt.ConvertUsing(new DateTimeOffsetConverter(), src => src.EffectiveDate))
-               //.ForMember(dest => dest.IdentificationExpirationDate, opt => opt.ConvertUsing(new DateTimeOffsetConverter(), src => src.ExpirationDate))
+               .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
+               .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
+               .ForMember(dest => dest.SupplierTypeCode, opt => opt.MapFrom(src => src.TypeCode))
+               .ForMember(dest => dest.Date1, opt => opt.MapFrom<Identifier_Date1Resolver>())
+               .ForMember(dest => dest.Date2, opt => opt.MapFrom<Identifier_Date2Resolver>())
+               .ForMember(dest => dest.Date1Label, opt => opt.MapFrom<Identifier_Date1LabelResolver>())
+               .ForMember(dest => dest.Date2Label, opt => opt.MapFrom<Identifier_Date2LabelResolver>())
                .ForMember(dest => dest.IdentifierType, opt => opt.ConvertUsing(new PersonalIdentifierTypeConverter(), src => src.Type))
-               //.ForMember(dest => dest.IssuedBy, opt=>opt.ConvertUsing( new IssuedByConverter(), src => src.IssuedBy))
+               .ForMember(dest => dest.IssuedBy, opt=> opt.MapFrom(src => src.IssuedBy))
                .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => 0))
                .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1));
 
@@ -94,10 +99,10 @@ namespace  DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.Category, opt => opt.ConvertUsing(new AddressTypeConverter(), src => src.Type))
                  .ForMember(dest => dest.FullText, opt => opt.MapFrom<FullTextResolver>())
                  .ForMember(dest => dest.PostalCode, opt => opt.MapFrom(src => src.ZipPostalCode))
-                 .ForMember(dest => dest.EffectiveDate, opt => opt.ConvertUsing(new DateTimeOffsetConverter(),src => src.EffectiveDate))
-                 .ForMember(dest => dest.EndDate, opt => opt.ConvertUsing(new DateTimeOffsetConverter(), src => src.EndDate))
-                 .ForMember(dest => dest.EffectiveDateLabel, opt => opt.MapFrom(src => "Effective Date"))
-                 .ForMember(dest => dest.EndDateLabel, opt => opt.MapFrom(src => "End Date"))
+                 //.ForMember(dest => dest.Date1, opt => opt.MapFrom<Date1Resolver>())
+                 //.ForMember(dest => dest.Date2, opt => opt.MapFrom<Date2Resolver>())
+                 //.ForMember(dest => dest.Date1Label, opt => opt.MapFrom<Date1LabelResolver>())
+                 //.ForMember(dest => dest.Date2Label, opt => opt.MapFrom<Date2LabelResolver>())
                  .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => 0))
                  .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1));
 
@@ -136,10 +141,10 @@ namespace  DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.MiddleName, opt => opt.MapFrom(src => src.MiddleName))
                  .ForMember(dest => dest.FullName, opt => opt.MapFrom<FullNameResolver>())
                  .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new NameCategoryConverter(), src => src.Type))
-                 .ForMember(dest => dest.EffectiveDate, opt => opt.ConvertUsing(new DateTimeOffsetConverter(), src => src.EffectiveDate))
-                 .ForMember(dest => dest.EndDate, opt => opt.ConvertUsing(new DateTimeOffsetConverter(), src => src.EndDate))
-                 .ForMember(dest => dest.EffectiveDateLabel, opt => opt.MapFrom(src => "Effective Date"))
-                 .ForMember(dest => dest.EndDateLabel, opt => opt.MapFrom(src => "End Date"))
+                 //.ForMember(dest => dest.EffectiveDate, opt => opt.ConvertUsing(new DateTimeOffsetConverter(), src => src.EffectiveDate))
+                 //.ForMember(dest => dest.EndDate, opt => opt.ConvertUsing(new DateTimeOffsetConverter(), src => src.EndDate))
+                 //.ForMember(dest => dest.EffectiveDateLabel, opt => opt.MapFrom(src => "Effective Date"))
+                 //.ForMember(dest => dest.EndDateLabel, opt => opt.MapFrom(src => "End Date"))
                  .ForMember(dest => dest.Comments, opt => opt.MapFrom(src => src.Description))
                  .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => 0))
                  .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1));

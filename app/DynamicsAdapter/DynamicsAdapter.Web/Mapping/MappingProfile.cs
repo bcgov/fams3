@@ -29,15 +29,15 @@ namespace  DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.ReferenceDates, opt => opt.MapFrom<ReferenceDateResolver>())
                  .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new IdentifierTypeConverter(), src => src.IdentifierType));
 
-            CreateMap<SSG_Identifier, PersonalIdentifier>()
-                 .ConstructUsing(m => new PersonalIdentifierActual() { })
-                 .ForMember(dest => dest.Value, opt => opt.MapFrom(src => src.Identification))
-                 .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
-                 .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
-                 .ForMember(dest => dest.TypeCode, opt => opt.MapFrom(src => src.SupplierTypeCode))
-                 .ForMember(dest => dest.IssuedBy, opt => opt.MapFrom(src => src.IssuedBy))
-                 .ForMember(dest => dest.ReferenceDates, opt => opt.MapFrom<PersonalIdentifier_ReferenceDateResolver>())
-                 .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new IdentifierTypeConverter(), src => src.IdentifierType));
+            //CreateMap<SSG_Identifier, PersonalIdentifier>()
+            //     .ConstructUsing(m => new PersonalIdentifierActual() { })
+            //     .ForMember(dest => dest.Value, opt => opt.MapFrom(src => src.Identification))
+            //     .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
+            //     .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
+            //     .ForMember(dest => dest.TypeCode, opt => opt.MapFrom(src => src.SupplierTypeCode))
+            //     .ForMember(dest => dest.IssuedBy, opt => opt.MapFrom(src => src.IssuedBy))
+            //     .ForMember(dest => dest.ReferenceDates, opt => opt.MapFrom<PersonalIdentifier_ReferenceDateResolver>())
+            //     .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new IdentifierTypeConverter(), src => src.IdentifierType));
 
             CreateMap<PersonalIdentifierActual, SSG_Identifier>()
                .ForMember(dest => dest.Identification, opt => opt.MapFrom(src => src.Value))

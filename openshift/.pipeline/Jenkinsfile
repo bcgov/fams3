@@ -18,7 +18,7 @@ def DOMAIN = "pathfinder.gov.bc.ca"
 def SUBDOMAIN = "fams3"
 
 def GIT_URI = "https://github.com/bcgov/fams3.git"
-def GIT_REF = "master"
+def GIT_REF = "fix/assemble-deps"
 
 def PRIVATE_GIT_URI = "git@github.com:bcgov-c/fams3-openshift.git"
 def PRIVATE_GIT_REF = "master"

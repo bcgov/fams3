@@ -137,7 +137,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                     {
                         new PhoneNumberActual ()
                         {
-                            PhoneNumber1 = "4005678900"
+                            PhoneNumber = "4005678900"
                         }
                     },
                     Names = new List<NameActual>()

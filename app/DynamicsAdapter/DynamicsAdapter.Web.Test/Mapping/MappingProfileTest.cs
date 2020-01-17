@@ -7,6 +7,7 @@ using AutoMapper;
 using DynamicsAdapter.Web.Mapping;
 using DynamicsAdapter.Web.PersonSearch;
 using DynamicsAdapter.Web.PersonSearch.Models;
+using DynamicsAdapter.Web.SearchRequest.Models;
 using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.Name;
@@ -35,7 +36,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
         }
 
         [Test]
-        public void SSG_Identifier_should_map_to_PersonalIdentifierActual_correctly()
+        public void SSG_Identifier_should_map_to_PersonalIdentifierRequest_correctly()
         {
             SSG_Identifier sSG_Identifier = new SSG_Identifier()
             {
@@ -51,7 +52,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 Description = "description",
                 Notes = "note"
             };
-            PersonalIdentifierActual identifier = _mapper.Map<PersonalIdentifierActual>(sSG_Identifier);
+            PersonalIdentifierRequest identifier = _mapper.Map<PersonalIdentifierRequest>(sSG_Identifier);
             Assert.AreEqual("testIdentification", identifier.Value);
             Assert.AreEqual("note", identifier.Notes);
             Assert.AreEqual("description", identifier.Description);
@@ -97,8 +98,8 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 CountryRegion = "canada",
                 ZipPostalCode = "p3p3p3",
                 SuppliedBy = "Employer",
-                EffectiveDate = new DateTimeOffset(new DateTime(2001,1,1)),
-                EndDate= new DateTimeOffset(new DateTime(2002,2,1))
+                EffectiveDate =new DateTime(2001,1,1),
+                EndDate= new DateTime(2002,2,1)
             };
             SSG_Address ssg_addr = _mapper.Map<SSG_Address>(address);
             Assert.AreEqual("AddressLine1", ssg_addr.AddressLine1);
@@ -113,10 +114,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual("AddressLine1 AddressLine2 AddressLine3 testCity Manitoba canada p3p3p3", ssg_addr.FullText);
             Assert.AreEqual(1, ssg_addr.StatusCode);
             Assert.AreEqual(0, ssg_addr.StateCode);
-            //Assert.AreEqual(new DateTime(2001, 1, 1), ssg_addr.EffectiveDate);
-            //Assert.AreEqual(new DateTime(2002, 2, 1), ssg_addr.EndDate);
-            //Assert.AreEqual("Effective Date", ssg_addr.EffectiveDateLabel);
-            //Assert.AreEqual("End Date", ssg_addr.EndDateLabel);
+
         }
 
         [Test]
@@ -296,8 +294,8 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 Notes = "notes",
                 TypeCode="BCDL",
                 ReferenceDates = new List<ReferenceDateActual>() {
-                    new ReferenceDateActual(){Index=0, Key="startDate", Value=new DateTimeOffset(new DateTime(2012,1,1)) },
-                    new ReferenceDateActual(){Index=1, Key="endDate", Value=new DateTimeOffset(new DateTime(2014,1,1)) },
+                    new ReferenceDateActual(){Index=0, Key="startDate", Value=new DateTime(2012,1,1) },
+                    new ReferenceDateActual(){Index=1, Key="endDate", Value=new DateTime(2014,1,1) },
                 }
             };
             SSG_Identifier sSG_Identifier = _mapper.Map<SSG_Identifier>(identifier);
@@ -318,11 +316,10 @@ namespace DynamicsAdapter.Web.Test.Mapping
         [Test]
         public void PersonalPhoneNumber_should_map_to_SSG_PhoneNumber_correctly()
         {
-            PhoneNumber phoneNumber = new PhoneNumberActual()
-            {
-               
-                Date = new DateTimeOffset(new DateTime(2003, 3, 3)),
-                PhoneNumber1 = "6904005678",
+            PhoneNumberActual phoneNumber = new PhoneNumberActual()
+            {               
+                Date = new DateTime(2003, 3, 3),
+                PhoneNumber = "6904005678",
                 DateType = "Effective Date",
                 PhoneNumberType = "Home",
                 SuppliedBy = "ICBC"
@@ -338,26 +335,6 @@ namespace DynamicsAdapter.Web.Test.Mapping
         }
 
         [Test]
-        public void SSG_PhoneNumber_should_map_to_PersonalPhoneNumber_correctly()
-        {
-            SSG_PhoneNumber ssg_PhoneNumber = new SSG_PhoneNumber()
-            {
-                
-                DateData = new DateTime(2001, 1, 1),
-                DateType = "Effective Date",
-                TelePhoneNumber  = "6504005678",
-                TelephoneNumberType = TelephoneNumberType.Cell.Value,
-                InformationSource = InformationSourceType.ICBC.Value
-
-            };
-            PhoneNumber phoneNumber = _mapper.Map<PhoneNumber>(ssg_PhoneNumber);
-            Assert.AreEqual("Effective Date", phoneNumber.DateType);
-            Assert.AreEqual(new DateTimeOffset(new DateTime(2001, 1, 1)), phoneNumber.Date);
-            Assert.AreEqual(InformationSourceType.ICBC.Name, phoneNumber.SuppliedBy);
-            Assert.AreEqual(TelephoneNumberType.Cell.Name, phoneNumber.PhoneNumberType);
-        }
-
-        [Test]
         public void Name_should_map_to_SSG_Name_correctly()
         {
             var name = new NameActual()
@@ -366,8 +343,8 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 LastName = "LastName",
                 MiddleName = "MiddleName",
                 Type = "Legal Name",
-                EffectiveDate = new DateTimeOffset(new DateTime(2001, 1, 1)),
-                EndDate = new DateTimeOffset(new DateTime(2002, 2, 1)),
+                EffectiveDate = new DateTime(2001, 1, 1),
+                EndDate = new DateTime(2002, 2, 1),
                 Description = "test name"
             };
             SSG_Aliase ssg_name = _mapper.Map<SSG_Aliase>(name);

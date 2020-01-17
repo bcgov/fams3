@@ -4,7 +4,7 @@ using System.ComponentModel;
 
 namespace BcGov.Fams3.SearchApi.Contracts.Person
 {
-    public class PersonalIdentifier : PersonFoundBase
+    public class PersonalIdentifier : PersonalInfo
     {
         [Description("The value of the identifier")]
         public string Value { get; set; }

@@ -29,7 +29,7 @@ namespace  DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.ReferenceDates, opt => opt.MapFrom<PersonalIdentifier_ReferenceDateResolver>())
                  .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new IdentifierTypeConverter(), src => src.IdentifierType));
 
-            CreateMap<PersonFoundBase, DynamicsEntity>()
+            CreateMap<PersonalInfo, DynamicsEntity>()
                .ForMember(dest => dest.Date1, opt => opt.MapFrom<Date1Resolver>())
                .ForMember(dest => dest.Date2, opt => opt.MapFrom<Date2Resolver>())
                .ForMember(dest => dest.Date1Label, opt => opt.MapFrom<Date1LabelResolver>())
@@ -44,7 +44,7 @@ namespace  DynamicsAdapter.Web.Mapping
                .ForMember(dest => dest.SupplierTypeCode, opt => opt.MapFrom(src => src.TypeCode))
                .ForMember(dest => dest.IdentifierType, opt => opt.ConvertUsing(new PersonalIdentifierTypeConverter(), src => src.Type))
                .ForMember(dest => dest.IssuedBy, opt => opt.MapFrom(src => src.IssuedBy))
-               .IncludeBase<PersonFoundBase, DynamicsEntity>();
+               .IncludeBase<PersonalInfo, DynamicsEntity>();
 
             CreateMap<SSG_SearchApiRequest, PersonSearchRequest>()
                  .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.PersonGivenName))

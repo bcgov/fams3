@@ -120,7 +120,7 @@
     "PersonalIdentifier": {
       "allOf": [
         {
-          "$ref": "#/definitions/PersonFoundBase"
+          "$ref": "#/definitions/PersonalInfo"
         },
         {
           "type": "object",
@@ -190,8 +190,9 @@
         "BCHydroBP"
       ]
     },
-    "PersonFoundBase": {
+    "PersonalInfo": {
       "type": "object",
+      "x-abstract": true,
       "properties": {
         "referenceDates": {
           "type": "array",

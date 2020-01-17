@@ -20,33 +20,33 @@ namespace DynamicsAdapter.Web.Mapping
         }
     }
 
-    public class Date1Resolver : IValueResolver<PersonFoundBase, DynamicsEntity, DateTime?>
+    public class Date1Resolver : IValueResolver<PersonalInfo, DynamicsEntity, DateTime?>
     {
-        public DateTime? Resolve(PersonFoundBase source, DynamicsEntity dest, DateTime? date1, ResolutionContext context)
+        public DateTime? Resolve(PersonalInfo source, DynamicsEntity dest, DateTime? date1, ResolutionContext context)
         {   
             return source.ReferenceDates?.SingleOrDefault(m => m.Index == 0) ?.Value.DateTime ;
         }
     }
 
-    public class Date1LabelResolver : IValueResolver<PersonFoundBase, DynamicsEntity, string>
+    public class Date1LabelResolver : IValueResolver<PersonalInfo, DynamicsEntity, string>
     {
-        public string Resolve(PersonFoundBase source, DynamicsEntity dest, string label, ResolutionContext context)
+        public string Resolve(PersonalInfo source, DynamicsEntity dest, string label, ResolutionContext context)
         {
             return source.ReferenceDates?.SingleOrDefault(m => m.Index == 0)?.Key;
         }
     }
 
-    public class Date2Resolver : IValueResolver<PersonFoundBase, DynamicsEntity, DateTime?>
+    public class Date2Resolver : IValueResolver<PersonalInfo, DynamicsEntity, DateTime?>
     {
-        public DateTime? Resolve(PersonFoundBase source, DynamicsEntity dest, DateTime? date2, ResolutionContext context)
+        public DateTime? Resolve(PersonalInfo source, DynamicsEntity dest, DateTime? date2, ResolutionContext context)
         {
             return source.ReferenceDates?.SingleOrDefault(m => m.Index == 1)?.Value.DateTime;
         }
     }
 
-    public class Date2LabelResolver : IValueResolver<PersonFoundBase, DynamicsEntity, string>
+    public class Date2LabelResolver : IValueResolver<PersonalInfo, DynamicsEntity, string>
     {
-        public string Resolve(PersonFoundBase source, DynamicsEntity dest, string label, ResolutionContext context)
+        public string Resolve(PersonalInfo source, DynamicsEntity dest, string label, ResolutionContext context)
         {
             return source.ReferenceDates?.SingleOrDefault(m => m.Index == 1)?.Key;
         }

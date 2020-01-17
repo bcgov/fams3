@@ -57,4 +57,29 @@ namespace DynamicsAdapter.Web.Mapping
             return source.ReferenceDates?.SingleOrDefault(m => m.Index == 1)?.Key;
         }
     }
+
+    public class ReferenceDateResolver : IValueResolver<SSG_Identifier, PersonalIdentifier, IEnumerable<ReferenceDateActual>>
+    {
+        public IEnumerable<ReferenceDateActual> Resolve(SSG_Identifier source, PersonalIdentifier dest, IEnumerable<ReferenceDateActual> dates, ResolutionContext context)
+        {
+            List<ReferenceDateActual> referDates = new List<ReferenceDateActual>();
+            if(source.Date1 != null)
+            {
+                referDates.Add(new ReferenceDateActual() { Index = 0, Key = source.Date1Label, Value = new DateTimeOffset((DateTime)source.Date1) });
+            }
+            if (source.Date2 != null)
+            {
+                referDates.Add(new ReferenceDateActual() { Index = 1, Key = source.Date2Label, Value = new DateTimeOffset((DateTime)source.Date2) });
+            }
+            return referDates;
+        }
+    }
+
+    public class PersonalIdentifier_ReferenceDateResolver : IValueResolver<SSG_Identifier, PersonalIdentifier, IEnumerable<ReferenceDate>>
+    {
+        public IEnumerable<ReferenceDate> Resolve(SSG_Identifier source, PersonalIdentifier dest, IEnumerable<ReferenceDate> dates, ResolutionContext context)
+        {
+            return null;
+        }
+    }
 }

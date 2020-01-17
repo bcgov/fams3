@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -34,7 +35,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
         }
 
         [Test]
-        public void SSG_Identifier_should_map_to_PersonalIdentifier_correctly()
+        public void SSG_Identifier_should_map_to_PersonalIdentifierActual_correctly()
         {
             SSG_Identifier sSG_Identifier = new SSG_Identifier()
             {
@@ -50,14 +51,13 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 Description = "description",
                 Notes = "note"
             };
-            PersonalIdentifier identifier = _mapper.Map<PersonalIdentifier>(sSG_Identifier);
+            PersonalIdentifierActual identifier = _mapper.Map<PersonalIdentifierActual>(sSG_Identifier);
             Assert.AreEqual("testIdentification", identifier.Value);
             Assert.AreEqual("note", identifier.Notes);
             Assert.AreEqual("description", identifier.Description);
             Assert.AreEqual("BC", identifier.IssuedBy);
             Assert.AreEqual("TypeCode", identifier.TypeCode);
-            //Assert.AreEqual(new DateTimeOffset(new DateTime(2001, 1, 1)), identifier.EffectiveDate);
-            //Assert.AreEqual(new DateTimeOffset(new DateTime(2001, 1, 1)), identifier.ExpirationDate);
+            Assert.AreEqual(2, identifier.ReferenceDates.Count());
             Assert.AreEqual(PersonalIdentifierType.SocialInsuranceNumber, identifier.Type);
            
         }

@@ -143,6 +143,8 @@ objects:
               value: "${DOTNET_TOOLS}"
             - name: DOTNET_INCREMENTAL
               value: "true"
+            - name: SSL_CERT_DIR
+              value: /dev/null
       output:
         to:
           kind: ImageStreamTag

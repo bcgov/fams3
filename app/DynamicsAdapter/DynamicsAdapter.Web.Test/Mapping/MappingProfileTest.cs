@@ -39,14 +39,23 @@ namespace DynamicsAdapter.Web.Test.Mapping
             SSG_Identifier sSG_Identifier = new SSG_Identifier()
             {
                 Identification = "testIdentification",
-                //IdentificationEffectiveDate = new DateTime(2001, 1, 1),
-                //IdentificationExpirationDate = new DateTime(2001, 1, 1),
+                Date1 = new DateTime(2001, 1, 1),
+                Date1Label = "effectiveDate",
+                Date2 = new DateTime(2001, 1, 1),
+                Date2Label = "expiredDate",
                 IdentifierType = IdentificationType.SocialInsuranceNumber.Value,
-                InformationSource = InformationSourceType.Employer.Value
-
+                InformationSource = InformationSourceType.ICBC.Value,
+                IssuedBy = "BC",
+                SupplierTypeCode = "TypeCode",
+                Description = "description",
+                Notes = "note"
             };
             PersonalIdentifier identifier = _mapper.Map<PersonalIdentifier>(sSG_Identifier);
             Assert.AreEqual("testIdentification", identifier.Value);
+            Assert.AreEqual("note", identifier.Notes);
+            Assert.AreEqual("description", identifier.Description);
+            Assert.AreEqual("BC", identifier.IssuedBy);
+            Assert.AreEqual("TypeCode", identifier.TypeCode);
             //Assert.AreEqual(new DateTimeOffset(new DateTime(2001, 1, 1)), identifier.EffectiveDate);
             //Assert.AreEqual(new DateTimeOffset(new DateTime(2001, 1, 1)), identifier.ExpirationDate);
             Assert.AreEqual(PersonalIdentifierType.SocialInsuranceNumber, identifier.Type);
@@ -276,20 +285,31 @@ namespace DynamicsAdapter.Web.Test.Mapping
         }
 
         [Test]
-        public void PersonalIdentifier_should_map_to_SSG_Identifier_correctly()
+        public void PersonalIdentifierActual_should_map_to_SSG_Identifier_correctly()
         {
-            PersonalIdentifier identifier = new PersonalIdentifierActual()
+            PersonalIdentifierActual identifier = new PersonalIdentifierActual()
             {
                 Value = "1111111",
-                //ExpirationDate = new DateTimeOffset(new DateTime(2003, 3, 3)),
-                //EffectiveDate = new DateTimeOffset(new DateTime(2002, 2, 2)),
                 Type = PersonalIdentifierType.DriverLicense,
-                IssuedBy = "BC"
+                IssuedBy = "BC",
+                Description = "description",
+                Notes = "notes",
+                TypeCode="BCDL",
+                ReferenceDates = new List<ReferenceDateActual>() {
+                    new ReferenceDateActual(){Index=0, Key="startDate", Value=new DateTimeOffset(new DateTime(2012,1,1)) },
+                    new ReferenceDateActual(){Index=1, Key="endDate", Value=new DateTimeOffset(new DateTime(2014,1,1)) },
+                }
             };
             SSG_Identifier sSG_Identifier = _mapper.Map<SSG_Identifier>(identifier);
             Assert.AreEqual("1111111", sSG_Identifier.Identification);
-            //Assert.AreEqual(new DateTime(2002, 2, 2), sSG_Identifier.IdentificationEffectiveDate);
-            //Assert.AreEqual(new DateTime(2003, 3, 3), sSG_Identifier.IdentificationExpirationDate);
+            Assert.AreEqual("description", sSG_Identifier.Description);
+            Assert.AreEqual("notes", sSG_Identifier.Notes);
+            Assert.AreEqual("BCDL", sSG_Identifier.SupplierTypeCode);
+            Assert.AreEqual("BC", sSG_Identifier.IssuedBy);
+            Assert.AreEqual(new DateTime(2012, 1, 1), sSG_Identifier.Date1);
+            Assert.AreEqual(new DateTime(2014, 1, 1), sSG_Identifier.Date2);
+            Assert.AreEqual("startDate", sSG_Identifier.Date1Label);
+            Assert.AreEqual("endDate", sSG_Identifier.Date2Label);
             Assert.AreEqual(IdentificationType.DriverLicense.Value, sSG_Identifier.IdentifierType);
             Assert.AreEqual(1, sSG_Identifier.StatusCode);
             Assert.AreEqual(0, sSG_Identifier.StateCode);

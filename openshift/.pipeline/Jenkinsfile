@@ -21,7 +21,7 @@ def GIT_URI = "https://github.com/bcgov/fams3.git"
 def GIT_REF = "fix/assemble-deps"
 
 def PRIVATE_GIT_URI = "git@github.com:bcgov-c/fams3-openshift.git"
-def PRIVATE_GIT_REF = "master"
+def PRIVATE_GIT_REF = "fix/assemble-deps"
 def PRIVATE_GIT_SECRET = "fams3-github-key"
 
 def BUILD_MEMORY = "1Gi"

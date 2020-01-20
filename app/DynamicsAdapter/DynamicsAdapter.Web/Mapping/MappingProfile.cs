@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using DynamicsAdapter.Web.PersonSearch.Models;
-using DynamicsAdapter.Web.SearchRequest.Models;
 using Fams3Adapter.Dynamics;
 using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.Identifier;
@@ -22,7 +21,6 @@ namespace  DynamicsAdapter.Web.Mapping
         public MappingProfile()
         {
             CreateMap<SSG_Identifier, PersonalIdentifier>()
-                 .ConstructUsing(m => new PersonalIdentifierRequest() { })
                  .ForMember(dest => dest.Value, opt => opt.MapFrom(src => src.Identification))
                  .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
                  .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))

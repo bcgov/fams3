@@ -7,7 +7,6 @@ using AutoMapper;
 using DynamicsAdapter.Web.Mapping;
 using DynamicsAdapter.Web.PersonSearch;
 using DynamicsAdapter.Web.PersonSearch.Models;
-using DynamicsAdapter.Web.SearchRequest.Models;
 using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.Name;
@@ -36,7 +35,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
         }
 
         [Test]
-        public void SSG_Identifier_should_map_to_PersonalIdentifierRequest_correctly()
+        public void SSG_Identifier_should_map_to_PersonalIdentifier_correctly()
         {
             SSG_Identifier sSG_Identifier = new SSG_Identifier()
             {
@@ -52,7 +51,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 Description = "description",
                 Notes = "note"
             };
-            PersonalIdentifierRequest identifier = _mapper.Map<PersonalIdentifierRequest>(sSG_Identifier);
+            PersonalIdentifier identifier = _mapper.Map<PersonalIdentifier>(sSG_Identifier);
             Assert.AreEqual("testIdentification", identifier.Value);
             Assert.AreEqual("note", identifier.Notes);
             Assert.AreEqual("description", identifier.Description);

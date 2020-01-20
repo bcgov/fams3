@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using DynamicsAdapter.Web.PersonSearch.Models;
-using DynamicsAdapter.Web.SearchRequest.Models;
 using Fams3Adapter.Dynamics;
 using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.Identifier;
@@ -60,11 +59,11 @@ namespace DynamicsAdapter.Web.Mapping
             List<ReferenceDate> referDates = new List<ReferenceDate>();
             if (source.Date1 != null)
             {
-                referDates.Add(new ReferenceDateRequest() { Index = 0, Key = source.Date1Label, Value = new DateTimeOffset((DateTime)source.Date1) });
+                referDates.Add(new ReferenceDate() { Index = 0, Key = source.Date1Label, Value = new DateTimeOffset((DateTime)source.Date1) });
             }
             if (source.Date2 != null)
             {
-                referDates.Add(new ReferenceDateRequest() { Index = 1, Key = source.Date2Label, Value = new DateTimeOffset((DateTime)source.Date2) });
+                referDates.Add(new ReferenceDate() { Index = 1, Key = source.Date2Label, Value = new DateTimeOffset((DateTime)source.Date2) });
             }
             return referDates;
         }

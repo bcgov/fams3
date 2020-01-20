@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using BcGov.Fams3.SearchApi.Contracts.Person;
 using NUnit.Framework;
 using SearchApi.Web.Controllers;
 
@@ -11,7 +12,7 @@ namespace SearchApi.Web.Test.People
         public void With_args_it_should_create()
         {
 
-            var sut = new PersonSearchRequest("firstName", "lastName", new DateTime(2001, 1, 12), new List<SearchApiPersonalIdentifier>(), new List<SearchApiAddress>(), new List<SearchApiPhoneNumber>(), new List<SearchApiName>() );
+            var sut = new PersonSearchRequest("firstName", "lastName", new DateTime(2001, 1, 12), new List<PersonalIdentifier>(), new List<SearchApiAddress>(), new List<SearchApiPhoneNumber>(), new List<SearchApiName>() );
 
             Assert.AreEqual("firstName", sut.FirstName);
             Assert.AreEqual("lastName", sut.LastName);

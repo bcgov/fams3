@@ -18,7 +18,7 @@ namespace SearchApi.Web.Controllers
             string firstName, 
             string lastName, 
             DateTime? dateOfBirth, 
-            IEnumerable<SearchApiPersonalIdentifier> identifiers,
+            IEnumerable<PersonalIdentifier> identifiers,
             IEnumerable<SearchApiAddress> addresses,
             IEnumerable<SearchApiPhoneNumber> phoneNumbers,
             IEnumerable<SearchApiName> names )
@@ -45,25 +45,6 @@ namespace SearchApi.Web.Controllers
         public IEnumerable<PhoneNumber> PhoneNumbers { get; set; }
         [Description("A collection of names")]
         public IEnumerable<Name> Names { get; set; }
-    }
-
-
-    public class SearchApiPersonalIdentifier : PersonalIdentifier
-    {
-        public string Value { get; set; }
-        public PersonalIdentifierType Type { get; set; }
-        public string TypeCode { get; set; }
-        public string IssuedBy { get; set; }
-        public string Description { get; set; }
-        public string Notes { get; set; }
-        public IEnumerable<ReferenceDate> ReferenceDates { get; }
-    }
-
-    public class SearchApiReferenceDateSample : ReferenceDate
-    {
-        public int Index { get; set; }
-        public string Key { get; set; }
-        public DateTime Value { get; set; }
     }
 
     public class SearchApiAddress : Address

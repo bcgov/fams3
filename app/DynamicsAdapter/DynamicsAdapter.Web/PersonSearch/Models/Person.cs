@@ -6,22 +6,7 @@ using System.Threading.Tasks;
 
 namespace DynamicsAdapter.Web.PersonSearch.Models
 {
-    public class BaseActual
-    {
-        public IEnumerable<ReferenceDateActual> ReferenceDates { get; set; }
-    }
-
-    public class PersonalIdentifierActual : BaseActual
-    {
-        public string Value { get; set; }
-        public PersonalIdentifierType Type { get; set; }
-        public string TypeCode { get; set; }
-        public string IssuedBy { get; set; }
-        public string Description { get; set; }
-        public string Notes { get; set; }
-    }
-
-    public class PhoneNumberActual : BaseActual
+    public class PhoneNumberActual 
     {
         public string SuppliedBy { get; set; }
         public DateTime? Date { get; set; }
@@ -30,7 +15,7 @@ namespace DynamicsAdapter.Web.PersonSearch.Models
         public string PhoneNumberType { get; set; }
     }
 
-    public class AddressActual : BaseActual
+    public class AddressActual 
     {
         public string Type { get; set; }
         public string AddressLine1 { get; set; }
@@ -45,7 +30,7 @@ namespace DynamicsAdapter.Web.PersonSearch.Models
         public DateTime? EndDate { get; set; }
     }
 
-    public class NameActual : BaseActual
+    public class NameActual 
     {
         public string Type { get; set; }
 
@@ -61,19 +46,13 @@ namespace DynamicsAdapter.Web.PersonSearch.Models
         public string Description { get; set; }
     }
 
-    public class ReferenceDateActual 
-    {
-        public int Index { get; set; }
-        public string Key { get; set; }
-        public DateTime Value { get; set; }
-    }
 
     public class Person
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public DateTime? DateOfBirth { get; set; }
-        public IEnumerable<PersonalIdentifierActual> Identifiers { get; set; }
+        public IEnumerable<PersonalIdentifier> Identifiers { get; set; }
 
         public IEnumerable<PhoneNumberActual> PhoneNumbers { get; set; }
         public IEnumerable<AddressActual> Addresses { get; set; }

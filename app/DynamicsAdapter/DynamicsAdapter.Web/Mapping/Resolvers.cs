@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using DynamicsAdapter.Web.PersonSearch.Models;
-using DynamicsAdapter.Web.SearchRequest.Models;
 using Fams3Adapter.Dynamics;
 using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.Identifier;
@@ -21,33 +20,33 @@ namespace DynamicsAdapter.Web.Mapping
         }
     }
 
-    public class Date1Resolver : IValueResolver<BaseActual, DynamicsEntity, DateTime?>
+    public class Date1Resolver : IValueResolver<PersonalInfo, DynamicsEntity, DateTime?>
     {
-        public DateTime? Resolve(BaseActual source, DynamicsEntity dest, DateTime? date1, ResolutionContext context)
+        public DateTime? Resolve(PersonalInfo source, DynamicsEntity dest, DateTime? date1, ResolutionContext context)
         {   
-            return source.ReferenceDates?.SingleOrDefault(m => m.Index == 0) ?.Value ;
+            return source.ReferenceDates?.SingleOrDefault(m => m.Index == 0) ?.Value.DateTime ;
         }
     }
 
-    public class Date1LabelResolver : IValueResolver<BaseActual, DynamicsEntity, string>
+    public class Date1LabelResolver : IValueResolver<PersonalInfo, DynamicsEntity, string>
     {
-        public string Resolve(BaseActual source, DynamicsEntity dest, string label, ResolutionContext context)
+        public string Resolve(PersonalInfo source, DynamicsEntity dest, string label, ResolutionContext context)
         {
             return source.ReferenceDates?.SingleOrDefault(m => m.Index == 0)?.Key;
         }
     }
 
-    public class Date2Resolver : IValueResolver<BaseActual, DynamicsEntity, DateTime?>
+    public class Date2Resolver : IValueResolver<PersonalInfo, DynamicsEntity, DateTime?>
     {
-        public DateTime? Resolve(BaseActual source, DynamicsEntity dest, DateTime? date2, ResolutionContext context)
+        public DateTime? Resolve(PersonalInfo source, DynamicsEntity dest, DateTime? date2, ResolutionContext context)
         {
-            return source.ReferenceDates?.SingleOrDefault(m => m.Index == 1)?.Value;
+            return source.ReferenceDates?.SingleOrDefault(m => m.Index == 1)?.Value.DateTime;
         }
     }
 
-    public class Date2LabelResolver : IValueResolver<BaseActual, DynamicsEntity, string>
+    public class Date2LabelResolver : IValueResolver<PersonalInfo, DynamicsEntity, string>
     {
-        public string Resolve(BaseActual source, DynamicsEntity dest, string label, ResolutionContext context)
+        public string Resolve(PersonalInfo source, DynamicsEntity dest, string label, ResolutionContext context)
         {
             return source.ReferenceDates?.SingleOrDefault(m => m.Index == 1)?.Key;
         }
@@ -60,11 +59,11 @@ namespace DynamicsAdapter.Web.Mapping
             List<ReferenceDate> referDates = new List<ReferenceDate>();
             if (source.Date1 != null)
             {
-                referDates.Add(new ReferenceDateRequest() { Index = 0, Key = source.Date1Label, Value = new DateTimeOffset((DateTime)source.Date1) });
+                referDates.Add(new ReferenceDate() { Index = 0, Key = source.Date1Label, Value = new DateTimeOffset((DateTime)source.Date1) });
             }
             if (source.Date2 != null)
             {
-                referDates.Add(new ReferenceDateRequest() { Index = 1, Key = source.Date2Label, Value = new DateTimeOffset((DateTime)source.Date2) });
+                referDates.Add(new ReferenceDate() { Index = 1, Key = source.Date2Label, Value = new DateTimeOffset((DateTime)source.Date2) });
             }
             return referDates;
         }

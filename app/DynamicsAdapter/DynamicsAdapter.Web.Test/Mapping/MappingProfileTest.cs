@@ -7,7 +7,6 @@ using AutoMapper;
 using DynamicsAdapter.Web.Mapping;
 using DynamicsAdapter.Web.PersonSearch;
 using DynamicsAdapter.Web.PersonSearch.Models;
-using DynamicsAdapter.Web.SearchRequest.Models;
 using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.Name;
@@ -36,7 +35,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
         }
 
         [Test]
-        public void SSG_Identifier_should_map_to_PersonalIdentifierRequest_correctly()
+        public void SSG_Identifier_should_map_to_PersonalIdentifier_correctly()
         {
             SSG_Identifier sSG_Identifier = new SSG_Identifier()
             {
@@ -52,7 +51,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 Description = "description",
                 Notes = "note"
             };
-            PersonalIdentifierRequest identifier = _mapper.Map<PersonalIdentifierRequest>(sSG_Identifier);
+            PersonalIdentifier identifier = _mapper.Map<PersonalIdentifier>(sSG_Identifier);
             Assert.AreEqual("testIdentification", identifier.Value);
             Assert.AreEqual("note", identifier.Notes);
             Assert.AreEqual("description", identifier.Description);
@@ -224,10 +223,10 @@ namespace DynamicsAdapter.Web.Test.Mapping
                     FirstName = "firstName",
                     LastName = "lastName",
                     DateOfBirth = new DateTime(2019, 3, 5),
-                    Identifiers = new PersonalIdentifierActual[]
+                    Identifiers = new PersonalIdentifier[]
                     {
-                        new PersonalIdentifierActual(){ },
-                        new PersonalIdentifierActual(){ }
+                        new PersonalIdentifier(){ },
+                        new PersonalIdentifier(){ }
                     },
                     Addresses = new AddressActual[]
                     {
@@ -265,10 +264,10 @@ namespace DynamicsAdapter.Web.Test.Mapping
                     FirstName = "firstName",
                     LastName = "lastName",
                     DateOfBirth = new DateTime(2019, 3, 5),
-                    Identifiers = new PersonalIdentifierActual[]
+                    Identifiers = new PersonalIdentifier[]
                     {
-                        new PersonalIdentifierActual(){ },
-                        new PersonalIdentifierActual(){ }
+                        new PersonalIdentifier(){ },
+                        new PersonalIdentifier(){ }
                     },
                     Addresses = null
                 }
@@ -284,7 +283,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
         [Test]
         public void PersonalIdentifierActual_should_map_to_SSG_Identifier_correctly()
         {
-            PersonalIdentifierActual identifier = new PersonalIdentifierActual()
+            PersonalIdentifier identifier = new PersonalIdentifier()
             {
                 Value = "1111111",
                 Type = PersonalIdentifierType.DriverLicense,
@@ -292,9 +291,9 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 Description = "description",
                 Notes = "notes",
                 TypeCode="BCDL",
-                ReferenceDates = new List<ReferenceDateActual>() {
-                    new ReferenceDateActual(){Index=0, Key="startDate", Value=new DateTime(2012,1,1) },
-                    new ReferenceDateActual(){Index=1, Key="endDate", Value=new DateTime(2014,1,1) },
+                ReferenceDates = new List<ReferenceDate>() {
+                    new ReferenceDate(){Index=0, Key="startDate", Value=new DateTime(2012,1,1) },
+                    new ReferenceDate(){Index=1, Key="endDate", Value=new DateTime(2014,1,1) },
                 }
             };
             SSG_Identifier sSG_Identifier = _mapper.Map<SSG_Identifier>(identifier);

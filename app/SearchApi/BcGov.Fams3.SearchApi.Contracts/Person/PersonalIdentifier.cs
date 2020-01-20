@@ -4,27 +4,23 @@ using System.ComponentModel;
 
 namespace BcGov.Fams3.SearchApi.Contracts.Person
 {
-    public interface PersonalIdentifier
+
+    public class PersonalIdentifier : PersonalInfo
     {
         [Description("The value of the identifier")]
-        string Value { get; }
+        public string Value { get; set; }
 
         [Description("The type of the identifier")]
-        PersonalIdentifierType Type { get; }
+        public PersonalIdentifierType Type { get; set; }
 
         [Description("The type code of the identifier directly from data provider")]
-        string TypeCode { get; }
+        public string TypeCode { get; set; }
 
         [Description("The issuer of the identifier")]
-        string IssuedBy { get; }
+        public string IssuedBy { get; set; }
 
         [Description("The description of the identifier")]
-        string Description { get; }
+        public string Notes { get; set; }
 
-        [Description("The description of the identifier")]
-        string Notes { get; }
-
-        [Description("The related dates information of the identifier")]
-        IEnumerable<ReferenceDate> ReferenceDates { get; }
     }
 }

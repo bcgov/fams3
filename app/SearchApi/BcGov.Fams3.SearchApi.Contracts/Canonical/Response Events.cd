@@ -1,0 +1,119 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="NameAndType">
+  <Interface Name="BcGov.Fams3.SearchApi.Contracts.PersonSearch.PersonSearchEvent">
+    <Position X="1" Y="0.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAA=</HashCode>
+      <FileName>PersonSearch\PersonSearchEvent.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="BcGov.Fams3.SearchApi.Contracts.PersonSearch.AdapterEvent">
+    <Position X="1.25" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>PersonSearch\AdapterEvent.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="BcGov.Fams3.SearchApi.Contracts.PersonSearch.PersonSearchAccepted">
+    <Position X="9.25" Y="2.25" Width="1.75" />
+    <InheritanceLine Type="BcGov.Fams3.SearchApi.Contracts.PersonSearch.PersonSearchAdapterEvent" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="6.125" Y="3.07" />
+        <Point X="6.125" Y="3.445" />
+        <Point X="8.875" Y="3.445" />
+        <Point X="8.875" Y="2.812" />
+        <Point X="9.25" Y="2.812" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>PersonSearch\PersonSearchAccepted.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="BcGov.Fams3.SearchApi.Contracts.PersonSearch.PersonSearchAdapterEvent" Collapsed="true">
+    <Position X="4.25" Y="2.25" Width="2.25" />
+    <InheritanceLine Type="BcGov.Fams3.SearchApi.Contracts.PersonSearch.AdapterEvent" ManuallyRouted="true" FixedToPoint="true">
+      <Path>
+        <Point X="2" Y="2.75" />
+        <Point X="2" Y="2.429" />
+        <Point X="3.125" Y="2.429" />
+        <Point X="3.125" Y="3.445" />
+        <Point X="4.562" Y="3.445" />
+        <Point X="4.562" Y="3.07" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>PersonSearch\PersonSearchAdapterEvent.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="BcGov.Fams3.SearchApi.Contracts.PersonSearch.PersonSearchCompleted">
+    <Position X="10.25" Y="0.5" Width="2" />
+    <InheritanceLine Type="BcGov.Fams3.SearchApi.Contracts.PersonSearch.PersonSearchAdapterEvent" FixedFromPoint="true">
+      <Path>
+        <Point X="6.5" Y="2.375" />
+        <Point X="6.792" Y="2.375" Type="JumpStart" />
+        <Point X="6.958" Y="2.375" Type="JumpEnd" />
+        <Point X="9.05" Y="2.375" />
+        <Point X="9.05" Y="2.183" />
+        <Point X="9.7" Y="2.183" />
+        <Point X="9.7" Y="2.05" />
+        <Point X="11.25" Y="2.05" />
+        <Point X="11.25" Y="1.733" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>PersonSearch\PersonSearchCompleted.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="BcGov.Fams3.SearchApi.Contracts.PersonSearch.PersonSearchFailed">
+    <Position X="7.75" Y="0.75" Width="1.75" />
+    <InheritanceLine Type="BcGov.Fams3.SearchApi.Contracts.PersonSearch.PersonSearchAdapterEvent" ManuallyRouted="true" FixedFromPoint="true">
+      <Path>
+        <Point X="6.5" Y="2.875" />
+        <Point X="6.875" Y="2.875" />
+        <Point X="6.875" Y="1.854" />
+        <Point X="7.461" Y="1.854" />
+        <Point X="7.461" Y="1.188" />
+        <Point X="7.75" Y="1.188" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>PersonSearch\PersonSearchFailed.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="BcGov.Fams3.SearchApi.Contracts.PersonSearch.PersonSearchOrdered">
+    <Position X="4" Y="0.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>PersonSearch\PersonSearchOrdered.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="BcGov.Fams3.SearchApi.Contracts.PersonSearch.PersonSearchRejected">
+    <Position X="8.25" Y="3.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>PersonSearch\PersonSearchRejected.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Reasons" />
+    </ShowAsCollectionAssociation>
+  </Interface>
+  <Interface Name="BcGov.Fams3.SearchApi.Contracts.PersonSearch.ProviderProfile">
+    <Position X="3.5" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>PersonSearch\ProviderProfile.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="BcGov.Fams3.SearchApi.Contracts.PersonSearch.ValidationResult" Collapsed="true">
+    <Position X="12.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAA=</HashCode>
+      <FileName>PersonSearch\ValidationResult.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace BcGov.Fams3.SearchApi.Contracts.Person
 {
-    public interface Name
+    public interface Name :BaseMetaData
     {
         [Description("The first name")]
         string FirstName { get; }
@@ -12,18 +13,16 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         string LastName { get; }
 
         [Description("The middle name")]
-        string MiddleName { get; }
+        string SecondName { get; }
+
+        [Description("The middle name")]
+        string ThirdName { get; }
 
         [Description("the type of the names")]
-        string Type { get; }
+        NameType Type { get; }
 
-        [Description("the name effective date")]
-        DateTime? EffectiveDate { get; }
+       
 
-        [Description("The name end date")]
-        DateTime? EndDate { get; }
-
-        [Description("The name description")]
-        string Description { get; }
+        string TypeCode { get;  }
     }
 }

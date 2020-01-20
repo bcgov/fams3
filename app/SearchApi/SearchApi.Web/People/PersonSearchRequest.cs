@@ -31,11 +31,28 @@ namespace SearchApi.Web.Controllers
             this.Names = names;
         }
 
-        [Description("The first name of the subject")]
+
+        [Description("The second name of the subject")]
+        public string SecondName { get; set; }
+        [Description("The third name of the subject")]
+        public string ThirdName { get; set; }
+        [Description("The hair colour of the subject")]
+        public string HairColour { get; set; }
+        [Description("The eye colour of the subject")]
+        public string EyeColour { get; set; }
+        [Description("The height of the subject")]
+        public decimal Height { get; set; }
+        [Description("The weight of the subject")]
+        public decimal Weight{get; set;}
+
+       [Description("The first name of the subject")]
         public string FirstName { get; }
         [Description("The last name of the subject")]
+
         public string LastName { get; }
         [Description("The date of birth of the subject")]
+
+
         public DateTime? DateOfBirth { get; }
         [Description("A collection of Personal Identifiers")]
         public IEnumerable<PersonalIdentifier> Identifiers { get; set; }
@@ -66,9 +83,9 @@ namespace SearchApi.Web.Controllers
         public DateTime Value { get; set; }
     }
 
-    public class SearchApiAddress : Address
+    public class SearchApiAddress : Address 
     {
-        public string Type { get; }
+        public string TypeCode { get; }
         public string AddressLine1 { get; }
         public string AddressLine2 { get; }
         public string AddressLine3 { get; }
@@ -77,18 +94,26 @@ namespace SearchApi.Web.Controllers
         public string CountryRegion { get; }
         public string ZipPostalCode { get; }
         public string SuppliedBy { get; }
-        public DateTime? EffectiveDate { get; }
-        public DateTime? EndDate { get; }
+        public IEnumerable<ReferenceDate> ReferenceDates { get; }
+        public AddressType  Type { get; }
+        public string Description { get; }
     }
 
 
     public class SearchApiPhoneNumber : PhoneNumber
     {
         public string SuppliedBy { get; }
-        public DateTime? Date { get; }
-        public string DateType { get; }
+        public string TypeCode { get; }
+
+        public string Extension { get; }
+
+        public PhoneTypeCode Type { get; }
+
+        public IEnumerable<ReferenceDate> ReferenceDates { get; }
+
+        public string Description { get; }
+
         public string PhoneNumber { get; }
-        public string PhoneNumberType { get; }
     }
 
     public class SearchApiName : Name
@@ -97,13 +122,13 @@ namespace SearchApi.Web.Controllers
 
         public string LastName { get; }
 
-        public string MiddleName { get; }
+        public string SecondName { get; }
 
-        public string Type { get; }
+        public string ThirdName { get; }
 
-        public DateTime? EffectiveDate { get; }
-
-        public DateTime? EndDate { get; }
+        public string TypeCode { get; }
+        public NameType Type { get; }
+        public IEnumerable<ReferenceDate> ReferenceDates { get; }
 
         public string Description { get; }
     }

@@ -42,6 +42,13 @@ namespace SearchAdapter.Sample.Test
             public string FirstName { get; set; }
             public string LastName { get; set; }
             public DateTime? DateOfBirth { get; set; }
+
+            public string SecondName { get; set; }
+            public string ThirdName { get; set; }
+            public string HairColour { get; set; }
+            public string EyeColour { get; set; }
+            public decimal Height { get; set; }
+            public decimal Weight { get; set; }
             public IEnumerable<PersonalIdentifier> Identifiers { get; }
             public IEnumerable<Address> Addresses { get; }
             public IEnumerable<PhoneNumber> PhoneNumbers { get; }

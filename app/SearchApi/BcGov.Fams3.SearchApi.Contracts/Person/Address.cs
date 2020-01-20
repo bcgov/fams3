@@ -1,12 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace BcGov.Fams3.SearchApi.Contracts.Person
 {
-    public interface Address
+    public interface Address : BaseMetaData
     {
         [Description("The type of address")]
-        string Type { get; }
+        AddressType Type { get; }
+
+        [Description("The type code of the address directly from data provider")]
+        string TypeCode { get; }
+
         [Description("The Address Line 1")]
         string AddressLine1 { get; }
         [Description("The Address Line 2")]
@@ -21,11 +26,6 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         string CountryRegion { get; }
         [Description("The Address Zip or Postal Code")]
         string ZipPostalCode { get; }
-        [Description("Information on who supplied")]
-        string SuppliedBy { get; }
-        [Description("The Address Efective Date")]
-        DateTime? EffectiveDate { get; }
-        [Description("The Address End Date")]
-        DateTime? EndDate { get; }
+
     }
 }

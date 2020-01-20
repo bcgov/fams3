@@ -91,6 +91,12 @@ namespace SearchAdapter.Sample.SearchRequest
                 {
                     FirstName = personSearchOrdered.Person.FirstName,
                     LastName = personSearchOrdered.Person.LastName,
+                    SecondName = personSearchOrdered.Person.SecondName,
+                    ThirdName  = personSearchOrdered.Person.ThirdName,
+                    Weight = personSearchOrdered.Person.Weight,
+                    Height = personSearchOrdered.Person.Height,
+                    HairColour = personSearchOrdered.Person.HairColour,
+                    EyeColour =  personSearchOrdered.Person.EyeColour,
                     DateOfBirth = personSearchOrdered.Person.DateOfBirth,
                     Identifiers = new List<PersonalIdentifierSample>()
                     {
@@ -113,21 +119,25 @@ namespace SearchAdapter.Sample.SearchRequest
                     {
                         new AddressSample()
                         {
-                            Type = "mailing",
+                            Type = AddressType.Mailing,
                             AddressLine1 = "address in line 1",
                             AddressLine2 = "address in line 2",
                             AddressLine3 = "address in line 3",
-                            EffectiveDate = new DateTime(2000,1,1),
-                            EndDate = new DateTime(2009,12,31),
+                          ReferenceDates = new List<ReferenceDate>(){
+                                new ReferenceDateSample(){ Index=0, Key="Effective Date", Value=new DateTime(2019,9,1) },
+                                new ReferenceDateSample(){ Index=1, Key="Expiration Date", Value=new DateTime(2020,9,1) }
+                            },
                             Province = "British Columbia",
                             City = "victoria" ,
                             CountryRegion= "canada",
                             ZipPostalCode = "t4t4t4",
-                            SuppliedBy = "ICBC"
+                            SuppliedBy = "ICBC",
+                            TypeCode = "mailing"
+                            
                         },
                          new AddressSample()
                         {
-                            Type = "residence",
+                            Type = AddressType.Residence,
                             AddressLine1 = "residence address in line 1",
                             AddressLine2 = "residence address in line 2",
                             Province = "British Columbia",
@@ -141,12 +151,16 @@ namespace SearchAdapter.Sample.SearchRequest
                     {
                         new NameSample()
                         {
-                            Type = "legal name",
+                            TypeCode = "legal",
+                            Type = NameType.Legal,
                             FirstName = "firstName",
                             LastName = "LastName",
-                            MiddleName = "MiddleName",
-                            EffectiveDate = new DateTime(2000,1,1),
-                            EndDate = new DateTime(2009,12,31),
+                            SecondName = "MiddleName",
+                           ThirdName = "ThirdName",
+                            ReferenceDates = new List<ReferenceDate>(){
+                                new ReferenceDateSample(){ Index=0, Key="Effective Date", Value=new DateTime(2019,9,1) },
+                                new ReferenceDateSample(){ Index=1, Key="Expiration Date", Value=new DateTime(2020,9,1) }
+                            },
                             Description = "Sample Name"
                         }
                     }

@@ -21,7 +21,7 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         [Description("The description of the identifier")]
         string Description { get; }
 
-        [Description("The description of the identifier")]
+        [Description("The notes of the identifier from identifier")]
         string Notes { get; }
 
         [Description("The related dates information of the identifier")]

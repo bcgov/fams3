@@ -1,0 +1,111 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="NameAndType">
+  <Interface Name="BcGov.Fams3.SearchApi.Contracts.Person.Person">
+    <Position X="1" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAEgABAAAAAAAAABAAAAAACAQAAAAAABAAAAAgAg=</HashCode>
+      <FileName>Person\Person.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="BcGov.Fams3.SearchApi.Contracts.Person.PhoneNumber">
+    <Position X="6.75" Y="2.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAgAAAAAAAAAAAAAAAAAQAAAAAAAAAAhAAAAAAAAAAA=</HashCode>
+      <FileName>Person\PhoneNumber.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="BcGov.Fams3.SearchApi.Contracts.Person.Name">
+    <Position X="7" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAEgAAAAAAAQAAABAAAAAAAAAAAAAAQAAAAAAAAg=</HashCode>
+      <FileName>Person\Name.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Type" />
+    </ShowAsAssociation>
+  </Interface>
+  <Interface Name="BcGov.Fams3.SearchApi.Contracts.Person.PersonFound">
+    <Position X="4.25" Y="0.5" Width="1.5" />
+    <InheritanceLine Type="BcGov.Fams3.SearchApi.Contracts.Person.Person" ManuallyRouted="true" FixedToPoint="true">
+      <Path>
+        <Point X="1.75" Y="2.5" />
+        <Point X="1.75" Y="2.125" />
+        <Point X="4.073" Y="2.125" />
+        <Point X="4.073" Y="1.704" />
+        <Point X="4.25" Y="1.704" />
+        <Point X="4.25" Y="1.062" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AABAgAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAIAAAA=</HashCode>
+      <FileName>Person\PersonFound.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="PhoneNumbers" />
+      <Property Name="Identifiers" />
+      <Property Name="Names" />
+      <Property Name="Addresses" />
+    </ShowAsCollectionAssociation>
+  </Interface>
+  <Interface Name="BcGov.Fams3.SearchApi.Contracts.Person.RelatedPerson">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAA=</HashCode>
+      <FileName>Person\RelatedPerson.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="BcGov.Fams3.SearchApi.Contracts.Person.Address">
+    <Position X="3" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAgEAAQIAAAAAAAAAgAAAAAAAQAAAAAQAAA=</HashCode>
+      <FileName>Person\Address.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Type" />
+    </ShowAsAssociation>
+  </Interface>
+  <Interface Name="BcGov.Fams3.SearchApi.Contracts.Person.PersonalIdentifier">
+    <Position X="8.5" Y="0.5" Width="1.5" />
+    <AssociationLine Name="ReferenceDates" Type="System.Collections.Generic.IEnumerable&lt;T&gt;" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="10" Y="1.312" />
+        <Point X="13.25" Y="1.312" />
+        <Point X="13.25" Y="8" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAgAAAAAAAgAAQAAAAAAAAQAAAAAAAAAQAgAAAACAA=</HashCode>
+      <FileName>Person\PersonalIdentifier.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Type" />
+      <Property Name="ReferenceDates" />
+    </ShowAsAssociation>
+  </Interface>
+  <Interface Name="System.Collections.Generic.IEnumerable&lt;T&gt;" Collapsed="true">
+    <Position X="11.75" Y="8" Width="1.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Enum Name="BcGov.Fams3.SearchApi.Contracts.Person.PersonalIdentifierType">
+    <Position X="10.75" Y="2" Width="2" />
+    <TypeIdentifier>
+      <HashCode>BAAAAAAACAAACAIAABAAAAAACAAAAACAAAAAEBDAAAA=</HashCode>
+      <FileName>Person\PersonalIdentifierType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="BcGov.Fams3.SearchApi.Contracts.Person.AddressType">
+    <Position X="5.25" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>JAAAAAAAAEAAAAAAAAAAAAAAAAQAAAAAAAAAEAAgABA=</HashCode>
+      <FileName>Person\AddressType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="BcGov.Fams3.SearchApi.Contracts.Person.NameType">
+    <Position X="9.25" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAAAAAAAAAIAAAAAAAAAAAAAAAAAAAASAAAAAAAAABI=</HashCode>
+      <FileName>Person\NameType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

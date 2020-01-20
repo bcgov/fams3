@@ -2,6 +2,6 @@
 {
    public  interface PersonSearchCompleted  : PersonSearchAdapterEvent
     {
-        Person.Person MatchedPerson { get; }
+        Person.PersonFound MatchedPerson { get; }
     }
 }

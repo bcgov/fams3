@@ -6,7 +6,7 @@ namespace SearchApi.Core.Test.Fake
 {
     public class FakePersonSearchCompleted : PersonSearchCompleted
     {
-        public Person MatchedPerson { get; set; }
+        public PersonFound MatchedPerson { get; set; }
 
         public Guid SearchRequestId { get; set; }
 

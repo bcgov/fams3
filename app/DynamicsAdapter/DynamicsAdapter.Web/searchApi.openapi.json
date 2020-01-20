@@ -148,10 +148,6 @@
               "type": "string",
               "description": "The issuer of the identifier"
             },
-            "description": {
-              "type": "string",
-              "description": "The description of the identifier"
-            },
             "notes": {
               "type": "string",
               "description": "The description of the identifier"
@@ -196,10 +192,14 @@
       "properties": {
         "referenceDates": {
           "type": "array",
-          "description": "The related dates information of the identifier",
+          "description": "The related dates information of the personal info",
           "items": {
             "$ref": "#/definitions/ReferenceDate"
           }
+        },
+        "description": {
+          "type": "string",
+          "description": "The description of the information"
         }
       }
     },

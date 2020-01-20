@@ -15,5 +15,6 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
 
         [Description("The date value")]
         public DateTime Value { get; set; }
+
     }
 }

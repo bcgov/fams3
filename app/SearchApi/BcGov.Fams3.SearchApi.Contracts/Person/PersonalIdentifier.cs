@@ -4,6 +4,7 @@ using System.ComponentModel;
 
 namespace BcGov.Fams3.SearchApi.Contracts.Person
 {
+
     public class PersonalIdentifier : PersonalInfo
     {
         [Description("The value of the identifier")]
@@ -19,11 +20,7 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         public string IssuedBy { get; set; }
 
         [Description("The description of the identifier")]
-        public string Description { get; set; }
-
-        [Description("The description of the identifier")]
         public string Notes { get; set; }
-
 
     }
 }

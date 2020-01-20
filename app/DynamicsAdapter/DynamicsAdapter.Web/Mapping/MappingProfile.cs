@@ -38,8 +38,8 @@ namespace  DynamicsAdapter.Web.Mapping
                .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1));
 
             CreateMap<PersonalIdentifier, SSG_Identifier>()
-               .ForMember(dest => dest.Identification, opt => opt.MapFrom(src => src.Value))
                .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
+               .ForMember(dest => dest.Identification, opt => opt.MapFrom(src => src.Value))
                .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
                .ForMember(dest => dest.SupplierTypeCode, opt => opt.MapFrom(src => src.TypeCode))
                .ForMember(dest => dest.IdentifierType, opt => opt.ConvertUsing(new PersonalIdentifierTypeConverter(), src => src.Type))

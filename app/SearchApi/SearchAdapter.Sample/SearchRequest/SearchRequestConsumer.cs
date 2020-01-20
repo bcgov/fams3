@@ -92,10 +92,10 @@ namespace SearchAdapter.Sample.SearchRequest
                     FirstName = personSearchOrdered.Person.FirstName,
                     LastName = personSearchOrdered.Person.LastName,
                     DateOfBirth = personSearchOrdered.Person.DateOfBirth,
-                    Identifiers = new List<PersonalIdentifierSample>()
+                    Identifiers = new List<PersonalIdentifier>()
                     {
 
-                        new PersonalIdentifierSample()
+                        new PersonalIdentifier()
                         {
                             Type = PersonalIdentifierType.DriverLicense,
                             TypeCode = "BCDL",

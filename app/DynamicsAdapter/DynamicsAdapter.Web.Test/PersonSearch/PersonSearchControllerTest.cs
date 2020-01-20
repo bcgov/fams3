@@ -109,9 +109,9 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                     DateOfBirth = DateTime.Now,
                     FirstName = "TEST1",
                     LastName = "TEST2",
-                    Identifiers = new List<PersonalIdentifierActual>()
+                    Identifiers = new List<PersonalIdentifier>()
                         {
-                            new PersonalIdentifierActual()
+                            new PersonalIdentifier()
                             {
                                Value  = "test",
                                IssuedBy = "test",
@@ -186,7 +186,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _mapper.Setup(m => m.Map<SSG_SearchApiEvent>(It.IsAny<PersonSearchCompleted>()))
                                .Returns(fakeSearchApiEvent);
 
-            _mapper.Setup(m => m.Map<SSG_Identifier>(It.IsAny<PersonalIdentifierActual>()))
+            _mapper.Setup(m => m.Map<SSG_Identifier>(It.IsAny<PersonalIdentifier>()))
                                .Returns(_fakePersoneIdentifier);
 
             _mapper.Setup(m => m.Map<SSG_PhoneNumber>(It.IsAny<PhoneNumberActual>()))

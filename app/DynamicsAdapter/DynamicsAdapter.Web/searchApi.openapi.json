@@ -118,47 +118,47 @@
       }
     },
     "PersonalIdentifier": {
-      "type": "object",
-      "required": [
-        "type"
-      ],
-      "properties": {
-        "value": {
-          "type": "string",
-          "description": "The value of the identifier"
+      "allOf": [
+        {
+          "$ref": "#/definitions/PersonFoundBase"
         },
-        "type": {
-          "description": "The type of the identifier",
-          "allOf": [
-            {
-              "$ref": "#/definitions/PersonalIdentifierType"
+        {
+          "type": "object",
+          "required": [
+            "type"
+          ],
+          "properties": {
+            "value": {
+              "type": "string",
+              "description": "The value of the identifier"
+            },
+            "type": {
+              "description": "The type of the identifier",
+              "allOf": [
+                {
+                  "$ref": "#/definitions/PersonalIdentifierType"
+                }
+              ]
+            },
+            "typeCode": {
+              "type": "string",
+              "description": "The type code of the identifier directly from data provider"
+            },
+            "issuedBy": {
+              "type": "string",
+              "description": "The issuer of the identifier"
+            },
+            "description": {
+              "type": "string",
+              "description": "The description of the identifier"
+            },
+            "notes": {
+              "type": "string",
+              "description": "The description of the identifier"
             }
-          ]
-        },
-        "typeCode": {
-          "type": "string",
-          "description": "The type code of the identifier directly from data provider"
-        },
-        "issuedBy": {
-          "type": "string",
-          "description": "The issuer of the identifier"
-        },
-        "description": {
-          "type": "string",
-          "description": "The description of the identifier"
-        },
-        "notes": {
-          "type": "string",
-          "description": "The description of the identifier"
-        },
-        "referenceDates": {
-          "type": "array",
-          "description": "The related dates information of the identifier",
-          "items": {
-            "$ref": "#/definitions/ReferenceDate"
           }
         }
-      }
+      ]
     },
     "PersonalIdentifierType": {
       "type": "string",
@@ -189,6 +189,18 @@
         "BCID",
         "BCHydroBP"
       ]
+    },
+    "PersonFoundBase": {
+      "type": "object",
+      "properties": {
+        "referenceDates": {
+          "type": "array",
+          "description": "The related dates information of the identifier",
+          "items": {
+            "$ref": "#/definitions/ReferenceDate"
+          }
+        }
+      }
     },
     "ReferenceDate": {
       "type": "object",

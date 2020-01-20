@@ -31,7 +31,7 @@ namespace  DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.ReferenceDates, opt => opt.MapFrom<PersonalIdentifier_ReferenceDateResolver>())
                  .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new IdentifierTypeConverter(), src => src.IdentifierType));
 
-            CreateMap<BaseActual, DynamicsEntity>()
+            CreateMap<PersonFoundBase, DynamicsEntity>()
                .ForMember(dest => dest.Date1, opt => opt.MapFrom<Date1Resolver>())
                .ForMember(dest => dest.Date2, opt => opt.MapFrom<Date2Resolver>())
                .ForMember(dest => dest.Date1Label, opt => opt.MapFrom<Date1LabelResolver>())
@@ -39,14 +39,14 @@ namespace  DynamicsAdapter.Web.Mapping
                .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => 0))
                .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1));
 
-            CreateMap<PersonalIdentifierActual, SSG_Identifier>()
+            CreateMap<PersonalIdentifier, SSG_Identifier>()
                .ForMember(dest => dest.Identification, opt => opt.MapFrom(src => src.Value))
                .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
                .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
                .ForMember(dest => dest.SupplierTypeCode, opt => opt.MapFrom(src => src.TypeCode))
                .ForMember(dest => dest.IdentifierType, opt => opt.ConvertUsing(new PersonalIdentifierTypeConverter(), src => src.Type))
                .ForMember(dest => dest.IssuedBy, opt => opt.MapFrom(src => src.IssuedBy))
-               .IncludeBase<BaseActual, DynamicsEntity>();
+               .IncludeBase<PersonFoundBase, DynamicsEntity>();
 
             CreateMap<SSG_SearchApiRequest, PersonSearchRequest>()
                  .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.PersonGivenName))
@@ -104,15 +104,19 @@ namespace  DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.Country, opt => opt.ConvertUsing(new CountryConverter(), src => src.CountryRegion))
                  .ForMember(dest => dest.Category, opt => opt.ConvertUsing(new AddressTypeConverter(), src => src.Type))
                  .ForMember(dest => dest.PostalCode, opt => opt.MapFrom(src => src.ZipPostalCode))
-                 .IncludeBase<BaseActual, DynamicsEntity>();
-          
+                 .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => 0))
+                 .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1));
+            //.IncludeBase<PersonFoundBase, DynamicsEntity>();
+
             CreateMap<PhoneNumberActual, SSG_PhoneNumber>()
                 .ForMember(dest => dest.TelePhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
                 .ForMember(dest => dest.DateType, opt => opt.MapFrom(src => src.DateType))
                 .ForMember(dest => dest.DateData, opt => opt.ConvertUsing(new DateTimeOffsetConverter(), src => src.Date))
                 .ForMember(dest => dest.TelephoneNumberType, opt => opt.ConvertUsing(new TelephoneNumberIdConverter(), src => src.PhoneNumberType))
                 .ForMember(dest => dest.InformationSource, opt => opt.ConvertUsing(new SuppliedByValueConverter(), src => src.SuppliedBy))
-                .IncludeBase<BaseActual, DynamicsEntity>();
+                .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => 0))
+               .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1));
+            //.IncludeBase<PersonFoundBase, DynamicsEntity>();
 
             CreateMap<NameActual, SSG_Aliase>()
                  .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
@@ -121,7 +125,9 @@ namespace  DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.FullName, opt => opt.MapFrom<FullNameResolver>())
                  .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new NameCategoryConverter(), src => src.Type))
                  .ForMember(dest => dest.Comments, opt => opt.MapFrom(src => src.Description))
-                 .IncludeBase<BaseActual, DynamicsEntity>();
+                 .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => 0))
+                 .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1));
+            //.IncludeBase<PersonFoundBase, DynamicsEntity>();
         }
     }
 

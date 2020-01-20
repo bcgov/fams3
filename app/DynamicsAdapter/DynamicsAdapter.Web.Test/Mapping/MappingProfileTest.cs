@@ -224,10 +224,10 @@ namespace DynamicsAdapter.Web.Test.Mapping
                     FirstName = "firstName",
                     LastName = "lastName",
                     DateOfBirth = new DateTime(2019, 3, 5),
-                    Identifiers = new PersonalIdentifierActual[]
+                    Identifiers = new PersonalIdentifier[]
                     {
-                        new PersonalIdentifierActual(){ },
-                        new PersonalIdentifierActual(){ }
+                        new PersonalIdentifier(){ },
+                        new PersonalIdentifier(){ }
                     },
                     Addresses = new AddressActual[]
                     {
@@ -265,10 +265,10 @@ namespace DynamicsAdapter.Web.Test.Mapping
                     FirstName = "firstName",
                     LastName = "lastName",
                     DateOfBirth = new DateTime(2019, 3, 5),
-                    Identifiers = new PersonalIdentifierActual[]
+                    Identifiers = new PersonalIdentifier[]
                     {
-                        new PersonalIdentifierActual(){ },
-                        new PersonalIdentifierActual(){ }
+                        new PersonalIdentifier(){ },
+                        new PersonalIdentifier(){ }
                     },
                     Addresses = null
                 }
@@ -284,7 +284,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
         [Test]
         public void PersonalIdentifierActual_should_map_to_SSG_Identifier_correctly()
         {
-            PersonalIdentifierActual identifier = new PersonalIdentifierActual()
+            PersonalIdentifier identifier = new PersonalIdentifier()
             {
                 Value = "1111111",
                 Type = PersonalIdentifierType.DriverLicense,
@@ -292,9 +292,9 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 Description = "description",
                 Notes = "notes",
                 TypeCode="BCDL",
-                ReferenceDates = new List<ReferenceDateActual>() {
-                    new ReferenceDateActual(){Index=0, Key="startDate", Value=new DateTime(2012,1,1) },
-                    new ReferenceDateActual(){Index=1, Key="endDate", Value=new DateTime(2014,1,1) },
+                ReferenceDates = new List<ReferenceDate>() {
+                    new ReferenceDate(){Index=0, Key="startDate", Value=new DateTime(2012,1,1) },
+                    new ReferenceDate(){Index=1, Key="endDate", Value=new DateTime(2014,1,1) },
                 }
             };
             SSG_Identifier sSG_Identifier = _mapper.Map<SSG_Identifier>(identifier);

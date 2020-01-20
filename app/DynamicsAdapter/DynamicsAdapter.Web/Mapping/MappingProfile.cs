@@ -103,7 +103,6 @@ namespace  DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.City, opt => opt.MapFrom(src => src.City))
                  .ForMember(dest => dest.Country, opt => opt.ConvertUsing(new CountryConverter(), src => src.CountryRegion))
                  .ForMember(dest => dest.Category, opt => opt.ConvertUsing(new AddressTypeConverter(), src => src.Type))
-                 .ForMember(dest => dest.FullText, opt => opt.MapFrom<FullTextResolver>())
                  .ForMember(dest => dest.PostalCode, opt => opt.MapFrom(src => src.ZipPostalCode))
                  .IncludeBase<BaseActual, DynamicsEntity>();
           

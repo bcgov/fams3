@@ -12,13 +12,6 @@ using System.Threading.Tasks;
 
 namespace DynamicsAdapter.Web.Mapping
 {
-    public class FullTextResolver : IValueResolver<AddressActual, SSG_Address, string>
-    {
-        public string Resolve(AddressActual source, SSG_Address dest, string fullText, ResolutionContext context)
-        {
-            return $"{source.AddressLine1} {source.AddressLine2} {source.AddressLine3} {source.City} {source.StateProvince} {source.CountryRegion} {source.ZipPostalCode}";
-        }
-    }
 
     public class FullNameResolver : IValueResolver<NameActual, SSG_Aliase, string>
     {

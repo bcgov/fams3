@@ -119,7 +119,6 @@
     },
     "PersonalIdentifier": {
       "type": "object",
-      "x-abstract": true,
       "required": [
         "type"
       ],
@@ -193,7 +192,6 @@
     },
     "ReferenceDate": {
       "type": "object",
-      "x-abstract": true,
       "required": [
         "index",
         "value"

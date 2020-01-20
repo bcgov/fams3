@@ -78,7 +78,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             var identifier = new SSG_Identifier()
             {
                 Identification = "identificationtest",
-                IdentificationEffectiveDate = DateTime.Now,
+                //IdentificationEffectiveDate = DateTime.Now,
                 StateCode = 0,
                 StatusCode = 1,
                 SSG_SearchRequest = new SSG_SearchRequest() { SearchRequestId = testId }

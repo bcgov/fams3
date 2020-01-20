@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using DynamicsAdapter.Web.PersonSearch.Models;
+using DynamicsAdapter.Web.SearchRequest.Models;
+using Fams3Adapter.Dynamics;
 using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.Name;
@@ -20,22 +22,31 @@ namespace  DynamicsAdapter.Web.Mapping
         public MappingProfile()
         {
             CreateMap<SSG_Identifier, PersonalIdentifier>()
-                 .ConstructUsing(m => new PersonalIdentifierActual() { })
+                 .ConstructUsing(m => new PersonalIdentifierRequest() { })
                  .ForMember(dest => dest.Value, opt => opt.MapFrom(src => src.Identification))
-                 .ForMember(dest => dest.EffectiveDate, opt => opt.MapFrom(src => src.IdentificationEffectiveDate))
-                 .ForMember(dest => dest.ExpirationDate, opt => opt.MapFrom(src => src.IdentificationExpirationDate))
+                 .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
+                 .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
+                 .ForMember(dest => dest.TypeCode, opt => opt.MapFrom(src => src.SupplierTypeCode))
+                 .ForMember(dest => dest.IssuedBy, opt => opt.MapFrom(src => src.IssuedBy))
+                 .ForMember(dest => dest.ReferenceDates, opt => opt.MapFrom<PersonalIdentifier_ReferenceDateResolver>())
                  .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new IdentifierTypeConverter(), src => src.IdentifierType));
-                
 
-            CreateMap<PersonalIdentifier, SSG_Identifier>()
-               .ForMember(dest => dest.Identification, opt => opt.MapFrom(src => src.Value))
-               .ForMember(dest => dest.IdentificationEffectiveDate, opt => opt.ConvertUsing(new DateTimeOffsetConverter(), src => src.EffectiveDate))
-               .ForMember(dest => dest.IdentificationExpirationDate, opt => opt.ConvertUsing(new DateTimeOffsetConverter(), src => src.ExpirationDate))
-               .ForMember(dest => dest.IdentifierType, opt => opt.ConvertUsing(new PersonalIdentifierTypeConverter(), src => src.Type))
-               .ForMember(dest => dest.IssuedBy, opt=>opt.ConvertUsing( new IssuedByConverter(), src => src.IssuedBy))
+            CreateMap<BaseActual, DynamicsEntity>()
+               .ForMember(dest => dest.Date1, opt => opt.MapFrom<Date1Resolver>())
+               .ForMember(dest => dest.Date2, opt => opt.MapFrom<Date2Resolver>())
+               .ForMember(dest => dest.Date1Label, opt => opt.MapFrom<Date1LabelResolver>())
+               .ForMember(dest => dest.Date2Label, opt => opt.MapFrom<Date2LabelResolver>())
                .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => 0))
                .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1));
 
+            CreateMap<PersonalIdentifierActual, SSG_Identifier>()
+               .ForMember(dest => dest.Identification, opt => opt.MapFrom(src => src.Value))
+               .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
+               .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
+               .ForMember(dest => dest.SupplierTypeCode, opt => opt.MapFrom(src => src.TypeCode))
+               .ForMember(dest => dest.IdentifierType, opt => opt.ConvertUsing(new PersonalIdentifierTypeConverter(), src => src.Type))
+               .ForMember(dest => dest.IssuedBy, opt => opt.MapFrom(src => src.IssuedBy))
+               .IncludeBase<BaseActual, DynamicsEntity>();
 
             CreateMap<SSG_SearchApiRequest, PersonSearchRequest>()
                  .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.PersonGivenName))
@@ -83,7 +94,7 @@ namespace  DynamicsAdapter.Web.Mapping
                           )
                .ReverseMap();
 
-            CreateMap<Address, SSG_Address>()
+            CreateMap<AddressActual, SSG_Address>()
                  .ForMember(dest => dest.AddressLine1, opt => opt.MapFrom(src => src.AddressLine1))
                  .ForMember(dest => dest.AddressLine2, opt => opt.MapFrom(src => src.AddressLine2))
                  .ForMember(dest => dest.AddressLine3, opt => opt.MapFrom(src => src.AddressLine3))
@@ -94,55 +105,24 @@ namespace  DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.Category, opt => opt.ConvertUsing(new AddressTypeConverter(), src => src.Type))
                  .ForMember(dest => dest.FullText, opt => opt.MapFrom<FullTextResolver>())
                  .ForMember(dest => dest.PostalCode, opt => opt.MapFrom(src => src.ZipPostalCode))
-                 .ForMember(dest => dest.EffectiveDate, opt => opt.ConvertUsing(new DateTimeOffsetConverter(),src => src.EffectiveDate))
-                 .ForMember(dest => dest.EndDate, opt => opt.ConvertUsing(new DateTimeOffsetConverter(), src => src.EndDate))
-                 .ForMember(dest => dest.EffectiveDateLabel, opt => opt.MapFrom(src => "Effective Date"))
-                 .ForMember(dest => dest.EndDateLabel, opt => opt.MapFrom(src => "End Date"))
-                 .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => 0))
-                 .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1));
-
-            CreateMap<SSG_Address, Address>()
-                 .ConstructUsing(m => new AddressActual() { })
-                 .ForMember(dest => dest.AddressLine1, opt => opt.MapFrom(src => src.AddressLine1))
-                 .ForMember(dest => dest.AddressLine2, opt => opt.MapFrom(src => src.AddressLine2))
-                 .ForMember(dest => dest.StateProvince, opt => opt.ConvertUsing(new ProvinceValueConverter(), src => src.Province))
-                 .ForMember(dest => dest.SuppliedBy, opt => opt.ConvertUsing(new SuppliedByIDConverter(), src => src.InformationSource))
-                 .ForMember(dest => dest.City, opt => opt.MapFrom(src => src.City))
-                 .ForMember(dest => dest.CountryRegion, opt => opt.MapFrom(src => src.Country.Name))
-                 .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new AddressTypeValueConverter(), src => src.Category))
-                 .ForMember(dest => dest.ZipPostalCode, opt => opt.MapFrom(src => src.PostalCode));
-
-
-            CreateMap<PhoneNumber, SSG_PhoneNumber>()
-                .ForMember(dest => dest.TelePhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber1))
+                 .IncludeBase<BaseActual, DynamicsEntity>();
+          
+            CreateMap<PhoneNumberActual, SSG_PhoneNumber>()
+                .ForMember(dest => dest.TelePhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
                 .ForMember(dest => dest.DateType, opt => opt.MapFrom(src => src.DateType))
                 .ForMember(dest => dest.DateData, opt => opt.ConvertUsing(new DateTimeOffsetConverter(), src => src.Date))
                 .ForMember(dest => dest.TelephoneNumberType, opt => opt.ConvertUsing(new TelephoneNumberIdConverter(), src => src.PhoneNumberType))
                 .ForMember(dest => dest.InformationSource, opt => opt.ConvertUsing(new SuppliedByValueConverter(), src => src.SuppliedBy))
-                .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => 0))
-                .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1));
+                .IncludeBase<BaseActual, DynamicsEntity>();
 
-            CreateMap<SSG_PhoneNumber, PhoneNumber>()
-                .ConstructUsing(m => new PhoneNumberActual() { })
-                .ForMember(dest => dest.PhoneNumber1, opt => opt.MapFrom(src => src.TelePhoneNumber))
-                .ForMember(dest => dest.DateType, opt => opt.MapFrom(src => src.DateType))
-                .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.DateData)) 
-                .ForMember(dest => dest.PhoneNumberType, opt => opt.ConvertUsing(new TelephoneNumberValueConverter(), src => src.TelephoneNumberType))
-                .ForMember(dest => dest.SuppliedBy, opt => opt.ConvertUsing(new SuppliedByIDConverter(), src => src.InformationSource));
-
-            CreateMap<Name, SSG_Aliase>()
+            CreateMap<NameActual, SSG_Aliase>()
                  .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
                  .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
                  .ForMember(dest => dest.MiddleName, opt => opt.MapFrom(src => src.MiddleName))
                  .ForMember(dest => dest.FullName, opt => opt.MapFrom<FullNameResolver>())
                  .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new NameCategoryConverter(), src => src.Type))
-                 .ForMember(dest => dest.EffectiveDate, opt => opt.ConvertUsing(new DateTimeOffsetConverter(), src => src.EffectiveDate))
-                 .ForMember(dest => dest.EndDate, opt => opt.ConvertUsing(new DateTimeOffsetConverter(), src => src.EndDate))
-                 .ForMember(dest => dest.EffectiveDateLabel, opt => opt.MapFrom(src => "Effective Date"))
-                 .ForMember(dest => dest.EndDateLabel, opt => opt.MapFrom(src => "End Date"))
                  .ForMember(dest => dest.Comments, opt => opt.MapFrom(src => src.Description))
-                 .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => 0))
-                 .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1));
+                 .IncludeBase<BaseActual, DynamicsEntity>();
         }
     }
 

@@ -306,3 +306,12 @@ services.AddProvider(Configuration, (provider) => new SearchRequestConsumer(prov
                                   provider.GetRequiredService<ILogger<SearchRequestConsumer>>()));
 ```
 
+## Data Model
+
+### Integration Canonical Model
+
+![canonical](docs/images/canonical.png)
+
+### Integration Events Model
+
+![response-event](docs/images/response-event.png)

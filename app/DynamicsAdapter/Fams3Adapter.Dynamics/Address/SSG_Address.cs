@@ -5,8 +5,6 @@ namespace Fams3Adapter.Dynamics.Address
 {
     public class SSG_Address : DynamicsEntity
     {
-        [JsonProperty("ssg_addressfulltext")]
-        public string FullText { get; set; }
 
         [JsonProperty("ssg_addresscategorytext")]
         public int? Category { get; set; }

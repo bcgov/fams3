@@ -111,7 +111,6 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(LocationType.Residence.Value, ssg_addr.Category);
             Assert.AreEqual("p3p3p3", ssg_addr.PostalCode);
             Assert.AreEqual((int)InformationSourceType.Employer.Value, ssg_addr.InformationSource);
-            Assert.AreEqual("AddressLine1 AddressLine2 AddressLine3 testCity Manitoba canada p3p3p3", ssg_addr.FullText);
             Assert.AreEqual(1, ssg_addr.StatusCode);
             Assert.AreEqual(0, ssg_addr.StateCode);
 

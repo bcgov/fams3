@@ -97,7 +97,6 @@ namespace  DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.AddressLine2, opt => opt.MapFrom(src => src.AddressLine2))
                  .ForMember(dest => dest.AddressLine3, opt => opt.MapFrom(src => src.AddressLine3))
                  .ForMember(dest => dest.Province, opt => opt.ConvertUsing(new ProvinceConverter(), src => src.StateProvince))
-                 .ForMember(dest => dest.InformationSource, opt => opt.ConvertUsing(new SuppliedByValueConverter(), src => src.SuppliedBy))
                  .ForMember(dest => dest.City, opt => opt.MapFrom(src => src.City))
                  .ForMember(dest => dest.Country, opt => opt.ConvertUsing(new CountryConverter(), src => src.CountryRegion))
                  .ForMember(dest => dest.Category, opt => opt.ConvertUsing(new AddressTypeConverter(), src => src.Type))

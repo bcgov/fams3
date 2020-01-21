@@ -265,20 +265,6 @@
             "zipPostalCode": {
               "type": "string",
               "description": "The Address Zip or Postal Code"
-            },
-            "suppliedBy": {
-              "type": "string",
-              "description": "Information on who supplied"
-            },
-            "effectiveDate": {
-              "type": "string",
-              "description": "The Address Efective Date",
-              "format": "date-time"
-            },
-            "endDate": {
-              "type": "string",
-              "description": "The Address End Date",
-              "format": "date-time"
             }
           }
         }

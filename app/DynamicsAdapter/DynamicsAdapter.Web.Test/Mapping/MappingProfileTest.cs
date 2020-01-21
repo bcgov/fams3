@@ -96,9 +96,11 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 Type = "residence",
                 CountryRegion = "canada",
                 ZipPostalCode = "p3p3p3",
-                SuppliedBy = "Employer",
-                EffectiveDate =new DateTime(2001,1,1),
-                EndDate= new DateTime(2002,2,1)
+                ReferenceDates = new List<ReferenceDate>(){
+                                new ReferenceDate(){ Index=0, Key="Start Date", Value=new DateTime(2019,9,1) },
+                                new ReferenceDate(){ Index=1, Key="End Date", Value=new DateTime(2020,9,1) }
+                            },
+                Description = "description"
             };
             SSG_Address ssg_addr = _mapper.Map<SSG_Address>(address);
             Assert.AreEqual("AddressLine1", ssg_addr.AddressLine1);
@@ -112,7 +114,10 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual((int)InformationSourceType.Employer.Value, ssg_addr.InformationSource);
             Assert.AreEqual(1, ssg_addr.StatusCode);
             Assert.AreEqual(0, ssg_addr.StateCode);
-
+            Assert.AreEqual("Start Date", ssg_addr.Date1Label);
+            Assert.AreEqual("End Date", ssg_addr.Date2Label);
+            Assert.AreEqual(new DateTime(2019, 9, 1), ssg_addr.Date1);
+            Assert.AreEqual(new DateTime(2020, 9, 1), ssg_addr.Date2);
         }
 
         [Test]

@@ -106,7 +106,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual("AddressLine1", ssg_addr.AddressLine1);
             Assert.AreEqual("AddressLine2", ssg_addr.AddressLine2);
             Assert.AreEqual("AddressLine3", ssg_addr.AddressLine3);
-            Assert.AreEqual(CanadianProvinceType.Manitoba.Value, ssg_addr.Province);
+            Assert.AreEqual(CanadianProvinceType.Manitoba.Value, ssg_addr.CountrySubdivision);
             Assert.AreEqual("testCity", ssg_addr.City);
             Assert.AreEqual("canada", ssg_addr.Country.Name);
             Assert.AreEqual(LocationType.Residence.Value, ssg_addr.Category);

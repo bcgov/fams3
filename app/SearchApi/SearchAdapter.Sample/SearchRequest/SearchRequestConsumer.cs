@@ -125,7 +125,8 @@ namespace SearchAdapter.Sample.SearchRequest
                                 new ReferenceDate(){ Index=0, Key="Start Date", Value=new DateTime(2019,9,1) },
                                 new ReferenceDate(){ Index=1, Key="End Date", Value=new DateTime(2020,9,1) }
                             },
-                            Description = "description"
+                            Description = "description",
+                            Notes = "notes"
                         },
                          new Address()
                         {
@@ -137,7 +138,8 @@ namespace SearchAdapter.Sample.SearchRequest
                             CountryRegion="canada",
                             ZipPostalCode = "5r5r5r",
                             ReferenceDates = null,
-                            Description = "description"
+                            Description = "description2",
+                            Notes = "notes2"
                         }
                     },
                     Names = new List<NameSample>()

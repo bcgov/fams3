@@ -21,8 +21,8 @@ namespace Fams3Adapter.Dynamics.Address
         [JsonProperty("ssg_addresslinethree")]
         public string AddressLine3 { get; set; }
 
-        [JsonProperty("ssg_countrysubdivision")]
-        public int? CountrySubdivision { get; set; }
+        [JsonProperty("ssg_CountrySubdivision")]
+        public virtual SSG_CountrySubdivision CountrySubdivision { get; set; }
 
         [JsonProperty("ssg_countrysubdivisiontext")]
         public string CountrySubdivisionText { get; set; }

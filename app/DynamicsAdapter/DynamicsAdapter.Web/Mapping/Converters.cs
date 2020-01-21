@@ -57,8 +57,8 @@ namespace DynamicsAdapter.Web.Mapping
             { IdentificationType.NativeStatusCard.Value, PersonalIdentifierType.NativeStatusCard },
             { IdentificationType.Passport.Value, PersonalIdentifierType.Passport },
             { IdentificationType.WorkSafeBCCCN.Value, PersonalIdentifierType.WorkSafeBCCCN },
-             { IdentificationType.BCHydroBP.Value, PersonalIdentifierType.BCHydroBP },
-                   { IdentificationType.BCID.Value, PersonalIdentifierType.BCID },
+            { IdentificationType.BCHydroBP.Value, PersonalIdentifierType.BCHydroBP },
+            { IdentificationType.BCID.Value, PersonalIdentifierType.BCID },
             { IdentificationType.Other.Value, PersonalIdentifierType.Other },
            
         };
@@ -124,8 +124,22 @@ namespace DynamicsAdapter.Web.Mapping
     {
         public int? Convert(string source, ResolutionContext context)
         {
-            return Enumeration.GetAll<LocationType>().FirstOrDefault(m => m.Name.Equals(source, StringComparison.OrdinalIgnoreCase))?.Value;
+            return source == null ? null : (int?)(AddressType.AddressTypeDictionary[source.ToLower()].Value);
         }
+    }
+
+    public class AddressType
+    {
+        public static readonly IDictionary<string, LocationType> AddressTypeDictionary = new Dictionary<string, LocationType>
+        {
+            { "mailing", LocationType.Mailing },
+            { "residence", LocationType.Residence },
+            { "business", LocationType.Business },
+            { "other", LocationType.Other },
+            { "blank", LocationType.Other },
+            { "home", LocationType.Residence },
+            { "unknown", LocationType.Other }
+        };
     }
 
     public class AddressTypeValueConverter : IValueConverter<int?, string>
@@ -141,25 +155,6 @@ namespace DynamicsAdapter.Web.Mapping
         public DateTime? Convert(DateTimeOffset? source, ResolutionContext context)
         {
             return source ==null? null : (DateTime?)(((DateTimeOffset)source).DateTime);
-        }
-    }
-
-    public class CountryConverter : IValueConverter<string, SSG_Country>
-    {
-        public SSG_Country Convert(string source, ResolutionContext context)
-        {
-            return new SSG_Country()
-            {
-                Name = source
-            };
-        }
-    }
-
-    public class CountryValueConverter : IValueConverter<int?, string>
-    {
-        public string Convert(int? source, ResolutionContext context)
-        {
-            return Enumeration.GetAll<LocationType>().FirstOrDefault(m => m.Value == source)?.Name;
         }
     }
 

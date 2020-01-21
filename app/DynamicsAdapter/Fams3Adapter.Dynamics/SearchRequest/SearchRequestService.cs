@@ -48,11 +48,18 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
         public async Task<SSG_Address> CreateAddress(SSG_Address address, CancellationToken cancellationToken)
         {
-            string countryName = address.Country.Name;
+            string countryName = address.CountryText;
             var country = await _oDataClient.For<SSG_Country>()
                                          .Filter(x => x.Name == countryName)
                                          .FindEntryAsync(cancellationToken);
             address.Country = country;
+
+            string subdivisionName = address.CountrySubdivisionText;
+            var subdivision = await _oDataClient.For<SSG_CountrySubdivision>()
+                                         .Filter(x => x.Name == subdivisionName)
+                                         .FindEntryAsync(cancellationToken);
+            address.CountrySubdivision = subdivision;
+
             return await this._oDataClient.For<SSG_Address>().Set(address).InsertEntryAsync(cancellationToken);
         }
 

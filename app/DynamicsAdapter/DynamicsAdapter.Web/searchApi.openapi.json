@@ -147,10 +147,6 @@
             "issuedBy": {
               "type": "string",
               "description": "The issuer of the identifier"
-            },
-            "notes": {
-              "type": "string",
-              "description": "The description of the identifier"
             }
           }
         }
@@ -200,6 +196,10 @@
         "description": {
           "type": "string",
           "description": "The description of the information"
+        },
+        "notes": {
+          "type": "string",
+          "description": "The notes of the information"
         }
       }
     },

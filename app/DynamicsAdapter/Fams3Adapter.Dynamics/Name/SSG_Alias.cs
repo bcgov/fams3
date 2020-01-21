@@ -14,18 +14,6 @@ namespace Fams3Adapter.Dynamics.Name
         [JsonProperty("ssg_informationsourcetext")]
         public int? InformationSource { get; set; }
 
-        [JsonProperty("ssg_datadate")]
-        public System.DateTime? EffectiveDate { get; set; }
-
-        [JsonProperty("ssg_datadatelabel")]
-        public string EffectiveDateLabel { get; set; }
-
-        [JsonProperty("ssg_datadate2")]
-        public System.DateTime? EndDate { get; set; }
-
-        [JsonProperty("ssg_datadatelabel2")]
-        public string EndDateLabel { get; set; }
-
         [JsonProperty("ssg_personfullname")]
         public string FullName { get; set; }
 

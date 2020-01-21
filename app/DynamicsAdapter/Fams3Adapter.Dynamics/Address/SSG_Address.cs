@@ -5,8 +5,6 @@ namespace Fams3Adapter.Dynamics.Address
 {
     public class SSG_Address : DynamicsEntity
     {
-        [JsonProperty("ssg_addressfulltext")]
-        public string FullText { get; set; }
 
         [JsonProperty("ssg_addresscategorytext")]
         public int? Category { get; set; }
@@ -41,16 +39,5 @@ namespace Fams3Adapter.Dynamics.Address
         [JsonProperty("ssg_informationsourcetext")]
         public int? InformationSource { get; set; }
 
-        [JsonProperty("ssg_datadate")]
-        public System.DateTime? EffectiveDate { get; set; }
-
-        [JsonProperty("ssg_datadatelabel")]
-        public string EffectiveDateLabel { get; set; }
-
-        [JsonProperty("ssg_datadate2")]
-        public System.DateTime? EndDate { get; set; }
-
-        [JsonProperty("ssg_datadatelabel2")]
-        public string EndDateLabel { get; set; }
     }
 }

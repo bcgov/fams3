@@ -12,5 +12,17 @@ namespace Fams3Adapter.Dynamics
 
         [JsonProperty("statuscode")]
         public int StatusCode { get; set; }
+
+        [JsonProperty("ssg_datadate")]
+        public System.DateTime? Date1 { get; set; }
+
+        [JsonProperty("ssg_datadatelabel")]
+        public string Date1Label { get; set; }
+
+        [JsonProperty("ssg_datadate2")]
+        public System.DateTime? Date2 { get; set; }
+
+        [JsonProperty("ssg_datadatelabel2")]
+        public string Date2Label { get; set; }
     }
 }

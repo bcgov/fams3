@@ -25,24 +25,6 @@ namespace SearchAdapter.Sample.SearchRequest
         public IEnumerable<Name> Names { get; set; }
     }
 
-    public class PersonalIdentifierSample : PersonalIdentifier
-    {
-        public string Value { get; set; }
-        public PersonalIdentifierType Type { get; set; }
-        public string TypeCode { get; set; }
-        public string IssuedBy { get; set; }
-        public string Description { get; set; }
-        public string Notes { get; set; }
-        public IEnumerable<ReferenceDate> ReferenceDates { get; set; }
-    }
-
-    public class ReferenceDateSample : ReferenceDate
-    {
-        public int Index { get; set; }
-        public string Key { get; set; }
-        public DateTime Value { get; set; }
-    }
-
     public class AddressSample : Address
     {
         public string Type { get; set; }

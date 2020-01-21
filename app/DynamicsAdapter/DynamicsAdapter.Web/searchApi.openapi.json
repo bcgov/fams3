@@ -118,39 +118,43 @@
       }
     },
     "PersonalIdentifier": {
-      "type": "object",
-      "x-abstract": true,
-      "required": [
-        "type"
-      ],
-      "properties": {
-        "value": {
-          "type": "string",
-          "description": "The value of the identifier"
+      "allOf": [
+        {
+          "$ref": "#/definitions/PersonalInfo"
         },
-        "effectiveDate": {
-          "type": "string",
-          "description": "The effective date of the identifier",
-          "format": "date-time"
-        },
-        "expirationDate": {
-          "type": "string",
-          "description": "The expiration date of the identifier",
-          "format": "date-time"
-        },
-        "type": {
-          "description": "The type of the identifier",
-          "allOf": [
-            {
-              "$ref": "#/definitions/PersonalIdentifierType"
+        {
+          "type": "object",
+          "required": [
+            "type"
+          ],
+          "properties": {
+            "value": {
+              "type": "string",
+              "description": "The value of the identifier"
+            },
+            "type": {
+              "description": "The type of the identifier",
+              "allOf": [
+                {
+                  "$ref": "#/definitions/PersonalIdentifierType"
+                }
+              ]
+            },
+            "typeCode": {
+              "type": "string",
+              "description": "The type code of the identifier directly from data provider"
+            },
+            "issuedBy": {
+              "type": "string",
+              "description": "The issuer of the identifier"
+            },
+            "notes": {
+              "type": "string",
+              "description": "The description of the identifier"
             }
-          ]
-        },
-        "issuedBy": {
-          "type": "string",
-          "description": "The issuer of the identifier"
+          }
         }
-      }
+      ]
     },
     "PersonalIdentifierType": {
       "type": "string",
@@ -181,6 +185,46 @@
         "BCID",
         "BCHydroBP"
       ]
+    },
+    "PersonalInfo": {
+      "type": "object",
+      "x-abstract": true,
+      "properties": {
+        "referenceDates": {
+          "type": "array",
+          "description": "The related dates information of the personal info",
+          "items": {
+            "$ref": "#/definitions/ReferenceDate"
+          }
+        },
+        "description": {
+          "type": "string",
+          "description": "The description of the information"
+        }
+      }
+    },
+    "ReferenceDate": {
+      "type": "object",
+      "required": [
+        "index",
+        "value"
+      ],
+      "properties": {
+        "index": {
+          "type": "integer",
+          "description": "The index of this date, for dynamics mapping",
+          "format": "int32"
+        },
+        "key": {
+          "type": "string",
+          "description": "The key of this date, mainly the description of the date"
+        },
+        "value": {
+          "type": "string",
+          "description": "The date value",
+          "format": "date-time"
+        }
+      }
     },
     "Address": {
       "type": "object",

@@ -109,9 +109,9 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                     DateOfBirth = DateTime.Now,
                     FirstName = "TEST1",
                     LastName = "TEST2",
-                    Identifiers = new List<PersonalIdentifierActual>()
+                    Identifiers = new List<PersonalIdentifier>()
                         {
-                            new PersonalIdentifierActual()
+                            new PersonalIdentifier()
                             {
                                Value  = "test",
                                IssuedBy = "test",
@@ -137,7 +137,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                     {
                         new PhoneNumberActual ()
                         {
-                            PhoneNumber1 = "4005678900"
+                            PhoneNumber = "4005678900"
                         }
                     },
                     Names = new List<NameActual>()
@@ -189,13 +189,13 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _mapper.Setup(m => m.Map<SSG_Identifier>(It.IsAny<PersonalIdentifier>()))
                                .Returns(_fakePersoneIdentifier);
 
-            _mapper.Setup(m => m.Map<SSG_PhoneNumber>(It.IsAny<PhoneNumber>()))
+            _mapper.Setup(m => m.Map<SSG_PhoneNumber>(It.IsAny<PhoneNumberActual>()))
                              .Returns(_fakePersonPhoneNumber);
 
-            _mapper.Setup(m => m.Map<SSG_Address>(It.IsAny<Web.Address>()))
+            _mapper.Setup(m => m.Map<SSG_Address>(It.IsAny<AddressActual>()))
                               .Returns(_fakePersonAddress);
 
-            _mapper.Setup(m => m.Map<SSG_Aliase>(It.IsAny<Name>()))
+            _mapper.Setup(m => m.Map<SSG_Aliase>(It.IsAny<NameActual>()))
                   .Returns(_fakeName);
 
 
@@ -218,7 +218,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _searchRequestServiceMock.Setup(x => x.CreateAddress(It.Is<SSG_Address>(x => x.SearchRequest.SearchRequestId == validRequestId), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<SSG_Address>(new SSG_Address()
                 {
-                    FullText = "test full line"
+                    AddressLine1 = "test full line"
                 }));
 
             _searchRequestServiceMock.Setup(x => x.CreatePhoneNumber(It.Is<SSG_PhoneNumber>(x => x.SearchRequest.SearchRequestId == validRequestId), It.IsAny<CancellationToken>()))

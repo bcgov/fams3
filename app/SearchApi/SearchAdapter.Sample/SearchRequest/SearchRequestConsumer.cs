@@ -92,10 +92,10 @@ namespace SearchAdapter.Sample.SearchRequest
                     FirstName = personSearchOrdered.Person.FirstName,
                     LastName = personSearchOrdered.Person.LastName,
                     DateOfBirth = personSearchOrdered.Person.DateOfBirth,
-                    Identifiers = new List<PersonalIdentifierSample>()
+                    Identifiers = new List<PersonalIdentifier>()
                     {
 
-                        new PersonalIdentifierSample()
+                        new PersonalIdentifier()
                         {
                             Type = PersonalIdentifierType.DriverLicense,
                             TypeCode = "BCDL",
@@ -104,8 +104,8 @@ namespace SearchAdapter.Sample.SearchRequest
                             IssuedBy = "BC",
                             Value = new Random().Next(0, 50000).ToString(),
                             ReferenceDates = new List<ReferenceDate>(){ 
-                                new ReferenceDateSample(){ Index=0, Key="Effective Date", Value=new DateTime(2019,9,1) },
-                                new ReferenceDateSample(){ Index=1, Key="Expiration Date", Value=new DateTime(2020,9,1) }
+                                new ReferenceDate(){ Index=0, Key="Effective Date", Value=new DateTime(2019,9,1) },
+                                new ReferenceDate(){ Index=1, Key="Expiration Date", Value=new DateTime(2020,9,1) }
                             }
                         }
                     },

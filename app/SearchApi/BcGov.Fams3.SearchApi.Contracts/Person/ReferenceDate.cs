@@ -5,15 +5,16 @@ using System.Text;
 
 namespace BcGov.Fams3.SearchApi.Contracts.Person
 {
-    public interface ReferenceDate
+    public class ReferenceDate
     {
         [Description("The index of this date, for dynamics mapping")]
-        int Index { get; }
+        public int Index { get; set; }
 
         [Description("The key of this date, mainly the description of the date")]
-        string Key { get; }
+        public string Key { get; set; }
 
         [Description("The date value")]
-        DateTime Value { get; }
+        public DateTime Value { get; set; }
+
     }
 }

@@ -44,11 +44,11 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
                                 Name = "Canada"
                             }));
 
-            odataClientMock.Setup(x => x.For<SSG_Address>(null).Set(It.Is<SSG_Address>(x => x.FullText == "address full text"))
+            odataClientMock.Setup(x => x.For<SSG_Address>(null).Set(It.Is<SSG_Address>(x => x.AddressLine1 == "address full text"))
             .InsertEntryAsync(It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult(new SSG_Address()
             {
-                FullText = "test"
+                AddressLine1 = "test"
             })
             );
 
@@ -78,7 +78,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             var identifier = new SSG_Identifier()
             {
                 Identification = "identificationtest",
-                IdentificationEffectiveDate = DateTime.Now,
+                //IdentificationEffectiveDate = DateTime.Now,
                 StateCode = 0,
                 StatusCode = 1,
                 SSG_SearchRequest = new SSG_SearchRequest() { SearchRequestId = testId }
@@ -113,14 +113,14 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         {
             var address = new SSG_Address()
             {
-                FullText = "address full text",
+                AddressLine1 = "address full text",
                 Country = new SSG_Country() { Name = "canada" },
                 SearchRequest = new SSG_SearchRequest() { SearchRequestId = testId }
             };
 
             var result = await _sut.CreateAddress(address, CancellationToken.None);
 
-            Assert.AreEqual("test", result.FullText);
+            Assert.AreEqual("test", result.AddressLine1);
         }
 
         [Test]

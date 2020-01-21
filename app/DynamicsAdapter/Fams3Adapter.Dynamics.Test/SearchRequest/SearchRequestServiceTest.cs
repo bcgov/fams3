@@ -44,6 +44,15 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
                                 Name = "Canada"
                             }));
 
+            odataClientMock.Setup(x => x.For<SSG_CountrySubdivision>(null)
+                .Filter(It.IsAny<Expression<Func<SSG_CountrySubdivision, bool>>>())
+                .FindEntryAsync(It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult<SSG_CountrySubdivision>(new SSG_CountrySubdivision()
+                {
+                    CountrySubdivisionId = Guid.NewGuid(),
+                    Name = "British Columbia"
+                }));
+
             odataClientMock.Setup(x => x.For<SSG_Address>(null).Set(It.Is<SSG_Address>(x => x.AddressLine1 == "address full text"))
             .InsertEntryAsync(It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult(new SSG_Address()
@@ -114,7 +123,8 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             var address = new SSG_Address()
             {
                 AddressLine1 = "address full text",
-                Country = new SSG_Country() { Name = "canada" },
+                CountryText = "canada",
+                CountrySubdivisionText = "British Columbia",
                 SearchRequest = new SSG_SearchRequest() { SearchRequestId = testId }
             };
 

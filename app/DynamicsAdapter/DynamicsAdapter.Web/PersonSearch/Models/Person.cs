@@ -15,21 +15,6 @@ namespace DynamicsAdapter.Web.PersonSearch.Models
         public string PhoneNumberType { get; set; }
     }
 
-    public class AddressActual 
-    {
-        public string Type { get; set; }
-        public string AddressLine1 { get; set; }
-        public string AddressLine2 { get; set; }
-        public string AddressLine3 { get; set; }
-        public string StateProvince { get; set; }
-        public string City { get; set; }
-        public string CountryRegion { get; set; }
-        public string ZipPostalCode { get; set; }
-        public string SuppliedBy { get; set; }
-        public DateTime? EffectiveDate { get; set; }
-        public DateTime? EndDate { get; set; }
-    }
-
     public class NameActual 
     {
         public string Type { get; set; }
@@ -55,7 +40,7 @@ namespace DynamicsAdapter.Web.PersonSearch.Models
         public IEnumerable<PersonalIdentifier> Identifiers { get; set; }
 
         public IEnumerable<PhoneNumberActual> PhoneNumbers { get; set; }
-        public IEnumerable<AddressActual> Addresses { get; set; }
+        public IEnumerable<Address> Addresses { get; set; }
         public IEnumerable<NameActual> Names { get; set; }
     }
 }

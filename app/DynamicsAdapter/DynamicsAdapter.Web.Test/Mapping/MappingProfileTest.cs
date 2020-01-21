@@ -86,7 +86,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
         [Test]
         public void Address_should_map_to_SSG_Address_correctly()
         {
-            var address = new AddressActual()
+            var address = new Address()
             {
                 AddressLine1 = "AddressLine1",
                 AddressLine2 = "AddressLine2",
@@ -228,10 +228,10 @@ namespace DynamicsAdapter.Web.Test.Mapping
                         new PersonalIdentifier(){ },
                         new PersonalIdentifier(){ }
                     },
-                    Addresses = new AddressActual[]
+                    Addresses = new Address[]
                     {
-                        new AddressActual(){ },
-                        new AddressActual(){ }
+                        new Address(){ },
+                        new Address(){ }
                     },
                     PhoneNumbers = new PhoneNumberActual[]
                     {

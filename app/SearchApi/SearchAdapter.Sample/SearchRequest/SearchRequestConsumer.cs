@@ -130,7 +130,7 @@ namespace SearchAdapter.Sample.SearchRequest
                         },
                          new Address()
                         {
-                            Type = "residence",
+                            Type = "unknown",
                             AddressLine1 = "residence address in line 1",
                             AddressLine2 = "residence address in line 2",
                             StateProvince = "British Columbia",

@@ -92,7 +92,7 @@ namespace  DynamicsAdapter.Web.Mapping
                           )
                .ReverseMap();
 
-            CreateMap<AddressActual, SSG_Address>()
+            CreateMap<Address, SSG_Address>()
                  .ForMember(dest => dest.AddressLine1, opt => opt.MapFrom(src => src.AddressLine1))
                  .ForMember(dest => dest.AddressLine2, opt => opt.MapFrom(src => src.AddressLine2))
                  .ForMember(dest => dest.AddressLine3, opt => opt.MapFrom(src => src.AddressLine3))
@@ -102,9 +102,7 @@ namespace  DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.Country, opt => opt.ConvertUsing(new CountryConverter(), src => src.CountryRegion))
                  .ForMember(dest => dest.Category, opt => opt.ConvertUsing(new AddressTypeConverter(), src => src.Type))
                  .ForMember(dest => dest.PostalCode, opt => opt.MapFrom(src => src.ZipPostalCode))
-                 .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => 0))
-                 .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1));
-            //.IncludeBase<PersonFoundBase, DynamicsEntity>();
+                 .IncludeBase<PersonalInfo, DynamicsEntity>();
 
             CreateMap<PhoneNumberActual, SSG_PhoneNumber>()
                 .ForMember(dest => dest.TelePhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))

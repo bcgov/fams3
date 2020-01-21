@@ -3,29 +3,39 @@ using System.ComponentModel;
 
 namespace BcGov.Fams3.SearchApi.Contracts.Person
 {
-    public interface Address
-    {
+    public class Address : PersonalInfo
+    { 
         [Description("The type of address")]
-        string Type { get; }
+        public string Type { get; set; }
+
         [Description("The Address Line 1")]
-        string AddressLine1 { get; }
+        public string AddressLine1 { get; set; }
+
         [Description("The Address Line 2")]
-        string AddressLine2 { get; }
+        public string AddressLine2 { get; set; }
+
         [Description("The Address Line 2")]
-        string AddressLine3 { get; }
+        public string AddressLine3 { get; set; }
+
         [Description("The Address Province or state")]
-        string StateProvince { get; }
+        public string StateProvince { get; set; }
+
         [Description("The Address City")]
-        string City { get; }
+        public string City { get; set; }
+
         [Description("The Address Country")]
-        string CountryRegion { get; }
+        public string CountryRegion { get; set; }
+
         [Description("The Address Zip or Postal Code")]
-        string ZipPostalCode { get; }
+        public string ZipPostalCode { get; set; }
+
         [Description("Information on who supplied")]
-        string SuppliedBy { get; }
+        public string SuppliedBy { get; set; }
+
         [Description("The Address Efective Date")]
-        DateTime? EffectiveDate { get; }
+        public DateTime? EffectiveDate { get; set; }
+
         [Description("The Address End Date")]
-        DateTime? EndDate { get; }
+        public DateTime? EndDate { get; set; }
     }
 }

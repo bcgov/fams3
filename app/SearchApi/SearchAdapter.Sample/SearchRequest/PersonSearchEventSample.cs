@@ -25,22 +25,7 @@ namespace SearchAdapter.Sample.SearchRequest
         public IEnumerable<Name> Names { get; set; }
     }
 
-    public class AddressSample : Address
-    {
-        public string Type { get; set; }
-        public string AddressLine1 { get; set; }
-        public string AddressLine2 { get; set; }
-        public string AddressLine3 { get; set; }
-        public string StateProvince { get; set; }
-        public string Province { get; set; }
-        public string City { get; set; }
-        public string CountryRegion { get; set; }
-        public string ZipPostalCode { get; set; }
-        public string SuppliedBy { get; set; }
-        public DateTime? EffectiveDate { get; set; }
-        public DateTime? EndDate { get; set; }
-    }
-
+  
     public class PhoneNumberSample : PhoneNumber
     {
 

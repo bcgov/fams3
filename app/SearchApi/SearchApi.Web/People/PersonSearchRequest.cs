@@ -19,7 +19,7 @@ namespace SearchApi.Web.Controllers
             string lastName, 
             DateTime? dateOfBirth, 
             IEnumerable<PersonalIdentifier> identifiers,
-            IEnumerable<SearchApiAddress> addresses,
+            IEnumerable<Address> addresses,
             IEnumerable<SearchApiPhoneNumber> phoneNumbers,
             IEnumerable<SearchApiName> names )
         {
@@ -47,23 +47,7 @@ namespace SearchApi.Web.Controllers
         public IEnumerable<Name> Names { get; set; }
     }
 
-    public class SearchApiAddress : Address
-    {
-        public string Type { get; }
-        public string AddressLine1 { get; }
-        public string AddressLine2 { get; }
-        public string AddressLine3 { get; }
-        public string StateProvince { get; }
-        public string City { get; }
-        public string CountryRegion { get; }
-        public string ZipPostalCode { get; }
-        public string SuppliedBy { get; }
-        public DateTime? EffectiveDate { get; }
-        public DateTime? EndDate { get; }
-    }
-
-
-    public class SearchApiPhoneNumber : PhoneNumber
+     public class SearchApiPhoneNumber : PhoneNumber
     {
         public string SuppliedBy { get; }
         public DateTime? Date { get; }

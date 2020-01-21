@@ -109,9 +109,9 @@ namespace SearchAdapter.Sample.SearchRequest
                             }
                         }
                     },
-                    Addresses = new List<AddressSample>()
+                    Addresses = new List<Address>()
                     {
-                        new AddressSample()
+                        new Address()
                         {
                             Type = "mailing",
                             AddressLine1 = "address in line 1",
@@ -119,18 +119,18 @@ namespace SearchAdapter.Sample.SearchRequest
                             AddressLine3 = "address in line 3",
                             EffectiveDate = new DateTime(2000,1,1),
                             EndDate = new DateTime(2009,12,31),
-                            Province = "British Columbia",
+                            StateProvince = "British Columbia",
                             City = "victoria" ,
                             CountryRegion= "canada",
                             ZipPostalCode = "t4t4t4",
                             SuppliedBy = "ICBC"
                         },
-                         new AddressSample()
+                         new Address()
                         {
                             Type = "residence",
                             AddressLine1 = "residence address in line 1",
                             AddressLine2 = "residence address in line 2",
-                            Province = "British Columbia",
+                            StateProvince = "British Columbia",
                             City = "vancouver" ,
                             CountryRegion="canada",
                             ZipPostalCode = "5r5r5r",

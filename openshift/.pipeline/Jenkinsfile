@@ -129,7 +129,7 @@ pipeline {
          -p NAMESPACE=${TOOLS_NAMESPACE} \
          -p TAG=dev | oc apply -f - -n ${DEV_NAMESPACE}"
       sh "oc tag ${SEARCH_API}:latest ${SEARCH_API}:dev -n ${TOOLS_NAMESPACE}"
-      WaitForDeploy(SEARCH_API, DEV_NAMESPACE)
+      // WaitForDeploy(SEARCH_API, DEV_NAMESPACE)
      },
      'Dynamics Adapter': {
       sh "oc process -f openshift/templates/dynamics-adapter.dc.yaml \
@@ -139,7 +139,7 @@ pipeline {
          -p NAMESPACE=${TOOLS_NAMESPACE} \
          -p TAG=dev | oc apply -f - -n ${DEV_NAMESPACE}"
       sh "oc tag ${DYNAMICS_ADAPTER}:latest ${DYNAMICS_ADAPTER}:dev -n ${TOOLS_NAMESPACE}"
-      WaitForDeploy(DYNAMICS_ADAPTER, DEV_NAMESPACE)
+      // WaitForDeploy(DYNAMICS_ADAPTER, DEV_NAMESPACE)
      },
      'Sample Adapter': {
       sh "oc process -f openshift/templates/sample-adapter.dc.yaml \
@@ -149,7 +149,7 @@ pipeline {
          -p NAMESPACE=${TOOLS_NAMESPACE} \
          -p TAG=dev | oc apply -f - -n ${DEV_NAMESPACE}"
       sh "oc tag ${SAMPLE_ADAPTER}:latest ${SAMPLE_ADAPTER}:dev -n ${TOOLS_NAMESPACE}"
-      WaitForDeploy(SAMPLE_ADAPTER, DEV_NAMESPACE)
+      // WaitForDeploy(SAMPLE_ADAPTER, DEV_NAMESPACE)
      },
      'ICBC Rest Adapter': {
       sh "oc process -f openshift/templates/icbc-rest-adapter.dc.yaml \
@@ -159,7 +159,7 @@ pipeline {
          -p NAMESPACE=${TOOLS_NAMESPACE} \
          -p TAG=dev | oc apply -f - -n ${DEV_NAMESPACE}"
       sh "oc tag ${ICBC_REST_ADAPTER}:latest ${ICBC_REST_ADAPTER}:dev -n ${TOOLS_NAMESPACE}"
-      WaitForDeploy(ICBC_REST_ADAPTER, DEV_NAMESPACE)
+      // WaitForDeploy(ICBC_REST_ADAPTER, DEV_NAMESPACE)
      },
      'ICBC Web Adapter': {
       sh "oc process -f openshift/templates/icbc-web-adapter.dc.yaml \
@@ -169,7 +169,7 @@ pipeline {
          -p NAMESPACE=${TOOLS_NAMESPACE} \
          -p TAG=dev | oc apply -f - -n ${DEV_NAMESPACE}"
       sh "oc tag ${ICBC_WEB_ADAPTER}:latest ${ICBC_WEB_ADAPTER}:dev -n ${TOOLS_NAMESPACE}"
-      WaitForDeploy(ICBC_WEB_ADAPTER, DEV_NAMESPACE)
+      // WaitForDeploy(ICBC_WEB_ADAPTER, DEV_NAMESPACE)
      },
      'Jaeger':{
         sh "oc process -f openshift/templates/jaeger-aio.dc.yaml | oc apply -f - -n ${DEV_NAMESPACE}"

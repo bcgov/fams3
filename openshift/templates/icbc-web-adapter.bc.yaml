@@ -143,6 +143,8 @@ objects:
               value: "${DOTNET_TOOLS}"
             - name: DOTNET_INCREMENTAL
               value: "true"
+            - name: DOTNET_SSL_DIRS
+              value: /etc/pki/tls/certs
       output:
         to:
           kind: ImageStreamTag

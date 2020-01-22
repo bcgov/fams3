@@ -147,10 +147,6 @@
             "issuedBy": {
               "type": "string",
               "description": "The issuer of the identifier"
-            },
-            "notes": {
-              "type": "string",
-              "description": "The description of the identifier"
             }
           }
         }
@@ -200,6 +196,10 @@
         "description": {
           "type": "string",
           "description": "The description of the information"
+        },
+        "notes": {
+          "type": "string",
+          "description": "The notes of the information"
         }
       }
     },
@@ -265,20 +265,6 @@
             "zipPostalCode": {
               "type": "string",
               "description": "The Address Zip or Postal Code"
-            },
-            "suppliedBy": {
-              "type": "string",
-              "description": "Information on who supplied"
-            },
-            "effectiveDate": {
-              "type": "string",
-              "description": "The Address Efective Date",
-              "format": "date-time"
-            },
-            "endDate": {
-              "type": "string",
-              "description": "The Address End Date",
-              "format": "date-time"
             }
           }
         }

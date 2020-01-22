@@ -117,24 +117,29 @@ namespace SearchAdapter.Sample.SearchRequest
                             AddressLine1 = "address in line 1",
                             AddressLine2 = "address in line 2",
                             AddressLine3 = "address in line 3",
-                            EffectiveDate = new DateTime(2000,1,1),
-                            EndDate = new DateTime(2009,12,31),
                             StateProvince = "British Columbia",
                             City = "victoria" ,
                             CountryRegion= "canada",
                             ZipPostalCode = "t4t4t4",
-                            SuppliedBy = "ICBC"
+                            ReferenceDates = new List<ReferenceDate>(){
+                                new ReferenceDate(){ Index=0, Key="Start Date", Value=new DateTime(2019,9,1) },
+                                new ReferenceDate(){ Index=1, Key="End Date", Value=new DateTime(2020,9,1) }
+                            },
+                            Description = "description",
+                            Notes = "notes"
                         },
                          new Address()
                         {
-                            Type = "residence",
+                            Type = "unknown",
                             AddressLine1 = "residence address in line 1",
                             AddressLine2 = "residence address in line 2",
                             StateProvince = "British Columbia",
                             City = "vancouver" ,
                             CountryRegion="canada",
                             ZipPostalCode = "5r5r5r",
-                            SuppliedBy = "employer"
+                            ReferenceDates = null,
+                            Description = "description2",
+                            Notes = "notes2"
                         }
                     },
                     Names = new List<NameSample>()

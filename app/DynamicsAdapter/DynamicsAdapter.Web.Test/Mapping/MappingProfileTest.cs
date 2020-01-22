@@ -96,23 +96,28 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 Type = "residence",
                 CountryRegion = "canada",
                 ZipPostalCode = "p3p3p3",
-                SuppliedBy = "Employer",
-                EffectiveDate =new DateTime(2001,1,1),
-                EndDate= new DateTime(2002,2,1)
+                ReferenceDates = new List<ReferenceDate>(){
+                                new ReferenceDate(){ Index=0, Key="Start Date", Value=new DateTime(2019,9,1) },
+                                new ReferenceDate(){ Index=1, Key="End Date", Value=new DateTime(2020,9,1) }
+                            },
+                Description = "description",
+                Notes = "notes"
             };
             SSG_Address ssg_addr = _mapper.Map<SSG_Address>(address);
             Assert.AreEqual("AddressLine1", ssg_addr.AddressLine1);
             Assert.AreEqual("AddressLine2", ssg_addr.AddressLine2);
             Assert.AreEqual("AddressLine3", ssg_addr.AddressLine3);
-            Assert.AreEqual(CanadianProvinceType.Manitoba.Value, ssg_addr.Province);
+            Assert.AreEqual("Manitoba", ssg_addr.CountrySubdivisionText);
             Assert.AreEqual("testCity", ssg_addr.City);
-            Assert.AreEqual("canada", ssg_addr.Country.Name);
+            Assert.AreEqual("canada", ssg_addr.CountryText);
             Assert.AreEqual(LocationType.Residence.Value, ssg_addr.Category);
             Assert.AreEqual("p3p3p3", ssg_addr.PostalCode);
-            Assert.AreEqual((int)InformationSourceType.Employer.Value, ssg_addr.InformationSource);
             Assert.AreEqual(1, ssg_addr.StatusCode);
             Assert.AreEqual(0, ssg_addr.StateCode);
-
+            Assert.AreEqual("Start Date", ssg_addr.Date1Label);
+            Assert.AreEqual("End Date", ssg_addr.Date2Label);
+            Assert.AreEqual(new DateTime(2019, 9, 1), ssg_addr.Date1);
+            Assert.AreEqual(new DateTime(2020, 9, 1), ssg_addr.Date2);
         }
 
         [Test]

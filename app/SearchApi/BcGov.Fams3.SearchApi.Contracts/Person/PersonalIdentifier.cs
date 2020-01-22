@@ -19,8 +19,5 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         [Description("The issuer of the identifier")]
         public string IssuedBy { get; set; }
 
-        [Description("The description of the identifier")]
-        public string Notes { get; set; }
-
     }
 }

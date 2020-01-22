@@ -130,7 +130,11 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                                 Type = "residence",
                                 CountryRegion= "canada",
                                 ZipPostalCode = "p3p3p3",
-                                SuppliedBy = "Employer"
+                                ReferenceDates = new List<ReferenceDate>(){
+                                    new ReferenceDate(){ Index=0, Key="Start Date", Value=new DateTime(2019,9,1) },
+                                    new ReferenceDate(){ Index=1, Key="End Date", Value=new DateTime(2020,9,1) }
+                                },
+                                Description = "description"
                             }
                         },
                     PhoneNumbers = new List<PhoneNumberActual>()

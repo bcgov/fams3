@@ -238,10 +238,10 @@ namespace DynamicsAdapter.Web.Test.Mapping
                         new Address(){ },
                         new Address(){ }
                     },
-                    PhoneNumbers = new PhoneNumberActual[]
+                    Phones = new Phone[]
                     {
-                        new PhoneNumberActual(){ },
-                        new PhoneNumberActual(){ }
+                        new Phone(){ },
+                        new Phone(){ }
                     }
                 }
             };
@@ -319,7 +319,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
         [Test]
         public void PersonalPhoneNumber_should_map_to_SSG_PhoneNumber_correctly()
         {
-            PhoneNumberActual phoneNumber = new PhoneNumberActual()
+            Phone phoneNumber = new Phone()
             {               
                 Date = new DateTime(2003, 3, 3),
                 PhoneNumber = "6904005678",
@@ -340,7 +340,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
         [Test]
         public void Name_should_map_to_SSG_Name_correctly()
         {
-            var name = new NameActual()
+            var name = new Name()
             {
                 FirstName = "FirstName",
                 LastName = "LastName",

@@ -71,46 +71,49 @@
       }
     },
     "PersonSearchRequest": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/Person"
+        },
+        {
+          "type": "object",
+          "description": "Represents a set of information to execute a search on a person"
+        }
+      ]
+    },
+    "Person": {
       "type": "object",
-      "description": "Represents a set of information to execute a search on a person",
       "properties": {
         "firstName": {
-          "type": "string",
-          "description": "The first name of the subject"
+          "type": "string"
         },
         "lastName": {
-          "type": "string",
-          "description": "The last name of the subject"
+          "type": "string"
         },
         "dateOfBirth": {
           "type": "string",
-          "description": "The date of birth of the subject",
           "format": "date-time"
         },
         "identifiers": {
           "type": "array",
-          "description": "A collection of Personal Identifiers",
           "items": {
             "$ref": "#/definitions/PersonalIdentifier"
           }
         },
         "addresses": {
           "type": "array",
-          "description": "A collection of addresses",
           "items": {
             "$ref": "#/definitions/Address"
           }
         },
-        "phoneNumbers": {
+        "phones": {
           "type": "array",
-          "description": "A collection of phone numbers",
           "items": {
-            "$ref": "#/definitions/PhoneNumber"
+            "$ref": "#/definitions/Phone"
           }
         },
         "names": {
           "type": "array",
-          "description": "A collection of names",
           "items": {
             "$ref": "#/definitions/Name"
           }
@@ -270,9 +273,8 @@
         }
       ]
     },
-    "PhoneNumber": {
+    "Phone": {
       "type": "object",
-      "x-abstract": true,
       "properties": {
         "suppliedBy": {
           "type": "string",
@@ -299,7 +301,6 @@
     },
     "Name": {
       "type": "object",
-      "x-abstract": true,
       "properties": {
         "firstName": {
           "type": "string",

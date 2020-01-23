@@ -81,16 +81,5 @@ namespace SearchApi.Web.Controllers
             public DateTime TimeStamp { get; }
             public Person Person { get; set; }
         }
-
-        public class ExecuteSearchCommand : Person
-        {
-            public string FirstName { get; set; }
-            public string LastName { get; set; }
-            public DateTime? DateOfBirth { get; set; }
-            public IEnumerable<PersonalIdentifier> Identifiers { get; }
-            public IEnumerable<Address> Addresses { get; }
-            public IEnumerable<PhoneNumber> PhoneNumbers { get; }
-            public IEnumerable<Name> Names { get; }
-        }
     }
 }

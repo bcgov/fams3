@@ -12,17 +12,6 @@ namespace SearchAdapter.Sample.Test
 
         private PersonSearchValidator _sut;
 
-        public class PersonTest : Person
-        {
-            public string FirstName { get; set; }
-            public string LastName { get; set; }
-            public DateTime? DateOfBirth { get; set; }
-            public IEnumerable<PersonalIdentifier> Identifiers { get; }
-            public IEnumerable<Address> Addresses { get; }
-            public IEnumerable<PhoneNumber> PhoneNumbers { get; }
-            public IEnumerable<Name> Names { get; set; }
-        }
-
         [SetUp]
         public void SetUp()
         {
@@ -32,7 +21,7 @@ namespace SearchAdapter.Sample.Test
         [Test]
         public void When_search_is_value_should_be_valid()
         {
-            var command = new PersonTest()
+            var command = new Person()
             {
                 FirstName = "fistName",
                 LastName = "lastName"
@@ -46,7 +35,7 @@ namespace SearchAdapter.Sample.Test
         [Test]
         public void When_first_name_is_null_should_have_validation_error()
         {
-            var command = new PersonTest()
+            var command = new Person()
             {
                 FirstName = null,
                 LastName = "lastName"
@@ -62,7 +51,7 @@ namespace SearchAdapter.Sample.Test
         [Test]
         public void When_first_name_is_empty_should_have_validation_error()
         {
-            var command = new PersonTest()
+            var command = new Person()
             {
                 FirstName = "",
                 LastName = "lastName"
@@ -78,7 +67,7 @@ namespace SearchAdapter.Sample.Test
         [Test]
         public void When_first_name_is_white_space_should_have_validation_error()
         {
-            var command = new PersonTest()
+            var command = new Person()
             {
                 FirstName = "  ",
                 LastName = "lastName"
@@ -94,7 +83,7 @@ namespace SearchAdapter.Sample.Test
         [Test]
         public void When_last_name_is_null_should_have_validation_error()
         {
-            var command = new PersonTest()
+            var command = new Person()
             {
                 FirstName = "fisrtName",
                 LastName = null
@@ -110,7 +99,7 @@ namespace SearchAdapter.Sample.Test
         [Test]
         public void When_last_name_is_empty_should_have_validation_error()
         {
-            var command = new PersonTest()
+            var command = new Person()
             {
                 FirstName = "firstNAme",
                 LastName = ""
@@ -126,7 +115,7 @@ namespace SearchAdapter.Sample.Test
         [Test]
         public void When_last_name_is_white_space_should_have_validation_error()
         {
-            var command = new PersonTest()
+            var command = new Person()
             {
                 FirstName = "firstName",
                 LastName = "  "

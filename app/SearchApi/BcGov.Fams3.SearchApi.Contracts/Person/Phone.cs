@@ -3,17 +3,17 @@ using System.ComponentModel;
 
 namespace BcGov.Fams3.SearchApi.Contracts.Person
 {
-    public interface PhoneNumber
+    public class Phone
     {
         [Description("Supply ")]
-        string SuppliedBy { get; }
+        public string SuppliedBy { get; set; }
         [Description("A Date")]
-        DateTime? Date { get; }
+        public DateTime? Date { get; set; }
         [Description("The Date type of the supplied Date")]
-        string DateType { get; }
+        public string DateType { get; set; }
         [Description("The Phone number")]
-        string PhoneNumber { get; }
+        public string PhoneNumber { get; set; }
         [Description("The phone number type")]
-        string PhoneNumberType { get; }
+        public string PhoneNumberType { get; set; }
     }
 }

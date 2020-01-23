@@ -30,17 +30,6 @@ namespace SearchApi.Core.Test.Adapters.Middleware
             public Person Person { get; set; }
         }
 
-        public class FakePerson : Person
-        {
-            public string FirstName { get; set; }
-            public string LastName { get; set; }
-            public DateTime? DateOfBirth { get; set; }
-            public IEnumerable<PersonalIdentifier> Identifiers { get; }
-            public IEnumerable<Address> Addresses { get; set; }
-
-            public IEnumerable<PhoneNumber> PhoneNumbers { get; set; }
-            public IEnumerable<Name> Names { get; set; }
-        }
 
         [OneTimeSetUp]
         public async Task A_consumer_is_being_tested()
@@ -65,7 +54,7 @@ namespace SearchApi.Core.Test.Adapters.Middleware
             {
                 SearchRequestId = Guid.NewGuid(),
                 TimeStamp = DateTime.Now,
-                Person = new FakePerson()
+                Person = new Person()
                 {
                     FirstName = "",
                     LastName = "lastName",

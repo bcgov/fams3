@@ -3,14 +3,14 @@ using System.Collections.Generic;
 
 namespace BcGov.Fams3.SearchApi.Contracts.Person
 {
-    public interface Person
+    public class Person
     {
-        string FirstName { get; }
-        string LastName { get; }
-        DateTime? DateOfBirth { get; }
-        IEnumerable<PersonalIdentifier> Identifiers { get; }
-        IEnumerable<Address> Addresses { get; }
-        IEnumerable<PhoneNumber> PhoneNumbers { get; }
-        IEnumerable<Name> Names { get; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public DateTime? DateOfBirth { get; set; }
+        public IEnumerable<PersonalIdentifier> Identifiers { get; set; }
+        public IEnumerable<Address> Addresses { get; set; }
+        public IEnumerable<Phone> Phones { get; set; }
+        public IEnumerable<Name> Names { get; set; }
     }
 }

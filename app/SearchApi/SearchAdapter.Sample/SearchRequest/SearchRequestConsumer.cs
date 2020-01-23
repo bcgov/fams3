@@ -87,7 +87,7 @@ namespace SearchAdapter.Sample.SearchRequest
                 ProviderProfile = _profile,
                 SearchRequestId = personSearchOrdered.SearchRequestId,
                 TimeStamp = DateTime.Now,
-                MatchedPerson = new PersonSample()
+                MatchedPerson = new Person()
                 {
                     FirstName = personSearchOrdered.Person.FirstName,
                     LastName = personSearchOrdered.Person.LastName,
@@ -142,9 +142,9 @@ namespace SearchAdapter.Sample.SearchRequest
                             Notes = "notes2"
                         }
                     },
-                    Names = new List<NameSample>()
+                    Names = new List<Name>()
                     {
-                        new NameSample()
+                        new Name()
                         {
                             Type = "legal name",
                             FirstName = "firstName",

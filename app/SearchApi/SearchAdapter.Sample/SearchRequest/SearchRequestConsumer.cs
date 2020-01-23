@@ -150,8 +150,10 @@ namespace SearchAdapter.Sample.SearchRequest
                             FirstName = "firstName",
                             LastName = "LastName",
                             MiddleName = "MiddleName",
-                            EffectiveDate = new DateTime(2000,1,1),
-                            EndDate = new DateTime(2009,12,31),
+                              ReferenceDates = new List<ReferenceDate>(){
+                                new ReferenceDate(){ Index=0, Key="Start Date", Value=new DateTime(2019,9,1) },
+                                new ReferenceDate(){ Index=1, Key="End Date", Value=new DateTime(2020,9,1) }
+                            },
                             Description = "Sample Name"
                         }
                     }

@@ -3,7 +3,7 @@ using System.ComponentModel;
 
 namespace BcGov.Fams3.SearchApi.Contracts.Person
 {
-    public class Name 
+    public class Name : PersonalInfo
     {
         [Description("The first name")]
         public string FirstName { get; set; }
@@ -14,16 +14,13 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         [Description("The middle name")]
         public string MiddleName { get; set; }
 
+        [Description("The other name")]
+        public string OtherName { get; set; }
+
         [Description("the type of the names")]
         public string Type { get; set; }
 
-        [Description("the name effective date")]
-        public DateTime? EffectiveDate { get; set; }
+        
 
-        [Description("The name end date")]
-        public DateTime? EndDate { get; set; }
-
-        [Description("The name description")]
-        public string Description { get; set; }
     }
 }

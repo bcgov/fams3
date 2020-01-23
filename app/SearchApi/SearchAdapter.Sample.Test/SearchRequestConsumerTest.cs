@@ -37,17 +37,6 @@ namespace SearchAdapter.Sample.Test
             public Person Person { get; set; }
         }
         
-        public class ExecuteSearchTest : Person
-        {
-            public string FirstName { get; set; }
-            public string LastName { get; set; }
-            public DateTime? DateOfBirth { get; set; }
-            public IEnumerable<PersonalIdentifier> Identifiers { get; }
-            public IEnumerable<Address> Addresses { get; }
-            public IEnumerable<PhoneNumber> PhoneNumbers { get; }
-            public IEnumerable<Name> Names { get; set; }
-        }
-
         [OneTimeSetUp]
         public async Task A_consumer_is_being_tested()
         {
@@ -74,7 +63,7 @@ namespace SearchAdapter.Sample.Test
             {
                 SearchRequestId = validGuid,
                 TimeStamp = DateTime.Now,
-                Person = new ExecuteSearchTest()
+                Person = new Person()
                 {
                     FirstName = "firstName",
                     LastName = "lastName",
@@ -86,7 +75,7 @@ namespace SearchAdapter.Sample.Test
             {
                 SearchRequestId = inValidGuid,
                 TimeStamp = DateTime.Now,
-                Person = new ExecuteSearchTest()
+                Person = new Person()
                 {
                     FirstName = "",
                     LastName = "lastName",

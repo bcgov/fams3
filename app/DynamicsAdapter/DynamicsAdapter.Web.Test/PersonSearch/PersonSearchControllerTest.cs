@@ -137,16 +137,16 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                                 Description = "description"
                             }
                         },
-                    PhoneNumbers = new List<PhoneNumberActual>()
+                    Phones = new List<Phone>()
                     {
-                        new PhoneNumberActual ()
+                        new Phone ()
                         {
                             PhoneNumber = "4005678900"
                         }
                     },
-                    Names = new List<NameActual>()
+                    Names = new List<Name>()
                     {
-                        new NameActual ()
+                        new Name ()
                         {
                             FirstName = "firstName"
                         }
@@ -193,13 +193,13 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _mapper.Setup(m => m.Map<SSG_Identifier>(It.IsAny<PersonalIdentifier>()))
                                .Returns(_fakePersoneIdentifier);
 
-            _mapper.Setup(m => m.Map<SSG_PhoneNumber>(It.IsAny<PhoneNumberActual>()))
+            _mapper.Setup(m => m.Map<SSG_PhoneNumber>(It.IsAny<Phone>()))
                              .Returns(_fakePersonPhoneNumber);
 
             _mapper.Setup(m => m.Map<SSG_Address>(It.IsAny<Address>()))
                               .Returns(_fakePersonAddress);
 
-            _mapper.Setup(m => m.Map<SSG_Aliase>(It.IsAny<NameActual>()))
+            _mapper.Setup(m => m.Map<SSG_Aliase>(It.IsAny<Name>()))
                   .Returns(_fakeName);
 
 

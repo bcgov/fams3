@@ -193,8 +193,8 @@ namespace DynamicsAdapter.Web.PersonSearch
 
         private async Task<bool> UploadPhoneNumbers(SSG_SearchRequest request, PersonSearchCompleted personCompletedEvent, CancellationToken concellationToken)
         {
-            if (personCompletedEvent.MatchedPerson.PhoneNumbers == null) return true;
-            foreach (var phone in personCompletedEvent.MatchedPerson.PhoneNumbers)
+            if (personCompletedEvent.MatchedPerson.Phones == null) return true;
+            foreach (var phone in personCompletedEvent.MatchedPerson.Phones)
             {
                 SSG_PhoneNumber ph = _mapper.Map<SSG_PhoneNumber>(phone);
                 ph.SearchRequest = request;

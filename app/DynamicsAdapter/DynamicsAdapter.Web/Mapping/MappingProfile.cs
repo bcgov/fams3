@@ -87,7 +87,7 @@ namespace  DynamicsAdapter.Web.Mapping
                .ForMember(dest => dest.EventType, opt => opt.MapFrom(src => Keys.EVENT_COMPLETED))
                .ForMember(dest => dest.Message,
                           opt => opt.MapFrom(
-                              src => $"Auto search processing completed successfully. {(src.MatchedPerson.Identifiers == null ? 0 : src.MatchedPerson.Identifiers.Count())} identifier(s) found.  {(src.MatchedPerson.Addresses == null ? 0 : src.MatchedPerson.Addresses.Count())} addresses found. {(src.MatchedPerson.PhoneNumbers == null ? 0 : src.MatchedPerson.PhoneNumbers.Count())} phone number(s) found."
+                              src => $"Auto search processing completed successfully. {(src.MatchedPerson.Identifiers == null ? 0 : src.MatchedPerson.Identifiers.Count())} identifier(s) found.  {(src.MatchedPerson.Addresses == null ? 0 : src.MatchedPerson.Addresses.Count())} addresses found. {(src.MatchedPerson.Phones == null ? 0 : src.MatchedPerson.Phones.Count())} phone number(s) found."
                               )
                           )
                .ReverseMap();
@@ -106,7 +106,7 @@ namespace  DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.PostalCode, opt => opt.MapFrom(src => src.ZipPostalCode))
                  .IncludeBase<PersonalInfo, DynamicsEntity>();
 
-            CreateMap<PhoneNumberActual, SSG_PhoneNumber>()
+            CreateMap<Phone, SSG_PhoneNumber>()
                 .ForMember(dest => dest.TelePhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
                 .ForMember(dest => dest.DateType, opt => opt.MapFrom(src => src.DateType))
                 .ForMember(dest => dest.DateData, opt => opt.ConvertUsing(new DateTimeOffsetConverter(), src => src.Date))
@@ -116,7 +116,7 @@ namespace  DynamicsAdapter.Web.Mapping
                .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1));
             //.IncludeBase<PersonFoundBase, DynamicsEntity>();
 
-            CreateMap<NameActual, SSG_Aliase>()
+            CreateMap<Name, SSG_Aliase>()
                  .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
                  .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
                  .ForMember(dest => dest.MiddleName, opt => opt.MapFrom(src => src.MiddleName))

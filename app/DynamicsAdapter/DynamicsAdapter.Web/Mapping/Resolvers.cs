@@ -12,9 +12,9 @@ using System.Threading.Tasks;
 namespace DynamicsAdapter.Web.Mapping
 {
 
-    public class FullNameResolver : IValueResolver<NameActual, SSG_Aliase, string>
+    public class FullNameResolver : IValueResolver<Name, SSG_Aliase, string>
     {
-        public string Resolve(NameActual source, SSG_Aliase dest, string fullName, ResolutionContext context)
+        public string Resolve(Name source, SSG_Aliase dest, string fullName, ResolutionContext context)
         {
             return $"{source.FirstName} {source.MiddleName} {source.LastName}";
         }

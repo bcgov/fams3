@@ -104,23 +104,23 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 {
                     Name = "TEST PROVIDER"
                 },
-                MatchedPerson = new Person()
+                MatchedPerson = new BcGov.Fams3.SearchApi.Contracts.Person.Person()
                 {
                     DateOfBirth = DateTime.Now,
                     FirstName = "TEST1",
                     LastName = "TEST2",
-                    Identifiers = new List<PersonalIdentifier>()
+                    Identifiers = new List<BcGov.Fams3.SearchApi.Contracts.Person.PersonalIdentifier>()
                         {
-                            new PersonalIdentifier()
+                            new BcGov.Fams3.SearchApi.Contracts.Person.PersonalIdentifier()
                             {
                                Value  = "test",
                                IssuedBy = "test",
-                               Type = PersonalIdentifierType.DriverLicense
+                               Type = BcGov.Fams3.SearchApi.Contracts.Person.PersonalIdentifierType.DriverLicense
                             }
                         },
-                    Addresses = new List<Address>()
+                    Addresses = new List<BcGov.Fams3.SearchApi.Contracts.Person.Address>()
                         {
-                            new Address()
+                            new BcGov.Fams3.SearchApi.Contracts.Person.Address()
                             {
                                 AddressLine1 = "AddressLine1",
                                 AddressLine2 = "AddressLine2",
@@ -130,23 +130,23 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                                 Type = "residence",
                                 CountryRegion= "canada",
                                 ZipPostalCode = "p3p3p3",
-                                ReferenceDates = new List<ReferenceDate>(){
-                                    new ReferenceDate(){ Index=0, Key="Start Date", Value=new DateTime(2019,9,1) },
-                                    new ReferenceDate(){ Index=1, Key="End Date", Value=new DateTime(2020,9,1) }
+                                ReferenceDates = new List<BcGov.Fams3.SearchApi.Contracts.Person.ReferenceDate>(){
+                                    new BcGov.Fams3.SearchApi.Contracts.Person.ReferenceDate(){ Index=0, Key="Start Date", Value=new DateTime(2019,9,1) },
+                                    new BcGov.Fams3.SearchApi.Contracts.Person.ReferenceDate(){ Index=1, Key="End Date", Value=new DateTime(2020,9,1) }
                                 },
                                 Description = "description"
                             }
                         },
-                    Phones = new List<Phone>()
+                    Phones = new List<BcGov.Fams3.SearchApi.Contracts.Person.Phone>()
                     {
-                        new Phone ()
+                        new BcGov.Fams3.SearchApi.Contracts.Person.Phone ()
                         {
                             PhoneNumber = "4005678900"
                         }
                     },
-                    Names = new List<Name>()
+                    Names = new List<BcGov.Fams3.SearchApi.Contracts.Person.Name>()
                     {
-                        new Name ()
+                        new BcGov.Fams3.SearchApi.Contracts.Person.Name ()
                         {
                             FirstName = "firstName"
                         }

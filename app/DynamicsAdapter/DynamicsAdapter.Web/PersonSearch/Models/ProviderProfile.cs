@@ -1,4 +1,5 @@
-﻿using Fams3Adapter.Dynamics.OptionSets.Models;
+﻿using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
+using Fams3Adapter.Dynamics.OptionSets.Models;
 using Fams3Adapter.Dynamics.Types;
 using System;
 using System.Collections.Generic;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DynamicsAdapter.Web.PersonSearch.Models
 {
-    public class ProviderProfile
+    public class ProviderProfile : BcGov.Fams3.SearchApi.Contracts.PersonSearch.ProviderProfile
     {
         public string Name { get; set; }
     }

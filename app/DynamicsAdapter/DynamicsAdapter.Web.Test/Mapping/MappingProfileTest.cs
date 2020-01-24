@@ -223,25 +223,25 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 {
                     Name = "completedProfile"
                 },
-                MatchedPerson = new Person()
+                MatchedPerson = new BcGov.Fams3.SearchApi.Contracts.Person.Person()
                 {
                     FirstName = "firstName",
                     LastName = "lastName",
                     DateOfBirth = new DateTime(2019, 3, 5),
-                    Identifiers = new PersonalIdentifier[]
+                    Identifiers = new BcGov.Fams3.SearchApi.Contracts.Person.PersonalIdentifier[]
                     {
-                        new PersonalIdentifier(){ },
-                        new PersonalIdentifier(){ }
+                        new BcGov.Fams3.SearchApi.Contracts.Person.PersonalIdentifier(){ },
+                        new BcGov.Fams3.SearchApi.Contracts.Person.PersonalIdentifier(){ }
                     },
-                    Addresses = new Address[]
+                    Addresses = new BcGov.Fams3.SearchApi.Contracts.Person.Address[]
                     {
-                        new Address(){ },
-                        new Address(){ }
+                        new BcGov.Fams3.SearchApi.Contracts.Person.Address(){ },
+                        new BcGov.Fams3.SearchApi.Contracts.Person.Address(){ }
                     },
-                    Phones = new Phone[]
+                    Phones = new BcGov.Fams3.SearchApi.Contracts.Person.Phone[]
                     {
-                        new Phone(){ },
-                        new Phone(){ }
+                        new BcGov.Fams3.SearchApi.Contracts.Person.Phone(){ },
+                        new BcGov.Fams3.SearchApi.Contracts.Person.Phone(){ }
                     }
                 }
             };
@@ -264,15 +264,15 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 {
                     Name = "completedProfile"
                 },
-                MatchedPerson = new Person()
+                MatchedPerson = new BcGov.Fams3.SearchApi.Contracts.Person.Person()
                 {
                     FirstName = "firstName",
                     LastName = "lastName",
                     DateOfBirth = new DateTime(2019, 3, 5),
-                    Identifiers = new PersonalIdentifier[]
+                    Identifiers = new BcGov.Fams3.SearchApi.Contracts.Person.PersonalIdentifier[]
                     {
-                        new PersonalIdentifier(){ },
-                        new PersonalIdentifier(){ }
+                        new BcGov.Fams3.SearchApi.Contracts.Person.PersonalIdentifier(){ },
+                        new BcGov.Fams3.SearchApi.Contracts.Person.PersonalIdentifier(){ }
                     },
                     Addresses = null
                 }

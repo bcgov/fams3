@@ -12,6 +12,6 @@ namespace DynamicsAdapter.Web.PersonSearch.Models
 
         public DateTime TimeStamp { get; set; }
 
-        public  BcGov.Fams3.SearchApi.Contracts.PersonSearch.ProviderProfile ProviderProfile { get; set; }
+        public BcGov.Fams3.SearchApi.Contracts.PersonSearch.ProviderProfile ProviderProfile { get; set; }
     }
 }

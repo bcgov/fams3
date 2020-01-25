@@ -6,15 +6,9 @@ using System.Threading.Tasks;
 
 namespace DynamicsAdapter.Web.PersonSearch.Models
 {
-    public class PersonSearchRejected : BcGov.Fams3.SearchApi.Contracts.PersonSearch.PersonSearchRejected
+    public class PersonSearchRejected : PersonSearchStatus, BcGov.Fams3.SearchApi.Contracts.PersonSearch.PersonSearchRejected
     {
         public IEnumerable<ValidationResult> Reasons { get; set; }
-        public Guid SearchRequestId { get; set; }
-
-        public DateTime TimeStamp { get; set; }
-
-        public ProviderProfile ProviderProfile { get; set; }
-
         BcGov.Fams3.SearchApi.Contracts.PersonSearch.ProviderProfile AdapterEvent.ProviderProfile => ProviderProfile;
         IEnumerable<BcGov.Fams3.SearchApi.Contracts.PersonSearch.ValidationResult> BcGov.Fams3.SearchApi.Contracts.PersonSearch.PersonSearchRejected.Reasons => Reasons;
     }

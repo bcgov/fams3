@@ -190,16 +190,16 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _mapper.Setup(m => m.Map<SSG_SearchApiEvent>(It.IsAny<PersonSearchCompleted>()))
                                .Returns(fakeSearchApiEvent);
 
-            _mapper.Setup(m => m.Map<SSG_Identifier>(It.IsAny<PersonalIdentifier>()))
+            _mapper.Setup(m => m.Map<SSG_Identifier>(It.IsAny<BcGov.Fams3.SearchApi.Contracts.Person.PersonalIdentifier>()))
                                .Returns(_fakePersoneIdentifier);
 
-            _mapper.Setup(m => m.Map<SSG_PhoneNumber>(It.IsAny<Phone>()))
+            _mapper.Setup(m => m.Map<SSG_PhoneNumber>(It.IsAny<BcGov.Fams3.SearchApi.Contracts.Person.Phone>()))
                              .Returns(_fakePersonPhoneNumber);
 
-            _mapper.Setup(m => m.Map<SSG_Address>(It.IsAny<Address>()))
+            _mapper.Setup(m => m.Map<SSG_Address>(It.IsAny<BcGov.Fams3.SearchApi.Contracts.Person.Address>()))
                               .Returns(_fakePersonAddress);
 
-            _mapper.Setup(m => m.Map<SSG_Aliase>(It.IsAny<Name>()))
+            _mapper.Setup(m => m.Map<SSG_Aliase>(It.IsAny<BcGov.Fams3.SearchApi.Contracts.Person.Name>()))
                   .Returns(_fakeName);
 
 

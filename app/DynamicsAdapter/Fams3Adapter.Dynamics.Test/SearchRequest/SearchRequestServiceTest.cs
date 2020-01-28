@@ -120,7 +120,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
                 ThirdGivenName = "Third",
                 DateOfBirth = null,
                 DateOfDeath = null,
-                DateOfDeathConfirmed = "No",
+                DateOfDeathConfirmed = false,
                 Incacerated = 86000071,
                 StateCode = 0,
                 StatusCode = 1,

@@ -73,7 +73,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             .InsertEntryAsync(It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult(new SSG_Aliase()
             {
-               FullName = "firstName middleName lastName"
+               FirstName = "firstName"
             })
             );
 
@@ -141,15 +141,19 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
                 FirstName = "firstName",
                 LastName = "lastName",
                 MiddleName = "middleName",
-                FullName = "firstName middleName lastName",
                 Comments = "testComments",
-                Type = PersonNameCategory.MaidenName.Value,
+                Type = PersonNameCategory.LegalName.Value,
+                Notes = "notes",
+                ThirdGivenName ="thirdName",
+                ProviderTypeCode = "legal",
+                Date1 = new DateTime(2001,1,1),
+                Date1Label = "date1lable",
                 SearchRequest = new SSG_SearchRequest() { SearchRequestId = testId }
             };
 
             var result = await _sut.CreateName(name, CancellationToken.None);
 
-            Assert.AreEqual("firstName middleName lastName", result.FullName);
+            Assert.AreEqual("firstName", result.FirstName);
         }
     }
 }

@@ -12,14 +12,6 @@ using System.Threading.Tasks;
 namespace DynamicsAdapter.Web.Mapping
 {
 
-    public class FullNameResolver : IValueResolver<Name, SSG_Aliase, string>
-    {
-        public string Resolve(Name source, SSG_Aliase dest, string fullName, ResolutionContext context)
-        {
-            return $"{source.FirstName} {source.MiddleName} {source.LastName}";
-        }
-    }
-
     public class Date1Resolver : IValueResolver<PersonalInfo, DynamicsEntity, DateTime?>
     {
         public DateTime? Resolve(PersonalInfo source, DynamicsEntity dest, DateTime? date1, ResolutionContext context)

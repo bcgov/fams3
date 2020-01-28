@@ -83,6 +83,9 @@
     },
     "Person": {
       "type": "object",
+      "required": [
+        "dateDeathConfirmed"
+      ],
       "properties": {
         "firstName": {
           "type": "string"
@@ -90,9 +93,28 @@
         "lastName": {
           "type": "string"
         },
+        "middleName": {
+          "type": "string"
+        },
+        "otherName": {
+          "type": "string"
+        },
         "dateOfBirth": {
           "type": "string",
           "format": "date-time"
+        },
+        "dateOfDeath": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "gender": {
+          "type": "string"
+        },
+        "dateDeathConfirmed": {
+          "type": "boolean"
+        },
+        "incacerated": {
+          "type": "string"
         },
         "identifiers": {
           "type": "array",
@@ -117,6 +139,9 @@
           "items": {
             "$ref": "#/definitions/Name"
           }
+        },
+        "notes": {
+          "type": "string"
         }
       }
     },
@@ -274,65 +299,60 @@
       ]
     },
     "Phone": {
-      "type": "object",
-      "properties": {
-        "suppliedBy": {
-          "type": "string",
-          "description": "Supply "
+      "allOf": [
+        {
+          "$ref": "#/definitions/PersonalInfo"
         },
-        "date": {
-          "type": "string",
-          "description": "A Date",
-          "format": "date-time"
-        },
-        "dateType": {
-          "type": "string",
-          "description": "The Date type of the supplied Date"
-        },
-        "phoneNumber": {
-          "type": "string",
-          "description": "The Phone number"
-        },
-        "phoneNumberType": {
-          "type": "string",
-          "description": "The phone number type"
+        {
+          "type": "object",
+          "properties": {
+            "phoneNumber": {
+              "type": "string",
+              "description": "The Phone number"
+            },
+            "extension": {
+              "type": "string",
+              "description": "The extension number"
+            },
+            "type": {
+              "type": "string",
+              "description": "The phone number type"
+            }
+          }
         }
-      }
+      ]
     },
     "Name": {
-      "type": "object",
-      "properties": {
-        "firstName": {
-          "type": "string",
-          "description": "The first name"
+      "allOf": [
+        {
+          "$ref": "#/definitions/PersonalInfo"
         },
-        "lastName": {
-          "type": "string",
-          "description": "The last name"
-        },
-        "middleName": {
-          "type": "string",
-          "description": "The middle name"
-        },
-        "type": {
-          "type": "string",
-          "description": "the type of the names"
-        },
-        "effectiveDate": {
-          "type": "string",
-          "description": "the name effective date",
-          "format": "date-time"
-        },
-        "endDate": {
-          "type": "string",
-          "description": "The name end date",
-          "format": "date-time"
-        },
-        "description": {
-          "type": "string",
-          "description": "The name description"
+        {
+          "type": "object",
+          "properties": {
+            "firstName": {
+              "type": "string",
+              "description": "The first name"
+            },
+            "lastName": {
+              "type": "string",
+              "description": "The last name"
+            },
+            "middleName": {
+              "type": "string",
+              "description": "The middle name"
+            },
+            "otherName": {
+              "type": "string",
+              "description": "The other name"
+            },
+            "type": {
+              "type": "string",
+              "description": "the type of the names"
+            }
+          }
         }
-      }
+      ]
     }
   },
   "tags": [

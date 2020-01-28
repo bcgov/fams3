@@ -63,6 +63,9 @@ namespace DynamicsAdapter.Web.PersonSearch
                 {
                     SearchRequestId = searchRequestId
                 };
+
+            
+                await SavePerson(searchRequest, personCompletedEvent, cts.Token);
                 await UploadIdentifiers(searchRequest, personCompletedEvent, cts.Token);
                 await UploadAddresses(searchRequest, personCompletedEvent, cts.Token);
                 await UploadPhoneNumbers(searchRequest, personCompletedEvent, cts.Token);

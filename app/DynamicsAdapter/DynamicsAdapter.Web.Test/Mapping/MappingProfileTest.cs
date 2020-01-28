@@ -361,7 +361,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual("OtherName", ssg_person.ThirdGivenName);
             Assert.AreEqual(new DateTime(2011, 1, 1), ssg_person.DateOfBirth);
             Assert.AreEqual(new DateTime(2011, 1, 1), ssg_person.DateOfDeath);
-            Assert.AreEqual("Yes", ssg_person.DateOfDeathConfirmed);
+            Assert.AreEqual(true, ssg_person.DateOfDeathConfirmed);
             Assert.AreEqual("M", ssg_person.Gender);
             Assert.AreEqual("Some notes", ssg_person.Notes);
             Assert.AreEqual(NullableBooleanType.Yes.Value, ssg_person.Incacerated);
@@ -390,7 +390,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual("LastName", ssg_person.LastName);
             Assert.AreEqual("MiddleName", ssg_person.MiddleName);
             Assert.AreEqual("OtherName", ssg_person.ThirdGivenName);
-            Assert.AreEqual("No", ssg_person.DateOfDeathConfirmed);
+            Assert.AreEqual(false, ssg_person.DateOfDeathConfirmed);
             Assert.AreEqual(null, ssg_person.DateOfBirth);
             Assert.AreEqual(null, ssg_person.DateOfDeath);
             Assert.AreEqual("M", ssg_person.Gender);

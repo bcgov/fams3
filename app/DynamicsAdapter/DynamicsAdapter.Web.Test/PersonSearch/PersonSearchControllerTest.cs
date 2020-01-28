@@ -314,8 +314,6 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         public async Task With_valid_accepted_event_it_should_return_ok()
         {
             var result = await _sut.Accepted(_testGuid, fakePersonAcceptedEvent);
-
-
             _searchApiRequestServiceMock
                 .Verify(x => x.AddEventAsync(It.Is<Guid>(x => x == _testGuid), It.IsAny<SSG_SearchApiEvent>(), It.IsAny<CancellationToken>()), Times.Once);
 

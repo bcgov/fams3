@@ -131,9 +131,11 @@ namespace  DynamicsAdapter.Web.Mapping
                .ForMember(dest => dest.ThirdGivenName, opt => opt.MapFrom(src => src.OtherName))
                .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => (src.DateOfBirth != null) ? src.DateOfBirth.Value.DateTime : (DateTime?)null))
                 .ForMember(dest => dest.DateOfDeath, opt => opt.MapFrom(src => (src.DateOfDeath != null) ? src.DateOfDeath.Value.DateTime : (DateTime?)null))
-                 .ForMember(dest => dest.DateOfDeathConfirmed, opt => opt.ConvertUsing(new DateDeathConfirmedConverter(), src => src.DateDeathConfirmed))
+                 .ForMember(dest => dest.DateOfDeathConfirmed, opt => opt.MapFrom( src => src.DateDeathConfirmed))
                .ForMember(dest => dest.Gender, opt => opt.MapFrom(src => src.Gender))
                .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
+                  .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => 0))
+               .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1))
                .ForMember(dest => dest.Incacerated, opt => opt.ConvertUsing(new IncaceratedConverter(), src => src.Incacerated));
               
         }

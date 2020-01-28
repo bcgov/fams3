@@ -191,17 +191,5 @@ namespace DynamicsAdapter.Web.Mapping
         }
     }
 
-    public class DateDeathConfirmedConverter : IValueConverter<bool?, string>
-    {
-        public string Convert(bool? source, ResolutionContext context)
-        {
-            return
-                source switch
-                {
-                    true => "Yes",
-                    false => "No",
-                    _ => null
-                };
-        }
-    }
+    
 }

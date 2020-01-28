@@ -6,9 +6,15 @@ using System.Text;
 
 namespace Fams3Adapter.Dynamics.Person
 {
-    public class SSG_Person : DynamicsEntity
+    public class SSG_Person 
     {
-        [JsonProperty("ssg_searchrequestid")]
+
+        [JsonProperty("statecode")]
+        public int StateCode { get; set; }
+
+        [JsonProperty("statuscode")]
+        public int StatusCode { get; set; }
+        [JsonProperty("ssg_SearchRequestId")]
         public virtual SSG_SearchRequest SearchRequest { get; set; }
 
         [JsonProperty("ssg_informationsourcetext")]
@@ -21,7 +27,7 @@ namespace Fams3Adapter.Dynamics.Person
         public DateTime? DateOfDeath { get; set; }
 
         [JsonProperty("ssg_dateofdeathconfirmed")]
-        public string DateOfDeathConfirmed { get; set; }
+        public bool? DateOfDeathConfirmed { get; set; }
 
         [JsonProperty("ssg_firstname")]
         public string FirstName { get; set; }

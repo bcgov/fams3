@@ -176,13 +176,18 @@ namespace DynamicsAdapter.Web.Mapping
     {
         public int? Convert(string source, ResolutionContext context)
         {
-            return
-                source.ToLower() switch
-                {
-                    "Yes" => NullableBooleanType.Yes.Value,
-                    "No" => NullableBooleanType.No.Value,
-                    _ => null
-                };
+            if (!string.IsNullOrEmpty(source))
+            {
+                return 
+                    source.ToLower() switch
+                    {
+                        "yes" => NullableBooleanType.Yes.Value,
+                        "no" => NullableBooleanType.No.Value,
+                        _ => null
+                    };
+            }
+            return null;
+
         }
     }
 

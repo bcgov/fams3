@@ -183,10 +183,10 @@ namespace DynamicsAdapter.Web.Mapping
                     {
                         "yes" => NullableBooleanType.Yes.Value,
                         "no" => NullableBooleanType.No.Value,
-                        _ => null
+                        _ => (int?)null
                     };
             }
-            return null;
+            return (int?)null;
 
         }
     }

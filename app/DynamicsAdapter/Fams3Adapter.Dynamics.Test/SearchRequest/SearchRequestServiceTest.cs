@@ -1,6 +1,7 @@
 ﻿using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.Name;
+using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Fams3Adapter.Dynamics.Types;
@@ -77,6 +78,15 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             })
             );
 
+            odataClientMock.Setup(x => x.For<SSG_Person>(null).Set(It.Is<SSG_Person>(x => x.FirstName == "First"))
+          .InsertEntryAsync(It.IsAny<CancellationToken>()))
+          .Returns(Task.FromResult(new SSG_Person()
+          {
+              FirstName = "FirstName"
+          })
+          );
+
+
             _sut = new SearchRequestService(odataClientMock.Object);
         }
 
@@ -98,6 +108,29 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             Assert.AreEqual("test", result.Identification);
         }
 
+
+        [Test]
+        public async Task with_correct_searchRequestid_upload_persion_should_success()
+        {
+            var person = new SSG_Person()
+            {
+                FirstName = "First",
+                LastName = "lastName",
+                MiddleName = "middleName",
+                ThirdGivenName = "Third",
+                DateOfBirth = null,
+                DateOfDeath = null,
+                DateOfDeathConfirmed = "No",
+                Incacerated = 86000071,
+                StateCode = 0,
+                StatusCode = 1,
+                SearchRequest = new SSG_SearchRequest() { SearchRequestId = testId }
+            };
+
+            var result = await _sut.SavePerson(person, CancellationToken.None);
+
+            Assert.AreEqual("FirstName", result.FirstName);
+        }
         [Test]
         public async Task with_correct_searchRequestid_upload_phone_number_should_success()
         {

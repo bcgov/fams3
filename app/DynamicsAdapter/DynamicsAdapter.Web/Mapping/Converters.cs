@@ -162,7 +162,14 @@ namespace DynamicsAdapter.Web.Mapping
     {
         public int? Convert(string source, ResolutionContext context)
         {
-            return Enumeration.GetAll<PersonNameCategory>().FirstOrDefault(m => m.Name.Equals(source, StringComparison.OrdinalIgnoreCase))?.Value;
+            return 
+                source.ToLower() switch
+                { 
+                    "legal" => PersonNameCategory.LegalName.Value,
+                    "alias" => PersonNameCategory.Alias.Value,
+                    "blank" => (int?)null,
+                    _ => PersonNameCategory.Other.Value
+                };
         }
     }
 }

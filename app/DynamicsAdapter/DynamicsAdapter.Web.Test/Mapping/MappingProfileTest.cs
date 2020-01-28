@@ -321,18 +321,15 @@ namespace DynamicsAdapter.Web.Test.Mapping
         {
             Phone phoneNumber = new Phone()
             {               
-                Date = new DateTime(2003, 3, 3),
+               
                 PhoneNumber = "6904005678",
-                DateType = "Effective Date",
-                PhoneNumberType = "Home",
-                SuppliedBy = "ICBC"
+               
+                //PhoneNumberType = "Home",
+               
             };
             SSG_PhoneNumber sSG_PhoneNumber = _mapper.Map<SSG_PhoneNumber>(phoneNumber);
             Assert.AreEqual("6904005678", sSG_PhoneNumber.TelePhoneNumber);
-            Assert.AreEqual(TelephoneNumberType.Home.Value, sSG_PhoneNumber.TelephoneNumberType);
-            Assert.AreEqual(new DateTime(2003, 3, 3), sSG_PhoneNumber.DateData);
-            Assert.AreEqual("Effective Date", sSG_PhoneNumber.DateType);
-            Assert.AreEqual(InformationSourceType.ICBC.Value, sSG_PhoneNumber.InformationSource);
+            //Assert.AreEqual(TelephoneNumberType.Home.Value, sSG_PhoneNumber.TelephoneNumberType); 
             Assert.AreEqual(1, sSG_PhoneNumber.StatusCode);
             Assert.AreEqual(0, sSG_PhoneNumber.StateCode);
         }
@@ -345,24 +342,30 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 FirstName = "FirstName",
                 LastName = "LastName",
                 MiddleName = "MiddleName",
-                Type = "Legal Name",
-                EffectiveDate = new DateTime(2001, 1, 1),
-                EndDate = new DateTime(2002, 2, 1),
-                Description = "test name"
+                OtherName ="OtherName",
+                Type = "Former",
+                Description = "test name",
+                Notes = "notes",
+                ReferenceDates = new List<ReferenceDate>() {
+                    new ReferenceDate(){Index=0, Key="startDate", Value=new DateTime(2012,1,1) },
+                    new ReferenceDate(){Index=1, Key="endDate", Value=new DateTime(2014,1,1) },
+                }
             };
             SSG_Aliase ssg_name = _mapper.Map<SSG_Aliase>(name);
             Assert.AreEqual("FirstName", ssg_name.FirstName);
             Assert.AreEqual("LastName", ssg_name.LastName);
             Assert.AreEqual("MiddleName", ssg_name.MiddleName);
-            Assert.AreEqual("FirstName MiddleName LastName", ssg_name.FullName);
-            Assert.AreEqual(PersonNameCategory.LegalName.Value, ssg_name.Type);
+            Assert.AreEqual("OtherName", ssg_name.ThirdGivenName);
+            Assert.AreEqual(PersonNameCategory.Other.Value, ssg_name.Type);
             Assert.AreEqual("test name", ssg_name.Comments);
+            Assert.AreEqual("notes", ssg_name.Notes);
+            Assert.AreEqual("Former", ssg_name.ProviderTypeCode);
             Assert.AreEqual(1, ssg_name.StatusCode);
             Assert.AreEqual(0, ssg_name.StateCode);
-            //Assert.AreEqual(new DateTime(2001, 1, 1), ssg_name.EffectiveDate);
-            //Assert.AreEqual(new DateTime(2002, 2, 1), ssg_name.EndDate);
-            //Assert.AreEqual("Effective Date", ssg_name.EffectiveDateLabel);
-            //Assert.AreEqual("End Date", ssg_name.EndDateLabel);
+            Assert.AreEqual(new DateTime(2012, 1, 1), ssg_name.Date1);
+            Assert.AreEqual(new DateTime(2014, 1, 1), ssg_name.Date2);
+            Assert.AreEqual("startDate", ssg_name.Date1Label);
+            Assert.AreEqual("endDate", ssg_name.Date2Label);
         }
     }
 }

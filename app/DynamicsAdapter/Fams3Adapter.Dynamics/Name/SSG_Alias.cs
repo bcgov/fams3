@@ -14,9 +14,6 @@ namespace Fams3Adapter.Dynamics.Name
         [JsonProperty("ssg_informationsourcetext")]
         public int? InformationSource { get; set; }
 
-        [JsonProperty("ssg_personfullname")]
-        public string FullName { get; set; }
-
         [JsonProperty("ssg_persongivenname")]
         public string FirstName { get; set; }
 
@@ -32,10 +29,16 @@ namespace Fams3Adapter.Dynamics.Name
         [JsonProperty("ssg_personnamecategorytext")]
         public int? Type { get; set; }
 
+        [JsonProperty("ssg_providertypecode")]
+        public string ProviderTypeCode { get; set; }
+
         [JsonProperty("ssg_SearchRequest")]
         public virtual SSG_SearchRequest SearchRequest { get; set; }
 
         [JsonProperty("ssg_responsecomment")]
         public string Comments { get; set; }
+
+        [JsonProperty("ssg_notes")]
+        public string Notes { get; set; }
     }
 }

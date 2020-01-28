@@ -15,7 +15,8 @@ namespace Fams3Adapter.Dynamics.Types
             "ssg_informationsourcecodes",
             "ssg_addresscategorycodes" ,
             "ssg_telephonenumbercategorycodes",
-            "ssg_personnamecategorycodes"
+            "ssg_personnamecategorycodes",
+            "ssg_nullableboolean"
 
         };
 

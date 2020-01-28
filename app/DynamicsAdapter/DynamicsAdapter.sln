@@ -11,9 +11,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{1BE19189-0
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DynamicsAdapter.Web.Test", "DynamicsAdapter.Web.Test\DynamicsAdapter.Web.Test.csproj", "{6283EFDD-21EC-4FE5-B01E-54588BBB8FCD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fams3Adapter.Dynamics", "Fams3Adapter.Dynamics\Fams3Adapter.Dynamics.csproj", "{64CD5D00-7677-4F3B-BBAA-8F70B68DB4A7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fams3Adapter.Dynamics", "Fams3Adapter.Dynamics\Fams3Adapter.Dynamics.csproj", "{64CD5D00-7677-4F3B-BBAA-8F70B68DB4A7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fams3Adapter.Dynamics.Test", "Fams3Adapter.Dynamics.Test\Fams3Adapter.Dynamics.Test.csproj", "{F0A1BDFD-08C2-4A1E-A6CB-BD996B2274CF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fams3Adapter.Dynamics.Test", "Fams3Adapter.Dynamics.Test\Fams3Adapter.Dynamics.Test.csproj", "{F0A1BDFD-08C2-4A1E-A6CB-BD996B2274CF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{44D4250C-B14B-49B8-8C85-A2373B2CF5FE}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

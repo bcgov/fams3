@@ -72,8 +72,8 @@ namespace DynamicsAdapter.Web.Health
                 "ssg_informationsourcecodes" => Enumeration.GetAll<InformationSourceType>(),
                 "ssg_addresscategorycodes" => Enumeration.GetAll<LocationType>(),
                 "ssg_telephonenumbercategorycodes" => Enumeration.GetAll<TelephoneNumberType>(),
-                "ssg_personnamecategorycodes" => Enumeration.GetAll<CanadianProvinceType>(),
-                "ssg_nullableboolean" => Enumeration.GetAll<PersonNameCategory>(),
+                "ssg_personnamecategorycodes" => Enumeration.GetAll<PersonNameCategory>(),
+                "ssg_nullableboolean" => Enumeration.GetAll<NullableBooleanType>(),
                 _ => Enumeration.GetAll<TelephoneNumberType>()
             };
         }

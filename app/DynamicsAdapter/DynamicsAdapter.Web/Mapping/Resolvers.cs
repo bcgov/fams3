@@ -4,6 +4,7 @@ using Fams3Adapter.Dynamics;
 using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.Name;
+using Fams3Adapter.Dynamics.Person;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,12 +16,14 @@ namespace DynamicsAdapter.Web.Mapping
     public class Date1Resolver : IValueResolver<PersonalInfo, DynamicsEntity, DateTime?>
     {
         public DateTime? Resolve(PersonalInfo source, DynamicsEntity dest, DateTime? date1, ResolutionContext context)
-        {   
-            return source.ReferenceDates?.SingleOrDefault(m => m.Index == 0) ?.Value.DateTime ;
+        {
+            return source.ReferenceDates?.SingleOrDefault(m => m.Index == 0)?.Value.DateTime;
         }
-    }
 
-    public class Date1LabelResolver : IValueResolver<PersonalInfo, DynamicsEntity, string>
+    }
+       
+
+        public class Date1LabelResolver : IValueResolver<PersonalInfo, DynamicsEntity, string>
     {
         public string Resolve(PersonalInfo source, DynamicsEntity dest, string label, ResolutionContext context)
         {
@@ -43,6 +46,8 @@ namespace DynamicsAdapter.Web.Mapping
             return source.ReferenceDates?.SingleOrDefault(m => m.Index == 1)?.Key;
         }
     }
+
+  
 
     public class PersonalIdentifier_ReferenceDateResolver : IValueResolver<SSG_Identifier, PersonalIdentifier, ICollection<ReferenceDate>>
     {

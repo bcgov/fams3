@@ -15,10 +15,10 @@ namespace Fams3Adapter.Dynamics.Person
         public int? InformationSource { get; set; }
 
         [JsonProperty("ssg_dateofbirth")]
-        public string DateOfBirth { get; set; }
+        public DateTime? DateOfBirth { get; set; }
 
         [JsonProperty("ssg_dateofdeath")]
-        public string DateOfDirth { get; set; }
+        public DateTime? DateOfDeath { get; set; }
 
         [JsonProperty("ssg_dateofdeathconfirmed")]
         public string DateOfDeathConfirmed { get; set; }
@@ -42,7 +42,7 @@ namespace Fams3Adapter.Dynamics.Person
         public string Notes { get; set; }
 
         [JsonProperty("ssg_thirdgivenname")]
-        public string ThirdGiveName { get; set; }
+        public string ThirdGivenName { get; set; }
 
     }
 }

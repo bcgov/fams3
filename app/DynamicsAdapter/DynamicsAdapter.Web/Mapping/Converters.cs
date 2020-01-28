@@ -60,15 +60,15 @@ namespace DynamicsAdapter.Web.Mapping
             { IdentificationType.BCHydroBP.Value, PersonalIdentifierType.BCHydroBP },
             { IdentificationType.BCID.Value, PersonalIdentifierType.BCID },
             { IdentificationType.Other.Value, PersonalIdentifierType.Other },
-           
+
         };
     }
 
     public class IdentifierTypeConverter : IValueConverter<int?, PersonalIdentifierType>
-    {      
+    {
         public PersonalIdentifierType Convert(int? source, ResolutionContext context)
         {
-            return source==null? PersonalIdentifierType.Other : IDType.IDTypeDictionary[(int)source];
+            return source == null ? PersonalIdentifierType.Other : IDType.IDTypeDictionary[(int)source];
         }
     }
 
@@ -154,7 +154,7 @@ namespace DynamicsAdapter.Web.Mapping
     {
         public DateTime? Convert(DateTimeOffset? source, ResolutionContext context)
         {
-            return source ==null? null : (DateTime?)(((DateTimeOffset)source).DateTime);
+            return source == null ? null : (DateTime?)(((DateTimeOffset)source).DateTime);
         }
     }
 
@@ -162,13 +162,40 @@ namespace DynamicsAdapter.Web.Mapping
     {
         public int? Convert(string source, ResolutionContext context)
         {
-            return 
+            return
                 source.ToLower() switch
-                { 
+                {
                     "legal" => PersonNameCategory.LegalName.Value,
                     "alias" => PersonNameCategory.Alias.Value,
                     "blank" => (int?)null,
                     _ => PersonNameCategory.Other.Value
+                };
+        }
+    }
+    public class IncaceratedConverter : IValueConverter<string, int?>
+    {
+        public int? Convert(string source, ResolutionContext context)
+        {
+            return
+                source.ToLower() switch
+                {
+                    "Yes" => NullableBooleanType.Yes.Value,
+                    "No" => NullableBooleanType.No.Value,
+                    _ => null
+                };
+        }
+    }
+
+    public class DateDeathConfirmedConverter : IValueConverter<bool?, string>
+    {
+        public string Convert(bool? source, ResolutionContext context)
+        {
+            return
+                source switch
+                {
+                    true => "Yes",
+                    false => "No",
+                    _ => null
                 };
         }
     }

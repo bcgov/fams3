@@ -167,7 +167,7 @@ namespace DynamicsAdapter.Web.Mapping
                 { 
                     "legal" => PersonNameCategory.LegalName.Value,
                     "alias" => PersonNameCategory.Alias.Value,
-                    "blank" => null,
+                    "blank" => (int?)null,
                     _ => PersonNameCategory.Other.Value
                 };
         }

@@ -33,68 +33,75 @@ namespace DynamicsAdapter.Web.PersonSearch
             _mapper = mapper;
         }
 
-        public bool ProcessPersonFound(Person person, ProviderProfile providerProfile, SSG_SearchRequest searchRequest, CancellationToken concellationToken)
+        public async Task<bool> ProcessPersonFound(Person person, ProviderProfile providerProfile, SSG_SearchRequest request, CancellationToken concellationToken)
         {
+            if (person == null) return true;
+
+            int? providerDynamicsID  = providerProfile.DynamicsID();
+            SSG_Person ssg_person = _mapper.Map<SSG_Person>(person);
+            ssg_person.SearchRequest = request;
+            ssg_person.InformationSource = providerDynamicsID;
+            SSG_Person returnedPerson = await _searchRequestService.SavePerson(ssg_person, concellationToken);
+
+            await UploadIdentifiers(person, request, returnedPerson, providerDynamicsID, concellationToken);
+            await UploadAddresses(person, request, returnedPerson, providerDynamicsID, concellationToken);
+            await UploadPhoneNumbers(person, request, returnedPerson, providerDynamicsID, concellationToken);
+            await UploadNames(person, request, returnedPerson, providerDynamicsID, concellationToken);
             return true;
+
         }
 
-        private async Task<bool> UploadIdentifiers(SSG_SearchRequest request, PersonSearchCompleted personCompletedEvent, CancellationToken concellationToken)
+        private async Task<bool> UploadIdentifiers(Person person, SSG_SearchRequest request, SSG_Person ssg_person, int? providerDynamicsID, CancellationToken concellationToken)
         {
-            if (personCompletedEvent.MatchedPerson.Identifiers == null) return true;
-            foreach (var matchFoundPersonId in personCompletedEvent.MatchedPerson.Identifiers)
+            if (person.Identifiers == null) return true;
+            foreach (var matchFoundPersonId in person.Identifiers)
             {
                 SSG_Identifier identifier = _mapper.Map<SSG_Identifier>(matchFoundPersonId);
-                identifier.SSG_SearchRequest = request;
-                identifier.InformationSource = personCompletedEvent.ProviderProfile.DynamicsID();
+                identifier.SearchRequest = request;
+                identifier.InformationSource = providerDynamicsID;
+                identifier.Person = ssg_person;
                 var identifer = await _searchRequestService.CreateIdentifier(identifier, concellationToken);
             }
             return true;
         }
 
-        private async Task<bool> SavePerson(SSG_SearchRequest request, PersonSearchCompleted personCompletedEvent, CancellationToken concellationToken)
+        private async Task<bool> UploadAddresses(Person person, SSG_SearchRequest request, SSG_Person ssg_person, int? providerDynamicsID, CancellationToken concellationToken)
         {
-            if (personCompletedEvent.MatchedPerson == null) return true;
-            SSG_Person person = _mapper.Map<SSG_Person>(personCompletedEvent.MatchedPerson);
-            person.SearchRequest = request;
-            person.InformationSource = personCompletedEvent.ProviderProfile.DynamicsID();
-            await _searchRequestService.SavePerson(person, concellationToken);
-            return true;
-        }
-
-        private async Task<bool> UploadAddresses(SSG_SearchRequest request, PersonSearchCompleted personCompletedEvent, CancellationToken concellationToken)
-        {
-            if (personCompletedEvent.MatchedPerson.Addresses == null) return true;
-            foreach (var address in personCompletedEvent.MatchedPerson.Addresses)
+            if (person.Addresses == null) return true;
+            foreach (var address in person.Addresses)
             {
                 SSG_Address addr = _mapper.Map<SSG_Address>(address);
                 addr.SearchRequest = request;
-                addr.InformationSource = personCompletedEvent.ProviderProfile.DynamicsID();
+                addr.InformationSource = providerDynamicsID;
+                addr.Person = ssg_person;
                 var uploadedAddr = await _searchRequestService.CreateAddress(addr, concellationToken);
             }
             return true;
         }
 
-        private async Task<bool> UploadPhoneNumbers(SSG_SearchRequest request, PersonSearchCompleted personCompletedEvent, CancellationToken concellationToken)
+        private async Task<bool> UploadPhoneNumbers(Person person, SSG_SearchRequest request, SSG_Person ssg_person, int? providerDynamicsID, CancellationToken concellationToken)
         {
-            if (personCompletedEvent.MatchedPerson.Phones == null) return true;
-            foreach (var phone in personCompletedEvent.MatchedPerson.Phones)
+            if (person.Phones == null) return true;
+            foreach (var phone in person.Phones)
             {
                 SSG_PhoneNumber ph = _mapper.Map<SSG_PhoneNumber>(phone);
                 ph.SearchRequest = request;
-                ph.InformationSource = personCompletedEvent.ProviderProfile.DynamicsID();
+                ph.InformationSource = providerDynamicsID;
+                ph.Person = ssg_person;
                 await _searchRequestService.CreatePhoneNumber(ph, concellationToken);
             }
             return true;
         }
 
-        private async Task<bool> UploadNames(SSG_SearchRequest request, PersonSearchCompleted personCompletedEvent, CancellationToken concellationToken)
+        private async Task<bool> UploadNames(Person person, SSG_SearchRequest request, SSG_Person ssg_person, int? providerDynamicsID, CancellationToken concellationToken)
         {
-            if (personCompletedEvent.MatchedPerson.Names == null) return true;
-            foreach (var name in personCompletedEvent.MatchedPerson.Names)
+            if (person.Names == null) return true;
+            foreach (var name in person.Names)
             {
                 SSG_Aliase n = _mapper.Map<SSG_Aliase>(name);
                 n.SearchRequest = request;
-                n.InformationSource = personCompletedEvent.ProviderProfile.DynamicsID();
+                n.InformationSource = providerDynamicsID;
+                n.Person = ssg_person;
                 await _searchRequestService.CreateName(n, concellationToken);
             }
             return true;

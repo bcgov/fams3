@@ -100,7 +100,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
                 //IdentificationEffectiveDate = DateTime.Now,
                 StateCode = 0,
                 StatusCode = 1,
-                SSG_SearchRequest = new SSG_SearchRequest() { SearchRequestId = testId }
+                SearchRequest = new SSG_SearchRequest() { SearchRequestId = testId }
             };
 
             var result = await _sut.CreateIdentifier(identifier, CancellationToken.None);

@@ -119,49 +119,10 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                     DateOfBirth = DateTime.Now,
                     FirstName = "TEST1",
                     LastName = "TEST2",
-                    Identifiers = new List<PersonalIdentifier>()
-                        {
-                            new PersonalIdentifier()
-                            {
-                               Value  = "test",
-                               IssuedBy = "test",
-                               Type = PersonalIdentifierType.DriverLicense
-                            }
-                        },
-                    Addresses = new List<Address>()
-                        {
-                            new Address()
-                            {
-                                AddressLine1 = "AddressLine1",
-                                AddressLine2 = "AddressLine2",
-                                AddressLine3 = "AddressLine3",
-                                StateProvince = "Manitoba",
-                                City = "testCity",
-                                Type = "residence",
-                                CountryRegion= "canada",
-                                ZipPostalCode = "p3p3p3",
-                                ReferenceDates = new List<ReferenceDate>(){
-                                    new ReferenceDate(){ Index=0, Key="Start Date", Value=new DateTime(2019,9,1) },
-                                    new ReferenceDate(){ Index=1, Key="End Date", Value=new DateTime(2020,9,1) }
-                                },
-                                Description = "description"
-                            }
-                        },
-                    Phones = new List<Phone>()
-                    {
-                        new Phone ()
-                        {
-                            PhoneNumber = "4005678900"
-                        }
-                    },
-                    Names = new List<Name>()
-                    {
-                        new Name ()
-                        {
-                            FirstName = "firstName"
-                        }
-                    }
-
+                    Identifiers = new List<PersonalIdentifier>() { },                       
+                    Addresses = new List<Address>(){ },
+                    Phones = new List<Phone>(){ },
+                    Names = new List<Name>(){ }
                 }
             };
 
@@ -226,34 +187,6 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _personFoundServiceMock.Setup(x => x.ProcessPersonFound(It.Is<Person>(x => x.FirstName == "TEST1"),It.IsAny<ProviderProfile>(), It.IsAny<SSG_SearchRequest>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<bool>(true));
 
-            //_searchRequestServiceMock.Setup(x => x.CreateIdentifier(It.Is<SSG_Identifier>(x => x.SearchRequest.SearchRequestId == invalidRequestId), It.IsAny<CancellationToken>()))
-            //    .Throws(new Exception("random exception"));
-
-            //_searchRequestServiceMock.Setup(x => x.CreateAddress(It.Is<SSG_Address>(x => x.SearchRequest.SearchRequestId == validRequestId), It.IsAny<CancellationToken>()))
-            //    .Returns(Task.FromResult<SSG_Address>(new SSG_Address()
-            //    {
-            //        AddressLine1 = "test full line"
-            //    }));
-
-            //_searchRequestServiceMock.Setup(x => x.CreatePhoneNumber(It.Is<SSG_PhoneNumber>(x => x.SearchRequest.SearchRequestId == validRequestId), It.IsAny<CancellationToken>()))
-            //  .Returns(Task.FromResult<SSG_PhoneNumber>(new SSG_PhoneNumber()
-            //  {
-            //      TelePhoneNumber = "4007678231"
-            //  }));
-
-            //_searchRequestServiceMock.Setup(x => x.CreateName(It.Is<SSG_Aliase>(x => x.SearchRequest.SearchRequestId == validRequestId), It.IsAny<CancellationToken>()))
-            //    .Returns(Task.FromResult<SSG_Aliase>(new SSG_Aliase()
-            //    {
-            //        FirstName = "firstName"
-            //    }));
-
-            //_searchRequestServiceMock.Setup(x => x.SavePerson(It.Is<SSG_Person>(x => x.SearchRequest.SearchRequestId == validRequestId), It.IsAny<CancellationToken>()))
-            //.Returns(Task.FromResult<SSG_Person>(new SSG_Person()
-            //{
-            //    FirstName = "First"
-            //}));
-
-
             _searchApiRequestServiceMock.Setup(x => x.AddEventAsync(It.Is<Guid>(x => x == _testGuid),
                     It.IsAny<SSG_SearchApiEvent>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<SSG_SearchApiEvent>(new SSG_SearchApiEvent()
@@ -277,25 +210,6 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             var result = await _sut.Completed(_testGuid, _fakePersonCompletedEvent);
 
             _personFoundServiceMock.Verify(x => x.ProcessPersonFound(It.Is<Person>(x => x.FirstName == "TEST1"), It.IsAny<ProviderProfile>(), It.IsAny<SSG_SearchRequest>(), It.IsAny<CancellationToken>()), Times.Once);
-            //_searchRequestServiceMock
-            //  .Verify(x => x.SavePerson(It.IsAny<SSG_Person>(), It.IsAny<CancellationToken>()), Times.Once);
-
-            //_searchRequestServiceMock
-            //    .Verify(x => x.CreateIdentifier(It.IsAny<SSG_Identifier>(), It.IsAny<CancellationToken>()), Times.Once);
-
-            //_searchRequestServiceMock
-            //     .Verify(x => x.CreateAddress(It.IsAny<SSG_Address>(), It.IsAny<CancellationToken>()), Times.Once);
-
-            //_searchRequestServiceMock
-            //    .Verify(x => x.CreatePhoneNumber(It.IsAny<SSG_PhoneNumber>(), It.IsAny<CancellationToken>()), Times.Once);
-
-            //_searchRequestServiceMock
-            //    .Verify(x => x.CreateName(It.IsAny<SSG_Aliase>(), It.IsAny<CancellationToken>()), Times.Once);
-
-
-            //_searchRequestServiceMock
-            //.Verify(x => x.SavePerson(It.IsAny<SSG_Person>(), It.IsAny<CancellationToken>()), Times.Once);
-
             _searchApiRequestServiceMock
                 .Verify(x => x.AddEventAsync(It.Is<Guid>(x => x == _testGuid), It.IsAny<SSG_SearchApiEvent>(), It.IsAny<CancellationToken>()), Times.Once);
             Assert.IsInstanceOf(typeof(OkResult), result);

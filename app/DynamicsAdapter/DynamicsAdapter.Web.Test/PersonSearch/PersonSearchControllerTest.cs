@@ -28,7 +28,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
 
         private PersonSearchController _sut;
         private Mock<ILogger<PersonSearchController>> _loggerMock ;
-        private Mock<ISearchRequestService> _searchRequestServiceMock;
+        private Mock<IPersonFoundService> _personFoundServiceMock;
         private Mock<ISearchApiRequestService> _searchApiRequestServiceMock;
         private PersonSearchCompleted _fakePersonCompletedEvent;
         private PersonSearchAccepted fakePersonAcceptedEvent;
@@ -50,7 +50,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _exceptionGuid = Guid.NewGuid();
             _loggerMock = new Mock<ILogger<PersonSearchController>>();
             _searchApiRequestServiceMock = new Mock<ISearchApiRequestService>();
-            _searchRequestServiceMock = new Mock<ISearchRequestService>();
+            _personFoundServiceMock = new Mock<IPersonFoundService>();
             _mapper = new Mock<IMapper>();
             var validRequestId = Guid.NewGuid();
             var invalidRequestId = Guid.NewGuid();
@@ -223,38 +223,35 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 .Returns(Task.FromResult<Guid>(invalidRequestId));
 
 
-            _searchRequestServiceMock.Setup(x => x.CreateIdentifier(It.Is<SSG_Identifier>(x => x.SearchRequest.SearchRequestId == validRequestId), It.IsAny<CancellationToken>()))
-                .Returns(Task.FromResult<SSG_Identifier>(new SSG_Identifier()
-                {
-                    Identification = "test identification"
-                }));
+            _personFoundServiceMock.Setup(x => x.ProcessPersonFound(It.Is<Person>(x => x.FirstName == "TEST1"),It.IsAny<ProviderProfile>(), It.IsAny<SSG_SearchRequest>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult<bool>(true));
 
-            _searchRequestServiceMock.Setup(x => x.CreateIdentifier(It.Is<SSG_Identifier>(x => x.SearchRequest.SearchRequestId == invalidRequestId), It.IsAny<CancellationToken>()))
-                .Throws(new Exception("random exception"));
+            //_searchRequestServiceMock.Setup(x => x.CreateIdentifier(It.Is<SSG_Identifier>(x => x.SearchRequest.SearchRequestId == invalidRequestId), It.IsAny<CancellationToken>()))
+            //    .Throws(new Exception("random exception"));
 
-            _searchRequestServiceMock.Setup(x => x.CreateAddress(It.Is<SSG_Address>(x => x.SearchRequest.SearchRequestId == validRequestId), It.IsAny<CancellationToken>()))
-                .Returns(Task.FromResult<SSG_Address>(new SSG_Address()
-                {
-                    AddressLine1 = "test full line"
-                }));
+            //_searchRequestServiceMock.Setup(x => x.CreateAddress(It.Is<SSG_Address>(x => x.SearchRequest.SearchRequestId == validRequestId), It.IsAny<CancellationToken>()))
+            //    .Returns(Task.FromResult<SSG_Address>(new SSG_Address()
+            //    {
+            //        AddressLine1 = "test full line"
+            //    }));
 
-            _searchRequestServiceMock.Setup(x => x.CreatePhoneNumber(It.Is<SSG_PhoneNumber>(x => x.SearchRequest.SearchRequestId == validRequestId), It.IsAny<CancellationToken>()))
-              .Returns(Task.FromResult<SSG_PhoneNumber>(new SSG_PhoneNumber()
-              {
-                  TelePhoneNumber = "4007678231"
-              }));
+            //_searchRequestServiceMock.Setup(x => x.CreatePhoneNumber(It.Is<SSG_PhoneNumber>(x => x.SearchRequest.SearchRequestId == validRequestId), It.IsAny<CancellationToken>()))
+            //  .Returns(Task.FromResult<SSG_PhoneNumber>(new SSG_PhoneNumber()
+            //  {
+            //      TelePhoneNumber = "4007678231"
+            //  }));
 
-            _searchRequestServiceMock.Setup(x => x.CreateName(It.Is<SSG_Aliase>(x => x.SearchRequest.SearchRequestId == validRequestId), It.IsAny<CancellationToken>()))
-                .Returns(Task.FromResult<SSG_Aliase>(new SSG_Aliase()
-                {
-                    FirstName = "firstName"
-                }));
+            //_searchRequestServiceMock.Setup(x => x.CreateName(It.Is<SSG_Aliase>(x => x.SearchRequest.SearchRequestId == validRequestId), It.IsAny<CancellationToken>()))
+            //    .Returns(Task.FromResult<SSG_Aliase>(new SSG_Aliase()
+            //    {
+            //        FirstName = "firstName"
+            //    }));
 
-            _searchRequestServiceMock.Setup(x => x.SavePerson(It.Is<SSG_Person>(x => x.SearchRequest.SearchRequestId == validRequestId), It.IsAny<CancellationToken>()))
-            .Returns(Task.FromResult<SSG_Person>(new SSG_Person()
-            {
-                FirstName = "First"
-            }));
+            //_searchRequestServiceMock.Setup(x => x.SavePerson(It.Is<SSG_Person>(x => x.SearchRequest.SearchRequestId == validRequestId), It.IsAny<CancellationToken>()))
+            //.Returns(Task.FromResult<SSG_Person>(new SSG_Person()
+            //{
+            //    FirstName = "First"
+            //}));
 
 
             _searchApiRequestServiceMock.Setup(x => x.AddEventAsync(It.Is<Guid>(x => x == _testGuid),
@@ -269,7 +266,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                     It.IsAny<SSG_SearchApiEvent>(), It.IsAny<CancellationToken>()))
                 .Throws(new Exception("random exception"));
 
-            _sut = new PersonSearchController(_searchRequestServiceMock.Object, _searchApiRequestServiceMock.Object, _loggerMock.Object,_mapper.Object);
+            _sut = new PersonSearchController(_personFoundServiceMock.Object, _searchApiRequestServiceMock.Object, _loggerMock.Object,_mapper.Object);
 
         }
 
@@ -279,24 +276,25 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
 
             var result = await _sut.Completed(_testGuid, _fakePersonCompletedEvent);
 
-            _searchRequestServiceMock
-              .Verify(x => x.SavePerson(It.IsAny<SSG_Person>(), It.IsAny<CancellationToken>()), Times.Once);
+            _personFoundServiceMock.Verify(x => x.ProcessPersonFound(It.Is<Person>(x => x.FirstName == "TEST1"), It.IsAny<ProviderProfile>(), It.IsAny<SSG_SearchRequest>(), It.IsAny<CancellationToken>()), Times.Once);
+            //_searchRequestServiceMock
+            //  .Verify(x => x.SavePerson(It.IsAny<SSG_Person>(), It.IsAny<CancellationToken>()), Times.Once);
 
-            _searchRequestServiceMock
-                .Verify(x => x.CreateIdentifier(It.IsAny<SSG_Identifier>(), It.IsAny<CancellationToken>()), Times.Once);
+            //_searchRequestServiceMock
+            //    .Verify(x => x.CreateIdentifier(It.IsAny<SSG_Identifier>(), It.IsAny<CancellationToken>()), Times.Once);
 
-            _searchRequestServiceMock
-                 .Verify(x => x.CreateAddress(It.IsAny<SSG_Address>(), It.IsAny<CancellationToken>()), Times.Once);
+            //_searchRequestServiceMock
+            //     .Verify(x => x.CreateAddress(It.IsAny<SSG_Address>(), It.IsAny<CancellationToken>()), Times.Once);
 
-            _searchRequestServiceMock
-                .Verify(x => x.CreatePhoneNumber(It.IsAny<SSG_PhoneNumber>(), It.IsAny<CancellationToken>()), Times.Once);
+            //_searchRequestServiceMock
+            //    .Verify(x => x.CreatePhoneNumber(It.IsAny<SSG_PhoneNumber>(), It.IsAny<CancellationToken>()), Times.Once);
 
-            _searchRequestServiceMock
-                .Verify(x => x.CreateName(It.IsAny<SSG_Aliase>(), It.IsAny<CancellationToken>()), Times.Once);
+            //_searchRequestServiceMock
+            //    .Verify(x => x.CreateName(It.IsAny<SSG_Aliase>(), It.IsAny<CancellationToken>()), Times.Once);
 
 
-            _searchRequestServiceMock
-            .Verify(x => x.SavePerson(It.IsAny<SSG_Person>(), It.IsAny<CancellationToken>()), Times.Once);
+            //_searchRequestServiceMock
+            //.Verify(x => x.SavePerson(It.IsAny<SSG_Person>(), It.IsAny<CancellationToken>()), Times.Once);
 
             _searchApiRequestServiceMock
                 .Verify(x => x.AddEventAsync(It.Is<Guid>(x => x == _testGuid), It.IsAny<SSG_SearchApiEvent>(), It.IsAny<CancellationToken>()), Times.Once);

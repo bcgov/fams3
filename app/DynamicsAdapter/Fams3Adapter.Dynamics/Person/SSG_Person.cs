@@ -6,16 +6,14 @@ using System.Text;
 
 namespace Fams3Adapter.Dynamics.Person
 {
-    public class SSG_Person 
+    public class SSG_Person_Upload
     {
-        //[JsonProperty("ssg_personid")]
-        //public Guid PersonId { get; set; }
-
         [JsonProperty("statecode")]
         public int StateCode { get; set; }
 
         [JsonProperty("statuscode")]
         public int StatusCode { get; set; }
+
         [JsonProperty("ssg_SearchRequestId")]
         public virtual SSG_SearchRequest SearchRequest { get; set; }
 
@@ -52,5 +50,11 @@ namespace Fams3Adapter.Dynamics.Person
         [JsonProperty("ssg_thirdgivenname")]
         public string ThirdGivenName { get; set; }
 
+    }
+
+    public class SSG_Person : SSG_Person_Upload
+    {
+        [JsonProperty("ssg_personid")]
+        public Guid PersonId { get; set; }
     }
 }

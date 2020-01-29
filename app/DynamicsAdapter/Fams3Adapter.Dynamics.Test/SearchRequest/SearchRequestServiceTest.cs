@@ -112,7 +112,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         [Test]
         public async Task with_correct_searchRequestid_upload_persion_should_success()
         {
-            var person = new SSG_Person()
+            var person = new SSG_Person_Upload()
             {
                 FirstName = "First",
                 LastName = "lastName",

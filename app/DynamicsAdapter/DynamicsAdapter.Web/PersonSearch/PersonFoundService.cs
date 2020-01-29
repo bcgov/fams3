@@ -38,7 +38,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             if (person == null) return true;
 
             int? providerDynamicsID  = providerProfile.DynamicsID();
-            SSG_Person ssg_person = _mapper.Map<SSG_Person>(person);
+            SSG_Person_Upload ssg_person = _mapper.Map<SSG_Person_Upload>(person);
             ssg_person.SearchRequest = request;
             ssg_person.InformationSource = providerDynamicsID;
             SSG_Person returnedPerson = await _searchRequestService.SavePerson(ssg_person, concellationToken);

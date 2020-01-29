@@ -64,7 +64,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                     SearchRequestId = searchRequestId
                 };
 
-                _personFoundService.ProcessPersonFound(personCompletedEvent.MatchedPerson, personCompletedEvent.ProviderProfile, searchRequest, cts.Token);
+                await _personFoundService.ProcessPersonFound(personCompletedEvent.MatchedPerson, personCompletedEvent.ProviderProfile, searchRequest, cts.Token);
             }
             catch (Exception ex)
             {

@@ -8,6 +8,8 @@ namespace Fams3Adapter.Dynamics.Person
 {
     public class SSG_Person 
     {
+        //[JsonProperty("ssg_personid")]
+        //public Guid PersonId { get; set; }
 
         [JsonProperty("statecode")]
         public int StateCode { get; set; }

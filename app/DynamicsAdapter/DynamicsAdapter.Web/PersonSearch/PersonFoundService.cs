@@ -17,10 +17,10 @@ namespace DynamicsAdapter.Web.PersonSearch
 {
     public interface IPersonFoundService
     {
-        bool ProcessPersonFound(Person person, ProviderProfile providerProfile, SSG_SearchRequest searchRequest, CancellationToken cancellationToken);
+        Task<bool> ProcessPersonFound(Person person, ProviderProfile providerProfile, SSG_SearchRequest searchRequest, CancellationToken cancellationToken);
     }
 
-    public class PersonFoundService
+    public class PersonFoundService : IPersonFoundService
     {
         private readonly ILogger<PersonFoundService> _logger;
         private readonly ISearchRequestService _searchRequestService;

@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Fams3Adapter.Dynamics.Types;
 using Fams3Adapter.Dynamics.Name;
+using Fams3Adapter.Dynamics.Person;
 
 namespace DynamicsAdapter.Web.PersonSearch
 {
@@ -62,6 +63,9 @@ namespace DynamicsAdapter.Web.PersonSearch
                 {
                     SearchRequestId = searchRequestId
                 };
+
+            
+                await SavePerson(searchRequest, personCompletedEvent, cts.Token);
                 await UploadIdentifiers(searchRequest, personCompletedEvent, cts.Token);
                 await UploadAddresses(searchRequest, personCompletedEvent, cts.Token);
                 await UploadPhoneNumbers(searchRequest, personCompletedEvent, cts.Token);
@@ -175,6 +179,16 @@ namespace DynamicsAdapter.Web.PersonSearch
                 identifier.InformationSource = personCompletedEvent.ProviderProfile.DynamicsID();
                 var identifer = await _searchRequestService.CreateIdentifier(identifier, concellationToken);
             }
+            return true;
+        }
+
+        private async Task<bool> SavePerson(SSG_SearchRequest request, PersonSearchCompleted personCompletedEvent, CancellationToken concellationToken)
+        {
+            if (personCompletedEvent.MatchedPerson == null) return true;
+            SSG_Person person = _mapper.Map<SSG_Person>(personCompletedEvent.MatchedPerson);
+            person.SearchRequest = request;
+            person.InformationSource = personCompletedEvent.ProviderProfile.DynamicsID();
+            await _searchRequestService.SavePerson(person, concellationToken);
             return true;
         }
 

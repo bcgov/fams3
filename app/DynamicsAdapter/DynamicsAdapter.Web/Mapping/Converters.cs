@@ -60,15 +60,15 @@ namespace DynamicsAdapter.Web.Mapping
             { IdentificationType.BCHydroBP.Value, PersonalIdentifierType.BCHydroBP },
             { IdentificationType.BCID.Value, PersonalIdentifierType.BCID },
             { IdentificationType.Other.Value, PersonalIdentifierType.Other },
-           
+
         };
     }
 
     public class IdentifierTypeConverter : IValueConverter<int?, PersonalIdentifierType>
-    {      
+    {
         public PersonalIdentifierType Convert(int? source, ResolutionContext context)
         {
-            return source==null? PersonalIdentifierType.Other : IDType.IDTypeDictionary[(int)source];
+            return source == null ? PersonalIdentifierType.Other : IDType.IDTypeDictionary[(int)source];
         }
     }
 
@@ -154,7 +154,7 @@ namespace DynamicsAdapter.Web.Mapping
     {
         public DateTime? Convert(DateTimeOffset? source, ResolutionContext context)
         {
-            return source ==null? null : (DateTime?)(((DateTimeOffset)source).DateTime);
+            return source == null ? null : (DateTime?)(((DateTimeOffset)source).DateTime);
         }
     }
 
@@ -162,9 +162,9 @@ namespace DynamicsAdapter.Web.Mapping
     {
         public int? Convert(string source, ResolutionContext context)
         {
-            return 
+            return
                 source.ToLower() switch
-                { 
+                {
                     "legal" => PersonNameCategory.LegalName.Value,
                     "alias" => PersonNameCategory.Alias.Value,
                     "blank" => (int?)null,
@@ -172,4 +172,24 @@ namespace DynamicsAdapter.Web.Mapping
                 };
         }
     }
+    public class IncaceratedConverter : IValueConverter<string, int?>
+    {
+        public int? Convert(string source, ResolutionContext context)
+        {
+            if (!string.IsNullOrEmpty(source))
+            {
+                return 
+                    source.ToLower() switch
+                    {
+                        "yes" => NullableBooleanType.Yes.Value,
+                        "no" => NullableBooleanType.No.Value,
+                        _ => (int?)null
+                    };
+            }
+            return (int?)null;
+
+        }
+    }
+
+    
 }

@@ -10,6 +10,7 @@ using DynamicsAdapter.Web.PersonSearch.Models;
 using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.Name;
+using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.SearchApiEvent;
 using Fams3Adapter.Dynamics.SearchApiRequest;
@@ -332,6 +333,101 @@ namespace DynamicsAdapter.Web.Test.Mapping
             //Assert.AreEqual(TelephoneNumberType.Home.Value, sSG_PhoneNumber.TelephoneNumberType); 
             Assert.AreEqual(1, sSG_PhoneNumber.StatusCode);
             Assert.AreEqual(0, sSG_PhoneNumber.StateCode);
+        }
+
+
+
+        [Test]
+        public void Person_should_map_to_SSG_Person_correctly()
+        {
+            var person = new Person()
+            {
+                FirstName = "FirstName",
+                LastName = "LastName",
+                MiddleName = "MiddleName",
+                OtherName = "OtherName",
+               DateOfBirth = new DateTimeOffset(new DateTime(2011, 1, 1)),
+               DateDeathConfirmed = true,
+               DateOfDeath = new DateTimeOffset(new DateTime(2011, 1, 1)),
+                Gender = "M",
+                Notes = "Some notes",
+               Incacerated = "Yes"
+               
+            };
+            SSG_Person ssg_person = _mapper.Map<SSG_Person>(person);
+            Assert.AreEqual("FirstName", ssg_person.FirstName);
+            Assert.AreEqual("LastName", ssg_person.LastName);
+            Assert.AreEqual("MiddleName", ssg_person.MiddleName);
+            Assert.AreEqual("OtherName", ssg_person.ThirdGivenName);
+            Assert.AreEqual(new DateTime(2011, 1, 1), ssg_person.DateOfBirth);
+            Assert.AreEqual(new DateTime(2011, 1, 1), ssg_person.DateOfDeath);
+            Assert.AreEqual(true, ssg_person.DateOfDeathConfirmed);
+            Assert.AreEqual("M", ssg_person.Gender);
+            Assert.AreEqual("Some notes", ssg_person.Notes);
+            Assert.AreEqual(NullableBooleanType.Yes.Value, ssg_person.Incacerated);
+          
+        }
+
+        [Test]
+        public void Person_should_map_null_dates_to_SSG_Person_correctly()
+        {
+            var person = new Person()
+            {
+                FirstName = "FirstName",
+                LastName = "LastName",
+                MiddleName = "MiddleName",
+                OtherName = "OtherName",
+                DateOfBirth = null,
+                DateOfDeath = null,
+                DateDeathConfirmed = false,
+                Gender = "M",
+                Notes = "Some notes",
+                
+
+            };
+            SSG_Person ssg_person = _mapper.Map<SSG_Person>(person);
+            Assert.AreEqual("FirstName", ssg_person.FirstName);
+            Assert.AreEqual("LastName", ssg_person.LastName);
+            Assert.AreEqual("MiddleName", ssg_person.MiddleName);
+            Assert.AreEqual("OtherName", ssg_person.ThirdGivenName);
+            Assert.AreEqual(false, ssg_person.DateOfDeathConfirmed);
+            Assert.AreEqual(null, ssg_person.DateOfBirth);
+            Assert.AreEqual(null, ssg_person.DateOfDeath);
+            Assert.AreEqual("M", ssg_person.Gender);
+            Assert.AreEqual("Some notes", ssg_person.Notes);
+
+        }
+
+
+        [Test]
+        public void Person_should_map_null_incacerated_datedealthconfirmed_to_SSG_Person_correctly()
+        {
+            var person = new Person()
+            {
+                FirstName = "FirstName",
+                LastName = "LastName",
+                MiddleName = "MiddleName",
+                OtherName = "OtherName",
+                DateOfBirth = new DateTimeOffset(new DateTime(2011, 1, 1)),
+                DateOfDeath = new DateTimeOffset(new DateTime(2011, 1, 1)),
+                DateDeathConfirmed = null,
+                Gender = "M",
+                Notes = "Some notes",
+                Incacerated = null
+
+
+            };
+            SSG_Person ssg_person = _mapper.Map<SSG_Person>(person);
+            Assert.AreEqual("FirstName", ssg_person.FirstName);
+            Assert.AreEqual("LastName", ssg_person.LastName);
+            Assert.AreEqual("MiddleName", ssg_person.MiddleName);
+            Assert.AreEqual("OtherName", ssg_person.ThirdGivenName);
+            Assert.AreEqual(null, ssg_person.DateOfDeathConfirmed);
+            Assert.AreEqual(new DateTime(2011, 1, 1), ssg_person.DateOfBirth);
+            Assert.AreEqual(new DateTime(2011, 1, 1), ssg_person.DateOfDeath);
+            Assert.AreEqual("M", ssg_person.Gender);
+            Assert.AreEqual(null, ssg_person.Incacerated);
+
         }
 
         [Test]

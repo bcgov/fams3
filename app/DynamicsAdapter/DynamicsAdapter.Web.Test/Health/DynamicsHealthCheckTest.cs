@@ -74,7 +74,11 @@ namespace DynamicsAdapter.Web.Test.Health
       .Returns(Task.FromResult(Enumeration.GetAll<TelephoneNumberType>().Select(x => new GenericOption(x.Value, x.Name))));
 
             _statusReasonServiceMock.Setup(x => x.GetAllOptions("ssg_personnamecategorycodes", CancellationToken.None))
-.Returns(Task.FromResult(Enumeration.GetAll<PersonNameCategory>().Select(x => new GenericOption(x.Value, x.Name))));
+        .Returns(Task.FromResult(Enumeration.GetAll<PersonNameCategory>().Select(x => new GenericOption(x.Value, x.Name))));
+
+            _statusReasonServiceMock.Setup(x => x.GetAllOptions("ssg_nullableboolean", CancellationToken.None))
+        .Returns(Task.FromResult(Enumeration.GetAll<NullableBooleanType>().Select(x => new GenericOption(x.Value, x.Name))));
+
 
             _sut = new DynamicsHealthCheck(_statusReasonServiceMock.Object, _statusReasonServiceLogger.Object);
 

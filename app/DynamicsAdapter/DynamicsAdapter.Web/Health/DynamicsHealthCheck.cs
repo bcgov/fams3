@@ -65,32 +65,17 @@ namespace DynamicsAdapter.Web.Health
 
         private IEnumerable<Enumeration> GetListOfOptions (string entityName)
         {
-            IEnumerable<Enumeration> optionsList;
-            switch (entityName)
+            return entityName.ToLower() switch
             {
-                case "ssg_canadianprovincecodesimpletype":
-                    optionsList= Enumeration.GetAll<CanadianProvinceType>();
-                    break;
-                case "ssg_identificationtypes":
-                    optionsList = Enumeration.GetAll<IdentificationType>();
-                    break;
-                case "ssg_informationsourcecodes":
-                    optionsList = Enumeration.GetAll<InformationSourceType>();
-                    break;
-                case "ssg_addresscategorycodes":
-                    optionsList = Enumeration.GetAll<LocationType>();
-                    break;
-                case "ssg_telephonenumbercategorycodes":
-                    optionsList = Enumeration.GetAll<TelephoneNumberType>();
-                    break;
-                case "ssg_personnamecategorycodes":
-                    optionsList = Enumeration.GetAll<PersonNameCategory>();
-                    break;
-                default:
-                    optionsList= Enumeration.GetAll<TelephoneNumberType>();
-                    break;
-            }
-            return optionsList;
+                "ssg_canadianprovincecodesimpletype" => Enumeration.GetAll<CanadianProvinceType>(),
+                "ssg_identificationtypes" => Enumeration.GetAll<IdentificationType>(),
+                "ssg_informationsourcecodes" => Enumeration.GetAll<InformationSourceType>(),
+                "ssg_addresscategorycodes" => Enumeration.GetAll<LocationType>(),
+                "ssg_telephonenumbercategorycodes" => Enumeration.GetAll<TelephoneNumberType>(),
+                "ssg_personnamecategorycodes" => Enumeration.GetAll<PersonNameCategory>(),
+                "ssg_nullableboolean" => Enumeration.GetAll<NullableBooleanType>(),
+                _ => Enumeration.GetAll<TelephoneNumberType>()
+            };
         }
 
         private async Task<bool> CheckOptionSet(CancellationToken cancellationToken, List<string> optionTypes)

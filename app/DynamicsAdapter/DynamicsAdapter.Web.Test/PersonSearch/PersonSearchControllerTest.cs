@@ -8,6 +8,7 @@ using DynamicsAdapter.Web.PersonSearch.Models;
 using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.Name;
+using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.SearchApiEvent;
 using Fams3Adapter.Dynamics.SearchApiRequest;
@@ -38,6 +39,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         private SSG_Address _fakePersonAddress;
         private SSG_PhoneNumber _fakePersonPhoneNumber;
         private SSG_Aliase _fakeName;
+        private SSG_Person _fakePerson;
 
         private Mock<IMapper> _mapper;
 
@@ -79,6 +81,14 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             };
 
             _fakeName = new SSG_Aliase
+            {
+                SearchRequest = new SSG_SearchRequest
+                {
+                    SearchRequestId = validRequestId
+                }
+            };
+
+            _fakePerson = new SSG_Person
             {
                 SearchRequest = new SSG_SearchRequest
                 {
@@ -202,6 +212,9 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _mapper.Setup(m => m.Map<SSG_Aliase>(It.IsAny<Name>()))
                   .Returns(_fakeName);
 
+            _mapper.Setup(m => m.Map<SSG_Person>(It.IsAny<Person>()))
+               .Returns(_fakePerson);
+
 
             _searchApiRequestServiceMock.Setup(x => x.GetLinkedSearchRequestIdAsync(It.Is<Guid>(x => x == _testGuid), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<Guid>(_testGuid));
@@ -237,6 +250,13 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                     FirstName = "firstName"
                 }));
 
+            _searchRequestServiceMock.Setup(x => x.SavePerson(It.Is<SSG_Person>(x => x.SearchRequest.SearchRequestId == validRequestId), It.IsAny<CancellationToken>()))
+            .Returns(Task.FromResult<SSG_Person>(new SSG_Person()
+            {
+                FirstName = "First"
+            }));
+
+
             _searchApiRequestServiceMock.Setup(x => x.AddEventAsync(It.Is<Guid>(x => x == _testGuid),
                     It.IsAny<SSG_SearchApiEvent>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<SSG_SearchApiEvent>(new SSG_SearchApiEvent()
@@ -256,7 +276,12 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         [Test]
         public async Task With_valid_completed_event_it_should_return_ok()
         {
+
             var result = await _sut.Completed(_testGuid, _fakePersonCompletedEvent);
+
+            _searchRequestServiceMock
+              .Verify(x => x.SavePerson(It.IsAny<SSG_Person>(), It.IsAny<CancellationToken>()), Times.Once);
+
             _searchRequestServiceMock
                 .Verify(x => x.CreateIdentifier(It.IsAny<SSG_Identifier>(), It.IsAny<CancellationToken>()), Times.Once);
 
@@ -268,6 +293,10 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
 
             _searchRequestServiceMock
                 .Verify(x => x.CreateName(It.IsAny<SSG_Aliase>(), It.IsAny<CancellationToken>()), Times.Once);
+
+
+            _searchRequestServiceMock
+            .Verify(x => x.SavePerson(It.IsAny<SSG_Person>(), It.IsAny<CancellationToken>()), Times.Once);
 
             _searchApiRequestServiceMock
                 .Verify(x => x.AddEventAsync(It.Is<Guid>(x => x == _testGuid), It.IsAny<SSG_SearchApiEvent>(), It.IsAny<CancellationToken>()), Times.Once);
@@ -285,8 +314,6 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         public async Task With_valid_accepted_event_it_should_return_ok()
         {
             var result = await _sut.Accepted(_testGuid, fakePersonAcceptedEvent);
-
-
             _searchApiRequestServiceMock
                 .Verify(x => x.AddEventAsync(It.Is<Guid>(x => x == _testGuid), It.IsAny<SSG_SearchApiEvent>(), It.IsAny<CancellationToken>()), Times.Once);
 

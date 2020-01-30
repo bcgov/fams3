@@ -20,7 +20,6 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
 {
     public class PersonFoundServiceTest
     {
-
         private PersonFoundService _sut;
         private Mock<ILogger<PersonFoundService>> _loggerMock;
         private Mock<ISearchRequestService> _searchRequestServiceMock;
@@ -182,7 +181,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                     FirstName = "firstName"
                 }));
 
-            _searchRequestServiceMock.Setup(x => x.SavePerson(It.Is<SSG_Person>(x => x.SearchRequest.SearchRequestId == validRequestId), It.IsAny<CancellationToken>()))
+            _searchRequestServiceMock.Setup(x => x.SavePerson(It.Is<SSG_Person_Upload>(x => x.SearchRequest.SearchRequestId == validRequestId), It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult<SSG_Person>(new SSG_Person()
             {
                 FirstName = "First"

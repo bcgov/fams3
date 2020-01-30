@@ -11,7 +11,6 @@ using Simple.OData.Client;
 
 namespace Fams3Adapter.Dynamics.SearchRequest
 {
-    using Entry = System.Collections.Generic.Dictionary<string, object>;
     public interface ISearchRequestService
     {
         Task<SSG_Identifier> CreateIdentifier(SSG_Identifier identifier, CancellationToken cancellationToken);

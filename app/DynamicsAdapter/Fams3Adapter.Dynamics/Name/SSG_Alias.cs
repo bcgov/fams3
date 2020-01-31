@@ -30,8 +30,8 @@ namespace Fams3Adapter.Dynamics.Name
         [JsonProperty("ssg_personnamecategorytext")]
         public int? Type { get; set; }
 
-        [JsonProperty("ssg_providertypecode")]
-        public string ProviderTypeCode { get; set; }
+        [JsonProperty("ssg_suppliertypecode")]
+        public string SupplierTypeCode { get; set; }
 
         [JsonProperty("ssg_SearchRequest")]
         public virtual SSG_SearchRequest SearchRequest { get; set; }

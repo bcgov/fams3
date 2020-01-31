@@ -122,7 +122,7 @@ namespace  DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.MiddleName, opt => opt.MapFrom(src => src.MiddleName))
                  .ForMember(dest => dest.ThirdGivenName, opt => opt.MapFrom(src => src.OtherName))
                  .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new NameCategoryConverter(), src => src.Type))
-                 .ForMember(dest => dest.ProviderTypeCode, opt => opt.MapFrom(src => src.Type))
+                 .ForMember(dest => dest.SupplierTypeCode, opt => opt.MapFrom(src => src.Type))
                  .ForMember(dest => dest.Comments, opt => opt.MapFrom(src => src.Description))
                  .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
                  .IncludeBase<PersonalInfo, DynamicsEntity>();

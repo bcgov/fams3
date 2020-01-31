@@ -184,7 +184,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
                 Type = PersonNameCategory.LegalName.Value,
                 Notes = "notes",
                 ThirdGivenName ="thirdName",
-                ProviderTypeCode = "legal",
+                SupplierTypeCode = "legal",
                 Date1 = new DateTime(2001,1,1),
                 Date1Label = "date1lable",
                 SearchRequest = new SSG_SearchRequest() { SearchRequestId = testId },

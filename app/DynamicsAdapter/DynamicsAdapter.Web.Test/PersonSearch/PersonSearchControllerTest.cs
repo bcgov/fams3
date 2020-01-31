@@ -28,7 +28,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
 
         private PersonSearchController _sut;
         private Mock<ILogger<PersonSearchController>> _loggerMock ;
-        private Mock<IPersonFoundService> _personFoundServiceMock;
+        private Mock<ISearchResultService> _searchResultServiceMock;
         private Mock<ISearchApiRequestService> _searchApiRequestServiceMock;
         private PersonSearchCompleted _fakePersonCompletedEvent;
         private PersonSearchAccepted fakePersonAcceptedEvent;
@@ -50,7 +50,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _exceptionGuid = Guid.NewGuid();
             _loggerMock = new Mock<ILogger<PersonSearchController>>();
             _searchApiRequestServiceMock = new Mock<ISearchApiRequestService>();
-            _personFoundServiceMock = new Mock<IPersonFoundService>();
+            _searchResultServiceMock = new Mock<ISearchResultService>();
             _mapper = new Mock<IMapper>();
             var validRequestId = Guid.NewGuid();
             var invalidRequestId = Guid.NewGuid();
@@ -184,7 +184,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 .Returns(Task.FromResult<Guid>(invalidRequestId));
 
 
-            _personFoundServiceMock.Setup(x => x.ProcessPersonFound(It.Is<Person>(x => x.FirstName == "TEST1"),It.IsAny<ProviderProfile>(), It.IsAny<SSG_SearchRequest>(), It.IsAny<CancellationToken>()))
+            _searchResultServiceMock.Setup(x => x.ProcessPersonFound(It.Is<Person>(x => x.FirstName == "TEST1"),It.IsAny<ProviderProfile>(), It.IsAny<SSG_SearchRequest>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<bool>(true));
 
             _searchApiRequestServiceMock.Setup(x => x.AddEventAsync(It.Is<Guid>(x => x == _testGuid),
@@ -199,7 +199,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                     It.IsAny<SSG_SearchApiEvent>(), It.IsAny<CancellationToken>()))
                 .Throws(new Exception("random exception"));
 
-            _sut = new PersonSearchController(_personFoundServiceMock.Object, _searchApiRequestServiceMock.Object, _loggerMock.Object,_mapper.Object);
+            _sut = new PersonSearchController(_searchResultServiceMock.Object, _searchApiRequestServiceMock.Object, _loggerMock.Object,_mapper.Object);
 
         }
 
@@ -209,7 +209,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
 
             var result = await _sut.Completed(_testGuid, _fakePersonCompletedEvent);
 
-            _personFoundServiceMock.Verify(x => x.ProcessPersonFound(It.Is<Person>(x => x.FirstName == "TEST1"), It.IsAny<ProviderProfile>(), It.IsAny<SSG_SearchRequest>(), It.IsAny<CancellationToken>()), Times.Once);
+            _searchResultServiceMock.Verify(x => x.ProcessPersonFound(It.Is<Person>(x => x.FirstName == "TEST1"), It.IsAny<ProviderProfile>(), It.IsAny<SSG_SearchRequest>(), It.IsAny<CancellationToken>()), Times.Once);
             _searchApiRequestServiceMock
                 .Verify(x => x.AddEventAsync(It.Is<Guid>(x => x == _testGuid), It.IsAny<SSG_SearchApiEvent>(), It.IsAny<CancellationToken>()), Times.Once);
             Assert.IsInstanceOf(typeof(OkResult), result);

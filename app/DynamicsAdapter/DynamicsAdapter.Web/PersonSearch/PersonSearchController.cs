@@ -24,14 +24,14 @@ namespace DynamicsAdapter.Web.PersonSearch
     public class PersonSearchController : ControllerBase
     {
         private readonly ILogger<PersonSearchController> _logger;
-        private readonly IPersonFoundService _personFoundService;
+        private readonly ISearchResultService _searchResultService;
         private readonly ISearchApiRequestService _searchApiRequestService;
         private readonly IMapper _mapper;
 
-        public PersonSearchController(IPersonFoundService personFoundService,
+        public PersonSearchController(ISearchResultService searchResultService,
             ISearchApiRequestService searchApiRequestService, ILogger<PersonSearchController> logger,  IMapper mapper)
         {
-            _personFoundService = personFoundService;
+            _searchResultService = searchResultService;
             _searchApiRequestService = searchApiRequestService;
             _logger = logger;
             _mapper = mapper;
@@ -64,7 +64,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                     SearchRequestId = searchRequestId
                 };
 
-                await _personFoundService.ProcessPersonFound(personCompletedEvent.MatchedPerson, personCompletedEvent.ProviderProfile, searchRequest, cts.Token);
+                await _searchResultService.ProcessPersonFound(personCompletedEvent.MatchedPerson, personCompletedEvent.ProviderProfile, searchRequest, cts.Token);
             }
             catch (Exception ex)
             {

@@ -65,7 +65,7 @@ namespace DynamicsAdapter.Web
             this.ConfigureScheduler(services);
             this.ConfigureAutoMapper(services);
 
-            services.AddTransient<IPersonFoundService, PersonFoundService>();
+            services.AddTransient<ISearchResultService, SearchResultService>();
         }
 
         private AppSettings ConfigureAppSettings(IServiceCollection services)

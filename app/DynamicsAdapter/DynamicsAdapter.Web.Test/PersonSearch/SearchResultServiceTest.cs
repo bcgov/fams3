@@ -18,10 +18,10 @@ using System.Threading.Tasks;
 
 namespace DynamicsAdapter.Web.Test.PersonSearch
 {
-    public class PersonFoundServiceTest
+    public class SearchResultServiceTest
     {
-        private PersonFoundService _sut;
-        private Mock<ILogger<PersonFoundService>> _loggerMock;
+        private SearchResultService _sut;
+        private Mock<ILogger<SearchResultService>> _loggerMock;
         private Mock<ISearchRequestService> _searchRequestServiceMock;
         private Person _fakePerson;
 
@@ -40,7 +40,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         public void Init()
         {
 
-            _loggerMock = new Mock<ILogger<PersonFoundService>>();
+            _loggerMock = new Mock<ILogger<SearchResultService>>();
             _searchRequestServiceMock = new Mock<ISearchRequestService>();
             _mapper = new Mock<IMapper>();
             var validRequestId = Guid.NewGuid();
@@ -187,7 +187,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 FirstName = "First"
             }));
 
-           _sut = new PersonFoundService(_searchRequestServiceMock.Object, _loggerMock.Object, _mapper.Object);
+           _sut = new SearchResultService(_searchRequestServiceMock.Object, _loggerMock.Object, _mapper.Object);
 
         }
 

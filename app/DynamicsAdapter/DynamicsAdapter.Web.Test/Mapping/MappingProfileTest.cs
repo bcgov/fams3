@@ -354,7 +354,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                Incacerated = "Yes"
                
             };
-            SSG_Person_Upload ssg_person = _mapper.Map<SSG_Person_Upload>(person);
+            PersonEntity ssg_person = _mapper.Map<PersonEntity>(person);
             Assert.AreEqual("FirstName", ssg_person.FirstName);
             Assert.AreEqual("LastName", ssg_person.LastName);
             Assert.AreEqual("MiddleName", ssg_person.MiddleName);
@@ -385,7 +385,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 
 
             };
-            SSG_Person_Upload ssg_person = _mapper.Map<SSG_Person_Upload>(person);
+            PersonEntity ssg_person = _mapper.Map<PersonEntity>(person);
             Assert.AreEqual("FirstName", ssg_person.FirstName);
             Assert.AreEqual("LastName", ssg_person.LastName);
             Assert.AreEqual("MiddleName", ssg_person.MiddleName);
@@ -417,7 +417,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
 
 
             };
-            SSG_Person_Upload ssg_person = _mapper.Map<SSG_Person_Upload>(person);
+            PersonEntity ssg_person = _mapper.Map<PersonEntity>(person);
             Assert.AreEqual("FirstName", ssg_person.FirstName);
             Assert.AreEqual("LastName", ssg_person.LastName);
             Assert.AreEqual("MiddleName", ssg_person.MiddleName);

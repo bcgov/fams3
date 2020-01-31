@@ -36,16 +36,25 @@ namespace DynamicsAdapter.Web.PersonSearch
         public async Task<bool> ProcessPersonFound(Person person, ProviderProfile providerProfile, SSG_SearchRequest request, CancellationToken concellationToken)
         {
             if (person == null) return true;
-
+            
             int? providerDynamicsID  = providerProfile.DynamicsID();
-            SSG_Person_Upload ssg_person = _mapper.Map<SSG_Person_Upload>(person);
+            PersonEntity ssg_person = _mapper.Map<PersonEntity>(person);
             ssg_person.SearchRequest = request;
             ssg_person.InformationSource = providerDynamicsID;
+            _logger.LogDebug($"Attempting to create a person entity for SearchRequest[{request.SearchRequestId}]");
             SSG_Person returnedPerson = await _searchRequestService.SavePerson(ssg_person, concellationToken);
+            _logger.LogInformation($"Successfully created person entity for SearchRequest [{request.SearchRequestId}]");
 
+            _logger.LogDebug($"Attempting to creat identifier entities for SearchRequest[{request.SearchRequestId}]");
             await UploadIdentifiers(person, request, returnedPerson, providerDynamicsID, concellationToken);
+
+            _logger.LogDebug($"Attempting to creat address entities for SearchRequest[{request.SearchRequestId}]");
             await UploadAddresses(person, request, returnedPerson, providerDynamicsID, concellationToken);
+
+            _logger.LogDebug($"Attempting to creat phonenumber entities for SearchRequest[{request.SearchRequestId}]");
             await UploadPhoneNumbers(person, request, returnedPerson, providerDynamicsID, concellationToken);
+
+            _logger.LogDebug($"Attempting to creat name entities for SearchRequest[{request.SearchRequestId}]");
             await UploadNames(person, request, returnedPerson, providerDynamicsID, concellationToken);
             return true;
 

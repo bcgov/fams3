@@ -29,7 +29,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         private SSG_Address _fakePersonAddress;
         private SSG_PhoneNumber _fakePersonPhoneNumber;
         private SSG_Aliase _fakeName;
-        private SSG_Person_Upload _ssg_fakePerson;
+        private PersonEntity _ssg_fakePerson;
         private ProviderProfile _providerProfile;
         private SSG_SearchRequest _searchRequest;
         private CancellationToken _fakeToken;
@@ -78,7 +78,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 }
             };
 
-            _ssg_fakePerson = new SSG_Person_Upload
+            _ssg_fakePerson = new PersonEntity
             {
                 
             };
@@ -157,7 +157,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _mapper.Setup(m => m.Map<SSG_Aliase>(It.IsAny<Name>()))
                   .Returns(_fakeName);
 
-            _mapper.Setup(m => m.Map<SSG_Person_Upload>(It.IsAny<Person>()))
+            _mapper.Setup(m => m.Map<PersonEntity>(It.IsAny<Person>()))
                .Returns(_ssg_fakePerson);
 
             _searchRequestServiceMock.Setup(x => x.CreateIdentifier(It.Is<SSG_Identifier>(x => x.SearchRequest.SearchRequestId == invalidRequestId), It.IsAny<CancellationToken>()))
@@ -181,7 +181,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                     FirstName = "firstName"
                 }));
 
-            _searchRequestServiceMock.Setup(x => x.SavePerson(It.Is<SSG_Person_Upload>(x => x.SearchRequest.SearchRequestId == validRequestId), It.IsAny<CancellationToken>()))
+            _searchRequestServiceMock.Setup(x => x.SavePerson(It.Is<PersonEntity>(x => x.SearchRequest.SearchRequestId == validRequestId), It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult<SSG_Person>(new SSG_Person()
             {
                 FirstName = "First"
@@ -198,7 +198,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             var result = await _sut.ProcessPersonFound(_fakePerson, _providerProfile, _searchRequest, _fakeToken);
 
             _searchRequestServiceMock
-              .Verify(x => x.SavePerson(It.IsAny<SSG_Person_Upload>(), It.IsAny<CancellationToken>()), Times.Once);
+              .Verify(x => x.SavePerson(It.IsAny<PersonEntity>(), It.IsAny<CancellationToken>()), Times.Once);
 
             _searchRequestServiceMock
                 .Verify(x => x.CreateIdentifier(It.IsAny<SSG_Identifier>(), It.IsAny<CancellationToken>()), Times.Once);

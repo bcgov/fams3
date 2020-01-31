@@ -27,8 +27,22 @@ namespace Fams3Adapter.Dynamics.PhoneNumber
         [JsonProperty("ssg_telephonenumber")]
         public string TelePhoneNumber { get; set; }
 
+        [JsonProperty("ssg_suppliertypecode")]
+        public string SupplierTypeCode { get; set; }
+
+        [JsonProperty("ssg_phoneextension")]
+        public string PhoneExtension { get; set; }
+
         [JsonProperty("ssg_telephonenumbercategorytext")]
         public int? TelephoneNumberType { get; set; }
+
+        [JsonProperty("ssg_description")]
+        public string Description { get; set; }
+
+        [JsonProperty("ssg_notes")]
+        public string Notes { get; set; }
+
+
 
     }
 }

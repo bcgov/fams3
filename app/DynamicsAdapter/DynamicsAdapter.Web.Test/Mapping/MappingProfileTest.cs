@@ -324,13 +324,15 @@ namespace DynamicsAdapter.Web.Test.Mapping
             {               
                
                 PhoneNumber = "6904005678",
-               
-                //PhoneNumberType = "Home",
+                Type = "home",
+                Extension ="123",
+                Description = "Description"
                
             };
             SSG_PhoneNumber sSG_PhoneNumber = _mapper.Map<SSG_PhoneNumber>(phoneNumber);
             Assert.AreEqual("6904005678", sSG_PhoneNumber.TelePhoneNumber);
-            //Assert.AreEqual(TelephoneNumberType.Home.Value, sSG_PhoneNumber.TelephoneNumberType); 
+            Assert.AreEqual("123", sSG_PhoneNumber.PhoneExtension);
+            Assert.AreEqual(TelephoneNumberType.Home.Value, sSG_PhoneNumber.TelephoneNumberType);
             Assert.AreEqual(1, sSG_PhoneNumber.StatusCode);
             Assert.AreEqual(0, sSG_PhoneNumber.StateCode);
         }

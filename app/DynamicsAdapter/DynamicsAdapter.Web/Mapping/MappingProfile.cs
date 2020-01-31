@@ -109,8 +109,12 @@ namespace  DynamicsAdapter.Web.Mapping
 
             CreateMap<Phone, SSG_PhoneNumber>()
                 .ForMember(dest => dest.TelePhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
-                //.ForMember(dest => dest.TelephoneNumberType, opt => opt.ConvertUsing(new TelephoneNumberIdConverter(), src => src.PhoneNumberType))
-                .IncludeBase<PersonalInfo, DynamicsEntity>();
+                 .ForMember(dest => dest.PhoneExtension, opt => opt.MapFrom(src => src.Extension))
+                 .ForMember(dest => dest.SupplierTypeCode, opt => opt.MapFrom(src => src.Type))
+                 .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
+                 .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
+                 .ForMember(dest => dest.TelephoneNumberType, opt => opt.ConvertUsing(new PhoneTypeConverter(), src => src.Type))
+               .IncludeBase<PersonalInfo, DynamicsEntity>();
 
             CreateMap<Name, SSG_Aliase>()
                  .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))

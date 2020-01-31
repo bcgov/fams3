@@ -5,6 +5,7 @@ using DynamicsAdapter.Web.Auth;
 using DynamicsAdapter.Web.Configuration;
 using DynamicsAdapter.Web.Health;
 using DynamicsAdapter.Web.Infrastructure;
+using DynamicsAdapter.Web.PersonSearch;
 using DynamicsAdapter.Web.SearchRequest;
 using Fams3Adapter.Dynamics.OptionSets;
 using Fams3Adapter.Dynamics.SearchApiRequest;
@@ -63,6 +64,8 @@ namespace DynamicsAdapter.Web
 
             this.ConfigureScheduler(services);
             this.ConfigureAutoMapper(services);
+
+            services.AddTransient<ISearchResultService, SearchResultService>();
         }
 
         private AppSettings ConfigureAppSettings(IServiceCollection services)

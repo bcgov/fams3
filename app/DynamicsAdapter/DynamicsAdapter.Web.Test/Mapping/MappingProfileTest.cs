@@ -338,7 +338,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
 
 
         [Test]
-        public void Person_should_map_to_SSG_Person_correctly()
+        public void Person_should_map_to_SSG_Person_Upload_correctly()
         {
             var person = new Person()
             {
@@ -354,7 +354,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                Incacerated = "Yes"
                
             };
-            SSG_Person ssg_person = _mapper.Map<SSG_Person>(person);
+            PersonEntity ssg_person = _mapper.Map<PersonEntity>(person);
             Assert.AreEqual("FirstName", ssg_person.FirstName);
             Assert.AreEqual("LastName", ssg_person.LastName);
             Assert.AreEqual("MiddleName", ssg_person.MiddleName);
@@ -369,7 +369,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
         }
 
         [Test]
-        public void Person_should_map_null_dates_to_SSG_Person_correctly()
+        public void Person_should_map_null_dates_to_SSG_Person_Upload_correctly()
         {
             var person = new Person()
             {
@@ -385,7 +385,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 
 
             };
-            SSG_Person ssg_person = _mapper.Map<SSG_Person>(person);
+            PersonEntity ssg_person = _mapper.Map<PersonEntity>(person);
             Assert.AreEqual("FirstName", ssg_person.FirstName);
             Assert.AreEqual("LastName", ssg_person.LastName);
             Assert.AreEqual("MiddleName", ssg_person.MiddleName);
@@ -400,7 +400,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
 
 
         [Test]
-        public void Person_should_map_null_incacerated_datedealthconfirmed_to_SSG_Person_correctly()
+        public void Person_should_map_null_incacerated_datedealthconfirmed_to_SSG_Person_Upload_correctly()
         {
             var person = new Person()
             {
@@ -417,7 +417,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
 
 
             };
-            SSG_Person ssg_person = _mapper.Map<SSG_Person>(person);
+            PersonEntity ssg_person = _mapper.Map<PersonEntity>(person);
             Assert.AreEqual("FirstName", ssg_person.FirstName);
             Assert.AreEqual("LastName", ssg_person.LastName);
             Assert.AreEqual("MiddleName", ssg_person.MiddleName);

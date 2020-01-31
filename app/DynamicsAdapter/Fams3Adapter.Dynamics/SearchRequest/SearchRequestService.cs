@@ -11,7 +11,6 @@ using Simple.OData.Client;
 
 namespace Fams3Adapter.Dynamics.SearchRequest
 {
-    using Entry = System.Collections.Generic.Dictionary<string, object>;
     public interface ISearchRequestService
     {
         Task<SSG_Identifier> CreateIdentifier(SSG_Identifier identifier, CancellationToken cancellationToken);
@@ -19,7 +18,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         Task<SSG_PhoneNumber> CreatePhoneNumber(SSG_PhoneNumber phoneNumber, CancellationToken cancellationToken);
         Task<SSG_Aliase> CreateName(SSG_Aliase name, CancellationToken cancellationToken);
 
-        Task<SSG_Person> SavePerson(SSG_Person person, CancellationToken cancellationToken);
+        Task<SSG_Person> SavePerson(PersonEntity person, CancellationToken cancellationToken);
     }
 
     /// <summary>
@@ -44,7 +43,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             return await this._oDataClient.For<SSG_Identifier>().Set(identifier).InsertEntryAsync(cancellationToken);
         }
 
-        public async Task<SSG_Person> SavePerson(SSG_Person person, CancellationToken cancellationToken)
+        public async Task<SSG_Person> SavePerson(PersonEntity person, CancellationToken cancellationToken)
         {
             return await this._oDataClient.For<SSG_Person>().Set(person).InsertEntryAsync(cancellationToken);
         }

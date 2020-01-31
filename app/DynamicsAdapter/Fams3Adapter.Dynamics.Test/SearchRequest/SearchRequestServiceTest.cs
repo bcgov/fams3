@@ -20,6 +20,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         private Mock<IODataClient> odataClientMock;
 
         private readonly Guid testId = Guid.Parse("6AE89FE6-9909-EA11-B813-00505683FBF4");
+        private readonly Guid testPersonId = Guid.Parse("6AE89FE6-9909-EA11-1111-00505683FBF4");
 
         private SearchRequestService _sut;
 
@@ -78,11 +79,12 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             })
             );
 
-            odataClientMock.Setup(x => x.For<SSG_Person>(null).Set(It.Is<SSG_Person>(x => x.FirstName == "First"))
+            odataClientMock.Setup(x => x.For<SSG_Person>(null).Set(It.Is<PersonEntity>(x => x.FirstName == "First"))
           .InsertEntryAsync(It.IsAny<CancellationToken>()))
           .Returns(Task.FromResult(new SSG_Person()
           {
-              FirstName = "FirstName"
+              FirstName = "FirstName",
+              PersonId = testPersonId
           })
           );
 
@@ -100,7 +102,8 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
                 //IdentificationEffectiveDate = DateTime.Now,
                 StateCode = 0,
                 StatusCode = 1,
-                SSG_SearchRequest = new SSG_SearchRequest() { SearchRequestId = testId }
+                SearchRequest = new SSG_SearchRequest() { SearchRequestId = testId },
+                Person = new SSG_Person() { PersonId = testPersonId }
             };
 
             var result = await _sut.CreateIdentifier(identifier, CancellationToken.None);
@@ -110,9 +113,9 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
 
 
         [Test]
-        public async Task with_correct_searchRequestid_upload_persion_should_success()
+        public async Task with_correct_searchRequestid_upload_person_should_success()
         {
-            var person = new SSG_Person()
+            var person = new PersonEntity()
             {
                 FirstName = "First",
                 LastName = "lastName",
@@ -130,6 +133,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             var result = await _sut.SavePerson(person, CancellationToken.None);
 
             Assert.AreEqual("FirstName", result.FirstName);
+            Assert.AreEqual(testPersonId, result.PersonId);
         }
         [Test]
         public async Task with_correct_searchRequestid_upload_phone_number_should_success()
@@ -142,7 +146,8 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
                 TelePhoneNumber = "4007678231",
                 StateCode = 0,
                 StatusCode = 1,
-                SearchRequest = new SSG_SearchRequest() { SearchRequestId = testId }
+                SearchRequest = new SSG_SearchRequest() { SearchRequestId = testId },
+                Person = new SSG_Person() { PersonId = testPersonId }
             };
 
             var result = await _sut.CreatePhoneNumber(phone, CancellationToken.None);
@@ -158,7 +163,8 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
                 AddressLine1 = "address full text",
                 CountryText = "canada",
                 CountrySubdivisionText = "British Columbia",
-                SearchRequest = new SSG_SearchRequest() { SearchRequestId = testId }
+                SearchRequest = new SSG_SearchRequest() { SearchRequestId = testId },
+                Person = new SSG_Person() { PersonId = testPersonId }
             };
 
             var result = await _sut.CreateAddress(address, CancellationToken.None);
@@ -181,7 +187,8 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
                 ProviderTypeCode = "legal",
                 Date1 = new DateTime(2001,1,1),
                 Date1Label = "date1lable",
-                SearchRequest = new SSG_SearchRequest() { SearchRequestId = testId }
+                SearchRequest = new SSG_SearchRequest() { SearchRequestId = testId },
+                Person = new SSG_Person() { PersonId = testPersonId }
             };
 
             var result = await _sut.CreateName(name, CancellationToken.None);

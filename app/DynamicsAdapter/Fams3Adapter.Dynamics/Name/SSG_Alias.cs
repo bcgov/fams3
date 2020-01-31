@@ -1,4 +1,5 @@
-﻿using Fams3Adapter.Dynamics.SearchRequest;
+﻿using Fams3Adapter.Dynamics.Person;
+using Fams3Adapter.Dynamics.SearchRequest;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -34,6 +35,9 @@ namespace Fams3Adapter.Dynamics.Name
 
         [JsonProperty("ssg_SearchRequest")]
         public virtual SSG_SearchRequest SearchRequest { get; set; }
+
+        [JsonProperty("ssg_PersonId")]
+        public virtual SSG_Person Person { get; set; }
 
         [JsonProperty("ssg_responsecomment")]
         public string Comments { get; set; }

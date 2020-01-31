@@ -2,6 +2,7 @@ using Newtonsoft.Json;
 using System;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Fams3Adapter.Dynamics.SearchApiRequest;
+using Fams3Adapter.Dynamics.Person;
 
 namespace Fams3Adapter.Dynamics.Identifier
 {
@@ -26,7 +27,10 @@ namespace Fams3Adapter.Dynamics.Identifier
         public string IssuedBy { get; set; }
 
         [JsonProperty("ssg_SearchRequest")]
-        public virtual SSG_SearchRequest SSG_SearchRequest { get; set; }
+        public virtual SSG_SearchRequest SearchRequest { get; set; }
+
+        [JsonProperty("ssg_PersonId")]
+        public virtual SSG_Person Person { get; set; }
 
         [JsonProperty("ssg_informationsourcetext")]
         public int? InformationSource { get; set; }

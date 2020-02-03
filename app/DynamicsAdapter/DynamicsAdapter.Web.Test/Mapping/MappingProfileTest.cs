@@ -327,6 +327,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 Type = "home",
                 Extension ="123",
                 Description = "Description"
+
                
             };
             SSG_PhoneNumber sSG_PhoneNumber = _mapper.Map<SSG_PhoneNumber>(phoneNumber);

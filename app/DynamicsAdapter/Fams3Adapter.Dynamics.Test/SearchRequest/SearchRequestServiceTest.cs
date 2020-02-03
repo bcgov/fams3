@@ -140,9 +140,11 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         {
             var phone = new SSG_PhoneNumber()
             {
-              
-                DateData = DateTime.Now,
-                DateType = "Effective Date",
+
+                Date1 = DateTime.Now,
+                Date1Label = "Effective Date",
+                Date2 = new DateTime(2001, 1, 1),
+                Date2Label = "Expiry Date",
                 TelePhoneNumber = "4007678231",
                 StateCode = 0,
                 StatusCode = 1,

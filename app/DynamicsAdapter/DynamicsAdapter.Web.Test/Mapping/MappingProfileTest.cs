@@ -318,19 +318,23 @@ namespace DynamicsAdapter.Web.Test.Mapping
         }
 
         [Test]
-        public void PersonalPhoneNumber_should_map_to_SSG_PhoneNumber_correctly()
+        public void PhoneNumber_should_map_to_SSG_PhoneNumber_correctly()
         {
             Phone phoneNumber = new Phone()
             {               
                
                 PhoneNumber = "6904005678",
-               
-                //PhoneNumberType = "Home",
+                Type = "home",
+                Extension ="123",
+                Description = "Description"
+
                
             };
             SSG_PhoneNumber sSG_PhoneNumber = _mapper.Map<SSG_PhoneNumber>(phoneNumber);
             Assert.AreEqual("6904005678", sSG_PhoneNumber.TelePhoneNumber);
-            //Assert.AreEqual(TelephoneNumberType.Home.Value, sSG_PhoneNumber.TelephoneNumberType); 
+            Assert.AreEqual("123", sSG_PhoneNumber.PhoneExtension);
+            Assert.AreEqual("home", sSG_PhoneNumber.SupplierTypeCode);
+            Assert.AreEqual(TelephoneNumberType.Home.Value, sSG_PhoneNumber.TelephoneNumberType);
             Assert.AreEqual(1, sSG_PhoneNumber.StatusCode);
             Assert.AreEqual(0, sSG_PhoneNumber.StateCode);
         }
@@ -455,7 +459,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(PersonNameCategory.Other.Value, ssg_name.Type);
             Assert.AreEqual("test name", ssg_name.Comments);
             Assert.AreEqual("notes", ssg_name.Notes);
-            Assert.AreEqual("Former", ssg_name.ProviderTypeCode);
+            Assert.AreEqual("Former", ssg_name.SupplierTypeCode);
             Assert.AreEqual(1, ssg_name.StatusCode);
             Assert.AreEqual(0, ssg_name.StateCode);
             Assert.AreEqual(new DateTime(2012, 1, 1), ssg_name.Date1);

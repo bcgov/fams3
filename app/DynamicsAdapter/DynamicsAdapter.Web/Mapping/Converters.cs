@@ -172,6 +172,27 @@ namespace DynamicsAdapter.Web.Mapping
                 };
         }
     }
+
+    public class PhoneTypeConverter : IValueConverter<string, int?>
+    {
+        public int? Convert(string source, ResolutionContext context)
+        {
+            return
+                source.ToLower() switch
+                {
+                    "cell" => TelephoneNumberType.Cell.Value,
+                    "home" => TelephoneNumberType.Home.Value,
+                    "work" => TelephoneNumberType.Work.Value,
+                    "homecell" => TelephoneNumberType.Home.Value,
+                    "workcell" => TelephoneNumberType.Work.Value,
+                    "business" => TelephoneNumberType.Work.Value,
+                    "unknown" => TelephoneNumberType.Other.Value,
+                    "other" => TelephoneNumberType.Other.Value,
+                    "blank" => (int?)null,
+                    _ => TelephoneNumberType.Other.Value
+                };
+        }
+    }
     public class IncaceratedConverter : IValueConverter<string, int?>
     {
         public int? Convert(string source, ResolutionContext context)

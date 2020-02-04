@@ -92,6 +92,13 @@ namespace SearchAdapter.Sample.SearchRequest
                     FirstName = personSearchOrdered.Person.FirstName,
                     LastName = personSearchOrdered.Person.LastName,
                     DateOfBirth = personSearchOrdered.Person.DateOfBirth,
+                    Incacerated = "N",
+                    DateDeathConfirmed = false,
+                    DateOfDeath = null,
+                    Gender = "F",
+                    MiddleName = "FoundMiddleName",
+                    OtherName = "FoundOtherName",
+                    Notes = "some notes",
                     Identifiers = new List<PersonalIdentifier>()
                     {
 
@@ -107,6 +114,8 @@ namespace SearchAdapter.Sample.SearchRequest
                                 new ReferenceDate(){ Index=0, Key="Effective Date", Value=new DateTime(2019,9,1) },
                                 new ReferenceDate(){ Index=1, Key="Expiration Date", Value=new DateTime(2020,9,1) }
                             }
+                            
+                            
                         }
                     },
                     Addresses = new List<Address>()
@@ -156,6 +165,34 @@ namespace SearchAdapter.Sample.SearchRequest
                             },
                             Description = "Sample Name"
                         }
+                    },
+                    Phones = new List<Phone>()
+                    {
+                        new Phone
+                        {
+                            Description = "Sample Phone",
+                            Extension = "1233",
+                            Notes = "Notes",
+                            PhoneNumber ="768990123",
+                            Type = "home",
+                             ReferenceDates = new List<ReferenceDate>(){
+                                new ReferenceDate(){ Index=0, Key="Start Date", Value=new DateTime(2019,9,1) },
+                                new ReferenceDate(){ Index=1, Key="End Date", Value=new DateTime(2020,9,1) }
+                            }
+
+                        },
+                        new Phone
+                        {
+                            Description = "Sample Phone",
+                            Extension = "1233",
+                            PhoneNumber ="768990123",
+                            Type = "work",
+                             ReferenceDates = new List<ReferenceDate>(){
+                                new ReferenceDate(){ Index=0, Key="Start Date", Value=new DateTime(2019,9,1) },
+                                new ReferenceDate(){ Index=1, Key="End Date", Value=new DateTime(2020,9,1) }
+                            }
+                        }
+
                     }
                 }
             };

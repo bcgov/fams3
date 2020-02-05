@@ -83,13 +83,13 @@ objects:
         deploymentconfig: sonarqube
       strategy:
         resources: {}
-        rollingParams:
+        RecreateParams:
           intervalSeconds: 1
           maxSurge: 25%
           maxUnavailable: 25%
           timeoutSeconds: 600
           updatePeriodSeconds: 1
-        type: Rolling
+        type: Recreate
       template:
         metadata:
           annotations:

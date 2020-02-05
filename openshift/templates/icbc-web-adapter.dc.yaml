@@ -86,7 +86,7 @@ objects:
         description: Defines how to deploy the application server
     spec:
       strategy:
-        type: Rolling
+        type: Recreate
       triggers:
         - type: ConfigChange
         - type: ImageChange

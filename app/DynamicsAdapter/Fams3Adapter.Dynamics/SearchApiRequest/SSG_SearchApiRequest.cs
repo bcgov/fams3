@@ -23,7 +23,7 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
         public string PersonThirdGivenName { get; set; }
 
         [JsonProperty("ssg_personbirthdate")]
-        public DateTime PersonBirthDate { get; set; }
+        public DateTime? PersonBirthDate { get; set; }
 
         [JsonProperty("_ssg_searchrequest_value")]
         public Guid SearchRequestId { get; set; }

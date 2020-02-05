@@ -145,8 +145,8 @@ objects:
               value: "true"
             - name: DOTNET_SSL_DIRS
               value: /etc/pki/tls/certs
-            - name: DOTNET_SYSTEM_NET_HTTP_USESOCKETSHTTPHANDLER
-              value: "0"
+            # - name: DOTNET_SYSTEM_NET_HTTP_USESOCKETSHTTPHANDLER
+            #   value: "0"
       output:
         to:
           kind: ImageStreamTag

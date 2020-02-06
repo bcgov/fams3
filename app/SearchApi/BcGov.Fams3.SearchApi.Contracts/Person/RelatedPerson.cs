@@ -24,5 +24,8 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
 
         [Description("The birth date of the related person")]
         public DateTime? DateOfBirth { get; set; }
+
+        [Description("The relationship type")]
+        public string Type { get; set; }
     }
 }

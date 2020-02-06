@@ -20,7 +20,8 @@ namespace SearchApi.Web.Controllers
             IEnumerable<PersonalIdentifier> identifiers,
             IEnumerable<Address> addresses,
             IEnumerable<Phone> phones,
-            IEnumerable<Name> names)
+            IEnumerable<Name> names,
+            IEnumerable<RelatedPerson> relatedPersons)
         {
             this.FirstName = firstName;
             this.LastName = lastName;
@@ -28,6 +29,8 @@ namespace SearchApi.Web.Controllers
             this.Identifiers = identifiers;
             this.Phones = phones;
             this.Names = names;
+            this.Addresses = addresses;
+            this.RelatedPersons = relatedPersons;
         }
     }
 

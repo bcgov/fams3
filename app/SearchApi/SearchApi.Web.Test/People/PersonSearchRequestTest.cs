@@ -12,7 +12,7 @@ namespace SearchApi.Web.Test.People
         public void With_args_it_should_create()
         {
 
-            var sut = new PersonSearchRequest("firstName", "lastName", new DateTime(2001, 1, 12), new List<PersonalIdentifier>(), new List<Address>(), new List<Phone>(), new List<Name>() );
+            var sut = new PersonSearchRequest("firstName", "lastName", new DateTime(2001, 1, 12), new List<PersonalIdentifier>(), new List<Address>(), new List<Phone>(), new List<Name>(), new List<RelatedPerson>());
 
             Assert.AreEqual("firstName", sut.FirstName);
             Assert.AreEqual("lastName", sut.LastName);

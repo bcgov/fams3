@@ -6,6 +6,7 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
 {
     public class Employment : PersonalInfo
     {
+        public string EmploymentConfirmed { get; set; }
         public string IncomeAssistance { get; set; }
 
         public string IncomeAssistanceStatus { get; set; }

@@ -16,7 +16,7 @@ namespace SearchApi.Web.Controllers
         public PersonSearchRequest(
             string firstName,
             string lastName,
-            DateTime? dateOfBirth,
+            DateTime? dateOfBirth, 
             IEnumerable<PersonalIdentifier> identifiers,
             IEnumerable<Address> addresses,
             IEnumerable<Phone> phones,

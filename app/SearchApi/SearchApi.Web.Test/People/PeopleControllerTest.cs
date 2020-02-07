@@ -42,7 +42,7 @@ namespace SearchApi.Web.Test.People
             var result =
                 (AcceptedResult) this._sut.Search(null, new PersonSearchRequest("firstName", "lastName", null, new List<PersonalIdentifier>(), new List<Address>(), new List<Phone>(), new List<Name>(), new List<RelatedPerson>(), new List<Employment>())).Result;
 
-            Assert.IsInstanceOf<PersonSearchResponse>(result.Value);
+            Assert.IsInstanceOf<PersonSearchResponse>(result.Value); 
             Assert.IsNotNull(((PersonSearchResponse)result.Value).Id);
             _spanMock.Verify(x => x.SetTag("searchRequestId", $"{((PersonSearchResponse)result.Value).Id}"), Times.Once);
             _busControlMock.Verify(x => x.Publish(It.IsAny<PersonSearchOrdered>(), It.IsAny<CancellationToken>()), Times.Once);

@@ -16,12 +16,11 @@ namespace SearchApi.Web.Controllers
         public PersonSearchRequest(
             string firstName,
             string lastName,
-            DateTime? dateOfBirth,
+            DateTime? dateOfBirth, 
             IEnumerable<PersonalIdentifier> identifiers,
             IEnumerable<Address> addresses,
             IEnumerable<Phone> phones,
-            IEnumerable<Name> names,
-            IEnumerable<RelatedPerson> relatedPersons)
+            IEnumerable<Name> names, IEnumerable<RelatedPerson> relatedPersons,IEnumerable<Employment> employments)
         {
             this.FirstName = firstName;
             this.LastName = lastName;
@@ -29,7 +28,10 @@ namespace SearchApi.Web.Controllers
             this.Identifiers = identifiers;
             this.Phones = phones;
             this.Names = names;
-            this.Addresses = addresses;
+ this.Addresses = addresses;
+            this.Employments = employments;
+
+           
             this.RelatedPersons = relatedPersons;
         }
     }

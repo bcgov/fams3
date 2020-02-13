@@ -193,6 +193,79 @@ namespace SearchAdapter.Sample.SearchRequest
                             }
                         }
 
+                    },
+                    Employments = new List<Employment>()
+                    {
+                        new Employment
+                        {
+                            EmploymentConfirmed = "Y",
+                            IncomeAssistance = "Y",
+                            IncomeAssistanceStatus = "Real Status",
+                             Notes = "Sample Notes",
+                             Occupation = "Occupation",
+                             ReferenceDates = new List<ReferenceDate>(){
+                                new ReferenceDate(){ Index=0, Key="Start Date", Value=new DateTime(2019,9,1) },
+                                new ReferenceDate(){ Index=1, Key="End Date", Value=new DateTime(2020,9,1) }
+                            },
+                             Website = "www.websitejob.com",
+                             Employer = new Employer
+                             {
+                                 Address = new Address
+                                 {
+                                     AddressLine1 = "Address 1",
+                                     AddressLine2 = "Address 2",
+                                     AddressLine3 = "Address 3",
+                                     City = "City",
+                                     StateProvince = "AB",
+                                     CountryRegion = "Canada",
+                                     ZipPostalCode = "VR4 123"
+                                 },
+                                 ContactPerson = "Surname FirstName",
+                                 Name = "Sample Company",
+                                 OwnerName = "Sample Company Owner",
+                                 Phones = new List<Phone>()
+                                 {
+                                     new Phone {PhoneNumber = "12345678", Extension ="123", Type ="Phone"},
+                                     new Phone {PhoneNumber = "901237123", Extension ="123", Type ="Fax"},
+                                     new Phone {PhoneNumber = "762349303", Extension ="123", Type ="Phone"}
+                                 }
+                             }
+                        },
+                          new Employment
+                        {
+                            EmploymentConfirmed = "Y",
+                            IncomeAssistance = "Y",
+                            IncomeAssistanceStatus = "Real Status",
+                             Notes = "Sample Notes",
+                             Occupation = "Occupation",
+                             ReferenceDates = new List<ReferenceDate>(){
+                                new ReferenceDate(){ Index=0, Key="Start Date", Value=new DateTime(2019,9,1) },
+                                new ReferenceDate(){ Index=1, Key="End Date", Value=new DateTime(2020,9,1) }
+                            },
+                             Website = "www.websitejob.com",
+                             Employer = new Employer
+                             {
+                                 Address = new Address
+                                 {
+                                     AddressLine1 = "Address 1",
+                                     AddressLine2 = "Address 2",
+                                     AddressLine3 = "Address 3",
+                                     City = "City",
+                                     StateProvince = "AB",
+                                     CountryRegion = "Canada",
+                                     ZipPostalCode = "VR4 123"
+                                 },
+                                 ContactPerson = "Surname FirstName",
+                                 Name = "Sample Company",
+                                 OwnerName = "Sample Company Owner",
+                                 Phones = new List<Phone>()
+                                 {
+                                     new Phone {PhoneNumber = "12345678", Extension ="123", Type ="Phone"},
+                                     new Phone {PhoneNumber = "901237123", Extension ="123", Type ="Fax"},
+                                     new Phone {PhoneNumber = "762349303", Extension ="123", Type ="Phone"}
+                                 }
+                             }
+                        }
                     }
                 }
             };

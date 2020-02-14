@@ -24,6 +24,15 @@ namespace Fams3Adapter.Dynamics.Employment
         [JsonProperty("ssg_employmentcontactname")]
         public string ContactPerson { get; set; }
 
+        [JsonProperty("ssg_employmentconfirmed")]
+        public bool? EmploymentConfirmed { get; set; }
+
+        [JsonProperty("ssg_incomeassistance")]
+        public bool? IncomeAssistance { get; set; }
+
+        [JsonProperty("ssg_incomeassistancestatus")]
+        public string IncomeAssistanceStatus { get; set; }
+
         [JsonProperty("ssg_occupation")]
         public string Occupation { get; set; }
 

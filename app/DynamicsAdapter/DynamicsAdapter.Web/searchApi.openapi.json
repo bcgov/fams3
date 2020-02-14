@@ -6,7 +6,7 @@
     "description": "For Search",
     "version": "V0.1"
   },
-  "host": "localhost:5050",
+  "host": "localhost:64834",
   "schemes": [
     "http"
   ],
@@ -135,6 +135,18 @@
           "type": "array",
           "items": {
             "$ref": "#/definitions/Name"
+          }
+        },
+        "relatedPersons": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/RelatedPerson"
+          }
+        },
+        "employments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Employment"
           }
         },
         "notes": {
@@ -350,6 +362,119 @@
           }
         }
       ]
+    },
+    "RelatedPerson": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/PersonalInfo"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "firstName": {
+              "type": "string",
+              "description": "The first name"
+            },
+            "lastName": {
+              "type": "string",
+              "description": "The last name"
+            },
+            "middleName": {
+              "type": "string",
+              "description": "The middle name"
+            },
+            "otherName": {
+              "type": "string",
+              "description": "The other name"
+            },
+            "gender": {
+              "type": "string",
+              "description": "The gender of the related person"
+            },
+            "dateOfBirth": {
+              "type": "string",
+              "description": "The birth date of the related person",
+              "format": "date-time"
+            },
+            "type": {
+              "type": "string",
+              "description": "The relationship type"
+            }
+          }
+        }
+      ]
+    },
+    "Employment": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/PersonalInfo"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "employmentConfirmed": {
+              "type": "boolean",
+              "description": "employment confirmation "
+            },
+            "incomeAssistance": {
+              "type": "boolean",
+              "description": "income assistant "
+            },
+            "incomeAssistanceStatus": {
+              "type": "string",
+              "description": "income assistant status"
+            },
+            "employer": {
+              "description": "employer",
+              "allOf": [
+                {
+                  "$ref": "#/definitions/Employer"
+                }
+              ]
+            },
+            "occupation": {
+              "type": "string",
+              "description": "person occupation"
+            },
+            "website": {
+              "type": "string",
+              "description": "company website"
+            }
+          }
+        }
+      ]
+    },
+    "Employer": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name of the employer"
+        },
+        "ownerName": {
+          "type": "string",
+          "description": "The name of the owner of the employer"
+        },
+        "phones": {
+          "type": "array",
+          "description": "the phone numbers and fax of the company",
+          "items": {
+            "$ref": "#/definitions/Phone"
+          }
+        },
+        "address": {
+          "description": "The address of the employer",
+          "allOf": [
+            {
+              "$ref": "#/definitions/Address"
+            }
+          ]
+        },
+        "contactPerson": {
+          "type": "string",
+          "description": "The full name  of the contact"
+        }
+      }
     }
   },
   "tags": [

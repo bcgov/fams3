@@ -198,8 +198,8 @@ namespace SearchAdapter.Sample.SearchRequest
                     {
                         new Employment
                         {
-                            EmploymentConfirmed = "Y",
-                            IncomeAssistance = "Y",
+                            EmploymentConfirmed = true,
+                            IncomeAssistance = true,
                             IncomeAssistanceStatus = "Real Status",
                              Notes = "Sample Notes",
                              Occupation = "Occupation",
@@ -233,8 +233,8 @@ namespace SearchAdapter.Sample.SearchRequest
                         },
                           new Employment
                         {
-                            EmploymentConfirmed = "Y",
-                            IncomeAssistance = "Y",
+                            EmploymentConfirmed = false,
+                            IncomeAssistance = false,
                             IncomeAssistanceStatus = "Real Status",
                              Notes = "Sample Notes",
                              Occupation = "Occupation",

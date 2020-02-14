@@ -2,6 +2,7 @@
 using DynamicsAdapter.Web.PersonSearch.Models;
 using Fams3Adapter.Dynamics;
 using Fams3Adapter.Dynamics.Address;
+using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.Name;
 using Fams3Adapter.Dynamics.OptionSets.Models;
@@ -88,7 +89,7 @@ namespace  DynamicsAdapter.Web.Mapping
                .ForMember(dest => dest.EventType, opt => opt.MapFrom(src => Keys.EVENT_COMPLETED))
                .ForMember(dest => dest.Message,
                           opt => opt.MapFrom(
-                              src => $"Auto search processing completed successfully. {(src.MatchedPerson.Identifiers == null ? 0 : src.MatchedPerson.Identifiers.Count())} identifier(s) found.  {(src.MatchedPerson.Addresses == null ? 0 : src.MatchedPerson.Addresses.Count())} addresses found. {(src.MatchedPerson.Phones == null ? 0 : src.MatchedPerson.Phones.Count())} phone number(s) found."
+                              src => $"Auto search processing completed successfully. {(src.MatchedPerson.Identifiers == null ? 0 : src.MatchedPerson.Identifiers.Count())} identifier(s) found.  {(src.MatchedPerson.Addresses == null ? 0 : src.MatchedPerson.Addresses.Count())} addresses found. {(src.MatchedPerson.Phones == null ? 0 : src.MatchedPerson.Phones.Count())} phone number(s) found.  {(src.MatchedPerson.Employments == null ? 0 : src.MatchedPerson.Employments.Count())} employment(s) found."
                               )
                           )
                .ReverseMap();
@@ -106,6 +107,23 @@ namespace  DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.Category, opt => opt.ConvertUsing(new AddressTypeConverter(), src => src.Type))
                  .ForMember(dest => dest.PostalCode, opt => opt.MapFrom(src => src.ZipPostalCode))
                  .IncludeBase<PersonalInfo, DynamicsEntity>();
+
+            CreateMap<Employment, SSG_Employment>()
+              .ForMember(dest => dest.AddressLine1, opt => opt.MapFrom(src => (src.Employer == null)? string.Empty: (src.Employer.Address == null)?string.Empty: src.Employer.Address.AddressLine1))
+              .ForMember(dest => dest.AddressLine2, opt => opt.MapFrom(src => (src.Employer == null) ? string.Empty : (src.Employer.Address == null) ? string.Empty : src.Employer.Address.AddressLine2))
+              .ForMember(dest => dest.AddressLine3, opt => opt.MapFrom(src => (src.Employer == null) ? string.Empty : (src.Employer.Address == null) ? string.Empty : src.Employer.Address.AddressLine3))
+              .ForMember(dest => dest.BusinessName, opt => opt.MapFrom(src => (src.Employer == null) ? string.Empty : src.Employer.Name))
+              .ForMember(dest => dest.CountrySubdivisionText, opt => opt.MapFrom(src => (src.Employer == null) ? string.Empty : (src.Employer.Address == null) ? string.Empty : src.Employer.Address.StateProvince))
+              .ForMember(dest => dest.CountryText, opt => opt.MapFrom(src => (src.Employer == null) ? string.Empty : (src.Employer.Address == null) ? string.Empty : src.Employer.Address.CountryRegion))
+              .ForMember(dest => dest.BusinessOwner, opt => opt.MapFrom(src => (src.Employer == null) ? string.Empty : src.Employer.OwnerName))
+              .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
+               .ForMember(dest => dest.Website, opt => opt.MapFrom(src => src.Website))
+                .ForMember(dest => dest.Occupation, opt => opt.MapFrom(src => src.Occupation))
+                 .ForMember(dest => dest.OccupationDescription, opt => opt.MapFrom(src => src.Description))
+              .ForMember(dest => dest.City, opt => opt.MapFrom(src => (src.Employer == null) ? string.Empty : (src.Employer.Address == null) ? string.Empty : src.Employer.Address.City))
+              .ForMember(dest => dest.ContactPerson, opt => opt.MapFrom( src => (src.Employer == null) ? string.Empty : src.Employer.ContactPerson))
+              .ForMember(dest => dest.PostalCode, opt => opt.MapFrom(src => (src.Employer == null) ? string.Empty : (src.Employer.Address == null) ? string.Empty : src.Employer.Address.ZipPostalCode))
+              .IncludeBase<PersonalInfo, DynamicsEntity>();
 
             CreateMap<Phone, SSG_PhoneNumber>()
                 .ForMember(dest => dest.TelePhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))

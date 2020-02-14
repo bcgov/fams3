@@ -8,6 +8,7 @@ using DynamicsAdapter.Web.Mapping;
 using DynamicsAdapter.Web.PersonSearch;
 using DynamicsAdapter.Web.PersonSearch.Models;
 using Fams3Adapter.Dynamics.Address;
+using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.Name;
 using Fams3Adapter.Dynamics.Person;
@@ -82,6 +83,107 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual("lastName", personSearchRequest.LastName);
             Assert.AreEqual(new DateTimeOffset(new DateTime(2002, 2, 2)), personSearchRequest.DateOfBirth);
             Assert.AreEqual(2, personSearchRequest.Identifiers.Count);
+        }
+
+        [Test]
+        public void Employment_should_map_to_SSG_Employment_correctly()
+        {
+            var employment = new Employment()
+            {
+                Employer = new Employer()
+                {
+                    ContactPerson = "Person",
+                    Name = "Name",
+                    OwnerName = "OwnerName",
+                    
+                    Address = new Address
+                    {
+                        AddressLine1 = "AddressLine1",
+                        AddressLine2 = "AddressLine2",
+                        AddressLine3 = "AddressLine3",
+                        StateProvince = "Manitoba",
+                        City = "testCity",
+                        Type = "residence",
+                        CountryRegion = "canada",
+                        ZipPostalCode = "p3p3p3",
+                    }
+                },
+               IncomeAssistance = false,
+               EmploymentConfirmed = true,
+               IncomeAssistanceStatus = "Status",
+               Occupation = "Occupation",
+               Website = "Website",
+                ReferenceDates = new List<ReferenceDate>(){
+                                new ReferenceDate(){ Index=0, Key="Start Date", Value=new DateTime(2019,9,1) },
+                                new ReferenceDate(){ Index=1, Key="End Date", Value=new DateTime(2020,9,1) }
+                            },
+                Description = "description",
+                Notes = "notes"
+            };
+            SSG_Employment ssg_empl = _mapper.Map<SSG_Employment>(employment);
+            Assert.AreEqual("Person", ssg_empl.ContactPerson);
+            Assert.AreEqual("Name", ssg_empl.BusinessName);
+            Assert.AreEqual("OwnerName", ssg_empl.BusinessOwner);
+            Assert.AreEqual(true, ssg_empl.EmploymentConfirmed);
+            Assert.AreEqual(false, ssg_empl.IncomeAssistance);
+            Assert.AreEqual("Occupation", ssg_empl.Occupation);
+            Assert.AreEqual("Website", ssg_empl.Website);
+            Assert.AreEqual("Status", ssg_empl.IncomeAssistanceStatus);
+            Assert.AreEqual("AddressLine1", ssg_empl.AddressLine1);
+            Assert.AreEqual("AddressLine2", ssg_empl.AddressLine2);
+            Assert.AreEqual("AddressLine3", ssg_empl.AddressLine3);
+            Assert.AreEqual("Manitoba", ssg_empl.CountrySubdivisionText);
+            Assert.AreEqual("testCity", ssg_empl.City);
+            Assert.AreEqual("canada", ssg_empl.CountryText);
+            Assert.AreEqual("p3p3p3", ssg_empl.PostalCode);
+            Assert.AreEqual(1, ssg_empl.StatusCode);
+            Assert.AreEqual(0, ssg_empl.StateCode);
+            Assert.AreEqual("Start Date", ssg_empl.Date1Label);
+            Assert.AreEqual("End Date", ssg_empl.Date2Label);
+            Assert.AreEqual(new DateTime(2019, 9, 1), ssg_empl.Date1);
+            Assert.AreEqual(new DateTime(2020, 9, 1), ssg_empl.Date2);
+        }
+
+        [Test]
+        public void Employment_with_null_employer_should_map_to_SSG_Employment_correctly()
+        {
+            var employment = new Employment()
+            {
+                Employer = null,
+                IncomeAssistance = false,
+                EmploymentConfirmed = true,
+                IncomeAssistanceStatus = "Status",
+                Occupation = "Occupation",
+                Website = "Website",
+                ReferenceDates = new List<ReferenceDate>(){
+                                new ReferenceDate(){ Index=0, Key="Start Date", Value=new DateTime(2019,9,1) },
+                                new ReferenceDate(){ Index=1, Key="End Date", Value=new DateTime(2020,9,1) }
+                            },
+                Description = "description",
+                Notes = "notes"
+            };
+            SSG_Employment ssg_empl = _mapper.Map<SSG_Employment>(employment);
+            Assert.AreEqual(string.Empty, ssg_empl.ContactPerson);
+            Assert.AreEqual(string.Empty, ssg_empl.BusinessName);
+            Assert.AreEqual(string.Empty, ssg_empl.BusinessOwner);
+            Assert.AreEqual(true, ssg_empl.EmploymentConfirmed);
+            Assert.AreEqual(false, ssg_empl.IncomeAssistance);
+            Assert.AreEqual("Occupation", ssg_empl.Occupation);
+            Assert.AreEqual("Website", ssg_empl.Website);
+            Assert.AreEqual("Status", ssg_empl.IncomeAssistanceStatus);
+            Assert.AreEqual(string.Empty, ssg_empl.AddressLine1);
+            Assert.AreEqual(string.Empty, ssg_empl.AddressLine2);
+            Assert.AreEqual(string.Empty, ssg_empl.AddressLine3);
+            Assert.AreEqual(string.Empty, ssg_empl.CountrySubdivisionText);
+            Assert.AreEqual(string.Empty, ssg_empl.City);
+            Assert.AreEqual(string.Empty, ssg_empl.CountryText);
+            Assert.AreEqual(string.Empty, ssg_empl.PostalCode);
+            Assert.AreEqual(1, ssg_empl.StatusCode);
+            Assert.AreEqual(0, ssg_empl.StateCode);
+            Assert.AreEqual("Start Date", ssg_empl.Date1Label);
+            Assert.AreEqual("End Date", ssg_empl.Date2Label);
+            Assert.AreEqual(new DateTime(2019, 9, 1), ssg_empl.Date1);
+            Assert.AreEqual(new DateTime(2020, 9, 1), ssg_empl.Date2);
         }
 
         [Test]
@@ -243,6 +345,10 @@ namespace DynamicsAdapter.Web.Test.Mapping
                     {
                         new Phone(){ },
                         new Phone(){ }
+                    },
+                    Employments = new Employment[]
+                    {
+                        new Employment(){}
                     }
                 }
             };
@@ -251,7 +357,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(new DateTime(2003, 3, 3), searchEvent.TimeStamp);
             Assert.AreEqual(Keys.EVENT_COMPLETED, searchEvent.EventType);
             Assert.AreEqual(Keys.SEARCH_API_EVENT_NAME, searchEvent.Name);
-            Assert.AreEqual("Auto search processing completed successfully. 2 identifier(s) found.  2 addresses found. 2 phone number(s) found.", searchEvent.Message);
+            Assert.AreEqual("Auto search processing completed successfully. 2 identifier(s) found.  2 addresses found. 2 phone number(s) found. 1 employment(s) found.", searchEvent.Message);
         }
 
         [Test]
@@ -283,7 +389,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(new DateTime(2003, 3, 3), searchEvent.TimeStamp);
             Assert.AreEqual(Keys.EVENT_COMPLETED, searchEvent.EventType);
             Assert.AreEqual(Keys.SEARCH_API_EVENT_NAME, searchEvent.Name);
-            Assert.AreEqual("Auto search processing completed successfully. 2 identifier(s) found.  0 addresses found. 0 phone number(s) found.", searchEvent.Message);
+            Assert.AreEqual("Auto search processing completed successfully. 2 identifier(s) found.  0 addresses found. 0 phone number(s) found. 0 employment(s) found.", searchEvent.Message);
         }
 
         [Test]
@@ -335,6 +441,27 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual("123", sSG_PhoneNumber.PhoneExtension);
             Assert.AreEqual("home", sSG_PhoneNumber.SupplierTypeCode);
             Assert.AreEqual(TelephoneNumberType.Home.Value, sSG_PhoneNumber.TelephoneNumberType);
+            Assert.AreEqual(1, sSG_PhoneNumber.StatusCode);
+            Assert.AreEqual(0, sSG_PhoneNumber.StateCode);
+        }
+
+        [Test]
+        public void PhoneNumber_with_unknown_type_and_no_descriptionshould_map_to_SSG_PhoneNumber_correctly()
+        {
+            Phone phoneNumber = new Phone()
+            {
+
+                PhoneNumber = "6904005678",
+                Type = "Phone",
+                Extension = "123"
+
+
+            };
+            SSG_PhoneNumber sSG_PhoneNumber = _mapper.Map<SSG_PhoneNumber>(phoneNumber);
+            Assert.AreEqual("6904005678", sSG_PhoneNumber.TelePhoneNumber);
+            Assert.AreEqual("123", sSG_PhoneNumber.PhoneExtension);
+            Assert.AreEqual("Phone", sSG_PhoneNumber.SupplierTypeCode);
+            Assert.AreEqual(TelephoneNumberType.Other.Value, sSG_PhoneNumber.TelephoneNumberType);
             Assert.AreEqual(1, sSG_PhoneNumber.StatusCode);
             Assert.AreEqual(0, sSG_PhoneNumber.StateCode);
         }

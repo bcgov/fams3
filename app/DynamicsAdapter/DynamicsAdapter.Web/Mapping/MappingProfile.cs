@@ -89,7 +89,7 @@ namespace  DynamicsAdapter.Web.Mapping
                .ForMember(dest => dest.EventType, opt => opt.MapFrom(src => Keys.EVENT_COMPLETED))
                .ForMember(dest => dest.Message,
                           opt => opt.MapFrom(
-                              src => $"Auto search processing completed successfully. {(src.MatchedPerson.Identifiers == null ? 0 : src.MatchedPerson.Identifiers.Count())} identifier(s) found.  {(src.MatchedPerson.Addresses == null ? 0 : src.MatchedPerson.Addresses.Count())} addresses found. {(src.MatchedPerson.Phones == null ? 0 : src.MatchedPerson.Phones.Count())} phone number(s) found.  {(src.MatchedPerson.Employments == null ? 0 : src.MatchedPerson.Employments.Count())} employment(s) found."
+                              src => $"Auto search processing completed successfully. {(src.MatchedPerson.Identifiers == null ? 0 : src.MatchedPerson.Identifiers.Count())} identifier(s) found.  {(src.MatchedPerson.Addresses == null ? 0 : src.MatchedPerson.Addresses.Count())} addresses found. {(src.MatchedPerson.Phones == null ? 0 : src.MatchedPerson.Phones.Count())} phone number(s) found. {(src.MatchedPerson.Employments == null ? 0 : src.MatchedPerson.Employments.Count())} employment(s) found."
                               )
                           )
                .ReverseMap();

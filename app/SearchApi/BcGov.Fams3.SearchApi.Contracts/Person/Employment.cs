@@ -1,21 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 
 namespace BcGov.Fams3.SearchApi.Contracts.Person
 {
     public class Employment : PersonalInfo
     {
-        public string EmploymentConfirmed { get; set; }
-        public string IncomeAssistance { get; set; }
+        [Description("employment confirmation ")]
+        public bool? EmploymentConfirmed { get; set; }
 
+        [Description("income assistant ")]
+        public bool? IncomeAssistance { get; set; }
+        [Description("income assistant status")]
         public string IncomeAssistanceStatus { get; set; }
-
+        [Description("employer")]
         public Employer Employer { get; set; }
-
+        [Description("person occupation")]
         public string Occupation { get; set; }
-
+        [Description("company website")]
         public string Website { get; set; }
+
 
     }
 }

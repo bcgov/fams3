@@ -149,6 +149,8 @@ objects:
               value: /etc/ssl/certs
             - name: DOTNET_SYSTEM_NET_HTTP_USESOCKETSHTTPHANDLER
               value: "0"
+            - name: DOTNET_RESTORE_CONFIGFILE
+              value: "${DOTNET_RESTORE_CONFIGFILE}"
       output:
         to:
           kind: ImageStreamTag

@@ -8,7 +8,7 @@ using System.Text;
 
 namespace Fams3Adapter.Dynamics.Employment
 {
-    public class Employment : DynamicsEntity
+    public class SSG_Employment : DynamicsEntity
     {
 
         [JsonProperty("ssg_website")]

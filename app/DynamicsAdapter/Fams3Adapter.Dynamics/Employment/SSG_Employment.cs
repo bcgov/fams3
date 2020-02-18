@@ -76,7 +76,7 @@ namespace Fams3Adapter.Dynamics.Employment
         [JsonProperty("ssg_locationpostalcode")]
         public string PostalCode { get; set; }
 
-        [JsonProperty("ssg_SearchRequest")]
+        [JsonProperty("ssg_SearchRequestId")]
         public virtual SSG_SearchRequest SearchRequest { get; set; }
     }
 }

@@ -2,6 +2,7 @@
 using DynamicsAdapter.Web.PersonSearch;
 using DynamicsAdapter.Web.PersonSearch.Models;
 using Fams3Adapter.Dynamics.Address;
+using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.Name;
 using Fams3Adapter.Dynamics.Person;
@@ -29,6 +30,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         private SSG_Address _fakePersonAddress;
         private SSG_PhoneNumber _fakePersonPhoneNumber;
         private SSG_Aliase _fakeName;
+        private SSG_Employment _fakeEmployment;
         private PersonEntity _ssg_fakePerson;
         private ProviderProfile _providerProfile;
         private SSG_SearchRequest _searchRequest;
@@ -61,7 +63,13 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                     SearchRequestId = validRequestId
                 }
             };
-
+            _fakeEmployment = new SSG_Employment
+            {
+                SearchRequest = new SSG_SearchRequest
+                {
+                    SearchRequestId = validRequestId
+                }
+            };
             _fakePersonPhoneNumber = new SSG_PhoneNumber
             {
                 SearchRequest = new SSG_SearchRequest
@@ -134,7 +142,15 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                         {
                             FirstName = "firstName"
                         }
+                    },
+                Employments = new List<Employment>()
+                { 
+                    new Employment()
+                    {
+                        Occupation = "Occupation"
                     }
+                }
+
 
             };
 
@@ -159,6 +175,9 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
 
             _mapper.Setup(m => m.Map<PersonEntity>(It.IsAny<Person>()))
                .Returns(_ssg_fakePerson);
+
+            _mapper.Setup(m => m.Map<SSG_Employment>(It.IsAny<Employment>()))
+       .Returns(_fakeEmployment);
 
             _searchRequestServiceMock.Setup(x => x.CreateIdentifier(It.Is<SSG_Identifier>(x => x.SearchRequest.SearchRequestId == invalidRequestId), It.IsAny<CancellationToken>()))
                 .Throws(new Exception("random exception"));
@@ -187,7 +206,13 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 FirstName = "First"
             }));
 
-           _sut = new SearchResultService(_searchRequestServiceMock.Object, _loggerMock.Object, _mapper.Object);
+            _searchRequestServiceMock.Setup(x => x.CreateEmployment(It.Is<SSG_Employment>(x => x.SearchRequest.SearchRequestId == validRequestId), It.IsAny<CancellationToken>()))
+            .Returns(Task.FromResult<SSG_Employment>(new SSG_Employment()
+            {
+                Occupation = "Occupation"
+            }));
+
+            _sut = new SearchResultService(_searchRequestServiceMock.Object, _loggerMock.Object, _mapper.Object);
 
         }
 
@@ -211,6 +236,9 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
 
             _searchRequestServiceMock
                 .Verify(x => x.CreateName(It.IsAny<SSG_Aliase>(), It.IsAny<CancellationToken>()), Times.Once);
+
+            _searchRequestServiceMock
+              .Verify(x => x.CreateEmployment(It.IsAny<SSG_Employment>(), It.IsAny<CancellationToken>()), Times.Once);
 
             Assert.AreEqual(true, result);
         }

@@ -1,4 +1,5 @@
-﻿using Fams3Adapter.Dynamics.Person;
+﻿using Fams3Adapter.Dynamics.Employment;
+using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Newtonsoft.Json;
 using System;
@@ -18,7 +19,8 @@ namespace Fams3Adapter.Dynamics.PhoneNumber
         [JsonProperty("ssg_informationsourcetext")]
         public int? InformationSource { get; set; }
 
-     
+        [JsonProperty("ssg_LinkedEmployment")]
+        public SSG_Employment LinkedEmployment { get; set; }
 
         [JsonProperty("ssg_telephonenumber")]
         public string TelePhoneNumber { get; set; }

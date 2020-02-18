@@ -266,6 +266,25 @@ namespace SearchAdapter.Sample.SearchRequest
                                  }
                              }
                         }
+                    },
+                    RelatedPersons = new List<RelatedPerson>()
+                    {
+                        new RelatedPerson
+                        {
+                            Description = "RelatedPersonDescription",
+                            DateOfBirth = new DateTime(1987, 1,1),
+                            Notes = "RelatedPerson Notes",
+                            FirstName ="SampleRelateFirst",
+                            LastName="SampleRelateLast",
+                            MiddleName="SampleRelateMiddle",
+                            OtherName="SampleRelateOther",
+                            Type = "Wife",
+                            Gender="F",
+                             ReferenceDates = new List<ReferenceDate>(){
+                                new ReferenceDate(){ Index=0, Key="Relation Start Date", Value=new DateTime(2019,9,1) },
+                                new ReferenceDate(){ Index=1, Key="Relation End Date", Value=new DateTime(2020,9,1) }
+                            }
+                        }
                     }
                 }
             };

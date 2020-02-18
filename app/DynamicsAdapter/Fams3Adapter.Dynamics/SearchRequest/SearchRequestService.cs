@@ -7,6 +7,7 @@ using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.Name;
 using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.PhoneNumber;
+using Fams3Adapter.Dynamics.RelatedPerson;
 using Simple.OData.Client;
 
 namespace Fams3Adapter.Dynamics.SearchRequest
@@ -17,8 +18,11 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         Task<SSG_Address> CreateAddress(SSG_Address address, CancellationToken cancellationToken);
         Task<SSG_PhoneNumber> CreatePhoneNumber(SSG_PhoneNumber phoneNumber, CancellationToken cancellationToken);
         Task<SSG_Aliase> CreateName(SSG_Aliase name, CancellationToken cancellationToken);
+        Task<SSG_Identity> CreateRelatedPerson(SSG_Identity name, CancellationToken cancellationToken);
 
         Task<SSG_Person> SavePerson(PersonEntity person, CancellationToken cancellationToken);
+
+        
     }
 
     /// <summary>
@@ -73,6 +77,11 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         public async Task<SSG_Aliase> CreateName(SSG_Aliase name, CancellationToken cancellationToken)
         {
             return await this._oDataClient.For<SSG_Aliase>().Set(name).InsertEntryAsync(cancellationToken);
+        }
+
+        public async Task<SSG_Identity> CreateRelatedPerson(SSG_Identity relatedPerson, CancellationToken cancellationToken)
+        {
+            return null;
         }
     }
 }

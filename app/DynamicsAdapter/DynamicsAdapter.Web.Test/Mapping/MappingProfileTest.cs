@@ -13,6 +13,7 @@ using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.Name;
 using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.PhoneNumber;
+using Fams3Adapter.Dynamics.RelatedPerson;
 using Fams3Adapter.Dynamics.SearchApiEvent;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using Fams3Adapter.Dynamics.SearchRequest;
@@ -357,7 +358,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(new DateTime(2003, 3, 3), searchEvent.TimeStamp);
             Assert.AreEqual(Keys.EVENT_COMPLETED, searchEvent.EventType);
             Assert.AreEqual(Keys.SEARCH_API_EVENT_NAME, searchEvent.Name);
-            Assert.AreEqual("Auto search processing completed successfully. 2 identifier(s) found.  2 addresses found. 2 phone number(s) found. 1 employment(s) found.", searchEvent.Message);
+            Assert.AreEqual("Auto search processing completed successfully. 2 identifier(s) found.  2 addresses found. 2 phone number(s) found. 1 employment(s) found. 0 related person(s) found.", searchEvent.Message);
         }
 
         [Test]
@@ -389,7 +390,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(new DateTime(2003, 3, 3), searchEvent.TimeStamp);
             Assert.AreEqual(Keys.EVENT_COMPLETED, searchEvent.EventType);
             Assert.AreEqual(Keys.SEARCH_API_EVENT_NAME, searchEvent.Name);
-            Assert.AreEqual("Auto search processing completed successfully. 2 identifier(s) found.  0 addresses found. 0 phone number(s) found. 0 employment(s) found.", searchEvent.Message);
+            Assert.AreEqual("Auto search processing completed successfully. 2 identifier(s) found.  0 addresses found. 0 phone number(s) found. 0 employment(s) found. 0 related person(s) found.", searchEvent.Message);
         }
 
         [Test]
@@ -593,6 +594,44 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(new DateTime(2014, 1, 1), ssg_name.Date2);
             Assert.AreEqual("startDate", ssg_name.Date1Label);
             Assert.AreEqual("endDate", ssg_name.Date2Label);
+        }
+
+        [Test]
+        public void RelatedPerson_should_map_to_SSG_Identity_correctly()
+        {
+            var relatedPerson = new RelatedPerson()
+            {
+                FirstName = "FirstName",
+                LastName = "LastName",
+                MiddleName = "MiddleName",
+                OtherName = "OtherName",
+                Type = "Aunt",
+                Description = "test description",
+                Notes = "notes",
+                Gender = "U",
+                DateOfBirth = new DateTimeOffset(new DateTime(2012,3,4)),
+                ReferenceDates = new List<ReferenceDate>() {
+                    new ReferenceDate(){Index=0, Key="relation start date", Value=new DateTimeOffset(new DateTime(2012,1,1)) },
+                    new ReferenceDate(){Index=1, Key="relation end date", Value=new DateTimeOffset(new DateTime(2014,1,1) )}
+                }
+            };
+            SSG_Identity ssg_relatedPerson = _mapper.Map<SSG_Identity>(relatedPerson);
+            Assert.AreEqual("FirstName", ssg_relatedPerson.FirstName);
+            Assert.AreEqual("LastName", ssg_relatedPerson.LastName);
+            Assert.AreEqual("MiddleName", ssg_relatedPerson.MiddleName);
+            Assert.AreEqual("OtherName", ssg_relatedPerson.ThirdGivenName);
+            Assert.AreEqual("test description", ssg_relatedPerson.Description);
+            Assert.AreEqual("notes", ssg_relatedPerson.Notes);
+            Assert.AreEqual(867670002, ssg_relatedPerson.Type);
+            Assert.AreEqual("Aunt", ssg_relatedPerson.SupplierRelationType);
+            Assert.AreEqual(new DateTime(2012, 3, 4), ssg_relatedPerson.DateOfBirth);
+            Assert.AreEqual(867670002, ssg_relatedPerson.Gender);
+            Assert.AreEqual(1, ssg_relatedPerson.StatusCode);
+            Assert.AreEqual(0, ssg_relatedPerson.StateCode);
+            Assert.AreEqual(new DateTime(2012, 1, 1), ssg_relatedPerson.Date1);
+            Assert.AreEqual(new DateTime(2014, 1, 1), ssg_relatedPerson.Date2);
+            Assert.AreEqual("relation start date", ssg_relatedPerson.Date1Label);
+            Assert.AreEqual("relation end date", ssg_relatedPerson.Date2Label);
         }
     }
 }

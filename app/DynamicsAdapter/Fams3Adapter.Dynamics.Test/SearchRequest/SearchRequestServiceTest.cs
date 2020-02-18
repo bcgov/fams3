@@ -3,6 +3,7 @@ using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.Name;
 using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.PhoneNumber;
+using Fams3Adapter.Dynamics.RelatedPerson;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Fams3Adapter.Dynamics.Types;
 using Moq;
@@ -88,6 +89,13 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
           })
           );
 
+            odataClientMock.Setup(x => x.For<SSG_Identity>(null).Set(It.Is<SSG_Identity>(x => x.FirstName == "First"))
+            .InsertEntryAsync(It.IsAny<CancellationToken>()))
+            .Returns(Task.FromResult(new SSG_Identity()
+            {
+              FirstName = "FirstName"
+            })
+            );
 
             _sut = new SearchRequestService(odataClientMock.Object);
         }
@@ -196,6 +204,33 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             var result = await _sut.CreateName(name, CancellationToken.None);
 
             Assert.AreEqual("firstName", result.FirstName);
+        }
+
+        [Test]
+        public async Task with_correct_searchRequestid_upload_related_person_should_success()
+        {
+            var relatedPerson = new SSG_Identity()
+            {
+                FirstName = "First",
+                LastName = "lastName",
+                MiddleName = "middleName",
+                ThirdGivenName = "otherName",
+                Type = PersonRelationType.Friend.Value,
+                Notes = "notes",
+                SupplierRelationType = "friend",
+                Date1 = new DateTime(2001, 1, 1),
+                Date1Label = "date1lable",
+                Date2 = new DateTime(2005, 1, 1),
+                Date2Label = "date2lable",
+                Gender = GenderType.Female.Value,
+                Description = "description",
+                SearchRequest = new SSG_SearchRequest() { SearchRequestId = testId },
+                Person = new SSG_Person() { PersonId = testPersonId }
+            };
+
+            var result = await _sut.CreateRelatedPerson(relatedPerson, CancellationToken.None);
+
+            Assert.AreEqual("FirstName", result.FirstName);
         }
     }
 }

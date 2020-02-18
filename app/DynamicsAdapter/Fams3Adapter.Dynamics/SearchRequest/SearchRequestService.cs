@@ -99,7 +99,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
         public async Task<SSG_Identity> CreateRelatedPerson(SSG_Identity relatedPerson, CancellationToken cancellationToken)
         {
-            return null;
+            return await this._oDataClient.For<SSG_Identity>().Set(relatedPerson).InsertEntryAsync(cancellationToken);
         }
     }
 }

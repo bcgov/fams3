@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using DynamicsAdapter.Web.PersonSearch.Models;
 using Fams3Adapter.Dynamics.Address;
+using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.Name;
 using Fams3Adapter.Dynamics.Person;
@@ -42,24 +43,34 @@ namespace DynamicsAdapter.Web.PersonSearch
             PersonEntity ssg_person = _mapper.Map<PersonEntity>(person);
             ssg_person.SearchRequest = request;
             ssg_person.InformationSource = providerDynamicsID;
-            _logger.LogDebug($"Attempting to create a person entity for SearchRequest[{request.SearchRequestId}]");
+            _logger.LogDebug($"Attempting to create the found person record for SearchRequest[{request.SearchRequestId}]");
             SSG_Person returnedPerson = await _searchRequestService.SavePerson(ssg_person, concellationToken);
-            _logger.LogInformation($"Successfully created person entity for SearchRequest [{request.SearchRequestId}]");
+            _logger.LogInformation($"Successfully created found person record for SearchRequest [{request.SearchRequestId}]");
 
-            _logger.LogDebug($"Attempting to creat identifier entities for SearchRequest[{request.SearchRequestId}]");
+            _logger.LogDebug($"Attempting to create found identifier records for SearchRequest[{request.SearchRequestId}]");
             await UploadIdentifiers(person, request, returnedPerson, providerDynamicsID, concellationToken);
+            _logger.LogInformation($"Successfully created found identifer records for SearchRequest [{request.SearchRequestId}]");
 
-            _logger.LogDebug($"Attempting to creat address entities for SearchRequest[{request.SearchRequestId}]");
+            _logger.LogDebug($"Attempting to create found adddress records for SearchRequest[{request.SearchRequestId}]");
             await UploadAddresses(person, request, returnedPerson, providerDynamicsID, concellationToken);
+            _logger.LogInformation($"Successfully created found address records for SearchRequest [{request.SearchRequestId}]");
 
-            _logger.LogDebug($"Attempting to creat phonenumber entities for SearchRequest[{request.SearchRequestId}]");
+            _logger.LogDebug($"Attempting to create found phone records for SearchRequest[{request.SearchRequestId}]");
             await UploadPhoneNumbers(person, request, returnedPerson, providerDynamicsID, concellationToken);
+            _logger.LogInformation($"Successfully created found phone records for SearchRequest [{request.SearchRequestId}]");
 
-            _logger.LogDebug($"Attempting to creat name entities for SearchRequest[{request.SearchRequestId}]");
+            _logger.LogDebug($"Attempting to create found name records for SearchRequest[{request.SearchRequestId}]");
             await UploadNames(person, request, returnedPerson, providerDynamicsID, concellationToken);
+            _logger.LogInformation($"Successfully created found name records for SearchRequest [{request.SearchRequestId}]");
 
-            _logger.LogDebug($"Attempting to creat related person entities for SearchRequest[{request.SearchRequestId}]");
+
+            _logger.LogDebug($"Attempting to create found employment records for SearchRequest[{request.SearchRequestId}]");
+            await UploadEmployment(person, request, returnedPerson, providerDynamicsID, concellationToken);
+            _logger.LogInformation($"Successfully created found employment records for SearchRequest [{request.SearchRequestId}]");
+
+            _logger.LogDebug($"Attempting to creat found related person records for SearchRequest[{request.SearchRequestId}]");
             await UploadRelatedPersons(person, request, returnedPerson, providerDynamicsID, concellationToken);
+            _logger.LogInformation($"Successfully created found related person records for SearchRequest [{request.SearchRequestId}]");
             return true;
 
         }
@@ -126,7 +137,6 @@ namespace DynamicsAdapter.Web.PersonSearch
                 return false;
             }
         }
-
         private async Task<bool> UploadNames(Person person, SSG_SearchRequest request, SSG_Person ssg_person, int? providerDynamicsID, CancellationToken concellationToken)
         {
             if (person.Names == null) return true;
@@ -139,6 +149,39 @@ namespace DynamicsAdapter.Web.PersonSearch
                     n.InformationSource = providerDynamicsID;
                     n.Person = ssg_person;
                     await _searchRequestService.CreateName(n, concellationToken);
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return false;
+            }
+        }
+        private async Task<bool> UploadEmployment(Person person, SSG_SearchRequest request, SSG_Person ssg_person, int? providerDynamicsID, CancellationToken concellationToken)
+        {
+            if (person.Employments == null) return true;
+            try
+            {
+                foreach (var employment in person.Employments)
+                {
+                    EmploymentEntity e = _mapper.Map<EmploymentEntity>(employment);
+                    e.SearchRequest = request;
+                    e.InformationSource = providerDynamicsID;
+                    e.Person = ssg_person;
+                    SSG_Employment ssg_employment  = await _searchRequestService.CreateEmployment(e, concellationToken);
+
+                    //add phones
+
+                    foreach(var phone in employment.Employer.Phones)
+                    {
+                        SSG_PhoneNumber p = _mapper.Map<SSG_PhoneNumber>(phone);
+                        p.LinkedEmployment = ssg_employment;
+                        p.SearchRequest = request;
+                        p.InformationSource = providerDynamicsID;
+                        p.Person = ssg_person;
+                        await _searchRequestService.CreatePhoneNumber(p, concellationToken);
+                    }
                 }
                 return true;
             }

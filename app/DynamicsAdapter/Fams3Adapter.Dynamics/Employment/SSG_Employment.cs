@@ -9,7 +9,7 @@ using System.Text;
 
 namespace Fams3Adapter.Dynamics.Employment
 {
-    public class SSG_Employment :  DynamicsEntity
+    public class EmploymentEntity :  DynamicsEntity
     {
 
         [JsonProperty("ssg_website")]
@@ -54,7 +54,7 @@ namespace Fams3Adapter.Dynamics.Employment
         [JsonProperty("ssg_addresslinethree")]
         public string AddressLine3 { get; set; }
 
-        [JsonProperty("ssg_CountrySubdivision")]
+        [JsonProperty("ssg_CountrySubDivision")]
         public virtual SSG_CountrySubdivision CountrySubdivision { get; set; }
 
         [JsonProperty("ssg_countrysubdivisiontext")]
@@ -70,13 +70,19 @@ namespace Fams3Adapter.Dynamics.Employment
         [JsonProperty("ssg_LocationCountry")]
         public virtual SSG_Country Country { get; set; }
 
-        [JsonProperty("ssg_countrytext")]
+        [JsonProperty("ssg_locationcountry_text")]
         public string CountryText { get; set; }
 
         [JsonProperty("ssg_locationpostalcode")]
         public string PostalCode { get; set; }
 
-        [JsonProperty("ssg_SearchRequest")]
+        [JsonProperty("ssg_SearchRequestId")]
         public virtual SSG_SearchRequest SearchRequest { get; set; }
+    }
+
+    public class SSG_Employment : EmploymentEntity
+    {
+        [JsonProperty("ssg_employmentid")]
+        public Guid EmploymentId { get; set; }
     }
 }

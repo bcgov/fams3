@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Fams3Adapter.Dynamics.Address;
+using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.Name;
 using Fams3Adapter.Dynamics.Person;
@@ -21,8 +22,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         Task<SSG_Identity> CreateRelatedPerson(SSG_Identity name, CancellationToken cancellationToken);
 
         Task<SSG_Person> SavePerson(PersonEntity person, CancellationToken cancellationToken);
-
-        
+        Task<SSG_Employment> CreateEmployment(EmploymentEntity employment, CancellationToken cancellationToken);
     }
 
     /// <summary>
@@ -77,6 +77,24 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         public async Task<SSG_Aliase> CreateName(SSG_Aliase name, CancellationToken cancellationToken)
         {
             return await this._oDataClient.For<SSG_Aliase>().Set(name).InsertEntryAsync(cancellationToken);
+        }
+
+        public async Task<SSG_Employment> CreateEmployment(EmploymentEntity employment, CancellationToken cancellationToken)
+        {
+            var countryText = employment.CountryText;
+            var country = await _oDataClient.For<SSG_Country>()
+                                            .Filter(x => x.Name == countryText)
+                                            .FindEntryAsync(cancellationToken);
+            employment.Country = country;
+
+            var subDivisionText = employment.CountrySubdivisionText;
+            var subdivision = await _oDataClient.For<SSG_CountrySubdivision>()
+                                      .Filter(x => x.Name == subDivisionText)
+                                      .FindEntryAsync(cancellationToken);
+            employment.CountrySubdivision = subdivision;
+
+
+            return await this._oDataClient.For<SSG_Employment>().Set(employment).InsertEntryAsync(cancellationToken);
         }
 
         public async Task<SSG_Identity> CreateRelatedPerson(SSG_Identity relatedPerson, CancellationToken cancellationToken)

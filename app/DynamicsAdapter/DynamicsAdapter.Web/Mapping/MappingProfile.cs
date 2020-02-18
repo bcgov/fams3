@@ -94,6 +94,7 @@ namespace  DynamicsAdapter.Web.Mapping
                                $"{(src.MatchedPerson.Identifiers == null ? 0 : src.MatchedPerson.Identifiers.Count())} identifier(s) found.  " +
                                $"{(src.MatchedPerson.Addresses == null ? 0 : src.MatchedPerson.Addresses.Count())} addresses found. " +
                                $"{(src.MatchedPerson.Phones == null ? 0 : src.MatchedPerson.Phones.Count())} phone number(s) found. " +
+                               $"{(src.MatchedPerson.Names == null ? 0 : src.MatchedPerson.Names.Count())} name(s) found. " +
                                $"{(src.MatchedPerson.Employments == null ? 0 : src.MatchedPerson.Employments.Count())} employment(s) found. "+
                                $"{(src.MatchedPerson.RelatedPersons == null ? 0 : src.MatchedPerson.RelatedPersons.Count())} related person(s) found."
                               )
@@ -114,7 +115,7 @@ namespace  DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.PostalCode, opt => opt.MapFrom(src => src.ZipPostalCode))
                  .IncludeBase<PersonalInfo, DynamicsEntity>();
 
-            CreateMap<Employment, SSG_Employment>()
+            CreateMap<Employment, EmploymentEntity>()
               .ForMember(dest => dest.AddressLine1, opt => opt.MapFrom(src => (src.Employer == null)? string.Empty: (src.Employer.Address == null)?string.Empty: src.Employer.Address.AddressLine1))
               .ForMember(dest => dest.AddressLine2, opt => opt.MapFrom(src => (src.Employer == null) ? string.Empty : (src.Employer.Address == null) ? string.Empty : src.Employer.Address.AddressLine2))
               .ForMember(dest => dest.AddressLine3, opt => opt.MapFrom(src => (src.Employer == null) ? string.Empty : (src.Employer.Address == null) ? string.Empty : src.Employer.Address.AddressLine3))

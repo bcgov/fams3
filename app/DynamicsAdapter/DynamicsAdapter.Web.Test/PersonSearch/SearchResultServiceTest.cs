@@ -2,6 +2,7 @@
 using DynamicsAdapter.Web.PersonSearch;
 using DynamicsAdapter.Web.PersonSearch.Models;
 using Fams3Adapter.Dynamics.Address;
+using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.Name;
 using Fams3Adapter.Dynamics.Person;
@@ -31,6 +32,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         private SSG_PhoneNumber _fakePersonPhoneNumber;
         private SSG_Aliase _fakeName;
         private SSG_Identity _fakeRelatedPerson;
+        private EmploymentEntity _fakeEmployment;
         private PersonEntity _ssg_fakePerson;
         private ProviderProfile _providerProfile;
         private SSG_SearchRequest _searchRequest;
@@ -63,7 +65,13 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                     SearchRequestId = validRequestId
                 }
             };
-
+            _fakeEmployment = new EmploymentEntity
+            {
+                SearchRequest = new SSG_SearchRequest
+                {
+                    SearchRequestId = validRequestId
+                }
+            };
             _fakePersonPhoneNumber = new SSG_PhoneNumber
             {
                 SearchRequest = new SSG_SearchRequest
@@ -148,7 +156,17 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 RelatedPersons=new List<RelatedPerson>()
                 { 
                     new RelatedPerson(){FirstName="firstName"}
+                },
+                    
+                Employments = new List<Employment>()
+                { 
+                    new Employment()
+                    {
+                        Occupation = "Occupation"
+                    }
                 }
+
+
             };
 
             _providerProfile = new ProviderProfile()
@@ -172,6 +190,9 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
 
             _mapper.Setup(m => m.Map<PersonEntity>(It.IsAny<Person>()))
                .Returns(_ssg_fakePerson);
+
+            _mapper.Setup(m => m.Map<EmploymentEntity>(It.IsAny<Employment>()))
+       .Returns(_fakeEmployment);
 
             _mapper.Setup(m => m.Map<SSG_Identity>(It.IsAny<RelatedPerson>()))
                    .Returns(_fakeRelatedPerson);
@@ -203,6 +224,13 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 FirstName = "First"
             }));
 
+            _searchRequestServiceMock.Setup(x => x.CreateEmployment(It.Is<EmploymentEntity>(x => x.SearchRequest.SearchRequestId == validRequestId), It.IsAny<CancellationToken>()))
+            .Returns(Task.FromResult<SSG_Employment>(new SSG_Employment()
+            {
+                Occupation = "Occupation"
+            }));
+
+           
             _searchRequestServiceMock.Setup(x => x.CreateRelatedPerson(It.Is<SSG_Identity>(x => x.SearchRequest.SearchRequestId == validRequestId), It.IsAny<CancellationToken>()))
               .Returns(Task.FromResult<SSG_Identity>(new SSG_Identity()
               {
@@ -236,6 +264,9 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
 
             _searchRequestServiceMock
                .Verify(x => x.CreateRelatedPerson(It.IsAny<SSG_Identity>(), It.IsAny<CancellationToken>()), Times.Once);
+
+            _searchRequestServiceMock
+              .Verify(x => x.CreateEmployment(It.IsAny<EmploymentEntity>(), It.IsAny<CancellationToken>()), Times.Once);
 
             Assert.AreEqual(true, result);
         }

@@ -233,7 +233,7 @@ namespace DynamicsAdapter.Web.Mapping
         }
     }
 
-    public class RelatedPersonGenderConverter : IValueConverter<string, int?>
+    public class PersonGenderConverter : IValueConverter<string, int?>
     {
         public int? Convert(string source, ResolutionContext context)
         {

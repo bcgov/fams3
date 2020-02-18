@@ -164,7 +164,7 @@ namespace  DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.SupplierRelationType, opt => opt.MapFrom(src => src.Type))
                  .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
                  .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
-                 .ForMember(dest => dest.Gender, opt => opt.ConvertUsing(new RelatedPersonGenderConverter(), src => src.Gender))
+                 .ForMember(dest => dest.Gender, opt => opt.ConvertUsing(new PersonGenderConverter(), src => src.Gender))
                  .IncludeBase<PersonalInfo, DynamicsEntity>();
 
             CreateMap<Person, PersonEntity>()

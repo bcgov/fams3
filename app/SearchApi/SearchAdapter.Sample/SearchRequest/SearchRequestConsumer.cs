@@ -198,8 +198,8 @@ namespace SearchAdapter.Sample.SearchRequest
                     {
                         new Employment
                         {
-                            EmploymentConfirmed = "Y",
-                            IncomeAssistance = "Y",
+                            EmploymentConfirmed = true,
+                            IncomeAssistance = true,
                             IncomeAssistanceStatus = "Real Status",
                              Notes = "Sample Notes",
                              Occupation = "Occupation",
@@ -233,8 +233,8 @@ namespace SearchAdapter.Sample.SearchRequest
                         },
                           new Employment
                         {
-                            EmploymentConfirmed = "Y",
-                            IncomeAssistance = "Y",
+                            EmploymentConfirmed = false,
+                            IncomeAssistance = false,
                             IncomeAssistanceStatus = "Real Status",
                              Notes = "Sample Notes",
                              Occupation = "Occupation",
@@ -265,6 +265,25 @@ namespace SearchAdapter.Sample.SearchRequest
                                      new Phone {PhoneNumber = "762349303", Extension ="123", Type ="Phone"}
                                  }
                              }
+                        }
+                    },
+                    RelatedPersons = new List<RelatedPerson>()
+                    {
+                        new RelatedPerson
+                        {
+                            Description = "RelatedPersonDescription",
+                            DateOfBirth = new DateTime(1987, 1,1),
+                            Notes = "RelatedPerson Notes",
+                            FirstName ="SampleRelateFirst",
+                            LastName="SampleRelateLast",
+                            MiddleName="SampleRelateMiddle",
+                            OtherName="SampleRelateOther",
+                            Type = "Wife",
+                            Gender="F",
+                             ReferenceDates = new List<ReferenceDate>(){
+                                new ReferenceDate(){ Index=0, Key="Relation Start Date", Value=new DateTime(2019,9,1) },
+                                new ReferenceDate(){ Index=1, Key="Relation End Date", Value=new DateTime(2020,9,1) }
+                            }
                         }
                     }
                 }

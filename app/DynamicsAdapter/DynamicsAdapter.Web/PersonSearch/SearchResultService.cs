@@ -6,6 +6,7 @@ using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.Name;
 using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.PhoneNumber;
+using Fams3Adapter.Dynamics.RelatedPerson;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Microsoft.Extensions.Logging;
 using System;
@@ -66,6 +67,10 @@ namespace DynamicsAdapter.Web.PersonSearch
             _logger.LogDebug($"Attempting to create found employment records for SearchRequest[{request.SearchRequestId}]");
             await UploadEmployment(person, request, returnedPerson, providerDynamicsID, concellationToken);
             _logger.LogInformation($"Successfully created found employment records for SearchRequest [{request.SearchRequestId}]");
+
+            _logger.LogDebug($"Attempting to creat found related person records for SearchRequest[{request.SearchRequestId}]");
+            await UploadRelatedPersons(person, request, returnedPerson, providerDynamicsID, concellationToken);
+            _logger.LogInformation($"Successfully created found related person records for SearchRequest [{request.SearchRequestId}]");
             return true;
 
         }
@@ -187,6 +192,26 @@ namespace DynamicsAdapter.Web.PersonSearch
             }
         }
 
-
+        private async Task<bool> UploadRelatedPersons(Person person, SSG_SearchRequest request, SSG_Person ssg_person, int? providerDynamicsID, CancellationToken concellationToken)
+        {
+            if (person.RelatedPersons == null) return true;
+            try
+            {
+                foreach (var relatedPerson in person.RelatedPersons)
+                {
+                    SSG_Identity n = _mapper.Map<SSG_Identity>(relatedPerson);
+                    n.SearchRequest = request;
+                    n.InformationSource = providerDynamicsID;
+                    n.Person = ssg_person;
+                    await _searchRequestService.CreateRelatedPerson(n, concellationToken);
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return false;
+            }
+        }
     }
 }

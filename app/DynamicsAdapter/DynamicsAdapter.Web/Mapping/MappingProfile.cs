@@ -8,6 +8,7 @@ using Fams3Adapter.Dynamics.Name;
 using Fams3Adapter.Dynamics.OptionSets.Models;
 using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.PhoneNumber;
+using Fams3Adapter.Dynamics.RelatedPerson;
 using Fams3Adapter.Dynamics.SearchApiEvent;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using System;
@@ -89,7 +90,13 @@ namespace  DynamicsAdapter.Web.Mapping
                .ForMember(dest => dest.EventType, opt => opt.MapFrom(src => Keys.EVENT_COMPLETED))
                .ForMember(dest => dest.Message,
                           opt => opt.MapFrom(
-                              src => $"Auto search processing completed successfully. {(src.MatchedPerson.Identifiers == null ? 0 : src.MatchedPerson.Identifiers.Count())} identifier(s) found.  {(src.MatchedPerson.Addresses == null ? 0 : src.MatchedPerson.Addresses.Count())} addresses found. {(src.MatchedPerson.Phones == null ? 0 : src.MatchedPerson.Phones.Count())} phone number(s) found. {(src.MatchedPerson.Names == null ? 0 : src.MatchedPerson.Names.Count())} name(s) found. {(src.MatchedPerson.Employments == null ? 0 : src.MatchedPerson.Employments.Count())} employment(s) found."
+                              src => $"Auto search processing completed successfully. " +
+                               $"{(src.MatchedPerson.Identifiers == null ? 0 : src.MatchedPerson.Identifiers.Count())} identifier(s) found.  " +
+                               $"{(src.MatchedPerson.Addresses == null ? 0 : src.MatchedPerson.Addresses.Count())} addresses found. " +
+                               $"{(src.MatchedPerson.Phones == null ? 0 : src.MatchedPerson.Phones.Count())} phone number(s) found. " +
+                               $"{(src.MatchedPerson.Names == null ? 0 : src.MatchedPerson.Names.Count())} name(s) found. " +
+                               $"{(src.MatchedPerson.Employments == null ? 0 : src.MatchedPerson.Employments.Count())} employment(s) found. "+
+                               $"{(src.MatchedPerson.RelatedPersons == null ? 0 : src.MatchedPerson.RelatedPersons.Count())} related person(s) found."
                               )
                           )
                .ReverseMap();
@@ -146,6 +153,19 @@ namespace  DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.SupplierTypeCode, opt => opt.MapFrom(src => src.Type))
                  .ForMember(dest => dest.Comments, opt => opt.MapFrom(src => src.Description))
                  .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
+                 .IncludeBase<PersonalInfo, DynamicsEntity>();
+
+            CreateMap<RelatedPerson, SSG_Identity>()
+                 .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
+                 .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
+                 .ForMember(dest => dest.MiddleName, opt => opt.MapFrom(src => src.MiddleName))
+                 .ForMember(dest => dest.ThirdGivenName, opt => opt.MapFrom(src => src.OtherName))
+                 .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new RelatedPersonCategoryConverter(), src => src.Type))
+                 .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => src.DateOfBirth==null? (DateTime?)null : src.DateOfBirth.Value.DateTime))
+                 .ForMember(dest => dest.SupplierRelationType, opt => opt.MapFrom(src => src.Type))
+                 .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
+                 .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
+                 .ForMember(dest => dest.Gender, opt => opt.ConvertUsing(new PersonGenderConverter(), src => src.Gender))
                  .IncludeBase<PersonalInfo, DynamicsEntity>();
 
             CreateMap<Person, PersonEntity>()

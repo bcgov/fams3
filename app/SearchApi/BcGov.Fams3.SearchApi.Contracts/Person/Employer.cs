@@ -12,7 +12,7 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
 
         [Description("The name of the owner of the employer")]
         public string OwnerName { get; set; }
-
+        [Description("the phone numbers and fax of the company")]
         public IEnumerable<Phone> Phones {get;set;}
 
         [Description("The address of the employer")]

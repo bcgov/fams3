@@ -128,10 +128,16 @@ objects:
                   value: rabbitmq-cluster
                 - name: RABBITMQ__PORT
                   value: "5672"
-                - name: RABBITMQ__USERNAME
-                  value: guest
                 - name: RABBITMQ__PASSWORD
-                  value: guest
+                  valueFrom:
+                    secretKeyRef:
+                      key: password
+                      name: rabbitmq-searchapi-credentials
+                - name: RABBITMQ__USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      key: username
+                      name: rabbitmq-searchapi-credentials
                 - name: ICBCRESTADAPTER__BASEURL
                   value: "${ICBC_REST_URL}"
               livenessProbe:

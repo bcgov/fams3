@@ -129,10 +129,16 @@ objects:
                   value: ${RABBITMQ_SERVICE}
                 - name: RABBITMQ__PORT
                   value: "5672"
-                - name: RABBITMQ__USERNAME
-                  value: guest
                 - name: RABBITMQ__PASSWORD
-                  value: guest
+                  valueFrom:
+                    secretKeyRef:
+                      key: password
+                      name: rabbitmq-searchapi-credentials
+                - name: RABBITMQ__USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      key: username
+                      name: rabbitmq-searchapi-credentials
               livenessProbe:
                 httpGet:
                   path: "/health"

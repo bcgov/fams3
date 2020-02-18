@@ -20,7 +20,7 @@ namespace Fams3Adapter.Dynamics.PhoneNumber
         public int? InformationSource { get; set; }
 
         [JsonProperty("ssg_LinkedEmployment")]
-        public SSG_Employment LinkedEmployment { get; set; }
+        public EmploymentEntity LinkedEmployment { get; set; }
 
         [JsonProperty("ssg_telephonenumber")]
         public string TelePhoneNumber { get; set; }

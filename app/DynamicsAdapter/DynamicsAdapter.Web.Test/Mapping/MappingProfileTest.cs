@@ -120,7 +120,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 Description = "description",
                 Notes = "notes"
             };
-            SSG_Employment ssg_empl = _mapper.Map<SSG_Employment>(employment);
+            EmploymentEntity ssg_empl = _mapper.Map<EmploymentEntity>(employment);
             Assert.AreEqual("Person", ssg_empl.ContactPerson);
             Assert.AreEqual("Name", ssg_empl.BusinessName);
             Assert.AreEqual("OwnerName", ssg_empl.BusinessOwner);
@@ -162,7 +162,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 Description = "description",
                 Notes = "notes"
             };
-            SSG_Employment ssg_empl = _mapper.Map<SSG_Employment>(employment);
+            EmploymentEntity ssg_empl = _mapper.Map<EmploymentEntity>(employment);
             Assert.AreEqual(string.Empty, ssg_empl.ContactPerson);
             Assert.AreEqual(string.Empty, ssg_empl.BusinessName);
             Assert.AreEqual(string.Empty, ssg_empl.BusinessOwner);

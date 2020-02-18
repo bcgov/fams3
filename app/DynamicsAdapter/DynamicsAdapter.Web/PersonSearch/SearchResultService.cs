@@ -160,11 +160,11 @@ namespace DynamicsAdapter.Web.PersonSearch
             {
                 foreach (var employment in person.Employments)
                 {
-                    SSG_Employment e = _mapper.Map<SSG_Employment>(employment);
+                    EmploymentEntity e = _mapper.Map<EmploymentEntity>(employment);
                     e.SearchRequest = request;
                     e.InformationSource = providerDynamicsID;
                     e.Person = ssg_person;
-                    var ssg_employment  = await _searchRequestService.CreateEmployment(e, concellationToken);
+                    SSG_Employment ssg_employment  = await _searchRequestService.CreateEmployment(e, concellationToken);
 
                     //add phones
 

@@ -108,7 +108,7 @@ namespace  DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.PostalCode, opt => opt.MapFrom(src => src.ZipPostalCode))
                  .IncludeBase<PersonalInfo, DynamicsEntity>();
 
-            CreateMap<Employment, SSG_Employment>()
+            CreateMap<Employment, EmploymentEntity>()
               .ForMember(dest => dest.AddressLine1, opt => opt.MapFrom(src => (src.Employer == null)? string.Empty: (src.Employer.Address == null)?string.Empty: src.Employer.Address.AddressLine1))
               .ForMember(dest => dest.AddressLine2, opt => opt.MapFrom(src => (src.Employer == null) ? string.Empty : (src.Employer.Address == null) ? string.Empty : src.Employer.Address.AddressLine2))
               .ForMember(dest => dest.AddressLine3, opt => opt.MapFrom(src => (src.Employer == null) ? string.Empty : (src.Employer.Address == null) ? string.Empty : src.Employer.Address.AddressLine3))

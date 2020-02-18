@@ -20,7 +20,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         Task<SSG_Aliase> CreateName(SSG_Aliase name, CancellationToken cancellationToken);
 
         Task<SSG_Person> SavePerson(PersonEntity person, CancellationToken cancellationToken);
-        Task<SSG_Employment> CreateEmployment(SSG_Employment employment, CancellationToken cancellationToken);
+        Task<SSG_Employment> CreateEmployment(EmploymentEntity employment, CancellationToken cancellationToken);
     }
 
     /// <summary>
@@ -77,15 +77,17 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             return await this._oDataClient.For<SSG_Aliase>().Set(name).InsertEntryAsync(cancellationToken);
         }
 
-        public async Task<SSG_Employment> CreateEmployment(SSG_Employment employment, CancellationToken cancellationToken)
+        public async Task<SSG_Employment> CreateEmployment(EmploymentEntity employment, CancellationToken cancellationToken)
         {
+            var countryText = employment.CountryText;
             var country = await _oDataClient.For<SSG_Country>()
-                                            .Filter(x => x.Name == employment.CountryText)
+                                            .Filter(x => x.Name == countryText)
                                             .FindEntryAsync(cancellationToken);
             employment.Country = country;
 
+            var subDivisionText = employment.CountrySubdivisionText;
             var subdivision = await _oDataClient.For<SSG_CountrySubdivision>()
-                                      .Filter(x => x.Name == employment.CountrySubdivisionText)
+                                      .Filter(x => x.Name == subDivisionText)
                                       .FindEntryAsync(cancellationToken);
             employment.CountrySubdivision = subdivision;
 

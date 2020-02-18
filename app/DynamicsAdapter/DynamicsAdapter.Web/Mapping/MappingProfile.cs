@@ -8,6 +8,7 @@ using Fams3Adapter.Dynamics.Name;
 using Fams3Adapter.Dynamics.OptionSets.Models;
 using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.PhoneNumber;
+using Fams3Adapter.Dynamics.RelatedPerson;
 using Fams3Adapter.Dynamics.SearchApiEvent;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using System;
@@ -146,6 +147,18 @@ namespace  DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.SupplierTypeCode, opt => opt.MapFrom(src => src.Type))
                  .ForMember(dest => dest.Comments, opt => opt.MapFrom(src => src.Description))
                  .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
+                 .IncludeBase<PersonalInfo, DynamicsEntity>();
+
+            CreateMap<RelatedPerson, SSG_Identity>()
+                 .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
+                 .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
+                 .ForMember(dest => dest.MiddleName, opt => opt.MapFrom(src => src.MiddleName))
+                 .ForMember(dest => dest.ThirdGivenName, opt => opt.MapFrom(src => src.OtherName))
+                 .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new RelatedPersonCategoryConverter(), src => src.Type))
+                 .ForMember(dest => dest.SupplierRelationType, opt => opt.MapFrom(src => src.Type))
+                 .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
+                 .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
+                 .ForMember(dest => dest.Gender, opt => opt.ConvertUsing(new RelatedPersonGenderConverter(), src => src.Gender))
                  .IncludeBase<PersonalInfo, DynamicsEntity>();
 
             CreateMap<Person, PersonEntity>()

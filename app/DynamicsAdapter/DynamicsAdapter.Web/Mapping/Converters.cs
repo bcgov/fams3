@@ -212,5 +212,37 @@ namespace DynamicsAdapter.Web.Mapping
         }
     }
 
-    
+    public class RelatedPersonCategoryConverter : IValueConverter<string, int?>
+    {
+        public int? Convert(string source, ResolutionContext context)
+        {
+            return
+                source.ToLower() switch
+                {
+                    "spouse" => PersonRelationType.Spouse.Value,
+                    "aunt/uncle" => PersonRelationType.AuntUncle.Value,
+                    "parent" => PersonRelationType.Parent.Value,
+                    "child" => PersonRelationType.Child.Value,
+                    "sibling" => PersonRelationType.Sibling.Value,
+                    "cousin" => PersonRelationType.Cousin.Value,
+                    "friend" => PersonRelationType.Friend.Value,
+                    _ => (int?)null
+                };
+        }
+    }
+
+    public class RelatedPersonGenderConverter : IValueConverter<string, int?>
+    {
+        public int? Convert(string source, ResolutionContext context)
+        {
+            return
+                source.ToLower() switch
+                {
+                    "m" => GenderType.Male.Value,
+                    "f" => GenderType.Female.Value,
+                    "u" => GenderType.Other.Value,
+                    _ => (int?)null
+                };
+        }
+    }
 }

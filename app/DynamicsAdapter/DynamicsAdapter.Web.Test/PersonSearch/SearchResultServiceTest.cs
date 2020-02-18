@@ -156,8 +156,8 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 RelatedPersons=new List<RelatedPerson>()
                 { 
                     new RelatedPerson(){FirstName="firstName"}
-                }
-                    },
+                },
+                    
                 Employments = new List<Employment>()
                 { 
                     new Employment()

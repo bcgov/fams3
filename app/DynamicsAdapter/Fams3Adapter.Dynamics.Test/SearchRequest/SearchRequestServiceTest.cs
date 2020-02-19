@@ -1,4 +1,5 @@
 ﻿using Fams3Adapter.Dynamics.Address;
+using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.Name;
 using Fams3Adapter.Dynamics.Person;
@@ -96,6 +97,14 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
               FirstName = "FirstName"
             })
             );
+
+            odataClientMock.Setup(x => x.For<SSG_Employment>(null).Set(It.Is<EmploymentEntity>(x => x.BusinessOwner == "Business Owner"))
+         .InsertEntryAsync(It.IsAny<CancellationToken>()))
+         .Returns(Task.FromResult(new SSG_Employment()
+         {
+             BusinessOwner = "Business Owner"
+         })
+         );
 
             _sut = new SearchRequestService(odataClientMock.Object);
         }
@@ -231,6 +240,29 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             var result = await _sut.CreateRelatedPerson(relatedPerson, CancellationToken.None);
 
             Assert.AreEqual("FirstName", result.FirstName);
+        }
+
+
+        [Test]
+        public async Task with_correct_searchRequestid_upload_employment_should_succed()
+        {
+            var employment = new EmploymentEntity()
+            {
+                BusinessOwner= "Business Owner",
+                BusinessName = "Business Name",
+                Notes = "notes",
+                Date1 = new DateTime(2001, 1, 1),
+                Date1Label = "date1lable",
+                Date2 = new DateTime(2005, 1, 1),
+                Date2Label = "date2lable",
+        
+                SearchRequest = new SSG_SearchRequest() { SearchRequestId = testId },
+                Person = new SSG_Person() { PersonId = testPersonId }
+            };
+
+            var result = await _sut.CreateEmployment(employment, CancellationToken.None);
+
+            Assert.AreEqual("Business Owner", result.BusinessOwner);
         }
     }
 }

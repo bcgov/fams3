@@ -42,6 +42,11 @@ namespace Fams3Adapter.Dynamics.OptionSets.Models
             return typeMatches && valueMatches && nameMatches;
         }
 
+        public override int GetHashCode()
+        {
+            return Tuple.Create(Value, Name).GetHashCode();
+        }
+
         public int CompareTo(object other) => Value.CompareTo(((Enumeration)other).Value);
 
     }

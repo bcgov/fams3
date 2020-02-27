@@ -131,9 +131,34 @@ services:
       HealthChecksUI:HealthChecks:3:Uri: http://sample-adapter/health
     networks: 
       - search-api-net
+  
+  redis:
+    container_name: redis
+    image: redis
+    hostname: redis
+    command: ["redis-server", "--appendonly", "yes"]
+    ports: 
+      - "6379:6379"
+    networks: 
+      - search-api-net
+    volumes: 
+      - data-redis:/data
+    restart: always
 
+  redis-commander:
+    container_name: redis-commander
+    hostname: redis-commander
+    image: rediscommander/redis-commander
+    restart: always
+    networks: 
+      - search-api-net
+    ports: 
+      - "8081:8081"
+    environment: 
+      - REDIS_HOSTS=redis
 networks:
   search-api-net:
 
 volumes:
   data-rabbit:
+  data-redis:

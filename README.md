@@ -32,6 +32,7 @@ docker-compose up
 | RabbitMq Management Console | [http://localhost:15672/](http://localhost:15672) |
 | Jaeger OpenTrace Monitoring | [http://localhost:16686/search](http://localhost:16686/search) |
 | HealthChecks UI | [http://localhost:6060/healthchecks-ui](http://localhost:6060/healthchecks-ui) |
+| Redis Commander | [http://localhost:8081](http://localhost:8081)
 
 ## SearchApi
 

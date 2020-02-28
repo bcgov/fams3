@@ -1,4 +1,4 @@
-version: '3.7'
+version: "3.7"
 services:
   search-api:
     build:
@@ -19,7 +19,7 @@ services:
     ports:
       - "5050:80"
     restart: always
-    networks: 
+    networks:
       - search-api-net
 
   sample-adapter:
@@ -39,7 +39,7 @@ services:
     ports:
       - "5052:80"
     restart: always
-    networks: 
+    networks:
       - search-api-net
 
   dynadapter:
@@ -64,7 +64,7 @@ services:
     restart: always
     networks:
       - search-api-net
-    
+
   rabbitmq:
     image: rabbitmq:3.7.15-management
     container_name: rabbitmq
@@ -80,7 +80,12 @@ services:
 
   jaeger-collector:
     image: jaegertracing/jaeger-collector
-    command: ["--cassandra.keyspace=jaeger_v1_dc1", "--cassandra.servers=cassandra", "--collector.zipkin.http-port=9411"]
+    command:
+      [
+        "--cassandra.keyspace=jaeger_v1_dc1",
+        "--cassandra.servers=cassandra",
+        "--collector.zipkin.http-port=9411",
+      ]
     ports:
       - "14269"
       - "14268:14268"
@@ -90,31 +95,32 @@ services:
     restart: on-failure
     depends_on:
       - cassandra-schema
-    networks: 
+    networks:
       - search-api-net
 
   jaeger-query:
     image: jaegertracing/jaeger-query
-    command: ["--cassandra.keyspace=jaeger_v1_dc1", "--cassandra.servers=cassandra"]
+    command:
+      ["--cassandra.keyspace=jaeger_v1_dc1", "--cassandra.servers=cassandra"]
     ports:
       - "16686:16686"
       - "16687"
     restart: on-failure
     depends_on:
       - cassandra-schema
-    networks: 
+    networks:
       - search-api-net
 
   cassandra:
     image: cassandra:3.9
-    networks: 
+    networks:
       - search-api-net
 
   cassandra-schema:
     image: jaegertracing/jaeger-cassandra-schema
     depends_on:
       - cassandra
-    networks: 
+    networks:
       - search-api-net
 
   watchdog:
@@ -129,19 +135,19 @@ services:
       HealthChecksUI:HealthChecks:1:Uri: http://dynadapter/health
       HealthChecksUI:HealthChecks:3:Name: Sample Adapter
       HealthChecksUI:HealthChecks:3:Uri: http://sample-adapter/health
-    networks: 
+    networks:
       - search-api-net
-  
+
   redis:
     container_name: redis
     image: redis
     hostname: redis
     command: ["redis-server", "--appendonly", "yes"]
-    ports: 
+    ports:
       - "6379:6379"
-    networks: 
+    networks:
       - search-api-net
-    volumes: 
+    volumes:
       - data-redis:/data
     restart: always
 
@@ -153,9 +159,9 @@ services:
     depends_on: [redis]
     networks: 
       - search-api-net
-    ports: 
+    ports:
       - "8081:8081"
-    environment: 
+    environment:
       - REDIS_HOSTS=redis
 networks:
   search-api-net:

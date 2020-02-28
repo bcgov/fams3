@@ -150,8 +150,7 @@ services:
     hostname: redis-commander
     image: rediscommander/redis-commander
     restart: always
-    depends_on:
-      redis
+    depends_on: [redis]
     networks: 
       - search-api-net
     ports: 

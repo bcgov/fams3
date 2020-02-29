@@ -51,7 +51,6 @@ namespace SearchApi.Web
                 .Bind(Configuration.GetSection(Keys.SEARCHAPI_SECTION_SETTING_KEY));
 
             services.AddCacheService(this.Configuration);
-
             services.AddWebHooks();
 
             this.ConfigureHealthChecks(services);
@@ -62,10 +61,6 @@ namespace SearchApi.Web
 
             this.ConfigureServiceBus(services);
             this.ConfigureAutoMapper(services);
-
-
-
-
         }
         public void ConfigureAutoMapper(IServiceCollection services)
         {

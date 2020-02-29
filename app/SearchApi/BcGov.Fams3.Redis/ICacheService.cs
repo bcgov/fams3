@@ -12,6 +12,7 @@ namespace BcGov.Fams3.Redis
     {
         void SaveRequest(SearchRequest searchRequest);
         SearchRequest GetRequest(Guid searchRequestId);
+        void DeleteRequest(Guid searchRequestId);
     }
 
     public class CacheService : ICacheService

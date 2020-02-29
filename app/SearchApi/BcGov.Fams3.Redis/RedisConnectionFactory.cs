@@ -9,12 +9,6 @@ namespace BcGov.Fams3.Redis
     {
         private static Lazy<ConnectionMultiplexer> Connection;
 
-        private static readonly string REDIS_CONNECTIONSTRING = "localhost";
-
-        static RedisConnectionFactory()
-        {
-        }
-
         public static ConnectionMultiplexer OpenConnection(string redisConnectionStr)
         {
             if(Connection == null)

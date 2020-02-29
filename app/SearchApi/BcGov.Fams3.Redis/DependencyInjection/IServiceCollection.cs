@@ -1,17 +1,16 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using BcGov.Fams3.Redis.Configuration;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace BcGov.Fams3.Redis.DependencyInjection
 {
     public static class IServiceCollectionExtensions
     {
 
-        public static void AddProvider(this IServiceCollection services, IConfiguration configuration)
+        public static void AddCacheService(this IServiceCollection services, IConfiguration configuration)
         {
-
+            RedisConfiguration redisSettings = configuration.GetSection("Redis").Get<RedisConfiguration>();
+            services.AddSingleton<ICacheService, CacheService>(service=> { return new CacheService(redisSettings.ConnectionString); });
         }
 
     }

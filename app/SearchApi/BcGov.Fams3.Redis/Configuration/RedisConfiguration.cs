@@ -27,5 +27,12 @@ namespace BcGov.Fams3.Redis.Configuration
         /// Redis Port
         /// </summary>
         public int Port { get; set; }
+
+        public string ConnectionString {
+            get
+            {
+                return $"{Host}:{ Port}";
+            }
+        }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using BcGov.Fams3.Redis;
+using BcGov.Fams3.Redis.Model;
 using BcGov.Fams3.SearchApi.Contracts.Person;
 using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 using MassTransit;
@@ -26,11 +28,14 @@ namespace SearchApi.Web.Controllers
 
         private readonly ILogger _logger;
 
-        public PeopleController(IBusControl busControl, ILogger<PeopleController> logger, ITracer tracer)
+        private readonly ICacheService _cacheService;
+
+        public PeopleController(IBusControl busControl, ILogger<PeopleController> logger, ITracer tracer, ICacheService cacheService)
         {
             this._logger = logger;
             this._tracer = tracer;
-            _busControl = busControl;
+            this._busControl = busControl;
+            this._cacheService = cacheService;
         }
 
         /// <summary>
@@ -51,6 +56,15 @@ namespace SearchApi.Web.Controllers
             {
                 searchRequestId = Guid.NewGuid();
             }
+
+            SearchRequest searchRequest = new SearchRequest
+            {
+                Person = personSearchRequest,
+                SearchRequestId = searchRequestId,
+                Providers = null
+            };
+
+            _cacheService.SaveRequest(searchRequest);
 
             _logger.LogInformation($"Successfully received new search request [{searchRequestId}].");
 

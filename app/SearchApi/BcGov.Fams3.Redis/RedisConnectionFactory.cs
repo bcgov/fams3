@@ -11,12 +11,17 @@ namespace BcGov.Fams3.Redis
 
         public static ConnectionMultiplexer OpenConnection(string redisConnectionStr)
         {
-            if(Connection == null)
+            if (Connection == null)
             {
                 var options = ConfigurationOptions.Parse(redisConnectionStr);
                 Connection = new Lazy<ConnectionMultiplexer>(() => ConnectionMultiplexer.Connect(options));
             }
             return Connection.Value;           
+        }
+
+        public static IDatabase GetDatabase()
+        {
+            return Connection.Value.GetDatabase();
         }
     }
 }

@@ -10,34 +10,54 @@ namespace BcGov.Fams3.Redis
 {
     public interface ICacheService
     {
-        void SaveRequest(SearchRequest searchRequest);
+        bool SaveRequest(SearchRequest searchRequest);
         SearchRequest GetRequest(Guid searchRequestId);
-        void DeleteRequest(Guid searchRequestId);
+        bool DeleteRequest(Guid searchRequestId);
     }
 
     public class CacheService : ICacheService
     {
         private static IDatabase _database;
-        public CacheService(string redisConfiguration )
+
+        public CacheService(IDatabase database)
         {
-            var connection = RedisConnectionFactory.OpenConnection(redisConfiguration);
-            _database = connection.GetDatabase();
+            _database = database;
         }
 
         public SearchRequest GetRequest(Guid searchRequestId)
         {
-            string searchRequest = _database.StringGet(searchRequestId.ToString());
-            return (SearchRequest)(JsonConvert.DeserializeObject(searchRequest));
+            try
+            {
+                if (searchRequestId == null) return null;
+                string str = searchRequestId.ToString();
+                string searchRequestStr = _database.StringGet(searchRequestId.ToString(), CommandFlags.None);
+                if (searchRequestStr == null) return null;
+                return JsonConvert.DeserializeObject<SearchRequest>(searchRequestStr);
+            }catch(Exception ex)
+            {
+                return null;
+            }
         }
 
-        public void SaveRequest(SearchRequest searchRequest)
+        public bool SaveRequest(SearchRequest searchRequest)
         {
-            _database.StringSet(searchRequest.SearchRequestId.ToString(),JsonConvert.SerializeObject(searchRequest));
+            try
+            {
+                if (searchRequest == null) return false;
+                else
+                {
+                    return _database.StringSet(searchRequest.SearchRequestId.ToString(), JsonConvert.SerializeObject(searchRequest));
+                }
+            }catch(Exception ex)
+            {
+                return false;
+            }
         }
 
-        public void DeleteRequest(Guid searchRequestId)
+        public bool DeleteRequest(Guid searchRequestId)
         {
-            _database.KeyDelete(searchRequestId.ToString());
+            if (searchRequestId == null) return false;
+            return _database.KeyDelete(searchRequestId.ToString());
         }
     }
 }

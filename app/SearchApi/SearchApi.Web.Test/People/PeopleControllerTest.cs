@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using BcGov.Fams3.Redis;
+using BcGov.Fams3.Redis.Model;
 using BcGov.Fams3.SearchApi.Contracts.Person;
 using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 using MassTransit;
@@ -24,6 +26,8 @@ namespace SearchApi.Web.Test.People
 
         private readonly Mock<ILogger<PeopleController>> _loggerMock = new Mock<ILogger<PeopleController>>();
 
+        private readonly Mock<ICacheService> _cacheMock = new Mock<ICacheService>();
+
         private Mock<IBusControl> _busControlMock;
 
             [SetUp]
@@ -32,7 +36,7 @@ namespace SearchApi.Web.Test.People
             _busControlMock = new Mock<IBusControl>();
             _spanMock.Setup(x => x.SetTag(It.IsAny<string>(), It.IsAny<string>())).Returns(_spanMock.Object);
             _tracerMock.Setup(x => x.ActiveSpan).Returns(_spanMock.Object);
-            _sut = new PeopleController(_busControlMock.Object, _loggerMock.Object, _tracerMock.Object);
+            _sut = new PeopleController(_busControlMock.Object, _loggerMock.Object, _tracerMock.Object, _cacheMock.Object);
         }
 
 
@@ -44,6 +48,7 @@ namespace SearchApi.Web.Test.People
 
             Assert.IsInstanceOf<PersonSearchResponse>(result.Value); 
             Assert.IsNotNull(((PersonSearchResponse)result.Value).Id);
+            _cacheMock.Verify(x => x.SaveRequest(It.IsAny<SearchRequest>()), Times.Once);
             _spanMock.Verify(x => x.SetTag("searchRequestId", $"{((PersonSearchResponse)result.Value).Id}"), Times.Once);
             _busControlMock.Verify(x => x.Publish(It.IsAny<PersonSearchOrdered>(), It.IsAny<CancellationToken>()), Times.Once);
         }
@@ -59,6 +64,7 @@ namespace SearchApi.Web.Test.People
             Assert.IsInstanceOf<PersonSearchResponse>(result.Value);
             Assert.AreEqual( expectedId, ((PersonSearchResponse)result.Value).Id);
             _spanMock.Verify(x => x.SetTag("searchRequestId", $"{((PersonSearchResponse)result.Value).Id}"), Times.Once);
+            _cacheMock.Verify(x => x.SaveRequest(It.IsAny<SearchRequest>()), Times.Once);
             _busControlMock.Verify(x => x.Publish(It.IsAny<PersonSearchOrdered>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 

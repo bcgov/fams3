@@ -33,7 +33,7 @@ namespace BcGov.Fams3.Redis
                 string searchRequestStr = _database.StringGet(searchRequestId.ToString(), CommandFlags.None);
                 if (searchRequestStr == null) return null;
                 return JsonConvert.DeserializeObject<SearchRequest>(searchRequestStr);
-            }catch(Exception ex)
+            }catch(Exception)
             {
                 return null;
             }
@@ -48,7 +48,7 @@ namespace BcGov.Fams3.Redis
                 {
                     return _database.StringSet(searchRequest.SearchRequestId.ToString(), JsonConvert.SerializeObject(searchRequest));
                 }
-            }catch(Exception ex)
+            }catch(Exception)
             {
                 return false;
             }

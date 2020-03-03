@@ -64,7 +64,7 @@ namespace SearchApi.Web.Controllers
                 Providers = null
             };
 
-            _cacheService.SaveRequest(searchRequest);
+            bool saveResult = await _cacheService.SaveRequest(searchRequest);
 
             _logger.LogInformation($"Successfully received new search request [{searchRequestId}].");
 

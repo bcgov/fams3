@@ -10,9 +10,9 @@ namespace BcGov.Fams3.Redis
 {
     public interface ICacheService
     {
-        bool SaveRequest(SearchRequest searchRequest);
-        SearchRequest GetRequest(Guid searchRequestId);
-        bool DeleteRequest(Guid searchRequestId);
+        Task<bool> SaveRequest(SearchRequest searchRequest);
+        Task<SearchRequest> GetRequest(Guid searchRequestId);
+        Task<bool> DeleteRequest(Guid searchRequestId);
     }
 
     public class CacheService : ICacheService
@@ -24,7 +24,7 @@ namespace BcGov.Fams3.Redis
             _database = database;
         }
 
-        public SearchRequest GetRequest(Guid searchRequestId)
+        public Task<SearchRequest> GetRequest(Guid searchRequestId)
         {
             try
             {
@@ -32,32 +32,40 @@ namespace BcGov.Fams3.Redis
                 string str = searchRequestId.ToString();
                 string searchRequestStr = _database.StringGet(searchRequestId.ToString(), CommandFlags.None);
                 if (searchRequestStr == null) return null;
-                return JsonConvert.DeserializeObject<SearchRequest>(searchRequestStr);
-            }catch(Exception)
+                return Task.FromResult(JsonConvert.DeserializeObject<SearchRequest>(searchRequestStr));
+            }
+            catch (Exception e)
             {
-                return null;
+                throw e; 
             }
         }
 
-        public bool SaveRequest(SearchRequest searchRequest)
+        public Task<bool> SaveRequest(SearchRequest searchRequest)
         {
             try
             {
-                if (searchRequest == null) return false;
+                if (searchRequest == null) return Task.FromResult(false);
                 else
                 {
-                    return _database.StringSet(searchRequest.SearchRequestId.ToString(), JsonConvert.SerializeObject(searchRequest));
+                    return Task.FromResult(_database.StringSet(searchRequest.SearchRequestId.ToString(), JsonConvert.SerializeObject(searchRequest)));
                 }
-            }catch(Exception)
+            }catch(Exception e)
             {
-                return false;
+                throw e;
             }
         }
 
-        public bool DeleteRequest(Guid searchRequestId)
+        public Task<bool> DeleteRequest(Guid searchRequestId)
         {
-            if (searchRequestId == null) return false;
-            return _database.KeyDelete(searchRequestId.ToString());
+            try
+            {
+                if (searchRequestId == null) return Task.FromResult(false);
+                return Task.FromResult(_database.KeyDelete(searchRequestId.ToString()));
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
         }
     }
 }

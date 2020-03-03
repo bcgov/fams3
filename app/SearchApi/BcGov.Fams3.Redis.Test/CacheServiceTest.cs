@@ -46,42 +46,42 @@ namespace BcGov.Fams3.Redis.Test
         [Test]
         public void with_existed_serachRequestId_getRequest_return_SearchRequest()
         {
-            SearchRequest sr = _sut.GetRequest(_existedReqestGuid);
+            SearchRequest sr = _sut.GetRequest(_existedReqestGuid).Result;
             Assert.AreEqual(_existedReqestGuid, sr.SearchRequestId);
         }
 
         [Test]
         public void with_nonexisted_searchRequestId_getRequest_return_null()
         {
-            SearchRequest sr = _sut.GetRequest(_nonExistedReqestGuid);
+            SearchRequest sr = _sut.GetRequest(_nonExistedReqestGuid).Result;
             Assert.AreEqual(null, sr);
         }
 
         [Test]
         public void with_correct_searchRequest_saveRequest_successfully()
         {
-            bool result = _sut.SaveRequest(_validSearchRequest);
+            bool result = _sut.SaveRequest(_validSearchRequest).Result;
             Assert.AreEqual(true, result);
         }
 
         [Test]
         public void with_null_searchRequest_saveRequest_retrun_false()
         {
-            bool result = _sut.SaveRequest(null);
+            bool result = _sut.SaveRequest(null).Result;
             Assert.AreEqual(false, result);
         }
 
         [Test]
         public void with_existed_searchRequestId_deleteRequest_successfully()
         {
-            bool result = _sut.DeleteRequest(_existedReqestGuid);
+            bool result = _sut.DeleteRequest(_existedReqestGuid).Result;
             Assert.AreEqual(true, result);
         }
 
         [Test]
         public void with_nonexisted_serachRequestId_deleteRequest_successfully()
         {
-            bool result = _sut.DeleteRequest(_nonExistedReqestGuid);
+            bool result = _sut.DeleteRequest(_nonExistedReqestGuid).Result;
             Assert.AreEqual(true, result);
         }
     }

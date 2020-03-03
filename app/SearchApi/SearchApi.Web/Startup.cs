@@ -51,6 +51,7 @@ namespace SearchApi.Web
                 .Bind(Configuration.GetSection(Keys.SEARCHAPI_SECTION_SETTING_KEY));
 
             services.AddCacheService(this.Configuration);
+
             services.AddWebHooks();
 
             this.ConfigureHealthChecks(services);

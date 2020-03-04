@@ -19,9 +19,19 @@ namespace BcGov.Fams3.Redis
     {
         private static IDatabase _database;
 
-        public CacheService(IDatabase database)
+        public CacheService(IRedisConnectionFactory factory)
         {
-            _database = database;
+            try
+            {
+                factory.OpenConnection();
+                _database = factory.GetDatabase();
+            }
+            catch (RedisException redisExp) {
+                throw redisExp;
+            }catch(Exception e)
+            {
+                throw e;
+            }
         }
 
         public Task<SearchRequest> GetRequest(Guid searchRequestId)
@@ -34,9 +44,13 @@ namespace BcGov.Fams3.Redis
                 if (searchRequestStr == null) return null;
                 return Task.FromResult(JsonConvert.DeserializeObject<SearchRequest>(searchRequestStr));
             }
+            catch (RedisException redisExp)
+            {
+                throw redisExp;
+            }
             catch (Exception e)
             {
-                throw e; 
+                throw e;
             }
         }
 
@@ -49,7 +63,12 @@ namespace BcGov.Fams3.Redis
                 {
                     return Task.FromResult(_database.StringSet(searchRequest.SearchRequestId.ToString(), JsonConvert.SerializeObject(searchRequest)));
                 }
-            }catch(Exception e)
+            }
+            catch (RedisException redisExp)
+            {
+                throw redisExp;
+            }
+            catch (Exception e)
             {
                 throw e;
             }
@@ -61,6 +80,10 @@ namespace BcGov.Fams3.Redis
             {
                 if (searchRequestId == null) return Task.FromResult(false);
                 return Task.FromResult(_database.KeyDelete(searchRequestId.ToString()));
+            }
+            catch (RedisException redisExp)
+            {
+                throw redisExp;
             }
             catch (Exception e)
             {

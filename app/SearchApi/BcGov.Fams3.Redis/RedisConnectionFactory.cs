@@ -5,23 +5,45 @@ using System.Text;
 
 namespace BcGov.Fams3.Redis
 {
-    public class RedisConnectionFactory
+    public interface IRedisConnectionFactory
     {
-        private static Lazy<ConnectionMultiplexer> Connection;
+        ConnectionMultiplexer OpenConnection();
+        IDatabase GetDatabase();
+    }
 
-        public static ConnectionMultiplexer OpenConnection(string redisConnectionStr)
+    public class RedisConnectionFactory : IRedisConnectionFactory
+    {
+        private static Lazy<ConnectionMultiplexer> _connection;
+        private string _redisConnectionStr;
+
+        public RedisConnectionFactory(string redisConnectionStr)
         {
-            if (Connection == null)
-            {
-                var options = ConfigurationOptions.Parse(redisConnectionStr);
-                Connection = new Lazy<ConnectionMultiplexer>(() => ConnectionMultiplexer.Connect(options));
-            }
-            return Connection.Value;           
+            _connection = null;
+            this._redisConnectionStr = redisConnectionStr;
         }
 
-        public static IDatabase GetDatabase()
+        public ConnectionMultiplexer OpenConnection()
         {
-            return Connection.Value.GetDatabase();
+            try
+            {
+                if (_connection == null)
+                {
+                    var options = ConfigurationOptions.Parse(_redisConnectionStr);
+                    _connection = new Lazy<ConnectionMultiplexer>(() => ConnectionMultiplexer.Connect(options));
+                }
+                return _connection.Value;
+            }catch(RedisException redisExp)
+            {
+                throw redisExp;
+            }catch(Exception e)
+            {
+                throw e;
+            }
+        }
+
+        public IDatabase GetDatabase()
+        {
+            return _connection.Value.GetDatabase();
         }
     }
 }

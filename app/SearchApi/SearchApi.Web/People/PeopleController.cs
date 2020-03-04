@@ -57,18 +57,18 @@ namespace SearchApi.Web.Controllers
                 searchRequestId = Guid.NewGuid();
             }
 
+            _logger.LogInformation($"Successfully received new search request [{searchRequestId}].");
+
+            _tracer.ActiveSpan.SetTag("searchRequestId", $"{searchRequestId}");
+
             SearchRequest searchRequest = new SearchRequest
             {
                 Person = personSearchRequest,
                 SearchRequestId = searchRequestId,
                 Providers = null
             };
-
+            _logger.LogInformation($"Save Request [{searchRequestId}] to cache. ");
             bool saveResult = await _cacheService.SaveRequest(searchRequest);
-
-            _logger.LogInformation($"Successfully received new search request [{searchRequestId}].");
-
-            _tracer.ActiveSpan.SetTag("searchRequestId", $"{searchRequestId}");
 
             _logger.LogDebug($"Attempting to publish ${nameof(PersonSearchOrdered)} to destination queue.");
 

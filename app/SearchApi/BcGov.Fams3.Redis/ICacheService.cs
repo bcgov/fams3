@@ -1,10 +1,10 @@
-﻿using BcGov.Fams3.Redis.Configuration;
+﻿
 using BcGov.Fams3.Redis.Model;
-using BcGov.Fams3.SearchApi.Contracts.Person;
 using Newtonsoft.Json;
 using StackExchange.Redis;
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace BcGov.Fams3.Redis
 {
@@ -18,18 +18,23 @@ namespace BcGov.Fams3.Redis
     public class CacheService : ICacheService
     {
         private static IDatabase _database;
+        private readonly ILogger _logger;
 
-        public CacheService(IRedisConnectionFactory factory)
+        public CacheService(IRedisConnectionFactory factory, ILogger<CacheService> logger)
         {
+            _logger = logger;
             try
             {
                 factory.OpenConnection();
                 _database = factory.GetDatabase();
             }
-            catch (RedisException redisExp) {
+            catch (RedisException redisExp)
+            {
+                _logger.LogError(redisExp.Message);
                 throw redisExp;
             }catch(Exception e)
             {
+                _logger.LogError(e.Message);
                 throw e;
             }
         }
@@ -46,10 +51,12 @@ namespace BcGov.Fams3.Redis
             }
             catch (RedisException redisExp)
             {
+                _logger.LogError(redisExp.Message);
                 throw redisExp;
             }
             catch (Exception e)
             {
+                _logger.LogError(e.Message);
                 throw e;
             }
         }
@@ -66,10 +73,12 @@ namespace BcGov.Fams3.Redis
             }
             catch (RedisException redisExp)
             {
+                _logger.LogError(redisExp.Message);
                 throw redisExp;
             }
             catch (Exception e)
             {
+                _logger.LogError(e.Message);
                 throw e;
             }
         }
@@ -83,10 +92,12 @@ namespace BcGov.Fams3.Redis
             }
             catch (RedisException redisExp)
             {
+                _logger.LogError(redisExp.Message);
                 throw redisExp;
             }
             catch (Exception e)
             {
+                _logger.LogError(e.Message);
                 throw e;
             }
         }

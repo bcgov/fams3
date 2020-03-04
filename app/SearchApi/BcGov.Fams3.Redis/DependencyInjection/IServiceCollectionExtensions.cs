@@ -25,10 +25,5 @@ namespace BcGov.Fams3.Redis.DependencyInjection
                 throw e;
             }
         }
-
-        private static int ILogger<T>()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

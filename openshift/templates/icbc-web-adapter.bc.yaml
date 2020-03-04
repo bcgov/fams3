@@ -81,10 +81,10 @@ parameters:
   displayName: NuGet package sources
   description: Set this to override the NuGet.config sources. Cannot be combined with
     DOTNET_RESTORE_CONFIGFILE.
-- name: DOTNET_RESTORE_CONFIGFILE
-  displayName: NuGet.Config file
-  description: Set this to a Nuget.Config file. Cannot be combined with DOTNET_RESTORE_SOURCES.
-  value: /opt/nuget.config
+# - name: DOTNET_RESTORE_CONFIGFILE
+#   displayName: NuGet.Config file
+#   description: Set this to a Nuget.Config file. Cannot be combined with DOTNET_RESTORE_SOURCES.
+#   value: /opt/nuget.config
 objects: 
   - kind: ImageStream
     apiVersion: v1
@@ -111,10 +111,6 @@ objects:
           uri: "${SOURCE_REPOSITORY_URL}"
           ref: "${SOURCE_REPOSITORY_REF}"
         contextDir: "${CONTEXT_DIR}"
-        configMaps:
-          - configMap:
-              name: dotnet-artifactory-configuration
-            destinationDir: /opt
         sourceSecret: 
           name: "${SOURCE_SECRET}"
       strategy:
@@ -143,14 +139,8 @@ objects:
               value: "${DOTNET_TOOLS}"
             - name: DOTNET_INCREMENTAL
               value: "true"
-            - name: DOTNET_SSL_CERTS
-              value: /etc/ssl/certs
-            - name: DOTNET_SSL_DIRS
-              value: /etc/ssl/certs
-            - name: DOTNET_SSL_CERT_DIR
-              value: /etc/ssl/certs
-            - name: DOTNET_RESTORE_CONFIGFILE
-              value: "${DOTNET_RESTORE_CONFIGFILE}"
+            # - name: DOTNET_RESTORE_CONFIGFILE
+            #   value: "${DOTNET_RESTORE_CONFIGFILE}"
       output:
         to:
           kind: ImageStreamTag

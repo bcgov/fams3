@@ -69,6 +69,7 @@ namespace BcGov.Fams3.Redis.Test
             Assert.Throws<RedisException>( ()=> { new CacheService(_factoryExceptionMock.Object); });
         }
 
+
         [Test]
         public void with_existed_serachRequestId_getRequest_return_SearchRequest()
         {

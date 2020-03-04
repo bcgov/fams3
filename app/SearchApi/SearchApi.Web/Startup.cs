@@ -22,6 +22,7 @@ using BcGov.Fams3.SearchApi.Core.OpenTracing;
 using SearchApi.Web.Configuration;
 using SearchApi.Web.Notifications;
 using SearchApi.Web.Search;
+using BcGov.Fams3.Redis.DependencyInjection;
 
 namespace SearchApi.Web
 {
@@ -49,6 +50,8 @@ namespace SearchApi.Web
             services.AddOptions<SearchApiOptions>()
                 .Bind(Configuration.GetSection(Keys.SEARCHAPI_SECTION_SETTING_KEY));
 
+            services.AddCacheService(this.Configuration);
+
             services.AddWebHooks();
 
             this.ConfigureHealthChecks(services);
@@ -59,10 +62,6 @@ namespace SearchApi.Web
 
             this.ConfigureServiceBus(services);
             this.ConfigureAutoMapper(services);
-
-
-
-
         }
         public void ConfigureAutoMapper(IServiceCollection services)
         {

@@ -4,7 +4,7 @@ using NUnit.Framework;
 using StackExchange.Redis;
 using System;
 using Newtonsoft.Json;
-
+using Microsoft.Extensions.Logging;
 
 namespace BcGov.Fams3.Redis.Test
 {
@@ -13,6 +13,7 @@ namespace BcGov.Fams3.Redis.Test
         private Mock<IDatabase> _databaseMock;
         private Mock<IRedisConnectionFactory> _factoryMock;
         private Mock<IRedisConnectionFactory> _factoryExceptionMock;
+        private Mock<ILogger<CacheService>> _loggerMock;
         private ICacheService _sut;
         private Guid _existedReqestGuid;
         private Guid _nonExistedReqestGuid;
@@ -60,13 +61,14 @@ namespace BcGov.Fams3.Redis.Test
             _factoryMock = new Mock<IRedisConnectionFactory>();
             _factoryMock.Setup(factory => factory.GetDatabase()).Returns(_databaseMock.Object);
 
-            _sut = new CacheService(_factoryMock.Object);
+            _loggerMock = new Mock<ILogger<CacheService>>();
+            _sut = new CacheService(_factoryMock.Object, _loggerMock.Object);
         }
 
         [Test]
         public void fail_redis_connectin_throws_redis_exception()
         {
-            Assert.Throws<RedisException>( ()=> { new CacheService(_factoryExceptionMock.Object); });
+            Assert.Throws<RedisException>( ()=> { new CacheService(_factoryExceptionMock.Object, _loggerMock.Object); });
         }
 
 
@@ -88,6 +90,7 @@ namespace BcGov.Fams3.Redis.Test
         public void when_there_has_redis_exception_getRequest_throws_it()
         {
             Assert.Throws<RedisException>(()=>_sut.GetRequest(_exceptionReqestGuid));
+
         }
 
         [Test]

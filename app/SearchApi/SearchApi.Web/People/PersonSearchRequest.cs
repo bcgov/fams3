@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using BcGov.Fams3.SearchApi.Contracts.Person;
+using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 using Newtonsoft.Json;
 
 namespace SearchApi.Web.Controllers
@@ -20,7 +21,10 @@ namespace SearchApi.Web.Controllers
             IEnumerable<PersonalIdentifier> identifiers,
             IEnumerable<Address> addresses,
             IEnumerable<Phone> phones,
-            IEnumerable<Name> names, IEnumerable<RelatedPerson> relatedPersons,IEnumerable<Employment> employments)
+            IEnumerable<Name> names, 
+            IEnumerable<RelatedPerson> relatedPersons,
+            IEnumerable<Employment> employments,
+            IEnumerable<DataProvider> dataProviders)
         {
             this.FirstName = firstName;
             this.LastName = lastName;
@@ -28,12 +32,17 @@ namespace SearchApi.Web.Controllers
             this.Identifiers = identifiers;
             this.Phones = phones;
             this.Names = names;
- this.Addresses = addresses;
-            this.Employments = employments;
-
-           
+            this.Addresses = addresses;
+            this.Employments = employments;         
             this.RelatedPersons = relatedPersons;
+            this.dataProviders = dataProviders;
         }
+
+        public IEnumerable<DataProvider> dataProviders { get; set; }
     }
 
+    public class DataProvider : ProviderProfile
+    {
+        public string Name { get; set; }
+    }
 }

@@ -77,9 +77,25 @@
         },
         {
           "type": "object",
-          "description": "Represents a set of information to execute a search on a person"
+          "description": "Represents a set of information to execute a search on a person",
+          "properties": {
+            "dataProviders": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/DataProvider"
+              }
+            }
+          }
         }
       ]
+    },
+    "DataProvider": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
     },
     "Person": {
       "type": "object",

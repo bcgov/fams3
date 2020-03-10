@@ -9,6 +9,7 @@ using Fams3Adapter.Dynamics.SearchApiRequest;
 using OpenTracing;
 using Fams3Adapter.Dynamics.Identifier;
 using AutoMapper;
+using DynamicsAdapter.Web.PersonSearch.Models;
 
 namespace DynamicsAdapter.Web.SearchRequest
 {
@@ -55,9 +56,21 @@ namespace DynamicsAdapter.Web.SearchRequest
                     _logger.LogDebug(
                         $"Attempting to post person search for request {ssgSearchRequest.SearchApiRequestId}");
 
+                    //temp code
+                    //PersonSearchRequest psr = _mapper.Map<PersonSearchRequest>(ssgSearchRequest);
+                    //psr.DataProviders = new List<DataProvider>{
+                    //    new DataProvider(){Name="ICBC"}
+                    //};
+
+                    //var result = await _searchApiClient.SearchAsync(
+                    //    psr,
+                    //    $"{ssgSearchRequest.SearchApiRequestId}",
+                    //    cts.Token);
+                    //temp
+
                     var result = await _searchApiClient.SearchAsync(
-                        _mapper.Map<PersonSearchRequest>(ssgSearchRequest), 
-                        $"{ssgSearchRequest.SearchApiRequestId}", 
+                        _mapper.Map<PersonSearchRequest>(ssgSearchRequest),
+                        $"{ssgSearchRequest.SearchApiRequestId}",
                         cts.Token);
 
                     _logger.LogInformation($"Successfully posted person search id:{result.Id}");

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using BcGov.Fams3.SearchApi.Contracts.Person;
+using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 using NUnit.Framework;
 using SearchApi.Web.Controllers;
 

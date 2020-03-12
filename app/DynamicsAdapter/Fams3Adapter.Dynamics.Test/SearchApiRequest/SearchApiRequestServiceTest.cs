@@ -44,6 +44,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchApiRequest
             odataClientMock.Setup(x => x.For<SSG_SearchApiRequest>(null)
                 .Key(_testId)
                 .Expand(x=>x.Identifiers)
+                .Expand(x=>x.DataProviders)
                 .FindEntryAsync(It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<SSG_SearchApiRequest>(new SSG_SearchApiRequest
                 {                      
@@ -60,6 +61,10 @@ namespace Fams3Adapter.Dynamics.Test.SearchApiRequest
                             Identification="identification2",
                             StatusCode = 1
                         }
+                    }.ToArray(),
+                    DataProviders = new List<DataProvider.SSG_SearchapiRequestDataProvider>()
+                    {
+                        new DataProvider.SSG_SearchapiRequestDataProvider(){Name="ICBC", SuppliedByValue=111111}
                     }.ToArray()
                 }));
 
@@ -86,6 +91,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchApiRequest
             Assert.AreEqual(1, result.Count());
             Assert.AreEqual("personGivenName1", result.FirstOrDefault().PersonGivenName);
             Assert.AreEqual(2, result.FirstOrDefault().Identifiers.Count());
+            Assert.AreEqual(1, result.FirstOrDefault().DataProviders.Count());
         }
 
         [Test]

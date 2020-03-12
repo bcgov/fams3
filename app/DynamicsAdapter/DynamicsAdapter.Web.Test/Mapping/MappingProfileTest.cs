@@ -8,6 +8,7 @@ using DynamicsAdapter.Web.Mapping;
 using DynamicsAdapter.Web.PersonSearch;
 using DynamicsAdapter.Web.PersonSearch.Models;
 using Fams3Adapter.Dynamics.Address;
+using Fams3Adapter.Dynamics.DataProvider;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.Name;
@@ -77,6 +78,11 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 {
                     new SSG_Identifier(){ },
                     new SSG_Identifier(){ }
+                },
+                DataProviders = new SSG_SearchapiRequestDataProvider[]
+                {
+                    new SSG_SearchapiRequestDataProvider(){Name="ICBC"},
+                    new SSG_SearchapiRequestDataProvider(){Name="BC Hydro"}
                 }
             };
             PersonSearchRequest personSearchRequest = _mapper.Map<PersonSearchRequest>(sSG_SearchApiRequest);
@@ -84,6 +90,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual("lastName", personSearchRequest.LastName);
             Assert.AreEqual(new DateTimeOffset(new DateTime(2002, 2, 2)), personSearchRequest.DateOfBirth);
             Assert.AreEqual(2, personSearchRequest.Identifiers.Count);
+            Assert.AreEqual(2, personSearchRequest.DataProviders.Count);
         }
 
         [Test]
@@ -637,6 +644,18 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(new DateTime(2014, 1, 1), ssg_relatedPerson.Date2);
             Assert.AreEqual("relation start date", ssg_relatedPerson.Date1Label);
             Assert.AreEqual("relation end date", ssg_relatedPerson.Date2Label);
+        }
+
+        [Test]
+        public void SSG_SearchapiRequestDataProvider_should_map_to_DataProvider_correctly()
+        {
+            var dp = new SSG_SearchapiRequestDataProvider()
+            {
+                Name="dp1",
+                SuppliedByValue=1
+            };
+            DataProvider provider = _mapper.Map<DataProvider>(dp);
+            Assert.AreEqual("dp1", provider.Name);
         }
     }
 }

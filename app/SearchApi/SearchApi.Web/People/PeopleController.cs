@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using BcGov.Fams3.Redis;
 using BcGov.Fams3.Redis.Model;
@@ -65,7 +66,7 @@ namespace SearchApi.Web.Controllers
             {
                 Person = personSearchRequest,
                 SearchRequestId = searchRequestId,
-                Providers = null
+                Providers = personSearchRequest.dataProviders.ToList<ProviderProfile>()
             };
             _logger.LogInformation($"Save Request [{searchRequestId}] to cache. ");
             bool saveResult = await _cacheService.SaveRequest(searchRequest);

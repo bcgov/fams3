@@ -66,14 +66,8 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
                 SSG_SearchApiRequest searchApiRequest = await _oDataClient.For<SSG_SearchApiRequest>()
                     .Key(request.SearchApiRequestId)
                     .Expand(x => x.Identifiers)
+                    .Expand(x => x.DataProviders)
                     .FindEntryAsync(cancellationToken);
-
-                Guid id = searchApiRequest.SearchApiRequestId;
-                IEnumerable<SSG_SearchapiRequestDataProvider> dataProviders=await _oDataClient.For<SSG_SearchapiRequestDataProvider>()
-                    .Filter(x=>x.SearchApiRequest.SearchApiRequestId==id)
-                    .FindEntriesAsync(cancellationToken);
-
-                searchApiRequest.DataProviders = dataProviders.ToArray();
 
                 results.Add( searchApiRequest );
             }

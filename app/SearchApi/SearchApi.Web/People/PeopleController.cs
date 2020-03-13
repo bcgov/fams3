@@ -66,7 +66,6 @@ namespace SearchApi.Web.Controllers
             {
                 Person = personSearchRequest,
                 SearchRequestId = searchRequestId,
-                Providers = personSearchRequest.dataProviders.ToList<ProviderProfile>()
             };
             _logger.LogInformation($"Save Request [{searchRequestId}] to cache. ");
             bool saveResult = await _cacheService.SaveRequest(searchRequest);

@@ -2,6 +2,7 @@
 using DynamicsAdapter.Web.PersonSearch.Models;
 using Fams3Adapter.Dynamics;
 using Fams3Adapter.Dynamics.Address;
+using Fams3Adapter.Dynamics.DataProvider;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.Name;
@@ -53,7 +54,8 @@ namespace  DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.PersonGivenName))
                  .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.PersonSurname))
                  .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => src.PersonBirthDate))
-                 .ForMember(dest => dest.Identifiers, opt => opt.MapFrom(src => src.Identifiers));       
+                 .ForMember(dest => dest.Identifiers, opt => opt.MapFrom(src => src.Identifiers))
+                 .ForMember(dest => dest.DataProviders, opt=>opt.MapFrom(src=>src.DataProviders));       
 
             CreateMap<PersonSearchAccepted, SSG_SearchApiEvent>()
               .ForMember(dest => dest.Id, opt => opt.MapFrom(src => Guid.NewGuid()))
@@ -167,6 +169,9 @@ namespace  DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
                  .ForMember(dest => dest.Gender, opt => opt.ConvertUsing(new PersonGenderConverter(), src => src.Gender))
                  .IncludeBase<PersonalInfo, DynamicsEntity>();
+
+            CreateMap<SSG_SearchapiRequestDataProvider, DataProvider>()
+                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name));
 
             CreateMap<Person, PersonEntity>()
                .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))

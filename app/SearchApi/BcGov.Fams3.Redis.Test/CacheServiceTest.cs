@@ -27,7 +27,7 @@ namespace BcGov.Fams3.Redis.Test
             _nonExistedReqestGuid = Guid.Parse("66666666-9909-EA11-B813-00505683FBF4");
             _exceptionReqestGuid = Guid.Parse("6AE89FE6-9909-EA11-B813-55555683FBF4"); ;
 
-            _validSearchRequest = new SearchRequest() { Person = null, Providers = null, SearchRequestId = _existedReqestGuid };
+            _validSearchRequest = new SearchRequest() { Person = null, SearchRequestId = _existedReqestGuid };
             string validSearchRequestStr = JsonConvert.SerializeObject(_validSearchRequest);
 
             _databaseMock = new Mock<IDatabase>();
@@ -110,7 +110,7 @@ namespace BcGov.Fams3.Redis.Test
         [Test]
         public void when_there_has_redis_exception_saveRequest_throws_it()
         {
-            Assert.Throws<RedisException>(() => _sut.SaveRequest(new SearchRequest() { SearchRequestId=_exceptionReqestGuid, Person = null, Providers = null }));
+            Assert.Throws<RedisException>(() => _sut.SaveRequest(new SearchRequest() { SearchRequestId=_exceptionReqestGuid, Person = null }));
         }
 
         [Test]

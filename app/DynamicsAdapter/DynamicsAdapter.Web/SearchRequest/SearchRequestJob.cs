@@ -9,6 +9,7 @@ using Fams3Adapter.Dynamics.SearchApiRequest;
 using OpenTracing;
 using Fams3Adapter.Dynamics.Identifier;
 using AutoMapper;
+using DynamicsAdapter.Web.PersonSearch.Models;
 
 namespace DynamicsAdapter.Web.SearchRequest
 {
@@ -56,8 +57,8 @@ namespace DynamicsAdapter.Web.SearchRequest
                         $"Attempting to post person search for request {ssgSearchRequest.SearchApiRequestId}");
 
                     var result = await _searchApiClient.SearchAsync(
-                        _mapper.Map<PersonSearchRequest>(ssgSearchRequest), 
-                        $"{ssgSearchRequest.SearchApiRequestId}", 
+                        _mapper.Map<PersonSearchRequest>(ssgSearchRequest),
+                        $"{ssgSearchRequest.SearchApiRequestId}",
                         cts.Token);
 
                     _logger.LogInformation($"Successfully posted person search id:{result.Id}");

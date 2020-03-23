@@ -17,15 +17,16 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         public string Gender { get; set; }
         public bool? DateDeathConfirmed { get; set; }
         public string Incacerated { get; set; }
-        public string HeightInCms { get; set; }
-        public string WeightInKgs { get; set; }
+        //the unit is centimeter
+        public string Height { get; set; }
+        //the unit is pounds
+        public string Weight { get; set; }
         public string HairColour { get; set; }
         public string EyeColour { get; set; }
         public string Complexion { get; set; }
         public string DistinguishingFeatures { get; set; }
-        public string GlassesFlag { get; set; }
-        public string CautionFlag { get; set; }
-        public string SecurityKeyword { get; set; }
+        public string WireGlasses { get; set; }
+
 
         public IEnumerable<PersonalIdentifier> Identifiers { get; set; }
         public IEnumerable<Address> Addresses { get; set; }

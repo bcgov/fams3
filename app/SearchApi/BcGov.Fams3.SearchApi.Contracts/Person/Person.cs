@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace BcGov.Fams3.SearchApi.Contracts.Person
 {
@@ -17,9 +18,9 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         public string Gender { get; set; }
         public bool? DateDeathConfirmed { get; set; }
         public string Incacerated { get; set; }
-        //the unit is centimeter
+        [Description("Height is in centimers")]
         public string Height { get; set; }
-        //the unit is pounds
+        [Description("Weight is in pounds")]
         public string Weight { get; set; }
         public string HairColour { get; set; }
         public string EyeColour { get; set; }

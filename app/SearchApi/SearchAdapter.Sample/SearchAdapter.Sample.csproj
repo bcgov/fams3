@@ -7,7 +7,6 @@
   <ItemGroup>
     <PackageReference Include="AspNetCore.HealthChecks.Rabbitmq" Version="3.0.1" />
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="3.0.0" />
-    <PackageReference Include="BcGov.Fams3.SearchApi.Core" Version="1.0.19" />
     <PackageReference Include="FluentValidation" Version="8.6.0" />
     <PackageReference Include="Jaeger" Version="0.3.6" />
     <PackageReference Include="MassTransit.AspNetCore" Version="5.5.6" />
@@ -17,6 +16,10 @@
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="3.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="OpenTracing.Contrib.NetCore" Version="0.6.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BcGov.Fams3.SearchApi.Core\BcGov.Fams3.SearchApi.Core.csproj" />
   </ItemGroup>
 
 </Project>

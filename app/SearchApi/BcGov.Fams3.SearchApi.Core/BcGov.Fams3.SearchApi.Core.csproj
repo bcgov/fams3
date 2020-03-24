@@ -6,7 +6,7 @@
     <Company>BcGov</Company>
     <Description>A core Librairy for BCGOV SearchApi Related Products</Description>
     <Version>1.0.15</Version>
-    <PackageVersion>1.0.18</PackageVersion>
+    <PackageVersion>1.0.19</PackageVersion>
   </PropertyGroup>
 
   <ItemGroup>

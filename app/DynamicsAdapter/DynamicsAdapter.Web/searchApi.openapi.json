@@ -129,6 +129,29 @@
         "incacerated": {
           "type": "string"
         },
+        "height": {
+          "type": "string",
+          "description": "Height is in centimers"
+        },
+        "weight": {
+          "type": "string",
+          "description": "Weight is in pounds"
+        },
+        "hairColour": {
+          "type": "string"
+        },
+        "eyeColour": {
+          "type": "string"
+        },
+        "complexion": {
+          "type": "string"
+        },
+        "distinguishingFeatures": {
+          "type": "string"
+        },
+        "wearGlasses": {
+          "type": "string"
+        },
         "identifiers": {
           "type": "array",
           "items": {

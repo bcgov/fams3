@@ -26,7 +26,7 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         public string EyeColour { get; set; }
         public string Complexion { get; set; }
         public string DistinguishingFeatures { get; set; }
-        public string WireGlasses { get; set; }
+        public string WearGlasses { get; set; }
 
 
         public IEnumerable<PersonalIdentifier> Identifiers { get; set; }

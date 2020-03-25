@@ -55,7 +55,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                 var searchApiEvent = _mapper.Map<SSG_SearchApiEvent>(personCompletedEvent);
                 _logger.LogDebug($"Attempting to create a new event for SearchApiRequest [{id}]");
                 var result = await _searchApiRequestService.AddEventAsync(id, searchApiEvent, cts.Token);
-                 _logger.LogInformation($"Successfully created completed event for SearchApiRequest [{id}]");
+                _logger.LogInformation($"Successfully created completed event for SearchApiRequest [{id}]");
 
                 //upload search result to dynamic search api
                 var searchRequestId = await _searchApiRequestService.GetLinkedSearchRequestIdAsync(id, cts.Token);

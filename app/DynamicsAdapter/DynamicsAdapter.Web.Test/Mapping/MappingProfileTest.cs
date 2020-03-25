@@ -133,7 +133,6 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual("Name", ssg_empl.BusinessName);
             Assert.AreEqual("OwnerName", ssg_empl.BusinessOwner);
             Assert.AreEqual(true, ssg_empl.EmploymentConfirmed);
-            Assert.AreEqual(false, ssg_empl.IncomeAssistance);
             Assert.AreEqual("Occupation", ssg_empl.Occupation);
             Assert.AreEqual("Website", ssg_empl.Website);
             Assert.AreEqual("Status", ssg_empl.IncomeAssistanceStatus);

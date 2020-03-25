@@ -45,32 +45,24 @@ namespace DynamicsAdapter.Web.PersonSearch
             ssg_person.InformationSource = providerDynamicsID;
             _logger.LogDebug($"Attempting to create the found person record for SearchRequest[{request.SearchRequestId}]");
             SSG_Person returnedPerson = await _searchRequestService.SavePerson(ssg_person, concellationToken);
-            _logger.LogInformation($"Successfully created found person record for SearchRequest [{request.SearchRequestId}]");
 
             _logger.LogDebug($"Attempting to create found identifier records for SearchRequest[{request.SearchRequestId}]");
             await UploadIdentifiers(person, request, returnedPerson, providerDynamicsID, concellationToken);
-            _logger.LogInformation($"Successfully created found identifer records for SearchRequest [{request.SearchRequestId}]");
 
             _logger.LogDebug($"Attempting to create found adddress records for SearchRequest[{request.SearchRequestId}]");
             await UploadAddresses(person, request, returnedPerson, providerDynamicsID, concellationToken);
-            _logger.LogInformation($"Successfully created found address records for SearchRequest [{request.SearchRequestId}]");
 
             _logger.LogDebug($"Attempting to create found phone records for SearchRequest[{request.SearchRequestId}]");
             await UploadPhoneNumbers(person, request, returnedPerson, providerDynamicsID, concellationToken);
-            _logger.LogInformation($"Successfully created found phone records for SearchRequest [{request.SearchRequestId}]");
 
             _logger.LogDebug($"Attempting to create found name records for SearchRequest[{request.SearchRequestId}]");
             await UploadNames(person, request, returnedPerson, providerDynamicsID, concellationToken);
-            _logger.LogInformation($"Successfully created found name records for SearchRequest [{request.SearchRequestId}]");
-
 
             _logger.LogDebug($"Attempting to create found employment records for SearchRequest[{request.SearchRequestId}]");
             await UploadEmployment(person, request, returnedPerson, providerDynamicsID, concellationToken);
-            _logger.LogInformation($"Successfully created found employment records for SearchRequest [{request.SearchRequestId}]");
 
             _logger.LogDebug($"Attempting to creat found related person records for SearchRequest[{request.SearchRequestId}]");
             await UploadRelatedPersons(person, request, returnedPerson, providerDynamicsID, concellationToken);
-            _logger.LogInformation($"Successfully created found related person records for SearchRequest [{request.SearchRequestId}]");
             return true;
 
         }
@@ -171,16 +163,11 @@ namespace DynamicsAdapter.Web.PersonSearch
                     e.Person = ssg_person;
                     SSG_Employment ssg_employment  = await _searchRequestService.CreateEmployment(e, concellationToken);
 
-                    //add phones
-
                     foreach(var phone in employment.Employer.Phones)
                     {
-                        SSG_PhoneNumber p = _mapper.Map<SSG_PhoneNumber>(phone);
-                        p.LinkedEmployment = ssg_employment;
-                        p.SearchRequest = request;
-                        p.InformationSource = providerDynamicsID;
-                        p.Person = ssg_person;
-                        await _searchRequestService.CreatePhoneNumber(p, concellationToken);
+                        SSG_EmploymentContact p = _mapper.Map<SSG_EmploymentContact>(phone);
+                        p.Employment = ssg_employment;
+                        await _searchRequestService.CreateEmploymentContact(p, concellationToken);
                     }
                 }
                 return true;

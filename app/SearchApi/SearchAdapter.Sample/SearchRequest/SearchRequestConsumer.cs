@@ -99,6 +99,13 @@ namespace SearchAdapter.Sample.SearchRequest
                     MiddleName = "FoundMiddleName",
                     OtherName = "FoundOtherName",
                     Notes = "some notes",
+                    Height = "178",
+                    Complexion = "Dark",
+                    DistinguishingFeatures = "None",
+                    EyeColour = "Hazel",
+                    HairColour = "Blonde",
+                    WearGlasses = "No",
+                    Weight= "200",
                     Identifiers = new List<PersonalIdentifier>()
                     {
 
@@ -116,7 +123,23 @@ namespace SearchAdapter.Sample.SearchRequest
                             }
                             
                             
+                        },
+                         new PersonalIdentifier()
+                        {
+                            Type = PersonalIdentifierType.BCID,
+                            TypeCode = "BCID",
+                            Description = "Sample Identifier Description",
+                            Notes = "Sample Identifier Notes",
+                            IssuedBy = "BC",
+                            Value = new Random().Next(0, 50000).ToString(),
+                            ReferenceDates = new List<ReferenceDate>(){
+                                new ReferenceDate(){ Index=0, Key="Effective Date", Value=new DateTime(2019,9,1) },
+                                new ReferenceDate(){ Index=1, Key="Expiration Date", Value=new DateTime(2020,9,1) }
+                            }
+
+
                         }
+
                     },
                     Addresses = new List<Address>()
                     {

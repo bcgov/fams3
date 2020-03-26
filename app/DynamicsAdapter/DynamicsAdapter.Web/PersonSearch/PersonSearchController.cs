@@ -75,7 +75,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             return Ok();
         }
 
-
+          
         [HttpPost]
         [Consumes("application/json")]
         [Produces("application/json")]

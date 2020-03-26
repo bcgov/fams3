@@ -138,7 +138,7 @@ namespace  DynamicsAdapter.Web.Mapping
 
             CreateMap<Phone, SSG_EmploymentContact>()
                 .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src =>src.Type.Equals("Phone",StringComparison.InvariantCultureIgnoreCase)?src.PhoneNumber:null))
-                .ForMember(dest => dest.PhoneExtension, opt => opt.MapFrom(src => src.Type.Equals("Phone", StringComparison.InvariantCultureIgnoreCase) ? src.Extension:null))
+                .ForMember(dest => dest.PhoneExtension, opt => opt.MapFrom(src => src.Extension))
                 .ForMember(dest => dest.FaxNumber, opt => opt.MapFrom(src => src.Type.Equals("fax", StringComparison.InvariantCultureIgnoreCase) ? src.PhoneNumber : null))
                 .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => 0))
                 .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1));

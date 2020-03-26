@@ -106,6 +106,14 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
          })
          );
 
+            odataClientMock.Setup(x => x.For<SSG_EmploymentContact>(null).Set(It.Is<SSG_EmploymentContact>(x => x.PhoneNumber == "12345678"))
+            .InsertEntryAsync(It.IsAny<CancellationToken>()))
+            .Returns(Task.FromResult(new SSG_EmploymentContact()
+            {
+             PhoneNumber = "12345678"
+            })
+            );
+
             _sut = new SearchRequestService(odataClientMock.Object);
         }
 
@@ -263,6 +271,20 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             var result = await _sut.CreateEmployment(employment, CancellationToken.None);
 
             Assert.AreEqual("Business Owner", result.BusinessOwner);
+        }
+
+        [Test]
+        public async Task with_correct_employmentid_upload_employmentcontact_should_succed()
+        {
+            var employmentContact = new SSG_EmploymentContact()
+            {
+                Employment = new SSG_Employment() { EmploymentId = testId },
+                PhoneNumber = "12345678"
+            };
+
+            var result = await _sut.CreateEmploymentContact(employmentContact, CancellationToken.None);
+
+            Assert.AreEqual("12345678", result.PhoneNumber);
         }
     }
 }

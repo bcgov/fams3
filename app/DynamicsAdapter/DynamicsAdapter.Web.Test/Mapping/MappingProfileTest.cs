@@ -133,7 +133,6 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual("Name", ssg_empl.BusinessName);
             Assert.AreEqual("OwnerName", ssg_empl.BusinessOwner);
             Assert.AreEqual(true, ssg_empl.EmploymentConfirmed);
-            Assert.AreEqual(false, ssg_empl.IncomeAssistance);
             Assert.AreEqual("Occupation", ssg_empl.Occupation);
             Assert.AreEqual("Website", ssg_empl.Website);
             Assert.AreEqual("Status", ssg_empl.IncomeAssistanceStatus);
@@ -148,6 +147,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(0, ssg_empl.StateCode);
             Assert.AreEqual("Start Date", ssg_empl.Date1Label);
             Assert.AreEqual("End Date", ssg_empl.Date2Label);
+            Assert.AreEqual(false, ssg_empl.IncomeAssistance);
             Assert.AreEqual(new DateTime(2019, 9, 1), ssg_empl.Date1);
             Assert.AreEqual(new DateTime(2020, 9, 1), ssg_empl.Date2);
         }
@@ -192,6 +192,38 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual("End Date", ssg_empl.Date2Label);
             Assert.AreEqual(new DateTime(2019, 9, 1), ssg_empl.Date1);
             Assert.AreEqual(new DateTime(2020, 9, 1), ssg_empl.Date2);
+        }
+
+        [Test]
+        public void Phone_should_map_to_SSG_EmploymentContact_correctly()
+        {
+            Phone phoneNumber = new Phone()
+            {
+                PhoneNumber = "6904005678",
+                Type = "Phone",
+                Extension = "123",
+            };
+            SSG_EmploymentContact sSG_EmploymentContact = _mapper.Map<SSG_EmploymentContact>(phoneNumber);
+            Assert.AreEqual("6904005678", sSG_EmploymentContact.PhoneNumber);
+            Assert.AreEqual("123", sSG_EmploymentContact.PhoneExtension);
+            Assert.AreEqual(1, sSG_EmploymentContact.StatusCode);
+            Assert.AreEqual(0, sSG_EmploymentContact.StateCode);
+        }
+
+        [Test]
+        public void Phone_Fax_should_map_to_SSG_EmploymentContact_correctly()
+        {
+            Phone phoneNumber = new Phone()
+            {
+                PhoneNumber = "6904005678",
+                Type = "fax",
+                Extension = "123",
+            };
+            SSG_EmploymentContact sSG_EmploymentContact = _mapper.Map<SSG_EmploymentContact>(phoneNumber);
+            Assert.AreEqual("6904005678", sSG_EmploymentContact.FaxNumber);
+            Assert.AreEqual("123", sSG_EmploymentContact.PhoneExtension);
+            Assert.AreEqual(1, sSG_EmploymentContact.StatusCode);
+            Assert.AreEqual(0, sSG_EmploymentContact.StateCode);
         }
 
         [Test]

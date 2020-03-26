@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -53,17 +53,20 @@ namespace DynamicsAdapter.Web.SearchRequest
 
                 foreach (SSG_SearchApiRequest ssgSearchRequest in requestList)
                 {
-                    _logger.LogDebug(
-                        $"Attempting to post person search for request {ssgSearchRequest.SearchApiRequestId}");
+                    if (ssgSearchRequest.SearchRequestId != Guid.Empty)
+                    {
+                        _logger.LogDebug(
+                            $"Attempting to post person search for request {ssgSearchRequest.SearchApiRequestId}");
 
-                    var result = await _searchApiClient.SearchAsync(
-                        _mapper.Map<PersonSearchRequest>(ssgSearchRequest),
-                        $"{ssgSearchRequest.SearchApiRequestId}",
-                        cts.Token);
+                        var result = await _searchApiClient.SearchAsync(
+                            _mapper.Map<PersonSearchRequest>(ssgSearchRequest),
+                            $"{ssgSearchRequest.SearchApiRequestId}",
+                            cts.Token);
 
-                    _logger.LogInformation($"Successfully posted person search id:{result.Id}");
+                        _logger.LogInformation($"Successfully posted person search id:{result.Id}");
 
-                    await MarkInProgress(ssgSearchRequest, cts.Token);
+                        await MarkInProgress(ssgSearchRequest, cts.Token);
+                    }
                 }
             }
             catch(Exception e) 

@@ -53,6 +53,26 @@ namespace Fams3Adapter.Dynamics.Person
         [JsonProperty("ssg_thirdgivenname")]
         public string ThirdGivenName { get; set; }
 
+        [JsonProperty("ssg_distinguishingfeatures")]
+        public string DistinguishingFeatures { get; set; }
+
+        [JsonProperty("ssg_eyecolour")]
+        public string EyeColor { get; set; }
+
+        [JsonProperty("ssg_haircolour")]
+        public string HairColor { get; set; }
+
+        [JsonProperty("ssg_glassesflag")]
+        public string WearGlasses { get; set; }
+
+        [JsonProperty("ssg_height")]
+        public string Height { get; set; }
+
+        [JsonProperty("ssg_weight")]
+        public string Weight { get; set; }
+
+        [JsonProperty("ssg_complexion")]
+        public string Complexion { get; set; }
     }
 
     public class SSG_Person : PersonEntity

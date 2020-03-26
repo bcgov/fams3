@@ -186,13 +186,20 @@ namespace  DynamicsAdapter.Web.Mapping
                .ForMember(dest => dest.MiddleName, opt => opt.MapFrom(src => src.MiddleName))
                .ForMember(dest => dest.ThirdGivenName, opt => opt.MapFrom(src => src.OtherName))
                .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => (src.DateOfBirth != null) ? src.DateOfBirth.Value.DateTime : (DateTime?)null))
-                .ForMember(dest => dest.DateOfDeath, opt => opt.MapFrom(src => (src.DateOfDeath != null) ? src.DateOfDeath.Value.DateTime : (DateTime?)null))
-                 .ForMember(dest => dest.DateOfDeathConfirmed, opt => opt.MapFrom( src => src.DateDeathConfirmed))
+               .ForMember(dest => dest.DateOfDeath, opt => opt.MapFrom(src => (src.DateOfDeath != null) ? src.DateOfDeath.Value.DateTime : (DateTime?)null))
+               .ForMember(dest => dest.DateOfDeathConfirmed, opt => opt.MapFrom( src => src.DateDeathConfirmed))
                .ForMember(dest => dest.Gender, opt => opt.MapFrom(src => src.Gender))
                .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
-                  .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => 0))
+               .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => 0))
                .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1))
-               .ForMember(dest => dest.Incacerated, opt => opt.ConvertUsing(new IncaceratedConverter(), src => src.Incacerated));
+               .ForMember(dest => dest.Incacerated, opt => opt.ConvertUsing(new IncaceratedConverter(), src => src.Incacerated))
+               .ForMember(dest => dest.Complexion, opt => opt.MapFrom(src => src.Complexion))
+               .ForMember(dest => dest.EyeColor, opt => opt.MapFrom(src => src.EyeColour))
+               .ForMember(dest => dest.HairColor, opt => opt.MapFrom(src => src.HairColour))
+               .ForMember(dest => dest.Height, opt => opt.MapFrom(src => src.Height))
+               .ForMember(dest => dest.Weight, opt => opt.MapFrom(src => src.Weight))
+               .ForMember(dest => dest.WearGlasses, opt => opt.MapFrom(src => src.WearGlasses))
+               .ForMember(dest => dest.DistinguishingFeatures, opt => opt.MapFrom(src => src.DistinguishingFeatures));
               
         }
     }

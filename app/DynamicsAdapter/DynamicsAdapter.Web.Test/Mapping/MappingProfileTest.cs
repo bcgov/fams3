@@ -522,13 +522,19 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 LastName = "LastName",
                 MiddleName = "MiddleName",
                 OtherName = "OtherName",
-               DateOfBirth = new DateTimeOffset(new DateTime(2011, 1, 1)),
-               DateDeathConfirmed = true,
-               DateOfDeath = new DateTimeOffset(new DateTime(2011, 1, 1)),
+                DateOfBirth = new DateTimeOffset(new DateTime(2011, 1, 1)),
+                DateDeathConfirmed = true,
+                DateOfDeath = new DateTimeOffset(new DateTime(2011, 1, 1)),
                 Gender = "M",
                 Notes = "Some notes",
-               Incacerated = "Yes"
-               
+                Incacerated = "Yes",
+                WearGlasses = "Yes",
+                HairColour = "Brown",
+                Complexion = "light",
+                Weight = "200",
+                Height="180",
+                EyeColour="black",
+                DistinguishingFeatures="features"           
             };
             PersonEntity ssg_person = _mapper.Map<PersonEntity>(person);
             Assert.AreEqual("FirstName", ssg_person.FirstName);
@@ -541,7 +547,13 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual("M", ssg_person.Gender);
             Assert.AreEqual("Some notes", ssg_person.Notes);
             Assert.AreEqual(NullableBooleanType.Yes.Value, ssg_person.Incacerated);
-          
+            Assert.AreEqual("black", ssg_person.EyeColor);
+            Assert.AreEqual("Brown", ssg_person.HairColor);
+            Assert.AreEqual("Yes", ssg_person.WearGlasses);
+            Assert.AreEqual("180", ssg_person.Height);
+            Assert.AreEqual("200", ssg_person.Weight);
+            Assert.AreEqual("features", ssg_person.DistinguishingFeatures);
+            Assert.AreEqual("light", ssg_person.Complexion);
         }
 
         [Test]

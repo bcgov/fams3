@@ -121,22 +121,22 @@ objects:
                 - name: DATAPARTNERSOAPAPI__BASEADDRESS
                   valueFrom:
                     secretKeyRef:
-                      name: icbc-soap-api-configuration
+                      name: bcyhydro-soap-api-configuration
                       key: base-address
                 - name: DATAPARTNERSOAPAPI__USERNAME
                   valueFrom:
                     secretKeyRef:
-                      name: icbc-soap-api-configuration
+                      name: bcyhydro-soap-api-configuration
                       key: username
                 - name: DATAPARTNERSOAPAPI__PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: icbc-soap-api-configuration
+                      name: bcyhydro-soap-api-configuration
                       key: password
                 - name: DATAPARTNERSOAPAPI__CODE
                   valueFrom:
                     secretKeyRef:
-                      name: icbc-soap-api-configuration
+                      name: bcyhydro-soap-api-configuration
                       key: code
               livenessProbe:
                 httpGet:

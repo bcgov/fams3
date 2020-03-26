@@ -9,8 +9,16 @@ def PROD_NAMESPACE = "frjeow-prod"
 def RABBITMQ = "rabbitmq"
 def SEARCH_API = "searchapi"
 def SAMPLE_ADAPTER = "sample-adapter"
+
+def DATA_PARTNER_REST_ADAPTER = "datapartner-rest-adapter"
+def DATA_PARTNER_WEB_ADAPTER = "datapartner-web-adapter"
+
 def ICBC_REST_ADAPTER = "icbc-rest-adapter"
 def ICBC_WEB_ADAPTER = "icbc-web-adapter"
+
+def BCHydro_REST_ADAPTER = "BCHydro-rest-adapter"
+def BCHydro_WEB_ADAPTER = "BcHydro-web-adapter"
+
 def DYNAMICS_ADAPTER = "dynadapter"
 def JAEGER = "jaeger"
 
@@ -88,37 +96,37 @@ pipeline {
       StartBuildAndWait("${SAMPLE_ADAPTER}-build", TOOLS_NAMESPACE)
       StartBuildAndWait("${SAMPLE_ADAPTER}-runtime", TOOLS_NAMESPACE)
      },
-     'ICBC Rest Adapter': {
-      echo "Initiating ICBC Rest Adapter build..."
-      sh "oc process -f openshift/templates/icbc-rest-adapter.bc.yaml \
-         -p NAME=${ICBC_REST_ADAPTER} \
+     'Data Partner Rest Adapter': {
+      echo "Initiating Data Partner Rest Adapter build..."
+      sh "oc process -f openshift/templates/datapartner-rest-adapter.bc.yaml \
+         -p NAME=${DATA_PARTNER_REST_ADAPTER} \
          -p SOURCE_REPOSITORY_URL=${PRIVATE_GIT_URI} \
          -p SOURCE_REPOSITORY_REF=${PRIVATE_GIT_REF} \
          -p SOURCE_SECRET=${PRIVATE_GIT_SECRET} \
          -p DOTNET_STARTUP_PROJECT=src/SearchApi.Adapters/ICBC.Rest.Adapter/ICBC.Rest.Adapter.csproj \
          -p MEMORY_LIMIT=${BUILD_MEMORY} \
          -p NAMESPACE=${TOOLS_NAMESPACE} | oc apply -f - -n ${TOOLS_NAMESPACE}"
-      StartBuildAndWait("${ICBC_REST_ADAPTER}-build", TOOLS_NAMESPACE)
-      StartBuildAndWait("${ICBC_REST_ADAPTER}-runtime", TOOLS_NAMESPACE)
+      StartBuildAndWait("${DATA_PARTNER_REST_ADAPTER}-build", TOOLS_NAMESPACE)
+      StartBuildAndWait("${DATA_PARTNER_REST_ADAPTER}-runtime", TOOLS_NAMESPACE)
      },
-     'ICBC Web Adapter': {
-      echo "Initiating ICBC Web Adapter build..."
-      sh "oc process -f openshift/templates/icbc-web-adapter.bc.yaml \
-         -p NAME=${ICBC_WEB_ADAPTER} \
+     'Data Partner Web Adapter': {
+      echo "Initiating Data Partner Web Adapter build..."
+      sh "oc process -f openshift/templates/datapartner-web-adapter.bc.yaml \
+         -p NAME=${DATA_PARTNER_WEB_ADAPTER} \
          -p SOURCE_REPOSITORY_URL=${PRIVATE_GIT_URI} \
          -p SOURCE_REPOSITORY_REF=${PRIVATE_GIT_REF} \
          -p SOURCE_SECRET=${PRIVATE_GIT_SECRET} \
          -p DOTNET_STARTUP_PROJECT=src/SearchApi.Adapters/ICBC.Adapter.Web/ICBC.Adapter.Web.csproj \
          -p MEMORY_LIMIT=${BUILD_MEMORY} \
          -p NAMESPACE=${TOOLS_NAMESPACE} | oc apply -f - -n ${TOOLS_NAMESPACE}"
-      StartBuildAndWait("${ICBC_WEB_ADAPTER}-build", TOOLS_NAMESPACE)
-      StartBuildAndWait("${ICBC_WEB_ADAPTER}-runtime", TOOLS_NAMESPACE)
+      StartBuildAndWait("${DATA_PARTNER_WEB_ADAPTER}-build", TOOLS_NAMESPACE)
+      StartBuildAndWait("${DATA_PARTNER_WEB_ADAPTER}-runtime", TOOLS_NAMESPACE)
      }
     )
    }
   }
 
-  stage('Promote to DEV') {
+  stage('Promote to DEV - Configure') {
    steps {
     parallel(
      'Search API': {
@@ -128,7 +136,7 @@ pipeline {
          -p MEMORY_LIMIT=${RUN_MEMORY} \
          -p NAMESPACE=${TOOLS_NAMESPACE} \
          -p TAG=dev | oc apply -f - -n ${DEV_NAMESPACE}"
-      sh "oc tag ${SEARCH_API}:latest ${SEARCH_API}:dev -n ${TOOLS_NAMESPACE}"
+      sh "oc tag dataprovider-rest:latest dataprovider-rest:dev -n ${TOOLS_NAMESPACE}"
       WaitForDeploy(SEARCH_API, DEV_NAMESPACE)
      },
      'Dynamics Adapter': {
@@ -151,24 +159,22 @@ pipeline {
       sh "oc tag ${SAMPLE_ADAPTER}:latest ${SAMPLE_ADAPTER}:dev -n ${TOOLS_NAMESPACE}"
       WaitForDeploy(SAMPLE_ADAPTER, DEV_NAMESPACE)
      },
-     'ICBC Rest Adapter': {
+     'Data Partner Rest Adapter - Configure': {
       sh "oc process -f openshift/templates/icbc-rest-adapter.dc.yaml \
          -p NAME=${ICBC_REST_ADAPTER} \
          -p APPLICATION_DOMAIN=${SUBDOMAIN}-dev.${DOMAIN} \
          -p MEMORY_LIMIT=${RUN_MEMORY} \
          -p NAMESPACE=${TOOLS_NAMESPACE} \
          -p TAG=dev | oc apply -f - -n ${DEV_NAMESPACE}"
-      sh "oc tag ${ICBC_REST_ADAPTER}:latest ${ICBC_REST_ADAPTER}:dev -n ${TOOLS_NAMESPACE}"
       WaitForDeploy(ICBC_REST_ADAPTER, DEV_NAMESPACE)
      },
-     'ICBC Web Adapter': {
+     'Data Partner Web Adapter - Configure': {
       sh "oc process -f openshift/templates/icbc-web-adapter.dc.yaml \
          -p NAME=${ICBC_WEB_ADAPTER} \
          -p APPLICATION_DOMAIN=${SUBDOMAIN}-dev.${DOMAIN} \
          -p MEMORY_LIMIT=${RUN_MEMORY} \
          -p NAMESPACE=${TOOLS_NAMESPACE} \
          -p TAG=dev | oc apply -f - -n ${DEV_NAMESPACE}"
-      sh "oc tag ${ICBC_WEB_ADAPTER}:latest ${ICBC_WEB_ADAPTER}:dev -n ${TOOLS_NAMESPACE}"
       WaitForDeploy(ICBC_WEB_ADAPTER, DEV_NAMESPACE)
      },
      'Jaeger':{
@@ -176,6 +182,15 @@ pipeline {
      }
     )
    }
+  }
+
+  stage('Promote to Dev - Promote Images')
+  {
+     steps {
+        step {
+                    sh "oc tag ${DATA_PARTNER_REST_ADAPTER}:latest ${DATA_PARTNER_REST_ADAPTER}:dev -n ${TOOLS_NAMESPACE}"
+        }
+     }
   }
 
   stage('Test Deploy Check'){

@@ -118,21 +118,26 @@ objects:
                   value: http://${JAEGER_COLLECTOR}:14268/api/traces
                 - name: ASPNETCORE_ENVIRONMENT
                   value: Development
-                - name: ICBCSOAPAPI__BASEADDRESS
+                - name: DATAPARTNERSOAPAPI__BASEADDRESS
                   valueFrom:
                     secretKeyRef:
                       name: icbc-soap-api-configuration
                       key: base-address
-                - name: ICBCSOAPAPI__USERNAME
+                - name: DATAPARTNERSOAPAPI__USERNAME
                   valueFrom:
                     secretKeyRef:
                       name: icbc-soap-api-configuration
                       key: username
-                - name: ICBCSOAPAPI__PASSWORD
+                - name: DATAPARTNERSOAPAPI__PASSWORD
                   valueFrom:
                     secretKeyRef:
                       name: icbc-soap-api-configuration
                       key: password
+                - name: DATAPARTNERSOAPAPI__CODE
+                  valueFrom:
+                    secretKeyRef:
+                      name: icbc-soap-api-configuration
+                      key: code
               livenessProbe:
                 httpGet:
                   path: "/health"

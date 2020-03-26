@@ -44,12 +44,6 @@ parameters:
       The name of the Jaeger collector to send traces to (port 14268)
     required: true
     value: jaeger-collector
-  - name: ICBC_REST_URL
-    displayName: ICBC rest adapter base url
-    description:
-      ICBC rest adapter base url for ICBC Web Adapter send search request to
-    required: true
-    value: http://icbc-rest-adapter:8080
 objects:
   - kind: Route
     apiVersion: v1
@@ -124,22 +118,26 @@ objects:
                   value: http://${JAEGER_COLLECTOR}:14268/api/traces
                 - name: ASPNETCORE_ENVIRONMENT
                   value: Development
-                - name: RABBITMQ__HOST
-                  value: rabbitmq-cluster
-                - name: RABBITMQ__PORT
-                  value: "5672"
-                - name: RABBITMQ__PASSWORD
+                - name: DATAPARTNERSOAPAPI__BASEADDRESS
                   valueFrom:
                     secretKeyRef:
-                      key: password
-                      name: rabbitmq-searchapi-credentials
-                - name: RABBITMQ__USERNAME
+                      name: bcyhydro-soap-api-configuration
+                      key: base-address
+                - name: DATAPARTNERSOAPAPI__USERNAME
                   valueFrom:
                     secretKeyRef:
+                      name: bcyhydro-soap-api-configuration
                       key: username
-                      name: rabbitmq-searchapi-credentials
-                - name: ICBCRESTADAPTER__BASEURL
-                  value: "${ICBC_REST_URL}"
+                - name: DATAPARTNERSOAPAPI__PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: bcyhydro-soap-api-configuration
+                      key: password
+                - name: DATAPARTNERSOAPAPI__CODE
+                  valueFrom:
+                    secretKeyRef:
+                      name: bcyhydro-soap-api-configuration
+                      key: code
               livenessProbe:
                 httpGet:
                   path: "/health"
@@ -154,3 +152,5 @@ objects:
                   scheme: HTTP
                 initialDelaySeconds: 10
                 timeoutSeconds: 30
+
+

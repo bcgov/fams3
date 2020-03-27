@@ -33,7 +33,6 @@ namespace SearchApi.Web.Controllers
         private readonly ICacheService _cacheService;
 
         public PeopleController(
-            IBusControl busControl, 
             ILogger<PeopleController> logger, 
             ITracer tracer, 
             ICacheService cacheService,

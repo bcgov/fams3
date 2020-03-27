@@ -159,7 +159,7 @@ namespace SearchApi.Web.Test.Messaging
         }
 
         [Test]
-        public async Task withNullRequestShouldSendThrowArgumentNullException()
+        public void withNullRequestShouldSendThrowArgumentNullException()
         {
 
             Assert.ThrowsAsync<ArgumentNullException>(() => sut.Dispatch(null, Guid.NewGuid()));
@@ -169,7 +169,7 @@ namespace SearchApi.Web.Test.Messaging
 
 
         [Test]
-        public async Task withDefaultRequestIdShouldSendThrowArgumentNullException()
+        public void withDefaultRequestIdShouldSendThrowArgumentNullException()
         {
 
             Assert.ThrowsAsync<ArgumentNullException>(() => sut.Dispatch(new PersonSearchRequest(

@@ -165,6 +165,7 @@ services:
       - REDIS_HOSTS=redis
 networks:
   search-api-net:
+    driver: bridge
 
 volumes:
   data-rabbit:

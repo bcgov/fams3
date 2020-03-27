@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NSwag.Annotations;
 using OpenTracing;
+using SearchApi.Web.Messaging;
 
 namespace SearchApi.Web.Controllers
 {
@@ -25,18 +26,23 @@ namespace SearchApi.Web.Controllers
 
         private readonly ITracer _tracer;
 
-        private readonly IBusControl _busControl;
+        private readonly IDispatcher _dispatcher;
 
         private readonly ILogger _logger;
 
         private readonly ICacheService _cacheService;
 
-        public PeopleController(IBusControl busControl, ILogger<PeopleController> logger, ITracer tracer, ICacheService cacheService)
+        public PeopleController(
+            IBusControl busControl, 
+            ILogger<PeopleController> logger, 
+            ITracer tracer, 
+            ICacheService cacheService,
+            IDispatcher dispatcher)
         {
             this._logger = logger;
             this._tracer = tracer;
-            this._busControl = busControl;
             this._cacheService = cacheService;
+            this._dispatcher = dispatcher;
         }
 
         /// <summary>
@@ -67,15 +73,13 @@ namespace SearchApi.Web.Controllers
                 Person = personSearchRequest,
                 SearchRequestId = searchRequestId,
             };
+
             _logger.LogInformation($"Save Request [{searchRequestId}] to cache. ");
             bool saveResult = await _cacheService.SaveRequest(searchRequest);
 
             _logger.LogDebug($"Attempting to publish ${nameof(PersonSearchOrdered)} to destination queue.");
 
-            await _busControl.Publish<PersonSearchOrdered>(new PersonSearchOrderEvent(searchRequestId)
-            {
-                Person = personSearchRequest
-            });
+            await _dispatcher.Dispatch(personSearchRequest, searchRequestId);
 
             _logger.LogInformation($"Successfully published ${nameof(PersonSearchOrdered)} to destination queue.");
 

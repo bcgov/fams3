@@ -12,6 +12,7 @@ using Moq;
 using NUnit.Framework;
 using OpenTracing;
 using SearchApi.Web.Controllers;
+using SearchApi.Web.Messaging;
 
 namespace SearchApi.Web.Test.People
 {
@@ -28,6 +29,8 @@ namespace SearchApi.Web.Test.People
 
         private readonly Mock<ICacheService> _cacheMock = new Mock<ICacheService>();
 
+        private readonly Mock<IDispatcher> _dispatcherMock = new Mock<IDispatcher>();
+
         private Mock<IBusControl> _busControlMock;
         private Guid expectedId = Guid.NewGuid();
 
@@ -38,7 +41,7 @@ namespace SearchApi.Web.Test.People
             _spanMock.Setup(x => x.SetTag(It.IsAny<string>(), It.IsAny<string>())).Returns(_spanMock.Object);
             _tracerMock.Setup(x => x.ActiveSpan).Returns(_spanMock.Object);
             
-            _sut = new PeopleController(_busControlMock.Object, _loggerMock.Object, _tracerMock.Object, _cacheMock.Object);
+            _sut = new PeopleController(_busControlMock.Object, _loggerMock.Object, _tracerMock.Object, _cacheMock.Object, _dispatcherMock.Object);
         }
 
 

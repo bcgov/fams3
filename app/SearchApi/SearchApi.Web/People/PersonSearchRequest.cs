@@ -13,6 +13,9 @@ namespace SearchApi.Web.Controllers
     [Description("Represents a set of information to execute a search on a person")]
     public class PersonSearchRequest : Person
     {
+
+        public IEnumerable<DataProvider> dataProviders { get; set; }
+
         [JsonConstructor]
         public PersonSearchRequest(
             string firstName,
@@ -38,7 +41,6 @@ namespace SearchApi.Web.Controllers
             this.dataProviders = dataProviders;
         }
 
-        public IEnumerable<DataProvider> dataProviders { get; set; }
     }
 
     public class DataProvider : ProviderProfile

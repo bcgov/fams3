@@ -23,6 +23,7 @@ using SearchApi.Web.Configuration;
 using SearchApi.Web.Notifications;
 using SearchApi.Web.Search;
 using BcGov.Fams3.Redis.DependencyInjection;
+using SearchApi.Web.Messaging;
 
 namespace SearchApi.Web
 {
@@ -61,6 +62,7 @@ namespace SearchApi.Web
             this.ConfigureOpenApi(services);
 
             this.ConfigureServiceBus(services);
+
             this.ConfigureAutoMapper(services);
         }
         public void ConfigureAutoMapper(IServiceCollection services)
@@ -159,6 +161,8 @@ namespace SearchApi.Web
         private void ConfigureServiceBus(IServiceCollection services)
         {
 
+            services.Configure<RabbitMqConfiguration>(Configuration.GetSection("RabbitMq"));
+
             var rabbitMqSettings = Configuration.GetSection("RabbitMq").Get<RabbitMqConfiguration>();
             var rabbitBaseUri = $"amqp://{rabbitMqSettings.Host}:{rabbitMqSettings.Port}";
 
@@ -209,6 +213,8 @@ namespace SearchApi.Web
             });
 
             services.AddHostedService<BusHostedService>();
+
+            services.AddTransient<IDispatcher, Dispatcher>();
 
         }
 

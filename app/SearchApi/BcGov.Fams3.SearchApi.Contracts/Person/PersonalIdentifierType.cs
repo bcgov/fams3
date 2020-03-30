@@ -2,7 +2,7 @@
 {
     public enum PersonalIdentifierType
     {
-        DriverLicense,
+        BCDriverLicense,
         SocialInsuranceNumber,
         PersonalHealthNumber,
         BirthCertificate,

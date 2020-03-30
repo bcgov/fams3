@@ -11,7 +11,7 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 3.0.100
+          dotnet-version: 3.1.101
       - name: Build SearchApi
         run: dotnet build --configuration Release
         working-directory: ./app/SearchApi

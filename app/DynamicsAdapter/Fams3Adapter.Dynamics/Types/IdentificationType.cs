@@ -5,7 +5,7 @@ namespace Fams3Adapter.Dynamics.Types
     
     public class IdentificationType : Enumeration
     { 
-        public static IdentificationType DriverLicense = new IdentificationType(867670000, "Driver's License");
+        public static IdentificationType BCDriverLicense = new IdentificationType(867670000, "BC Driver's License");
         public static IdentificationType SocialInsuranceNumber = new IdentificationType(867670006, "Social Insurance Number");
         public static IdentificationType PersonalHealthNumber = new IdentificationType(867670001, "Personal Health Number");
         public static IdentificationType BirthCertificate = new IdentificationType(867670008,  "Birth Certificate");
@@ -16,6 +16,7 @@ namespace Fams3Adapter.Dynamics.Types
         public static IdentificationType BCID = new IdentificationType(867670003, "BCID");
         public static IdentificationType BCHydroBP = new IdentificationType(867670004, "BC Hydro BP");      
         public static IdentificationType Other = new IdentificationType(867670012,  "Other");
+        public static IdentificationType OutOfBCDriverLicense = new IdentificationType(867670005, "OOP Driver's License");
 
 
         protected IdentificationType(int value, string name) : base(value, name)

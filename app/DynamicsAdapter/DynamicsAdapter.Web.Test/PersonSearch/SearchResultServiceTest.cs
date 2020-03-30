@@ -124,7 +124,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                             {
                                Value  = "test",
                                IssuedBy = "test",
-                               Type = PersonalIdentifierType.DriverLicense
+                               Type = PersonalIdentifierType.BCDriverLicense
                             }
                         },
                 Addresses = new List<Address>()

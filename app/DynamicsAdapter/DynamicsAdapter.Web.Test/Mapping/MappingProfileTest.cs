@@ -443,7 +443,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             PersonalIdentifier identifier = new PersonalIdentifier()
             {
                 Value = "1111111",
-                Type = PersonalIdentifierType.DriverLicense,
+                Type = PersonalIdentifierType.BCDriverLicense,
                 IssuedBy = "BC",
                 Description = "description",
                 Notes = "notes",
@@ -463,7 +463,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(new DateTime(2014, 1, 1), sSG_Identifier.Date2);
             Assert.AreEqual("startDate", sSG_Identifier.Date1Label);
             Assert.AreEqual("endDate", sSG_Identifier.Date2Label);
-            Assert.AreEqual(IdentificationType.DriverLicense.Value, sSG_Identifier.IdentifierType);
+            Assert.AreEqual(IdentificationType.BCDriverLicense.Value, sSG_Identifier.IdentifierType);
             Assert.AreEqual(1, sSG_Identifier.StatusCode);
             Assert.AreEqual(0, sSG_Identifier.StateCode);
         }

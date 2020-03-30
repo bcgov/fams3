@@ -15,10 +15,9 @@ using SearchApi.Web.Notifications;
 using SearchApi.Web.Test.Utils;
 
 namespace SearchApi.Web.Test.Notifications
-{
+{ 
 
-   
-        public class WebHookNotifierSearchStatusTest
+    public class WebHookNotifierSearchStatusTest
         {
             private WebHookNotifierSearchEventStatus _sut;
 

@@ -111,7 +111,7 @@ namespace SearchAdapter.Sample.SearchRequest
 
                         new PersonalIdentifier()
                         {
-                            Type = PersonalIdentifierType.DriverLicense,
+                            Type = PersonalIdentifierType.BCDriverLicense,
                             TypeCode = "BCDL",
                             Description = "Sample Identifier Description",
                             Notes = "Sample Identifier Notes",

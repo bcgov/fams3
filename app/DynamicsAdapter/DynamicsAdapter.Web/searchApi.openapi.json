@@ -232,7 +232,7 @@
       "type": "string",
       "description": "",
       "x-enumNames": [
-        "DriverLicense",
+        "BCDriverLicense",
         "SocialInsuranceNumber",
         "PersonalHealthNumber",
         "BirthCertificate",
@@ -242,10 +242,11 @@
         "WorkSafeBCCCN",
         "Other",
         "BCID",
-        "BCHydroBP"
+        "BCHydroBP",
+        "OtherDriverLicense"
       ],
       "enum": [
-        "DriverLicense",
+        "BCDriverLicense",
         "SocialInsuranceNumber",
         "PersonalHealthNumber",
         "BirthCertificate",
@@ -255,7 +256,8 @@
         "WorkSafeBCCCN",
         "Other",
         "BCID",
-        "BCHydroBP"
+        "BCHydroBP",
+        "OtherDriverLicense"
       ]
     },
     "PersonalInfo": {

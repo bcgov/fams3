@@ -49,7 +49,7 @@ namespace DynamicsAdapter.Web.Mapping
     {
         public static readonly IDictionary<int, PersonalIdentifierType> IDTypeDictionary = new Dictionary<int, PersonalIdentifierType>
         {
-            { IdentificationType.DriverLicense.Value, PersonalIdentifierType.DriverLicense },
+            { IdentificationType.BCDriverLicense.Value, PersonalIdentifierType.BCDriverLicense },
             { IdentificationType.SocialInsuranceNumber.Value, PersonalIdentifierType.SocialInsuranceNumber },
             { IdentificationType.PersonalHealthNumber.Value, PersonalIdentifierType.PersonalHealthNumber },
             { IdentificationType.BirthCertificate.Value, PersonalIdentifierType.BirthCertificate },
@@ -60,7 +60,7 @@ namespace DynamicsAdapter.Web.Mapping
             { IdentificationType.BCHydroBP.Value, PersonalIdentifierType.BCHydroBP },
             { IdentificationType.BCID.Value, PersonalIdentifierType.BCID },
             { IdentificationType.Other.Value, PersonalIdentifierType.Other },
-
+            { IdentificationType.OutOfBCDriverLicense.Value, PersonalIdentifierType.OtherDriverLicense }
         };
     }
 

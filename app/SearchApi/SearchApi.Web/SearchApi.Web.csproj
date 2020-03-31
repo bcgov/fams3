@@ -34,7 +34,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BcGov.Fams3.Redis\BcGov.Fams3.Redis.csproj" />
     <ProjectReference Include="..\BcGov.Fams3.SearchApi.Core\BcGov.Fams3.SearchApi.Core.csproj" />
   </ItemGroup>
 

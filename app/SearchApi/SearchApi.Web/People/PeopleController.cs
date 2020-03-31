@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using BcGov.Fams3.Redis;
-using BcGov.Fams3.Redis.Model;
 using BcGov.Fams3.SearchApi.Contracts.Person;
 using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 using MassTransit;
@@ -30,17 +28,13 @@ namespace SearchApi.Web.Controllers
 
         private readonly ILogger _logger;
 
-        private readonly ICacheService _cacheService;
-
         public PeopleController(
             ILogger<PeopleController> logger, 
-            ITracer tracer, 
-            ICacheService cacheService,
+            ITracer tracer,
             IDispatcher dispatcher)
         {
             this._logger = logger;
             this._tracer = tracer;
-            this._cacheService = cacheService;
             this._dispatcher = dispatcher;
         }
 
@@ -66,15 +60,6 @@ namespace SearchApi.Web.Controllers
             _logger.LogInformation($"Successfully received new search request [{searchRequestId}].");
 
             _tracer.ActiveSpan.SetTag("searchRequestId", $"{searchRequestId}");
-
-            SearchRequest searchRequest = new SearchRequest
-            {
-                Person = personSearchRequest,
-                SearchRequestId = searchRequestId,
-            };
-
-            _logger.LogInformation($"Save Request [{searchRequestId}] to cache. ");
-            bool saveResult = await _cacheService.SaveRequest(searchRequest);
 
             _logger.LogDebug($"Attempting to publish ${nameof(PersonSearchOrdered)} to destination queue.");
 

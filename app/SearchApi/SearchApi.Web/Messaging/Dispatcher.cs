@@ -49,7 +49,7 @@ namespace SearchApi.Web.Messaging
 
             foreach (var requestDataProvider in personSearchRequest.dataProviders)
             {
-                var endpoint = await getEndpointAddress(requestDataProvider.Name);
+                var endpoint = await getEndpointAddress(requestDataProvider.DataProviderID.ToString());
 
                 await endpoint.Send<PersonSearchOrdered>(new PeopleController.PersonSearchOrderEvent(searchRequestId)
                 {

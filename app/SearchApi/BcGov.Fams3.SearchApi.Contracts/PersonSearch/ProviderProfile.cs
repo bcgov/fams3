@@ -6,5 +6,6 @@
     public interface ProviderProfile
     { 
         string Name { get; }
+        DataProviderEnums DataProviderID { get;  }
     }
 }

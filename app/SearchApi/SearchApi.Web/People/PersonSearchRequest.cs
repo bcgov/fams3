@@ -46,5 +46,6 @@ namespace SearchApi.Web.Controllers
     public class DataProvider : ProviderProfile
     {
         public string Name { get; set; }
+        public DataProviderEnums DataProviderID { get; set; }
     }
 }

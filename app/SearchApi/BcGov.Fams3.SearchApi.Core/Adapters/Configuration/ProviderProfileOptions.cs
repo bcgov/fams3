@@ -10,5 +10,6 @@ namespace BcGov.Fams3.SearchApi.Core.Adapters.Configuration
     {
         [Required]
         public string Name { get; set; }
+        public DataProviderEnums DataProviderID { get; set; }
     }
 }

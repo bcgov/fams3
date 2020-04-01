@@ -60,7 +60,7 @@ namespace SearchApi.Web.Messaging
 
         private Task<ISendEndpoint> getEndpointAddress(string providerName)
         {
-            return _sendEndpointProvider.GetSendEndpoint(new Uri($"rabbitmq://{this._rabbitMqConfiguration.Host}:{this._rabbitMqConfiguration.Port}/PersonSearchOrdered_{providerName}"));
+            return _sendEndpointProvider.GetSendEndpoint(new Uri($"rabbitmq://{this._rabbitMqConfiguration.Host}:{this._rabbitMqConfiguration.Port}/PersonSearchOrdered_{providerName.ToUpperInvariant()}"));
         }
 
     }

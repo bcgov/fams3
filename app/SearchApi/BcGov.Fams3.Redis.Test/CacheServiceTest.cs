@@ -5,6 +5,7 @@ using StackExchange.Redis;
 using System;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace BcGov.Fams3.Redis.Test
 {
@@ -13,6 +14,7 @@ namespace BcGov.Fams3.Redis.Test
         private Mock<IDatabase> _databaseMock;
         private Mock<IRedisConnectionFactory> _factoryMock;
         private Mock<IRedisConnectionFactory> _factoryExceptionMock;
+        private Mock<IDistributedCache> _distributedCacheMock;
         private Mock<ILogger<CacheService>> _loggerMock;
         private ICacheService _sut;
         private Guid _existedReqestGuid;
@@ -29,6 +31,8 @@ namespace BcGov.Fams3.Redis.Test
 
             _validSearchRequest = new SearchRequest() { Person = null, SearchRequestId = _existedReqestGuid };
             string validSearchRequestStr = JsonConvert.SerializeObject(_validSearchRequest);
+
+            _distributedCacheMock = new Mock<IDistributedCache>();
 
             _databaseMock = new Mock<IDatabase>();
             _databaseMock.Setup(db => db.StringGet(It.Is<RedisKey>(m=>m== _existedReqestGuid.ToString()), It.IsAny<CommandFlags>()))
@@ -61,8 +65,10 @@ namespace BcGov.Fams3.Redis.Test
             _factoryMock = new Mock<IRedisConnectionFactory>();
             _factoryMock.Setup(factory => factory.GetDatabase()).Returns(_databaseMock.Object);
 
+            _distributedCacheMock.Setup(x => x.GetStringAsync ()
+
             _loggerMock = new Mock<ILogger<CacheService>>();
-            _sut = new CacheService(_factoryMock.Object, _loggerMock.Object);
+            _sut = new CacheService(_distributedCacheMock.Object, _loggerMock.Object);
         }
 
         [Test]

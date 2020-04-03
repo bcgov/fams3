@@ -150,6 +150,15 @@ namespace SearchApi.Web
 
         }
 
+        public void ConfigureRedisIDistributedServices(IServiceCollection services)
+        {
+            var redisConfig = Configuration.GetSection("Redis").Get<RedisConfiguration>();
+            services.AddDistributedRedisCache(options =>
+            {
+                options.Configuration = $"{redisConfig.Host}:{redisConfig.Port}";
+            });
+        }
+
         /// <summary>
         /// Configure MassTransit Service Bus
         /// http://masstransit-project.com/

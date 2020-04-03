@@ -7,6 +7,7 @@ using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 using MassTransit;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using NSwag.Annotations;
 using OpenTracing;
@@ -28,14 +29,17 @@ namespace SearchApi.Web.Controllers
 
         private readonly ILogger _logger;
 
+        private readonly IDistributedCache _distributedCache;
+
         public PeopleController(
             ILogger<PeopleController> logger, 
             ITracer tracer,
-            IDispatcher dispatcher)
+            IDispatcher dispatcher, IDistributedCache distributedCache)
         {
             this._logger = logger;
             this._tracer = tracer;
             this._dispatcher = dispatcher;
+            this._distributedCache = distributedCache;
         }
 
         /// <summary>

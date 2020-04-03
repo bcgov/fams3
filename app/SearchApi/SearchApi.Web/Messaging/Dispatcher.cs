@@ -49,11 +49,6 @@ namespace SearchApi.Web.Messaging
 
             foreach (var requestDataProvider in personSearchRequest.dataProviders)
             {
-                if(requestDataProvider.Name.Contains(" "))
-                {
-                    requestDataProvider.Name = requestDataProvider.Name.Replace(" ", string.Empty);
-                }
-
                 var endpoint = await getEndpointAddress(requestDataProvider.Name);
 
                 await endpoint.Send<PersonSearchOrdered>(new PeopleController.PersonSearchOrderEvent(searchRequestId)

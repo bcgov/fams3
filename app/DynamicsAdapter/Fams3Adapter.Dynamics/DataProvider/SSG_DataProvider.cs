@@ -12,6 +12,9 @@ namespace Fams3Adapter.Dynamics.DataProvider
         [JsonProperty("ssg_name")]
         public string Name { get; set; }
 
+        [JsonProperty("ssg_adaptorname")]
+        public string AdaptorName { get; set; }
+
         [JsonProperty("ssg_suppliedbyvalue")]
         public int? SuppliedByValue { get; set; }
 

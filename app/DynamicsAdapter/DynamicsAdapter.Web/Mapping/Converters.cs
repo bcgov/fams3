@@ -237,6 +237,7 @@ namespace DynamicsAdapter.Web.Mapping
     {
         public int? Convert(string source, ResolutionContext context)
         {
+            if (source == null) return null;
             return
                 source.ToLower() switch
                 {

@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using NSwag.Annotations;
 using OpenTracing;
 using SearchApi.Web.Messaging;
@@ -74,12 +75,11 @@ namespace SearchApi.Web.Controllers
             {
                 Person = personSearchRequest,
                 SearchRequestId = searchRequestId,
-               
+                DataPartners = personSearchRequest.dataProviders.Select(x => new DataPartner { Name = x.Name, Completed = false })
             };
 
-            _logger.LogInformation($"Save Request [{searchRequestId}] to cache. ");
+            _logger.LogInformation($"Save Complete Request [{searchRequestId}] to cache. ");
              await _cacheService.SaveRequest(searchRequest);
-
 
             _logger.LogDebug($"Attempting to publish ${nameof(PersonSearchOrdered)} to destination queue.");
 

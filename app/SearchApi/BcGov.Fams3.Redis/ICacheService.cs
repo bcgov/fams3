@@ -12,18 +12,21 @@ namespace BcGov.Fams3.Redis
     public interface ICacheService
     {
         Task SaveRequest(SearchRequest searchRequest);
-        Task<SearchRequest> GetRequest(Guid searchRequestId);
-        Task DeleteRequest(Guid searchRequestId);
+
+        Task SaveRequest(string data, string key);
+        Task<SearchRequest> GetRequest(Guid id);
+        Task DeleteRequest(Guid id);
     }
 
     public class CacheService : ICacheService
     {
         private readonly IDistributedCache _distributedCache;
-        private readonly ILogger _logger;
+  
 
-        public CacheService(IDistributedCache distributedCache, ILogger<CacheService> logger)
+        public CacheService(IDistributedCache distributedCache)
         {
             _distributedCache = distributedCache;
+        
         }
 
 
@@ -35,6 +38,17 @@ namespace BcGov.Fams3.Redis
             if (searchRequest is null) throw new ArgumentNullException("SaveRequest : Search request cannot be null");
             if (searchRequest.SearchRequestId.Equals(default(Guid))) throw new ArgumentNullException("SaveRequest : Search request id cannot be null");
             await _distributedCache.SetStringAsync(searchRequest.SearchRequestId.ToString(), JsonConvert.SerializeObject(searchRequest), new CancellationToken());
+
+
+        }
+
+        public async Task SaveRequest(string data, string key)
+        {
+
+
+            if (string.IsNullOrEmpty(key)) throw new ArgumentNullException("SaveRequest : Data cannot be empty");
+            if (string.IsNullOrEmpty(key)) throw new ArgumentNullException("SaveRequest : Key cannot be null");
+            await _distributedCache.SetStringAsync(key, data, new CancellationToken());
 
 
         }

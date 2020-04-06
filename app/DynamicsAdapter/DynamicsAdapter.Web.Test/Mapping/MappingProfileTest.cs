@@ -81,8 +81,8 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 },
                 DataProviders = new SSG_SearchapiRequestDataProvider[]
                 {
-                    new SSG_SearchapiRequestDataProvider(){Name="ICBC"},
-                    new SSG_SearchapiRequestDataProvider(){Name="BC Hydro"}
+                    new SSG_SearchapiRequestDataProvider(){AdaptorName="ICBC"},
+                    new SSG_SearchapiRequestDataProvider(){AdaptorName="BC Hydro"}
                 }
             };
             PersonSearchRequest personSearchRequest = _mapper.Map<PersonSearchRequest>(sSG_SearchApiRequest);
@@ -696,10 +696,11 @@ namespace DynamicsAdapter.Web.Test.Mapping
             var dp = new SSG_SearchapiRequestDataProvider()
             {
                 Name="dp1",
-                SuppliedByValue=1
+                SuppliedByValue=1,
+                AdaptorName="data provider 1"
             };
             DataProvider provider = _mapper.Map<DataProvider>(dp);
-            Assert.AreEqual("dp1", provider.Name);
+            Assert.AreEqual("DATAPROVIDER1", provider.Name);
         }
     }
 }

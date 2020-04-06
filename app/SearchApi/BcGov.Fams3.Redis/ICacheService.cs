@@ -33,11 +33,9 @@ namespace BcGov.Fams3.Redis
         {
             try
             {
-                if (searchRequest == null) throw new InvalidOperationException("Search request cannot be null");
-                else
-                {
-                    await _distributedCache.SetStringAsync(searchRequest.SearchRequestId.ToString(), JsonConvert.SerializeObject(searchRequest), new CancellationToken());
-                }
+                if (searchRequest == null) throw new InvalidOperationException("SaveRequest : Search request cannot be null");
+                await _distributedCache.SetStringAsync(searchRequest.SearchRequestId.ToString(), JsonConvert.SerializeObject(searchRequest), new CancellationToken());
+                
             }
             
             catch (Exception e)
@@ -51,7 +49,7 @@ namespace BcGov.Fams3.Redis
         {
             try
             {
-                if (searchRequestId == null) throw new InvalidOperationException("Search request cannot be null");
+                if (searchRequestId == null) throw new InvalidOperationException("DeleteRequest : Search request cannot be null");
                 await _distributedCache.RemoveAsync(searchRequestId.ToString(), new CancellationToken());
 
             }
@@ -67,7 +65,7 @@ namespace BcGov.Fams3.Redis
         {
             try
             {
-                if (searchRequestId == null) return null;
+                if (searchRequestId == null) throw new InvalidOperationException("GetRequest : Search request cannot be null");
                 string str = searchRequestId.ToString();
                 string searchRequestStr = await _distributedCache.GetStringAsync(searchRequestId.ToString(), new CancellationToken());
                 if (searchRequestStr == null) return null;

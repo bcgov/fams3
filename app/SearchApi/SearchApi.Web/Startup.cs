@@ -22,6 +22,7 @@ using BcGov.Fams3.SearchApi.Core.OpenTracing;
 using SearchApi.Web.Configuration;
 using SearchApi.Web.Notifications;
 using SearchApi.Web.Search;
+
 using SearchApi.Web.Messaging;
 
 namespace SearchApi.Web
@@ -150,14 +151,7 @@ namespace SearchApi.Web
 
         }
 
-        public void ConfigureRedisIDistributedServices(IServiceCollection services)
-        {
-            var redisConfig = Configuration.GetSection("Redis").Get<RedisConfiguration>();
-            services.AddDistributedRedisCache(options =>
-            {
-                options.Configuration = $"{redisConfig.Host}:{redisConfig.Port}";
-            });
-        }
+      
 
         /// <summary>
         /// Configure MassTransit Service Bus

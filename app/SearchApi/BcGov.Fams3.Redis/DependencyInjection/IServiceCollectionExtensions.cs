@@ -9,21 +9,15 @@ namespace BcGov.Fams3.Redis.DependencyInjection
 {
     public static class IServiceCollectionExtensions
     {
-        public static void AddCacheService(this IServiceCollection services, IConfiguration configuration)
+        public static void AddCacheService(this IServiceCollection services, RedisConfiguration redisConfig)
         {
 
-            var redisSettings = configuration.GetSection("Redis").Get<RedisConfiguration>();
-            if (redisSettings == null) throw new Exception("Invalid redis settings. ");
-
-            try
+      
+            services.AddDistributedRedisCache(options =>
             {
-                services.AddSingleton<IRedisConnectionFactory, IRedisConnectionFactory>(factory => new RedisConnectionFactory(redisSettings.ConnectionString, factory.GetService<ILogger<RedisConnectionFactory>>()));
-                services.AddSingleton<ICacheService, CacheService>();
-            }
-            catch(RedisException e)
-            {
-                throw e;
-            }
+                options.Configuration = $"{redisConfig.Host}:{redisConfig.Port}";
+            });
+            services.AddSingleton<ICacheService, CacheService>();
         }
     }
 }

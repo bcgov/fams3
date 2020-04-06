@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BcGov.Fams3.Redis;
+using BcGov.Fams3.Redis.Model;
 using BcGov.Fams3.SearchApi.Contracts.Person;
 using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 using MassTransit;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using NSwag.Annotations;
 using OpenTracing;
@@ -28,14 +31,20 @@ namespace SearchApi.Web.Controllers
 
         private readonly ILogger _logger;
 
+        private readonly ICacheService _cacheService;
+
         public PeopleController(
             ILogger<PeopleController> logger, 
             ITracer tracer,
-            IDispatcher dispatcher)
+            IDispatcher dispatcher, ICacheService distributedCache)
         {
             this._logger = logger;
             this._tracer = tracer;
             this._dispatcher = dispatcher;
+
+            this._cacheService = distributedCache;
+           
+      
         }
 
         /// <summary>
@@ -60,6 +69,17 @@ namespace SearchApi.Web.Controllers
             _logger.LogInformation($"Successfully received new search request [{searchRequestId}].");
 
             _tracer.ActiveSpan.SetTag("searchRequestId", $"{searchRequestId}");
+
+            SearchRequest searchRequest = new SearchRequest
+            {
+                Person = personSearchRequest,
+                SearchRequestId = searchRequestId,
+               
+            };
+
+            _logger.LogInformation($"Save Request [{searchRequestId}] to cache. ");
+             await _cacheService.SaveRequest(searchRequest);
+
 
             _logger.LogDebug($"Attempting to publish ${nameof(PersonSearchOrdered)} to destination queue.");
 

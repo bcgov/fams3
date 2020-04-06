@@ -1,105 +1,61 @@
 ﻿
 using BcGov.Fams3.Redis.Model;
 using Newtonsoft.Json;
-using StackExchange.Redis;
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Caching.Distributed;
+using System.Threading;
 
 namespace BcGov.Fams3.Redis
 {
     public interface ICacheService
     {
-        Task<bool> SaveRequest(SearchRequest searchRequest);
+        Task SaveRequest(SearchRequest searchRequest);
         Task<SearchRequest> GetRequest(Guid searchRequestId);
-        Task<bool> DeleteRequest(Guid searchRequestId);
+        Task DeleteRequest(Guid searchRequestId);
     }
 
     public class CacheService : ICacheService
     {
-        private static IDatabase _database;
+        private readonly IDistributedCache _distributedCache;
         private readonly ILogger _logger;
 
-        public CacheService(IRedisConnectionFactory factory, ILogger<CacheService> logger)
+        public CacheService(IDistributedCache distributedCache, ILogger<CacheService> logger)
         {
-            _logger = logger;
-            try
-            {
-                factory.OpenConnection();
-                _database = factory.GetDatabase();
-            }
-            catch (RedisException redisExp)
-            {
-                _logger.LogError(redisExp.Message);
-                throw redisExp;
-            }catch(Exception e)
-            {
-                _logger.LogError(e.Message);
-                throw e;
-            }
+            _distributedCache = distributedCache;
         }
 
-        public Task<SearchRequest> GetRequest(Guid searchRequestId)
+
+
+        public async Task SaveRequest(SearchRequest searchRequest)
         {
-            try
-            {
-                if (searchRequestId == null) return null;
-                string str = searchRequestId.ToString();
-                string searchRequestStr = _database.StringGet(searchRequestId.ToString(), CommandFlags.None);
+
+
+            if (searchRequest is null) throw new ArgumentNullException("SaveRequest : Search request cannot be null");
+            if (searchRequest.SearchRequestId.Equals(default(Guid))) throw new ArgumentNullException("SaveRequest : Search request id cannot be null");
+            await _distributedCache.SetStringAsync(searchRequest.SearchRequestId.ToString(), JsonConvert.SerializeObject(searchRequest), new CancellationToken());
+
+
+        }
+
+        public async Task DeleteRequest(Guid searchRequestId)
+        {
+          
+               if (searchRequestId.Equals(default(Guid))) throw new ArgumentNullException("DeleteRequest : Search request cannot be null");
+                await _distributedCache.RemoveAsync(searchRequestId.ToString(), new CancellationToken());
+
+        }
+
+        public async  Task<SearchRequest> GetRequest(Guid searchRequestId)
+        {
+            
+                if (searchRequestId.Equals(default(Guid))) throw new ArgumentNullException("GetRequest : Search request cannot be null");
+    
+                string searchRequestStr = await _distributedCache.GetStringAsync(searchRequestId.ToString(), new CancellationToken());
                 if (searchRequestStr == null) return null;
-                return Task.FromResult(JsonConvert.DeserializeObject<SearchRequest>(searchRequestStr));
-            }
-            catch (RedisException redisExp)
-            {
-                _logger.LogError(redisExp.Message);
-                throw redisExp;
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e.Message);
-                throw e;
-            }
-        }
-
-        public Task<bool> SaveRequest(SearchRequest searchRequest)
-        {
-            try
-            {
-                if (searchRequest == null) return Task.FromResult(false);
-                else
-                {
-                    return Task.FromResult(_database.StringSet(searchRequest.SearchRequestId.ToString(), JsonConvert.SerializeObject(searchRequest)));
-                }
-            }
-            catch (RedisException redisExp)
-            {
-                _logger.LogError(redisExp.Message);
-                throw redisExp;
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e.Message);
-                throw e;
-            }
-        }
-
-        public Task<bool> DeleteRequest(Guid searchRequestId)
-        {
-            try
-            {
-                if (searchRequestId == null) return Task.FromResult(false);
-                return Task.FromResult(_database.KeyDelete(searchRequestId.ToString()));
-            }
-            catch (RedisException redisExp)
-            {
-                _logger.LogError(redisExp.Message);
-                throw redisExp;
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e.Message);
-                throw e;
-            }
+                return await Task.FromResult(JsonConvert.DeserializeObject<SearchRequest>(searchRequestStr));
+          
         }
     }
 }

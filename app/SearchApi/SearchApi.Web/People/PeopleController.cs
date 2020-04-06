@@ -34,12 +34,12 @@ namespace SearchApi.Web.Controllers
         public PeopleController(
             ILogger<PeopleController> logger, 
             ITracer tracer,
-            IDispatcher dispatcher, IDistributedCache distributedCache)
+            IDispatcher dispatcher)
         {
             this._logger = logger;
             this._tracer = tracer;
             this._dispatcher = dispatcher;
-            this._distributedCache = distributedCache;
+      
         }
 
         /// <summary>

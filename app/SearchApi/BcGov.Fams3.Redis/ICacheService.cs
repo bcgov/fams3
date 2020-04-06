@@ -1,7 +1,6 @@
 ﻿
 using BcGov.Fams3.Redis.Model;
 using Newtonsoft.Json;
-using StackExchange.Redis;
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -27,56 +26,36 @@ namespace BcGov.Fams3.Redis
             _distributedCache = distributedCache;
         }
 
-       
+
 
         public async Task SaveRequest(SearchRequest searchRequest)
         {
-            try
-            {
-                if (searchRequest == null) throw new InvalidOperationException("SaveRequest : Search request cannot be null");
-                await _distributedCache.SetStringAsync(searchRequest.SearchRequestId.ToString(), JsonConvert.SerializeObject(searchRequest), new CancellationToken());
-                
-            }
-            
-            catch (Exception e)
-            {
-                _logger.LogError(e.Message);
-                throw e;
-            }
+
+
+            if (searchRequest is null) throw new ArgumentNullException("SaveRequest : Search request cannot be null");
+            if (searchRequest.SearchRequestId.Equals(default(Guid))) throw new ArgumentNullException("SaveRequest : Search request id cannot be null");
+            await _distributedCache.SetStringAsync(searchRequest.SearchRequestId.ToString(), JsonConvert.SerializeObject(searchRequest), new CancellationToken());
+
+
         }
 
         public async Task DeleteRequest(Guid searchRequestId)
         {
-            try
-            {
-                if (searchRequestId == null) throw new InvalidOperationException("DeleteRequest : Search request cannot be null");
+          
+               if (searchRequestId.Equals(default(Guid))) throw new ArgumentNullException("DeleteRequest : Search request cannot be null");
                 await _distributedCache.RemoveAsync(searchRequestId.ToString(), new CancellationToken());
 
-            }
-            
-            catch (Exception e)
-            {
-                _logger.LogError(e.Message);
-                throw e;
-            }
         }
 
         public async  Task<SearchRequest> GetRequest(Guid searchRequestId)
         {
-            try
-            {
-                if (searchRequestId == null) throw new InvalidOperationException("GetRequest : Search request cannot be null");
-                string str = searchRequestId.ToString();
+            
+                if (searchRequestId.Equals(default(Guid))) throw new ArgumentNullException("GetRequest : Search request cannot be null");
+    
                 string searchRequestStr = await _distributedCache.GetStringAsync(searchRequestId.ToString(), new CancellationToken());
                 if (searchRequestStr == null) return null;
                 return await Task.FromResult(JsonConvert.DeserializeObject<SearchRequest>(searchRequestStr));
-            }
-
-            catch (Exception e)
-            {
-                _logger.LogError(e.Message);
-                throw e;
-            }
+          
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using BcGov.Fams3.Redis.Model;
 using Moq;
 using NUnit.Framework;
-using StackExchange.Redis;
 using System;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
@@ -85,10 +84,18 @@ namespace BcGov.Fams3.Redis.Test
         }
 
         [Test]
-        public void when_there_has_redis_exception_getRequest_throws_it()
+        public void save_request_throws_Exception_with_null_id()
         {
            
-            Assert.Throws<InvalidOperationException>(() => _sut.GetRequest((Guid)myGuidVar));
+            Assert.ThrowsAsync<ArgumentNullException>(() => _sut.SaveRequest(new SearchRequest()));
+
+        }
+
+        [Test]
+        public void save_request_throws_Exception_with_null_object()
+        {
+
+            Assert.ThrowsAsync<ArgumentNullException>(() => _sut.SaveRequest(null));
 
         }
 
@@ -123,13 +130,14 @@ namespace BcGov.Fams3.Redis.Test
         [Test]
         public void when_there_null_deleteRequest_throws_it()
         {
-            Assert.Throws<InvalidOperationException>(() => _sut.DeleteRequest((Guid)myGuidVar));
+            Assert.ThrowsAsync<ArgumentNullException>(() => _sut.DeleteRequest(new Guid()));
+          
         }
 
         [Test]
         public void when_there_null_GetRequest_throws_it()
         {
-            Assert.Throws<InvalidOperationException>(() => _sut.GetRequest((Guid)myGuidVar));
+            Assert.ThrowsAsync<ArgumentNullException>(() => _sut.GetRequest(new Guid()));
         }
     }
 }

@@ -22,7 +22,10 @@ using BcGov.Fams3.SearchApi.Core.OpenTracing;
 using SearchApi.Web.Configuration;
 using SearchApi.Web.Notifications;
 using SearchApi.Web.Search;
+
 using SearchApi.Web.Messaging;
+using BcGov.Fams3.Redis.DependencyInjection;
+using BcGov.Fams3.Redis.Configuration;
 
 namespace SearchApi.Web
 {
@@ -49,6 +52,8 @@ namespace SearchApi.Web
             // Bind OAuth Configuration
             services.AddOptions<SearchApiOptions>()
                 .Bind(Configuration.GetSection(Keys.SEARCHAPI_SECTION_SETTING_KEY));
+
+            services.AddCacheService(Configuration.GetSection(Keys.REDIS_SECTION_SETTING_KEY).Get<RedisConfiguration>());
 
             services.AddWebHooks();
 
@@ -149,6 +154,8 @@ namespace SearchApi.Web
             });
 
         }
+
+      
 
         /// <summary>
         /// Configure MassTransit Service Bus

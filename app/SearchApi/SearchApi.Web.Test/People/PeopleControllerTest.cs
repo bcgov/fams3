@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using BcGov.Fams3.Redis;
+using BcGov.Fams3.Redis.Model;
 using BcGov.Fams3.SearchApi.Contracts.Person;
 using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 using MassTransit;
@@ -27,6 +29,7 @@ namespace SearchApi.Web.Test.People
         private Mock<ILogger<PeopleController>> _loggerMock;
 
         private Mock<IDispatcher> _dispatcherMock;
+        private Mock<ICacheService> _cacheMock;
 
         private Guid expectedId = Guid.NewGuid();
 
@@ -42,6 +45,7 @@ namespace SearchApi.Web.Test.People
 
             _loggerMock = new Mock<ILogger<PeopleController>>();
 
+            _cacheMock = new Mock<ICacheService>();
 
             _spanMock.Setup(x => x.SetTag(It.IsAny<string>(), It.IsAny<string>())).Returns(_spanMock.Object);
             _tracerMock.Setup(x => x.ActiveSpan).Returns(_spanMock.Object);
@@ -49,7 +53,7 @@ namespace SearchApi.Web.Test.People
             _dispatcherMock.Setup(x => x.Dispatch(It.IsAny<PersonSearchRequest>(), It.IsAny<Guid>()))
                 .Returns(Task.CompletedTask);
 
-            _sut = new PeopleController(_loggerMock.Object, _tracerMock.Object, _dispatcherMock.Object);
+            _sut = new PeopleController(_loggerMock.Object, _tracerMock.Object, _dispatcherMock.Object,_cacheMock.Object);
         }
 
 
@@ -62,6 +66,7 @@ namespace SearchApi.Web.Test.People
             Assert.IsInstanceOf<PersonSearchResponse>(result.Value);
             Assert.IsNotNull(((PersonSearchResponse)result.Value).Id);
             _spanMock.Verify(x => x.SetTag("searchRequestId", $"{((PersonSearchResponse)result.Value).Id}"), Times.Once);
+            _cacheMock.Verify(x => x.SaveRequest(It.Is<SearchRequest>(m => m.SearchRequestId != expectedId)), Times.Once);
             _dispatcherMock.Verify(x => x.Dispatch(It.IsAny<PersonSearchRequest>(), It.IsAny<Guid>()), Times.Once);
         }
 
@@ -74,6 +79,7 @@ namespace SearchApi.Web.Test.People
             Assert.IsInstanceOf<PersonSearchResponse>(result.Value);
             Assert.AreEqual(expectedId, ((PersonSearchResponse)result.Value).Id);
             _spanMock.Verify(x => x.SetTag("searchRequestId", $"{((PersonSearchResponse)result.Value).Id}"), Times.Once);
+            _cacheMock.Verify(x => x.SaveRequest(It.Is<SearchRequest>(m => m.SearchRequestId == expectedId)), Times.Once);
             _dispatcherMock.Verify(x => x.Dispatch(It.IsAny<PersonSearchRequest>(), It.IsAny<Guid>()), Times.Once);
         }
 

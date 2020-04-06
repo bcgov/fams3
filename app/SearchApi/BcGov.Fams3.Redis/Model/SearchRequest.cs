@@ -10,5 +10,7 @@ namespace BcGov.Fams3.Redis.Model
     {
         public Guid SearchRequestId { get; set; }
         public Person Person { get; set; }
+
     }
+
 }

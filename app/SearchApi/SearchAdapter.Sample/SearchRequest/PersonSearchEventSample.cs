@@ -11,7 +11,7 @@ namespace SearchAdapter.Sample.SearchRequest
         public Guid SearchRequestId { get; set; }
         public DateTime TimeStamp { get; set; }
         public ProviderProfile ProviderProfile { get; set; }
-        public Person MatchedPerson { get; set; }
+        public IEnumerable<Person> MatchedPersons { get; set; }
     }
 
     public class PersonSearchRejectedEvent : PersonSearchRejected

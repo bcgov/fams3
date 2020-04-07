@@ -1,7 +1,9 @@
-﻿namespace BcGov.Fams3.SearchApi.Contracts.PersonSearch
+﻿using System.Collections.Generic;
+
+namespace BcGov.Fams3.SearchApi.Contracts.PersonSearch
 {
    public  interface PersonSearchCompleted  : PersonSearchAdapterEvent
     {
-        Person.Person MatchedPerson { get; }
+        IEnumerable<Person.Person> MatchedPersons { get; }
     }
 }

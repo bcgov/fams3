@@ -27,7 +27,10 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
         Task<SSG_SearchApiEvent> AddEventAsync(Guid searchApiRequestId, SSG_SearchApiEvent searchApiEvent,
             CancellationToken cancellationToken);
 
+        Task<SSG_SearchApiRequest> MarkComplete(Guid searchApiRequestId, CancellationToken cancellationToken);
         
+
+
     }
 
     /// <summary>
@@ -122,5 +125,15 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
             return await this._oDataClient.For<SSG_SearchApiEvent>().Set(searchApiEvent).InsertEntryAsync(cancellationToken);
         }
 
+        public async Task<SSG_SearchApiRequest> MarkComplete(Guid searchApiRequestId, CancellationToken cancellationToken)
+        {
+            if (searchApiRequestId == default || searchApiRequestId == Guid.Empty) throw new ArgumentNullException(nameof(searchApiRequestId));
+
+            return await _oDataClient
+                .For<SSG_SearchApiRequest>()
+                .Key(searchApiRequestId)
+                .Set(new Entry { { Keys.DYNAMICS_STATUS_CODE_FIELD, SearchApiRequestStatusReason.Complete.Value } })
+                .UpdateEntryAsync(cancellationToken);
+        }
     }
 }

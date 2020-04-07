@@ -28,6 +28,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchApiRequest
 
             int readyForSearchVAlue = SearchApiRequestStatusReason.ReadyForSearch.Value;
             int inProgressValue = SearchApiRequestStatusReason.InProgress.Value;
+            int completeValue = SearchApiRequestStatusReason.Complete.Value;
 
             odataClientMock.Setup(x => x.For<SSG_SearchApiRequest>(null)
                 .Select(x => x.SearchApiRequestId)
@@ -79,6 +80,17 @@ namespace Fams3Adapter.Dynamics.Test.SearchApiRequest
                         StatusCode = SearchApiRequestStatusReason.InProgress.Value
                     }));
 
+            odataClientMock.Setup(x => x.For<SSG_SearchApiRequest>(null)
+             .Key(_testId)
+             .Set(new Dictionary<string, object>() { { Keys.DYNAMICS_STATUS_CODE_FIELD, completeValue } })
+             .UpdateEntryAsync(It.IsAny<CancellationToken>()))
+             .Returns(Task.FromResult<SSG_SearchApiRequest>(new SSG_SearchApiRequest()
+             {
+                 SearchApiRequestId = Guid.NewGuid(),
+                 PersonGivenName = "personGivenName",
+                 StatusCode = SearchApiRequestStatusReason.Complete.Value
+             }));
+
             _sut = new SearchApiRequestService(odataClientMock.Object);
 
         }
@@ -101,6 +113,13 @@ namespace Fams3Adapter.Dynamics.Test.SearchApiRequest
         }
 
         [Test]
+        public void With_empty_guid_should_throw_mark_completeArgumentNullException()
+        {
+            Assert.ThrowsAsync<ArgumentNullException>(async () => await _sut.MarkComplete(Guid.Empty, CancellationToken.None));
+        }
+
+
+        [Test]
         public async Task With_guid_should_mark_entry_in_progress()
         {
             var result = await _sut.MarkInProgress(_testId, CancellationToken.None);
@@ -108,6 +127,13 @@ namespace Fams3Adapter.Dynamics.Test.SearchApiRequest
             Assert.AreEqual(SearchApiRequestStatusReason.InProgress.Value, result.StatusCode);
         }
 
+        [Test]
+        public async Task With_guid_should_mark_entry_complete()
+        {
+            var result = await _sut.MarkComplete(_testId, CancellationToken.None);
+
+            Assert.AreEqual(SearchApiRequestStatusReason.Complete.Value, result.StatusCode);
+        }
 
 
     }

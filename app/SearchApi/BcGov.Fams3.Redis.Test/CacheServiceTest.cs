@@ -60,17 +60,13 @@ namespace BcGov.Fams3.Redis.Test
 
             _loggerMock = new Mock<ILogger<CacheService>>();
          
-            _sut = new CacheService(_distributedCacheMock.Object, _loggerMock.Object);
+            _sut = new CacheService(_distributedCacheMock.Object);
 
         }
-
-
 
         [Test]
         public void with_existed_serachRequestId_getRequest_return_SearchRequest()
         {
-           
-
             SearchRequest sr = _sut.GetRequest(_existedReqestGuid).Result;
             Assert.AreEqual(_existedReqestGuid, sr.SearchRequestId);
         }
@@ -85,17 +81,13 @@ namespace BcGov.Fams3.Redis.Test
         [Test]
         public void save_request_throws_Exception_with_null_id()
         {
-           
             Assert.ThrowsAsync<ArgumentNullException>(() => _sut.SaveRequest(new SearchRequest()));
-
         }
 
         [Test]
         public void save_request_throws_Exception_with_null_object()
         {
-
             Assert.ThrowsAsync<ArgumentNullException>(() => _sut.SaveRequest(null));
-
         }
 
         [Test]

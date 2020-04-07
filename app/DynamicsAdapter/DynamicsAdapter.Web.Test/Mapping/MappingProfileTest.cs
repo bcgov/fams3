@@ -691,6 +691,21 @@ namespace DynamicsAdapter.Web.Test.Mapping
         }
 
         [Test]
+        public void gender_null_RelatedPerson_should_map_to_SSG_Identity_correctly()
+        {
+            var relatedPerson = new RelatedPerson()
+            {
+                FirstName = "FirstName",
+                Description = "test description",
+                Notes = "notes",
+                Gender = null,
+            };
+            SSG_Identity ssg_relatedPerson = _mapper.Map<SSG_Identity>(relatedPerson);
+            Assert.AreEqual(null, ssg_relatedPerson.Gender);            
+        }
+
+
+        [Test]
         public void SSG_SearchapiRequestDataProvider_should_map_to_DataProvider_correctly()
         {
             var dp = new SSG_SearchapiRequestDataProvider()

@@ -64,7 +64,13 @@ namespace DynamicsAdapter.Web.PersonSearch
                     SearchRequestId = searchRequestId
                 };
 
-                await _searchResultService.ProcessPersonFound(personCompletedEvent.MatchedPerson, personCompletedEvent.ProviderProfile, searchRequest, cts.Token);
+                if (personCompletedEvent.MatchedPersons != null)
+                {
+                    Parallel.ForEach<Person>(personCompletedEvent.MatchedPersons, async p =>
+                    {
+                        await _searchResultService.ProcessPersonFound(p, personCompletedEvent.ProviderProfile, searchRequest, cts.Token);
+                    });
+                }
             }
             catch (Exception ex)
             {

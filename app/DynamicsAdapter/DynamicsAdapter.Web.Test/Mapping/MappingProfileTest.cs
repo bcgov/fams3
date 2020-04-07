@@ -366,34 +366,56 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 {
                     Name = "completedProfile"
                 },
-                MatchedPerson = new Person()
+                MatchedPersons = new List<Person>()
                 {
-                    FirstName = "firstName",
-                    LastName = "lastName",
-                    DateOfBirth = new DateTime(2019, 3, 5),
-                    Identifiers = new PersonalIdentifier[]
-                    {
-                        new PersonalIdentifier(){ },
-                        new PersonalIdentifier(){ }
+                    new Person(){
+                        FirstName = "firstName",
+                        LastName = "lastName",
+                        DateOfBirth = new DateTime(2019, 3, 5),
+                        Identifiers = new PersonalIdentifier[]
+                        {
+                            new PersonalIdentifier(){ },
+                            new PersonalIdentifier(){ }
+                        },
+                        Addresses = new Address[]
+                        {
+                            new Address(){ },
+                            new Address(){ }
+                        },
+                        Phones = new Phone[]
+                        {
+                            new Phone(){ },
+                            new Phone(){ }
+                        },
+                        Names = new Name[]
+                        {
+                            new Name() {},
+                            new Name () {}
+                        },
+                        Employments = new Employment[]
+                        {
+                            new Employment(){}
+                        }
                     },
-                    Addresses = new Address[]
-                    {
-                        new Address(){ },
-                        new Address(){ }
-                    },
-                    Phones = new Phone[]
-                    {
-                        new Phone(){ },
-                        new Phone(){ }
-                    },
-                    Names = new Name[]
-                    {
-                        new Name() {},
-                        new Name () {}
-                    },
-                    Employments = new Employment[]
-                    {
-                        new Employment(){}
+                    new Person(){
+                        FirstName = "firstName",
+                        LastName = "lastName",
+                        DateOfBirth = new DateTime(2019, 3, 5),
+                        Identifiers = new PersonalIdentifier[]
+                        {
+                            new PersonalIdentifier(){ },
+
+                        },
+                        Addresses = null,
+                        Phones = null,
+                        Names = new Name[]
+                        {
+                            new Name() {}
+                        },
+                        RelatedPersons = new RelatedPerson[]
+                        {
+                            new RelatedPerson(){}
+                        }
                     }
                 }
             };
@@ -402,7 +424,29 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(new DateTime(2003, 3, 3), searchEvent.TimeStamp);
             Assert.AreEqual(Keys.EVENT_COMPLETED, searchEvent.EventType);
             Assert.AreEqual(Keys.SEARCH_API_EVENT_NAME, searchEvent.Name);
-            Assert.AreEqual("Auto search processing completed successfully. 2 identifier(s) found.  2 addresses found. 2 phone number(s) found. 2 name(s) found. 1 employment(s) found. 0 related person(s) found.", searchEvent.Message);
+            Assert.AreEqual("Auto search processing completed successfully. 2 Matched Persons found.\nFor Matched Person 1 : 2 identifier(s) found.  2 addresses found. 2 phone number(s) found. 2 name(s) found. 1 employment(s) found. 0 related person(s) found.\nFor Matched Person 2 : 1 identifier(s) found.  0 addresses found. 0 phone number(s) found. 1 name(s) found. 0 employment(s) found. 1 related person(s) found.\n", searchEvent.Message);
+        }
+
+        [Test]
+        public void PersonSearchCompleted_with_0_matchperson_should_map_to_SSG_SearchApiEvent_correctly()
+        {
+            PersonSearchCompleted completed = new PersonSearchCompleted()
+            {
+                SearchRequestId = Guid.NewGuid(),
+                TimeStamp = new DateTime(2003, 3, 3),
+                ProviderProfile = new ProviderProfile()
+                {
+                    Name = "completedProfile"
+                },
+                MatchedPersons = new List<Person>()
+                {}
+            };
+            SSG_SearchApiEvent searchEvent = _mapper.Map<SSG_SearchApiEvent>(completed);
+            Assert.AreEqual("completedProfile", searchEvent.ProviderName);
+            Assert.AreEqual(new DateTime(2003, 3, 3), searchEvent.TimeStamp);
+            Assert.AreEqual(Keys.EVENT_COMPLETED, searchEvent.EventType);
+            Assert.AreEqual(Keys.SEARCH_API_EVENT_NAME, searchEvent.Name);
+            Assert.AreEqual("Auto search processing completed successfully. 0 Matched Persons found.\n", searchEvent.Message);
         }
 
         [Test]
@@ -416,17 +460,19 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 {
                     Name = "completedProfile"
                 },
-                MatchedPerson = new Person()
+                MatchedPersons = new List<Person>()
                 {
-                    FirstName = "firstName",
-                    LastName = "lastName",
-                    DateOfBirth = new DateTime(2019, 3, 5),
-                    Identifiers = new PersonalIdentifier[]
-                    {
-                        new PersonalIdentifier(){ },
-                        new PersonalIdentifier(){ }
-                    },
-                    Addresses = null
+                    new Person(){
+                        FirstName = "firstName",
+                        LastName = "lastName",
+                        DateOfBirth = new DateTime(2019, 3, 5),
+                        Identifiers = new PersonalIdentifier[]
+                        {
+                            new PersonalIdentifier(){ },
+                            new PersonalIdentifier(){ }
+                        },
+                        Addresses = null
+                    }
                 }
             };
             SSG_SearchApiEvent searchEvent = _mapper.Map<SSG_SearchApiEvent>(completed);

@@ -184,6 +184,13 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 .Returns(Task.FromResult<Guid>(invalidRequestId));
 
 
+            _searchApiRequestServiceMock.Setup(x => x.MarkComplete(It.Is<Guid>(x => x == _testGuid), It.IsAny<CancellationToken>()))
+               .Returns(Task.FromResult<SSG_SearchApiRequest>(new SSG_SearchApiRequest()
+               {
+                  SearchApiRequestId = _testGuid,
+                   Name = "Random Event"
+               }));
+
             _searchResultServiceMock.Setup(x => x.ProcessPersonFound(It.Is<Person>(x => x.FirstName == "TEST1"),It.IsAny<ProviderProfile>(), It.IsAny<SSG_SearchRequest>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<bool>(true));
 
@@ -212,6 +219,15 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _searchResultServiceMock.Verify(x => x.ProcessPersonFound(It.Is<Person>(x => x.FirstName == "TEST1"), It.IsAny<ProviderProfile>(), It.IsAny<SSG_SearchRequest>(), It.IsAny<CancellationToken>()), Times.Once);
             _searchApiRequestServiceMock
                 .Verify(x => x.AddEventAsync(It.Is<Guid>(x => x == _testGuid), It.IsAny<SSG_SearchApiEvent>(), It.IsAny<CancellationToken>()), Times.Once);
+            Assert.IsInstanceOf(typeof(OkResult), result);
+        }
+
+        [Test]
+        public async Task With_valid_finalized_event_it_should_return_ok()
+        {
+            var result = await _sut.Finalized(_testGuid);
+           _searchApiRequestServiceMock
+                .Verify(x => x.MarkComplete(It.Is<Guid>(x => x == _testGuid), It.IsAny<CancellationToken>()), Times.Once);
             Assert.IsInstanceOf(typeof(OkResult), result);
         }
 

@@ -187,27 +187,27 @@ namespace SearchApi.Web
 
 
                     // Configure Person Search Accepted Consumer Consumer
-                    cfg.ReceiveEndpoint(host, $"{nameof(PersonSearchAccepted)}_queue", e =>
+                    cfg.ReceiveEndpoint( $"{nameof(PersonSearchAccepted)}_queue", e =>
                     {
                         e.Consumer(() =>
                             new PersonSearchAcceptedConsumer(provider.GetRequiredService<ISearchApiNotifier<PersonSearchAdapterEvent>>(), provider.GetRequiredService<ILogger<PersonSearchAcceptedConsumer>>()));
                     });
                     // Configure Person Search Accepted Consumer Consumer
-                    cfg.ReceiveEndpoint(host, $"{nameof(PersonSearchCompleted)}_queue", e =>
+                    cfg.ReceiveEndpoint( $"{nameof(PersonSearchCompleted)}_queue", e =>
                     {
                         e.Consumer(() =>
                             new PersonSearchCompletedConsumer(provider.GetRequiredService<ISearchApiNotifier<PersonSearchAdapterEvent>>(), provider.GetRequiredService<ILogger<PersonSearchCompletedConsumer>>()));
                     });
 
                     // Configure Person Search Rejected Consumer Consumer
-                    cfg.ReceiveEndpoint(host, $"{nameof(PersonSearchRejected)}_queue", e =>
+                    cfg.ReceiveEndpoint( $"{nameof(PersonSearchRejected)}_queue", e =>
                     {
                         e.Consumer(() =>
                             new PersonSearchRejectedConsumer(provider.GetRequiredService<ISearchApiNotifier<PersonSearchAdapterEvent>>(), provider.GetRequiredService<ILogger<PersonSearchRejectedConsumer>>()));
                     });
 
                     // Configure Person Search Failed Consumer Consumer
-                    cfg.ReceiveEndpoint(host, $"{nameof(PersonSearchFailed)}_queue", e =>
+                    cfg.ReceiveEndpoint( $"{nameof(PersonSearchFailed)}_queue", e =>
                     {
                         e.Consumer(() =>
                             new PersonSearchFailedConsumer(provider.GetRequiredService<ISearchApiNotifier<PersonSearchAdapterEvent>>(), provider.GetRequiredService<ILogger<PersonSearchFailedConsumer>>()));

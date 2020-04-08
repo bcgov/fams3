@@ -66,10 +66,15 @@ namespace DynamicsAdapter.Web.PersonSearch
 
                 if (personCompletedEvent.MatchedPersons != null)
                 {
-                    Parallel.ForEach<Person>(personCompletedEvent.MatchedPersons, async p =>
+                    //try following code, but automapper throws exception.
+                    //Parallel.ForEach<Person>(personCompletedEvent.MatchedPersons, async p =>
+                    //{
+                    //    await _searchResultService.ProcessPersonFound(p, personCompletedEvent.ProviderProfile, searchRequest, cts.Token);
+                    //});
+                    foreach (Person p in personCompletedEvent.MatchedPersons)
                     {
                         await _searchResultService.ProcessPersonFound(p, personCompletedEvent.ProviderProfile, searchRequest, cts.Token);
-                    });
+                    }
                 }
             }
             catch (Exception ex)

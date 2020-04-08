@@ -55,7 +55,7 @@ namespace DynamicsAdapter.Web.SearchRequest
                 {
                     if (ssgSearchRequest.SearchRequestId != Guid.Empty)
                     {
-                        _logger.LogDebug(
+                         _logger.LogDebug(
                             $"Attempting to post person search for request {ssgSearchRequest.SearchApiRequestId}");
 
                         var result = await _searchApiClient.SearchAsync(

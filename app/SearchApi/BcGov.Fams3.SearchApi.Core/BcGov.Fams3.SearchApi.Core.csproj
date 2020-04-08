@@ -5,8 +5,8 @@
     <Authors>PathFinder</Authors>
     <Company>BcGov</Company>
     <Description>A core Librairy for BCGOV SearchApi Related Products</Description>
-    <Version>1.0.21</Version>
-    <PackageVersion>1.0.21</PackageVersion>
+    <Version>1.0.22</Version>
+    <PackageVersion>1.0.22</PackageVersion>
   </PropertyGroup>
 
   <ItemGroup>

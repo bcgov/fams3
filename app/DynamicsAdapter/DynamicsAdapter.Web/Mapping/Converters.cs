@@ -216,6 +216,8 @@ namespace DynamicsAdapter.Web.Mapping
     {
         public int? Convert(string source, ResolutionContext context)
         {
+            if (source == null) return null;
+
             if ("aunt/uncle".Contains(source.ToLower())) 
                 return PersonRelationType.AuntUncle.Value;
             else
@@ -237,6 +239,7 @@ namespace DynamicsAdapter.Web.Mapping
     {
         public int? Convert(string source, ResolutionContext context)
         {
+            if (source == null) return null;
             return
                 source.ToLower() switch
                 {

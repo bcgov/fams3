@@ -1,4 +1,5 @@
-﻿namespace BcGov.Fams3.SearchApi.Contracts.PersonSearch
+﻿
+namespace BcGov.Fams3.SearchApi.Contracts.PersonSearch
 {
     public interface PersonSearchFailed : PersonSearchAdapterEvent
     {

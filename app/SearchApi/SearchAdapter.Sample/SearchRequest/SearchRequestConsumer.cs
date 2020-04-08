@@ -87,225 +87,227 @@ namespace SearchAdapter.Sample.SearchRequest
                 ProviderProfile = _profile,
                 SearchRequestId = personSearchOrdered.SearchRequestId,
                 TimeStamp = DateTime.Now,
-                MatchedPerson = new Person()
+                MatchedPersons = new List<Person>()
                 {
-                    FirstName = personSearchOrdered.Person.FirstName,
-                    LastName = personSearchOrdered.Person.LastName,
-                    DateOfBirth = personSearchOrdered.Person.DateOfBirth,
-                    Incacerated = "N",
-                    DateDeathConfirmed = false,
-                    DateOfDeath = null,
-                    Gender = "F",
-                    MiddleName = "FoundMiddleName",
-                    OtherName = "FoundOtherName",
-                    Notes = "some notes",
-                    Height = "178",
-                    Complexion = "Dark",
-                    DistinguishingFeatures = "None",
-                    EyeColour = "Hazel",
-                    HairColour = "Blonde",
-                    WearGlasses = "No",
-                    Weight= "200",
-                    Identifiers = new List<PersonalIdentifier>()
-                    {
-
-                        new PersonalIdentifier()
+                    new Person(){
+                        FirstName = personSearchOrdered.Person.FirstName,
+                        LastName = personSearchOrdered.Person.LastName,
+                        DateOfBirth = personSearchOrdered.Person.DateOfBirth,
+                        Incacerated = "N",
+                        DateDeathConfirmed = false,
+                        DateOfDeath = null,
+                        Gender = "F",
+                        MiddleName = "FoundMiddleName",
+                        OtherName = "FoundOtherName",
+                        Notes = "some notes",
+                        Height = "178",
+                        Complexion = "Dark",
+                        DistinguishingFeatures = "None",
+                        EyeColour = "Hazel",
+                        HairColour = "Blonde",
+                        WearGlasses = "No",
+                        Weight= "200",
+                        Identifiers = new List<PersonalIdentifier>()
                         {
-                            Type = PersonalIdentifierType.BCDriverLicense,
-                            TypeCode = "BCDL",
-                            Description = "Sample Identifier Description",
-                            Notes = "Sample Identifier Notes",
-                            IssuedBy = "BC",
-                            Value = new Random().Next(0, 50000).ToString(),
-                            ReferenceDates = new List<ReferenceDate>(){ 
-                                new ReferenceDate(){ Index=0, Key="Effective Date", Value=new DateTime(2019,9,1) },
-                                new ReferenceDate(){ Index=1, Key="Expiration Date", Value=new DateTime(2020,9,1) }
-                            }
-                            
-                            
-                        },
-                         new PersonalIdentifier()
-                        {
-                            Type = PersonalIdentifierType.BCID,
-                            TypeCode = "BCID",
-                            Description = "Sample Identifier Description",
-                            Notes = "Sample Identifier Notes",
-                            IssuedBy = "BC",
-                            Value = new Random().Next(0, 50000).ToString(),
-                            ReferenceDates = new List<ReferenceDate>(){
-                                new ReferenceDate(){ Index=0, Key="Effective Date", Value=new DateTime(2019,9,1) },
-                                new ReferenceDate(){ Index=1, Key="Expiration Date", Value=new DateTime(2020,9,1) }
-                            }
+
+                            new PersonalIdentifier()
+                            {
+                                Type = PersonalIdentifierType.BCDriverLicense,
+                                TypeCode = "BCDL",
+                                Description = "Sample Identifier Description",
+                                Notes = "Sample Identifier Notes",
+                                IssuedBy = "BC",
+                                Value = new Random().Next(0, 50000).ToString(),
+                                ReferenceDates = new List<ReferenceDate>(){
+                                    new ReferenceDate(){ Index=0, Key="Effective Date", Value=new DateTime(2019,9,1) },
+                                    new ReferenceDate(){ Index=1, Key="Expiration Date", Value=new DateTime(2020,9,1) }
+                                }
 
 
-                        }
-
-                    },
-                    Addresses = new List<Address>()
-                    {
-                        new Address()
-                        {
-                            Type = "mailing",
-                            AddressLine1 = "address in line 1",
-                            AddressLine2 = "address in line 2",
-                            AddressLine3 = "address in line 3",
-                            StateProvince = "British Columbia",
-                            City = "victoria" ,
-                            CountryRegion= "canada",
-                            ZipPostalCode = "t4t4t4",
-                            ReferenceDates = new List<ReferenceDate>(){
-                                new ReferenceDate(){ Index=0, Key="Start Date", Value=new DateTime(2019,9,1) },
-                                new ReferenceDate(){ Index=1, Key="End Date", Value=new DateTime(2020,9,1) }
                             },
-                            Description = "description",
-                            Notes = "notes"
-                        },
-                         new Address()
-                        {
-                            Type = "unknown",
-                            AddressLine1 = "residence address in line 1",
-                            AddressLine2 = "residence address in line 2",
-                            StateProvince = "British Columbia",
-                            City = "vancouver" ,
-                            CountryRegion="canada",
-                            ZipPostalCode = "5r5r5r",
-                            ReferenceDates = null,
-                            Description = "description2",
-                            Notes = "notes2"
-                        }
-                    },
-                    Names = new List<Name>()
-                    {
-                        new Name()
-                        {
-                            Type = "legal name",
-                            FirstName = "firstName",
-                            LastName = "LastName",
-                            MiddleName = "MiddleName",
-                              ReferenceDates = new List<ReferenceDate>(){
-                                new ReferenceDate(){ Index=0, Key="Start Date", Value=new DateTime(2019,9,1) },
-                                new ReferenceDate(){ Index=1, Key="End Date", Value=new DateTime(2020,9,1) }
-                            },
-                            Description = "Sample Name"
-                        }
-                    },
-                    Phones = new List<Phone>()
-                    {
-                        new Phone
-                        {
-                            Description = "Sample Phone",
-                            Extension = "1233",
-                            Notes = "Notes",
-                            PhoneNumber ="768990123",
-                            Type = "home",
-                             ReferenceDates = new List<ReferenceDate>(){
-                                new ReferenceDate(){ Index=0, Key="Start Date", Value=new DateTime(2019,9,1) },
-                                new ReferenceDate(){ Index=1, Key="End Date", Value=new DateTime(2020,9,1) }
+                             new PersonalIdentifier()
+                            {
+                                Type = PersonalIdentifierType.BCID,
+                                TypeCode = "BCID",
+                                Description = "Sample Identifier Description",
+                                Notes = "Sample Identifier Notes",
+                                IssuedBy = "BC",
+                                Value = new Random().Next(0, 50000).ToString(),
+                                ReferenceDates = new List<ReferenceDate>(){
+                                    new ReferenceDate(){ Index=0, Key="Effective Date", Value=new DateTime(2019,9,1) },
+                                    new ReferenceDate(){ Index=1, Key="Expiration Date", Value=new DateTime(2020,9,1) }
+                                }
+
+
                             }
 
                         },
-                        new Phone
+                        Addresses = new List<Address>()
                         {
-                            Description = "Sample Phone",
-                            Extension = "1233",
-                            PhoneNumber ="768990123",
-                            Type = "work",
-                             ReferenceDates = new List<ReferenceDate>(){
-                                new ReferenceDate(){ Index=0, Key="Start Date", Value=new DateTime(2019,9,1) },
-                                new ReferenceDate(){ Index=1, Key="End Date", Value=new DateTime(2020,9,1) }
-                            }
-                        }
-
-                    },
-                    Employments = new List<Employment>()
-                    {
-                        new Employment
-                        {
-                            EmploymentConfirmed = true,
-                            IncomeAssistance = true,
-                            IncomeAssistanceStatus = "Real Status",
-                             Notes = "Sample Notes",
-                             Occupation = "Occupation",
-                             ReferenceDates = new List<ReferenceDate>(){
-                                new ReferenceDate(){ Index=0, Key="Start Date", Value=new DateTime(2019,9,1) },
-                                new ReferenceDate(){ Index=1, Key="End Date", Value=new DateTime(2020,9,1) }
+                            new Address()
+                            {
+                                Type = "mailing",
+                                AddressLine1 = "address in line 1",
+                                AddressLine2 = "address in line 2",
+                                AddressLine3 = "address in line 3",
+                                StateProvince = "British Columbia",
+                                City = "victoria" ,
+                                CountryRegion= "canada",
+                                ZipPostalCode = "t4t4t4",
+                                ReferenceDates = new List<ReferenceDate>(){
+                                    new ReferenceDate(){ Index=0, Key="Start Date", Value=new DateTime(2019,9,1) },
+                                    new ReferenceDate(){ Index=1, Key="End Date", Value=new DateTime(2020,9,1) }
+                                },
+                                Description = "description",
+                                Notes = "notes"
                             },
-                             Website = "www.websitejob.com",
-                             Employer = new Employer
-                             {
-                                 Address = new Address
+                             new Address()
+                            {
+                                Type = "unknown",
+                                AddressLine1 = "residence address in line 1",
+                                AddressLine2 = "residence address in line 2",
+                                StateProvince = "British Columbia",
+                                City = "vancouver" ,
+                                CountryRegion="canada",
+                                ZipPostalCode = "5r5r5r",
+                                ReferenceDates = null,
+                                Description = "description2",
+                                Notes = "notes2"
+                            }
+                        },
+                        Names = new List<Name>()
+                        {
+                            new Name()
+                            {
+                                Type = "legal name",
+                                FirstName = "firstName",
+                                LastName = "LastName",
+                                MiddleName = "MiddleName",
+                                  ReferenceDates = new List<ReferenceDate>(){
+                                    new ReferenceDate(){ Index=0, Key="Start Date", Value=new DateTime(2019,9,1) },
+                                    new ReferenceDate(){ Index=1, Key="End Date", Value=new DateTime(2020,9,1) }
+                                },
+                                Description = "Sample Name"
+                            }
+                        },
+                        Phones = new List<Phone>()
+                        {
+                            new Phone
+                            {
+                                Description = "Sample Phone",
+                                Extension = "1233",
+                                Notes = "Notes",
+                                PhoneNumber ="768990123",
+                                Type = "home",
+                                 ReferenceDates = new List<ReferenceDate>(){
+                                    new ReferenceDate(){ Index=0, Key="Start Date", Value=new DateTime(2019,9,1) },
+                                    new ReferenceDate(){ Index=1, Key="End Date", Value=new DateTime(2020,9,1) }
+                                }
+
+                            },
+                            new Phone
+                            {
+                                Description = "Sample Phone",
+                                Extension = "1233",
+                                PhoneNumber ="768990123",
+                                Type = "work",
+                                 ReferenceDates = new List<ReferenceDate>(){
+                                    new ReferenceDate(){ Index=0, Key="Start Date", Value=new DateTime(2019,9,1) },
+                                    new ReferenceDate(){ Index=1, Key="End Date", Value=new DateTime(2020,9,1) }
+                                }
+                            }
+
+                        },
+                        Employments = new List<Employment>()
+                        {
+                            new Employment
+                            {
+                                EmploymentConfirmed = true,
+                                IncomeAssistance = true,
+                                IncomeAssistanceStatus = "Real Status",
+                                 Notes = "Sample Notes",
+                                 Occupation = "Occupation",
+                                 ReferenceDates = new List<ReferenceDate>(){
+                                    new ReferenceDate(){ Index=0, Key="Start Date", Value=new DateTime(2019,9,1) },
+                                    new ReferenceDate(){ Index=1, Key="End Date", Value=new DateTime(2020,9,1) }
+                                },
+                                 Website = "www.websitejob.com",
+                                 Employer = new Employer
                                  {
-                                     AddressLine1 = "Address 1",
-                                     AddressLine2 = "Address 2",
-                                     AddressLine3 = "Address 3",
-                                     City = "City",
-                                     StateProvince = "AB",
-                                     CountryRegion = "Canada",
-                                     ZipPostalCode = "VR4 123"
-                                 },
-                                 ContactPerson = "Surname FirstName",
-                                 Name = "Sample Company",
-                                 OwnerName = "Sample Company Owner",
-                                 Phones = new List<Phone>()
-                                 {
-                                     new Phone {PhoneNumber = "12345678", Extension ="123", Type ="Phone"},
-                                     new Phone {PhoneNumber = "901237123", Extension ="123", Type ="Fax"},
-                                     new Phone {PhoneNumber = "762349303", Extension ="123", Type ="Phone"}
+                                     Address = new Address
+                                     {
+                                         AddressLine1 = "Address 1",
+                                         AddressLine2 = "Address 2",
+                                         AddressLine3 = "Address 3",
+                                         City = "City",
+                                         StateProvince = "AB",
+                                         CountryRegion = "Canada",
+                                         ZipPostalCode = "VR4 123"
+                                     },
+                                     ContactPerson = "Surname FirstName",
+                                     Name = "Sample Company",
+                                     OwnerName = "Sample Company Owner",
+                                     Phones = new List<Phone>()
+                                     {
+                                         new Phone {PhoneNumber = "12345678", Extension ="123", Type ="Phone"},
+                                         new Phone {PhoneNumber = "901237123", Extension ="123", Type ="Fax"},
+                                         new Phone {PhoneNumber = "762349303", Extension ="123", Type ="Phone"}
+                                     }
                                  }
-                             }
-                        },
-                          new Employment
-                        {
-                            EmploymentConfirmed = false,
-                            IncomeAssistance = false,
-                            IncomeAssistanceStatus = "Real Status",
-                             Notes = "Sample Notes",
-                             Occupation = "Occupation",
-                             ReferenceDates = new List<ReferenceDate>(){
-                                new ReferenceDate(){ Index=0, Key="Start Date", Value=new DateTime(2019,9,1) },
-                                new ReferenceDate(){ Index=1, Key="End Date", Value=new DateTime(2020,9,1) }
                             },
-                             Website = "www.websitejob.com",
-                             Employer = new Employer
-                             {
-                                 Address = new Address
+                              new Employment
+                            {
+                                EmploymentConfirmed = false,
+                                IncomeAssistance = false,
+                                IncomeAssistanceStatus = "Real Status",
+                                 Notes = "Sample Notes",
+                                 Occupation = "Occupation",
+                                 ReferenceDates = new List<ReferenceDate>(){
+                                    new ReferenceDate(){ Index=0, Key="Start Date", Value=new DateTime(2019,9,1) },
+                                    new ReferenceDate(){ Index=1, Key="End Date", Value=new DateTime(2020,9,1) }
+                                },
+                                 Website = "www.websitejob.com",
+                                 Employer = new Employer
                                  {
-                                     AddressLine1 = "Address 1",
-                                     AddressLine2 = "Address 2",
-                                     AddressLine3 = "Address 3",
-                                     City = "City",
-                                     StateProvince = "AB",
-                                     CountryRegion = "Canada",
-                                     ZipPostalCode = "VR4 123"
-                                 },
-                                 ContactPerson = "Surname FirstName",
-                                 Name = "Sample Company",
-                                 OwnerName = "Sample Company Owner",
-                                 Phones = new List<Phone>()
-                                 {
-                                     new Phone {PhoneNumber = "12345678", Extension ="123", Type ="Phone"},
-                                     new Phone {PhoneNumber = "901237123", Extension ="123", Type ="Fax"},
-                                     new Phone {PhoneNumber = "762349303", Extension ="123", Type ="Phone"}
+                                     Address = new Address
+                                     {
+                                         AddressLine1 = "Address 1",
+                                         AddressLine2 = "Address 2",
+                                         AddressLine3 = "Address 3",
+                                         City = "City",
+                                         StateProvince = "AB",
+                                         CountryRegion = "Canada",
+                                         ZipPostalCode = "VR4 123"
+                                     },
+                                     ContactPerson = "Surname FirstName",
+                                     Name = "Sample Company",
+                                     OwnerName = "Sample Company Owner",
+                                     Phones = new List<Phone>()
+                                     {
+                                         new Phone {PhoneNumber = "12345678", Extension ="123", Type ="Phone"},
+                                         new Phone {PhoneNumber = "901237123", Extension ="123", Type ="Fax"},
+                                         new Phone {PhoneNumber = "762349303", Extension ="123", Type ="Phone"}
+                                     }
                                  }
-                             }
-                        }
-                    },
-                    RelatedPersons = new List<RelatedPerson>()
-                    {
-                        new RelatedPerson
+                            }
+                        },
+                        RelatedPersons = new List<RelatedPerson>()
                         {
-                            Description = "RelatedPersonDescription",
-                            DateOfBirth = new DateTime(1987, 1,1),
-                            Notes = "RelatedPerson Notes",
-                            FirstName ="SampleRelateFirst",
-                            LastName="SampleRelateLast",
-                            MiddleName="SampleRelateMiddle",
-                            OtherName="SampleRelateOther",
-                            Type = "Wife",
-                            Gender="F",
-                             ReferenceDates = new List<ReferenceDate>(){
-                                new ReferenceDate(){ Index=0, Key="Relation Start Date", Value=new DateTime(2019,9,1) },
-                                new ReferenceDate(){ Index=1, Key="Relation End Date", Value=new DateTime(2020,9,1) }
+                            new RelatedPerson
+                            {
+                                Description = "RelatedPersonDescription",
+                                DateOfBirth = new DateTime(1987, 1,1),
+                                Notes = "RelatedPerson Notes",
+                                FirstName ="SampleRelateFirst",
+                                LastName="SampleRelateLast",
+                                MiddleName="SampleRelateMiddle",
+                                OtherName="SampleRelateOther",
+                                Type = "Wife",
+                                Gender="F",
+                                 ReferenceDates = new List<ReferenceDate>(){
+                                    new ReferenceDate(){ Index=0, Key="Relation Start Date", Value=new DateTime(2019,9,1) },
+                                    new ReferenceDate(){ Index=1, Key="Relation End Date", Value=new DateTime(2020,9,1) }
+                                }
                             }
                         }
                     }

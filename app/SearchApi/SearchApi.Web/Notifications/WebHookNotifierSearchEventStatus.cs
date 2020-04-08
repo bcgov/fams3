@@ -38,7 +38,7 @@ namespace SearchApi.Web.Notifications
             var webHookName = "PersonSearch";
 
             await UpdateDataPartner(searchRequestId, eventStatus, eventName);
-            if (IsAllDataPartnerCompletedOrSearchInProgress(searchRequestId, eventName))
+            if (await IsAllDataPartnerCompletedOrSearchInProgress(searchRequestId, eventName))
             {
 
                 foreach (var webHook in _searchApiOptions.WebHooks)
@@ -88,13 +88,13 @@ namespace SearchApi.Web.Notifications
 
         }
 
-        private bool IsAllDataPartnerCompletedOrSearchInProgress(Guid searchRequestId, string eventName)
+        private async Task<bool> IsAllDataPartnerCompletedOrSearchInProgress(Guid searchRequestId, string eventName)
         {
             try
             {
                 if (eventName.Equals(EventName.Finalized))
                 {
-                    return JsonConvert.SerializeObject(_cacheService.GetRequest(searchRequestId)).AllPartnerCompleted();
+                    return JsonConvert.SerializeObject(await _cacheService.GetRequest(searchRequestId)).AllPartnerCompleted();
                 }
                 return true;
             }
@@ -104,13 +104,13 @@ namespace SearchApi.Web.Notifications
                 return false;
             }
         }
-        private void DeleteFromCache(Guid searchRequestId, string eventName)
+        private async void DeleteFromCache(Guid searchRequestId, string eventName)
         {
             try
             {
                 if (eventName.Equals(EventName.Finalized))
                 {
-                    _cacheService.DeleteRequest(searchRequestId);
+                    await _cacheService.DeleteRequest(searchRequestId);
                 }
             }
             catch (Exception exception)

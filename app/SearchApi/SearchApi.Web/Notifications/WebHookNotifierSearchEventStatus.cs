@@ -83,27 +83,59 @@ namespace SearchApi.Web.Notifications
                         _logger.LogError($"The webHook {webHookName} notification failed for status {eventName} for {webHook.Name} webHook. [{exception.Message}]");
                     }
                 }
-
+                DeleteFromCache(searchRequestId, eventName);
             }
 
         }
 
         private bool IsAllDataPartnerCompletedOrSearchInProgress(Guid searchRequestId, string eventName)
         {
-            if (eventName.Equals(EventName.Finalized))
+            try
             {
-                return JsonConvert.SerializeObject(_cacheService.GetRequest(searchRequestId)).AllPartnerCompleted();
+                if (eventName.Equals(EventName.Finalized))
+                {
+                    return JsonConvert.SerializeObject(_cacheService.GetRequest(searchRequestId)).AllPartnerCompleted();
+                }
+                return true;
             }
-            return true;
+            catch (Exception exception)
+            {
+                _logger.LogError($"Check Data Partner Status Failed. [{eventName}] for {searchRequestId}. [{exception.Message}]");
+                return false;
+            }
+        }
+        private void DeleteFromCache(Guid searchRequestId, string eventName)
+        {
+            try
+            {
+                if (eventName.Equals(EventName.Finalized))
+                {
+                    _cacheService.DeleteRequest(searchRequestId);
+                }
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"Delete search request failed. [{eventName}] for {searchRequestId}. [{exception.Message}]");
+                
+            }
+
         }
 
 
         private async Task UpdateDataPartner(Guid searchRequestId, PersonSearchAdapterEvent eventStatus, string eventName)
         {
-            if (eventName.Equals(EventName.Completed) || eventName.Equals(EventName.Rejected))
+            try
             {
-                var searchRequest = JsonConvert.SerializeObject(_cacheService.GetRequest(searchRequestId)).UpdateDataPartner(eventStatus.ProviderProfile.Name);
-                await _cacheService.SaveRequest(searchRequest);
+                if (eventName.Equals(EventName.Completed) || eventName.Equals(EventName.Rejected))
+                {
+                    var searchRequest = JsonConvert.SerializeObject(_cacheService.GetRequest(searchRequestId)).UpdateDataPartner(eventStatus.ProviderProfile.Name);
+                    await _cacheService.SaveRequest(searchRequest);
+                }
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"Update Data Partner Status Failed. [{eventName}] for {searchRequestId}. [{exception.Message}]");
+                
             }
         }
     }

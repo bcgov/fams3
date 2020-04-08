@@ -128,7 +128,7 @@ namespace SearchApi.Web.Notifications
             {
                 if (eventName.Equals(EventName.Completed) || eventName.Equals(EventName.Rejected))
                 {
-                    var searchRequest = JsonConvert.SerializeObject(_cacheService.GetRequest(searchRequestId)).UpdateDataPartner(eventStatus.ProviderProfile.Name);
+                    var searchRequest = JsonConvert.SerializeObject(await _cacheService.GetRequest(searchRequestId)).UpdateDataPartner(eventStatus.ProviderProfile.Name);
                     await _cacheService.SaveRequest(searchRequest);
                 }
             }

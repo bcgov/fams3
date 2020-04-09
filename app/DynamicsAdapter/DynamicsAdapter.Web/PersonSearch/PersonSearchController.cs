@@ -64,7 +64,18 @@ namespace DynamicsAdapter.Web.PersonSearch
                     SearchRequestId = searchRequestId
                 };
 
-                await _searchResultService.ProcessPersonFound(personCompletedEvent.MatchedPerson, personCompletedEvent.ProviderProfile, searchRequest, cts.Token);
+                if (personCompletedEvent.MatchedPersons != null)
+                {
+                    //try following code, but automapper throws exception.Cannot access a disposed object.Object name: 'IServiceProvider'.
+                    //Parallel.ForEach<Person>(personCompletedEvent.MatchedPersons, async p =>
+                    //{
+                    //    await _searchResultService.ProcessPersonFound(p, personCompletedEvent.ProviderProfile, searchRequest, cts.Token);
+                    //});
+                    foreach (Person p in personCompletedEvent.MatchedPersons)
+                    {
+                        await _searchResultService.ProcessPersonFound(p, personCompletedEvent.ProviderProfile, searchRequest, cts.Token);
+                    }
+                }
             }
             catch (Exception ex)
             {

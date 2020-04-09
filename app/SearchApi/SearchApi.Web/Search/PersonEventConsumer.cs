@@ -48,7 +48,8 @@ namespace SearchApi.Web.Search
 
         public async Task Consume(ConsumeContext<PersonSearchAccepted> context)
         {
-            await base.Consume(context, "Accepted");
+            await base.Consume(context, EventName.Accepted);
+
         }
 
     }
@@ -67,7 +68,8 @@ namespace SearchApi.Web.Search
 
         public async Task Consume(ConsumeContext<PersonSearchCompleted> context)
         {
-            await base.Consume(context, "Completed");
+            await base.Consume(context, EventName.Completed);
+            await base.Consume(context, EventName.Finalized);
         }
 
     }
@@ -86,7 +88,10 @@ namespace SearchApi.Web.Search
 
         public async Task Consume(ConsumeContext<PersonSearchRejected> context)
         {
-            await base.Consume(context, "Rejected");
+      
+            await base.Consume(context, EventName.Rejected);
+            await base.Consume(context, EventName.Finalized);
+           
         }
 
     }
@@ -110,7 +115,7 @@ namespace SearchApi.Web.Search
 
         public async Task Consume(ConsumeContext<PersonSearchFailed> context)
         {
-            await base.Consume(context, "Failed");
+            await base.Consume(context, EventName.Failed);
         }
 
     }

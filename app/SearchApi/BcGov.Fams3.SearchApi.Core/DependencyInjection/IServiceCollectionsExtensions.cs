@@ -56,7 +56,7 @@ namespace BcGov.Fams3.SearchApi.Core.DependencyInjection
                             hostConfigurator.Password(rabbitMqSettings.Password);
                         });
 
-                        cfg.ReceiveEndpoint(host, $"{nameof(PersonSearchOrdered)}_{providerConfiguration.Name}", e =>
+                        cfg.ReceiveEndpoint( $"{nameof(PersonSearchOrdered)}_{providerConfiguration.Name}", e =>
                         {
                             e.Consumer(() => function.Invoke(provider));
                         });

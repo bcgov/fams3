@@ -75,7 +75,8 @@ namespace SearchApi.Web.Test.Messaging
                 {
                     new DataProvider()
                     {
-                        Name = "TEST"
+                        Name = "TEST",
+                        Completed = false
                     }
                 }), Guid.NewGuid());
 
@@ -101,11 +102,11 @@ namespace SearchApi.Web.Test.Messaging
                 new List<Employment>(),
                 new List<DataProvider>
                 {
-                    new DataProvider() {Name = "TEST1"},
-                    new DataProvider() {Name = "TEST2"},
-                    new DataProvider() {Name = "TEST3"},
-                    new DataProvider() {Name = "TEST4"},
-                    new DataProvider() {Name = "TEST5"}
+                    new DataProvider() {Name = "TEST1", Completed = false},
+                    new DataProvider() {Name = "TEST2", Completed = false},
+                    new DataProvider() {Name = "TEST3", Completed= true},
+                    new DataProvider() {Name = "TEST4", Completed =false},
+                    new DataProvider() {Name = "TEST5", Completed=false}
                 }), Guid.NewGuid());
 
 

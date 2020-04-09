@@ -58,7 +58,7 @@ namespace SearchApi.Web.Test.Search
         public void Should_send_the_initial_message_to_the_consumer()
         {
             Assert.IsTrue(_harness.Consumed.Select<PersonSearchRejected>().Any());
-            _searchApiNotifierMock.Verify(x => x.NotifyEventAsync(It.Is<Guid>(x => x == _requestId), It.IsAny<PersonSearchRejected>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
+            _searchApiNotifierMock.Verify(x => x.NotifyEventAsync(It.Is<Guid>(x => x == _requestId), It.IsAny<PersonSearchRejected>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
         }
     }
 }

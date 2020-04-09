@@ -45,6 +45,12 @@ namespace SearchApi.Web.Controllers
 
     public class DataProvider : ProviderProfile
     {
+
+        public DataProvider()
+        {
+            Completed = false;
+        }
         public string Name { get; set; }
+        public bool Completed { get; set; }
     }
 }

@@ -104,6 +104,27 @@ namespace DynamicsAdapter.Web.SearchRequest
             }
         }
 
+        private async Task<SSG_SearchApiRequest> MarkComplete(SSG_SearchApiRequest ssgSearchRequest,
+          CancellationToken cancellationToken)
+        {
+            try
+            {
+                _logger.LogDebug(
+                    $"Attempting to update searchRequest[{ssgSearchRequest.SearchApiRequestId}] to {SearchApiRequestStatusReason.InProgress.ToString()} status");
+                var request =
+                    await _searchApiRequestService.MarkComplete(ssgSearchRequest.SearchApiRequestId,
+                        cancellationToken);
+                _logger.LogInformation(
+                    $"Successfully updated searchRequest[{ssgSearchRequest.SearchApiRequestId}] to {SearchApiRequestStatusReason.InProgress.ToString()} status");
+                return request;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error updated searchRequest[{ssgSearchRequest.SearchApiRequestId}] to {SearchApiRequestStatusReason.InProgress.ToString()} status", ex);
+                throw;
+            }
+        }
+
     }
 
 }

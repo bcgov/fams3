@@ -18,10 +18,8 @@ namespace BcGov.Fams3.Redis.Test
         private ICacheService _sut;
         private Guid _existedReqestGuid;
         private Guid _nonExistedReqestGuid;
-        private Guid _exceptionReqestGuid;
         private SearchRequest _validSearchRequest;
         private string _validRequestString;
-        Guid? myGuidVar = null;
         byte[] bytesSearch = null;
 
         [SetUp]
@@ -29,7 +27,7 @@ namespace BcGov.Fams3.Redis.Test
         {
             _existedReqestGuid = Guid.Parse("6AE89FE6-9909-EA11-B813-00505683FBF4");
             _nonExistedReqestGuid = Guid.Parse("66666666-9909-EA11-B813-00505683FBF4");
-            _exceptionReqestGuid = Guid.Parse("6AE89FE6-9909-EA11-B813-55555683FBF4"); ;
+            
 
             _validSearchRequest = new SearchRequest() { Person = null, SearchRequestId = _existedReqestGuid };
             _validRequestString = JsonConvert.SerializeObject(_validSearchRequest);
@@ -40,6 +38,10 @@ namespace BcGov.Fams3.Redis.Test
             _distributedCacheMock.Setup(x => x.SetAsync(_existedReqestGuid.ToString(),
                 It.IsAny<byte[]>(), It.IsAny<DistributedCacheEntryOptions>(), It.IsAny<CancellationToken>()))
                 .Verifiable();
+
+            _distributedCacheMock.Setup(x => x.SetAsync("key",
+      It.IsAny<byte[]>(), It.IsAny<DistributedCacheEntryOptions>(), It.IsAny<CancellationToken>()))
+      .Verifiable();
 
             _distributedCacheMock.Setup(x => x.GetAsync(_existedReqestGuid.ToString(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(bytesSearch));
@@ -55,23 +57,16 @@ namespace BcGov.Fams3.Redis.Test
             It.IsAny<CancellationToken>()))
            .Verifiable();
 
-        
-
-
 
             _loggerMock = new Mock<ILogger<CacheService>>();
          
-            _sut = new CacheService(_distributedCacheMock.Object, _loggerMock.Object);
+            _sut = new CacheService(_distributedCacheMock.Object);
 
         }
-
-
 
         [Test]
         public void with_existed_serachRequestId_getRequest_return_SearchRequest()
         {
-           
-
             SearchRequest sr = _sut.GetRequest(_existedReqestGuid).Result;
             Assert.AreEqual(_existedReqestGuid, sr.SearchRequestId);
         }
@@ -86,17 +81,13 @@ namespace BcGov.Fams3.Redis.Test
         [Test]
         public void save_request_throws_Exception_with_null_id()
         {
-           
             Assert.ThrowsAsync<ArgumentNullException>(() => _sut.SaveRequest(new SearchRequest()));
-
         }
 
         [Test]
         public void save_request_throws_Exception_with_null_object()
         {
-
             Assert.ThrowsAsync<ArgumentNullException>(() => _sut.SaveRequest(null));
-
         }
 
         [Test]
@@ -110,7 +101,17 @@ namespace BcGov.Fams3.Redis.Test
 
         }
 
-      
+        [Test]
+        public void with_correct_data_and_key_saveRequest_successfully()
+        {
+            _sut.SaveRequest("data","key");
+            _distributedCacheMock.Verify(x => x.SetAsync("key",
+                It.IsAny<byte[]>(),
+                It.IsAny<DistributedCacheEntryOptions>(),
+                It.IsAny<CancellationToken>()), Times.AtLeastOnce());
+
+        }
+
 
 
         [Test]

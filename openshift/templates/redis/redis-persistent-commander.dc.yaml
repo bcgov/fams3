@@ -42,6 +42,11 @@ parameters:
   generate: expression
   name: REDIS_PASSWORD
   required: true
+- description: Cookie Secret string for oauth-proxy.
+  displayName: oauth-proxy cookie secret
+  from: '[a-zA-Z0-9]{16}'
+  generate: expression
+  name: COOKIE_SECRET
 - description: Volume space available for data, e.g. 512Mi, 2Gi.
   displayName: Volume Capacity
   name: VOLUME_CAPACITY
@@ -151,6 +156,15 @@ objects:
     name: ${DATABASE_SERVICE_NAME}
   stringData:
     database-password: ${REDIS_PASSWORD}
+
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    annotations:
+      template.openshift.io/expose-password: '{.data[''cookie-secret'']}'
+    name: oauth-proxy
+  stringData:
+    database-password: ${COOKIE_SECRET}
 
 # Service
 - apiVersion: v1
@@ -263,8 +277,7 @@ objects:
           imagePullPolicy: IfNotPresent
           name: redis
           args:
-            - --requirepass
-            - $(REDIS_PASSWORD)
+            - --requirepass $(REDIS_PASSWORD)
           ports:
           - containerPort: 6379
             protocol: TCP
@@ -354,8 +367,14 @@ objects:
             - --upstream=http://localhost:8081
             - --tls-cert=/etc/tls/private/tls.crt
             - --tls-key=/etc/tls/private/tls.key
-            - --cookie-secret=SECRET
+            - --cookie-secret=$(COOKIE_SECRET)
             - --pass-basic-auth=false
+          env:
+            - name: COOKIE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  key: cookie-secret
+                  name: oauth-proxy
           volumeMounts:
             - mountPath: /etc/tls/private
               name: proxy-tls

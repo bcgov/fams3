@@ -340,6 +340,7 @@ objects:
           ports:
             - containerPort: 8443
               name: public
+          # Set --pass-basic-auth to false to enable redis commander basic auth to work
           args:
             - --https-address=:8443
             - --provider=openshift
@@ -348,6 +349,7 @@ objects:
             - --tls-cert=/etc/tls/private/tls.crt
             - --tls-key=/etc/tls/private/tls.key
             - --cookie-secret=SECRET
+            - --pass-basic-auth=false
           volumeMounts:
             - mountPath: /etc/tls/private
               name: proxy-tls

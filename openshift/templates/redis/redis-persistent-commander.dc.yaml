@@ -57,6 +57,11 @@ parameters:
   name: REDIS_COMMANDER_VERSION
   required: true
   value: "latest"
+- description: Version of oauth-proxy image to be used.
+  displayName: Version of oauth-proxu Image
+  name: OAUTH_PROXY_VERSION
+  required: true
+  value: "latest"
 
 # Objects
 objects:
@@ -101,6 +106,28 @@ objects:
       from:
         kind: DockerImage
         name: rediscommander/redis-commander
+      generation: 2
+      importPolicy: {}
+      name: latest
+      referencePolicy:
+        type: Source
+# oauth-proxy image
+- apiVersion: image.openshift.io/v1
+  kind: ImageStream
+  metadata:
+    annotations: {}
+    labels:
+      app: oauth-proxy
+    name: oauth-proxy
+    namespace: ${NAMESPACE}
+  spec:
+    lookupPolicy:
+      local: false
+    tags:
+    - annotations: {}
+      from:
+        kind: DockerImage
+        name: openshift/oauth-proxy
       generation: 2
       importPolicy: {}
       name: latest
@@ -308,7 +335,7 @@ objects:
           terminationMessagePath: /dev/termination-log
         # redis commander oauth-proxy
         - name: oauth-proxy
-          image: openshift/oauth-proxy:latest
+          image: ' '
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8443
@@ -316,7 +343,7 @@ objects:
           args:
             - --https-address=:8443
             - --provider=openshift
-            - --openshift-service-account=splunk-proxy
+            - --openshift-service-account=redis-commander-proxy
             - --upstream=http://localhost:8081
             - --tls-cert=/etc/tls/private/tls.crt
             - --tls-key=/etc/tls/private/tls.key
@@ -351,6 +378,16 @@ objects:
         from:
           kind: ImageStreamTag
           name: redis-commander:${REDIS_COMMANDER_VERSION}
+          namespace: ${NAMESPACE}
+        lastTriggeredImage: ""
+      type: ImageChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+          - oauth-proxy
+        from:
+          kind: ImageStreamTag
+          name: oauth-proxy:${OAUTH_PROXY_VERSION}
           namespace: ${NAMESPACE}
         lastTriggeredImage: ""
       type: ImageChange

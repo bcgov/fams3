@@ -88,10 +88,10 @@ objects:
     - annotations: {}
       from:
         kind: DockerImage
-        name: redis
+        name: redis:${REDIS_VERSION}
       generation: 2
       importPolicy: {}
-      name: latest
+      name: ${REDIS_VERSION}
       referencePolicy:
         type: Source
 # redis commander image
@@ -110,10 +110,10 @@ objects:
     - annotations: {}
       from:
         kind: DockerImage
-        name: rediscommander/redis-commander
+        name: rediscommander/redis-commander:${REDIS_COMMANDER_VERSION}
       generation: 2
       importPolicy: {}
-      name: latest
+      name: ${REDIS_COMMANDER_VERSION}
       referencePolicy:
         type: Source
 # oauth-proxy image
@@ -132,10 +132,10 @@ objects:
     - annotations: {}
       from:
         kind: DockerImage
-        name: openshift/oauth-proxy
+        name: openshift/oauth-proxy:${OAUTH_PROXY_VERSION}
       generation: 2
       importPolicy: {}
-      name: latest
+      name: ${OAUTH_PROXY_VERSION}
       referencePolicy:
         type: Source
 

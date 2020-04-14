@@ -185,21 +185,21 @@ objects:
     loadBalancer: {}
 
 # Route
-- apiVersion: route.openshift.io/v1
-  kind: Route
-  metadata:
-    labels:
-      template: redis-persistent-template
-      app: redis-commander
-    name: redis-commander
-  spec:
-    port:
-      targetPort: redis-commander
-    tls:
-      termination: edge
-    to:
-      kind: Service
-      name: redis
+#- apiVersion: route.openshift.io/v1
+#  kind: Route
+#  metadata:
+#    labels:
+#      template: redis-persistent-template
+#      app: redis-commander
+#    name: redis-commander
+#  spec:
+#    port:
+#      targetPort: redis-commander
+#    tls:
+#      termination: edge
+#    to:
+#      kind: Service
+#      name: redis
 
 - apiVersion: v1
   kind: Route
@@ -261,11 +261,6 @@ objects:
                 name: ${DATABASE_SERVICE_NAME}
           image: ' '
           imagePullPolicy: IfNotPresent
-          livenessProbe:
-            initialDelaySeconds: 30
-            tcpSocket:
-              port: 6379
-            timeoutSeconds: 2
           name: redis
           args:
             - --requirepass
@@ -282,6 +277,14 @@ objects:
                 - -c
                 - test "$(redis-cli -h 127.0.0.1 -a $REDIS_PASSWORD ping)" == "PONG"
             timeoutSeconds: 5
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: 6379
+            timeoutSeconds: 2
           resources:
             limits:
               memory: ${MEMORY_LIMIT}
@@ -311,11 +314,6 @@ objects:
                   name: redis
           image: ' '
           imagePullPolicy: IfNotPresent
-          livenessProbe:
-            initialDelaySeconds: 30
-            tcpSocket:
-              port: 8081
-            timeoutSeconds: 2
           name: redis-commander
           ports:
             - containerPort: 8081
@@ -328,6 +326,14 @@ objects:
             initialDelaySeconds: 30
             periodSeconds: 20
             successThreshold: 1
+            timeoutSeconds: 5
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: 8081
             timeoutSeconds: 2
           securityContext:
             capabilities: {}
@@ -353,6 +359,24 @@ objects:
           volumeMounts:
             - mountPath: /etc/tls/private
               name: proxy-tls
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /oauth/healthz
+              port: 8443
+              scheme: HTTPS
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: 8443
+            timeoutSeconds: 2
         dnsPolicy: ClusterFirst
         restartPolicy: Always
         volumes:

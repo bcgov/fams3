@@ -164,7 +164,7 @@ objects:
       template.openshift.io/expose-password: '{.data[''cookie-secret'']}'
     name: oauth-proxy
   stringData:
-    database-password: ${COOKIE_SECRET}
+    cookie-secret: ${COOKIE_SECRET}
 
 # Service
 - apiVersion: v1

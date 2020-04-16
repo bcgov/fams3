@@ -2,6 +2,7 @@ apiVersion: v1
 kind: Template
 labels:
   template: redis-persistent-template
+  app: redis
 message: |-
   The following service(s) have been created in your project: ${DATABASE_SERVICE_NAME}.
 
@@ -63,7 +64,7 @@ parameters:
   required: true
   value: "latest"
 - description: Version of oauth-proxy image to be used.
-  displayName: Version of oauth-proxu Image
+  displayName: Version of oauth-proxy Image
   name: OAUTH_PROXY_VERSION
   required: true
   value: "latest"
@@ -100,7 +101,7 @@ objects:
 #  metadata:
 #    annotations: {}
 #    labels:
-#      app: redis-commander
+#      app: redis
 #    name: redis-commander
 #    namespace: ${NAMESPACE}
 #  spec:
@@ -122,7 +123,7 @@ objects:
 #  metadata:
 #    annotations: {}
 #    labels:
-#      app: oauth-proxy
+#      app: redis
 #    name: oauth-proxy
 #    namespace: ${NAMESPACE}
 #  spec:
@@ -144,6 +145,8 @@ objects:
 #  kind: ServiceAccount
 #  metadata:
 #    name: redis-commander-proxy
+#    labels:
+#      app: redis
 #    annotations:
 #      serviceaccounts.openshift.io/oauth-redirectreference.primary: '{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"redis-commander-proxy"}}'
 
@@ -151,6 +154,8 @@ objects:
 - apiVersion: v1
   kind: Secret
   metadata:
+    labels:
+      app: redis
     annotations:
       template.openshift.io/expose-password: '{.data[''database-password'']}'
     name: ${DATABASE_SERVICE_NAME}
@@ -160,6 +165,8 @@ objects:
 #- apiVersion: v1
 #  kind: Secret
 #  metadata:
+#    labels:
+#      app: redis
 #    annotations:
 #      template.openshift.io/expose-password: '{.data[''cookie-secret'']}'
 #    name: oauth-proxy
@@ -170,11 +177,13 @@ objects:
 - apiVersion: v1
   kind: Service
   metadata:
+    labels:
+      app: redis
     annotations:
       template.openshift.io/expose-uri: redis://{.spec.clusterIP}:{.spec.ports[?(.name=="redis")].port}
       # this will have the cluster generate a signed serving certificate/key pair into a secret in your namespace
       # https://docs.openshift.com/container-platform/3.11/dev_guide/secrets.html
-#      service.alpha.openshift.io/serving-cert-secret-name: proxy-tls
+#      service.alpha.openshift.io/serving-cert-secret-name: redis-commander-oauth-proxy-tls
     name: ${DATABASE_SERVICE_NAME}
   spec:
     ports:
@@ -204,7 +213,7 @@ objects:
 #  metadata:
 #    labels:
 #      template: redis-persistent-template
-#      app: redis-commander
+#      app: redis
 #    name: redis-commander
 #  spec:
 #    port:
@@ -220,7 +229,7 @@ objects:
 #  metadata:
 #    name: redis-commander-proxy
 #    labels:
-#      app: redis-commander
+#      app: redis
 #      template: redis-persistent-template
 #  spec:
 #    port:
@@ -235,6 +244,8 @@ objects:
 - apiVersion: v1
   kind: PersistentVolumeClaim
   metadata:
+    labels:
+      app: redis
     name: ${DATABASE_SERVICE_NAME}
   spec:
     accessModes:
@@ -262,6 +273,7 @@ objects:
       metadata:
         labels:
           name: ${DATABASE_SERVICE_NAME}
+          app: redis
       spec:
         serviceAccountName: redis-commander-proxy
         containers:
@@ -404,7 +416,7 @@ objects:
             claimName: ${DATABASE_SERVICE_NAME}
 #        - name: proxy-tls
 #          secret:
-#            secretName: proxy-tls
+#            secretName: redis-commander-oauth-proxy-tls
     triggers:
     - imageChangeParams:
         automatic: true

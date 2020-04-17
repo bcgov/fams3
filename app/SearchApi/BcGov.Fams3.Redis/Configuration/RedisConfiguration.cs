@@ -15,6 +15,7 @@ namespace BcGov.Fams3.Redis.Configuration
         {
             this.Host = "localhost";
             this.Port = 6379;
+            this.Password = "";
         }
 
         /// <summary>
@@ -27,6 +28,12 @@ namespace BcGov.Fams3.Redis.Configuration
         /// Redis Port
         /// </summary>
         public int Port { get; set; }
+
+        /// <summary>
+        /// Redis Database Password
+        /// </summary>
+
+        public string Password { get; set; }
 
         public string ConnectionString {
             get

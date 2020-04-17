@@ -1,0 +1,154 @@
+---
+kind: Template
+apiVersion: v1
+metadata:
+  name: fams3-dotnet
+  annotations:
+    openshift.io/display-name: "FAMS3 Dotnet"
+    description: The FAMS3 Dotnet Deployment
+    tags: quickstart,dotnet,.net
+    iconClass: icon-dotnet
+    template.openshift.io/provider-display-name: BCGov
+    template.openshift.io/documentation-url: https://github.com/bcgov/FAMS3/
+parameters:
+  - name: NAME
+    displayName: Name
+    description: The name assigned to all of the frontend objects defined in this template.
+    required: true
+    value: dotnet-runtime-example
+  - name: MEMORY_LIMIT
+    displayName: Memory Limit
+    description: Maximum amount of memory the container can use.
+    required: true
+    value: 128Mi
+  - name: NAMESPACE
+    displayName: Namespace
+    description: The OpenShift Namespace where the ImageStream resides.
+    required: true
+    value: openshift
+  - name: APPLICATION_DOMAIN
+    displayName: Application Hostname
+    description:
+      The exposed hostname that will route to the .NET Core service, if left
+      blank a value will be defaulted.
+    value: ""
+  - name: TAG
+    displayName: Image Tag
+    description:
+      The image tag to be deployed from the registry.
+    required: true
+    value: latest
+  - name: JAEGER_COLLECTOR
+    displayName: Jaeger Collector Service
+    description:
+      The name of the Jaeger collector to send traces to (port 14268)
+    required: true
+    value: jaeger-collector
+objects:
+  - kind: Route
+    apiVersion: v1
+    metadata:
+      name: "${NAME}"
+    spec:
+      host: "${NAME}-${APPLICATION_DOMAIN}"
+      to:
+        kind: Service
+        name: "${NAME}"
+    port:
+      targetPort: web
+    tls:
+      insecureEdgeTerminationPolicy: Redirect
+      termination: edge
+  - kind: Service
+    apiVersion: v1
+    metadata:
+      name: "${NAME}"
+      annotations:
+        description: Exposes and load balances the application pods
+    spec:
+      ports:
+        - name: web
+          port: 8080
+          targetPort: 8080
+      selector:
+        name: "${NAME}"
+  - kind: DeploymentConfig
+    apiVersion: v1
+    metadata:
+      name: "${NAME}"
+      annotations:
+        description: Defines how to deploy the application server
+    spec:
+      strategy:
+        type: Recreate
+      triggers:
+        - type: ConfigChange
+        - type: ImageChange
+          imageChangeParams:
+            automatic: true
+            containerNames:
+              - dotnet-runtime-app
+            from:
+              kind: ImageStreamTag
+              namespace: "${NAMESPACE}"
+              name: "${NAME}:${TAG}"
+      replicas: 1
+      selector:
+        name: "${NAME}"
+      template:
+        metadata:
+          name: "${NAME}"
+          labels:
+            name: "${NAME}"
+        spec:
+          containers:
+            - name: dotnet-runtime-app
+              image: " "
+              ports:
+                - containerPort: 8080
+              resources:
+                limits:
+                  memory: "${MEMORY_LIMIT}"
+              env: 
+                - name: JAEGER_SERVICE_NAME
+                  value: "${NAME}"
+                - name: JAEGER_SAMPLER_TYPE
+                  value: const
+                - name: JAEGER_ENDPOINT
+                  value: http://${JAEGER_COLLECTOR}:14268/api/traces
+                - name: ASPNETCORE_ENVIRONMENT
+                  value: Development
+                - name: DATAPARTNERSOAPAPI__BASEADDRESS
+                  valueFrom:
+                    secretKeyRef:
+                      name: mhsd-soap-api-configuration
+                      key: base-address
+                - name: DATAPARTNERSOAPAPI__USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: mhsd-soap-api-configuration
+                      key: username
+                - name: DATAPARTNERSOAPAPI__PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: mhsd-soap-api-configuration
+                      key: password
+                - name: DATAPARTNERSOAPAPI__CODE
+                  valueFrom:
+                    secretKeyRef:
+                      name: mhsd-soap-api-configuration
+                      key: code
+              livenessProbe:
+                httpGet:
+                  path: "/health"
+                  port: 8080
+                  scheme: HTTP
+                initialDelaySeconds: 40
+                timeoutSeconds: 15
+              readinessProbe:
+                httpGet:
+                  path: "/health"
+                  port: 8080
+                  scheme: HTTP
+                initialDelaySeconds: 10
+                timeoutSeconds: 30

@@ -250,4 +250,29 @@ namespace DynamicsAdapter.Web.Mapping
                 };
         }
     }
+
+    public class PersonSearchCompletedMessageConvertor : IValueConverter<IEnumerable<Person>, string>
+    {
+        public string Convert(IEnumerable<Person> source, ResolutionContext context)
+        {
+            if(source==null)
+                return $"Auto search processing completed successfully. 0 Matched Persons found.";
+
+            string msg = $"Auto search processing completed successfully. {source.Count()} Matched Persons found.\n";
+            int i = 1;
+            foreach(Person p in source)
+            {
+                msg = msg 
+                    + $"For Matched Person {i} : "
+                    + $"{(p.Identifiers == null ? 0 : p.Identifiers.Count())} identifier(s) found.  "
+                    + $"{(p.Addresses == null ? 0 : p.Addresses.Count())} addresses found. "
+                    + $"{(p.Phones == null ? 0 : p.Phones.Count())} phone number(s) found. "
+                    + $"{(p.Names == null ? 0 : p.Names.Count())} name(s) found. " 
+                    + $"{(p.Employments == null ? 0 : p.Employments.Count())} employment(s) found. " 
+                    + $"{(p.RelatedPersons == null ? 0 : p.RelatedPersons.Count())} related person(s) found.\n";
+                i++;
+            };
+            return msg;
+        }
+    }
 }

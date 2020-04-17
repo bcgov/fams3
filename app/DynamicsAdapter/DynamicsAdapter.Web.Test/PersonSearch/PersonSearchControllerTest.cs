@@ -114,15 +114,17 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 {
                     Name = "TEST PROVIDER"
                 },
-                MatchedPerson = new Person()
+                MatchedPersons = new List<Person>()
                 {
-                    DateOfBirth = DateTime.Now,
-                    FirstName = "TEST1",
-                    LastName = "TEST2",
-                    Identifiers = new List<PersonalIdentifier>() { },                       
-                    Addresses = new List<Address>(){ },
-                    Phones = new List<Phone>(){ },
-                    Names = new List<Name>(){ }
+                    new Person(){
+                        DateOfBirth = DateTime.Now,
+                        FirstName = "TEST1",
+                        LastName = "TEST2",
+                        Identifiers = new List<PersonalIdentifier>() { },
+                        Addresses = new List<Address>(){ },
+                        Phones = new List<Phone>(){ },
+                        Names = new List<Name>(){ }
+                    }
                 }
             };
 

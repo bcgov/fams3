@@ -90,18 +90,8 @@ namespace  DynamicsAdapter.Web.Mapping
                .ForMember(dest => dest.TimeStamp, opt => opt.MapFrom(src => src.TimeStamp))
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => Keys.SEARCH_API_EVENT_NAME))
                .ForMember(dest => dest.EventType, opt => opt.MapFrom(src => Keys.EVENT_COMPLETED))
-               .ForMember(dest => dest.Message,
-                          opt => opt.MapFrom(
-                              src => $"Auto search processing completed successfully. " +
-                               $"{(src.MatchedPerson.Identifiers == null ? 0 : src.MatchedPerson.Identifiers.Count())} identifier(s) found.  " +
-                               $"{(src.MatchedPerson.Addresses == null ? 0 : src.MatchedPerson.Addresses.Count())} addresses found. " +
-                               $"{(src.MatchedPerson.Phones == null ? 0 : src.MatchedPerson.Phones.Count())} phone number(s) found. " +
-                               $"{(src.MatchedPerson.Names == null ? 0 : src.MatchedPerson.Names.Count())} name(s) found. " +
-                               $"{(src.MatchedPerson.Employments == null ? 0 : src.MatchedPerson.Employments.Count())} employment(s) found. "+
-                               $"{(src.MatchedPerson.RelatedPersons == null ? 0 : src.MatchedPerson.RelatedPersons.Count())} related person(s) found."
-                              )
-                          )
-               .ReverseMap();
+               .ForMember(dest => dest.Message, opt => opt.ConvertUsing(new PersonSearchCompletedMessageConvertor(), src => src.MatchedPersons));
+
 
             CreateMap<Address, SSG_Address>()
                  .ForMember(dest => dest.AddressLine1, opt => opt.MapFrom(src => src.AddressLine1))

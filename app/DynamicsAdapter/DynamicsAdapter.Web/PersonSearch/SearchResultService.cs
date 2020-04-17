@@ -163,11 +163,14 @@ namespace DynamicsAdapter.Web.PersonSearch
                     e.Person = ssg_person;
                     SSG_Employment ssg_employment  = await _searchRequestService.CreateEmployment(e, concellationToken);
 
-                    foreach(var phone in employment.Employer.Phones)
+                    if (employment.Employer != null)
                     {
-                        SSG_EmploymentContact p = _mapper.Map<SSG_EmploymentContact>(phone);
-                        p.Employment = ssg_employment;
-                        await _searchRequestService.CreateEmploymentContact(p, concellationToken);
+                        foreach (var phone in employment.Employer.Phones)
+                        {
+                            SSG_EmploymentContact p = _mapper.Map<SSG_EmploymentContact>(phone);
+                            p.Employment = ssg_employment;
+                            await _searchRequestService.CreateEmploymentContact(p, concellationToken);
+                        }
                     }
                 }
                 return true;

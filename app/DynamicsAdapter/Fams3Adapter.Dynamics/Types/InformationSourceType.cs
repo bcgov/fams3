@@ -28,7 +28,8 @@ namespace Fams3Adapter.Dynamics.Types
         {
             {"ICBC", "ICBC"},
             {"BCHydro", "BCHydro"},
-             { "MHSD","MSDPR" }
+             { "MHSD","MSDPR" },
+            {"Other","Other" }
         });
     }
 }

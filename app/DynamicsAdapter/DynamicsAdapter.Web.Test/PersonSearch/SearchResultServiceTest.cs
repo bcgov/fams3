@@ -184,9 +184,10 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
 
             _providerProfile = new ProviderProfile()
             {
-                Name = "TEST PROVIDER"
+                Name = "Other"
             };
 
+     
             _fakeToken = new CancellationToken();
 
             _mapper.Setup(m => m.Map<SSG_Identifier>(It.IsAny<PersonalIdentifier>()))

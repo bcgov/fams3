@@ -22,14 +22,4 @@ namespace Fams3Adapter.Dynamics.Types
         }
     }
    
-    public class ProviderProfileMap
-    {
-        public static readonly ReadOnlyDictionary<string, string> ProvideCodeToProfileNameMap = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>()
-        {
-            {"ICBC", "ICBC"},
-            {"BCHYDRO", "BCHydro"},
-             { "MHSD","MSDPR" },
-            {"Other","Other" }
-        });
-    }
-}
+  }

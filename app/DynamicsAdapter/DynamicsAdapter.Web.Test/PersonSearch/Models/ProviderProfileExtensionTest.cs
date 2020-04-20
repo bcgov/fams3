@@ -26,7 +26,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch.Models
         [Test]
         public void map_adaptor_code_name_from_dynamics_msdh()
         {
-            _sut = new ProviderProfile { Name = "MHSD" };
+            _sut = new ProviderProfile { Name = "MSDPR" };
             Assert.AreEqual(867670023, _sut.DynamicsID());
         }
     }

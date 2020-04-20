@@ -1,0 +1,452 @@
+apiVersion: v1
+kind: Template
+labels:
+  template: redis-persistent-template
+  app: redis
+message: |-
+  The following service(s) have been created in your project: ${DATABASE_SERVICE_NAME}.
+
+         Password: ${REDIS_PASSWORD}
+   Connection URL: redis://${DATABASE_SERVICE_NAME}:6379/
+
+  For more information about using this template, including OpenShift considerations, see https://github.com/sclorg/redis-container/blob/master/3.2.
+metadata:
+  annotations:
+    description: |-
+      Redis in-memory data structure store, with persistent storage. For more information about using this template, including OpenShift considerations, see https://github.com/sclorg/redis-container/blob/master/3.2.
+
+      NOTE: You must have persistent volumes available in your cluster to use this template.
+    iconClass: icon-redis
+    tags: database,redis
+  name: redis-persistent
+
+# Parameters
+parameters:
+- description: Maximum amount of memory the container can use.
+  displayName: Memory Limit
+  name: MEMORY_LIMIT
+  required: true
+  value: 512Mi
+- description: The OpenShift Namespace where the ImageStream resides (*-tools).
+  displayName: Namespace
+  name: NAMESPACE
+  required: true
+  value: openshift
+- description: The name of the OpenShift Service exposed for the database.
+  displayName: Database Service Name
+  name: DATABASE_SERVICE_NAME
+  required: true
+  value: redis
+- description: Password for the Redis connection user.
+  displayName: Redis Connection Password
+  from: '[a-zA-Z0-9]{16}'
+  generate: expression
+  name: REDIS_PASSWORD
+  required: true
+- description: Cookie Secret string for oauth-proxy.
+  displayName: oauth-proxy cookie secret
+  from: '[a-zA-Z0-9]{16}'
+  generate: expression
+  name: COOKIE_SECRET
+- description: Volume space available for data, e.g. 512Mi, 2Gi.
+  displayName: Volume Capacity
+  name: VOLUME_CAPACITY
+  required: true
+  value: 1Gi
+- description: Version of Redis image to be used.
+  displayName: Version of Redis Image
+  name: REDIS_VERSION
+  required: true
+  value: "latest"
+- description: Version of Redis commander image to be used.
+  displayName: Version of Redis commander Image
+  name: REDIS_COMMANDER_VERSION
+  required: true
+  value: "latest"
+- description: Version of oauth-proxy image to be used.
+  displayName: Version of oauth-proxy Image
+  name: OAUTH_PROXY_VERSION
+  required: true
+  value: "latest"
+
+# Objects
+objects:
+
+# Image stream
+# redis image
+- apiVersion: image.openshift.io/v1
+  kind: ImageStream
+  metadata:
+    annotations: {}
+    labels:
+      app: redis
+    name: redis
+    namespace: ${NAMESPACE}
+  spec:
+    lookupPolicy:
+      local: false
+    tags:
+    - annotations: {}
+      from:
+        kind: DockerImage
+        name: redis:${REDIS_VERSION}
+      generation: 2
+      importPolicy: {}
+      name: ${REDIS_VERSION}
+      referencePolicy:
+        type: Source
+# redis commander image
+- apiVersion: image.openshift.io/v1
+  kind: ImageStream
+  metadata:
+    annotations: {}
+    labels:
+      app: redis
+    name: redis-commander
+    namespace: ${NAMESPACE}
+  spec:
+    lookupPolicy:
+      local: false
+    tags:
+    - annotations: {}
+      from:
+        kind: DockerImage
+        name: rediscommander/redis-commander:${REDIS_COMMANDER_VERSION}
+      generation: 2
+      importPolicy: {}
+      name: ${REDIS_COMMANDER_VERSION}
+      referencePolicy:
+        type: Source
+# oauth-proxy image
+- apiVersion: image.openshift.io/v1
+  kind: ImageStream
+  metadata:
+    annotations: {}
+    labels:
+      app: redis
+    name: oauth-proxy
+    namespace: ${NAMESPACE}
+  spec:
+    lookupPolicy:
+      local: false
+    tags:
+    - annotations: {}
+      from:
+        kind: DockerImage
+        name: openshift/oauth-proxy:${OAUTH_PROXY_VERSION}
+      generation: 2
+      importPolicy: {}
+      name: ${OAUTH_PROXY_VERSION}
+      referencePolicy:
+        type: Source
+
+# Service account for redis commander oauth-proxy service
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    name: redis-commander-proxy
+    labels:
+      app: redis
+    annotations:
+      serviceaccounts.openshift.io/oauth-redirectreference.primary: '{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"redis-commander-proxy"}}'
+
+# Secret
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    labels:
+      app: redis
+    annotations:
+      template.openshift.io/expose-password: '{.data[''database-password'']}'
+    name: ${DATABASE_SERVICE_NAME}
+  stringData:
+    database-password: ${REDIS_PASSWORD}
+
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    labels:
+      app: redis
+    annotations:
+      template.openshift.io/expose-password: '{.data[''cookie-secret'']}'
+    name: oauth-proxy
+  stringData:
+    cookie-secret: ${COOKIE_SECRET}
+
+# Service
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app: redis
+    annotations:
+      template.openshift.io/expose-uri: redis://{.spec.clusterIP}:{.spec.ports[?(.name=="redis")].port}
+      # this will have the cluster generate a signed serving certificate/key pair into a secret in your namespace
+      # https://docs.openshift.com/container-platform/3.11/dev_guide/secrets.html
+      service.alpha.openshift.io/serving-cert-secret-name: redis-commander-oauth-proxy-tls
+    name: ${DATABASE_SERVICE_NAME}
+  spec:
+    ports:
+    - name: redis
+      nodePort: 0
+      port: 6379
+      protocol: TCP
+      targetPort: 6379
+    - name: redis-commander
+      nodePort: 0
+      port: 8082
+      protocol: TCP
+      targetPort: 8081
+    - name: redis-commander-proxy
+      port: 443
+      targetPort: 8443
+    selector:
+      name: ${DATABASE_SERVICE_NAME}
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+
+# Route
+#- apiVersion: route.openshift.io/v1
+#  kind: Route
+#  metadata:
+#    labels:
+#      template: redis-persistent-template
+#      app: redis
+#    name: redis-commander
+#  spec:
+#    port:
+#      targetPort: redis-commander
+#    tls:
+#      termination: edge
+#    to:
+#      kind: Service
+#      name: redis
+
+- apiVersion: v1
+  kind: Route
+  metadata:
+    name: redis-commander-proxy
+    labels:
+      app: redis
+      template: redis-persistent-template
+  spec:
+    port:
+      targetPort: redis-commander-proxy
+    to:
+      kind: Service
+      name: redis
+    tls:
+      termination: Reencrypt
+
+# Persistent volume claim
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    labels:
+      app: redis
+    name: ${DATABASE_SERVICE_NAME}
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: ${VOLUME_CAPACITY}
+
+# Deployment config
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      template.alpha.openshift.io/wait-for-ready: "true"
+    name: ${DATABASE_SERVICE_NAME}
+    labels:
+      app: redis
+  spec:
+    replicas: 1
+    selector:
+      name: ${DATABASE_SERVICE_NAME}
+    strategy:
+      type: Recreate
+    template:
+      metadata:
+        labels:
+          name: ${DATABASE_SERVICE_NAME}
+          app: redis
+      spec:
+        serviceAccountName: redis-commander-proxy
+        containers:
+        # redis
+        - capabilities: {}
+          env:
+          - name: REDIS_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: database-password
+                name: ${DATABASE_SERVICE_NAME}
+          image: ' '
+          imagePullPolicy: IfNotPresent
+          name: redis
+          args:
+            - --requirepass $(REDIS_PASSWORD)
+          ports:
+          - containerPort: 6379
+            protocol: TCP
+          readinessProbe:
+            initialDelaySeconds: 30
+            exec:
+              command:
+                - /bin/bash
+                - -i
+                - -c
+                - test "$(redis-cli -h 127.0.0.1 -a $REDIS_PASSWORD ping)" == "PONG"
+            timeoutSeconds: 5
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: 6379
+            timeoutSeconds: 2
+          resources:
+            limits:
+              memory: ${MEMORY_LIMIT}
+          securityContext:
+            capabilities: {}
+            privileged: false
+          terminationMessagePath: /dev/termination-log
+          volumeMounts:
+          - mountPath: /var/lib/redis/data
+            name: ${DATABASE_SERVICE_NAME}-data
+        # redis-commander
+        - capabilities: {}
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: database-password
+                  name: redis
+            - name: REDIS_HOST
+              value: localhost
+            - name: HTTP_USER
+              value: redis
+            - name: HTTP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: database-password
+                  name: redis
+          image: ' '
+          imagePullPolicy: IfNotPresent
+          name: redis-commander
+          ports:
+            - containerPort: 8081
+              protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 8081
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            successThreshold: 1
+            timeoutSeconds: 5
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: 8081
+            timeoutSeconds: 2
+          securityContext:
+            capabilities: {}
+            privileged: false
+          terminationMessagePath: /dev/termination-log
+        # redis commander oauth-proxy
+        - name: oauth-proxy
+          image: ' '
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8443
+              name: public
+          # Set --pass-basic-auth to false to enable redis commander basic auth to work
+          args:
+            - --https-address=:8443
+            - --provider=openshift
+            - --openshift-service-account=redis-commander-proxy
+            - --upstream=http://localhost:8081
+            - --tls-cert=/etc/tls/private/tls.crt
+            - --tls-key=/etc/tls/private/tls.key
+            - --cookie-secret=$(COOKIE_SECRET)
+            - --pass-basic-auth=false
+          env:
+            - name: COOKIE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  key: cookie-secret
+                  name: oauth-proxy
+          volumeMounts:
+            - mountPath: /etc/tls/private
+              name: proxy-tls
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /oauth/healthz
+              port: 8443
+              scheme: HTTPS
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: 8443
+            timeoutSeconds: 2
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        volumes:
+        - name: ${DATABASE_SERVICE_NAME}-data
+          persistentVolumeClaim:
+            claimName: ${DATABASE_SERVICE_NAME}
+        - name: proxy-tls
+          secret:
+            secretName: redis-commander-oauth-proxy-tls
+    triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - redis
+        from:
+          kind: ImageStreamTag
+          name: redis:${REDIS_VERSION}
+          namespace: ${NAMESPACE}
+        lastTriggeredImage: ""
+      type: ImageChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+          - redis-commander
+        from:
+          kind: ImageStreamTag
+          name: redis-commander:${REDIS_COMMANDER_VERSION}
+          namespace: ${NAMESPACE}
+        lastTriggeredImage: ""
+      type: ImageChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+          - oauth-proxy
+        from:
+          kind: ImageStreamTag
+          name: oauth-proxy:${OAUTH_PROXY_VERSION}
+          namespace: ${NAMESPACE}
+        lastTriggeredImage: ""
+      type: ImageChange
+    - type: ConfigChange
+  status: {}

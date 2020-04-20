@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Template
-message: 'Login to SonarQube with the default admin user: admin/admin'
+message: "Login to SonarQube with the default admin user: admin/admin"
 metadata:
   annotations:
     description: The SonarQube OpenShift template
-    tags: 'instant-app,sonarqube'
+    tags: "instant-app,sonarqube"
   name: sonarqube
 objects:
   - apiVersion: v1
@@ -44,15 +44,25 @@ objects:
     data:
       username: YWRtaW4=
     kind: Secret
-    labels:
-        app: sonarqube
     metadata:
+      labels:
+        app: sonarqube
       annotations:
-        template.openshift.io/base64-expose-password: '{.data[''password'']}'
+        template.openshift.io/base64-expose-password: "{.data['password']}"
       name: sonarqube-admin-password
     stringData:
       password: ${SONARQUBE_ADMIN_PASSWORD}
-    type: kubernetes.io/basic-auth    
+    type: kubernetes.io/basic-auth
+  - apiVersion: v1
+    kind: Secret
+    metadata:
+      labels:
+        app: sonarqube
+      annotations:
+        template.openshift.io/expose-password: '{.data[''password'']}'
+      name: postgresql-sonar-password
+    stringData:
+      password: ${POSTGRESQL_PASSWORD}
   - apiVersion: v1
     kind: ImageStream
     metadata:
@@ -66,9 +76,9 @@ objects:
             tags: sonarqube
           from:
             kind: DockerImage
-            name: 'bcgovimages/sonarqube:${SONARQUBE_VERSION}'
+            name: "bcgovimages/sonarqube:${SONARQUBE_VERSION}"
           importPolicy: {}
-          name: '${SONARQUBE_VERSION}'
+          name: "${SONARQUBE_VERSION}"
   - apiVersion: v1
     kind: DeploymentConfig
     metadata:
@@ -83,13 +93,13 @@ objects:
         deploymentconfig: sonarqube
       strategy:
         resources: {}
-        RecreateParams:
+        rollingParams:
           intervalSeconds: 1
           maxSurge: 25%
           maxUnavailable: 25%
           timeoutSeconds: 600
           updatePeriodSeconds: 1
-        type: Recreate
+        type: Rolling
       template:
         metadata:
           annotations:
@@ -102,11 +112,16 @@ objects:
           containers:
             - env:
                 - name: SONARQUBE_JDBC_PASSWORD
-                  value: '${POSTGRESQL_PASSWORD}'
+                  valueFrom:
+                    secretKeyRef:
+                      key: password
+                      name: postgresql-sonar-password
                 - name: SONARQUBE_JDBC_URL
-                  value: 'jdbc:postgresql://postgresql-sonarqube/sonar'
+                  value: "jdbc:postgresql://postgresql-sonarqube/sonar"
                 - name: SONARQUBE_JDBC_USERNAME
                   value: sonar
+                - name: SONAR_FORCEAUTHENTICATION
+                  value: "true"
               volumeMounts:
                 - mountPath: /opt/sonarqube/data
                   name: sonar-data
@@ -119,8 +134,8 @@ objects:
                   subPath: temp
                 - mountPath: /opt/sonarqube/extensions/plugins
                   name: sonar-plugins
-                  subPath: plugins      
-              image: ' '
+                  subPath: plugins
+              image: " "
               imagePullPolicy: IfNotPresent
               livenessProbe:
                 failureThreshold: 3
@@ -174,7 +189,7 @@ objects:
               - sonarqube
             from:
               kind: ImageStreamTag
-              name: 'sonarqube:${SONARQUBE_VERSION}'
+              name: "sonarqube:${SONARQUBE_VERSION}"
           type: ImageChange
   - apiVersion: v1
     kind: Service
@@ -221,10 +236,13 @@ objects:
                 - name: POSTGRESQL_USER
                   value: sonar
                 - name: POSTGRESQL_PASSWORD
-                  value: '${POSTGRESQL_PASSWORD}'
+                  valueFrom:
+                    secretKeyRef:
+                      key: password
+                      name: postgresql-sonar-password
                 - name: POSTGRESQL_DATABASE
                   value: sonar
-              image: ' '
+              image: " "
               imagePullPolicy: IfNotPresent
               livenessProbe:
                 failureThreshold: 3
@@ -242,8 +260,8 @@ objects:
                 exec:
                   command:
                     - /bin/sh
-                    - '-i'
-                    - '-c'
+                    - "-i"
+                    - "-c"
                     - >-
                       psql -h 127.0.0.1 -U $POSTGRESQL_USER -q -d
                       $POSTGRESQL_DATABASE -c 'SELECT 1'
@@ -282,7 +300,7 @@ objects:
               - postgresql
             from:
               kind: ImageStreamTag
-              name: 'postgresql:9.5'
+              name: "postgresql:9.5"
               namespace: openshift
           type: ImageChange
         - type: ConfigChange
@@ -298,7 +316,7 @@ objects:
       storageClassName: ${POSTGRESQL_PERSISTENT_VOLUME_CLASS}
       resources:
         requests:
-          storage: '${POSTGRESQL_VOLUME_CAPACITY}'
+          storage: "${POSTGRESQL_VOLUME_CAPACITY}"
   - apiVersion: v1
     kind: PersistentVolumeClaim
     metadata:
@@ -311,24 +329,24 @@ objects:
       storageClassName: ${SONAR_PERSISTENT_VOLUME_CLASS}
       resources:
         requests:
-          storage: '${SONAR_VOLUME_CAPACITY}'
+          storage: "${SONAR_VOLUME_CAPACITY}"
 parameters:
   - displayName: SonarQube version
     name: SONARQUBE_VERSION
     required: true
-    value: '6.7.5'
+    value: "8.2"
   - description: Password for SonarQube Server PostgreSQL backend
     displayName: SonarQube's PostgreSQL Password
-    from: '[a-zA-Z0-9]{16}'
+    from: "[a-zA-Z0-9]{16}"
     generate: expression
     name: POSTGRESQL_PASSWORD
     required: true
   - description: Password for SonarQube Admin
     displayName: SonarQube's Admin Password
-    from: '[a-zA-Z0-9]{8}'
+    from: "[a-zA-Z0-9]{16}"
     generate: expression
     name: SONARQUBE_ADMIN_PASSWORD
-    required: true  
+    required: true
   - description: Volume space available for PostgreSQL
     displayName: PostgreSQL Volume Capacity
     name: POSTGRESQL_VOLUME_CAPACITY
@@ -341,12 +359,11 @@ parameters:
     value: 5Gi
   - name: SONAR_PERSISTENT_VOLUME_CLASS
     displayName: Persistent Volume Class name
-    description: The class of the volume; gluster-file, gluster-block, gluster-file-db
+    description: The class of the volume; netapp-file-standard
     required: false
-    value: gluster-file
+    value: netapp-file-standard
   - name: POSTGRESQL_PERSISTENT_VOLUME_CLASS
     displayName: Persistent Volume Class name
-    description: The class of the volume; gluster-file, gluster-block, gluster-file-db
+    description: The class of the volume; netapp-file-standard
     required: false
-    value: gluster-file-db
-   
+    value: netapp-file-standard

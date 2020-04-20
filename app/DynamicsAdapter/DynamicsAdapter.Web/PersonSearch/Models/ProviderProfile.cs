@@ -16,7 +16,7 @@ namespace DynamicsAdapter.Web.PersonSearch.Models
     {
         public static int? DynamicsID(this ProviderProfile profile)
         {
-            return Enumeration.GetAll<InformationSourceType>().FirstOrDefault(m => m.Name.Equals(ProviderProfileMap.ProvideCodeToProfileNameMap[profile.Name], StringComparison.OrdinalIgnoreCase))?.Value;
+            return Enumeration.GetAll<InformationSourceType>().FirstOrDefault(m => m.Name.Equals(profile.Name, StringComparison.OrdinalIgnoreCase))?.Value;
         }
        
     }

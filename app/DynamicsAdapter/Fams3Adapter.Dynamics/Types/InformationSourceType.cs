@@ -27,7 +27,7 @@ namespace Fams3Adapter.Dynamics.Types
         public static readonly ReadOnlyDictionary<string, string> ProvideCodeToProfileNameMap = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>()
         {
             {"ICBC", "ICBC"},
-            {"BCHydro", "BCHydro"},
+            {"BCHYDRO", "BCHydro"},
              { "MHSD","MSDPR" },
             {"Other","Other" }
         });

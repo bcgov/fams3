@@ -32,7 +32,7 @@ namespace Fams3Adapter.Dynamics.Employment
         [JsonProperty("ssg_locationcityname")]
         public string City { get; set; }
 
-        [JsonProperty("ssg_informationsourcetext")]
+        [JsonProperty("ssg_suppliedby")]
         public int? InformationSource { get; set; }
 
         [JsonProperty("ssg_incomeassistancestatus")]
@@ -71,7 +71,7 @@ namespace Fams3Adapter.Dynamics.Employment
         [JsonProperty("ssg_addresslinethree")]
         public string AddressLine3 { get; set; }
 
-        [JsonProperty("ssg_SearchRequestId")]
+        [JsonProperty("ssg_SearchRequest")]
         public virtual SSG_SearchRequest SearchRequest { get; set; }
     }
 

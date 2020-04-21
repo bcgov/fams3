@@ -3,5 +3,6 @@
     public interface PersonSearchOrdered : PersonSearchEvent
     {
         Person.Person Person { get; }
+        string FileId { get; }
     }
 }

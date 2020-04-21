@@ -78,7 +78,8 @@ namespace SearchApi.Web.Test.Messaging
                         Name = "TEST",
                         Completed = false
                     }
-                }), Guid.NewGuid());
+                },
+                "FileID"), Guid.NewGuid());
 
 
             sendEndpointMock.Verify(x => x.Send<PersonSearchOrdered>(It.IsAny<PersonSearchOrdered>(), It.IsAny<CancellationToken>()),
@@ -107,7 +108,8 @@ namespace SearchApi.Web.Test.Messaging
                     new DataProvider() {Name = "TEST3", Completed= true},
                     new DataProvider() {Name = "TEST4", Completed =false},
                     new DataProvider() {Name = "TEST5", Completed=false}
-                }), Guid.NewGuid());
+                },
+                "FileID"), Guid.NewGuid());
 
 
             sendEndpointMock.Verify(x => x.Send<PersonSearchOrdered>(It.IsAny<PersonSearchOrdered>(), It.IsAny<CancellationToken>()),
@@ -129,7 +131,7 @@ namespace SearchApi.Web.Test.Messaging
                 new List<Name>(),
                 new List<RelatedPerson>(),
                 new List<Employment>(),
-                new List<DataProvider>()), Guid.NewGuid());
+                new List<DataProvider>(), "FileID"), Guid.NewGuid());
 
 
             sendEndpointMock.Verify(x => x.Send<PersonSearchOrdered>(It.IsAny<PersonSearchOrdered>(), It.IsAny<CancellationToken>()),
@@ -151,7 +153,7 @@ namespace SearchApi.Web.Test.Messaging
                 new List<Name>(),
                 new List<RelatedPerson>(),
                 new List<Employment>(),
-                null), Guid.NewGuid());
+                null, "FileID"), Guid.NewGuid());
 
 
             sendEndpointMock.Verify(x => x.Send<PersonSearchOrdered>(It.IsAny<PersonSearchOrdered>(), It.IsAny<CancellationToken>()),
@@ -183,7 +185,7 @@ namespace SearchApi.Web.Test.Messaging
                 new List<Name>(),
                 new List<RelatedPerson>(),
                 new List<Employment>(),
-                null), new Guid()));
+                null, "FileID"), new Guid()));
 
         }
 

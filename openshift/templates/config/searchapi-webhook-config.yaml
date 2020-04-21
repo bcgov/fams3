@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Template
+labels:
+  template: searchapi-webhook-config
+message: |-
+  searchapi webhook configuration template.
+metadata:
+  annotations:
+    description: |-
+      searchapi webhook configuration template.
+    tags: searchapi-webhook-config
+    template: searchapi-webhook-config
+  name: searchapi-webhook-config
+
+# Parameters
+parameters:
+- name: NAME
+  required: true
+  value: "set.name"
+- name: URL
+  required: true
+  value: "set.url"
+
+# Objects
+objects:
+
+- apiVersion: v1
+  stringData:
+    SearchApi__WebHooks__0__Name: ${NAME}
+    SearchApi__WebHooks__0__Uri: ${URL}
+  kind: Secret
+  metadata:
+    name: searchapi-webhook-config

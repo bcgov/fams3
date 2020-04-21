@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Template
+labels:
+  template: rest-config
+message: |-
+  Rest config template.
+metadata:
+  annotations:
+    description: |-
+      Rest config template.
+    tags: rest-config
+    template: rest-config
+  name: rest-config
+
+# Parameters
+parameters:
+- name: APP_NAME
+  required: true
+  value: "set.app.name"
+- name: URL
+  required: true
+  value: "set.url.com"
+- name: CODE
+  required: true
+  value: "set.code"
+- name: USERNAME
+- name: PASSWORD
+
+# Objects
+objects:
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    name: ${APP_NAME}-rest-config
+    label:
+      app: ${APP_NAME}
+  stringData:
+    DataPartnerSoapApi__BaseAddress: ${URL}
+    DataPartnerSoapApi__Code: ${CODE}
+    DataPartnerSoapApi__Password: ${PASSWORD}
+    DataPartnerSoapApi__Username: ${USERNAME}

@@ -14,7 +14,8 @@ namespace SearchApi.Web.Controllers
     public class PersonSearchRequest : Person
     {
 
-        public IEnumerable<DataProvider> dataProviders { get; set; }
+        public IEnumerable<DataProvider> DataProviders { get; set; }
+        public string FileID { get; set; }
 
         [JsonConstructor]
         public PersonSearchRequest(
@@ -27,7 +28,8 @@ namespace SearchApi.Web.Controllers
             IEnumerable<Name> names, 
             IEnumerable<RelatedPerson> relatedPersons,
             IEnumerable<Employment> employments,
-            IEnumerable<DataProvider> dataProviders)
+            IEnumerable<DataProvider> dataProviders,
+            string fileID)
         {
             this.FirstName = firstName;
             this.LastName = lastName;
@@ -38,7 +40,8 @@ namespace SearchApi.Web.Controllers
             this.Addresses = addresses;
             this.Employments = employments;         
             this.RelatedPersons = relatedPersons;
-            this.dataProviders = dataProviders;
+            this.DataProviders = dataProviders;
+            this.FileID = fileID;
         }
 
     }

@@ -75,7 +75,8 @@ namespace SearchApi.Web.Controllers
             {
                 Person = personSearchRequest,
                 SearchRequestId = searchRequestId,
-                DataPartners = personSearchRequest.dataProviders.Select(x => new DataPartner { Name = x.Name, Completed = false })
+                FileId = personSearchRequest.FileID,
+                DataPartners = personSearchRequest.DataProviders.Select(x => new DataPartner { Name = x.Name, Completed = false })
             };
 
             _logger.LogInformation($"Save Complete Request [{searchRequestId}] to cache. ");
@@ -93,13 +94,15 @@ namespace SearchApi.Web.Controllers
         public class PersonSearchOrderEvent : PersonSearchOrdered
         {
 
-            public PersonSearchOrderEvent(Guid searchRequestId)
+            public PersonSearchOrderEvent(Guid searchRequestId, String fileID)
             {
                 SearchRequestId = searchRequestId;
                 TimeStamp = DateTime.Now;
+                this.FileId = fileID;
             }
 
             public Guid SearchRequestId { get; }
+            public string FileId { get; set; }
             public DateTime TimeStamp { get; }
             public Person Person { get; set; }
         }

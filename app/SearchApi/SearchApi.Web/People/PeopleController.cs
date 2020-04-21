@@ -94,7 +94,7 @@ namespace SearchApi.Web.Controllers
         public class PersonSearchOrderEvent : PersonSearchOrdered
         {
 
-            public PersonSearchOrderEvent(Guid searchRequestId, String fileID)
+            public PersonSearchOrderEvent(Guid searchRequestId, string fileID)
             {
                 SearchRequestId = searchRequestId;
                 TimeStamp = DateTime.Now;

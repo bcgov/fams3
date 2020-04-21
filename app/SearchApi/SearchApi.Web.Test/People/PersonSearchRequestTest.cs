@@ -14,7 +14,7 @@ namespace SearchApi.Web.Test.People
         {
 
 
-            var sut = new PersonSearchRequest("firstName", "lastName", new DateTime(2001, 1, 12), new List<PersonalIdentifier>(), new List<Address>(), new List<Phone>(), new List<Name>(),  new List<RelatedPerson>(), new List<Employment>(), new List<DataProvider>() );
+            var sut = new PersonSearchRequest("firstName", "lastName", new DateTime(2001, 1, 12), new List<PersonalIdentifier>(), new List<Address>(), new List<Phone>(), new List<Name>(),  new List<RelatedPerson>(), new List<Employment>(), new List<DataProvider>(), "fileId");
 
             Assert.AreEqual("firstName", sut.FirstName);
             Assert.AreEqual("lastName", sut.LastName);

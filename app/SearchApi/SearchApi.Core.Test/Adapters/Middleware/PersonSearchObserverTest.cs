@@ -28,6 +28,7 @@ namespace SearchApi.Core.Test.Adapters.Middleware
             public Guid SearchRequestId { get; set; }
             public DateTime TimeStamp { get; set; }
             public Person Person { get; set; }
+            public string FileId { get; set; }
         }
 
 

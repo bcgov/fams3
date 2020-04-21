@@ -9,5 +9,8 @@ namespace Fams3Adapter.Dynamics.SearchRequest
     {
         [JsonProperty("ssg_searchrequestid")]
         public Guid SearchRequestId { get; set; }
+
+        [JsonProperty("ssg_name")]
+        public string FileId { get; set; }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Fams3Adapter.Dynamics.DataProvider;
 using Fams3Adapter.Dynamics.Identifier;
+using Fams3Adapter.Dynamics.SearchRequest;
 using Newtonsoft.Json;
 
 namespace Fams3Adapter.Dynamics.SearchApiRequest
@@ -26,8 +27,11 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
         [JsonProperty("ssg_personbirthdate")]
         public DateTime? PersonBirthDate { get; set; }
 
-        [JsonProperty("_ssg_searchrequest_value")]
+        [JsonProperty("ssg_searchrequest_value")]
         public Guid SearchRequestId { get; set; }
+
+        [JsonProperty("ssg_SearchRequest")]
+        public SSG_SearchRequest SearchRequest { get; set; }
 
         [JsonProperty(Keys.DYNAMICS_STATUS_CODE_FIELD)]
         public int StatusCode { get; set; }

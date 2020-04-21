@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Fams3Adapter.Dynamics.SearchApiRequest;
+using Fams3Adapter.Dynamics.SearchRequest;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.DataCollection;
 using Moq;
 using NUnit.Framework;
@@ -46,6 +47,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchApiRequest
                 .Key(_testId)
                 .Expand(x=>x.Identifiers)
                 .Expand(x=>x.DataProviders)
+                .Expand(x=>x.SearchRequest)
                 .FindEntryAsync(It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<SSG_SearchApiRequest>(new SSG_SearchApiRequest
                 {                      
@@ -66,7 +68,8 @@ namespace Fams3Adapter.Dynamics.Test.SearchApiRequest
                     DataProviders = new List<DataProvider.SSG_SearchapiRequestDataProvider>()
                     {
                         new DataProvider.SSG_SearchapiRequestDataProvider(){Name="ICBC", SuppliedByValue=111111}
-                    }.ToArray()
+                    }.ToArray(),
+                    SearchRequest = new SSG_SearchRequest() { FileId="fileId"}
                 }));
 
             odataClientMock.Setup(x => x.For<SSG_SearchApiRequest>(null)

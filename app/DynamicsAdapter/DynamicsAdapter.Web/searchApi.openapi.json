@@ -1,5 +1,5 @@
 {
-  "x-generator": "NSwag v13.1.3.0 (NJsonSchema v10.0.27.0 (Newtonsoft.Json v12.0.0.0))",
+  "x-generator": "NSwag v13.3.0.0 (NJsonSchema v10.1.11.0 (Newtonsoft.Json v12.0.0.0))",
   "swagger": "2.0",
   "info": {
     "title": "FAMS Search API",
@@ -84,6 +84,9 @@
               "items": {
                 "$ref": "#/definitions/DataProvider"
               }
+            },
+            "fileID": {
+              "type": "string"
             }
           }
         }
@@ -91,9 +94,15 @@
     },
     "DataProvider": {
       "type": "object",
+      "required": [
+        "completed"
+      ],
       "properties": {
         "name": {
           "type": "string"
+        },
+        "completed": {
+          "type": "boolean"
         }
       }
     },

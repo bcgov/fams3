@@ -70,6 +70,7 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
                     .Key(request.SearchApiRequestId)
                     .Expand(x => x.Identifiers)
                     .Expand(x => x.DataProviders)
+                    .Expand(x => x.SearchRequest)
                     .FindEntryAsync(cancellationToken);
 
                 results.Add( searchApiRequest );

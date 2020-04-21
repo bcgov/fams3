@@ -215,7 +215,7 @@ FAMS-search-api is a dotnet core rest service to execute people search accross m
 
 ## Search Adapters
 
-The Search Adpaters a worker that execute a search for a specific data providers.
+The Search Adpaters a worker that execute a search for a specific data providers.  
 
 ### Configuration
 

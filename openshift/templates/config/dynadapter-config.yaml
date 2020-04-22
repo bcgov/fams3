@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Template
+labels:
+  template: dynadapter-config
+message: |-
+  dynadapter config template.
+metadata:
+  annotations:
+    description: |-
+      dynadapter config template.
+    tags: dynadapter-config
+    template: dynadapter-config
+  name: dynadapter-config
+
+# Parameters
+parameters:
+- name: CRON
+  required: true
+  value: "set.cron like '0/5 * * * * ?' "
+- name: URL
+  required: true
+  value: "set.url.com"
+
+# Objects
+objects:
+
+- apiVersion: v1
+  stringData:
+    SCHEDULER__CRON: ${CRON}
+    SEARCHAPI__BASEURL: ${URL}
+  kind: Secret
+  metadata:
+    name: dynadapter-config

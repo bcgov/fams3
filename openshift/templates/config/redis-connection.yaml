@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Template
+labels:
+  template: redis-connection
+message: |-
+  redis connection template.
+metadata:
+  annotations:
+    description: |-
+      redis connection template.
+    tags: redis-connection
+    template: redis-connection
+  name: redis-connection
+
+# Parameters
+parameters:
+- name: HOST
+  required: true
+  value: "set.host"
+- name: PORT
+  required: true
+  value: "set.port"
+
+# Objects
+objects:
+
+- apiVersion: v1
+  stringData:
+    Redis__Host: ${HOST}
+    Redis__Port: ${PORT}
+  kind: Secret
+  metadata:
+    name: redis-connection

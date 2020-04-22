@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Template
+labels:
+  template: rabbit-mq-configuration
+message: |-
+  rabbit-mq configuration template.
+metadata:
+  annotations:
+    description: |-
+      rabbit-mq configuration template.
+    tags: rabbit-mq-configuration
+    template: rabbit-mq-configuration
+  name: rabbit-mq-configuration
+
+# Parameters
+parameters:
+- name: HOST
+  required: true
+  value: "set.host"
+- name: PORT
+  required: true
+  value: "set.port"
+- name: USERNAME
+  required: true
+  value: "set.username"
+- name: PASSWORD
+  required: true
+  value: "set.password"
+
+# Objects
+objects:
+
+- apiVersion: v1
+  stringData:
+    RABBITMQ__HOST: ${HOST}
+    RABBITMQ__PASSWORD: ${PASSWORD}
+    RABBITMQ__PORT: ${PORT}
+    RABBITMQ__USERNAME: ${USERNAME}
+  kind: Secret
+  metadata:
+    name: rabbit-mq-configuration

@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Template
+labels:
+  template: aspnet-env
+message: |-
+  aspnet-env template.
+metadata:
+  annotations:
+    description: |-
+      aspnet-env template.
+    tags: aspnet-env
+    template: aspnet-env
+  name: aspnet-env
+
+# Parameters
+parameters:
+- name: ENVIRONMENT
+  required: true
+  value: "set.environment"
+
+# Objects
+objects:
+
+- apiVersion: v1
+  stringData:
+    ASPNETCORE_ENVIRONMENT: ${ENVIRONMENT}
+  kind: Secret
+  metadata:
+    name: aspnet-env

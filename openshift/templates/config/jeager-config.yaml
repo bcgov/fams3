@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Template
+labels:
+  template: jeager-config
+message: |-
+  jeager config template.
+metadata:
+  annotations:
+    description: |-
+      jeager config template.
+    tags: jeager-config
+    template: jeager-config
+  name: jeager-config
+
+# Parameters
+parameters:
+- name: URL
+  required: true
+  value: "set.url.com"
+- name: TYPE
+  required: true
+  value: "set.type"
+
+# Objects
+objects:
+
+- apiVersion: v1
+  stringData:
+    JAEGER_ENDPOINT: ${URL}
+    JAEGER_SAMPLER_TYPE: ${TYPE}
+  kind: Secret
+  metadata:
+    name: jeager-config

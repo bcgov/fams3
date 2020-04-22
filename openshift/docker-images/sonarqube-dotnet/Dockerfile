@@ -2,9 +2,9 @@ FROM openshift/jenkins-slave-base-centos7
 
 USER root
 
-ARG SONARQUBE_SCANNER_VERSION 4.8.0
-ARG DOT_NET_VERSION 3.1
-ENV HOME /home/jenkins
+ARG SONARQUBE_SCANNER_VERSION=4.8.0
+ARG DOT_NET_VERSION=3.1
+ENV HOME=/home/jenkins
 
 # Install .NET sdk rpm
 RUN rpm -Uvh https://packages.microsoft.com/config/rhel/7/packages-microsoft-prod.rpm
@@ -20,7 +20,7 @@ RUN yum install -y centos-release-scl-rh && \
 WORKDIR /
 
 # Install SonarQube Scanner as the running user
-RUN dotnet tool install --global dotnet-sonarscanner
+RUN dotnet tool install --global dotnet-sonarscanner --version ${SONARQUBE_SCANNER_VERSION}
 RUN dotnet tool install --global coverlet.console
 ENV PATH="${PATH}:$HOME/.dotnet/tools"
 

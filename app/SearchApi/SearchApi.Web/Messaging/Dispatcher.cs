@@ -41,17 +41,17 @@ namespace SearchApi.Web.Messaging
             if(personSearchRequest == null) throw new ArgumentNullException(nameof(personSearchRequest));
             if(searchRequestId.Equals(default(Guid))) throw new ArgumentNullException(nameof(searchRequestId));
 
-            if (personSearchRequest.dataProviders == null)
+            if (personSearchRequest.DataProviders == null)
             {
                 await Task.CompletedTask;
                 return;
             }
 
-            foreach (var requestDataProvider in personSearchRequest.dataProviders)
+            foreach (var requestDataProvider in personSearchRequest.DataProviders)
             {
                 var endpoint = await getEndpointAddress(requestDataProvider.Name);
 
-                await endpoint.Send<PersonSearchOrdered>(new PeopleController.PersonSearchOrderEvent(searchRequestId)
+                await endpoint.Send<PersonSearchOrdered>(new PeopleController.PersonSearchOrderEvent(searchRequestId, personSearchRequest.FileID)
                 {
                     Person = personSearchRequest
                 });

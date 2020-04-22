@@ -9,6 +9,7 @@ namespace BcGov.Fams3.Redis.Model
     public class SearchRequest
     {
         public Guid SearchRequestId { get; set; }
+        public string FileId { get; set; }
         public Person Person { get; set; }
 
         public IEnumerable<DataPartner> DataPartners { get; set; }

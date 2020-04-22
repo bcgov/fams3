@@ -35,6 +35,7 @@ namespace SearchAdapter.Sample.Test
             public Guid SearchRequestId { get; set; }
             public DateTime TimeStamp { get; set; }
             public Person Person { get; set; }
+            public string FileId { get; set; }
         }
         
         [OneTimeSetUp]
@@ -68,7 +69,8 @@ namespace SearchAdapter.Sample.Test
                     FirstName = "firstName",
                     LastName = "lastName",
                     DateOfBirth = new DateTime(2001, 1, 1)
-                }
+                },
+                FileId="FileId"
             });
 
             await _harness.BusControl.Publish<PersonSearchOrdered>(new PersonSearchOrderedTest()
@@ -80,7 +82,8 @@ namespace SearchAdapter.Sample.Test
                     FirstName = "",
                     LastName = "lastName",
                     DateOfBirth = new DateTime(2001, 1, 1)
-                }
+                },
+                FileId = "FileId"
             });
 
         }

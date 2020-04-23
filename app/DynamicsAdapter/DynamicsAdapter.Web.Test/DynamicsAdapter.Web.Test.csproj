@@ -13,6 +13,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="coverlet.msbuild" Version="2.8.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="Moq" Version="4.13.1" />
     <PackageReference Include="nunit" Version="3.12.0" />
@@ -23,7 +27,6 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
     <PackageReference Include="Quartz" Version="3.0.7" />
     <PackageReference Include="Simple.OData.V4.Client" Version="5.12.0" />
-    <PackageReference Include="XunitXml.TestLogger" Version="2.1.26" />
     <PackageReference Include="coverlet.collector" Version="1.0.1" />
   </ItemGroup>
 

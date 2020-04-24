@@ -15,6 +15,7 @@ using Newtonsoft.Json;
 using NSwag.Annotations;
 using OpenTracing;
 using SearchApi.Web.Messaging;
+using Serilog.Context;
 
 namespace SearchApi.Web.Controllers
 {
@@ -61,34 +62,36 @@ namespace SearchApi.Web.Controllers
         [OpenApiTag("People API")]
         public async Task<IActionResult> Search([FromHeader(Name = "X-RequestId")] string id, [FromBody]PersonSearchRequest personSearchRequest)
         {
-
-            if(id == null || !Guid.TryParse(id, out var searchRequestId))
+            using (LogContext.PushProperty("FileId", " - FileId: " + personSearchRequest.FileID))
             {
-                searchRequestId = Guid.NewGuid();
+                if (id == null || !Guid.TryParse(id, out var searchRequestId))
+                {
+                    searchRequestId = Guid.NewGuid();
+                }
+
+                _logger.LogInformation($"Successfully received new search request [{searchRequestId}].");
+
+                _tracer.ActiveSpan.SetTag("searchRequestId", $"{searchRequestId}");
+
+                SearchRequest searchRequest = new SearchRequest
+                {
+                    Person = personSearchRequest,
+                    SearchRequestId = searchRequestId,
+                    FileId = personSearchRequest.FileID,
+                    DataPartners = personSearchRequest.DataProviders.Select(x => new DataPartner { Name = x.Name, Completed = false })
+                };
+
+                _logger.LogInformation($"Save Complete Request [{searchRequestId}] to cache. ");
+                await _cacheService.SaveRequest(searchRequest);
+
+                _logger.LogDebug($"Attempting to publish ${nameof(PersonSearchOrdered)} to destination queue.");
+
+                await _dispatcher.Dispatch(personSearchRequest, searchRequestId);
+
+                _logger.LogInformation($"Successfully published ${nameof(PersonSearchOrdered)} to destination queue.");
+
+                return Accepted(new PersonSearchResponse(searchRequestId));
             }
-
-            _logger.LogInformation($"Successfully received new search request [{searchRequestId}].");
-
-            _tracer.ActiveSpan.SetTag("searchRequestId", $"{searchRequestId}");
-
-            SearchRequest searchRequest = new SearchRequest
-            {
-                Person = personSearchRequest,
-                SearchRequestId = searchRequestId,
-                FileId = personSearchRequest.FileID,
-                DataPartners = personSearchRequest.DataProviders.Select(x => new DataPartner { Name = x.Name, Completed = false })
-            };
-
-            _logger.LogInformation($"Save Complete Request [{searchRequestId}] to cache. ");
-             await _cacheService.SaveRequest(searchRequest);
-
-            _logger.LogDebug($"Attempting to publish ${nameof(PersonSearchOrdered)} to destination queue.");
-
-            await _dispatcher.Dispatch(personSearchRequest, searchRequestId);
-
-            _logger.LogInformation($"Successfully published ${nameof(PersonSearchOrdered)} to destination queue.");
-
-            return Accepted(new PersonSearchResponse(searchRequestId));
         }
 
         public class PersonSearchOrderEvent : PersonSearchOrdered

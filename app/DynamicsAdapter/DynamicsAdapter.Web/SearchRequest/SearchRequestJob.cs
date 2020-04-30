@@ -10,6 +10,8 @@ using OpenTracing;
 using Fams3Adapter.Dynamics.Identifier;
 using AutoMapper;
 using DynamicsAdapter.Web.PersonSearch.Models;
+using Serilog;
+using Serilog.Context;
 
 namespace DynamicsAdapter.Web.SearchRequest
 {
@@ -42,7 +44,7 @@ namespace DynamicsAdapter.Web.SearchRequest
 
         public async Task Execute(IJobExecutionContext context)
         {
-
+                       
             _logger.LogInformation("Search Request started!");
 
             var cts = new CancellationTokenSource();
@@ -54,18 +56,21 @@ namespace DynamicsAdapter.Web.SearchRequest
                 foreach (SSG_SearchApiRequest ssgSearchRequest in requestList)
                 {
                     if (ssgSearchRequest.SearchRequestId != Guid.Empty)
-                    {
-                         _logger.LogDebug(
-                            $"Attempting to post person search for request {ssgSearchRequest.SearchApiRequestId}");
+                    {                      
+                        using (LogContext.PushProperty("FileId", " - FileId: "+ssgSearchRequest.SearchRequest.FileId ))
+                        {
+                            _logger.LogDebug(
+                               $"Attempting to post person search for request {ssgSearchRequest.SearchApiRequestId}");
 
-                        var result = await _searchApiClient.SearchAsync(
-                            _mapper.Map<PersonSearchRequest>(ssgSearchRequest),
-                            $"{ssgSearchRequest.SearchApiRequestId}",
-                            cts.Token);
+                            var result = await _searchApiClient.SearchAsync(
+                                _mapper.Map<PersonSearchRequest>(ssgSearchRequest),
+                                $"{ssgSearchRequest.SearchApiRequestId}",
+                                cts.Token);
 
-                        _logger.LogInformation($"Successfully posted person search id:{result.Id}");
+                            _logger.LogInformation($"Successfully posted person search id:{result.Id}");
 
-                        await MarkInProgress(ssgSearchRequest, cts.Token);
+                            await MarkInProgress(ssgSearchRequest, cts.Token);
+                        }
                     }
                 }
             }

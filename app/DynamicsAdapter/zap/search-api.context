@@ -4,7 +4,7 @@
         <name>Default Context</name>
         <desc/>
         <inscope>true</inscope>
-        <incregexes>https://search-api-frjeow-dev.pathfinder.gov.bc.ca.*</incregexes>
+        <incregexes>https://dynadapter-frjeow-dev.pathfinder.gov.bc.ca.*</incregexes>
         <tech>
             <include>Language.ASP</include>
             <include>Language.JavaScript</include>

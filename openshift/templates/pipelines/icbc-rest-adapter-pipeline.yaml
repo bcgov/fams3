@@ -1,0 +1,262 @@
+apiVersion: v1
+kind: Template
+labels:
+  template: icbc-rest-adapter-pipeline-template
+message: |-
+  A Jenkins server must be instantiated in this project to manage
+  the Pipeline BuildConfig created by this template. You will be able to log in to
+  it using your OpenShift user credentials.
+metadata:
+  annotations:
+    openshift.io/display-name: icbc-rest-adapter pipeline template
+    description: |-
+      This is a template for icbc-rest-adapter pipeline.
+    iconClass: icon-jenkins
+    tags: instant-app,jenkins
+  name: icbc-rest-adapter-pipeline-template
+parameters:
+  - description: The OpenShift Namespace prefix.
+    displayName: Namespace Prefix (Prefix for each namespace ie prefix-tools, prefix-dev etc)
+    name: namespacePrefix
+    required: true
+    value:
+  - description: Github trigger secret. A difficult to guess string encoded as part of the webhook URL. Not encrypted.
+    displayName: GitHub Webhook Secret (Generated if empty)
+    from: '[a-zA-Z0-9]{40}'
+    generate: expression
+    name: gitSecret
+objects:
+- apiVersion: build.openshift.io/v1
+  kind: BuildConfig
+  metadata:
+    labels:
+      application: icbc-rest-adapter
+      template: master-build-pipeline
+    name: icbc-rest-adapter-pipeline
+    namespace: ${namespacePrefix}-tools
+  spec:
+    failedBuildsHistoryLimit: 5
+    nodeSelector: {}
+    output: {}
+    postCommit: {}
+    resources: {}
+    runPolicy: Serial
+    source:
+      git:
+        ref: master
+        uri: https://github.com/bcgov-c/fams3-openshift
+      type: Git
+    strategy:
+      jenkinsPipelineStrategy:
+        env:
+        - name: APP_NAME
+          value: icbc-rest-adapter
+        - name: LIFECYCLE_WEBHOOK
+        - name: GIT_SOURCE_URL
+          value: https://github.com/bcgov-c/fams3-openshift
+        - name: GIT_SOURCE_REF
+          value: master
+        - name: GIT_CREDENTIALS_ID
+        - name: GIT_CONTEXT_DIR
+        - name: JENKINS_POD
+          value: dotnet
+        - name: SONAR_TOKEN
+        - name: SONAR_CREDENTIAL_ID
+        - name: SONAR_URL
+          value: http://sonarqube:9000
+        - name: SONAR_COMMAND
+        - name: SONAR_ENABLED
+          value: "false"
+        - name: TOOLS_NAMESPACE
+          value: ${namespacePrefix}-tools
+        - name: DEV_NAMESPACE
+          value: ${namespacePrefix}-dev
+        - name: TEST_NAMESPACE
+          value: ${namespacePrefix}-test
+        - name: PROD_NAMESPACE
+          value: ${namespacePrefix}-prod
+        - name: ROUTE_TYPE
+          value: public
+        jenkinsfile: |-
+          try {
+
+              node("${JENKINS_POD}") {
+
+                  // Checkout Openshift metadata template
+                  stage("Checkout Templates") {
+                      dir("${APP_NAME}") {
+                          //git url: "${GIT_SOURCE_URL}", branch: "${GIT_SOURCE_REF}", credentialsId: "${GIT_CREDENTIALS_ID}"
+                          //env.GIT_COMMIT = getCommit()
+                          git url: "https://github.com/ChrisHoban/ssg-openshift-meta-templates.git"
+                      }
+                  }
+
+                  stage("Get Build Config") {
+                      dir("${APP_NAME}") {
+
+                          artifactPath = "/openshift/templates/${APP_NAME}-dc.yaml"
+                          artifactExists = fileExists artifactPath
+
+                          if (artifactExists){
+                              env.BUILD_CONFIG_PATH = artifactPath
+                          } else {
+                              env.BUILD_CONFIG_PATH = "openshift/meta-templates/deployment-config.yaml"
+                          }
+
+                          sh "echo build config path: ${BUILD_CONFIG_PATH}"
+                      }
+                  }
+
+                  // Deploy Build Config, Build Image
+                  stage("Build ${APP_NAME}") {
+                      dir("${APP_NAME}") {
+                          timeout(time: 10, unit: 'MINUTES') {
+                              openshift.withCluster() {
+                                  openshift.withProject() {
+                                      def bld = openshift.startBuild(env.APP_NAME)
+                                      bld.untilEach {
+                                          return (it.object().status.phase == "Complete")
+                                      }
+                                      bld.logs('-f')
+                                  }
+                              }
+                          }
+                      }
+                  }
+
+                  if ("${SONAR_ENABLED}"!="false") {
+                      stage("Sonar Scan") {
+                          timeout(time: 8, unit: 'MINUTES') {
+                              sh "ls -a"
+                              sh "${SONAR_COMMAND}"
+                          }
+                      }
+                  }
+
+                  stage('Promote to DEV') {
+                      openshift.withCluster() {
+                          sh "echo Tagging image for DEV"
+                          openshift.tag("${APP_NAME}:latest", "${APP_NAME}:dev")
+                      }
+                  }
+
+                  stage("Deploy ${APP_NAME}") {
+                      deploy("${BUILD_CONFIG_PATH}", "${APP_NAME}", "${TOOLS_NAMESPACE}", "${DEV_NAMESPACE}", "${ROUTE_TYPE}", "dev")
+                  }
+
+                  stage('Promotion gate') {
+                      script {
+                          input message: 'Promote application to Test?'
+                      }
+                  }
+
+                  stage('Promote to TEST') {
+                      openshift.withCluster() {
+                          sh "echo Tagging image for TEST"
+                          openshift.tag("${APP_NAME}:latest", "${APP_NAME}:test")
+                      }
+                  }
+
+                  stage("Deploy ${APP_NAME}") {
+                      deploy("${BUILD_CONFIG_PATH}", "${APP_NAME}", "${TOOLS_NAMESPACE}", "${TEST_NAMESPACE}", "${ROUTE_TYPE}", "test")
+                  }
+
+                  stage('Promotion gate') {
+                      script {
+                          input message: 'Promote application to Prod?'
+                      }
+                  }
+
+                  stage('Promote to PROD') {
+                      openshift.withCluster() {
+                          sh "echo Tagging image for prod"
+                          openshift.tag("${APP_NAME}:latest", "${APP_NAME}:prod")
+                      }
+                  }
+
+                  stage("Deploy ${APP_NAME}") {
+                      deploy("${BUILD_CONFIG_PATH}", "${APP_NAME}", "${TOOLS_NAMESPACE}", "${PROD_NAMESPACE}", "${ROUTE_TYPE}", "prod")
+                  }
+              }
+
+          } catch (err) {
+             echo "in catch block"
+
+             currentBuild.result = 'FAILURE'
+             env.ERR = "${err}"
+             node {
+                sh "curl -XPOST '${LIFECYCLE_WEBHOOK}' -H 'Content-type: application/json' --data '{\"username\":\"The Pipe Lion\",\"icon_emoji\":\":lion_face:\",\"text\": \"${APP_NAME} Pipeline Failure - ${ERR}\"}'"
+             }
+             echo "Caught: ${err}"
+             throw err
+          }
+
+          String getCommit() {
+              return sh(script: 'git rev-parse HEAD', returnStdout: true)?.trim()
+          }
+
+          // Deploy application to environment
+          def deploy(String buildConfigPath, String appName, String sourceNamespace, String targetNamespace, String routeType, String version) {
+              dir("${appName}") {
+
+                  sh "echo Creating DeploymentConfig in ${targetNamespace}"
+
+                  // If not grab generic deploymentconfig
+                  sh "oc process -f ${buildConfigPath} \
+                      -p appName=${appName} \
+                      -p namespace=${sourceNamespace} \
+                      -p TAG=${version} | oc apply -f - -n ${targetNamespace}"
+
+                  createRoute("${appName}", "${targetNamespace}", "${routeType}")
+
+                  sh "echo Wait for service to be up"
+
+                  timeout(time: 180, unit: 'SECONDS') {
+                      openshift.withCluster() {
+                          openshift.withProject("${targetNamespace}") {
+                              def dc = openshift.selector('dc', "${appName}")
+                              // this will wait until the desired replicas are available
+                              dc.rollout().status()
+                          }
+                      }
+                  }
+
+              }
+          }
+
+          // Create a service routes using the default template and apply the government suffix pattern
+          def createRoute(String appName, String targetNamespace, String routeType) {
+
+              try {
+
+                  sh "oc get routes ${appName} -n ${targetNamespace}"
+
+              } catch (err) {
+
+                  if(routeType == "private") {
+                      createServiceRoute("${appName}", "${targetNamespace}", "pathfinder.bcgov")
+                  } else if (routeType == "public") {
+                      createServiceRoute("${appName}", "${targetNamespace}", "pathfinder.gov.bc.ca")
+                  }
+
+              }
+
+          }
+
+          // Create a service routes using the default template
+          def createServiceRoute(String appName, String targetNamespace, String suffix) {
+              // -p suffix=${suffix} \
+
+              sh "oc process -f openshift/meta-templates/service-route.yaml \
+                  -p appName=${appName} \
+                  -p namespace=${targetNamespace} | oc apply -f - -n ${targetNamespace}"
+
+          }
+
+      type: JenkinsPipeline
+    successfulBuildsHistoryLimit: 5
+    triggers:
+    - type: ConfigChange
+    - github:
+        secret: ${gitSecret}
+      type: GitHub

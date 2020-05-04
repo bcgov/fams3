@@ -309,6 +309,22 @@ namespace SearchAdapter.Sample.SearchRequest
                                     new ReferenceDate(){ Index=1, Key="Relation End Date", Value=new DateTime(2020,9,1) }
                                 }
                             }
+                        },
+                        BankInfos = new List<BankInfo>()
+                        { 
+                            new BankInfo()
+                            { 
+                                BankName="BankName",
+                                AccountNumber="AccountNumber123",
+                                Branch="Branch",
+                                TransitNumber="TransitNumber123",
+                                ReferenceDates = new List<ReferenceDate>(){
+                                    new ReferenceDate(){ Index=0, Key="Account Start Date", Value=new DateTime(2019,9,1) },
+                                    new ReferenceDate(){ Index=1, Key="Account Expired Date", Value=new DateTime(2020,9,1) }
+                                },
+                                Description="Description",
+                                Notes="Notes"
+                            }
                         }
                     }
                 }

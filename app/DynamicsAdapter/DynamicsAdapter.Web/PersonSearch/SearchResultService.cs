@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using DynamicsAdapter.Web.PersonSearch.Models;
 using Fams3Adapter.Dynamics.Address;
+using Fams3Adapter.Dynamics.BankInfo;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.Name;
@@ -61,8 +62,11 @@ namespace DynamicsAdapter.Web.PersonSearch
             _logger.LogDebug($"Attempting to create found employment records for SearchRequest[{request.SearchRequestId}]");
             await UploadEmployment(person, request, returnedPerson, providerDynamicsID, concellationToken);
 
-            _logger.LogDebug($"Attempting to creat found related person records for SearchRequest[{request.SearchRequestId}]");
+            _logger.LogDebug($"Attempting to create found related person records for SearchRequest[{request.SearchRequestId}]");
             await UploadRelatedPersons(person, request, returnedPerson, providerDynamicsID, concellationToken);
+
+            _logger.LogDebug($"Attempting to create bank info records for SearchRequest[{request.SearchRequestId}]");
+            await UploadBankInfos(person, request, returnedPerson, providerDynamicsID, concellationToken);
             return true;
 
         }
@@ -194,6 +198,28 @@ namespace DynamicsAdapter.Web.PersonSearch
                     n.InformationSource = providerDynamicsID;
                     n.Person = ssg_person;
                     await _searchRequestService.CreateRelatedPerson(n, concellationToken);
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return false;
+            }
+        }
+        
+        private async Task<bool> UploadBankInfos(Person person, SSG_SearchRequest request, SSG_Person ssg_person, int? providerDynamicsID, CancellationToken concellationToken)
+        {
+            if (person.BankInfos == null) return true;
+            try
+            {
+                foreach (var bankInfo in person.BankInfos)
+                {
+                    SSG_Asset_BankingInformation bank = _mapper.Map<SSG_Asset_BankingInformation>(bankInfo);
+                    bank.SearchRequest = request;
+                    bank.InformationSource = providerDynamicsID;
+                    bank.Person = ssg_person;
+                    await _searchRequestService.CreateBankInfo(bank, concellationToken);
                 }
                 return true;
             }

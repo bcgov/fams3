@@ -334,3 +334,22 @@ ASALocalRun/
 
 # s2i
 !.s2i/bin/
+app/SearchApi/BcGov.Fams3.Redis.Test/opencover.opencover.xml
+
+app/SearchApi/SearchAdapter.Sample.Test/app/SearchApi/coverage/opencover.opencover.xml
+
+app/SearchApi/SearchAdapter.Sample.Test/opencover.opencover.xml
+
+app/SearchApi/SearchAdapter.Sample.Test/SearchApi/coverage/opencover.opencover.xml
+
+app/SearchApi/SearchApi.Core.Test/app/SearchApi/coverage/opencover.opencover.xml
+
+app/SearchApi/SearchApi.Core.Test/opencover.opencover.xml
+
+app/SearchApi/SearchApi.Core.Test/SearchApi/coverage/opencover.opencover.xml
+
+app/SearchApi/SearchApi.Web.Test/app/SearchApi/coverage/opencover.opencover.xml
+
+app/SearchApi/SearchApi.Web.Test/opencover.opencover.xml
+
+app/SearchApi/SearchApi.Web.Test/SearchApi/coverage/opencover.opencover.xml

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using AutoMapper;
 using DynamicsAdapter.Web.ApiGateway;
 using DynamicsAdapter.Web.Auth;
@@ -21,6 +22,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using NSwag;
 using OpenTracing;
 using OpenTracing.Util;
 using Quartz;
@@ -57,11 +59,11 @@ namespace DynamicsAdapter.Web
             var appSettings = ConfigureAppSettings(services);
 
             this.ConfigureOpenTracing(services);
-
+            this.ConfigureOpenApi(services);
             this.ConfigureSearchApi(services);
 
             this.ConfigureDynamicsClient(services);
-
+            
             this.ConfigureScheduler(services);
             this.ConfigureAutoMapper(services);
 
@@ -160,6 +162,33 @@ namespace DynamicsAdapter.Web
 
 
         }
+        /// <summary>
+        /// Configure Open Api using NSwag
+        /// https://github.com/RicoSuter/NSwag
+        /// </summary>
+        /// <param name="services"></param>
+        public void ConfigureOpenApi(IServiceCollection services)
+        {
+
+            services.AddSwaggerDocument(config =>
+            {
+                // configure swagger properties
+                config.PostProcess = document =>
+                {
+                    document.Info.Version = "V0.1";
+                    document.Info.Description = "For Dynamics APi Call";
+                    document.Info.Title = "FAMS  API";
+                    document.Tags = new List<OpenApiTag>()
+                    {
+                        new OpenApiTag() {
+                            Name = "Person Search Events API",
+                            Description = "The FAMS People API"
+                        }
+                    };
+                };
+            });
+
+        }
 
         /// <summary>
         /// Configures OpenTracing with Jaeger Instrumentation from Environment Variables
@@ -211,11 +240,14 @@ namespace DynamicsAdapter.Web
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseSwaggerUi3();
             }
 
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.UseOpenApi();
 
             app.UseEndpoints(endpoints =>
             {

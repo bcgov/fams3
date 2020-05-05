@@ -197,6 +197,12 @@
             "$ref": "#/definitions/Employment"
           }
         },
+        "bankInfos": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/BankInfo"
+          }
+        },
         "notes": {
           "type": "string"
         }
@@ -525,6 +531,34 @@
           "description": "The full name  of the contact"
         }
       }
+    },
+    "BankInfo": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/PersonalInfo"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "bankName": {
+              "type": "string",
+              "description": "Bank name"
+            },
+            "branch": {
+              "type": "string",
+              "description": "The last name"
+            },
+            "transitNumber": {
+              "type": "string",
+              "description": "The middle name"
+            },
+            "accountNumber": {
+              "type": "string",
+              "description": "The other name"
+            }
+          }
+        }
+      ]
     }
   },
   "tags": [

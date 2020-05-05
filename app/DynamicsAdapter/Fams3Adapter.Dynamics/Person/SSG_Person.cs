@@ -17,7 +17,7 @@ namespace Fams3Adapter.Dynamics.Person
         [JsonProperty("statuscode")]
         public int StatusCode { get; set; }
 
-        [JsonProperty("ssg_SearchRequestId")]
+        [JsonProperty("ssg_SearchRequest")]
         public virtual SSG_SearchRequest SearchRequest { get; set; }
 
         [JsonProperty("ssg_informationsourcetext")]

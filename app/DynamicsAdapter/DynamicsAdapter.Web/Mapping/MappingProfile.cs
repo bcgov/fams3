@@ -2,6 +2,7 @@
 using DynamicsAdapter.Web.PersonSearch.Models;
 using Fams3Adapter.Dynamics;
 using Fams3Adapter.Dynamics.Address;
+using Fams3Adapter.Dynamics.BankInfo;
 using Fams3Adapter.Dynamics.DataProvider;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
@@ -191,7 +192,15 @@ namespace  DynamicsAdapter.Web.Mapping
                .ForMember(dest => dest.Weight, opt => opt.MapFrom(src => src.Weight))
                .ForMember(dest => dest.WearGlasses, opt => opt.MapFrom(src => src.WearGlasses))
                .ForMember(dest => dest.DistinguishingFeatures, opt => opt.MapFrom(src => src.DistinguishingFeatures));
-              
+
+            CreateMap<BankInfo, SSG_Asset_BankingInformation>()
+                 .ForMember(dest => dest.AccountNumber, opt => opt.MapFrom(src => src.AccountNumber))
+                 .ForMember(dest => dest.Branch, opt => opt.MapFrom(src => src.Branch))
+                 .ForMember(dest => dest.BankName, opt => opt.MapFrom(src => src.BankName))
+                 .ForMember(dest => dest.TransitNumber, opt => opt.MapFrom(src => src.TransitNumber))
+                 .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => $"{src.Notes} {src.Description}"))
+                 .IncludeBase<PersonalInfo, DynamicsEntity>();
+
         }
     }
 

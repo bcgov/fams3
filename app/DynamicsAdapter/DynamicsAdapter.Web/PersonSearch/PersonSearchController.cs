@@ -1,21 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using DynamicsAdapter.Web.PersonSearch.Models;
-using Fams3Adapter.Dynamics.Address;
-using Fams3Adapter.Dynamics.Identifier;
-using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.SearchApiEvent;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Fams3Adapter.Dynamics.Types;
-using Fams3Adapter.Dynamics.Name;
-using Fams3Adapter.Dynamics.Person;
+using NSwag.Annotations;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace DynamicsAdapter.Web.PersonSearch
 {
@@ -44,6 +38,7 @@ namespace DynamicsAdapter.Web.PersonSearch
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Route("Completed/{id}")]
+        [OpenApiTag("Person Search Events API")]
         public async Task<IActionResult> Completed(Guid id, [FromBody]PersonSearchCompleted personCompletedEvent)
         {
             _logger.LogInformation("Received Person search completed event with SearchRequestId is " + id);
@@ -93,6 +88,7 @@ namespace DynamicsAdapter.Web.PersonSearch
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Route("Accepted/{id}")]
+        [OpenApiTag("Person Search Events API")]
         public async Task<IActionResult> Accepted(Guid id, [FromBody]PersonSearchAccepted personAcceptedEvent)
         {
 
@@ -122,6 +118,7 @@ namespace DynamicsAdapter.Web.PersonSearch
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Route("Failed/{id}")]
+        [OpenApiTag("Person Search Events API")]
         public async Task<IActionResult> Failed(Guid id, [FromBody]PersonSearchFailed personFailedEvent)
         {
 
@@ -152,6 +149,7 @@ namespace DynamicsAdapter.Web.PersonSearch
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Route("Finalized/{id}")]
+        [OpenApiTag("Person Search Events API")]
         public async Task<IActionResult> Finalized(Guid id)
         {
 
@@ -183,6 +181,7 @@ namespace DynamicsAdapter.Web.PersonSearch
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Route("Rejected/{id}")]
+        [OpenApiTag("Person Search Events API")]
         public async Task<IActionResult> Rejected(Guid id, [FromBody]PersonSearchRejected personRejectedEvent)
         {
 

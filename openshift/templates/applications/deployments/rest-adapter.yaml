@@ -1,0 +1,101 @@
+apiVersion: v1
+kind: Template
+labels:
+  template: rest-adapter-template
+message: |-
+  A Jenkins server must be instantiated in this project to manage
+  the Pipeline BuildConfig created by this template. You will be able to log in to
+  it using your OpenShift user credentials.
+metadata:
+  annotations:
+    openshift.io/display-name: rest-adapter template
+    description: |-
+      This is a template for rest-adapter.
+    iconClass: icon-jenkins
+    tags: instant-app,jenkins
+  name: rest-adapter-template
+parameters:
+  - description: The OpenShift Namespace prefix.
+    displayName: Namespace Prefix (Prefix for each namespace ie prefix-tools, prefix-dev etc)
+    name: namespacePrefix
+    required: true
+    value:
+  - description: Data partner service name.
+    displayName: Name of the data partner service
+    name: dataPartnerService
+    required: true
+    value:
+  - name: TAG
+    required: true
+    value: dev
+objects:
+- apiVersion: apps.openshift.io/v1
+  kind: DeploymentConfig
+  metadata:
+    labels:
+      app: ${dataPartnerService}-rest-adapter
+    name: ${dataPartnerService}-rest-adapter
+  spec:
+    replicas: 2
+    revisionHistoryLimit: 10
+    selector:
+      io.kompose.service: ${dataPartnerService}-rest-adapter
+    strategy:
+      activeDeadlineSeconds: 21600
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          io.kompose.service: ${dataPartnerService}-rest-adapter
+      spec:
+        containers:
+        - env:
+          - name: JAEGER_SERVICE_NAME
+            value: ${dataPartnerService}-rest-adapter
+          envFrom:
+          - secretRef:
+              name: ${dataPartnerService}-rest-config
+          - secretRef:
+              name: jeager-config
+          - secretRef:
+              name: aspnet-env
+          image: ''
+          imagePullPolicy: IfNotPresent
+          name: ${dataPartnerService}-rest-adapter
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          resources:
+            limits:
+              cpu: 250m
+              memory: 1Gi
+            requests:
+              cpu: 100m
+              memory: 256Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - ${dataPartnerService}-rest-adapter
+        from:
+          kind: ImageStreamTag
+          name: ${dataPartnerService}-rest-adapter:${TAG}
+          namespace: ${namespacePrefix}-tools
+      type: ImageChange

@@ -1,0 +1,98 @@
+apiVersion: v1
+kind: Template
+labels:
+  template: dynadapter-template
+message: |-
+  A Jenkins server must be instantiated in this project to manage
+  the Pipeline BuildConfig created by this template. You will be able to log in to
+  it using your OpenShift user credentials.
+metadata:
+  annotations:
+    openshift.io/display-name: dynadapter template
+    description: |-
+      This is a template for dynadapter.
+    iconClass: icon-jenkins
+    tags: instant-app,jenkins
+  name: dynadapter-template
+parameters:
+  - description: The OpenShift Namespace prefix.
+    displayName: Namespace Prefix (Prefix for each namespace ie prefix-tools, prefix-dev etc)
+    name: namespacePrefix
+    required: true
+    value:
+  - name: TAG
+    required: true
+    value: dev
+objects:
+- apiVersion: apps.openshift.io/v1
+  kind: DeploymentConfig
+  metadata:
+    labels:
+      app: dynadapter
+    name: dynadapter
+  spec:
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      io.kompose.service: dynadapter
+    strategy:
+      activeDeadlineSeconds: 21600
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          io.kompose.service: dynadapter
+      spec:
+        containers:
+        - env:
+          - name: JAEGER_SERVICE_NAME
+            value: dyanadapter
+          envFrom:
+          - secretRef:
+              name: aspnet-env
+          - secretRef:
+              name: dynadapter-config
+          - secretRef:
+              name: dynamics-oauth-credentials
+          - secretRef:
+              name: jeager-config
+          image: ''
+          imagePullPolicy: IfNotPresent
+          name: dynadapter
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          resources:
+            limits:
+              cpu: "1"
+              memory: 1Gi
+            requests:
+              cpu: 100m
+              memory: 256Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - dynadapter
+        from:
+          kind: ImageStreamTag
+          name: dynadapter:${TAG}
+          namespace: ${namespacePrefix}-tools
+      type: ImageChange

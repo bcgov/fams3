@@ -8,6 +8,8 @@ namespace SearchApi.Core.Test.Fake
       
             public Guid SearchRequestId { get; set; }
 
+            public string FileId { get; set; }
+
             public DateTime TimeStamp { get; set; }
 
             public ProviderProfile ProviderProfile { get; set; }

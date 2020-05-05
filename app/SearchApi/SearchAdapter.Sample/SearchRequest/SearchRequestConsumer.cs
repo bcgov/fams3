@@ -58,13 +58,13 @@ namespace SearchAdapter.Sample.SearchRequest
 
             if (validation.IsValid)
             {
-                await context.Publish<PersonSearchAccepted>(new DefaultPersonSearchAccepted(context.Message.SearchRequestId, _profile));
+                await context.Publish<PersonSearchAccepted>(new DefaultPersonSearchAccepted(context.Message.SearchRequestId, _profile, context.Message.FileId));
             }
             else
             {
                 _logger.LogInformation("PersonSearch does not have sufficient information for the adapter to proceed the search.");
 
-                var rejectionEvent = new PersonSearchRejectedEvent(context.Message.SearchRequestId, _profile);
+                var rejectionEvent = new PersonSearchRejectedEvent(context.Message.SearchRequestId, context.Message.FileId, _profile);
 
                 validation.Errors.ToList().ForEach(x => rejectionEvent.AddValidationResult(new DefaultValidationResult()
                 {

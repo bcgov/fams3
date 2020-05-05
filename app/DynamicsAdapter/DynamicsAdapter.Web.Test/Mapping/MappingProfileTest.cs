@@ -8,6 +8,7 @@ using DynamicsAdapter.Web.Mapping;
 using DynamicsAdapter.Web.PersonSearch;
 using DynamicsAdapter.Web.PersonSearch.Models;
 using Fams3Adapter.Dynamics.Address;
+using Fams3Adapter.Dynamics.BankInfo;
 using Fams3Adapter.Dynamics.DataProvider;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
@@ -397,6 +398,10 @@ namespace DynamicsAdapter.Web.Test.Mapping
                         Employments = new Employment[]
                         {
                             new Employment(){}
+                        },
+                        BankInfos = new BankInfo[]
+                        {
+                            new BankInfo(){}
                         }
                     },
                     new Person(){
@@ -426,7 +431,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(new DateTime(2003, 3, 3), searchEvent.TimeStamp);
             Assert.AreEqual(Keys.EVENT_COMPLETED, searchEvent.EventType);
             Assert.AreEqual(Keys.SEARCH_API_EVENT_NAME, searchEvent.Name);
-            Assert.AreEqual("Auto search processing completed successfully. 2 Matched Persons found.\nFor Matched Person 1 : 2 identifier(s) found.  2 addresses found. 2 phone number(s) found. 2 name(s) found. 1 employment(s) found. 0 related person(s) found.\nFor Matched Person 2 : 1 identifier(s) found.  0 addresses found. 0 phone number(s) found. 1 name(s) found. 0 employment(s) found. 1 related person(s) found.\n", searchEvent.Message);
+            Assert.AreEqual("Auto search processing completed successfully. 2 Matched Persons found.\nFor Matched Person 1 : 2 identifier(s) found.  2 addresses found. 2 phone number(s) found. 2 name(s) found. 1 employment(s) found. 0 related person(s) found. 1 bank info(s) found.\nFor Matched Person 2 : 1 identifier(s) found.  0 addresses found. 0 phone number(s) found. 1 name(s) found. 0 employment(s) found. 1 related person(s) found. 0 bank info(s) found.\n", searchEvent.Message);
         }
 
         [Test]
@@ -482,7 +487,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(new DateTime(2003, 3, 3), searchEvent.TimeStamp);
             Assert.AreEqual(Keys.EVENT_COMPLETED, searchEvent.EventType);
             Assert.AreEqual(Keys.SEARCH_API_EVENT_NAME, searchEvent.Name);
-            Assert.AreEqual("Auto search processing completed successfully. 1 Matched Persons found.\nFor Matched Person 1 : 2 identifier(s) found.  0 addresses found. 0 phone number(s) found. 0 name(s) found. 0 employment(s) found. 0 related person(s) found.\n", searchEvent.Message);
+            Assert.AreEqual("Auto search processing completed successfully. 1 Matched Persons found.\nFor Matched Person 1 : 2 identifier(s) found.  0 addresses found. 0 phone number(s) found. 0 name(s) found. 0 employment(s) found. 0 related person(s) found. 0 bank info(s) found.\n", searchEvent.Message);
         }
 
         [Test]
@@ -736,6 +741,37 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(new DateTime(2014, 1, 1), ssg_relatedPerson.Date2);
             Assert.AreEqual("relation start date", ssg_relatedPerson.Date1Label);
             Assert.AreEqual("relation end date", ssg_relatedPerson.Date2Label);
+        }
+
+        [Test]
+        public void BankInfo_should_map_to_SSG_Asset_BankingInformation_correctly()
+        {
+            var bank = new BankInfo()
+            {
+                Branch="Branch",
+                TransitNumber="123456",
+                BankName="Test123",
+                AccountNumber="666666",
+                Description = "test description",
+                Notes = "notes",
+
+                ReferenceDates = new List<ReferenceDate>() {
+                    new ReferenceDate(){Index=0, Key="account start date", Value=new DateTimeOffset(new DateTime(2012,1,1)) },
+                    new ReferenceDate(){Index=1, Key="account end date", Value=new DateTimeOffset(new DateTime(2014,1,1) )}
+                }
+            };
+            SSG_Asset_BankingInformation ssg_bank = _mapper.Map<SSG_Asset_BankingInformation>(bank);
+            Assert.AreEqual("666666", ssg_bank.AccountNumber);
+            Assert.AreEqual("Test123", ssg_bank.BankName);
+            Assert.AreEqual("Branch", ssg_bank.Branch);
+            Assert.AreEqual("123456", ssg_bank.TransitNumber);
+            Assert.AreEqual("notes test description", ssg_bank.Notes);
+            Assert.AreEqual(1, ssg_bank.StatusCode);
+            Assert.AreEqual(0, ssg_bank.StateCode);
+            Assert.AreEqual(new DateTime(2012, 1, 1), ssg_bank.Date1);
+            Assert.AreEqual(new DateTime(2014, 1, 1), ssg_bank.Date2);
+            Assert.AreEqual("account start date", ssg_bank.Date1Label);
+            Assert.AreEqual("account end date", ssg_bank.Date2Label);
         }
 
         [Test]

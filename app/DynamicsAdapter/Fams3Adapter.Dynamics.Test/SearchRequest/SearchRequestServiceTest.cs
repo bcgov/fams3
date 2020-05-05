@@ -1,4 +1,5 @@
 ﻿using Fams3Adapter.Dynamics.Address;
+using Fams3Adapter.Dynamics.BankInfo;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.Name;
@@ -90,15 +91,15 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
           })
           );
 
-            odataClientMock.Setup(x => x.For<SSG_Identity>(null).Set(It.Is<SSG_Identity>(x => x.FirstName == "First"))
-            .InsertEntryAsync(It.IsAny<CancellationToken>()))
-            .Returns(Task.FromResult(new SSG_Identity()
-            {
-              FirstName = "FirstName"
-            })
-            );
+        odataClientMock.Setup(x => x.For<SSG_Identity>(null).Set(It.Is<SSG_Identity>(x => x.FirstName == "First"))
+        .InsertEntryAsync(It.IsAny<CancellationToken>()))
+        .Returns(Task.FromResult(new SSG_Identity()
+        {
+            FirstName = "FirstName"
+        })
+        );
 
-            odataClientMock.Setup(x => x.For<SSG_Employment>(null).Set(It.Is<EmploymentEntity>(x => x.BusinessOwner == "Business Owner"))
+         odataClientMock.Setup(x => x.For<SSG_Employment>(null).Set(It.Is<EmploymentEntity>(x => x.BusinessOwner == "Business Owner"))
          .InsertEntryAsync(It.IsAny<CancellationToken>()))
          .Returns(Task.FromResult(new SSG_Employment()
          {
@@ -111,6 +112,14 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             .Returns(Task.FromResult(new SSG_EmploymentContact()
             {
              PhoneNumber = "12345678"
+            })
+            );
+
+            odataClientMock.Setup(x => x.For<SSG_Asset_BankingInformation>(null).Set(It.Is<SSG_Asset_BankingInformation>(x => x.BankName == "bank"))
+            .InsertEntryAsync(It.IsAny<CancellationToken>()))
+            .Returns(Task.FromResult(new SSG_Asset_BankingInformation()
+            {
+              BankName = "bank",
             })
             );
 
@@ -285,6 +294,29 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             var result = await _sut.CreateEmploymentContact(employmentContact, CancellationToken.None);
 
             Assert.AreEqual("12345678", result.PhoneNumber);
+        }
+
+        [Test]
+        public async Task with_correct_searchRequestid_upload_bank_info_should_success()
+        {
+            var bankInfo = new SSG_Asset_BankingInformation()
+            {
+                BankName = "bank",
+                TransitNumber = "123456",
+                AccountNumber = "123456",
+                Branch = "branch",
+                Notes = "notes",
+                Date1 = new DateTime(2001, 1, 1),
+                Date1Label = "date1lable",
+                Date2 = new DateTime(2005, 1, 1),
+                Date2Label = "date2lable",
+                SearchRequest = new SSG_SearchRequest() { SearchRequestId = testId },
+                Person = new SSG_Person() { PersonId = testPersonId }
+            };
+
+            var result = await _sut.CreateBankInfo(bankInfo, CancellationToken.None);
+
+            Assert.AreEqual("bank", result.BankName);
         }
     }
 }

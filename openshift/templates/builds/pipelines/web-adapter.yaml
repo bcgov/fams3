@@ -1,23 +1,28 @@
 apiVersion: v1
 kind: Template
 labels:
-  template: icbc-web-adapter-pipeline-template
+  template: web-adapter-pipeline-template
 message: |-
   A Jenkins server must be instantiated in this project to manage
   the Pipeline BuildConfig created by this template. You will be able to log in to
   it using your OpenShift user credentials.
 metadata:
   annotations:
-    openshift.io/display-name: icbc-web-adapter pipeline template
+    openshift.io/display-name: web-adapter pipeline template
     description: |-
-      This is a template for icbc-web-adapter pipeline.
+      This is a template for web-adapter pipeline.
     iconClass: icon-jenkins
     tags: instant-app,jenkins
-  name: icbc-web-adapter-pipeline-template
+  name: web-adapter-pipeline-template
 parameters:
   - description: The OpenShift Namespace prefix.
     displayName: Namespace Prefix (Prefix for each namespace ie prefix-tools, prefix-dev etc)
     name: namespacePrefix
+    required: true
+    value:
+  - description: Data partner service name.
+    displayName: Name of the data partner service
+    name: dataPartnerService
     required: true
     value:
   - description: Github trigger secret. A difficult to guess string encoded as part of the webhook URL. Not encrypted.
@@ -26,14 +31,13 @@ parameters:
     generate: expression
     name: gitSecret
 objects:
-
 - apiVersion: build.openshift.io/v1
   kind: BuildConfig
   metadata:
     labels:
-      application: icbc-web-adapter
+      application: ${dataPartnerService}-web-adapter
       template: master-build-pipeline
-    name: icbc-web-adapter-pipeline
+    name: ${dataPartnerService}-web-adapter-pipeline
     namespace: ${namespacePrefix}-tools
   spec:
     failedBuildsHistoryLimit: 5
@@ -51,14 +55,13 @@ objects:
       jenkinsPipelineStrategy:
         env:
         - name: APP_NAME
-          value: icbc-web-adapter
+          value: ${dataPartnerService}-web-adapter
         - name: LIFECYCLE_WEBHOOK
         - name: GIT_SOURCE_URL
           value: git@github.com:bcgov-c/fams3-openshift.git
         - name: GIT_SOURCE_REF
           value: master
         - name: GIT_CREDENTIALS_ID
-        - name: GIT_CONTEXT_DIR
         - name: JENKINS_POD
           value: dotnet
         - name: SONAR_TOKEN

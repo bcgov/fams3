@@ -1,23 +1,28 @@
 apiVersion: v1
 kind: Template
 labels:
-  template: bchydro-web-adapter-pipeline-template
+  template: rest-adapter-pipeline-template
 message: |-
   A Jenkins server must be instantiated in this project to manage
   the Pipeline BuildConfig created by this template. You will be able to log in to
   it using your OpenShift user credentials.
 metadata:
   annotations:
-    openshift.io/display-name: bchydro-web-adapter pipeline template
+    openshift.io/display-name: rest-adapter pipeline template
     description: |-
-      This is a template for bchydro-web-adapter pipeline.
+      This is a template for rest-adapter pipeline.
     iconClass: icon-jenkins
     tags: instant-app,jenkins
-  name: bchydro-web-adapter-pipeline-template
+  name: rest-adapter-pipeline-template
 parameters:
   - description: The OpenShift Namespace prefix.
     displayName: Namespace Prefix (Prefix for each namespace ie prefix-tools, prefix-dev etc)
     name: namespacePrefix
+    required: true
+    value:
+  - description: Data partner service name.
+    displayName: Name of the data partner service
+    name: dataPartnerService
     required: true
     value:
   - description: Github trigger secret. A difficult to guess string encoded as part of the webhook URL. Not encrypted.
@@ -26,14 +31,13 @@ parameters:
     generate: expression
     name: gitSecret
 objects:
-
 - apiVersion: build.openshift.io/v1
   kind: BuildConfig
   metadata:
     labels:
-      application: bchydro-web-adapter
+      application: ${dataPartnerService}-rest-adapter
       template: master-build-pipeline
-    name: bchydro-web-adapter-pipeline
+    name: ${dataPartnerService}-rest-adapter-pipeline
     namespace: ${namespacePrefix}-tools
   spec:
     failedBuildsHistoryLimit: 5
@@ -45,20 +49,19 @@ objects:
     source:
       git:
         ref: master
-        uri: git@github.com:bcgov-c/fams3-openshift.git
+        uri: https://github.com/bcgov-c/fams3-openshift
       type: Git
     strategy:
       jenkinsPipelineStrategy:
         env:
         - name: APP_NAME
-          value: bchydro-web-adapter
+          value: ${dataPartnerService}-rest-adapter
         - name: LIFECYCLE_WEBHOOK
         - name: GIT_SOURCE_URL
-          value: git@github.com:bcgov-c/fams3-openshift.git
+          value: https://github.com/bcgov-c/fams3-openshift
         - name: GIT_SOURCE_REF
           value: master
         - name: GIT_CREDENTIALS_ID
-        - name: GIT_CONTEXT_DIR
         - name: JENKINS_POD
           value: dotnet
         - name: SONAR_TOKEN
@@ -206,7 +209,6 @@ objects:
               sh "oc process -f ${buildConfigPath} \
                 -p appName=${appName} \
                 -p namespace=${sourceNamespace} \
-                -p replicas=1 \
                 -p TAG=${version} | oc apply -f - -n ${targetNamespace}"
 
               createRoute("${appName}", "${targetNamespace}", "${routeType}")

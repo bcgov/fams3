@@ -2,6 +2,7 @@
 using DynamicsAdapter.Web.PersonSearch;
 using DynamicsAdapter.Web.PersonSearch.Models;
 using Fams3Adapter.Dynamics.Address;
+using Fams3Adapter.Dynamics.BankInfo;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.Name;
@@ -34,6 +35,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         private SSG_Identity _fakeRelatedPerson;
         private EmploymentEntity _fakeEmployment;
         private SSG_EmploymentContact _fakeEmploymentContact;
+        private SSG_Asset_BankingInformation _fakeBankInfo;
         private PersonEntity _ssg_fakePerson;
         private ProviderProfile _providerProfile;
         private SSG_SearchRequest _searchRequest;
@@ -113,6 +115,11 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 SearchRequestId = validRequestId
             };
 
+            _fakeBankInfo = new SSG_Asset_BankingInformation
+            {
+                BankName="bank"
+            };
+
             _fakePerson = new Person()
             {
                 DateOfBirth = DateTime.Now,
@@ -177,6 +184,14 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                             }
                         }
                     }
+                },
+
+                BankInfos = new List<BankInfo>()
+                {
+                    new BankInfo()
+                    {
+                        BankName = "BankName",                       
+                    }
                 }
 
 
@@ -213,6 +228,9 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
 
             _mapper.Setup(m => m.Map<SSG_Identity>(It.IsAny<RelatedPerson>()))
                    .Returns(_fakeRelatedPerson);
+
+            _mapper.Setup(m => m.Map<SSG_Asset_BankingInformation>(It.IsAny<BankInfo>()))
+                   .Returns(_fakeBankInfo);
 
             _searchRequestServiceMock.Setup(x => x.CreateIdentifier(It.Is<SSG_Identifier>(x => x.SearchRequest.SearchRequestId == invalidRequestId), It.IsAny<CancellationToken>()))
                 .Throws(new Exception("random exception"));
@@ -260,6 +278,12 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                   FirstName = "firstName"
               }));
 
+            _searchRequestServiceMock.Setup(x => x.CreateBankInfo(It.Is<SSG_Asset_BankingInformation>(x => x.SearchRequest.SearchRequestId == validRequestId), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult<SSG_Asset_BankingInformation>(new SSG_Asset_BankingInformation()
+                {
+                    BankName = "bankName"
+                }));
+
             _sut = new SearchResultService(_searchRequestServiceMock.Object, _loggerMock.Object, _mapper.Object);
 
         }
@@ -293,6 +317,9 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
 
             _searchRequestServiceMock
                 .Verify(x => x.CreateEmploymentContact(It.IsAny<SSG_EmploymentContact>(), It.IsAny<CancellationToken>()), Times.Once);
+
+            _searchRequestServiceMock
+               .Verify(x => x.CreateBankInfo(It.IsAny<SSG_Asset_BankingInformation>(), It.IsAny<CancellationToken>()), Times.Once);
 
             Assert.AreEqual(true, result);
         }

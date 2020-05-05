@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Fams3Adapter.Dynamics.Address;
+using Fams3Adapter.Dynamics.BankInfo;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.Name;
@@ -24,6 +25,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         Task<SSG_Person> SavePerson(PersonEntity person, CancellationToken cancellationToken);
         Task<SSG_Employment> CreateEmployment(EmploymentEntity employment, CancellationToken cancellationToken);
         Task<SSG_EmploymentContact> CreateEmploymentContact(SSG_EmploymentContact employmentContact, CancellationToken cancellationToken);
+        Task<SSG_Asset_BankingInformation> CreateBankInfo(SSG_Asset_BankingInformation bankInfo, CancellationToken cancellationToken);
     }
 
     /// <summary>
@@ -106,6 +108,11 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         public async Task<SSG_Identity> CreateRelatedPerson(SSG_Identity relatedPerson, CancellationToken cancellationToken)
         {
             return await this._oDataClient.For<SSG_Identity>().Set(relatedPerson).InsertEntryAsync(cancellationToken);
+        }
+
+        public async Task<SSG_Asset_BankingInformation> CreateBankInfo(SSG_Asset_BankingInformation bankInfo, CancellationToken cancellationToken)
+        {
+            return await this._oDataClient.For<SSG_Asset_BankingInformation>().Set(bankInfo).InsertEntryAsync(cancellationToken);
         }
     }
 }

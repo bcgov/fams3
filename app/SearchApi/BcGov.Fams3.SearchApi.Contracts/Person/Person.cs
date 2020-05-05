@@ -35,6 +35,7 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         public IEnumerable<Name> Names { get; set; }
         public IEnumerable<RelatedPerson> RelatedPersons { get; set; }
         public IEnumerable<Employment> Employments { get; set; }
+        public IEnumerable<BankInfo> BankInfos { get; set; }
 
         public string Notes { get; set; }
     }

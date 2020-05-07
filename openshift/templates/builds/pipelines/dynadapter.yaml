@@ -84,25 +84,12 @@ objects:
               // Checkout Openshift metadata template
               stage("Checkout Templates") {
                 dir("${APP_NAME}") {
-                  //git url: "${GIT_SOURCE_URL}", branch: "${GIT_SOURCE_REF}", credentialsId: "${GIT_CREDENTIALS_ID}"
-                  //env.GIT_COMMIT = getCommit()
-                  git url: "https://github.com/ChrisHoban/ssg-openshift-meta-templates.git"
-                }
-              }
+                  git url: "https://github.com/bcgov/fams3.git"
 
-              stage("Get Build Config") {
-                dir("${APP_NAME}") {
-
-                  artifactPath = "/openshift/templates/${APP_NAME}-dc.yaml"
-                  artifactExists = fileExists artifactPath
-
-                  if (artifactExists){
-                    env.BUILD_CONFIG_PATH = artifactPath
-                  } else {
-                    env.BUILD_CONFIG_PATH = "openshift/meta-templates/deployment-config.yaml"
-                  }
-
-                  sh "echo build config path: ${BUILD_CONFIG_PATH}"
+                  DEPLOYMENT_CONFIG_PATH = "openshift/templates/applications/deployments/dynadapter.yaml"
+                  ROUTE_CONFIG_PATH = "openshift/templates/applications/routes/dynadapter.yaml"
+                  SERVICE_CONFIG_PATH = "openshift/templates/applications/services/dynadapter.yaml"
+                  sh "echo deployment config path: ${DEPLOYMENT_CONFIG_PATH}"
                 }
               }
 
@@ -140,7 +127,7 @@ objects:
               }
 
               stage("Deploy ${APP_NAME}") {
-                deploy("${BUILD_CONFIG_PATH}", "${APP_NAME}", "${TOOLS_NAMESPACE}", "${DEV_NAMESPACE}", "${ROUTE_TYPE}", "dev")
+                deploy("${DEPLOYMENT_CONFIG_PATH}", "${SERVICE_CONFIG_PATH}", "${ROUTE_CONFIG_PATH}", "${APP_NAME}", "${TOOLS_NAMESPACE}", "${DEV_NAMESPACE}", "${ROUTE_TYPE}", "dev")
               }
 
               stage('Promotion gate') {
@@ -157,7 +144,7 @@ objects:
               }
 
               stage("Deploy ${APP_NAME}") {
-                deploy("${BUILD_CONFIG_PATH}", "${APP_NAME}", "${TOOLS_NAMESPACE}", "${TEST_NAMESPACE}", "${ROUTE_TYPE}", "test")
+                deploy("${DEPLOYMENT_CONFIG_PATH}", "${SERVICE_CONFIG_PATH}", "${ROUTE_CONFIG_PATH}", "${APP_NAME}", "${TOOLS_NAMESPACE}", "${TEST_NAMESPACE}", "${ROUTE_TYPE}", "test")
               }
 
               stage('Promotion gate') {
@@ -174,7 +161,7 @@ objects:
               }
 
               stage("Deploy ${APP_NAME}") {
-                deploy("${BUILD_CONFIG_PATH}", "${APP_NAME}", "${TOOLS_NAMESPACE}", "${PROD_NAMESPACE}", "${ROUTE_TYPE}", "prod")
+                deploy("${DEPLOYMENT_CONFIG_PATH}", "${SERVICE_CONFIG_PATH}", "${ROUTE_CONFIG_PATH}", "${APP_NAME}", "${TOOLS_NAMESPACE}", "${PROD_NAMESPACE}", "${ROUTE_TYPE}", "prod")
               }
             }
 
@@ -195,18 +182,51 @@ objects:
           }
 
           // Deploy application to environment
-          def deploy(String buildConfigPath, String appName, String sourceNamespace, String targetNamespace, String routeType, String version) {
+          def deploy(String buildConfigPath, String serviceConfigPath, String routeConfigPath, String appName, String sourceNamespace, String targetNamespace, String routeType, String version) {
             dir("${appName}") {
 
               sh "echo Creating DeploymentConfig in ${targetNamespace}"
 
-              // If not grab generic deploymentconfig
-              sh "oc process -f ${buildConfigPath} \
-                -p appName=${appName} \
-                -p namespace=${sourceNamespace} \
-                -p TAG=${version} | oc apply -f - -n ${targetNamespace}"
+              def dcExists
+              def serviceExists
+              def routeExists
+              openshift.withCluster() {
+                openshift.withProject("${targetNamespace}") {
+                  dcExists = openshift.selector( "dc", "${appName}").exists()
+                  serviceExists = openshift.selector( "service", "${appName}").exists()
+                  routeExists = openshift.selector( "route", "${appName}").exists()
+                }
+              }
 
-              createRoute("${appName}", "${targetNamespace}", "${routeType}")
+              if(dcExists){
+                sh "echo ${appName} Deployment Configuration Exists in ${targetNamespace}, skipping baseline template deploy"
+              }else{
+                sh "echo ${appName} Deployment Configuration not found in ${targetNamespace}, performing baseline template deploy"
+                // deploy generic deploymentconfig
+                sh "oc process -f ${deploymentConfigPath} \
+                  -p namespacePrefix=${namespacePrefix} \
+                  -p TAG=${version} | oc apply -f - -n ${targetNamespace}"
+              }
+
+              if(serviceExists){
+                sh "echo ${appName} Service Configuration Exists in ${targetNamespace}, skipping baseline template deploy"
+              }else{
+                sh "echo ${appName} Service Configuration not found in ${targetNamespace}, performing baseline template deploy"
+                // deploy generic Service
+                sh "oc process -f ${serviceConfigPath} \
+                  -p namespacePrefix=${namespacePrefix} \
+                  -p TAG=${version} | oc apply -f - -n ${targetNamespace}"
+              }
+
+              if(routeExists){
+                sh "echo ${appName} Route Configuration Exists in ${targetNamespace}, skipping baseline template deploy"
+              }else{
+                sh "echo ${appName} Route Configuration not found in ${targetNamespace}, performing baseline template deploy"
+                // deploy generic Route
+                sh "oc process -f ${routeConfigPath} \
+                  -p namespacePrefix=${namespacePrefix} \
+                  -p TAG=${version} | oc apply -f - -n ${targetNamespace}"
+              }
 
               sh "echo Wait for service to be up"
 
@@ -219,37 +239,7 @@ objects:
                   }
                 }
               }
-
             }
-          }
-
-          // Create a service routes using the default template and apply the government suffix pattern
-          def createRoute(String appName, String targetNamespace, String routeType) {
-
-            try {
-
-              sh "oc get routes ${appName} -n ${targetNamespace}"
-
-            } catch (err) {
-
-              if(routeType == "private") {
-                createServiceRoute("${appName}", "${targetNamespace}", "pathfinder.bcgov")
-              } else if (routeType == "public") {
-                createServiceRoute("${appName}", "${targetNamespace}", "pathfinder.gov.bc.ca")
-              }
-
-            }
-
-          }
-
-          // Create a service routes using the default template
-          def createServiceRoute(String appName, String targetNamespace, String suffix) {
-            // -p suffix=${suffix} \
-
-            sh "oc process -f openshift/meta-templates/service-route.yaml \
-              -p appName=${appName} \
-              -p namespace=${targetNamespace} | oc apply -f - -n ${targetNamespace}"
-
           }
       type: JenkinsPipeline
     successfulBuildsHistoryLimit: 5

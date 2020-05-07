@@ -57,6 +57,16 @@ namespace SearchApi.Web.Notifications
 
                     try
                     {
+                        if (eventName == EventName.Finalized) {
+                            eventStatus = new PersonSearchFinalizedCls()
+                            {
+                                FileId=eventStatus.FileId,
+                                Message = "Search Request Finalized",
+                                SearchRequestId= eventStatus.SearchRequestId,
+                                TimeStamp=DateTime.Now,
+                                ProviderProfile=null
+                            };
+                        }
                         var content = new StringContent(JsonConvert.SerializeObject(eventStatus));
                         content.Headers.ContentType =
                             System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");

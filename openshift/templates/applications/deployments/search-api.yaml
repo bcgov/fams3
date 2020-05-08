@@ -64,7 +64,7 @@ objects:
           - secretRef:
               name: rabbit-mq-configuration
           - secretRef:
-              name: aspnet-dev-env
+              name: aspnet-env
           - secretRef:
               name: jeager-config
           - secretRef:

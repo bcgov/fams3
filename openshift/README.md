@@ -2,6 +2,18 @@
 Setup openshift tools
 ## Jenkins
 ### dotnet slave
+```shell script
+export NAMESPACE_PREFIX=
+export TOOLS_NAMESPACE=${NAMESPACE_PREFIX}-tools
+export GIT_REPO="bcgov/fams3"
+export GIT_BRANCH="master"
+export GIT_URL="https://raw.githubusercontent.com/${GIT_REPO}/${GIT_BRANCH}"
+
+oc process -o=yaml \
+  -f ${GIT_URL}/openshift/templates/jenkins-slave-dotnet.yaml \
+  -p namespacePrefix=${NAMESPACE_PREFIX}  \
+  | oc apply -f - -n ${TOOLS_NAMESPACE}
+```
 ### dotnet sonarqube slave
 ```shell script
 export NAMESPACE_PREFIX=

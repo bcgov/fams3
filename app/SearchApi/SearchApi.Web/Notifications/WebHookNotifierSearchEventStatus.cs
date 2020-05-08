@@ -19,7 +19,6 @@ namespace SearchApi.Web.Notifications
         private readonly HttpClient _httpClient;
         private readonly SearchApiOptions _searchApiOptions;
         private readonly ILogger<WebHookNotifierSearchEventStatus> _logger;
-
         private readonly ICacheService _cacheService;
 
         public WebHookNotifierSearchEventStatus(HttpClient httpClient, IOptions<SearchApiOptions> searchApiOptions,
@@ -57,17 +56,22 @@ namespace SearchApi.Web.Notifications
 
                     try
                     {
+                        StringContent content;
                         if (eventName == EventName.Finalized) {
-                            eventStatus = new PersonSearchFinalizedCls()
+                            PersonSearchEvent finalizedSearch = new PersonSearchFinalizedCls()
                             {
                                 FileId=eventStatus.FileId,
                                 Message = "Search Request Finalized",
                                 SearchRequestId= eventStatus.SearchRequestId,
-                                TimeStamp=DateTime.Now,
-                                ProviderProfile=null
+                                TimeStamp=DateTime.Now
                             };
+                            content = new StringContent(JsonConvert.SerializeObject(finalizedSearch));
                         }
-                        var content = new StringContent(JsonConvert.SerializeObject(eventStatus));
+                        else
+                        {
+                            content = new StringContent(JsonConvert.SerializeObject(eventStatus));
+                        }
+ 
                         content.Headers.ContentType =
                             System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                         request.Content = content;

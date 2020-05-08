@@ -16,6 +16,7 @@ using SearchApi.Web.Configuration;
 using SearchApi.Web.Notifications;
 using SearchApi.Web.Test.Utils;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace SearchApi.Web.Test.Notifications
 { 
@@ -65,7 +66,7 @@ namespace SearchApi.Web.Test.Notifications
             _mapper = new Mock<IMapper>();
                 fakePersonSearchStatus = new FakePersonSearchAccepted()
                 {
-
+                    FileId = "fileId",
                     SearchRequestId = Guid.NewGuid(),
                     TimeStamp = DateTime.Now
                 };
@@ -121,7 +122,7 @@ namespace SearchApi.Web.Test.Notifications
 
 
         [Test]
-        public async Task finalized_it_should_send_zero_notification_to_one_subscribers()
+        public async Task finalized_it_should_send_zero_notification_to_one_subscribers_when_not_all_dp_completed()
         {
 
             _searchApiOptionsMock.Setup(x => x.Value).Returns(new SearchApiOptions().AddWebHook("test", "http://test:1234"));
@@ -166,9 +167,8 @@ namespace SearchApi.Web.Test.Notifications
         }
 
         [Test]
-        public async Task finalized_it_should_send_notification_to_one_subscribers()
+        public async Task finalized_it_should_send_notification_to_one_subscribers_when_all_dp_completed()
         {
-
             _searchApiOptionsMock.Setup(x => x.Value).Returns(new SearchApiOptions().AddWebHook("test", "http://test:1234"));
 
             _cacheServiceMock.Setup(x => x.GetRequest(It.IsAny<Guid>())).Returns( Task.FromResult(_allcompleted));

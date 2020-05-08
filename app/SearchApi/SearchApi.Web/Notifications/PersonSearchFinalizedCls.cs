@@ -16,6 +16,5 @@ namespace SearchApi.Web.Notifications
 
         public DateTime TimeStamp { get; set; }
 
-        public ProviderProfile ProviderProfile { get; set; }
     }
 }

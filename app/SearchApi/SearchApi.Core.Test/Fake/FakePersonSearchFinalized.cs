@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
+using System;
 
-namespace DynamicsAdapter.Web.PersonSearch.Models
+namespace SearchApi.Core.Test.Fake
 {
-    public class PersonSearchFinalized 
+    public class FakePersonSearchFinalized : PersonSearchFinalized
     {
         public Guid SearchRequestId { get; set; }
         public string FileId { get; set; }
+
         public DateTime TimeStamp { get; set; }
+
         public string Message { get; set; }
     }
 }

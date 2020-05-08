@@ -58,7 +58,7 @@ namespace SearchApi.Web.Notifications
                     {
                         StringContent content;
                         if (eventName == EventName.Finalized) {
-                            PersonSearchEvent finalizedSearch = new PersonSearchFinalizedCls()
+                            PersonSearchEvent finalizedSearch = new PersonSearchFinalizedEvent()
                             {
                                 FileId=eventStatus.FileId,
                                 Message = "Search Request Finalized",

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SearchApi.Web.Notifications
 {
-    public class PersonSearchFinalizedCls : PersonSearchFinalized
+    public class PersonSearchFinalizedEvent : PersonSearchFinalized
     {
         public string Message { get; set; }
 

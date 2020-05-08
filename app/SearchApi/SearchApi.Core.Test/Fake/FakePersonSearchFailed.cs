@@ -8,6 +8,7 @@ namespace SearchApi.Core.Test.Fake
         public string Cause { get; set; }
 
         public Guid SearchRequestId { get; set; }
+        public string FileId { get; set; }
 
         public DateTime TimeStamp { get; set; }
 

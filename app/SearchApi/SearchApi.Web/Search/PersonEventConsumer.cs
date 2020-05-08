@@ -4,6 +4,7 @@ using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 using SearchApi.Web.Notifications;
+using Serilog.Context;
 
 namespace SearchApi.Web.Search
 {
@@ -24,11 +25,13 @@ namespace SearchApi.Web.Search
 
         public async Task Consume(ConsumeContext<PersonSearchAdapterEvent> context, string eventName)
         {
-            var cts = new CancellationTokenSource();
-            _logger.LogInformation($"received new {nameof(PersonSearchAdapterEvent)} event from {context.Message.ProviderProfile?.Name}");
-            await _searchApiNotifier.NotifyEventAsync(context.Message.SearchRequestId, context.Message, eventName,
-                cts.Token);
-
+            using (LogContext.PushProperty("FileId", " - FileId: " + context.Message?.FileId))
+            {
+                var cts = new CancellationTokenSource();
+                _logger.LogInformation($"received new {nameof(PersonSearchAdapterEvent)} event from {context.Message.ProviderProfile?.Name}");
+                await _searchApiNotifier.NotifyEventAsync(context.Message.SearchRequestId, context.Message, eventName,
+                    cts.Token);
+            }
         }
     }
 

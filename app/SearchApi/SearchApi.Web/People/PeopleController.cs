@@ -62,7 +62,7 @@ namespace SearchApi.Web.Controllers
         [OpenApiTag("People API")]
         public async Task<IActionResult> Search([FromHeader(Name = "X-RequestId")] string id, [FromBody]PersonSearchRequest personSearchRequest)
         {
-            using (LogContext.PushProperty("FileId", " - FileId: " + personSearchRequest.FileID))
+            using (LogContext.PushProperty("FileId", " - FileId: " + personSearchRequest?.FileID))
             {
                 if (id == null || !Guid.TryParse(id, out var searchRequestId))
                 {

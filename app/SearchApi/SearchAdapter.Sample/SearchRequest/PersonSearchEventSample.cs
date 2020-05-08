@@ -9,6 +9,7 @@ namespace SearchAdapter.Sample.SearchRequest
     public class PersonSearchCompletedSample : PersonSearchCompleted
     {
         public Guid SearchRequestId { get; set; }
+        public string FileId { get; set; }
         public DateTime TimeStamp { get; set; }
         public ProviderProfile ProviderProfile { get; set; }
         public IEnumerable<Person> MatchedPersons { get; set; }
@@ -19,11 +20,12 @@ namespace SearchAdapter.Sample.SearchRequest
 
         private readonly List<DefaultValidationResult> _validationResults = new List<DefaultValidationResult>();
 
-        public PersonSearchRejectedEvent(Guid searchRequestId, ProviderProfile providerProfile)
+        public PersonSearchRejectedEvent(Guid searchRequestId, string fileId, ProviderProfile providerProfile)
         {
             TimeStamp = DateTime.Now;
             SearchRequestId = searchRequestId;
             ProviderProfile = providerProfile;
+            FileId = fileId;
         }
 
         public void AddValidationResult(DefaultValidationResult validationResult)
@@ -32,6 +34,8 @@ namespace SearchAdapter.Sample.SearchRequest
         }
 
         public Guid SearchRequestId { get; }
+        public string FileId { get; }
+
         public DateTime TimeStamp { get; }
         public ProviderProfile ProviderProfile { get; }
         public IEnumerable<ValidationResult> Reasons => _validationResults;

@@ -325,6 +325,35 @@ namespace SearchAdapter.Sample.SearchRequest
                                 Description="Description",
                                 Notes="Notes"
                             }
+                        },
+                        Vehicles = new List<Vehicle>()
+                        {
+                            new Vehicle()
+                            {
+                                OwnershipType="SINGLE OWNER",
+                                Vin="ABCDEFGHIJK",
+                                PlateNumber="AAA.BBB",
+                                ReferenceDates = new List<ReferenceDate>(){
+                                    new ReferenceDate(){ Index=0, Key="Account Start Date", Value=new DateTime(2019,9,1) },
+                                    new ReferenceDate(){ Index=1, Key="Account Expired Date", Value=new DateTime(2020,9,1) }
+                                },
+                                Description="2020 BRAND TRUCK $DR / CAR AWD",
+                                Notes="vehicle Notes",
+                                Owners=new List<AssetOwner>()
+                                {
+                                    new AssetOwner()
+                                    {
+                                        FirstName = "owner first name",
+                                        LastName = "owner last name",
+                                        MiddleName ="owner middle name",
+                                        OtherName = "owner other name",
+                                        Description="",
+                                        Type="lease",
+                                        Notes="notes",
+                                        OrganizationName="TRUCK COMPANY INC."                                        
+                                    }
+                                }
+                            }
                         }
                     }
                 }

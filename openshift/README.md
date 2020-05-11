@@ -54,34 +54,62 @@ oc process -o=yaml \
 ```
 # Deploy Applications
 ## RabbitMQ
+```shell script
+export NAMESPACE_PREFIX=
+export NAMESPACE_SUFFIX=
+export TARGET_NAMESPACE=${NAMESPACE_PREFIX}-${NAMESPACE_SUFFIX}
+export GIT_REPO="bcgov/fams3"
+export GIT_BRANCH="master"
+export GIT_URL="https://raw.githubusercontent.com/${GIT_REPO}/${GIT_BRANCH}"
+
+# All-in-one template
+oc process -o=yaml \
+  -f ${GIT_URL}/openshift/templates/rabbitmq.dc.yaml \
+  -p namespacePrefix=${NAMESPACE_PREFIX} \
+  | oc apply -f - ${TARGET_NAMESPACE}
+```
 ## Jeager
+```shell script
+export NAMESPACE_PREFIX=
+export NAMESPACE_SUFFIX=
+export TARGET_NAMESPACE=${NAMESPACE_PREFIX}-${NAMESPACE_SUFFIX}
+export GIT_REPO="bcgov/fams3"
+export GIT_BRANCH="master"
+export GIT_URL="https://raw.githubusercontent.com/${GIT_REPO}/${GIT_BRANCH}"
+
+# All-in-one template
+oc process -o=yaml \
+  -f ${GIT_URL}/openshift/templates/jaeger-aio.dc.yaml \
+  -p namespacePrefix=${NAMESPACE_PREFIX} \
+  | oc apply -f - ${TARGET_NAMESPACE}
+```
 ## Redis
 ```shell script
 export NAMESPACE_PREFIX=
-export TARGET_NAMESPACE=${NAMESPACE_PREFIX}-
-export TOOLS_NAMESPACE=${NAMESPACE_PREFIX}-tools
+export NAMESPACE_SUFFIX=
 export GIT_REPO="bcgov/fams3"
 export GIT_BRANCH="master"
 export GIT_URL="https://raw.githubusercontent.com/${GIT_REPO}/${GIT_BRANCH}"
 
 # for dev and test
 oc process -o=yaml \
-  -f ${GIT_URL}/openshift/templates/redis/redis-persistent.dc.yaml \
+  -f ${GIT_URL}/openshift/templates/redis/redis-persistent-commander.dc.yaml \
   -p namespacePrefix=${NAMESPACE_PREFIX} \
-  -p TAG=  \
+  -p TAG=${NAMESPACE_SUFFIX}  \
   | oc apply -f -
 
 # for prod
 oc process -o=yaml \
-  -f ${GIT_URL}/openshift/templates/redis/redis-persistent-commander.dc.yaml \
+  -f ${GIT_URL}/openshift/templates/redis/redis-persistent.dc.yaml \
   -p namespacePrefix=${NAMESPACE_PREFIX} \
-  -p TAG=  \
+  -p TAG=${NAMESPACE_SUFFIX}  \
   | oc apply -f -
 ```
 ## Search-API
 ```shell script
 export NAMESPACE_PREFIX=
-export TARGET_NAMESPACE=${NAMESPACE_PREFIX}-
+export NAMESPACE_SUFFIX=
+export TARGET_NAMESPACE=${NAMESPACE_PREFIX}-${NAMESPACE_SUFFIX}
 export TOOLS_NAMESPACE=${NAMESPACE_PREFIX}-tools
 export GIT_REPO="bcgov/fams3"
 export GIT_BRANCH="master"
@@ -141,7 +169,8 @@ oc process -o=yaml \
 ## Dynadapter
 ```shell script
 export NAMESPACE_PREFIX=
-export TARGET_NAMESPACE=${NAMESPACE_PREFIX}-
+export NAMESPACE_SUFFIX=
+export TARGET_NAMESPACE=${NAMESPACE_PREFIX}-${NAMESPACE_SUFFIX}
 export TOOLS_NAMESPACE=${NAMESPACE_PREFIX}-tools
 export GIT_REPO="bcgov/fams3"
 export GIT_BRANCH="master"
@@ -198,7 +227,8 @@ oc process -o=yaml \
 ## Rest adapter
 ```shell script
 export NAMESPACE_PREFIX=
-export TARGET_NAMESPACE=${NAMESPACE_PREFIX}-
+export NAMESPACE_SUFFIX=
+export TARGET_NAMESPACE=${NAMESPACE_PREFIX}-${NAMESPACE_SUFFIX}
 export TOOLS_NAMESPACE=${NAMESPACE_PREFIX}-tools
 export DATAPARTNERSERVICE=
 export GIT_REPO="bcgov/fams3"
@@ -250,7 +280,8 @@ oc process -o=yaml \
 ## Web adapter
 ```shell script
 export NAMESPACE_PREFIX=
-export TARGET_NAMESPACE=${NAMESPACE_PREFIX}-
+export NAMESPACE_SUFFIX=
+export TARGET_NAMESPACE=${NAMESPACE_PREFIX}-${NAMESPACE_SUFFIX}
 export TOOLS_NAMESPACE=${NAMESPACE_PREFIX}-tools
 export DATAPARTNERSERVICE=
 export GIT_REPO="bcgov/fams3"

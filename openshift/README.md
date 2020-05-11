@@ -56,6 +56,28 @@ oc process -o=yaml \
 ## RabbitMQ
 ## Jeager
 ## Redis
+```shell script
+export NAMESPACE_PREFIX=
+export TARGET_NAMESPACE=${NAMESPACE_PREFIX}-
+export TOOLS_NAMESPACE=${NAMESPACE_PREFIX}-tools
+export GIT_REPO="bcgov/fams3"
+export GIT_BRANCH="master"
+export GIT_URL="https://raw.githubusercontent.com/${GIT_REPO}/${GIT_BRANCH}"
+
+# for dev and test
+oc process -o=yaml \
+  -f ${GIT_URL}/openshift/templates/redis/redis-persistent.dc.yaml \
+  -p namespacePrefix=${NAMESPACE_PREFIX} \
+  -p TAG=  \
+  | oc apply -f -
+
+# for prod
+oc process -o=yaml \
+  -f ${GIT_URL}/openshift/templates/redis/redis-persistent-commander.dc.yaml \
+  -p namespacePrefix=${NAMESPACE_PREFIX} \
+  -p TAG=  \
+  | oc apply -f -
+```
 ## Search-API
 ```shell script
 export NAMESPACE_PREFIX=
@@ -101,7 +123,7 @@ oc process -o=yaml \
 oc process -o=yaml \
   -f ${GIT_URL}/openshift/templates/builds/images/generic.yaml \
   -p namespacePrefix=${NAMESPACE_PREFIX}  \
-  -p appName=  \
+  -p appName="search-api"  \
   | oc apply -f - -n ${TOOLS_NAMESPACE}
 
 # Build config
@@ -158,7 +180,7 @@ oc process -o=yaml \
 oc process -o=yaml \
   -f ${GIT_URL}/openshift/templates/builds/images/generic.yaml \
   -p namespacePrefix=${NAMESPACE_PREFIX}  \
-  -p appName=  \
+  -p appName="dynadapter"  \
   | oc apply -f - -n ${TOOLS_NAMESPACE}
 
 # Build config

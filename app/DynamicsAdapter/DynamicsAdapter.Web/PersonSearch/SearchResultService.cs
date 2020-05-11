@@ -247,11 +247,14 @@ namespace DynamicsAdapter.Web.PersonSearch
                     vehicle.InformationSource = providerDynamicsID;
                     vehicle.Person = ssg_person;
                     SSG_Asset_Vehicle ssgVehicle = await _searchRequestService.CreateVehicle(vehicle, concellationToken);
-                    foreach (var owner in v.Owners)
-                    { 
-                        SSG_AssetOwner assetOwner = _mapper.Map<SSG_AssetOwner>(owner);
-                        assetOwner.Vehicle = ssgVehicle;
-                        await _searchRequestService.CreateAssetOwner(assetOwner, concellationToken);
+                    if (v.Owners != null)
+                    {
+                        foreach (var owner in v.Owners)
+                        {
+                            SSG_AssetOwner assetOwner = _mapper.Map<SSG_AssetOwner>(owner);
+                            assetOwner.Vehicle = ssgVehicle;
+                            await _searchRequestService.CreateAssetOwner(assetOwner, concellationToken);
+                        }
                     }
                 }
                 return true;

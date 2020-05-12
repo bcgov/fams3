@@ -354,6 +354,35 @@ namespace SearchAdapter.Sample.SearchRequest
                                     }
                                 }
                             }
+                        },
+                        OtherAssets= new List<OtherAsset>()
+                        {
+                            new OtherAsset()
+                            {
+                                TypeDescription="type description",
+                                ReferenceDescription="reference description",
+                                ReferenceValue="reference value",
+                                ReferenceDates = new List<ReferenceDate>(){
+                                    new ReferenceDate(){ Index=0, Key="Start Date", Value=new DateTime(2019,9,1) },
+                                    new ReferenceDate(){ Index=1, Key="Expired Date", Value=new DateTime(2020,9,1) }
+                                },
+                                Description="other asset description",
+                                Notes="other asset Notes",
+                                Owners=new List<AssetOwner>()
+                                {
+                                    new AssetOwner()
+                                    {
+                                        FirstName = "owner other first name",
+                                        LastName = "owner other last name",
+                                        MiddleName ="owner other middle name",
+                                        OtherName = "owner other other name",
+                                        Description="other description",
+                                        Type="other type",
+                                        Notes="notes",
+                                        OrganizationName="owner other org name"
+                                    }
+                                }
+                            }
                         }
                     }
                 }

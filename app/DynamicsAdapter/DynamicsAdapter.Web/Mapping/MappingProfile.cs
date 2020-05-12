@@ -2,6 +2,7 @@
 using DynamicsAdapter.Web.PersonSearch.Models;
 using Fams3Adapter.Dynamics;
 using Fams3Adapter.Dynamics.Address;
+using Fams3Adapter.Dynamics.AssetOwner;
 using Fams3Adapter.Dynamics.BankInfo;
 using Fams3Adapter.Dynamics.DataProvider;
 using Fams3Adapter.Dynamics.Employment;
@@ -13,6 +14,7 @@ using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.RelatedPerson;
 using Fams3Adapter.Dynamics.SearchApiEvent;
 using Fams3Adapter.Dynamics.SearchApiRequest;
+using Fams3Adapter.Dynamics.Vehicle;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -201,6 +203,23 @@ namespace  DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => $"{src.Notes} {src.Description}"))
                  .IncludeBase<PersonalInfo, DynamicsEntity>();
 
+            CreateMap<Vehicle, VehicleEntity>()
+                 .ForMember(dest => dest.OwnershipType, opt => opt.MapFrom(src => src.OwnershipType))
+                 .ForMember(dest => dest.PlateNumber, opt => opt.MapFrom(src => src.PlateNumber))
+                 .ForMember(dest => dest.Discription, opt => opt.MapFrom(src => src.Description))
+                 .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
+                 .ForMember(dest => dest.Vin, opt => opt.MapFrom(src => src.Vin))
+                 .IncludeBase<PersonalInfo, DynamicsEntity>();
+
+            CreateMap<AssetOwner, SSG_AssetOwner>()
+                 .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
+                 .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
+                 .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
+                 .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
+                 .ForMember(dest => dest.MiddleName, opt => opt.MapFrom(src => src.MiddleName))
+                 .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type))
+                 .ForMember(dest => dest.OtherName, opt => opt.MapFrom(src => src.OtherName))
+                 .ForMember(dest => dest.OrganizationName, opt => opt.MapFrom(src => src.OrganizationName));
         }
     }
 

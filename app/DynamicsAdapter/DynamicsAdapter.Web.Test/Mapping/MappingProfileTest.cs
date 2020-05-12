@@ -8,6 +8,7 @@ using DynamicsAdapter.Web.Mapping;
 using DynamicsAdapter.Web.PersonSearch;
 using DynamicsAdapter.Web.PersonSearch.Models;
 using Fams3Adapter.Dynamics.Address;
+using Fams3Adapter.Dynamics.AssetOwner;
 using Fams3Adapter.Dynamics.BankInfo;
 using Fams3Adapter.Dynamics.DataProvider;
 using Fams3Adapter.Dynamics.Employment;
@@ -20,6 +21,7 @@ using Fams3Adapter.Dynamics.SearchApiEvent;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Fams3Adapter.Dynamics.Types;
+using Fams3Adapter.Dynamics.Vehicle;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -422,6 +424,10 @@ namespace DynamicsAdapter.Web.Test.Mapping
                         RelatedPersons = new RelatedPerson[]
                         {
                             new RelatedPerson(){}
+                        },
+                        Vehicles=new Vehicle[]
+                        { 
+                            new Vehicle(){}
                         }
                     }
                 }
@@ -431,7 +437,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(new DateTime(2003, 3, 3), searchEvent.TimeStamp);
             Assert.AreEqual(Keys.EVENT_COMPLETED, searchEvent.EventType);
             Assert.AreEqual(Keys.SEARCH_API_EVENT_NAME, searchEvent.Name);
-            Assert.AreEqual("Auto search processing completed successfully. 2 Matched Persons found.\nFor Matched Person 1 : 2 identifier(s) found.  2 addresses found. 2 phone number(s) found. 2 name(s) found. 1 employment(s) found. 0 related person(s) found. 1 bank info(s) found.\nFor Matched Person 2 : 1 identifier(s) found.  0 addresses found. 0 phone number(s) found. 1 name(s) found. 0 employment(s) found. 1 related person(s) found. 0 bank info(s) found.\n", searchEvent.Message);
+            Assert.AreEqual("Auto search processing completed successfully. 2 Matched Persons found.\nFor Matched Person 1 : 2 identifier(s) found.  2 addresses found. 2 phone number(s) found. 2 name(s) found. 1 employment(s) found. 0 related person(s) found. 1 bank info(s) found. 0 vehicle(s) found.\nFor Matched Person 2 : 1 identifier(s) found.  0 addresses found. 0 phone number(s) found. 1 name(s) found. 0 employment(s) found. 1 related person(s) found. 0 bank info(s) found. 1 vehicle(s) found.\n", searchEvent.Message);
         }
 
         [Test]
@@ -487,7 +493,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(new DateTime(2003, 3, 3), searchEvent.TimeStamp);
             Assert.AreEqual(Keys.EVENT_COMPLETED, searchEvent.EventType);
             Assert.AreEqual(Keys.SEARCH_API_EVENT_NAME, searchEvent.Name);
-            Assert.AreEqual("Auto search processing completed successfully. 1 Matched Persons found.\nFor Matched Person 1 : 2 identifier(s) found.  0 addresses found. 0 phone number(s) found. 0 name(s) found. 0 employment(s) found. 0 related person(s) found. 0 bank info(s) found.\n", searchEvent.Message);
+            Assert.AreEqual("Auto search processing completed successfully. 1 Matched Persons found.\nFor Matched Person 1 : 2 identifier(s) found.  0 addresses found. 0 phone number(s) found. 0 name(s) found. 0 employment(s) found. 0 related person(s) found. 0 bank info(s) found. 0 vehicle(s) found.\n", searchEvent.Message);
         }
 
         [Test]
@@ -772,6 +778,65 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(new DateTime(2014, 1, 1), ssg_bank.Date2);
             Assert.AreEqual("account start date", ssg_bank.Date1Label);
             Assert.AreEqual("account end date", ssg_bank.Date2Label);
+        }
+
+        [Test]
+        public void Vehicle_should_map_to_VehicleEntity_correctly()
+        {
+            var v = new Vehicle()
+            {
+                PlateNumber = "123456",
+                OwnershipType = "single owner",
+                Vin = "Test123VinTest",
+                Description = "description",
+                Notes = "notes",
+                Owners=new List<AssetOwner>() {
+                    new AssetOwner(){}
+                },
+
+                ReferenceDates = new List<ReferenceDate>() {
+                    new ReferenceDate(){Index=0, Key="start date", Value=new DateTimeOffset(new DateTime(2012,1,1)) },
+                    new ReferenceDate(){Index=1, Key="end date", Value=new DateTimeOffset(new DateTime(2014,1,1) )}
+                }
+            };
+            VehicleEntity vehicleEntity = _mapper.Map<VehicleEntity>(v);
+            Assert.AreEqual("single owner", vehicleEntity.OwnershipType);
+            Assert.AreEqual("123456", vehicleEntity.PlateNumber);
+            Assert.AreEqual("Test123VinTest", vehicleEntity.Vin);
+            Assert.AreEqual("description", vehicleEntity.Discription);
+            Assert.AreEqual("notes", vehicleEntity.Notes);
+            Assert.AreEqual(1, vehicleEntity.StatusCode);
+            Assert.AreEqual(0, vehicleEntity.StateCode);
+            Assert.AreEqual(new DateTime(2012, 1, 1), vehicleEntity.Date1);
+            Assert.AreEqual(new DateTime(2014, 1, 1), vehicleEntity.Date2);
+            Assert.AreEqual("start date", vehicleEntity.Date1Label);
+            Assert.AreEqual("end date", vehicleEntity.Date2Label);
+        }
+
+        [Test]
+        public void AssetOwner_should_map_to_SSG_AssetOwner_correctly()
+        {
+            var owner = new AssetOwner()
+            {
+                Description="desc",
+                FirstName="firstname",
+                LastName="lastname",
+                MiddleName="middlename",
+                OtherName="othername",
+                Notes="notes",
+                OrganizationName="orgname",
+                Type="ownerType"
+            };
+
+            SSG_AssetOwner assetOwner = _mapper.Map<SSG_AssetOwner>(owner);
+            Assert.AreEqual("lastname", assetOwner.LastName);
+            Assert.AreEqual("firstname", assetOwner.FirstName);
+            Assert.AreEqual("middlename", assetOwner.MiddleName);
+            Assert.AreEqual("othername", assetOwner.OtherName);
+            Assert.AreEqual("desc", assetOwner.Description);
+            Assert.AreEqual("orgname", assetOwner.OrganizationName);
+            Assert.AreEqual("notes", assetOwner.Notes);
+            Assert.AreEqual("ownerType", assetOwner.Type);
         }
 
         [Test]

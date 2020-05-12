@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using DynamicsAdapter.Web.PersonSearch.Models;
 using Fams3Adapter.Dynamics.Address;
+using Fams3Adapter.Dynamics.AssetOwner;
 using Fams3Adapter.Dynamics.BankInfo;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
@@ -9,6 +10,7 @@ using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.RelatedPerson;
 using Fams3Adapter.Dynamics.SearchRequest;
+using Fams3Adapter.Dynamics.Vehicle;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -67,6 +69,9 @@ namespace DynamicsAdapter.Web.PersonSearch
 
             _logger.LogDebug($"Attempting to create bank info records for SearchRequest[{request.SearchRequestId}]");
             await UploadBankInfos(person, request, returnedPerson, providerDynamicsID, concellationToken);
+
+            _logger.LogDebug($"Attempting to create vehicles records for SearchRequest[{request.SearchRequestId}]");
+            await UploadVehicles(person, request, returnedPerson, providerDynamicsID, concellationToken);
             return true;
 
         }
@@ -220,6 +225,37 @@ namespace DynamicsAdapter.Web.PersonSearch
                     bank.InformationSource = providerDynamicsID;
                     bank.Person = ssg_person;
                     await _searchRequestService.CreateBankInfo(bank, concellationToken);
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return false;
+            }
+        }
+
+        private async Task<bool> UploadVehicles(Person person, SSG_SearchRequest request, SSG_Person ssg_person, int? providerDynamicsID, CancellationToken concellationToken)
+        {
+            if (person.Vehicles == null) return true;
+            try
+            {
+                foreach (var v in person.Vehicles)
+                {
+                    VehicleEntity vehicle = _mapper.Map<VehicleEntity>(v);
+                    vehicle.SearchRequest = request;
+                    vehicle.InformationSource = providerDynamicsID;
+                    vehicle.Person = ssg_person;
+                    SSG_Asset_Vehicle ssgVehicle = await _searchRequestService.CreateVehicle(vehicle, concellationToken);
+                    if (v.Owners != null)
+                    {
+                        foreach (var owner in v.Owners)
+                        {
+                            SSG_AssetOwner assetOwner = _mapper.Map<SSG_AssetOwner>(owner);
+                            assetOwner.Vehicle = ssgVehicle;
+                            await _searchRequestService.CreateAssetOwner(assetOwner, concellationToken);
+                        }
+                    }
                 }
                 return true;
             }

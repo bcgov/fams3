@@ -1,4 +1,5 @@
 ﻿using Fams3Adapter.Dynamics.Address;
+using Fams3Adapter.Dynamics.AssetOwner;
 using Fams3Adapter.Dynamics.BankInfo;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
@@ -8,6 +9,7 @@ using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.RelatedPerson;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Fams3Adapter.Dynamics.Types;
+using Fams3Adapter.Dynamics.Vehicle;
 using Moq;
 using NUnit.Framework;
 using Simple.OData.Client;
@@ -24,6 +26,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
 
         private readonly Guid testId = Guid.Parse("6AE89FE6-9909-EA11-B813-00505683FBF4");
         private readonly Guid testPersonId = Guid.Parse("6AE89FE6-9909-EA11-1111-00505683FBF4");
+        private readonly Guid testVehicleId = Guid.Parse("8AE89FE6-9909-EA11-1901-00005683FBF9");
 
         private SearchRequestService _sut;
 
@@ -122,6 +125,22 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
               BankName = "bank",
             })
             );
+
+            odataClientMock.Setup(x => x.For<SSG_Asset_Vehicle>(null).Set(It.Is<VehicleEntity>(x => x.PlateNumber == "AAA.BBB"))
+             .InsertEntryAsync(It.IsAny<CancellationToken>()))
+             .Returns(Task.FromResult(new SSG_Asset_Vehicle()
+             {
+                 VehicleId = testVehicleId
+             })
+             );
+
+            odataClientMock.Setup(x => x.For<SSG_AssetOwner>(null).Set(It.Is<SSG_AssetOwner>(x => x.FirstName == "firstName"))
+             .InsertEntryAsync(It.IsAny<CancellationToken>()))
+             .Returns(Task.FromResult(new SSG_AssetOwner()
+             {
+                 FirstName = "firstName"
+             })
+             );
 
             _sut = new SearchRequestService(odataClientMock.Object);
         }
@@ -317,6 +336,41 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             var result = await _sut.CreateBankInfo(bankInfo, CancellationToken.None);
 
             Assert.AreEqual("bank", result.BankName);
+        }
+
+        [Test]
+        public async Task with_correct_searchRequestid_upload_vehicle_should_success()
+        {
+            var vehicle = new VehicleEntity()
+            {
+                Discription="car color, type",
+                PlateNumber="AAA.BBB",
+                Notes = "notes",
+                Date1 = new DateTime(2001, 1, 1),
+                Date1Label = "date1lable",
+                Date2 = new DateTime(2005, 1, 1),
+                Date2Label = "date2lable",
+                SearchRequest = new SSG_SearchRequest() { SearchRequestId = testId },
+                Person = new SSG_Person() { PersonId = testPersonId }
+            };
+
+            var result = await _sut.CreateVehicle(vehicle, CancellationToken.None);
+
+            Assert.AreEqual(testVehicleId, result.VehicleId);
+        }
+
+        [Test]
+        public async Task with_correct_vehicleID_upload_Assetowner_should_success()
+        {
+            var owner = new SSG_AssetOwner()
+            {
+                FirstName = "firstName",
+                Notes = "notes",
+            };
+
+            var result = await _sut.CreateAssetOwner(owner, CancellationToken.None);
+
+            Assert.AreEqual("firstName", result.FirstName);
         }
     }
 }

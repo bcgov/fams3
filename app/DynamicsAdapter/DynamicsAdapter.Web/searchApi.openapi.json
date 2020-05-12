@@ -203,6 +203,12 @@
             "$ref": "#/definitions/BankInfo"
           }
         },
+        "vehicles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Vehicle"
+          }
+        },
         "notes": {
           "type": "string"
         }
@@ -559,6 +565,74 @@
           }
         }
       ]
+    },
+    "Vehicle": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/PersonalInfo"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "ownershipType": {
+              "type": "string",
+              "description": "OwnershipType"
+            },
+            "vin": {
+              "type": "string",
+              "description": "Vin"
+            },
+            "plateNumber": {
+              "type": "string",
+              "description": "PlateNumber"
+            },
+            "owners": {
+              "type": "array",
+              "description": "Owners",
+              "items": {
+                "$ref": "#/definitions/AssetOwner"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "AssetOwner": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "The asset owner type"
+        },
+        "description": {
+          "type": "string",
+          "description": "The asset owner description"
+        },
+        "organizationName": {
+          "type": "string",
+          "description": "The asset owner organization name"
+        },
+        "firstName": {
+          "type": "string",
+          "description": "The asset owner first name"
+        },
+        "lastName": {
+          "type": "string",
+          "description": "The asset owner last name"
+        },
+        "middleName": {
+          "type": "string",
+          "description": "The asset owner middle name"
+        },
+        "otherName": {
+          "type": "string",
+          "description": "The asset owner other name"
+        },
+        "notes": {
+          "type": "string",
+          "description": "The asset owner notes"
+        }
+      }
     }
   },
   "tags": [

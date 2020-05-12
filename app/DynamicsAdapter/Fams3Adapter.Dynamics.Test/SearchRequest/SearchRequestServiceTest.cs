@@ -4,6 +4,7 @@ using Fams3Adapter.Dynamics.BankInfo;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.Name;
+using Fams3Adapter.Dynamics.OtherAsset;
 using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.RelatedPerson;
@@ -27,6 +28,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         private readonly Guid testId = Guid.Parse("6AE89FE6-9909-EA11-B813-00505683FBF4");
         private readonly Guid testPersonId = Guid.Parse("6AE89FE6-9909-EA11-1111-00505683FBF4");
         private readonly Guid testVehicleId = Guid.Parse("8AE89FE6-9909-EA11-1901-00005683FBF9");
+        private readonly Guid testAssetOtherId = Guid.Parse("77789FE6-9909-EA11-1901-000056837777");
 
         private SearchRequestService _sut;
 
@@ -139,6 +141,14 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
              .Returns(Task.FromResult(new SSG_AssetOwner()
              {
                  FirstName = "firstName"
+             })
+             );
+
+            odataClientMock.Setup(x => x.For<SSG_Asset_Other>(null).Set(It.Is<AssetOtherEntity>(x => x.AssetDescription == "asset description"))
+             .InsertEntryAsync(It.IsAny<CancellationToken>()))
+             .Returns(Task.FromResult(new SSG_Asset_Other()
+             {
+                 AssetOtherId = testAssetOtherId
              })
              );
 
@@ -371,6 +381,28 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             var result = await _sut.CreateAssetOwner(owner, CancellationToken.None);
 
             Assert.AreEqual("firstName", result.FirstName);
+        }
+
+        [Test]
+        public async Task with_correct_searchRequestid_upload_otherasset_should_success()
+        {
+            var assetOther = new AssetOtherEntity()
+            {
+                AssetDescription = "asset description",
+                Description = "description",
+                TypeDescription="asset type description",
+                Notes = "notes",
+                Date1 = new DateTime(2001, 1, 1),
+                Date1Label = "date1lable",
+                Date2 = new DateTime(2005, 1, 1),
+                Date2Label = "date2lable",
+                SearchRequest = new SSG_SearchRequest() { SearchRequestId = testId },
+                Person = new SSG_Person() { PersonId = testPersonId }
+            };
+
+            var result = await _sut.CreateOtherAsset(assetOther, CancellationToken.None);
+
+            Assert.AreEqual(testAssetOtherId, result.AssetOtherId);
         }
     }
 }

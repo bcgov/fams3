@@ -8,6 +8,7 @@ using Fams3Adapter.Dynamics.BankInfo;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.Name;
+using Fams3Adapter.Dynamics.OtherAsset;
 using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.RelatedPerson;
@@ -30,6 +31,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         Task<SSG_Asset_BankingInformation> CreateBankInfo(SSG_Asset_BankingInformation bankInfo, CancellationToken cancellationToken);
         Task<SSG_Asset_Vehicle> CreateVehicle(VehicleEntity vehicle, CancellationToken cancellationToken);
         Task<SSG_AssetOwner> CreateAssetOwner(SSG_AssetOwner owner, CancellationToken cancellationToken);
+        Task<SSG_Asset_Other> CreateOtherAsset(AssetOtherEntity owner, CancellationToken cancellationToken);
     }
 
     /// <summary>
@@ -127,6 +129,11 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         public async Task<SSG_AssetOwner> CreateAssetOwner(SSG_AssetOwner owner, CancellationToken cancellationToken)
         {
             return await this._oDataClient.For<SSG_AssetOwner>().Set(owner).InsertEntryAsync(cancellationToken);
+        }
+
+        public async Task<SSG_Asset_Other> CreateOtherAsset(AssetOtherEntity otherAsset, CancellationToken cancellationToken)
+        {
+            return await this._oDataClient.For<SSG_Asset_Other>().Set(otherAsset).InsertEntryAsync(cancellationToken);
         }
     }
 }

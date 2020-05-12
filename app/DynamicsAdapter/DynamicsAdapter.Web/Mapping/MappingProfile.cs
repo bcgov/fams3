@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using DynamicsAdapter.Web.PersonSearch.Models;
 using Fams3Adapter.Dynamics;
 using Fams3Adapter.Dynamics.Address;
@@ -8,7 +8,7 @@ using Fams3Adapter.Dynamics.DataProvider;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.Name;
-using Fams3Adapter.Dynamics.OptionSets.Models;
+using Fams3Adapter.Dynamics.OtherAsset;
 using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.RelatedPerson;
@@ -16,11 +16,9 @@ using Fams3Adapter.Dynamics.SearchApiEvent;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using Fams3Adapter.Dynamics.Vehicle;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
-namespace  DynamicsAdapter.Web.Mapping
+namespace DynamicsAdapter.Web.Mapping
 {
 
     public class MappingProfile : Profile
@@ -220,6 +218,13 @@ namespace  DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type))
                  .ForMember(dest => dest.OtherName, opt => opt.MapFrom(src => src.OtherName))
                  .ForMember(dest => dest.OrganizationName, opt => opt.MapFrom(src => src.OrganizationName));
+
+            CreateMap<OtherAsset, AssetOtherEntity>()
+                  .ForMember(dest => dest.TypeDescription, opt => opt.MapFrom(src => src.TypeDescription))
+                  .ForMember(dest => dest.Description, opt => opt.MapFrom(src => $"{src.ReferenceDescription} {src.ReferenceValue}"))
+                  .ForMember(dest => dest.AssetDescription, opt => opt.MapFrom(src => src.Description))
+                  .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
+                  .IncludeBase<PersonalInfo, DynamicsEntity>();
         }
     }
 

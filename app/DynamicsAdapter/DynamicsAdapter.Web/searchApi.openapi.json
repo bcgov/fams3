@@ -209,6 +209,12 @@
             "$ref": "#/definitions/Vehicle"
           }
         },
+        "otherAssets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/OtherAsset"
+          }
+        },
         "notes": {
           "type": "string"
         }
@@ -633,6 +639,37 @@
           "description": "The asset owner notes"
         }
       }
+    },
+    "OtherAsset": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/PersonalInfo"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "typeDescription": {
+              "type": "string",
+              "description": "Asset Type Description"
+            },
+            "referenceDescription": {
+              "type": "string",
+              "description": "Reference Description"
+            },
+            "referenceValue": {
+              "type": "string",
+              "description": "Reference Value"
+            },
+            "owners": {
+              "type": "array",
+              "description": "Owners",
+              "items": {
+                "$ref": "#/definitions/AssetOwner"
+              }
+            }
+          }
+        }
+      ]
     }
   },
   "tags": [

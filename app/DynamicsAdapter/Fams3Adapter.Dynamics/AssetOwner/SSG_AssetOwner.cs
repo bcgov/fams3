@@ -1,8 +1,6 @@
-﻿using Fams3Adapter.Dynamics.Vehicle;
+﻿using Fams3Adapter.Dynamics.OtherAsset;
+using Fams3Adapter.Dynamics.Vehicle;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Fams3Adapter.Dynamics.AssetOwner
 {
@@ -34,5 +32,8 @@ namespace Fams3Adapter.Dynamics.AssetOwner
 
         [JsonProperty("ssg_Vehicle")]
         public SSG_Asset_Vehicle Vehicle { get; set; }
+
+        [JsonProperty("ssg_OtherAsset")]
+        public SSG_Asset_Other OtherAsset { get; set; }
     }
 }

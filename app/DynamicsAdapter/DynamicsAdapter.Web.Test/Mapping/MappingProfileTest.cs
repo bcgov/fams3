@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using DynamicsAdapter.Web.Mapping;
-using DynamicsAdapter.Web.PersonSearch;
 using DynamicsAdapter.Web.PersonSearch.Models;
 using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.AssetOwner;
@@ -14,6 +8,7 @@ using Fams3Adapter.Dynamics.DataProvider;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.Name;
+using Fams3Adapter.Dynamics.OtherAsset;
 using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.RelatedPerson;
@@ -22,10 +17,10 @@ using Fams3Adapter.Dynamics.SearchApiRequest;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Fams3Adapter.Dynamics.Types;
 using Fams3Adapter.Dynamics.Vehicle;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Moq;
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DynamicsAdapter.Web.Test.Mapping
 {
@@ -66,7 +61,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual("TypeCode", identifier.TypeCode);
             Assert.AreEqual(2, identifier.ReferenceDates.Count());
             Assert.AreEqual(PersonalIdentifierType.SocialInsuranceNumber, identifier.Type);
-           
+
         }
 
         [Test]
@@ -87,7 +82,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                     new SSG_SearchapiRequestDataProvider(){AdaptorName="ICBC"},
                     new SSG_SearchapiRequestDataProvider(){AdaptorName="BC Hydro"}
                 },
-                SearchRequest=new SSG_SearchRequest() { FileId="testFileId"}
+                SearchRequest = new SSG_SearchRequest() { FileId = "testFileId" }
             };
             PersonSearchRequest personSearchRequest = _mapper.Map<PersonSearchRequest>(sSG_SearchApiRequest);
             Assert.AreEqual("firstName", personSearchRequest.FirstName);
@@ -108,7 +103,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                     ContactPerson = "Person",
                     Name = "Name",
                     OwnerName = "OwnerName",
-                    
+
                     Address = new Address
                     {
                         AddressLine1 = "AddressLine1",
@@ -121,11 +116,11 @@ namespace DynamicsAdapter.Web.Test.Mapping
                         ZipPostalCode = "p3p3p3",
                     }
                 },
-               IncomeAssistance = false,
-               EmploymentConfirmed = true,
-               IncomeAssistanceStatus = "Status",
-               Occupation = "Occupation",
-               Website = "Website",
+                IncomeAssistance = false,
+                EmploymentConfirmed = true,
+                IncomeAssistanceStatus = "Status",
+                Occupation = "Occupation",
+                Website = "Website",
                 ReferenceDates = new List<ReferenceDate>(){
                                 new ReferenceDate(){ Index=0, Key="Start Date", Value=new DateTime(2019,9,1) },
                                 new ReferenceDate(){ Index=1, Key="End Date", Value=new DateTime(2020,9,1) }
@@ -404,6 +399,10 @@ namespace DynamicsAdapter.Web.Test.Mapping
                         BankInfos = new BankInfo[]
                         {
                             new BankInfo(){}
+                        },
+                        OtherAssets = new OtherAsset[]
+                        {
+                            new OtherAsset(){}
                         }
                     },
                     new Person(){
@@ -426,7 +425,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                             new RelatedPerson(){}
                         },
                         Vehicles=new Vehicle[]
-                        { 
+                        {
                             new Vehicle(){}
                         }
                     }
@@ -437,7 +436,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(new DateTime(2003, 3, 3), searchEvent.TimeStamp);
             Assert.AreEqual(Keys.EVENT_COMPLETED, searchEvent.EventType);
             Assert.AreEqual(Keys.SEARCH_API_EVENT_NAME, searchEvent.Name);
-            Assert.AreEqual("Auto search processing completed successfully. 2 Matched Persons found.\nFor Matched Person 1 : 2 identifier(s) found.  2 addresses found. 2 phone number(s) found. 2 name(s) found. 1 employment(s) found. 0 related person(s) found. 1 bank info(s) found. 0 vehicle(s) found.\nFor Matched Person 2 : 1 identifier(s) found.  0 addresses found. 0 phone number(s) found. 1 name(s) found. 0 employment(s) found. 1 related person(s) found. 0 bank info(s) found. 1 vehicle(s) found.\n", searchEvent.Message);
+            Assert.AreEqual("Auto search processing completed successfully. 2 Matched Persons found.\nFor Matched Person 1 : 2 identifier(s) found.  2 addresses found. 2 phone number(s) found. 2 name(s) found. 1 employment(s) found. 0 related person(s) found. 1 bank info(s) found. 0 vehicle(s) found. 1 other asset(s) found.\nFor Matched Person 2 : 1 identifier(s) found.  0 addresses found. 0 phone number(s) found. 1 name(s) found. 0 employment(s) found. 1 related person(s) found. 0 bank info(s) found. 1 vehicle(s) found. 0 other asset(s) found.\n", searchEvent.Message);
         }
 
         [Test]
@@ -452,7 +451,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                     Name = "completedProfile"
                 },
                 MatchedPersons = new List<Person>()
-                {}
+                { }
             };
             SSG_SearchApiEvent searchEvent = _mapper.Map<SSG_SearchApiEvent>(completed);
             Assert.AreEqual("completedProfile", searchEvent.ProviderName);
@@ -493,7 +492,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(new DateTime(2003, 3, 3), searchEvent.TimeStamp);
             Assert.AreEqual(Keys.EVENT_COMPLETED, searchEvent.EventType);
             Assert.AreEqual(Keys.SEARCH_API_EVENT_NAME, searchEvent.Name);
-            Assert.AreEqual("Auto search processing completed successfully. 1 Matched Persons found.\nFor Matched Person 1 : 2 identifier(s) found.  0 addresses found. 0 phone number(s) found. 0 name(s) found. 0 employment(s) found. 0 related person(s) found. 0 bank info(s) found. 0 vehicle(s) found.\n", searchEvent.Message);
+            Assert.AreEqual("Auto search processing completed successfully. 1 Matched Persons found.\nFor Matched Person 1 : 2 identifier(s) found.  0 addresses found. 0 phone number(s) found. 0 name(s) found. 0 employment(s) found. 0 related person(s) found. 0 bank info(s) found. 0 vehicle(s) found. 0 other asset(s) found.\n", searchEvent.Message);
         }
 
         [Test]
@@ -506,7 +505,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 IssuedBy = "BC",
                 Description = "description",
                 Notes = "notes",
-                TypeCode="BCDL",
+                TypeCode = "BCDL",
                 ReferenceDates = new List<ReferenceDate>() {
                     new ReferenceDate(){Index=0, Key="startDate", Value=new DateTime(2012,1,1) },
                     new ReferenceDate(){Index=1, Key="endDate", Value=new DateTime(2014,1,1) },
@@ -531,14 +530,14 @@ namespace DynamicsAdapter.Web.Test.Mapping
         public void PhoneNumber_should_map_to_SSG_PhoneNumber_correctly()
         {
             Phone phoneNumber = new Phone()
-            {               
-               
+            {
+
                 PhoneNumber = "6904005678",
                 Type = "home",
-                Extension ="123",
+                Extension = "123",
                 Description = "Description"
 
-               
+
             };
             SSG_PhoneNumber sSG_PhoneNumber = _mapper.Map<SSG_PhoneNumber>(phoneNumber);
             Assert.AreEqual("6904005678", sSG_PhoneNumber.TelePhoneNumber);
@@ -591,9 +590,9 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 HairColour = "Brown",
                 Complexion = "light",
                 Weight = "200",
-                Height="180",
-                EyeColour="black",
-                DistinguishingFeatures="features"           
+                Height = "180",
+                EyeColour = "black",
+                DistinguishingFeatures = "features"
             };
             PersonEntity ssg_person = _mapper.Map<PersonEntity>(person);
             Assert.AreEqual("FirstName", ssg_person.FirstName);
@@ -629,7 +628,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 DateDeathConfirmed = false,
                 Gender = "M",
                 Notes = "Some notes",
-                
+
 
             };
             PersonEntity ssg_person = _mapper.Map<PersonEntity>(person);
@@ -685,7 +684,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 FirstName = "FirstName",
                 LastName = "LastName",
                 MiddleName = "MiddleName",
-                OtherName ="OtherName",
+                OtherName = "OtherName",
                 Type = "Former",
                 Description = "test name",
                 Notes = "notes",
@@ -724,7 +723,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 Description = "test description",
                 Notes = "notes",
                 Gender = "U",
-                DateOfBirth = new DateTimeOffset(new DateTime(2012,3,4)),
+                DateOfBirth = new DateTimeOffset(new DateTime(2012, 3, 4)),
                 ReferenceDates = new List<ReferenceDate>() {
                     new ReferenceDate(){Index=0, Key="relation start date", Value=new DateTimeOffset(new DateTime(2012,1,1)) },
                     new ReferenceDate(){Index=1, Key="relation end date", Value=new DateTimeOffset(new DateTime(2014,1,1) )}
@@ -754,10 +753,10 @@ namespace DynamicsAdapter.Web.Test.Mapping
         {
             var bank = new BankInfo()
             {
-                Branch="Branch",
-                TransitNumber="123456",
-                BankName="Test123",
-                AccountNumber="666666",
+                Branch = "Branch",
+                TransitNumber = "123456",
+                BankName = "Test123",
+                AccountNumber = "666666",
                 Description = "test description",
                 Notes = "notes",
 
@@ -790,7 +789,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 Vin = "Test123VinTest",
                 Description = "description",
                 Notes = "notes",
-                Owners=new List<AssetOwner>() {
+                Owners = new List<AssetOwner>() {
                     new AssetOwner(){}
                 },
 
@@ -818,14 +817,14 @@ namespace DynamicsAdapter.Web.Test.Mapping
         {
             var owner = new AssetOwner()
             {
-                Description="desc",
-                FirstName="firstname",
-                LastName="lastname",
-                MiddleName="middlename",
-                OtherName="othername",
-                Notes="notes",
-                OrganizationName="orgname",
-                Type="ownerType"
+                Description = "desc",
+                FirstName = "firstname",
+                LastName = "lastname",
+                MiddleName = "middlename",
+                OtherName = "othername",
+                Notes = "notes",
+                OrganizationName = "orgname",
+                Type = "ownerType"
             };
 
             SSG_AssetOwner assetOwner = _mapper.Map<SSG_AssetOwner>(owner);
@@ -840,6 +839,38 @@ namespace DynamicsAdapter.Web.Test.Mapping
         }
 
         [Test]
+        public void OtherAsset_should_map_to_AssetOtherEntity_correctly()
+        {
+            var otherAsset = new OtherAsset()
+            {
+                TypeDescription = "TypeDescription",
+                ReferenceDescription = "referenceDescription",
+                ReferenceValue = "referenceValue",
+                Description = "description",
+                Notes = "notes",
+                Owners = new List<AssetOwner>() {
+                    new AssetOwner(){}
+                },
+
+                ReferenceDates = new List<ReferenceDate>() {
+                    new ReferenceDate(){Index=0, Key="start date", Value=new DateTimeOffset(new DateTime(2012,1,1)) },
+                    new ReferenceDate(){Index=1, Key="end date", Value=new DateTimeOffset(new DateTime(2014,1,1) )}
+                }
+            };
+            AssetOtherEntity assetEntity = _mapper.Map<AssetOtherEntity>(otherAsset);
+            Assert.AreEqual("TypeDescription", assetEntity.TypeDescription);
+            Assert.AreEqual("description", assetEntity.AssetDescription);
+            Assert.AreEqual("referenceDescription referenceValue", assetEntity.Description);
+            Assert.AreEqual("notes", assetEntity.Notes);
+            Assert.AreEqual(1, assetEntity.StatusCode);
+            Assert.AreEqual(0, assetEntity.StateCode);
+            Assert.AreEqual(new DateTime(2012, 1, 1), assetEntity.Date1);
+            Assert.AreEqual(new DateTime(2014, 1, 1), assetEntity.Date2);
+            Assert.AreEqual("start date", assetEntity.Date1Label);
+            Assert.AreEqual("end date", assetEntity.Date2Label);
+        }
+
+        [Test]
         public void gender_null_RelatedPerson_should_map_to_SSG_Identity_correctly()
         {
             var relatedPerson = new RelatedPerson()
@@ -850,7 +881,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 Gender = null,
             };
             SSG_Identity ssg_relatedPerson = _mapper.Map<SSG_Identity>(relatedPerson);
-            Assert.AreEqual(null, ssg_relatedPerson.Gender);            
+            Assert.AreEqual(null, ssg_relatedPerson.Gender);
         }
 
 
@@ -859,9 +890,9 @@ namespace DynamicsAdapter.Web.Test.Mapping
         {
             var dp = new SSG_SearchapiRequestDataProvider()
             {
-                Name="dp1",
-                SuppliedByValue=1,
-                AdaptorName="data provider 1"
+                Name = "dp1",
+                SuppliedByValue = 1,
+                AdaptorName = "data provider 1"
             };
             DataProvider provider = _mapper.Map<DataProvider>(dp);
             Assert.AreEqual("DATAPROVIDER1", provider.Name);

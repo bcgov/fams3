@@ -86,6 +86,7 @@ namespace SearchAdapter.Sample.SearchRequest
             {
                 ProviderProfile = _profile,
                 SearchRequestId = personSearchOrdered.SearchRequestId,
+                FileId = personSearchOrdered.FileId,
                 TimeStamp = DateTime.Now,
                 MatchedPersons = new List<Person>()
                 {

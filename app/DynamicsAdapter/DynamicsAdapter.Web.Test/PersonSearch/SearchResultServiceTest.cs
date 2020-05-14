@@ -7,6 +7,7 @@ using Fams3Adapter.Dynamics.BankInfo;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.Name;
+using Fams3Adapter.Dynamics.OtherAsset;
 using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.RelatedPerson;
@@ -17,7 +18,6 @@ using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -41,6 +41,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         private PersonEntity _ssg_fakePerson;
         private SSG_AssetOwner _fakeAssetOwner;
         private VehicleEntity _fakeVehicleEntity;
+        private AssetOtherEntity _fakeOtherAsset;
         private ProviderProfile _providerProfile;
         private SSG_SearchRequest _searchRequest;
         private CancellationToken _fakeToken;
@@ -57,6 +58,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             var validRequestId = Guid.NewGuid();
             var invalidRequestId = Guid.NewGuid();
             var validVehicleId = Guid.NewGuid();
+            var validOtherAssetId = Guid.NewGuid();
 
             _fakePersoneIdentifier = new SSG_Identifier
             {
@@ -112,7 +114,6 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
 
             _ssg_fakePerson = new PersonEntity
             {
-                
             };
 
             _searchRequest = new SSG_SearchRequest
@@ -122,18 +123,24 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
 
             _fakeBankInfo = new SSG_Asset_BankingInformation
             {
-                BankName="bank"
+                BankName = "bank"
             };
 
             _fakeVehicleEntity = new VehicleEntity
             {
                 SearchRequest = _searchRequest,
-                PlateNumber ="AAA.BBB"
+                PlateNumber = "AAA.BBB"
             };
 
             _fakeAssetOwner = new SSG_AssetOwner()
             {
                 OrganizationName = "Ford Inc."
+            };
+
+            _fakeOtherAsset = new AssetOtherEntity()
+            {
+                SearchRequest = _searchRequest,
+                TypeDescription = "type description"
             };
 
             _fakePerson = new Person()
@@ -183,19 +190,19 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                             FirstName = "firstName"
                         }
                     },
-                RelatedPersons=new List<RelatedPerson>()
-                { 
+                RelatedPersons = new List<RelatedPerson>()
+                {
                     new RelatedPerson(){FirstName="firstName"}
                 },
-                    
+
                 Employments = new List<Employment>()
-                { 
+                {
                     new Employment()
                     {
                         Occupation = "Occupation",
                         Employer = new Employer()
                         {
-                            Phones=new List<Phone>(){ 
+                            Phones=new List<Phone>(){
                                 new Phone(){ PhoneNumber = "1111111", Type="Phone"}
                             }
                         }
@@ -206,7 +213,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 {
                     new BankInfo()
                     {
-                        BankName = "BankName",                       
+                        BankName = "BankName",
                     }
                 },
                 Vehicles = new List<Vehicle>() {
@@ -215,6 +222,16 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
 
                     },
                     new Vehicle()
+                    {
+                        Owners=new List<AssetOwner>()
+                        {
+                            new AssetOwner(){}
+                        }
+                    }
+                },
+                OtherAssets = new List<OtherAsset>()
+                {
+                    new OtherAsset()
                     {
                         Owners=new List<AssetOwner>()
                         {
@@ -230,7 +247,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 Name = "Other"
             };
 
-     
+
             _fakeToken = new CancellationToken();
 
             _mapper.Setup(m => m.Map<SSG_Identifier>(It.IsAny<PersonalIdentifier>()))
@@ -266,6 +283,9 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _mapper.Setup(m => m.Map<SSG_AssetOwner>(It.IsAny<AssetOwner>()))
                     .Returns(_fakeAssetOwner);
 
+            _mapper.Setup(m => m.Map<AssetOtherEntity>(It.IsAny<OtherAsset>()))
+                    .Returns(_fakeOtherAsset);
+
             _searchRequestServiceMock.Setup(x => x.CreateIdentifier(It.Is<SSG_Identifier>(x => x.SearchRequest.SearchRequestId == invalidRequestId), It.IsAny<CancellationToken>()))
                 .Throws(new Exception("random exception"));
 
@@ -298,7 +318,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             {
                 EmploymentId = Guid.NewGuid(),
                 Occupation = "Occupation"
-            })) ;
+            }));
 
             _searchRequestServiceMock.Setup(x => x.CreateEmploymentContact(It.IsAny<SSG_EmploymentContact>(), It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult<SSG_EmploymentContact>(new SSG_EmploymentContact()
@@ -327,7 +347,13 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _searchRequestServiceMock.Setup(x => x.CreateAssetOwner(It.Is<SSG_AssetOwner>(x => x.Vehicle.VehicleId == validVehicleId), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<SSG_AssetOwner>(new SSG_AssetOwner()
                 {
-                   Type="Owner"
+                    Type = "Owner"
+                }));
+
+            _searchRequestServiceMock.Setup(x => x.CreateOtherAsset(It.Is<AssetOtherEntity>(x => x.SearchRequest.SearchRequestId == validRequestId), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult<SSG_Asset_Other>(new SSG_Asset_Other()
+                {
+                    AssetOtherId = validOtherAssetId
                 }));
 
             _sut = new SearchResultService(_searchRequestServiceMock.Object, _loggerMock.Object, _mapper.Object);
@@ -371,7 +397,10 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
               .Verify(x => x.CreateVehicle(It.IsAny<VehicleEntity>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
 
             _searchRequestServiceMock
-                .Verify(x => x.CreateAssetOwner(It.IsAny<SSG_AssetOwner>(), It.IsAny<CancellationToken>()), Times.Exactly(1));
+              .Verify(x => x.CreateOtherAsset(It.IsAny<AssetOtherEntity>(), It.IsAny<CancellationToken>()), Times.Exactly(1));
+
+            _searchRequestServiceMock
+                .Verify(x => x.CreateAssetOwner(It.IsAny<SSG_AssetOwner>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
 
             Assert.AreEqual(true, result);
         }
@@ -391,7 +420,8 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 RelatedPersons = null,
                 Employments = null,
                 BankInfos = null,
-                Vehicles = null
+                Vehicles = null,
+                OtherAssets = null
             };
             var result = await _sut.ProcessPersonFound(fakePersonNull, _providerProfile, _searchRequest, _fakeToken);
 
@@ -427,6 +457,9 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
 
             _searchRequestServiceMock
                 .Verify(x => x.CreateAssetOwner(It.IsAny<SSG_AssetOwner>(), It.IsAny<CancellationToken>()), Times.Never);
+
+            _searchRequestServiceMock
+                .Verify(x => x.CreateOtherAsset(It.IsAny<AssetOtherEntity>(), It.IsAny<CancellationToken>()), Times.Never);
 
             Assert.AreEqual(true, result);
         }

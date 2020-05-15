@@ -15,16 +15,16 @@ metadata:
     tags: instant-app,jenkins
   name: web-adapter-imagestream-template
 parameters:
-  - description: The OpenShift Namespace prefix.
-    displayName: Namespace Prefix (Prefix for each namespace ie prefix-tools, prefix-dev etc)
-    name: namespacePrefix
-    required: true
-    value:
-  - description: Data partner service name.
-    displayName: Name of the data partner service
-    name: dataPartnerService
-    required: true
-    value:
+- description: The OpenShift Namespace prefix.
+  displayName: Namespace Prefix (Prefix for each namespace ie prefix-tools, prefix-dev etc)
+  name: namespacePrefix
+  required: true
+  value:
+- description: Data partner service name.
+  displayName: Name of the data partner service
+  name: dataPartnerService
+  required: true
+  value:
 objects:
 - apiVersion: image.openshift.io/v1
   kind: ImageStream

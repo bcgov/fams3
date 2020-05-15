@@ -270,7 +270,9 @@ namespace DynamicsAdapter.Web.Mapping
                     + $"{(p.Names == null ? 0 : p.Names.Count())} name(s) found. " 
                     + $"{(p.Employments == null ? 0 : p.Employments.Count())} employment(s) found. " 
                     + $"{(p.RelatedPersons == null ? 0 : p.RelatedPersons.Count())} related person(s) found. "
-                    + $"{(p.BankInfos == null ? 0 : p.BankInfos.Count())} bank info(s) found.\n";
+                    + $"{(p.BankInfos == null ? 0 : p.BankInfos.Count())} bank info(s) found. "
+                    + $"{(p.Vehicles == null ? 0 : p.Vehicles.Count())} vehicle(s) found. "
+                    + $"{(p.OtherAssets == null ? 0 : p.OtherAssets.Count())} other asset(s) found.\n";
                 i++;
             };
             return msg;

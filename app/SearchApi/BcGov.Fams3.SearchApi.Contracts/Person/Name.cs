@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 
 namespace BcGov.Fams3.SearchApi.Contracts.Person
 {
@@ -20,7 +19,7 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         [Description("the type of the names")]
         public string Type { get; set; }
 
-        
+
 
     }
 }

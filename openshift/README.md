@@ -54,6 +54,7 @@ oc process -o=yaml \
 ```
 # Deploy Applications
 ## RabbitMQ
+Need access to create service account and role binding in target namespace
 ```shell script
 export NAMESPACE_PREFIX=
 export NAMESPACE_SUFFIX=
@@ -62,10 +63,8 @@ export GIT_REPO="bcgov/fams3"
 export GIT_BRANCH="master"
 export GIT_URL="https://raw.githubusercontent.com/${GIT_REPO}/${GIT_BRANCH}"
 
-# All-in-one template
 oc process -o=yaml \
   -f ${GIT_URL}/openshift/templates/rabbitmq.dc.yaml \
-  -p namespacePrefix=${NAMESPACE_PREFIX} \
   | oc apply -f - ${TARGET_NAMESPACE}
 ```
 ## Jeager
@@ -80,7 +79,6 @@ export GIT_URL="https://raw.githubusercontent.com/${GIT_REPO}/${GIT_BRANCH}"
 # All-in-one template
 oc process -o=yaml \
   -f ${GIT_URL}/openshift/templates/jaeger-aio.dc.yaml \
-  -p namespacePrefix=${NAMESPACE_PREFIX} \
   | oc apply -f - ${TARGET_NAMESPACE}
 ```
 ## Redis
@@ -106,6 +104,7 @@ oc process -o=yaml \
   | oc apply -f -
 ```
 ## Search-API
+### Deployment Pipeline
 ```shell script
 export NAMESPACE_PREFIX=
 export NAMESPACE_SUFFIX=
@@ -166,7 +165,26 @@ oc process -o=yaml \
   -p namespacePrefix=${NAMESPACE_PREFIX}  \
   | oc apply -f - -n ${TOOLS_NAMESPACE}
 ```
+### Scans Pipeline
+```shell script
+export NAMESPACE_PREFIX=
+export NAMESPACE_SUFFIX=
+export TARGET_NAMESPACE=${NAMESPACE_PREFIX}-${NAMESPACE_SUFFIX}
+export TOOLS_NAMESPACE=${NAMESPACE_PREFIX}-tools
+export GIT_REPO="bcgov/fams3"
+export GIT_BRANCH="master"
+export GIT_URL="https://raw.githubusercontent.com/${GIT_REPO}/${GIT_BRANCH}"
+
+# Pipeline
+oc process -o=yaml \
+  -f ${GIT_URL}/openshift/templates/builds/pipelines/search-api-scans.yaml \
+  -p namespacePrefix=${NAMESPACE_PREFIX}  \
+  -p apiDefinition=  \
+  -p sonartoken=  \
+  | oc apply -f - -n ${TOOLS_NAMESPACE}
+```
 ## Dynadapter
+### Deployment Pipeline
 ```shell script
 export NAMESPACE_PREFIX=
 export NAMESPACE_SUFFIX=
@@ -224,7 +242,26 @@ oc process -o=yaml \
   -p namespacePrefix=${NAMESPACE_PREFIX}  \
   | oc apply -f - -n ${TOOLS_NAMESPACE}
 ```
-## Rest adapter
+### Scans Pipeline
+```shell script
+export NAMESPACE_PREFIX=
+export NAMESPACE_SUFFIX=
+export TARGET_NAMESPACE=${NAMESPACE_PREFIX}-${NAMESPACE_SUFFIX}
+export TOOLS_NAMESPACE=${NAMESPACE_PREFIX}-tools
+export GIT_REPO="bcgov/fams3"
+export GIT_BRANCH="master"
+export GIT_URL="https://raw.githubusercontent.com/${GIT_REPO}/${GIT_BRANCH}"
+
+# Pipeline
+oc process -o=yaml \
+  -f ${GIT_URL}/openshift/templates/builds/pipelines/dynadapter-scans.yaml \
+  -p namespacePrefix=${NAMESPACE_PREFIX}  \
+  -p apiDefinition=  \
+  -p sonartoken=  \
+  | oc apply -f - -n ${TOOLS_NAMESPACE}
+```
+## Web/Rest adapter
+### Rest adapter deployment pipeline
 ```shell script
 export NAMESPACE_PREFIX=
 export NAMESPACE_SUFFIX=
@@ -277,7 +314,7 @@ oc process -o=yaml \
   -p dataPartnerService=${DATAPARTNERSERVICE}  \
   | oc apply -f - -n ${TOOLS_NAMESPACE}
 ```
-## Web adapter
+### Web adapter deployment pipeline
 ```shell script
 export NAMESPACE_PREFIX=
 export NAMESPACE_SUFFIX=
@@ -334,5 +371,30 @@ oc process -o=yaml \
   -f ${GIT_URL}/openshift/templates/builds/pipelines/web-adapter.yaml \
   -p namespacePrefix=${NAMESPACE_PREFIX}  \
   -p dataPartnerService=${DATAPARTNERSERVICE}  \
+  | oc apply -f - -n ${TOOLS_NAMESPACE}
+```
+### web/rest adapters Scans Pipeline
+```shell script
+export NAMESPACE_PREFIX=
+export NAMESPACE_SUFFIX=
+export TARGET_NAMESPACE=${NAMESPACE_PREFIX}-${NAMESPACE_SUFFIX}
+export TOOLS_NAMESPACE=${NAMESPACE_PREFIX}-tools
+export GIT_REPO="bcgov/fams3"
+export GIT_BRANCH="master"
+export GIT_URL="https://raw.githubusercontent.com/${GIT_REPO}/${GIT_BRANCH}"
+
+# Configuration evn/secrets
+oc process -o=yaml \
+  -f ${GIT_URL}/openshift/templates/config/fams3-github-key.yaml \
+  -p gitSshPrivateKey=  \
+  | oc apply -f - -n ${TOOLS_NAMESPACE}
+
+# Pipeline
+oc process -o=yaml \
+  -f ${GIT_URL}/openshift/templates/builds/pipelines/web-rest-adapters-scans.yaml \
+  -p namespacePrefix=${NAMESPACE_PREFIX}  \
+  -p apiDefinition=  \
+  -p sonartoken=  \
+  -p PI=  \
   | oc apply -f - -n ${TOOLS_NAMESPACE}
 ```

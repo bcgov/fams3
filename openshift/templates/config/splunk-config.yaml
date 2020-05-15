@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Template
+labels:
+  template: splunk-config
+message: |-
+  splunk configuration template.
+metadata:
+  annotations:
+    description: |-
+      splunk configuration template.
+    tags: splunk-config
+    template: splunk-config
+  name: splunk-config
+
+# Parameters
+parameters:
+- name: URL
+  required: true
+  value: "set.url"
+- name: TOKEN
+  required: true
+  value: "set.token"
+
+# Objects
+objects:
+
+- apiVersion: v1
+  stringData:
+    Serilog__WriteTo__1__splunkHost: ${URL}
+    Serilog__WriteTo__1__eventCollectorToken: ${TOKEN}
+  kind: Secret
+  metadata:
+    name: splunk-config

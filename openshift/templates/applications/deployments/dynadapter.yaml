@@ -64,6 +64,8 @@ objects:
               name: dynamics-oauth-credentials
           - secretRef:
               name: jeager-config
+          - secretRef:
+              name: splunk-config
           image: ''
           imagePullPolicy: IfNotPresent
           name: dynadapter

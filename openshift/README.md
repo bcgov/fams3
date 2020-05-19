@@ -146,6 +146,12 @@ oc process -o=yaml \
   -p PORT=  \
   | oc apply -f - -n ${TARGET_NAMESPACE}
 
+oc process -o=yaml \
+  -f ${GIT_URL}/openshift/templates/config/splunk-config.yaml \
+  -p URL=  \
+  -p TOKEN=  \
+  | oc apply -f - -n ${TARGET_NAMESPACE}
+
 # Image stream
 oc process -o=yaml \
   -f ${GIT_URL}/openshift/templates/builds/images/generic.yaml \
@@ -221,6 +227,12 @@ oc process -o=yaml \
   -f ${GIT_URL}/openshift/templates/config/jeager-config.yaml \
   -p URL=  \
   -p TYPE=  \
+  | oc apply -f - -n ${TARGET_NAMESPACE}
+
+oc process -o=yaml \
+  -f ${GIT_URL}/openshift/templates/config/splunk-config.yaml \
+  -p URL=  \
+  -p TOKEN=  \
   | oc apply -f - -n ${TARGET_NAMESPACE}
 
 # Image stream
@@ -350,6 +362,12 @@ oc process -o=yaml \
   -f ${GIT_URL}/openshift/templates/config/jeager-config.yaml \
   -p URL=  \
   -p TYPE=  \
+  | oc apply -f - -n ${TARGET_NAMESPACE}
+
+oc process -o=yaml \
+  -f ${GIT_URL}/openshift/templates/config/splunk-config.yaml \
+  -p URL=  \
+  -p TOKEN=  \
   | oc apply -f - -n ${TARGET_NAMESPACE}
 
 # Image stream

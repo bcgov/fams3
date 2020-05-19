@@ -71,6 +71,8 @@ objects:
               name: searchapi-webhook-config
           - secretRef:
               name: redis-connection
+          - secretRef:
+              name: splunk-config
           image: ''
           imagePullPolicy: IfNotPresent
           name: search-api

@@ -1,0 +1,85 @@
+apiVersion: v1
+kind: Template
+labels:
+  template: rest-adapter-template
+message: |-
+  A Jenkins server must be instantiated in this project to manage
+  the Pipeline BuildConfig created by this template. You will be able to log in to
+  it using your OpenShift user credentials.
+metadata:
+  annotations:
+    openshift.io/display-name: rest-adapter template
+    description: |-
+      This is a template for rest-adapter.
+    iconClass: icon-jenkins
+    tags: instant-app,jenkins
+  name: rest-adapter-template
+parameters:
+- description: The OpenShift Namespace prefix.
+  displayName: Namespace Prefix (Prefix for each namespace ie prefix-tools, prefix-dev etc)
+  name: namespacePrefix
+  required: true
+  value:
+- description: Data partner service name.
+  displayName: Name of the data partner service
+  name: dataPartnerService
+  required: true
+  value:
+objects:
+- apiVersion: build.openshift.io/v1
+  kind: BuildConfig
+  metadata:
+    annotations:
+      description: Defines how to build the application
+    labels:
+      app: ${dataPartnerService}-rest-adapter
+      template: master-build-pipeline
+    name: ${dataPartnerService}-rest-adapter
+    namespace: ${namespacePrefix}-tools
+  spec:
+    completionDeadlineSeconds: 1800
+    failedBuildsHistoryLimit: 5
+    nodeSelector: null
+    output:
+      to:
+        kind: ImageStreamTag
+        name: ${dataPartnerService}-rest-adapter:latest
+    postCommit: {}
+    resources:
+      limits:
+        cpu: "4"
+        memory: 4Gi
+      requests:
+        cpu: "1"
+        memory: 1Gi
+    runPolicy: Serial
+    source:
+      git:
+        ref: master
+        uri: git@github.com:bcgov-c/fams3-openshift.git
+      sourceSecret:
+        name: fams3-github-key
+      type: Git
+    strategy:
+      sourceStrategy:
+        env:
+        - name: DOTNET_STARTUP_PROJECT
+          value: src/SearchApi.Adapters/Fams.Rest.Adapter/Fams.Rest.Adapter.csproj
+        - name: DOTNET_ASSEMBLY_NAME
+        - name: DOTNET_NPM_TOOLS
+        - name: DOTNET_TEST_PROJECTS
+        - name: DOTNET_CONFIGURATION
+          value: Release
+        - name: DOTNET_RESTORE_SOURCES
+        - name: DOTNET_PACK
+          value: "true"
+        - name: DOTNET_TOOLS
+        - name: DOTNET_INCREMENTAL
+          value: "true"
+        from:
+          kind: ImageStreamTag
+          name: dotnet:3.1
+          namespace: ${namespacePrefix}-tools
+      type: Source
+    successfulBuildsHistoryLimit: 5
+    triggers: []

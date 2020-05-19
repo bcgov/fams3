@@ -1,0 +1,105 @@
+apiVersion: v1
+kind: Template
+labels:
+  template: search-api-template
+message: |-
+  A Jenkins server must be instantiated in this project to manage
+  the Pipeline BuildConfig created by this template. You will be able to log in to
+  it using your OpenShift user credentials.
+metadata:
+  annotations:
+    openshift.io/display-name: search-api template
+    description: |-
+      This is a template for search-api.
+    iconClass: icon-jenkins
+    tags: instant-app,jenkins
+  name: search-api-template
+parameters:
+- description: The OpenShift Namespace prefix.
+  displayName: Namespace Prefix (Prefix for each namespace ie prefix-tools, prefix-dev etc)
+  name: namespacePrefix
+  required: true
+  value:
+- name: TAG
+  required: true
+  value: dev
+objects:
+- apiVersion: apps.openshift.io/v1
+  kind: DeploymentConfig
+  metadata:
+    labels:
+      app: search-api
+    name: search-api
+  spec:
+    replicas: 2
+    revisionHistoryLimit: 10
+    selector:
+      io.kompose.service: search-api
+    strategy:
+      activeDeadlineSeconds: 21600
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          io.kompose.service: search-api
+      spec:
+        containers:
+        - env:
+          - name: JAEGER_SERVICE_NAME
+            value: search-api
+          - name: REDIS__PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: database-password
+                name: redis
+          envFrom:
+          - secretRef:
+              name: rabbit-mq-configuration
+          - secretRef:
+              name: aspnet-env
+          - secretRef:
+              name: jeager-config
+          - secretRef:
+              name: searchapi-webhook-config
+          - secretRef:
+              name: redis-connection
+          image: ''
+          imagePullPolicy: IfNotPresent
+          name: search-api
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          resources:
+            limits:
+              cpu: 250m
+              memory: 1Gi
+            requests:
+              cpu: 100m
+              memory: 256Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - search-api
+        from:
+          kind: ImageStreamTag
+          name: search-api:${TAG}
+          namespace: ${namespacePrefix}-tools
+      type: ImageChange

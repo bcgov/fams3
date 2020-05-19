@@ -1,0 +1,219 @@
+apiVersion: v1
+kind: Template
+labels:
+  template: web-rest-adapters-scans-pipeline-template
+message: |-
+  A Jenkins server must be instantiated in this project to manage
+  the Pipeline BuildConfig created by this template. You will be able to log in to
+  it using your OpenShift user credentials.
+metadata:
+  annotations:
+    openshift.io/display-name: web-rest-adapters scans pipeline template
+    description: |-
+      This is a template for web-rest-adapters scans pipeline.
+    iconClass: icon-jenkins
+    tags: instant-app,jenkins
+  name: web-rest-adapters-scans-pipeline-template
+parameters:
+- description: The OpenShift Namespace prefix.
+  displayName: Namespace Prefix (Prefix for each namespace ie prefix-tools, prefix-dev etc)
+  name: namespacePrefix
+  required: true
+  value:
+- description: Github trigger secret. A difficult to guess string encoded as part of the webhook URL. Not encrypted.
+  displayName: GitHub Webhook Secret (Generated if empty)
+  from: '[a-zA-Z0-9]{40}'
+  generate: expression
+  name: gitSecret
+- description: API definition, url pointing to swagger.json
+  displayName: API definition
+  name: apiDefinition
+  required: true
+  value:
+- description: Sonarqube Raw Token
+  displayName: Sonarqube Token
+  name: sonartoken
+  required: true
+  value:
+- description: Private information to substitue in api POST
+  displayName: Private information
+  name: PI
+  required: true
+  value:
+objects:
+- apiVersion: build.openshift.io/v1
+  kind: BuildConfig
+  metadata:
+    labels:
+      application: web-rest-adapters
+      template: master-build-pipeline
+    name: web-rest-adapters-scans-pipeline
+    namespace: ${namespacePrefix}-tools
+  spec:
+    failedBuildsHistoryLimit: 5
+    nodeSelector: {}
+    output: {}
+    postCommit: {}
+    resources: {}
+    runPolicy: Serial
+    source:
+      git:
+        ref: master
+        uri: git@github.com:bcgov-c/fams3-openshift.git
+      type: Git
+    strategy:
+      jenkinsPipelineStrategy:
+        env:
+        - name: APP_NAME
+          value: web-rest-adapter
+        - name: API_DEFINITION
+          value: ${apiDefinition}
+        - name: LIFECYCLE_WEBHOOK
+        - name: GIT_SOURCE_URL
+          value: git@github.com:bcgov-c/fams3-openshift.git
+        - name: GIT_SOURCE_REF
+          value: master
+        - name: GIT_CREDENTIALS_ID
+          value: ${namespacePrefix}-tools-fams3-github-key
+        - name: SONAR_TOKEN
+          value: ${sonartoken}
+        - name: SONAR_PROJECT_KEY
+          value: FAMS3-SearchApi-Adapters
+        - name: SONAR_URL
+          value: http://sonarqube:9000
+        - name: SONAR_COMMAND
+        - name: SONAR_ENABLED
+          value: "true"
+        - name: TOOLS_NAMESPACE
+          value: ${namespacePrefix}-tools
+        - name: DEV_NAMESPACE
+          value: ${namespacePrefix}-dev
+        - name: TEST_NAMESPACE
+          value: ${namespacePrefix}-test
+        - name: PROD_NAMESPACE
+          value: ${namespacePrefix}-prod
+        jenkinsfile: |-
+          try {
+            // The API format; either openapi or soap
+            def API_FORMAT = 'openapi'
+
+            // The name  of the ZAP report
+            def ZAP_REPORT_NAME = "zap-report.xml"
+
+            // The location of the ZAP reports
+            def ZAP_REPORT_PATH = "/zap/wrk/${ZAP_REPORT_NAME}"
+
+            // The name of the "stash" containing the ZAP report
+            def ZAP_REPORT_STASH = "zap-report"
+
+            node("zap") {
+              stage('ZAP Security Scan') {
+                timeout(time: 60, unit: 'MINUTES') {
+
+                  dir('zap') {
+                    git url: "${GIT_SOURCE_URL}", branch: "${GIT_SOURCE_REF}", credentialsId: "${GIT_CREDENTIALS_ID}"
+                    def retVal = sh (
+                      returnStatus: true,
+                      script: """
+                        find
+                        mkdir -p /zap/wrk/
+                        mv src/SearchApi.Adapters/zap/options.conf /zap/wrk/options.conf
+                        sed -ir "s/replaceThisIdValue/${PI}/g" /zap/wrk/options.conf
+                        cat /zap/wrk/options.conf
+                        mv src/SearchApi.Adapters/zap/default.context /zap/wrk/default.context
+                        cat /zap/wrk/default.context
+
+                        pwd
+                        # sleep 3600
+
+                        cp -r /var/lib/jenkins/.ZAP/policies /var/lib/jenkins/
+
+                        zap-api-scan.py -t "${API_DEFINITION}" \
+                          -f openapi \
+                          -d \
+                          -x ${ZAP_REPORT_NAME} \
+                          -z "-configfile /zap/wrk/options.conf -d /var/lib/jenkins" \
+                          -n /zap/wrk/default.context
+
+                      """
+                    )
+                    echo "Return value is: ${retVal}"
+
+                    // Copy the ZAP report into the Jenkins working directory so the Jenkins tools can access it.
+                    sh (
+                      returnStdout: true,
+                      script: "mkdir -p ./wrk/ && cp ${ZAP_REPORT_PATH} ./wrk/"
+                    )
+                  }
+
+                  // Stash the ZAP report for publishing in a different stage (which will run on a different pod).
+                  echo "Stash the report for the publishing stage ..."
+                  stash name: "${ZAP_REPORT_STASH}", includes: "zap/wrk/*.xml"
+                }
+              }
+            }
+
+            node("sonar-dotnet") {
+
+              // Checkout Openshift metadata template
+              stage("Checkout Templates") {
+                dir("${APP_NAME}") {
+                  git url: "${GIT_SOURCE_URL}", branch: "${GIT_SOURCE_REF}", credentialsId: "${GIT_CREDENTIALS_ID}"
+                  env.GIT_COMMIT = getCommit()
+                }
+              }
+
+              if ("${SONAR_ENABLED}"!="false") {
+                stage("Sonar Scan") {
+                  timeout(time: 10, unit: 'MINUTES') {
+
+                    echo "Preparing the report for the publishing ..."
+                    unstash name: "${ZAP_REPORT_STASH}"
+
+
+                    sh """
+                    echo ${GIT_COMMIT}
+                    ls -la
+                    cd ${APP_NAME}/src/SearchApi.Adapters
+                    ls -la
+                    dotnet test --logger:"trx;LogFileName=TestResults.trx" \
+                                /p:CollectCoverage=true \
+                                /p:CoverletOutputFormat=opencover \
+                                /p:CoverletOutput=./TestResults/
+                    timeout -k 20 10 dotnet build-server shutdown || echo "Kill dotnet"
+                    find
+                    dotnet sonarscanner begin /k:"${SONAR_PROJECT_KEY}" \
+                      /d:sonar.login=${SONAR_TOKEN} \
+                      /d:sonar.host.url=${SONAR_URL} \
+                      /d:sonar.cs.opencover.reportsPaths=./*Test/TestResults/coverage.opencover.xml \
+                      /d:sonar.cs.vstest.reportsPaths=./*Test/TestResults/TestResults.trx \
+                      /d:sonar.zaproxy.reportPath=${WORKSPACE}${ZAP_REPORT_PATH}
+                    dotnet build
+                    dotnet sonarscanner end /d:sonar.login=${SONAR_TOKEN}
+                    """
+                  }
+                }
+              }
+            }
+          } catch (err) {
+            echo "in catch block"
+
+            currentBuild.result = 'FAILURE'
+            env.ERR = "${err}"
+            node {
+                sh "curl -XPOST '${LIFECYCLE_WEBHOOK}' -H 'Content-type: application/json' --data '{\"username\":\"The Pipe Lion\",\"icon_emoji\":\":lion_face:\",\"text\": \"${APP_NAME} Pipeline Failure - ${ERR}\"}'"
+            }
+            echo "Caught: ${err}"
+            throw err
+          }
+
+          String getCommit() {
+              return sh(script: 'git rev-parse HEAD', returnStdout: true)?.trim()
+          }
+      type: JenkinsPipeline
+    successfulBuildsHistoryLimit: 5
+    triggers:
+    - type: ConfigChange
+    - github:
+        secret: ${gitSecret}
+      type: GitHub

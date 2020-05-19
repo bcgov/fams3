@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Template
+labels:
+  template: dynadapter-template
+message: |-
+  A Jenkins server must be instantiated in this project to manage
+  the Pipeline BuildConfig created by this template. You will be able to log in to
+  it using your OpenShift user credentials.
+metadata:
+  annotations:
+    openshift.io/display-name: dynadapter template
+    description: |-
+      This is a template for dynadapter.
+    iconClass: icon-jenkins
+    tags: instant-app,jenkins
+  name: dynadapter-template
+parameters:
+- description: The OpenShift Namespace prefix.
+  displayName: Namespace Prefix (Prefix for each namespace ie prefix-tools, prefix-dev etc)
+  name: namespacePrefix
+  required: true
+  value:
+- name: TAG
+  required: true
+  value: dev
+objects:
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    labels:
+      app: dynadapter
+      template: meta-service
+    name: dynadapter
+  spec:
+    host: dynadapter-${namespacePrefix}-${TAG}.pathfinder.gov.bc.ca
+    port:
+      targetPort: web
+    tls:
+      termination: edge
+    to:
+      kind: Service
+      name: dynadapter
+      weight: 100
+    wildcardPolicy: None

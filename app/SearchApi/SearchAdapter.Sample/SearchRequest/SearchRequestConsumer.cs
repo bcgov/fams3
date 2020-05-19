@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using BcGov.Fams3.SearchApi.Contracts.Person;
+﻿using BcGov.Fams3.SearchApi.Contracts.Person;
 using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
+using BcGov.Fams3.SearchApi.Core.Adapters.Configuration;
+using BcGov.Fams3.SearchApi.Core.Adapters.Models;
 using FluentValidation;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using BcGov.Fams3.SearchApi.Core.Adapters.Configuration;
-using BcGov.Fams3.SearchApi.Core.Adapters.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SearchAdapter.Sample.SearchRequest
 {
@@ -43,7 +43,7 @@ namespace SearchAdapter.Sample.SearchRequest
             if (await ValidatePersonSearch(context))
             {
 
-                if(string.Equals(context.Message.Person.FirstName, "exception", StringComparison.InvariantCultureIgnoreCase))
+                if (string.Equals(context.Message.Person.FirstName, "exception", StringComparison.InvariantCultureIgnoreCase))
                     throw new Exception("Exception from Sample Adapter, Your name is no exception");
 
                 await context.Publish<PersonSearchCompleted>(BuildFakePersonSearchCompleted(context.Message));
@@ -312,9 +312,9 @@ namespace SearchAdapter.Sample.SearchRequest
                             }
                         },
                         BankInfos = new List<BankInfo>()
-                        { 
+                        {
                             new BankInfo()
-                            { 
+                            {
                                 BankName="BankName",
                                 AccountNumber="AccountNumber123",
                                 Branch="Branch",
@@ -351,7 +351,7 @@ namespace SearchAdapter.Sample.SearchRequest
                                         Description="",
                                         Type="lease",
                                         Notes="notes",
-                                        OrganizationName="TRUCK COMPANY INC."                                        
+                                        OrganizationName="TRUCK COMPANY INC."
                                     }
                                 }
                             }
@@ -382,6 +382,56 @@ namespace SearchAdapter.Sample.SearchRequest
                                         Notes="notes",
                                         OrganizationName="owner other org name"
                                     }
+                                }
+                            }
+                        },
+                        CompensationClaims = new List<CompensationClaim>(){
+                            new CompensationClaim()
+                            {
+                                ClaimNumber="claimNumber",
+                                ClaimantNumber="claimant121",
+                                ClaimStatus="Processing",
+                                ClaimType="Disable compensation",
+                                Description="dis",
+                                Notes="compensation notes",
+                                ReferenceDates = new List<ReferenceDate>(){
+                                    new ReferenceDate(){ Index=0, Key="compensation Start Date", Value=new DateTime(2019,9,1) },
+                                    new ReferenceDate(){ Index=1, Key="compensation Expired Date", Value=new DateTime(2020,9,1) }
+                                },
+                                BankInfo=new BankInfo()
+                                {
+                                    BankName="compensation BankName",
+                                    AccountNumber="compensation AccountNumber123",
+                                    Branch="Branch-compensation",
+                                    TransitNumber="TransitNumber123-compensation",
+                                    ReferenceDates = new List<ReferenceDate>(){
+                                        new ReferenceDate(){ Index=0, Key="Account Start Date", Value=new DateTime(2019,9,1) },
+                                        new ReferenceDate(){ Index=1, Key="Account Expired Date", Value=new DateTime(2020,9,1) }
+                                    },
+                                    Description="compensation bank Description",
+                                    Notes="compensation bank Notes"
+                                },
+                                Employer=new Employer()
+                                {
+                                     Address = new Address
+                                     {
+                                         AddressLine1 = "compensation Employer Address 1",
+                                         AddressLine2 = "compensation Employer Address 2",
+                                         AddressLine3 = "compensation Employer Address 3",
+                                         City = "compensation Employer City",
+                                         StateProvince = "AB",
+                                         CountryRegion = "Canada",
+                                         ZipPostalCode = "VR4 123"
+                                     },
+                                     ContactPerson = "compensation Employer Surname FirstName",
+                                     Name = "compensation Employer Sample Company",
+                                     OwnerName = "compensation Employer Sample Company Owner",
+                                     Phones = new List<Phone>()
+                                     {
+                                         new Phone {PhoneNumber = "11111111", Extension ="123", Type ="Phone"},
+                                         new Phone {PhoneNumber = "22222222", Extension ="123", Type ="Fax"},
+                                         new Phone {PhoneNumber = "33333333", Extension ="123", Type ="Phone"}
+                                     }
                                 }
                             }
                         }

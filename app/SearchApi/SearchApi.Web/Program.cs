@@ -59,6 +59,7 @@ namespace SearchApi.Web
                         loggerConfiguration.WriteTo.EventCollector(
                             splunkCollectorUrl,
                             splunkToken,
+                            sourceType: "SearchApi",
                             restrictedToMinimumLevel: LogEventLevel.Debug,
                             messageHandler: new HttpClientHandler
                             {

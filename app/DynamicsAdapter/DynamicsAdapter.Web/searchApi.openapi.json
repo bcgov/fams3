@@ -215,6 +215,12 @@
             "$ref": "#/definitions/OtherAsset"
           }
         },
+        "compensationClaims": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CompensationClaim"
+          }
+        },
         "notes": {
           "type": "string"
         }
@@ -666,6 +672,50 @@
               "items": {
                 "$ref": "#/definitions/AssetOwner"
               }
+            }
+          }
+        }
+      ]
+    },
+    "CompensationClaim": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/PersonalInfo"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "claimType": {
+              "type": "string",
+              "description": "Claim Type"
+            },
+            "claimStatus": {
+              "type": "string",
+              "description": "Claim Status"
+            },
+            "claimNumber": {
+              "type": "string",
+              "description": "claim number"
+            },
+            "claimantNumber": {
+              "type": "string",
+              "description": "Claimant number"
+            },
+            "bankInfo": {
+              "description": "Bank information",
+              "allOf": [
+                {
+                  "$ref": "#/definitions/BankInfo"
+                }
+              ]
+            },
+            "employer": {
+              "description": "Employer",
+              "allOf": [
+                {
+                  "$ref": "#/definitions/Employer"
+                }
+              ]
             }
           }
         }

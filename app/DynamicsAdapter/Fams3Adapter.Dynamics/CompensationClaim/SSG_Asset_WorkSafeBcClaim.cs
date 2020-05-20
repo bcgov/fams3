@@ -21,6 +21,9 @@ namespace Fams3Adapter.Dynamics.BankInfo
         [JsonProperty("ssg_notes")]
         public string Notes { get; set; }
 
+        [JsonProperty("ssg_description")]
+        public string Description { get; set; }
+
         [JsonProperty("ssg_suppliedby")]
         public int? InformationSource { get; set; }
 

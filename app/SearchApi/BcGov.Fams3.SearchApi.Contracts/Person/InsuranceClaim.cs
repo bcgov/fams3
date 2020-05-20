@@ -12,11 +12,8 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         [Description("Claim Status")]
         public string ClaimStatus { get; set; }
 
-        [Description("claim number")]
+        [Description("Claim number")]
         public string ClaimNumber { get; set; }
-
-        [Description("claim center")]
-        public string ClaimCenter { get; set; }
 
         [Description("Adjustor")]
         public Name Adjustor { get; set; }
@@ -27,10 +24,11 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         [Description("Identifer involved in insurance claim")]
         public IEnumerable<PersonalIdentifier> Identifiers { get; set; }
 
-        [Description("Person involved")]
-        public Name InsuredPerson { get; set; }
-
-
-
+        [Description("Parties involved in the insurance claim")]
+        public IEnumerable<InvolvedParty> InsuredParties { get; set; }
+        [Description("Claim center information")]
+        public ClaimCentre ClaimCentre { get; set; }
     }
+
+    
 }

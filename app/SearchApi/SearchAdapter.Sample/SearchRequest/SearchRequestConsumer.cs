@@ -143,6 +143,79 @@ namespace SearchAdapter.Sample.SearchRequest
                             }
 
                         },
+                        InsuranceClaims = new List<InsuranceClaim>()
+                        {
+                            new InsuranceClaim ()
+                            {
+                                Adjustor = new Name {FirstName = "FirstName", LastName="LastName",OtherName = "OtherName",MiddleName="MiddleName"},
+                                AdjustorPhone = new Phone {Extension="1", PhoneNumber = "222222222",  Type="Phone"},
+                                ClaimNumber = "123123123",
+                                ClaimStatus = "Status",
+                                ClaimType = "Type",
+                                 ClaimCentre = new ClaimCentre
+                                 {
+                                     ContactAddress = new Address
+                                     {
+                                        AddressLine1 = "address in line 1",
+                                        AddressLine2 = "address in line 2",
+                                        AddressLine3 = "address in line 3",
+                                        StateProvince = "British Columbia",
+                                        City = "victoria" ,
+                                        CountryRegion= "canada",
+                                        ZipPostalCode = "t4t4t4",
+
+                                     },
+                                     Location = "123",
+                                     ContactNumber = new List<Phone> ()
+                                     {
+                                         new Phone {Extension="1", PhoneNumber = "222222222",  Type="Phone"},
+                                         new Phone {Extension="1", PhoneNumber = "333333333",  Type="Fax"},
+                                         new Phone {Extension="1", PhoneNumber = "444444444",  Type="Phone"}
+                                     }
+                                 },
+                                 Description = "Description",
+                                 Identifiers = new List<PersonalIdentifier>
+                                 {
+                                    new PersonalIdentifier
+                                    {
+                                        Type = PersonalIdentifierType.BCDriverLicense,
+                                        TypeCode = "BCDL",
+                                        Description = "Sample Identifier Description",
+                                        Notes = "Sample Identifier Notes",
+                                        IssuedBy = "BC",
+                                        Value = new Random().Next(0, 50000).ToString()
+                                    },
+                                    new PersonalIdentifier
+                                    {
+                                        Type = PersonalIdentifierType.PersonalHealthNumber,
+                                        TypeCode = "PHN",
+                                        Description = "Sample Identifier Description",
+                                        Notes = "Sample Identifier Notes",
+                                        IssuedBy = "BC",
+                                        Value = new Random().Next(0, 50000).ToString()
+                                    },
+
+                                 },
+                                 ReferenceDates =  new List<ReferenceDate>()
+                                 {
+                                    new ReferenceDate(){ Index=0, Key="Start Date", Value=new DateTime(2019,9,1) },
+                                    new ReferenceDate(){ Index=1, Key="End Date", Value=new DateTime(2020,9,1) }
+                                },
+                                 Notes = "notes",
+                                 InsuredParties = new List<InvolvedParty>()
+                                 {
+                                    new InvolvedParty()
+                                    {
+                                      Name =  new Name {FirstName = "FirstName", LastName="LastName",OtherName = "OtherName",MiddleName="MiddleName"},
+                                      Organization= "Organization",
+                                      Type = "Type",
+                                      TypeDescription = "Type Description"
+                                    }
+
+                                 }
+                            }
+
+                        },
                         Addresses = new List<Address>()
                         {
                             new Address()
@@ -411,6 +484,7 @@ namespace SearchAdapter.Sample.SearchRequest
                                     Description="compensation bank Description",
                                     Notes="compensation bank Notes"
                                 },
+
                                 Employer=new Employer()
                                 {
                                      Address = new Address
@@ -433,6 +507,7 @@ namespace SearchAdapter.Sample.SearchRequest
                                          new Phone {PhoneNumber = "33333333", Extension ="123", Type ="Phone"}
                                      }
                                 }
+
                             }
                         }
                     }

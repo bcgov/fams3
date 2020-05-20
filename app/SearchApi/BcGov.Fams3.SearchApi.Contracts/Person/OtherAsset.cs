@@ -15,6 +15,6 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         public string ReferenceValue { get; set; }
 
         [Description("Owners")]
-        public IEnumerable<AssetOwner> Owners { get; set; }
+        public IEnumerable<InvolvedParty> Owners { get; set; }
     }
 }

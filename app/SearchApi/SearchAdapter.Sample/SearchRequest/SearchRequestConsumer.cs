@@ -413,18 +413,15 @@ namespace SearchAdapter.Sample.SearchRequest
                                 },
                                 Description="2020 BRAND TRUCK $DR / CAR AWD",
                                 Notes="vehicle Notes",
-                                Owners=new List<AssetOwner>()
+                                Owners=new List<InvolvedParty>()
                                 {
-                                    new AssetOwner()
+                                    new  InvolvedParty()
                                     {
-                                        FirstName = "owner first name",
-                                        LastName = "owner last name",
-                                        MiddleName ="owner middle name",
-                                        OtherName = "owner other name",
-                                        Description="",
+                                        Name = new Name {FirstName = "FirstName", LastName="LastName",OtherName = "OtherName",MiddleName="MiddleName"},
+                                        Description="description",
                                         Type="lease",
                                         Notes="notes",
-                                        OrganizationName="TRUCK COMPANY INC."
+                                        Organization ="TRUCK COMPANY INC."
                                     }
                                 }
                             }
@@ -442,18 +439,15 @@ namespace SearchAdapter.Sample.SearchRequest
                                 },
                                 Description="other asset description",
                                 Notes="other asset Notes",
-                                Owners=new List<AssetOwner>()
+                                Owners=new List<InvolvedParty>()
                                 {
-                                    new AssetOwner()
+                                    new InvolvedParty()
                                     {
-                                        FirstName = "owner other first name",
-                                        LastName = "owner other last name",
-                                        MiddleName ="owner other middle name",
-                                        OtherName = "owner other other name",
+                                        Name = new Name {FirstName = "FirstName", LastName="LastName",OtherName = "OtherName",MiddleName="MiddleName"},
                                         Description="other description",
                                         Type="other type",
                                         Notes="notes",
-                                        OrganizationName="owner other org name"
+                                        Organization ="owner other org name"
                                     }
                                 }
                             }

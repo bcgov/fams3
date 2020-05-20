@@ -2,7 +2,7 @@
 
 namespace BcGov.Fams3.SearchApi.Contracts.Person
 {
-    public class InvolvedParty
+    public class InvolvedParty : PersonalInfo
     {
         [Description("Name of person involved.  If this is returned, organization is not returned")]
         public Name Name { get; set; }

@@ -69,6 +69,8 @@ objects:
               name: aspnet-env
           - secretRef:
               name: jeager-config
+          - secretRef:
+              name: splunk-config
           image: ''
           imagePullPolicy: IfNotPresent
           name: ${dataPartnerService}-web-adapter

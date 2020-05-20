@@ -60,6 +60,8 @@ objects:
         - env:
           - name: JAEGER_SERVICE_NAME
             value: ${dataPartnerService}-web-adapter
+          - name: DATA_PARTNER
+            value: ${dataPartnerService}
           envFrom:
           - secretRef:
               name: ${dataPartnerService}-web-adapter-config

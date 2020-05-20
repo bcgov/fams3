@@ -1,10 +1,11 @@
 ﻿using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Newtonsoft.Json;
+using System;
 
 namespace Fams3Adapter.Dynamics.BankInfo
 {
-    public class SSG_Asset_BankingInformation : DynamicsEntity
+    public class BankingInformationEntity : DynamicsEntity
     {
         [JsonProperty("ssg_institutionname")]
         public string BankName { get; set; }
@@ -29,5 +30,11 @@ namespace Fams3Adapter.Dynamics.BankInfo
 
         [JsonProperty("ssg_Person")]
         public virtual SSG_Person Person { get; set; }
+    }
+
+    public class SSG_Asset_BankingInformation : BankingInformationEntity
+    {
+        [JsonProperty("ssg_asset_bankinginformationid")]
+        public Guid BankingInformationId { get; set; }
     }
 }

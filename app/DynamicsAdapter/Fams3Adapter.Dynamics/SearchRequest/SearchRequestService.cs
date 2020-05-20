@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,10 +28,11 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         Task<SSG_Person> SavePerson(PersonEntity person, CancellationToken cancellationToken);
         Task<SSG_Employment> CreateEmployment(EmploymentEntity employment, CancellationToken cancellationToken);
         Task<SSG_EmploymentContact> CreateEmploymentContact(SSG_EmploymentContact employmentContact, CancellationToken cancellationToken);
-        Task<SSG_Asset_BankingInformation> CreateBankInfo(SSG_Asset_BankingInformation bankInfo, CancellationToken cancellationToken);
+        Task<SSG_Asset_BankingInformation> CreateBankInfo(BankingInformationEntity bankInfo, CancellationToken cancellationToken);
         Task<SSG_Asset_Vehicle> CreateVehicle(VehicleEntity vehicle, CancellationToken cancellationToken);
         Task<SSG_AssetOwner> CreateAssetOwner(SSG_AssetOwner owner, CancellationToken cancellationToken);
-        Task<SSG_Asset_Other> CreateOtherAsset(AssetOtherEntity owner, CancellationToken cancellationToken);
+        Task<SSG_Asset_Other> CreateOtherAsset(AssetOtherEntity asset, CancellationToken cancellationToken);
+        Task<SSG_Asset_WorkSafeBcClaim> CreateCompensationClaim(SSG_Asset_WorkSafeBcClaim claim, CancellationToken cancellationToken);
     }
 
     /// <summary>
@@ -116,7 +117,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             return await this._oDataClient.For<SSG_Identity>().Set(relatedPerson).InsertEntryAsync(cancellationToken);
         }
 
-        public async Task<SSG_Asset_BankingInformation> CreateBankInfo(SSG_Asset_BankingInformation bankInfo, CancellationToken cancellationToken)
+        public async Task<SSG_Asset_BankingInformation> CreateBankInfo(BankingInformationEntity bankInfo, CancellationToken cancellationToken)
         {
             return await this._oDataClient.For<SSG_Asset_BankingInformation>().Set(bankInfo).InsertEntryAsync(cancellationToken);
         }
@@ -134,6 +135,11 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         public async Task<SSG_Asset_Other> CreateOtherAsset(AssetOtherEntity otherAsset, CancellationToken cancellationToken)
         {
             return await this._oDataClient.For<SSG_Asset_Other>().Set(otherAsset).InsertEntryAsync(cancellationToken);
+        }
+
+        public async Task<SSG_Asset_WorkSafeBcClaim> CreateCompensationClaim(SSG_Asset_WorkSafeBcClaim claim, CancellationToken cancellationToken)
+        {
+            return await this._oDataClient.For<SSG_Asset_WorkSafeBcClaim>().Set(claim).InsertEntryAsync(cancellationToken);
         }
     }
 }

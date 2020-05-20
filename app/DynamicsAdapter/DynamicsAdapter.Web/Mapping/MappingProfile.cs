@@ -193,7 +193,7 @@ namespace DynamicsAdapter.Web.Mapping
                .ForMember(dest => dest.WearGlasses, opt => opt.MapFrom(src => src.WearGlasses))
                .ForMember(dest => dest.DistinguishingFeatures, opt => opt.MapFrom(src => src.DistinguishingFeatures));
 
-            CreateMap<BankInfo, SSG_Asset_BankingInformation>()
+            CreateMap<BankInfo, BankingInformationEntity>()
                  .ForMember(dest => dest.AccountNumber, opt => opt.MapFrom(src => src.AccountNumber))
                  .ForMember(dest => dest.Branch, opt => opt.MapFrom(src => src.Branch))
                  .ForMember(dest => dest.BankName, opt => opt.MapFrom(src => src.BankName))
@@ -223,6 +223,14 @@ namespace DynamicsAdapter.Web.Mapping
                   .ForMember(dest => dest.TypeDescription, opt => opt.MapFrom(src => src.TypeDescription))
                   .ForMember(dest => dest.Description, opt => opt.MapFrom(src => $"{src.ReferenceDescription} {src.ReferenceValue}"))
                   .ForMember(dest => dest.AssetDescription, opt => opt.MapFrom(src => src.Description))
+                  .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
+                  .IncludeBase<PersonalInfo, DynamicsEntity>();
+
+            CreateMap<CompensationClaim, SSG_Asset_WorkSafeBcClaim>()
+                  .ForMember(dest => dest.ClaimType, opt => opt.MapFrom(src => src.ClaimType))
+                  .ForMember(dest => dest.ClaimantNumber, opt => opt.MapFrom(src => src.ClaimantNumber))
+                  .ForMember(dest => dest.ClaimNumber, opt => opt.MapFrom(src => src.ClaimNumber))
+                  .ForMember(dest => dest.ClaimStatus, opt => opt.MapFrom(src => src.ClaimStatus))
                   .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
                   .IncludeBase<PersonalInfo, DynamicsEntity>();
         }

@@ -60,6 +60,8 @@ objects:
         - env:
           - name: JAEGER_SERVICE_NAME
             value: ${dataPartnerService}-rest-adapter
+          - name: DATA_PARTNER
+            value: ${dataPartnerService}
           envFrom:
           - secretRef:
               name: ${dataPartnerService}-rest-config

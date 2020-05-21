@@ -235,9 +235,9 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                     },
                     new Vehicle()
                     {
-                        Owners = new List<AssetOwner>()
+                        Owners=new List<InvolvedParty>()
                         {
-                            new AssetOwner() { }
+                            new InvolvedParty(){}
                         }
                     }
                 },
@@ -245,9 +245,9 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 {
                     new OtherAsset()
                     {
-                        Owners = new List<AssetOwner>()
+                        Owners=new List<InvolvedParty>()
                         {
-                            new AssetOwner() { }
+                            new InvolvedParty(){}
                         }
                     }
                 },
@@ -303,7 +303,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _mapper.Setup(m => m.Map<VehicleEntity>(It.IsAny<Vehicle>()))
                     .Returns(_fakeVehicleEntity);
 
-            _mapper.Setup(m => m.Map<SSG_AssetOwner>(It.IsAny<AssetOwner>()))
+            _mapper.Setup(m => m.Map<SSG_AssetOwner>(It.IsAny<InvolvedParty>()))
                     .Returns(_fakeAssetOwner);
 
             _mapper.Setup(m => m.Map<AssetOtherEntity>(It.IsAny<OtherAsset>()))

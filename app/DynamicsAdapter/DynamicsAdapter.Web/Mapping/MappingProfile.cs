@@ -209,15 +209,15 @@ namespace DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.Vin, opt => opt.MapFrom(src => src.Vin))
                  .IncludeBase<PersonalInfo, DynamicsEntity>();
 
-            CreateMap<AssetOwner, SSG_AssetOwner>()
+            CreateMap<InvolvedParty, SSG_AssetOwner>()
                  .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
-                 .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
-                 .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
+                 .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.Name.FirstName))
+                 .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.Name.LastName))
                  .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
-                 .ForMember(dest => dest.MiddleName, opt => opt.MapFrom(src => src.MiddleName))
+                 .ForMember(dest => dest.MiddleName, opt => opt.MapFrom(src => src.Name.MiddleName))
                  .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type))
-                 .ForMember(dest => dest.OtherName, opt => opt.MapFrom(src => src.OtherName))
-                 .ForMember(dest => dest.OrganizationName, opt => opt.MapFrom(src => src.OrganizationName));
+                 .ForMember(dest => dest.OtherName, opt => opt.MapFrom(src => src.Name.OtherName))
+                 .ForMember(dest => dest.OrganizationName, opt => opt.MapFrom(src => src.Organization));
 
             CreateMap<OtherAsset, AssetOtherEntity>()
                   .ForMember(dest => dest.TypeDescription, opt => opt.MapFrom(src => src.TypeDescription))

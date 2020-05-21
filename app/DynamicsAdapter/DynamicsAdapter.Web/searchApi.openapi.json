@@ -221,6 +221,12 @@
             "$ref": "#/definitions/CompensationClaim"
           }
         },
+        "insuranceClaims": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/InsuranceClaim"
+          }
+        },
         "notes": {
           "type": "string"
         }
@@ -602,49 +608,44 @@
               "type": "array",
               "description": "Owners",
               "items": {
-                "$ref": "#/definitions/AssetOwner"
+                "$ref": "#/definitions/InvolvedParty"
               }
             }
           }
         }
       ]
     },
-    "AssetOwner": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "type": "string",
-          "description": "The asset owner type"
+    "InvolvedParty": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/PersonalInfo"
         },
-        "description": {
-          "type": "string",
-          "description": "The asset owner description"
-        },
-        "organizationName": {
-          "type": "string",
-          "description": "The asset owner organization name"
-        },
-        "firstName": {
-          "type": "string",
-          "description": "The asset owner first name"
-        },
-        "lastName": {
-          "type": "string",
-          "description": "The asset owner last name"
-        },
-        "middleName": {
-          "type": "string",
-          "description": "The asset owner middle name"
-        },
-        "otherName": {
-          "type": "string",
-          "description": "The asset owner other name"
-        },
-        "notes": {
-          "type": "string",
-          "description": "The asset owner notes"
+        {
+          "type": "object",
+          "properties": {
+            "name": {
+              "description": "Name of person involved.  If this is returned, organization is not returned",
+              "allOf": [
+                {
+                  "$ref": "#/definitions/Name"
+                }
+              ]
+            },
+            "type": {
+              "type": "string",
+              "description": "Type code for the party involved"
+            },
+            "typeDescription": {
+              "type": "string",
+              "description": "Type description for the party involved"
+            },
+            "organization": {
+              "type": "string",
+              "description": "Organization involved. If this is returned, name is not returned"
+            }
+          }
         }
-      }
+      ]
     },
     "OtherAsset": {
       "allOf": [
@@ -670,7 +671,7 @@
               "type": "array",
               "description": "Owners",
               "items": {
-                "$ref": "#/definitions/AssetOwner"
+                "$ref": "#/definitions/InvolvedParty"
               }
             }
           }
@@ -720,6 +721,92 @@
           }
         }
       ]
+    },
+    "InsuranceClaim": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/PersonalInfo"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "claimType": {
+              "type": "string",
+              "description": "Claim Type"
+            },
+            "claimStatus": {
+              "type": "string",
+              "description": "Claim Status"
+            },
+            "claimNumber": {
+              "type": "string",
+              "description": "Claim number"
+            },
+            "adjustor": {
+              "description": "Adjustor",
+              "allOf": [
+                {
+                  "$ref": "#/definitions/Name"
+                }
+              ]
+            },
+            "adjustorPhone": {
+              "description": "Adjustor Phone",
+              "allOf": [
+                {
+                  "$ref": "#/definitions/Phone"
+                }
+              ]
+            },
+            "identifiers": {
+              "type": "array",
+              "description": "Identifer involved in insurance claim",
+              "items": {
+                "$ref": "#/definitions/PersonalIdentifier"
+              }
+            },
+            "insuredParties": {
+              "type": "array",
+              "description": "Parties involved in the insurance claim",
+              "items": {
+                "$ref": "#/definitions/InvolvedParty"
+              }
+            },
+            "claimCentre": {
+              "description": "Claim center information",
+              "allOf": [
+                {
+                  "$ref": "#/definitions/ClaimCentre"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "ClaimCentre": {
+      "type": "object",
+      "properties": {
+        "location": {
+          "type": "string",
+          "description": "Location code"
+        },
+        "contactAddress": {
+          "description": "Contact address",
+          "allOf": [
+            {
+              "$ref": "#/definitions/Address"
+            }
+          ]
+        },
+        "contactNumber": {
+          "type": "array",
+          "description": "Contact address",
+          "items": {
+            "$ref": "#/definitions/Phone"
+          }
+        }
+      }
     }
   },
   "tags": [

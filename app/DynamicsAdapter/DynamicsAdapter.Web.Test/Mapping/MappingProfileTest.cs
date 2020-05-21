@@ -794,8 +794,8 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 Vin = "Test123VinTest",
                 Description = "description",
                 Notes = "notes",
-                Owners = new List<AssetOwner>() {
-                    new AssetOwner(){}
+                Owners = new List<InvolvedParty>() {
+                    new InvolvedParty(){}
                 },
 
                 ReferenceDates = new List<ReferenceDate>() {
@@ -818,17 +818,20 @@ namespace DynamicsAdapter.Web.Test.Mapping
         }
 
         [Test]
-        public void AssetOwner_should_map_to_SSG_AssetOwner_correctly()
+        public void InvolvedParty_should_map_to_SSG_AssetOwner_correctly()
         {
-            var owner = new AssetOwner()
+            var owner = new InvolvedParty()
             {
                 Description = "desc",
-                FirstName = "firstname",
-                LastName = "lastname",
-                MiddleName = "middlename",
-                OtherName = "othername",
+                Name = new Name()
+                {
+                    FirstName = "firstname",
+                    LastName = "lastname",
+                    MiddleName = "middlename",
+                    OtherName = "othername"
+                },
                 Notes = "notes",
-                OrganizationName = "orgname",
+                Organization = "orgname",
                 Type = "ownerType"
             };
 
@@ -853,8 +856,8 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 ReferenceValue = "referenceValue",
                 Description = "description",
                 Notes = "notes",
-                Owners = new List<AssetOwner>() {
-                    new AssetOwner(){}
+                Owners = new List<InvolvedParty>() {
+                    new InvolvedParty(){}
                 },
 
                 ReferenceDates = new List<ReferenceDate>() {

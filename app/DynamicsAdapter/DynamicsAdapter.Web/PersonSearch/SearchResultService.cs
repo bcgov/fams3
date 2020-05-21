@@ -75,6 +75,9 @@ namespace DynamicsAdapter.Web.PersonSearch
             _logger.LogDebug($"Attempting to create other assets records for SearchRequest[{request.SearchRequestId}]");
             await UploadOtherAssets(person, request, returnedPerson, providerDynamicsID, concellationToken);
 
+            _logger.LogDebug($"Attempting to create compnsation claims records for SearchRequest[{request.SearchRequestId}]");
+            await UploadCompensationClaims(person, request, returnedPerson, providerDynamicsID, concellationToken);
+
             return true;
         }
 
@@ -222,7 +225,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             {
                 foreach (var bankInfo in person.BankInfos)
                 {
-                    SSG_Asset_BankingInformation bank = _mapper.Map<SSG_Asset_BankingInformation>(bankInfo);
+                    BankingInformationEntity bank = _mapper.Map<BankingInformationEntity>(bankInfo);
                     bank.SearchRequest = request;
                     bank.InformationSource = providerDynamicsID;
                     bank.Person = ssg_person;
@@ -289,6 +292,37 @@ namespace DynamicsAdapter.Web.PersonSearch
                             await _searchRequestService.CreateAssetOwner(assetOwner, concellationToken);
                         }
                     }
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return false;
+            }
+        }
+
+        private async Task<bool> UploadCompensationClaims(Person person, SSG_SearchRequest request, SSG_Person ssg_person, int? providerDynamicsID, CancellationToken concellationToken)
+        {
+            if (person.CompensationClaims == null) return true;
+            try
+            {
+                foreach (CompensationClaim claim in person.CompensationClaims)
+                {
+                    SSG_Asset_BankingInformation ssg_bank = null;
+                    if (claim.BankInfo != null)
+                    {
+                        BankingInformationEntity bank = _mapper.Map<BankingInformationEntity>(claim.BankInfo);
+                        bank.InformationSource = providerDynamicsID;
+                        ssg_bank = await _searchRequestService.CreateBankInfo(bank, concellationToken);
+                    }
+
+                    SSG_Asset_WorkSafeBcClaim ssg_claim = _mapper.Map<SSG_Asset_WorkSafeBcClaim>(claim);
+                    ssg_claim.SearchRequest = request;
+                    ssg_claim.InformationSource = providerDynamicsID;
+                    ssg_claim.Person = ssg_person;
+                    ssg_claim.BankingInformation = ssg_bank;
+                    await _searchRequestService.CreateCompensationClaim(ssg_claim, concellationToken);
                 }
                 return true;
             }

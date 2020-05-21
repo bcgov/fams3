@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using DynamicsAdapter.Web.Mapping;
 using DynamicsAdapter.Web.PersonSearch.Models;
 using Fams3Adapter.Dynamics.Address;
@@ -403,7 +403,8 @@ namespace DynamicsAdapter.Web.Test.Mapping
                         OtherAssets = new OtherAsset[]
                         {
                             new OtherAsset(){}
-                        }
+                        },
+                        CompensationClaims=null
                     },
                     new Person(){
                         FirstName = "firstName",
@@ -427,6 +428,10 @@ namespace DynamicsAdapter.Web.Test.Mapping
                         Vehicles=new Vehicle[]
                         {
                             new Vehicle(){}
+                        },
+                        CompensationClaims= new CompensationClaim[]
+                        {
+                            new CompensationClaim(){ }
                         }
                     }
                 }
@@ -436,7 +441,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(new DateTime(2003, 3, 3), searchEvent.TimeStamp);
             Assert.AreEqual(Keys.EVENT_COMPLETED, searchEvent.EventType);
             Assert.AreEqual(Keys.SEARCH_API_EVENT_NAME, searchEvent.Name);
-            Assert.AreEqual("Auto search processing completed successfully. 2 Matched Persons found.\nFor Matched Person 1 : 2 identifier(s) found.  2 addresses found. 2 phone number(s) found. 2 name(s) found. 1 employment(s) found. 0 related person(s) found. 1 bank info(s) found. 0 vehicle(s) found. 1 other asset(s) found.\nFor Matched Person 2 : 1 identifier(s) found.  0 addresses found. 0 phone number(s) found. 1 name(s) found. 0 employment(s) found. 1 related person(s) found. 0 bank info(s) found. 1 vehicle(s) found. 0 other asset(s) found.\n", searchEvent.Message);
+            Assert.AreEqual("Auto search processing completed successfully. 2 Matched Persons found.\nFor Matched Person 1 : 2 identifier(s) found.  2 addresses found. 2 phone number(s) found. 2 name(s) found. 1 employment(s) found. 0 related person(s) found. 1 bank info(s) found. 0 vehicle(s) found. 1 other asset(s) found. 0 compensation claim(s) found.\nFor Matched Person 2 : 1 identifier(s) found.  0 addresses found. 0 phone number(s) found. 1 name(s) found. 0 employment(s) found. 1 related person(s) found. 0 bank info(s) found. 1 vehicle(s) found. 0 other asset(s) found. 1 compensation claim(s) found.\n", searchEvent.Message);
         }
 
         [Test]
@@ -492,7 +497,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(new DateTime(2003, 3, 3), searchEvent.TimeStamp);
             Assert.AreEqual(Keys.EVENT_COMPLETED, searchEvent.EventType);
             Assert.AreEqual(Keys.SEARCH_API_EVENT_NAME, searchEvent.Name);
-            Assert.AreEqual("Auto search processing completed successfully. 1 Matched Persons found.\nFor Matched Person 1 : 2 identifier(s) found.  0 addresses found. 0 phone number(s) found. 0 name(s) found. 0 employment(s) found. 0 related person(s) found. 0 bank info(s) found. 0 vehicle(s) found. 0 other asset(s) found.\n", searchEvent.Message);
+            Assert.AreEqual("Auto search processing completed successfully. 1 Matched Persons found.\nFor Matched Person 1 : 2 identifier(s) found.  0 addresses found. 0 phone number(s) found. 0 name(s) found. 0 employment(s) found. 0 related person(s) found. 0 bank info(s) found. 0 vehicle(s) found. 0 other asset(s) found. 0 compensation claim(s) found.\n", searchEvent.Message);
         }
 
         [Test]
@@ -749,7 +754,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
         }
 
         [Test]
-        public void BankInfo_should_map_to_SSG_Asset_BankingInformation_correctly()
+        public void BankInfo_should_map_to_BankingInformationEntity_correctly()
         {
             var bank = new BankInfo()
             {
@@ -765,7 +770,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                     new ReferenceDate(){Index=1, Key="account end date", Value=new DateTimeOffset(new DateTime(2014,1,1) )}
                 }
             };
-            SSG_Asset_BankingInformation ssg_bank = _mapper.Map<SSG_Asset_BankingInformation>(bank);
+            BankingInformationEntity ssg_bank = _mapper.Map<BankingInformationEntity>(bank);
             Assert.AreEqual("666666", ssg_bank.AccountNumber);
             Assert.AreEqual("Test123", ssg_bank.BankName);
             Assert.AreEqual("Branch", ssg_bank.Branch);
@@ -868,6 +873,58 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(new DateTime(2014, 1, 1), assetEntity.Date2);
             Assert.AreEqual("start date", assetEntity.Date1Label);
             Assert.AreEqual("end date", assetEntity.Date2Label);
+        }
+
+        [Test]
+        public void CompensationClaim_should_map_to_SSG_Asset_WorkSafeBcClaim_correctly()
+        {
+            var claim = new CompensationClaim()
+            {
+                ClaimNumber = "claimNumber",
+                ClaimantNumber = "claimant121",
+                ClaimStatus = "Processing",
+                ClaimType = "Disable compensation",
+                Description = "dis",
+                Notes = "compensation notes",
+                ReferenceDates = new List<ReferenceDate>(){
+                                    new ReferenceDate(){ Index=0, Key="compensation Start Date", Value=new DateTime(2019,9,1) },
+                                    new ReferenceDate(){ Index=1, Key="compensation Expired Date", Value=new DateTime(2020,9,1) }
+                                },
+                BankInfo = new BankInfo()
+                {
+                    Notes = "compensation bank Notes"
+                },
+                Employer = new Employer()
+                {
+                    Address = new Address
+                    {
+                        AddressLine1 = "compensation Employer Address 1",                        
+                        City = "compensation Employer City",
+                        StateProvince = "AB",
+                        CountryRegion = "Canada",
+                        ZipPostalCode = "VR4 123"
+                    },
+                    ContactPerson = "compensation Employer Surname FirstName",
+                    Name = "compensation Employer Sample Company",
+                    Phones = new List<Phone>()
+                                     {
+                                         new Phone {PhoneNumber = "33333333", Extension ="123", Type ="Phone"}
+                                     }
+                }
+            };
+            SSG_Asset_WorkSafeBcClaim bcClaim = _mapper.Map<SSG_Asset_WorkSafeBcClaim>(claim);
+            Assert.AreEqual("claimNumber", bcClaim.ClaimNumber);
+            Assert.AreEqual("claimant121", bcClaim.ClaimantNumber);
+            Assert.AreEqual("Processing", bcClaim.ClaimStatus);
+            Assert.AreEqual("Disable compensation", bcClaim.ClaimType);
+            Assert.AreEqual("dis", bcClaim.Description);
+            Assert.AreEqual("compensation notes", bcClaim.Notes);
+            Assert.AreEqual(1, bcClaim.StatusCode);
+            Assert.AreEqual(0, bcClaim.StateCode);
+            Assert.AreEqual(new DateTime(2019, 9, 1), bcClaim.Date1);
+            Assert.AreEqual(new DateTime(2020, 9, 1), bcClaim.Date2);
+            Assert.AreEqual("compensation Start Date", bcClaim.Date1Label);
+            Assert.AreEqual("compensation Expired Date", bcClaim.Date2Label);
         }
 
         [Test]

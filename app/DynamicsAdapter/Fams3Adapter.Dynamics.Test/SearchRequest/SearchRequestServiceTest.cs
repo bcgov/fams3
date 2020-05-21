@@ -1,4 +1,4 @@
-﻿using Fams3Adapter.Dynamics.Address;
+using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.AssetOwner;
 using Fams3Adapter.Dynamics.BankInfo;
 using Fams3Adapter.Dynamics.Employment;
@@ -29,6 +29,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         private readonly Guid testPersonId = Guid.Parse("6AE89FE6-9909-EA11-1111-00505683FBF4");
         private readonly Guid testVehicleId = Guid.Parse("8AE89FE6-9909-EA11-1901-00005683FBF9");
         private readonly Guid testAssetOtherId = Guid.Parse("77789FE6-9909-EA11-1901-000056837777");
+        private readonly Guid testBankInfoId = Guid.Parse("00089FE6-9909-EA11-1901-000056837777");
 
         private SearchRequestService _sut;
 
@@ -120,7 +121,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             })
             );
 
-            odataClientMock.Setup(x => x.For<SSG_Asset_BankingInformation>(null).Set(It.Is<SSG_Asset_BankingInformation>(x => x.BankName == "bank"))
+            odataClientMock.Setup(x => x.For<SSG_Asset_BankingInformation>(null).Set(It.Is<BankingInformationEntity>(x => x.BankName == "bank"))
             .InsertEntryAsync(It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult(new SSG_Asset_BankingInformation()
             {
@@ -149,6 +150,14 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
              .Returns(Task.FromResult(new SSG_Asset_Other()
              {
                  AssetOtherId = testAssetOtherId
+             })
+             );
+
+            odataClientMock.Setup(x => x.For<SSG_Asset_WorkSafeBcClaim>(null).Set(It.Is<SSG_Asset_WorkSafeBcClaim>(x => x.ClaimNumber == "compensationClaimNumber"))
+             .InsertEntryAsync(It.IsAny<CancellationToken>()))
+             .Returns(Task.FromResult(new SSG_Asset_WorkSafeBcClaim()
+             {
+                 ClaimNumber = "compensationClaimNumber"
              })
              );
 
@@ -328,7 +337,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         [Test]
         public async Task with_correct_searchRequestid_upload_bank_info_should_success()
         {
-            var bankInfo = new SSG_Asset_BankingInformation()
+            var bankInfo = new BankingInformationEntity()
             {
                 BankName = "bank",
                 TransitNumber = "123456",
@@ -403,6 +412,28 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             var result = await _sut.CreateOtherAsset(assetOther, CancellationToken.None);
 
             Assert.AreEqual(testAssetOtherId, result.AssetOtherId);
+        }
+
+        [Test]
+        public async Task with_correct_bankInfomationId_upload_worksafebcClaim_should_success()
+        {
+            var claim = new SSG_Asset_WorkSafeBcClaim()
+            {
+                ClaimNumber = "compensationClaimNumber",
+                BankingInformation = new SSG_Asset_BankingInformation() { BankingInformationId = testBankInfoId },
+                Notes = "notes",
+                Date1 = new DateTime(2001, 1, 1),
+                Date1Label = "date1lable",
+                Date2 = new DateTime(2005, 1, 1),
+                Date2Label = "date2lable",
+                SearchRequest = new SSG_SearchRequest() { SearchRequestId = testId },
+                Person = new SSG_Person() { PersonId = testPersonId }
+               
+            };
+
+            var result = await _sut.CreateCompensationClaim(claim, CancellationToken.None);
+
+            Assert.AreEqual("compensationClaimNumber", result.ClaimNumber);
         }
     }
 }

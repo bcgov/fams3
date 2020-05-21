@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using DynamicsAdapter.Web.PersonSearch;
 using DynamicsAdapter.Web.PersonSearch.Models;
 using Fams3Adapter.Dynamics.Address;
@@ -37,11 +37,12 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         private SSG_Identity _fakeRelatedPerson;
         private EmploymentEntity _fakeEmployment;
         private SSG_EmploymentContact _fakeEmploymentContact;
-        private SSG_Asset_BankingInformation _fakeBankInfo;
+        private BankingInformationEntity _fakeBankInfo;
         private PersonEntity _ssg_fakePerson;
         private SSG_AssetOwner _fakeAssetOwner;
         private VehicleEntity _fakeVehicleEntity;
         private AssetOtherEntity _fakeOtherAsset;
+        private SSG_Asset_WorkSafeBcClaim _fakeWorkSafeBcClaim;
         private ProviderProfile _providerProfile;
         private SSG_SearchRequest _searchRequest;
         private CancellationToken _fakeToken;
@@ -59,6 +60,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             var invalidRequestId = Guid.NewGuid();
             var validVehicleId = Guid.NewGuid();
             var validOtherAssetId = Guid.NewGuid();
+            var validBankInformationId = Guid.NewGuid();
 
             _fakePersoneIdentifier = new SSG_Identifier
             {
@@ -121,7 +123,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 SearchRequestId = validRequestId
             };
 
-            _fakeBankInfo = new SSG_Asset_BankingInformation
+            _fakeBankInfo = new BankingInformationEntity
             {
                 BankName = "bank"
             };
@@ -143,56 +145,66 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 TypeDescription = "type description"
             };
 
+            _fakeWorkSafeBcClaim = new SSG_Asset_WorkSafeBcClaim()
+            {
+                SearchRequest = _searchRequest,
+                ClaimNumber= "claimNumber",
+                BankingInformation=new SSG_Asset_BankingInformation() 
+                { 
+                    BankingInformationId=validBankInformationId
+                }
+            };
+
             _fakePerson = new Person()
             {
                 DateOfBirth = DateTime.Now,
                 FirstName = "TEST1",
                 LastName = "TEST2",
                 Identifiers = new List<PersonalIdentifier>()
-                        {
-                            new PersonalIdentifier()
-                            {
-                               Value  = "test",
-                               IssuedBy = "test",
-                               Type = PersonalIdentifierType.BCDriverLicense
-                            }
-                        },
+                {
+                    new PersonalIdentifier()
+                    {
+                        Value = "test",
+                        IssuedBy = "test",
+                        Type = PersonalIdentifierType.BCDriverLicense
+                    }
+                },
                 Addresses = new List<Address>()
-                        {
-                            new Address()
-                            {
-                                AddressLine1 = "AddressLine1",
-                                AddressLine2 = "AddressLine2",
-                                AddressLine3 = "AddressLine3",
-                                StateProvince = "Manitoba",
-                                City = "testCity",
-                                Type = "residence",
-                                CountryRegion= "canada",
-                                ZipPostalCode = "p3p3p3",
-                                ReferenceDates = new List<ReferenceDate>(){
-                                    new ReferenceDate(){ Index=0, Key="Start Date", Value=new DateTime(2019,9,1) },
-                                    new ReferenceDate(){ Index=1, Key="End Date", Value=new DateTime(2020,9,1) }
-                                },
-                                Description = "description"
-                            }
+                {
+                    new Address()
+                    {
+                        AddressLine1 = "AddressLine1",
+                        AddressLine2 = "AddressLine2",
+                        AddressLine3 = "AddressLine3",
+                        StateProvince = "Manitoba",
+                        City = "testCity",
+                        Type = "residence",
+                        CountryRegion = "canada",
+                        ZipPostalCode = "p3p3p3",
+                        ReferenceDates = new List<ReferenceDate>() {
+                            new ReferenceDate() { Index = 0, Key = "Start Date", Value = new DateTime(2019, 9, 1) },
+                            new ReferenceDate() { Index = 1, Key = "End Date", Value = new DateTime(2020, 9, 1) }
                         },
+                        Description = "description"
+                    }
+                },
                 Phones = new List<Phone>()
+                {
+                    new Phone()
                     {
-                        new Phone ()
-                        {
-                            PhoneNumber = "4005678900"
-                        }
-                    },
+                        PhoneNumber = "4005678900"
+                    }
+                },
                 Names = new List<Name>()
+                {
+                    new Name()
                     {
-                        new Name ()
-                        {
-                            FirstName = "firstName"
-                        }
-                    },
+                        FirstName = "firstName"
+                    }
+                },
                 RelatedPersons = new List<RelatedPerson>()
                 {
-                    new RelatedPerson(){FirstName="firstName"}
+                    new RelatedPerson() { FirstName = "firstName" }
                 },
 
                 Employments = new List<Employment>()
@@ -202,8 +214,8 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                         Occupation = "Occupation",
                         Employer = new Employer()
                         {
-                            Phones=new List<Phone>(){
-                                new Phone(){ PhoneNumber = "1111111", Type="Phone"}
+                            Phones = new List<Phone>() {
+                                new Phone() { PhoneNumber = "1111111", Type = "Phone" }
                             }
                         }
                     }
@@ -223,9 +235,9 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                     },
                     new Vehicle()
                     {
-                        Owners=new List<AssetOwner>()
+                        Owners = new List<AssetOwner>()
                         {
-                            new AssetOwner(){}
+                            new AssetOwner() { }
                         }
                     }
                 },
@@ -233,9 +245,20 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 {
                     new OtherAsset()
                     {
-                        Owners=new List<AssetOwner>()
+                        Owners = new List<AssetOwner>()
                         {
-                            new AssetOwner(){}
+                            new AssetOwner() { }
+                        }
+                    }
+                },
+                CompensationClaims = new List<CompensationClaim>()
+                {
+                    new CompensationClaim()
+                    {
+                        ClaimNumber="claimNumber",
+                        BankInfo = new BankInfo()
+                        {
+                            BankName="compensationBankName"
                         }
                     }
                 }
@@ -274,7 +297,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _mapper.Setup(m => m.Map<SSG_Identity>(It.IsAny<RelatedPerson>()))
                    .Returns(_fakeRelatedPerson);
 
-            _mapper.Setup(m => m.Map<SSG_Asset_BankingInformation>(It.IsAny<BankInfo>()))
+            _mapper.Setup(m => m.Map<BankingInformationEntity>(It.IsAny<BankInfo>()))
                    .Returns(_fakeBankInfo);
 
             _mapper.Setup(m => m.Map<VehicleEntity>(It.IsAny<Vehicle>()))
@@ -285,6 +308,9 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
 
             _mapper.Setup(m => m.Map<AssetOtherEntity>(It.IsAny<OtherAsset>()))
                     .Returns(_fakeOtherAsset);
+
+            _mapper.Setup(m => m.Map<SSG_Asset_WorkSafeBcClaim>(It.IsAny<CompensationClaim>()))
+                    .Returns(_fakeWorkSafeBcClaim);
 
             _searchRequestServiceMock.Setup(x => x.CreateIdentifier(It.Is<SSG_Identifier>(x => x.SearchRequest.SearchRequestId == invalidRequestId), It.IsAny<CancellationToken>()))
                 .Throws(new Exception("random exception"));
@@ -332,9 +358,10 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                   FirstName = "firstName"
               }));
 
-            _searchRequestServiceMock.Setup(x => x.CreateBankInfo(It.Is<SSG_Asset_BankingInformation>(x => x.SearchRequest.SearchRequestId == validRequestId), It.IsAny<CancellationToken>()))
+            _searchRequestServiceMock.Setup(x => x.CreateBankInfo(It.Is<BankingInformationEntity>(x => x.SearchRequest.SearchRequestId == validRequestId), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<SSG_Asset_BankingInformation>(new SSG_Asset_BankingInformation()
                 {
+                    BankingInformationId= validBankInformationId,
                     BankName = "bankName"
                 }));
 
@@ -354,6 +381,12 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 .Returns(Task.FromResult<SSG_Asset_Other>(new SSG_Asset_Other()
                 {
                     AssetOtherId = validOtherAssetId
+                }));
+
+            _searchRequestServiceMock.Setup(x => x.CreateCompensationClaim(It.Is<SSG_Asset_WorkSafeBcClaim>(x => x.SearchRequest.SearchRequestId == validRequestId), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult<SSG_Asset_WorkSafeBcClaim>(new SSG_Asset_WorkSafeBcClaim()
+                {
+                    ClaimNumber = "claimNumber"
                 }));
 
             _sut = new SearchResultService(_searchRequestServiceMock.Object, _loggerMock.Object, _mapper.Object);
@@ -391,7 +424,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 .Verify(x => x.CreateEmploymentContact(It.IsAny<SSG_EmploymentContact>(), It.IsAny<CancellationToken>()), Times.Once);
 
             _searchRequestServiceMock
-               .Verify(x => x.CreateBankInfo(It.IsAny<SSG_Asset_BankingInformation>(), It.IsAny<CancellationToken>()), Times.Once);
+               .Verify(x => x.CreateBankInfo(It.IsAny<BankingInformationEntity>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
 
             _searchRequestServiceMock
               .Verify(x => x.CreateVehicle(It.IsAny<VehicleEntity>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
@@ -401,6 +434,9 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
 
             _searchRequestServiceMock
                 .Verify(x => x.CreateAssetOwner(It.IsAny<SSG_AssetOwner>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
+
+            _searchRequestServiceMock
+               .Verify(x => x.CreateCompensationClaim(It.IsAny<SSG_Asset_WorkSafeBcClaim>(), It.IsAny<CancellationToken>()), Times.Exactly(1));
 
             Assert.AreEqual(true, result);
         }
@@ -421,7 +457,8 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 Employments = null,
                 BankInfos = null,
                 Vehicles = null,
-                OtherAssets = null
+                OtherAssets = null,
+                CompensationClaims=null
             };
             var result = await _sut.ProcessPersonFound(fakePersonNull, _providerProfile, _searchRequest, _fakeToken);
 
@@ -460,6 +497,9 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
 
             _searchRequestServiceMock
                 .Verify(x => x.CreateOtherAsset(It.IsAny<AssetOtherEntity>(), It.IsAny<CancellationToken>()), Times.Never);
+
+            _searchRequestServiceMock
+                .Verify(x => x.CreateCompensationClaim(It.IsAny<SSG_Asset_WorkSafeBcClaim>(), It.IsAny<CancellationToken>()), Times.Never);
 
             Assert.AreEqual(true, result);
         }

@@ -14,6 +14,7 @@ using Fams3Adapter.Dynamics.SearchRequest;
 using Fams3Adapter.Dynamics.Vehicle;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -317,11 +318,31 @@ namespace DynamicsAdapter.Web.PersonSearch
                         ssg_bank = await _searchRequestService.CreateBankInfo(bank, concellationToken);
                     }
 
+                    SSG_Employment ssg_employment = null;
+                    if (claim.Employer != null)
+                    {
+                        EmploymentEntity employ = _mapper.Map<EmploymentEntity>(claim.Employer);
+                        employ.InformationSource = providerDynamicsID;
+                        employ.Date1= claim.ReferenceDates?.SingleOrDefault(m => m.Index == 0)?.Value.DateTime;
+                        employ.Date1Label = claim.ReferenceDates?.SingleOrDefault(m => m.Index == 0)?.Key;
+                        ssg_employment = await _searchRequestService.CreateEmployment(employ, concellationToken);
+                        if (claim.Employer.Phones != null)
+                        {
+                            foreach (var phone in claim.Employer.Phones)
+                            {
+                                SSG_EmploymentContact p = _mapper.Map<SSG_EmploymentContact>(phone);
+                                p.Employment = ssg_employment;
+                                await _searchRequestService.CreateEmploymentContact(p, concellationToken);
+                            }
+                        }
+                    }
+
                     SSG_Asset_WorkSafeBcClaim ssg_claim = _mapper.Map<SSG_Asset_WorkSafeBcClaim>(claim);
                     ssg_claim.SearchRequest = request;
                     ssg_claim.InformationSource = providerDynamicsID;
                     ssg_claim.Person = ssg_person;
                     ssg_claim.BankingInformation = ssg_bank;
+                    ssg_claim.Employment = ssg_employment;
                     await _searchRequestService.CreateCompensationClaim(ssg_claim, concellationToken);
                 }
                 return true;

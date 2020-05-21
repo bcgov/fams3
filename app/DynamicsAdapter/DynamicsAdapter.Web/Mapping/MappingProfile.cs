@@ -56,8 +56,8 @@ namespace DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.PersonSurname))
                  .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => src.PersonBirthDate))
                  .ForMember(dest => dest.Identifiers, opt => opt.MapFrom(src => src.Identifiers))
-                 .ForMember(dest => dest.FileID, opt=>opt.MapFrom(src=>src.SearchRequest==null?"0":src.SearchRequest.FileId))
-                 .ForMember(dest => dest.DataProviders, opt=>opt.MapFrom(src=>src.DataProviders));       
+                 .ForMember(dest => dest.FileID, opt => opt.MapFrom(src => src.SearchRequest == null ? "0" : src.SearchRequest.FileId))
+                 .ForMember(dest => dest.DataProviders, opt => opt.MapFrom(src => src.DataProviders));
 
             CreateMap<PersonSearchAccepted, SSG_SearchApiEvent>()
               .ForMember(dest => dest.Id, opt => opt.MapFrom(src => Guid.NewGuid()))
@@ -110,7 +110,7 @@ namespace DynamicsAdapter.Web.Mapping
                  .IncludeBase<PersonalInfo, DynamicsEntity>();
 
             CreateMap<Employment, EmploymentEntity>()
-              .ForMember(dest => dest.AddressLine1, opt => opt.MapFrom(src => (src.Employer == null)? string.Empty: (src.Employer.Address == null)?string.Empty: src.Employer.Address.AddressLine1))
+              .ForMember(dest => dest.AddressLine1, opt => opt.MapFrom(src => (src.Employer == null) ? string.Empty : (src.Employer.Address == null) ? string.Empty : src.Employer.Address.AddressLine1))
               .ForMember(dest => dest.AddressLine2, opt => opt.MapFrom(src => (src.Employer == null) ? string.Empty : (src.Employer.Address == null) ? string.Empty : src.Employer.Address.AddressLine2))
               .ForMember(dest => dest.AddressLine3, opt => opt.MapFrom(src => (src.Employer == null) ? string.Empty : (src.Employer.Address == null) ? string.Empty : src.Employer.Address.AddressLine3))
               .ForMember(dest => dest.BusinessName, opt => opt.MapFrom(src => (src.Employer == null) ? string.Empty : src.Employer.Name))
@@ -123,18 +123,18 @@ namespace DynamicsAdapter.Web.Mapping
               .ForMember(dest => dest.IncomeAssistance, opt => opt.MapFrom(src => src.IncomeAssistance))
               .ForMember(dest => dest.CountrySubdivisionText, opt => opt.MapFrom(src => (src.Employer == null) ? string.Empty : (src.Employer.Address == null) ? string.Empty : src.Employer.Address.StateProvince))
               .ForMember(dest => dest.CountryText, opt => opt.MapFrom(src => (src.Employer == null) ? string.Empty : (src.Employer.Address == null) ? string.Empty : src.Employer.Address.CountryRegion))
-              .ForMember(dest => dest.BusinessOwner, opt => opt.MapFrom(src => (src.Employer == null) ? string.Empty : src.Employer.OwnerName)) 
-              .ForMember(dest => dest.EmploymentConfirmed, opt => opt.MapFrom(src => src.EmploymentConfirmed))           
-              .ForMember(dest => dest.ContactPerson, opt => opt.MapFrom( src => (src.Employer == null) ? string.Empty : src.Employer.ContactPerson))             
+              .ForMember(dest => dest.BusinessOwner, opt => opt.MapFrom(src => (src.Employer == null) ? string.Empty : src.Employer.OwnerName))
+              .ForMember(dest => dest.EmploymentConfirmed, opt => opt.MapFrom(src => src.EmploymentConfirmed))
+              .ForMember(dest => dest.ContactPerson, opt => opt.MapFrom(src => (src.Employer == null) ? string.Empty : src.Employer.ContactPerson))
               .IncludeBase<PersonalInfo, DynamicsEntity>();
 
             CreateMap<Phone, SSG_EmploymentContact>()
-                .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src =>src.Type.Equals("Phone",StringComparison.InvariantCultureIgnoreCase)?src.PhoneNumber:null))
+                .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.Type.Equals("Phone", StringComparison.InvariantCultureIgnoreCase) ? src.PhoneNumber : null))
                 .ForMember(dest => dest.PhoneExtension, opt => opt.MapFrom(src => src.Extension))
                 .ForMember(dest => dest.FaxNumber, opt => opt.MapFrom(src => src.Type.Equals("fax", StringComparison.InvariantCultureIgnoreCase) ? src.PhoneNumber : null))
                 .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => 0))
                 .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1));
-                //.IncludeBase<PersonalInfo, DynamicsEntity>();
+            //.IncludeBase<PersonalInfo, DynamicsEntity>();
 
             CreateMap<Phone, SSG_PhoneNumber>()
                 .ForMember(dest => dest.TelePhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
@@ -162,7 +162,7 @@ namespace DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.MiddleName, opt => opt.MapFrom(src => src.MiddleName))
                  .ForMember(dest => dest.ThirdGivenName, opt => opt.MapFrom(src => src.OtherName))
                  .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new RelatedPersonCategoryConverter(), src => src.Type))
-                 .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => src.DateOfBirth==null? (DateTime?)null : src.DateOfBirth.Value.DateTime))
+                 .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => src.DateOfBirth == null ? (DateTime?)null : src.DateOfBirth.Value.DateTime))
                  .ForMember(dest => dest.SupplierRelationType, opt => opt.MapFrom(src => src.Type))
                  .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
                  .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
@@ -170,7 +170,7 @@ namespace DynamicsAdapter.Web.Mapping
                  .IncludeBase<PersonalInfo, DynamicsEntity>();
 
             CreateMap<SSG_SearchapiRequestDataProvider, DataProvider>()
-                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.AdaptorName.Replace(" ",String.Empty).ToUpperInvariant()));
+                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.AdaptorName.Replace(" ", String.Empty).ToUpperInvariant()));
 
             CreateMap<Person, PersonEntity>()
                .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
@@ -179,7 +179,7 @@ namespace DynamicsAdapter.Web.Mapping
                .ForMember(dest => dest.ThirdGivenName, opt => opt.MapFrom(src => src.OtherName))
                .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => (src.DateOfBirth != null) ? src.DateOfBirth.Value.DateTime : (DateTime?)null))
                .ForMember(dest => dest.DateOfDeath, opt => opt.MapFrom(src => (src.DateOfDeath != null) ? src.DateOfDeath.Value.DateTime : (DateTime?)null))
-               .ForMember(dest => dest.DateOfDeathConfirmed, opt => opt.MapFrom( src => src.DateDeathConfirmed))
+               .ForMember(dest => dest.DateOfDeathConfirmed, opt => opt.MapFrom(src => src.DateDeathConfirmed))
                .ForMember(dest => dest.Gender, opt => opt.MapFrom(src => src.Gender))
                .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
                .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => 0))
@@ -200,6 +200,20 @@ namespace DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.TransitNumber, opt => opt.MapFrom(src => src.TransitNumber))
                  .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => $"{src.Notes} {src.Description}"))
                  .IncludeBase<PersonalInfo, DynamicsEntity>();
+
+            CreateMap<Employer, EmploymentEntity>()
+                  .ForMember(dest => dest.AddressLine1, opt => opt.MapFrom(src => (src.Address == null) ? string.Empty : src.Address.AddressLine1))
+                  .ForMember(dest => dest.AddressLine2, opt => opt.MapFrom(src => (src.Address == null) ? string.Empty : src.Address.AddressLine2))
+                  .ForMember(dest => dest.AddressLine3, opt => opt.MapFrom(src => (src.Address == null) ? string.Empty : src.Address.AddressLine3))
+                  .ForMember(dest => dest.BusinessName, opt => opt.MapFrom(src => src.Name))
+                  .ForMember(dest => dest.PostalCode, opt => opt.MapFrom(src => (src.Address == null) ? string.Empty : src.Address.ZipPostalCode))
+                  .ForMember(dest => dest.City, opt => opt.MapFrom(src => (src.Address == null) ? string.Empty : src.Address.City))
+                  .ForMember(dest => dest.CountrySubdivisionText, opt => opt.MapFrom(src => (src.Address == null) ? string.Empty : src.Address.StateProvince))
+                  .ForMember(dest => dest.CountryText, opt => opt.MapFrom(src => (src.Address == null) ? string.Empty : src.Address.CountryRegion))
+                  .ForMember(dest => dest.BusinessOwner, opt => opt.MapFrom(src => src.OwnerName))
+                  .ForMember(dest => dest.ContactPerson, opt => opt.MapFrom(src => src.ContactPerson))
+                  .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => 0))
+                  .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1));
 
             CreateMap<Vehicle, VehicleEntity>()
                  .ForMember(dest => dest.OwnershipType, opt => opt.MapFrom(src => src.OwnershipType))
@@ -233,6 +247,8 @@ namespace DynamicsAdapter.Web.Mapping
                   .ForMember(dest => dest.ClaimStatus, opt => opt.MapFrom(src => src.ClaimStatus))
                   .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
                   .IncludeBase<PersonalInfo, DynamicsEntity>();
+
+
         }
     }
 

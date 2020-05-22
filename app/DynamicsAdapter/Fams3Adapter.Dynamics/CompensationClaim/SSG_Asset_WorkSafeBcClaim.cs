@@ -1,4 +1,5 @@
-﻿using Fams3Adapter.Dynamics.Person;
+﻿using Fams3Adapter.Dynamics.Employment;
+using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Newtonsoft.Json;
 
@@ -35,5 +36,8 @@ namespace Fams3Adapter.Dynamics.BankInfo
 
         [JsonProperty("ssg_BankingInformationId")]
         public virtual SSG_Asset_BankingInformation BankingInformation { get; set; }
+
+        [JsonProperty("ssg_Employment")]
+        public virtual SSG_Employment Employment { get; set; }
     }
 }

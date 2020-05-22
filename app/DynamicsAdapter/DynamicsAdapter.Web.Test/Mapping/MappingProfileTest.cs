@@ -931,6 +931,45 @@ namespace DynamicsAdapter.Web.Test.Mapping
         }
 
         [Test]
+        public void Employer_should_map_to_EmploymentEntity_correctly()
+        {
+            var employer = new Employer()
+            {
+                Address = new Address
+                {
+                    AddressLine1 = "compensation Employer Address 1",
+                    City = "compensation Employer City",
+                    StateProvince = "AB",
+                    CountryRegion = "Canada",
+                    ZipPostalCode = "VR4 123"
+                },
+                ContactPerson = "compensation Employer Surname FirstName",
+                Name = "compensation Employer Sample Company",
+                Phones = new List<Phone>()
+                {
+                    new Phone {PhoneNumber = "33333333", Extension ="123", Type ="Phone"}
+                },
+                OwnerName = "owner name"
+            };
+            EmploymentEntity employmentEntity = _mapper.Map<EmploymentEntity>(employer);
+            Assert.AreEqual("compensation Employer Address 1", employmentEntity.AddressLine1);
+            Assert.AreEqual(null, employmentEntity.AddressLine2);
+            Assert.AreEqual(null, employmentEntity.AddressLine3);
+            Assert.AreEqual(null, employmentEntity.Occupation);
+            Assert.AreEqual("compensation Employer Sample Company", employmentEntity.BusinessName);
+            Assert.AreEqual("owner name", employmentEntity.BusinessOwner);
+            Assert.AreEqual("compensation Employer City", employmentEntity.City);
+            Assert.AreEqual("compensation Employer Surname FirstName", employmentEntity.ContactPerson);
+            Assert.AreEqual("Canada", employmentEntity.CountryText);
+            Assert.AreEqual("AB", employmentEntity.CountrySubdivisionText);
+            Assert.AreEqual("VR4 123", employmentEntity.PostalCode);
+            Assert.AreEqual(null, employmentEntity.Notes);
+            Assert.AreEqual(1, employmentEntity.StatusCode);
+            Assert.AreEqual(0, employmentEntity.StateCode);
+
+        }
+
+        [Test]
         public void gender_null_RelatedPerson_should_map_to_SSG_Identity_correctly()
         {
             var relatedPerson = new RelatedPerson()
@@ -957,6 +996,8 @@ namespace DynamicsAdapter.Web.Test.Mapping
             DataProvider provider = _mapper.Map<DataProvider>(dp);
             Assert.AreEqual("DATAPROVIDER1", provider.Name);
         }
+
+
     }
 }
 

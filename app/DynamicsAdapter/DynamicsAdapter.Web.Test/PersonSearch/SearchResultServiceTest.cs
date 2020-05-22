@@ -36,6 +36,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         private SSG_Aliase _fakeName;
         private SSG_Identity _fakeRelatedPerson;
         private EmploymentEntity _fakeEmployment;
+        private EmploymentEntity _fakeCompensationEmployment;
         private SSG_EmploymentContact _fakeEmploymentContact;
         private BankingInformationEntity _fakeBankInfo;
         private PersonEntity _ssg_fakePerson;
@@ -46,6 +47,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         private ProviderProfile _providerProfile;
         private SSG_SearchRequest _searchRequest;
         private CancellationToken _fakeToken;
+        private string COMPENSATION_BUISNESS_NAME = "businessName";
 
         private Mock<IMapper> _mapper;
 
@@ -61,6 +63,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             var validVehicleId = Guid.NewGuid();
             var validOtherAssetId = Guid.NewGuid();
             var validBankInformationId = Guid.NewGuid();
+            var validEmploymentId = Guid.NewGuid();
 
             _fakePersoneIdentifier = new SSG_Identifier
             {
@@ -148,11 +151,21 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _fakeWorkSafeBcClaim = new SSG_Asset_WorkSafeBcClaim()
             {
                 SearchRequest = _searchRequest,
-                ClaimNumber= "claimNumber",
-                BankingInformation=new SSG_Asset_BankingInformation() 
-                { 
-                    BankingInformationId=validBankInformationId
+                ClaimNumber = "claimNumber",
+                BankingInformation = new SSG_Asset_BankingInformation()
+                {
+                    BankingInformationId = validBankInformationId
+                },
+                Employment = new SSG_Employment()
+                {
+                    EmploymentId = validEmploymentId
                 }
+
+            };
+
+            _fakeCompensationEmployment = new EmploymentEntity()
+            {
+                BusinessName = COMPENSATION_BUISNESS_NAME
             };
 
             _fakePerson = new Person()
@@ -259,6 +272,14 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                         BankInfo = new BankInfo()
                         {
                             BankName="compensationBankName"
+                        },
+                        Employer = new Employer()
+                        {
+                            Name=COMPENSATION_BUISNESS_NAME
+                        },
+                        ReferenceDates=new ReferenceDate[]
+                        {
+                            new ReferenceDate() { Index = 0, Key = "Start Date", Value = new DateTime(2019, 9, 1) }
                         }
                     }
                 }
@@ -288,8 +309,11 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _mapper.Setup(m => m.Map<PersonEntity>(It.IsAny<Person>()))
                .Returns(_ssg_fakePerson);
 
+            _mapper.Setup(m => m.Map<EmploymentEntity>(It.Is<Employer>(m=>m.Name== COMPENSATION_BUISNESS_NAME)))
+                .Returns(_fakeCompensationEmployment);
+
             _mapper.Setup(m => m.Map<EmploymentEntity>(It.IsAny<Employment>()))
-       .Returns(_fakeEmployment);
+              .Returns(_fakeEmployment);
 
             _mapper.Setup(m => m.Map<SSG_EmploymentContact>(It.IsAny<Phone>()))
                 .Returns(_fakeEmploymentContact);
@@ -311,6 +335,8 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
 
             _mapper.Setup(m => m.Map<SSG_Asset_WorkSafeBcClaim>(It.IsAny<CompensationClaim>()))
                     .Returns(_fakeWorkSafeBcClaim);
+
+
 
             _searchRequestServiceMock.Setup(x => x.CreateIdentifier(It.Is<SSG_Identifier>(x => x.SearchRequest.SearchRequestId == invalidRequestId), It.IsAny<CancellationToken>()))
                 .Throws(new Exception("random exception"));
@@ -361,7 +387,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _searchRequestServiceMock.Setup(x => x.CreateBankInfo(It.Is<BankingInformationEntity>(x => x.SearchRequest.SearchRequestId == validRequestId), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<SSG_Asset_BankingInformation>(new SSG_Asset_BankingInformation()
                 {
-                    BankingInformationId= validBankInformationId,
+                    BankingInformationId = validBankInformationId,
                     BankName = "bankName"
                 }));
 
@@ -387,6 +413,13 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 .Returns(Task.FromResult<SSG_Asset_WorkSafeBcClaim>(new SSG_Asset_WorkSafeBcClaim()
                 {
                     ClaimNumber = "claimNumber"
+                }));
+
+            _searchRequestServiceMock.Setup(x => x.CreateEmployment(It.Is<EmploymentEntity>(x => x.BusinessName == COMPENSATION_BUISNESS_NAME && x.Date1== new DateTime(2019, 9, 1)), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult<SSG_Employment>(new SSG_Employment()
+                {
+                    EmploymentId = Guid.NewGuid(),
+
                 }));
 
             _sut = new SearchResultService(_searchRequestServiceMock.Object, _loggerMock.Object, _mapper.Object);
@@ -418,7 +451,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                .Verify(x => x.CreateRelatedPerson(It.IsAny<SSG_Identity>(), It.IsAny<CancellationToken>()), Times.Once);
 
             _searchRequestServiceMock
-              .Verify(x => x.CreateEmployment(It.IsAny<EmploymentEntity>(), It.IsAny<CancellationToken>()), Times.Once);
+              .Verify(x => x.CreateEmployment(It.IsAny<EmploymentEntity>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
 
             _searchRequestServiceMock
                 .Verify(x => x.CreateEmploymentContact(It.IsAny<SSG_EmploymentContact>(), It.IsAny<CancellationToken>()), Times.Once);
@@ -458,7 +491,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 BankInfos = null,
                 Vehicles = null,
                 OtherAssets = null,
-                CompensationClaims=null
+                CompensationClaims = null
             };
             var result = await _sut.ProcessPersonFound(fakePersonNull, _providerProfile, _searchRequest, _fakeToken);
 

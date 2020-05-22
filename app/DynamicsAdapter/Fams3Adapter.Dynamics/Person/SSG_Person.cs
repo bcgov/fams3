@@ -8,7 +8,7 @@ namespace Fams3Adapter.Dynamics.Person
 {
     //if we add PersonId in this class, when we do odataClient insert, it will fail with message personID cannot be null.
     //so, we have to move PersonId to SSG_Person class. When we do insert request, there is no personID (as we use SSG_Person_Upload)
-    //and when we get the result, it has personId (as SSG_Person has personId.) 
+    //and when we get the result, it has personId (as SSG_Person has personId.)   
     public class PersonEntity
     {
         [JsonProperty("statecode")]

@@ -7,6 +7,7 @@ using Fams3Adapter.Dynamics.BankInfo;
 using Fams3Adapter.Dynamics.DataProvider;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
+using Fams3Adapter.Dynamics.InsuranceClaim;
 using Fams3Adapter.Dynamics.Name;
 using Fams3Adapter.Dynamics.OtherAsset;
 using Fams3Adapter.Dynamics.Person;
@@ -966,6 +967,140 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(null, employmentEntity.Notes);
             Assert.AreEqual(1, employmentEntity.StatusCode);
             Assert.AreEqual(0, employmentEntity.StateCode);
+
+        }
+
+        [Test]
+        public void InsuranceClaim_should_map_to_ICBCClaimEntity_correctly()
+        {
+            var claim = new InsuranceClaim()
+            {
+                ClaimNumber = "claimNumber",
+                ClaimType = "claimType",
+                ClaimStatus = "claimStatus",
+                Adjustor = new Name() { FirstName="adjusterFirstName", LastName="adjusterLastName", MiddleName="adjusterMiddleName", OtherName="adjusterOtherName"},
+                AdjustorPhone=new Phone() {PhoneNumber="adjusterPhoneNumber", Extension="adjusterPhoneExtension" },
+                ClaimCentre=new ClaimCentre()
+                {
+                    Location="claimCenterLocation",
+                    ContactAddress=new Address() 
+                    { 
+                        AddressLine1="claimCenterAddressLine1",
+                        AddressLine2="claimCenterAddressLine2",
+                        AddressLine3="claimCenterAddressLine3",
+                        City="city",
+                        StateProvince="province",
+                        CountryRegion="claimCenterCountry",
+                        ZipPostalCode="claimCenterPostalCode"
+                    },
+                    ContactNumber=new List<Phone>()
+                    {
+                        new Phone(){PhoneNumber="claimCenterContactPhoneNumber1", Extension="claimCenterContactPhoneExt1", Type="Phone"},
+                        new Phone(){PhoneNumber="claimCenterContactFaxNumber", Extension="", Type="Fax"}
+                    }
+                },
+                Identifiers=new List<PersonalIdentifier>()
+                { 
+                    new PersonalIdentifier()
+                    {
+                        Value="InsuranceClaimBCDLNumber",
+                        Type=PersonalIdentifierType.BCDriverLicense,
+                        ReferenceDates=new List<ReferenceDate>()
+                        {
+                            new ReferenceDate()
+                            {
+                                Index=0,
+                                Key="ExpiryDate",
+                                Value=new DateTimeOffset(new DateTime(2002, 2, 2))
+                            }
+                        },
+                        Description="BCDLStatus"
+                    },
+                    new PersonalIdentifier()
+                    {
+                        Value="InsuranceClaimPHNNumber",
+                        Type=PersonalIdentifierType.PersonalHealthNumber,                        
+                    }
+                },
+                InsuredParties=new List<InvolvedParty>() 
+                { 
+                    new InvolvedParty()
+                    {
+                        Name=new Name(){ FirstName="InvolvedPartyFirstName", LastName="InvolvedPartLastName", MiddleName="InvolvedPartyMiddleName", OtherName="InvolvedPartyOtherName"},
+                        Organization="InvolvedPartyOrgName",
+                        Description="InvolvedPartyDescription",
+                        Type="InvolvedPartyTypeCode",
+                        Notes="InvolvedPartyNotes",
+                        TypeDescription="InvolvedPartyTypeDescription"
+                    }
+                },
+                Description = "dis",
+                Notes = "insurance notes",
+                ReferenceDates = new List<ReferenceDate>(){
+                                    new ReferenceDate(){ Index=0, Key="insurance Start Date", Value=new DateTime(2019,9,1) },
+                                    new ReferenceDate(){ Index=1, Key="insurance Expired Date", Value=new DateTime(2020,9,1) }
+                                },
+            };
+            ICBCClaimEntity icbcClaim = _mapper.Map<SSG_Asset_ICBCClaim>(claim);
+            Assert.AreEqual("claimNumber", icbcClaim.ClaimNumber);
+            Assert.AreEqual("claimType", icbcClaim.ClaimType);
+            Assert.AreEqual("claimStatus", icbcClaim.ClaimStatus);
+            Assert.AreEqual("adjusterFirstName", icbcClaim.AdjusterFirstName);
+            Assert.AreEqual("adjusterLastName", icbcClaim.AdjusterLastName);
+            Assert.AreEqual("adjusterMiddleName", icbcClaim.AdjusterMiddleName);
+            Assert.AreEqual("adjusterOtherName", icbcClaim.AdjusterOtherName);
+            Assert.AreEqual("adjusterPhoneNumber", icbcClaim.AdjusterPhoneNumber);
+            Assert.AreEqual("adjusterPhoneExtension", icbcClaim.AdjusterPhoneNumberExt);
+            Assert.AreEqual(new DateTimeOffset(new DateTime(2002, 2, 2)).ToString(), icbcClaim.BCDLExpiryDate);
+            Assert.AreEqual("InsuranceClaimBCDLNumber", icbcClaim.BCDLNumber);
+            Assert.AreEqual("BCDLStatus", icbcClaim.BCDLStatus);
+            Assert.AreEqual("city", icbcClaim.City);
+            Assert.AreEqual("claimCenterLocation", icbcClaim.ClaimCenterLocationCode);
+            Assert.AreEqual("claimCenterCountry", icbcClaim.SupplierCountryCode);
+            Assert.AreEqual("province", icbcClaim.SupplierCountrySubdivisionCode);
+            Assert.AreEqual("InsuranceClaimPHNNumber", icbcClaim.PHNNumber);
+            Assert.AreEqual("claimCenterPostalCode", icbcClaim.PostalCode);
+            Assert.AreEqual("insurance notes", icbcClaim.Notes);
+            Assert.AreEqual(1, icbcClaim.StatusCode);
+            Assert.AreEqual(0, icbcClaim.StateCode);
+            Assert.AreEqual(new DateTime(2019, 9, 1), icbcClaim.Date1);
+            Assert.AreEqual(new DateTime(2020, 9, 1), icbcClaim.Date2);
+            Assert.AreEqual("insurance Start Date", icbcClaim.Date1Label);
+            Assert.AreEqual("insurance Expired Date", icbcClaim.Date2Label);
+        }
+
+        [Test]
+        public void InsuranceClaim_without_BCDL_should_map_to_ICBCClaimEntity_correctly()
+        {
+            var claim = new InsuranceClaim()
+            {
+              ClaimCentre = new ClaimCentre()
+                {
+                    Location = "claimCenterLocation",
+                    ContactAddress = new Address()
+                    {
+                        
+                        ZipPostalCode = "claimCenterPostalCode"
+                    },
+                    ContactNumber = null
+                },
+                Identifiers = new List<PersonalIdentifier>()
+                {
+                    new PersonalIdentifier()
+                    {
+                        Value="InsuranceClaimPHNNumber",
+                        Type=PersonalIdentifierType.PersonalHealthNumber,
+                    }
+                },
+                InsuredParties = null,
+                Description = "dis",
+                Notes = "insurance notes",
+                ReferenceDates = new List<ReferenceDate>(){
+                                    new ReferenceDate(){ Index=0, Key="insurance Start Date", Value=new DateTime(2019,9,1) },
+                                    new ReferenceDate(){ Index=1, Key="insurance Expired Date", Value=new DateTime(2020,9,1) }
+                                },
+            };
+            ICBCClaimEntity icbcClaim = _mapper.Map<SSG_Asset_ICBCClaim>(claim);
 
         }
 

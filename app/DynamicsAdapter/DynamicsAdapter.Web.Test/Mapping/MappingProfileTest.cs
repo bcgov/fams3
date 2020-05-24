@@ -1069,6 +1069,23 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual("insurance Expired Date", icbcClaim.Date2Label);
         }
 
+
+        [Test]
+        public void Phone_should_map_to_SSG_PhoneNumberForAssets_correctly()
+        {
+            var phone = new Phone()
+            {
+                PhoneNumber = "claimCenterContactPhoneNumber1",
+                Extension = "claimCenterContactPhoneExt1",
+                Type = "Phone"
+            };
+
+            SSG_PhoneNumberForAssets assetPhone = _mapper.Map<SSG_PhoneNumberForAssets>(phone);
+            Assert.AreEqual("claimCenterContactPhoneNumber1", assetPhone.PhoneNumber);
+            Assert.AreEqual("claimCenterContactPhoneExt1", assetPhone.Extension);
+            Assert.AreEqual("Phone", assetPhone.Type);
+        }
+
         [Test]
         public void InsuranceClaim_without_BCDL_should_map_to_ICBCClaimEntity_correctly()
         {
@@ -1101,7 +1118,30 @@ namespace DynamicsAdapter.Web.Test.Mapping
                                 },
             };
             ICBCClaimEntity icbcClaim = _mapper.Map<SSG_Asset_ICBCClaim>(claim);
+        }
 
+        [Test]
+        public void InvolvedParty_should_map_to_SSG_InvolvedParty_correctly()
+        {
+            var party = new InvolvedParty()
+            {
+                Name = new Name() { FirstName = "InvolvedPartyFirstName", LastName = "InvolvedPartLastName", MiddleName = "InvolvedPartyMiddleName", OtherName = "InvolvedPartyOtherName" },
+                Organization = "InvolvedPartyOrgName",
+                Description = "InvolvedPartyDescription",
+                Type = "InvolvedPartyTypeCode",
+                Notes = "InvolvedPartyNotes",
+                TypeDescription = "InvolvedPartyTypeDescription"
+            };
+
+            SSG_InvolvedParty ssg_InvolvedParty = _mapper.Map<SSG_InvolvedParty>(party);
+            Assert.AreEqual("InvolvedPartyFirstName", ssg_InvolvedParty.FirstName);
+            Assert.AreEqual("InvolvedPartLastName", ssg_InvolvedParty.LastName);
+            Assert.AreEqual("InvolvedPartyMiddleName", ssg_InvolvedParty.MiddleName);
+            Assert.AreEqual("InvolvedPartyOtherName", ssg_InvolvedParty.OtherName);
+            Assert.AreEqual("InvolvedPartyNotes", ssg_InvolvedParty.Notes);
+            Assert.AreEqual("InvolvedPartyOrgName", ssg_InvolvedParty.OrganizationName);
+            Assert.AreEqual("InvolvedPartyTypeDescription", ssg_InvolvedParty.PartyDescription);
+            Assert.AreEqual("InvolvedPartyTypeCode", ssg_InvolvedParty.PartyTypeCode);
         }
 
         [Test]

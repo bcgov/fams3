@@ -20,7 +20,10 @@ namespace Fams3Adapter.Dynamics.InsuranceClaim
         [JsonProperty("ssg_locationcityname")]
         public string City { get; set; }
 
+        [JsonProperty("ssg_countrytext")]
         public string SupplierCountryCode { get; set; }
+
+        [JsonProperty("ssg_countrysubdivisiontext")]
         public string SupplierCountrySubdivisionCode { get; set; }
 
         [JsonProperty("ssg_CountrySubdivision")]
@@ -38,7 +41,7 @@ namespace Fams3Adapter.Dynamics.InsuranceClaim
         [JsonProperty("ssg_adjusterlastname")]
         public string AdjusterLastName { get; set; }
 
-        [JsonProperty("adjustersecondgivenname")]
+        [JsonProperty("ssg_adjustersecondgivenname")]
         public string AdjusterMiddleName { get; set; }
 
         [JsonProperty("ssg_adjusterthirdgivenname")]
@@ -86,7 +89,7 @@ namespace Fams3Adapter.Dynamics.InsuranceClaim
         [JsonProperty("ssg_SearchRequest")]
         public virtual SSG_SearchRequest SearchRequest { get; set; }
 
-        [JsonProperty("ssg_PersonId")]
+        [JsonProperty("ssg_personid")]
         public virtual SSG_Person Person { get; set; }
 
     }

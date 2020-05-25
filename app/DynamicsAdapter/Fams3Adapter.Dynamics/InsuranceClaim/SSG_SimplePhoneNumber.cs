@@ -2,15 +2,15 @@
 
 namespace Fams3Adapter.Dynamics.InsuranceClaim
 {
-    public class SSG_PhoneNumberForAssets
+    public class SSG_SimplePhoneNumber
     {
-        [JsonProperty("ssg_name")]
+        [JsonProperty("ssg_phonenumber")]
         public string PhoneNumber { get; set; }
 
-        [JsonProperty("ssg_type")]
+        [JsonProperty("ssg_phonenumbertype")]
         public string Type { get; set; }
 
-        [JsonProperty("ssg_extension")]
+        [JsonProperty("ssg_phoneextension")]
         public string Extension { get; set; }
 
         [JsonProperty("ssg_ICBCClaim")]

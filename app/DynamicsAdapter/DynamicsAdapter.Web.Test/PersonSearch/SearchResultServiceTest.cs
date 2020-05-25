@@ -6,6 +6,7 @@ using Fams3Adapter.Dynamics.AssetOwner;
 using Fams3Adapter.Dynamics.BankInfo;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
+using Fams3Adapter.Dynamics.InsuranceClaim;
 using Fams3Adapter.Dynamics.Name;
 using Fams3Adapter.Dynamics.OtherAsset;
 using Fams3Adapter.Dynamics.Person;
@@ -44,6 +45,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         private VehicleEntity _fakeVehicleEntity;
         private AssetOtherEntity _fakeOtherAsset;
         private SSG_Asset_WorkSafeBcClaim _fakeWorkSafeBcClaim;
+        private ICBCClaimEntity _fakeIcbcClaim;
         private ProviderProfile _providerProfile;
         private SSG_SearchRequest _searchRequest;
         private CancellationToken _fakeToken;
@@ -166,6 +168,11 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _fakeCompensationEmployment = new EmploymentEntity()
             {
                 BusinessName = COMPENSATION_BUISNESS_NAME
+            };
+
+            _fakeIcbcClaim = new ICBCClaimEntity()
+            {
+                
             };
 
             _fakePerson = new Person()

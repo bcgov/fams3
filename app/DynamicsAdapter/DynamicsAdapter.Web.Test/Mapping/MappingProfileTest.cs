@@ -1014,12 +1014,14 @@ namespace DynamicsAdapter.Web.Test.Mapping
                                 Value=new DateTimeOffset(new DateTime(2002, 2, 2))
                             }
                         },
-                        Description="BCDLStatus"
+                        Description="BCDLStatus",
+                        TypeCode="bcdl"
                     },
                     new PersonalIdentifier()
                     {
                         Value="InsuranceClaimPHNNumber",
-                        Type=PersonalIdentifierType.PersonalHealthNumber,                        
+                        Type=PersonalIdentifierType.PersonalHealthNumber,   
+                        TypeCode="phn"
                     }
                 },
                 InsuredParties=new List<InvolvedParty>() 
@@ -1041,7 +1043,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                                     new ReferenceDate(){ Index=1, Key="insurance Expired Date", Value=new DateTime(2020,9,1) }
                                 },
             };
-            ICBCClaimEntity icbcClaim = _mapper.Map<SSG_Asset_ICBCClaim>(claim);
+            ICBCClaimEntity icbcClaim = _mapper.Map<ICBCClaimEntity>(claim);
             Assert.AreEqual("claimNumber", icbcClaim.ClaimNumber);
             Assert.AreEqual("claimType", icbcClaim.ClaimType);
             Assert.AreEqual("claimStatus", icbcClaim.ClaimStatus);
@@ -1071,7 +1073,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
 
 
         [Test]
-        public void Phone_should_map_to_SSG_PhoneNumberForAssets_correctly()
+        public void Phone_should_map_to_SSG_SimplePhoneNumber_correctly()
         {
             var phone = new Phone()
             {
@@ -1080,7 +1082,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 Type = "Phone"
             };
 
-            SSG_PhoneNumberForAssets assetPhone = _mapper.Map<SSG_PhoneNumberForAssets>(phone);
+            SSG_SimplePhoneNumber assetPhone = _mapper.Map<SSG_SimplePhoneNumber>(phone);
             Assert.AreEqual("claimCenterContactPhoneNumber1", assetPhone.PhoneNumber);
             Assert.AreEqual("claimCenterContactPhoneExt1", assetPhone.Extension);
             Assert.AreEqual("Phone", assetPhone.Type);
@@ -1093,12 +1095,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             {
               ClaimCentre = new ClaimCentre()
                 {
-                    Location = "claimCenterLocation",
-                    ContactAddress = new Address()
-                    {
-                        
-                        ZipPostalCode = "claimCenterPostalCode"
-                    },
+                    ContactAddress = null,
                     ContactNumber = null
                 },
                 Identifiers = new List<PersonalIdentifier>()
@@ -1107,17 +1104,58 @@ namespace DynamicsAdapter.Web.Test.Mapping
                     {
                         Value="InsuranceClaimPHNNumber",
                         Type=PersonalIdentifierType.PersonalHealthNumber,
+                        TypeCode="phn"
                     }
                 },
                 InsuredParties = null,
-                Description = "dis",
-                Notes = "insurance notes",
-                ReferenceDates = new List<ReferenceDate>(){
-                                    new ReferenceDate(){ Index=0, Key="insurance Start Date", Value=new DateTime(2019,9,1) },
-                                    new ReferenceDate(){ Index=1, Key="insurance Expired Date", Value=new DateTime(2020,9,1) }
-                                },
+                ReferenceDates = null
             };
-            ICBCClaimEntity icbcClaim = _mapper.Map<SSG_Asset_ICBCClaim>(claim);
+            ICBCClaimEntity icbcClaim = _mapper.Map<ICBCClaimEntity>(claim);
+            Assert.AreEqual(null, icbcClaim.BCDLExpiryDate);
+            Assert.AreEqual(null, icbcClaim.BCDLNumber);
+            Assert.AreEqual(null, icbcClaim.BCDLStatus);
+            Assert.AreEqual(null, icbcClaim.City);
+            Assert.AreEqual(null, icbcClaim.ClaimCenterLocationCode);
+            Assert.AreEqual(null, icbcClaim.SupplierCountryCode);
+            Assert.AreEqual(null, icbcClaim.SupplierCountrySubdivisionCode);
+            Assert.AreEqual("InsuranceClaimPHNNumber", icbcClaim.PHNNumber);
+            Assert.AreEqual(null, icbcClaim.PostalCode);
+            Assert.AreEqual(null, icbcClaim.Notes);
+            Assert.AreEqual(1, icbcClaim.StatusCode);
+            Assert.AreEqual(0, icbcClaim.StateCode);
+            Assert.AreEqual(null, icbcClaim.Date1);
+            Assert.AreEqual(null, icbcClaim.Date2);
+            Assert.AreEqual(null, icbcClaim.Date1Label);
+            Assert.AreEqual(null, icbcClaim.Date2Label);
+        }
+
+        [Test]
+        public void InsuranceClaim_identifiers_null_should_map_to_ICBCClaimEntity_correctly()
+        {
+            var claim = new InsuranceClaim()
+            {
+                ClaimCentre = null,
+                Identifiers = null,
+                InsuredParties = null,
+                ReferenceDates = null
+            };
+            ICBCClaimEntity icbcClaim = _mapper.Map<ICBCClaimEntity>(claim);
+            Assert.AreEqual(null, icbcClaim.BCDLExpiryDate);
+            Assert.AreEqual(null, icbcClaim.BCDLNumber);
+            Assert.AreEqual(null, icbcClaim.BCDLStatus);
+            Assert.AreEqual(null, icbcClaim.City);
+            Assert.AreEqual(null, icbcClaim.ClaimCenterLocationCode);
+            Assert.AreEqual(null, icbcClaim.SupplierCountryCode);
+            Assert.AreEqual(null, icbcClaim.SupplierCountrySubdivisionCode);
+            Assert.AreEqual(null, icbcClaim.PHNNumber);
+            Assert.AreEqual(null, icbcClaim.PostalCode);
+            Assert.AreEqual(null, icbcClaim.Notes);
+            Assert.AreEqual(1, icbcClaim.StatusCode);
+            Assert.AreEqual(0, icbcClaim.StateCode);
+            Assert.AreEqual(null, icbcClaim.Date1);
+            Assert.AreEqual(null, icbcClaim.Date2);
+            Assert.AreEqual(null, icbcClaim.Date1Label);
+            Assert.AreEqual(null, icbcClaim.Date2Label);
         }
 
         [Test]

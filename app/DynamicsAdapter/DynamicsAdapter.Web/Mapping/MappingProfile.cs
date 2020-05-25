@@ -275,7 +275,7 @@ namespace DynamicsAdapter.Web.Mapping
                   .ForMember(dest => dest.SupplierCountrySubdivisionCode, opt => opt.MapFrom(src => src.ClaimCentre == null ? null : src.ClaimCentre.ContactAddress == null ? null : src.ClaimCentre.ContactAddress.StateProvince))
                   .IncludeBase<PersonalInfo, DynamicsEntity>();
 
-            CreateMap<Phone, SSG_PhoneNumberForAssets>()
+            CreateMap<Phone, SSG_SimplePhoneNumber>()
                   .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
                   .ForMember(dest => dest.Extension, opt => opt.MapFrom(src => src.Extension))
                   .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type));

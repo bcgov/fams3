@@ -28,9 +28,6 @@ namespace Fams3Adapter.Dynamics.InsuranceClaim
         [JsonProperty("ssg_partytypecode")]
         public string PartyTypeCode { get; set; }
 
-        [JsonProperty("ssg_type")]
-        public string Type { get; set; }
-
         [JsonProperty("ssg_notes")]
         public string Notes { get; set; }
 

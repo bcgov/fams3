@@ -380,9 +380,9 @@ namespace DynamicsAdapter.Web.PersonSearch
                         (
                             async m =>
                             {
-                                SSG_PhoneNumberForAssets phoneForAsset = _mapper.Map<SSG_PhoneNumberForAssets>(m);
+                                SSG_SimplePhoneNumber phoneForAsset = _mapper.Map<SSG_SimplePhoneNumber>(m);
                                 phoneForAsset.SSG_Asset_ICBCClaim = ssg_claim;
-                                await _searchRequestService.CreatePhoneNumberForAssets(phoneForAsset, concellationToken);
+                                await _searchRequestService.CreateSimplePhoneNumber(phoneForAsset, concellationToken);
                             }
                         );
                     }

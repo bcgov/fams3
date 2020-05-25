@@ -3,6 +3,7 @@ using Fams3Adapter.Dynamics.AssetOwner;
 using Fams3Adapter.Dynamics.BankInfo;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
+using Fams3Adapter.Dynamics.InsuranceClaim;
 using Fams3Adapter.Dynamics.Name;
 using Fams3Adapter.Dynamics.OtherAsset;
 using Fams3Adapter.Dynamics.Person;
@@ -160,6 +161,30 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
                  ClaimNumber = "compensationClaimNumber"
              })
              );
+
+            odataClientMock.Setup(x => x.For<SSG_Asset_ICBCClaim>(null).Set(It.IsAny<ICBCClaimEntity>())
+             .InsertEntryAsync(It.IsAny<CancellationToken>()))
+             .Returns(Task.FromResult(new SSG_Asset_ICBCClaim()
+             {
+                 ClaimNumber = "icbcClaim"
+             })
+             );
+
+            odataClientMock.Setup(x => x.For<SSG_SimplePhoneNumber>(null).Set(It.IsAny<SSG_SimplePhoneNumber>())
+             .InsertEntryAsync(It.IsAny<CancellationToken>()))
+             .Returns(Task.FromResult(new SSG_SimplePhoneNumber()
+             {
+                 PhoneNumber= "phone"
+             })
+             );
+
+            odataClientMock.Setup(x => x.For<SSG_InvolvedParty>(null).Set(It.IsAny<SSG_InvolvedParty>())
+            .InsertEntryAsync(It.IsAny<CancellationToken>()))
+            .Returns(Task.FromResult(new SSG_InvolvedParty()
+            {
+                OrganizationName = "party"
+            })
+            );
 
             _sut = new SearchRequestService(odataClientMock.Object);
         }
@@ -434,6 +459,48 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             var result = await _sut.CreateCompensationClaim(claim, CancellationToken.None);
 
             Assert.AreEqual("compensationClaimNumber", result.ClaimNumber);
+        }
+
+        [Test]
+        public async Task upload_ICBCClaimEntity_should_success()
+        {
+            var claim = new ICBCClaimEntity()
+            {
+                ClaimNumber = "icbcClaim",
+                SearchRequest = new SSG_SearchRequest() { SearchRequestId = testId },
+                Person = new SSG_Person() { PersonId = testPersonId }
+
+            };
+
+            var result = await _sut.CreateInsuranceClaim(claim, CancellationToken.None);
+
+            Assert.AreEqual("icbcClaim", result.ClaimNumber);
+        }
+
+        [Test]
+        public async Task upload_SimplePhoneNumber_should_success()
+        {
+            var phone = new SSG_SimplePhoneNumber()
+            {
+                PhoneNumber="phone"
+            };
+
+            var result = await _sut.CreateSimplePhoneNumber(phone, CancellationToken.None);
+
+            Assert.AreEqual("phone", result.PhoneNumber);
+        }
+
+        [Test]
+        public async Task upload_InvolvedParty_should_success()
+        {
+            var party = new SSG_InvolvedParty()
+            {
+                OrganizationName = "party"
+            };
+
+            var result = await _sut.CreateInvolvedParty(party, CancellationToken.None);
+
+            Assert.AreEqual("party", result.OrganizationName);
         }
     }
 }

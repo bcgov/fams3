@@ -264,16 +264,17 @@ namespace DynamicsAdapter.Web.Mapping
             {
                 msg = msg 
                     + $"For Matched Person {i} : "
-                    + $"{(p.Identifiers == null ? 0 : p.Identifiers.Count())} identifier(s) found.  "
-                    + $"{(p.Addresses == null ? 0 : p.Addresses.Count())} addresses found. "
-                    + $"{(p.Phones == null ? 0 : p.Phones.Count())} phone number(s) found. "
-                    + $"{(p.Names == null ? 0 : p.Names.Count())} name(s) found. " 
-                    + $"{(p.Employments == null ? 0 : p.Employments.Count())} employment(s) found. " 
-                    + $"{(p.RelatedPersons == null ? 0 : p.RelatedPersons.Count())} related person(s) found. "
-                    + $"{(p.BankInfos == null ? 0 : p.BankInfos.Count())} bank info(s) found. "
-                    + $"{(p.Vehicles == null ? 0 : p.Vehicles.Count())} vehicle(s) found. "
-                    + $"{(p.OtherAssets == null ? 0 : p.OtherAssets.Count())} other asset(s) found. "
-                    + $"{(p.CompensationClaims == null ? 0 : p.CompensationClaims.Count())} compensation claim(s) found.\n";
+                    + $"{(p.Identifiers == null ? 0 : p.Identifiers.Count)} identifier(s) found.  "
+                    + $"{(p.Addresses == null ? 0 : p.Addresses.Count)} addresses found. "
+                    + $"{(p.Phones == null ? 0 : p.Phones.Count)} phone number(s) found. "
+                    + $"{(p.Names == null ? 0 : p.Names.Count)} name(s) found. " 
+                    + $"{(p.Employments == null ? 0 : p.Employments.Count)} employment(s) found. " 
+                    + $"{(p.RelatedPersons == null ? 0 : p.RelatedPersons.Count)} related person(s) found. "
+                    + $"{(p.BankInfos == null ? 0 : p.BankInfos.Count)} bank info(s) found. "
+                    + $"{(p.Vehicles == null ? 0 : p.Vehicles.Count)} vehicle(s) found. "
+                    + $"{(p.OtherAssets == null ? 0 : p.OtherAssets.Count)} other asset(s) found. "
+                    + $"{(p.CompensationClaims == null ? 0 : p.CompensationClaims.Count)} compensation claim(s) found. "
+                    + $"{(p.InsuranceClaims == null ? 0 : p.InsuranceClaims.Count)} insurance claim(s) found.\n";
                 i++;
             };
             return msg;

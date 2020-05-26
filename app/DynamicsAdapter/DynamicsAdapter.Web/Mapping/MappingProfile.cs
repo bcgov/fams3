@@ -7,6 +7,7 @@ using Fams3Adapter.Dynamics.BankInfo;
 using Fams3Adapter.Dynamics.DataProvider;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
+using Fams3Adapter.Dynamics.InsuranceClaim;
 using Fams3Adapter.Dynamics.Name;
 using Fams3Adapter.Dynamics.OtherAsset;
 using Fams3Adapter.Dynamics.Person;
@@ -248,6 +249,46 @@ namespace DynamicsAdapter.Web.Mapping
                   .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
                   .IncludeBase<PersonalInfo, DynamicsEntity>();
 
+            CreateMap<InsuranceClaim, ICBCClaimEntity>()
+                  .ForMember(dest => dest.ClaimType, opt => opt.MapFrom(src => src.ClaimType))
+                  .ForMember(dest => dest.ClaimNumber, opt => opt.MapFrom(src => src.ClaimNumber))
+                  .ForMember(dest => dest.ClaimStatus, opt => opt.MapFrom(src => src.ClaimStatus))
+                  .ForMember(dest => dest.AdjusterFirstName, opt => opt.MapFrom(src => src.Adjustor == null ? null : src.Adjustor.FirstName))
+                  .ForMember(dest => dest.AdjusterLastName, opt => opt.MapFrom(src => src.Adjustor == null ? null : src.Adjustor.LastName))
+                  .ForMember(dest => dest.AdjusterMiddleName, opt => opt.MapFrom(src => src.Adjustor == null ? null : src.Adjustor.MiddleName))
+                  .ForMember(dest => dest.AdjusterOtherName, opt => opt.MapFrom(src => src.Adjustor == null ? null : src.Adjustor.OtherName))
+                  .ForMember(dest => dest.AdjusterPhoneNumber, opt => opt.MapFrom(src => src.AdjustorPhone==null?null:src.AdjustorPhone.PhoneNumber))
+                  .ForMember(dest => dest.AdjusterPhoneNumberExt, opt => opt.MapFrom(src => src.AdjustorPhone == null ? null : src.AdjustorPhone.Extension))
+                  .ForMember(dest => dest.PHNNumber, opt=>opt.MapFrom(src=>src.Identifiers==null?null:src.Identifiers.Where<PersonalIdentifier>(m=>m.Type==PersonalIdentifierType.PersonalHealthNumber).FirstOrDefault().Value))
+                  .ForMember(dest => dest.BCDLNumber, opt => opt.MapFrom(src => src.Identifiers == null ? null : src.Identifiers.Where<PersonalIdentifier>(m => m.Type == PersonalIdentifierType.BCDriverLicense).FirstOrDefault().Value))
+                  .ForMember(dest => dest.BCDLStatus, opt => opt.MapFrom(src => src.Identifiers == null ? null : src.Identifiers.Where<PersonalIdentifier>(m => m.Type == PersonalIdentifierType.BCDriverLicense).FirstOrDefault().Description))
+                  .ForMember(dest => dest.BCDLExpiryDate, opt => opt.MapFrom(src => src.Identifiers == null ? null : src.Identifiers.Where<PersonalIdentifier>(m=>m.Type== PersonalIdentifierType.BCDriverLicense).FirstOrDefault().ReferenceDates.ElementAt(0).Value.ToString()))
+                  .ForMember(dest => dest.ClaimCenterLocationCode, opt => opt.MapFrom(src => src.ClaimCentre==null? null:src.ClaimCentre.Location))
+                  .ForMember(dest => dest.Description, opt=>opt.MapFrom(src=>src.Description))
+                  .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
+                  .ForMember(dest => dest.PostalCode, opt => opt.MapFrom(src => src.ClaimCentre == null ? null : src.ClaimCentre.ContactAddress==null?null: src.ClaimCentre.ContactAddress.ZipPostalCode))
+                  .ForMember(dest => dest.AddressLine1, opt => opt.MapFrom(src => src.ClaimCentre == null ? null : src.ClaimCentre.ContactAddress == null ? null : src.ClaimCentre.ContactAddress.AddressLine1))
+                  .ForMember(dest => dest.AddressLine2, opt => opt.MapFrom(src => src.ClaimCentre == null ? null : src.ClaimCentre.ContactAddress == null ? null : src.ClaimCentre.ContactAddress.AddressLine2))
+                  .ForMember(dest => dest.AddressLine3, opt => opt.MapFrom(src => src.ClaimCentre == null ? null : src.ClaimCentre.ContactAddress == null ? null : src.ClaimCentre.ContactAddress.AddressLine3))
+                  .ForMember(dest => dest.City, opt => opt.MapFrom(src => src.ClaimCentre == null ? null : src.ClaimCentre.ContactAddress == null ? null : src.ClaimCentre.ContactAddress.City))
+                  .ForMember(dest => dest.SupplierCountryCode, opt => opt.MapFrom(src => src.ClaimCentre == null ? null : src.ClaimCentre.ContactAddress == null ? null : src.ClaimCentre.ContactAddress.CountryRegion))
+                  .ForMember(dest => dest.SupplierCountrySubdivisionCode, opt => opt.MapFrom(src => src.ClaimCentre == null ? null : src.ClaimCentre.ContactAddress == null ? null : src.ClaimCentre.ContactAddress.StateProvince))
+                  .IncludeBase<PersonalInfo, DynamicsEntity>();
+
+            CreateMap<Phone, SSG_SimplePhoneNumber>()
+                  .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
+                  .ForMember(dest => dest.Extension, opt => opt.MapFrom(src => src.Extension))
+                  .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type));
+
+            CreateMap<InvolvedParty, SSG_InvolvedParty>()
+                  .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.Name==null? null: src.Name.FirstName))
+                  .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.Name == null ? null : src.Name.LastName))
+                  .ForMember(dest => dest.MiddleName, opt => opt.MapFrom(src => src.Name == null ? null : src.Name.MiddleName))
+                  .ForMember(dest => dest.OtherName, opt => opt.MapFrom(src => src.Name == null ? null : src.Name.OtherName))
+                  .ForMember(dest => dest.OrganizationName, opt => opt.MapFrom(src => src.Organization))
+                  .ForMember(dest => dest.PartyTypeCode, opt => opt.MapFrom(src => src.Type))
+                  .ForMember(dest => dest.PartyDescription, opt => opt.MapFrom(src => src.TypeDescription))
+                  .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes));
 
         }
     }

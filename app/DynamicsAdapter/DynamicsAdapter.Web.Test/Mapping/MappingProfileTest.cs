@@ -7,6 +7,7 @@ using Fams3Adapter.Dynamics.BankInfo;
 using Fams3Adapter.Dynamics.DataProvider;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
+using Fams3Adapter.Dynamics.InsuranceClaim;
 using Fams3Adapter.Dynamics.Name;
 using Fams3Adapter.Dynamics.OtherAsset;
 using Fams3Adapter.Dynamics.Person;
@@ -404,7 +405,8 @@ namespace DynamicsAdapter.Web.Test.Mapping
                         {
                             new OtherAsset(){}
                         },
-                        CompensationClaims=null
+                        CompensationClaims=null,
+                        InsuranceClaims=null
                     },
                     new Person(){
                         FirstName = "firstName",
@@ -432,6 +434,10 @@ namespace DynamicsAdapter.Web.Test.Mapping
                         CompensationClaims= new CompensationClaim[]
                         {
                             new CompensationClaim(){ }
+                        },
+                        InsuranceClaims = new InsuranceClaim[]
+                        {
+                            new InsuranceClaim(){ }
                         }
                     }
                 }
@@ -441,7 +447,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(new DateTime(2003, 3, 3), searchEvent.TimeStamp);
             Assert.AreEqual(Keys.EVENT_COMPLETED, searchEvent.EventType);
             Assert.AreEqual(Keys.SEARCH_API_EVENT_NAME, searchEvent.Name);
-            Assert.AreEqual("Auto search processing completed successfully. 2 Matched Persons found.\nFor Matched Person 1 : 2 identifier(s) found.  2 addresses found. 2 phone number(s) found. 2 name(s) found. 1 employment(s) found. 0 related person(s) found. 1 bank info(s) found. 0 vehicle(s) found. 1 other asset(s) found. 0 compensation claim(s) found.\nFor Matched Person 2 : 1 identifier(s) found.  0 addresses found. 0 phone number(s) found. 1 name(s) found. 0 employment(s) found. 1 related person(s) found. 0 bank info(s) found. 1 vehicle(s) found. 0 other asset(s) found. 1 compensation claim(s) found.\n", searchEvent.Message);
+            Assert.AreEqual("Auto search processing completed successfully. 2 Matched Persons found.\nFor Matched Person 1 : 2 identifier(s) found.  2 addresses found. 2 phone number(s) found. 2 name(s) found. 1 employment(s) found. 0 related person(s) found. 1 bank info(s) found. 0 vehicle(s) found. 1 other asset(s) found. 0 compensation claim(s) found. 0 insurance claim(s) found.\nFor Matched Person 2 : 1 identifier(s) found.  0 addresses found. 0 phone number(s) found. 1 name(s) found. 0 employment(s) found. 1 related person(s) found. 0 bank info(s) found. 1 vehicle(s) found. 0 other asset(s) found. 1 compensation claim(s) found. 1 insurance claim(s) found.\n", searchEvent.Message);
         }
 
         [Test]
@@ -497,7 +503,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(new DateTime(2003, 3, 3), searchEvent.TimeStamp);
             Assert.AreEqual(Keys.EVENT_COMPLETED, searchEvent.EventType);
             Assert.AreEqual(Keys.SEARCH_API_EVENT_NAME, searchEvent.Name);
-            Assert.AreEqual("Auto search processing completed successfully. 1 Matched Persons found.\nFor Matched Person 1 : 2 identifier(s) found.  0 addresses found. 0 phone number(s) found. 0 name(s) found. 0 employment(s) found. 0 related person(s) found. 0 bank info(s) found. 0 vehicle(s) found. 0 other asset(s) found. 0 compensation claim(s) found.\n", searchEvent.Message);
+            Assert.AreEqual("Auto search processing completed successfully. 1 Matched Persons found.\nFor Matched Person 1 : 2 identifier(s) found.  0 addresses found. 0 phone number(s) found. 0 name(s) found. 0 employment(s) found. 0 related person(s) found. 0 bank info(s) found. 0 vehicle(s) found. 0 other asset(s) found. 0 compensation claim(s) found. 0 insurance claim(s) found.\n", searchEvent.Message);
         }
 
         [Test]
@@ -540,8 +546,8 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 PhoneNumber = "6904005678",
                 Type = "home",
                 Extension = "123",
-                Description = "Description"
-
+                Description = "Description",
+                Notes = "notes"
 
             };
             SSG_PhoneNumber sSG_PhoneNumber = _mapper.Map<SSG_PhoneNumber>(phoneNumber);
@@ -551,6 +557,8 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(TelephoneNumberType.Home.Value, sSG_PhoneNumber.TelephoneNumberType);
             Assert.AreEqual(1, sSG_PhoneNumber.StatusCode);
             Assert.AreEqual(0, sSG_PhoneNumber.StateCode);
+            Assert.AreEqual("Description", sSG_PhoneNumber.Description);
+            Assert.AreEqual("notes", sSG_PhoneNumber.Notes);
         }
 
         [Test]
@@ -901,7 +909,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 {
                     Address = new Address
                     {
-                        AddressLine1 = "compensation Employer Address 1",                        
+                        AddressLine1 = "compensation Employer Address 1",
                         City = "compensation Employer City",
                         StateProvince = "AB",
                         CountryRegion = "Canada",
@@ -970,6 +978,246 @@ namespace DynamicsAdapter.Web.Test.Mapping
         }
 
         [Test]
+        public void InsuranceClaim_should_map_to_ICBCClaimEntity_correctly()
+        {
+            var claim = new InsuranceClaim()
+            {
+                ClaimNumber = "claimNumber",
+                ClaimType = "claimType",
+                ClaimStatus = "claimStatus",
+                Adjustor = new Name() { FirstName = "adjusterFirstName", LastName = "adjusterLastName", MiddleName = "adjusterMiddleName", OtherName = "adjusterOtherName" },
+                AdjustorPhone = new Phone() { PhoneNumber = "adjusterPhoneNumber", Extension = "adjusterPhoneExtension" },
+                ClaimCentre = new ClaimCentre()
+                {
+                    Location = "claimCenterLocation",
+                    ContactAddress = new Address()
+                    {
+                        AddressLine1 = "claimCenterAddressLine1",
+                        AddressLine2 = "claimCenterAddressLine2",
+                        AddressLine3 = "claimCenterAddressLine3",
+                        City = "city",
+                        StateProvince = "province",
+                        CountryRegion = "claimCenterCountry",
+                        ZipPostalCode = "claimCenterPostalCode"
+                    },
+                    ContactNumber = new List<Phone>()
+                    {
+                        new Phone(){PhoneNumber="claimCenterContactPhoneNumber1", Extension="claimCenterContactPhoneExt1", Type="Phone"},
+                        new Phone(){PhoneNumber="claimCenterContactFaxNumber", Extension="", Type="Fax"}
+                    }
+                },
+                Identifiers = new List<PersonalIdentifier>()
+                {
+                    new PersonalIdentifier()
+                    {
+                        Value="InsuranceClaimBCDLNumber",
+                        Type=PersonalIdentifierType.BCDriverLicense,
+                        ReferenceDates=new List<ReferenceDate>()
+                        {
+                            new ReferenceDate()
+                            {
+                                Index=0,
+                                Key="ExpiryDate",
+                                Value=new DateTimeOffset(new DateTime(2002, 2, 2))
+                            }
+                        },
+                        Description="BCDLStatus",
+                        TypeCode="bcdl"
+                    },
+                    new PersonalIdentifier()
+                    {
+                        Value="InsuranceClaimPHNNumber",
+                        Type=PersonalIdentifierType.PersonalHealthNumber,
+                        TypeCode="phn"
+                    }
+                },
+                InsuredParties = new List<InvolvedParty>()
+                {
+                    new InvolvedParty()
+                    {
+                        Name=new Name(){ FirstName="InvolvedPartyFirstName", LastName="InvolvedPartLastName", MiddleName="InvolvedPartyMiddleName", OtherName="InvolvedPartyOtherName"},
+                        Organization="InvolvedPartyOrgName",
+                        Description="InvolvedPartyDescription",
+                        Type="InvolvedPartyTypeCode",
+                        Notes="InvolvedPartyNotes",
+                        TypeDescription="InvolvedPartyTypeDescription"
+                    }
+                },
+                Description = "dis",
+                Notes = "insurance notes",
+                ReferenceDates = new List<ReferenceDate>(){
+                                    new ReferenceDate(){ Index=0, Key="insurance Start Date", Value=new DateTime(2019,9,1) },
+                                    new ReferenceDate(){ Index=1, Key="insurance Expired Date", Value=new DateTime(2020,9,1) }
+                                },
+            };
+            ICBCClaimEntity icbcClaim = _mapper.Map<ICBCClaimEntity>(claim);
+            Assert.AreEqual("claimNumber", icbcClaim.ClaimNumber);
+            Assert.AreEqual("claimType", icbcClaim.ClaimType);
+            Assert.AreEqual("claimStatus", icbcClaim.ClaimStatus);
+            Assert.AreEqual("adjusterFirstName", icbcClaim.AdjusterFirstName);
+            Assert.AreEqual("adjusterLastName", icbcClaim.AdjusterLastName);
+            Assert.AreEqual("adjusterMiddleName", icbcClaim.AdjusterMiddleName);
+            Assert.AreEqual("adjusterOtherName", icbcClaim.AdjusterOtherName);
+            Assert.AreEqual("adjusterPhoneNumber", icbcClaim.AdjusterPhoneNumber);
+            Assert.AreEqual("adjusterPhoneExtension", icbcClaim.AdjusterPhoneNumberExt);
+            Assert.AreEqual(new DateTimeOffset(new DateTime(2002, 2, 2)).ToString(), icbcClaim.BCDLExpiryDate);
+            Assert.AreEqual("InsuranceClaimBCDLNumber", icbcClaim.BCDLNumber);
+            Assert.AreEqual("BCDLStatus", icbcClaim.BCDLStatus);
+            Assert.AreEqual("city", icbcClaim.City);
+            Assert.AreEqual("claimCenterLocation", icbcClaim.ClaimCenterLocationCode);
+            Assert.AreEqual("claimCenterCountry", icbcClaim.SupplierCountryCode);
+            Assert.AreEqual("province", icbcClaim.SupplierCountrySubdivisionCode);
+            Assert.AreEqual("InsuranceClaimPHNNumber", icbcClaim.PHNNumber);
+            Assert.AreEqual("claimCenterPostalCode", icbcClaim.PostalCode);
+            Assert.AreEqual("insurance notes", icbcClaim.Notes);
+            Assert.AreEqual(1, icbcClaim.StatusCode);
+            Assert.AreEqual(0, icbcClaim.StateCode);
+            Assert.AreEqual(new DateTime(2019, 9, 1), icbcClaim.Date1);
+            Assert.AreEqual(new DateTime(2020, 9, 1), icbcClaim.Date2);
+            Assert.AreEqual("insurance Start Date", icbcClaim.Date1Label);
+            Assert.AreEqual("insurance Expired Date", icbcClaim.Date2Label);
+        }
+
+
+        [Test]
+        public void Phone_should_map_to_SSG_SimplePhoneNumber_correctly()
+        {
+            var phone = new Phone()
+            {
+                PhoneNumber = "claimCenterContactPhoneNumber1",
+                Extension = "claimCenterContactPhoneExt1",
+                Type = "Phone"
+            };
+
+            SSG_SimplePhoneNumber assetPhone = _mapper.Map<SSG_SimplePhoneNumber>(phone);
+            Assert.AreEqual("claimCenterContactPhoneNumber1", assetPhone.PhoneNumber);
+            Assert.AreEqual("claimCenterContactPhoneExt1", assetPhone.Extension);
+            Assert.AreEqual("Phone", assetPhone.Type);
+        }
+
+        [Test]
+        public void InsuranceClaim_without_BCDL_should_map_to_ICBCClaimEntity_correctly()
+        {
+            var claim = new InsuranceClaim()
+            {
+                ClaimCentre = new ClaimCentre()
+                {
+                    ContactAddress = null,
+                    ContactNumber = null
+                },
+                Identifiers = new List<PersonalIdentifier>()
+                {
+                    new PersonalIdentifier()
+                    {
+                        Value="InsuranceClaimPHNNumber",
+                        Type=PersonalIdentifierType.PersonalHealthNumber,
+                        TypeCode="phn"
+                    }
+                },
+                InsuredParties = null,
+                ReferenceDates = null
+            };
+            ICBCClaimEntity icbcClaim = _mapper.Map<ICBCClaimEntity>(claim);
+            Assert.AreEqual(null, icbcClaim.BCDLExpiryDate);
+            Assert.AreEqual(null, icbcClaim.BCDLNumber);
+            Assert.AreEqual(null, icbcClaim.BCDLStatus);
+            Assert.AreEqual(null, icbcClaim.City);
+            Assert.AreEqual(null, icbcClaim.ClaimCenterLocationCode);
+            Assert.AreEqual(null, icbcClaim.SupplierCountryCode);
+            Assert.AreEqual(null, icbcClaim.SupplierCountrySubdivisionCode);
+            Assert.AreEqual("InsuranceClaimPHNNumber", icbcClaim.PHNNumber);
+            Assert.AreEqual(null, icbcClaim.PostalCode);
+            Assert.AreEqual(null, icbcClaim.Notes);
+            Assert.AreEqual(1, icbcClaim.StatusCode);
+            Assert.AreEqual(0, icbcClaim.StateCode);
+            Assert.AreEqual(null, icbcClaim.Date1);
+            Assert.AreEqual(null, icbcClaim.Date2);
+            Assert.AreEqual(null, icbcClaim.Date1Label);
+            Assert.AreEqual(null, icbcClaim.Date2Label);
+        }
+
+        [Test]
+        public void InsuranceClaim_identifiers_null_should_map_to_ICBCClaimEntity_correctly()
+        {
+            var claim = new InsuranceClaim()
+            {
+                ClaimCentre = null,
+                Identifiers = null,
+                InsuredParties = null,
+                ReferenceDates = null,
+                Adjustor=null,
+                AdjustorPhone=null
+            };
+            ICBCClaimEntity icbcClaim = _mapper.Map<ICBCClaimEntity>(claim);
+            Assert.AreEqual(null, icbcClaim.BCDLExpiryDate);
+            Assert.AreEqual(null, icbcClaim.BCDLNumber);
+            Assert.AreEqual(null, icbcClaim.BCDLStatus);
+            Assert.AreEqual(null, icbcClaim.City);
+            Assert.AreEqual(null, icbcClaim.ClaimCenterLocationCode);
+            Assert.AreEqual(null, icbcClaim.SupplierCountryCode);
+            Assert.AreEqual(null, icbcClaim.SupplierCountrySubdivisionCode);
+            Assert.AreEqual(null, icbcClaim.PHNNumber);
+            Assert.AreEqual(null, icbcClaim.PostalCode);
+            Assert.AreEqual(null, icbcClaim.Notes);
+            Assert.AreEqual(1, icbcClaim.StatusCode);
+            Assert.AreEqual(0, icbcClaim.StateCode);
+            Assert.AreEqual(null, icbcClaim.Date1);
+            Assert.AreEqual(null, icbcClaim.Date2);
+            Assert.AreEqual(null, icbcClaim.Date1Label);
+            Assert.AreEqual(null, icbcClaim.Date2Label);
+            Assert.AreEqual(null, icbcClaim.AdjusterFirstName);
+            Assert.AreEqual(null, icbcClaim.AdjusterLastName);
+            Assert.AreEqual(null, icbcClaim.AdjusterMiddleName);
+            Assert.AreEqual(null, icbcClaim.AdjusterOtherName);
+            Assert.AreEqual(null, icbcClaim.AdjusterPhoneNumber);
+            Assert.AreEqual(null, icbcClaim.AdjusterPhoneNumberExt);
+        }
+
+        [Test]
+        public void InvolvedParty_should_map_to_SSG_InvolvedParty_correctly()
+        {
+            var party = new InvolvedParty()
+            {
+                Name = new Name() { FirstName = "InvolvedPartyFirstName", LastName = "InvolvedPartLastName", MiddleName = "InvolvedPartyMiddleName", OtherName = "InvolvedPartyOtherName" },
+                Organization = "InvolvedPartyOrgName",
+                Description = "InvolvedPartyDescription",
+                Type = "InvolvedPartyTypeCode",
+                Notes = "InvolvedPartyNotes",
+                TypeDescription = "InvolvedPartyTypeDescription"
+            };
+
+            SSG_InvolvedParty ssg_InvolvedParty = _mapper.Map<SSG_InvolvedParty>(party);
+            Assert.AreEqual("InvolvedPartyFirstName", ssg_InvolvedParty.FirstName);
+            Assert.AreEqual("InvolvedPartLastName", ssg_InvolvedParty.LastName);
+            Assert.AreEqual("InvolvedPartyMiddleName", ssg_InvolvedParty.MiddleName);
+            Assert.AreEqual("InvolvedPartyOtherName", ssg_InvolvedParty.OtherName);
+            Assert.AreEqual("InvolvedPartyNotes", ssg_InvolvedParty.Notes);
+            Assert.AreEqual("InvolvedPartyOrgName", ssg_InvolvedParty.OrganizationName);
+            Assert.AreEqual("InvolvedPartyTypeDescription", ssg_InvolvedParty.PartyDescription);
+            Assert.AreEqual("InvolvedPartyTypeCode", ssg_InvolvedParty.PartyTypeCode);
+        }
+
+        [Test]
+        public void InvolvedParty_with_null_name_should_map_to_SSG_InvolvedParty_correctly()
+        {
+            var party = new InvolvedParty()
+            {
+                Name = null,
+                Notes = "InvolvedPartyNotes",
+            };
+
+            SSG_InvolvedParty ssg_InvolvedParty = _mapper.Map<SSG_InvolvedParty>(party);
+            Assert.AreEqual(null, ssg_InvolvedParty.FirstName);
+            Assert.AreEqual(null, ssg_InvolvedParty.LastName);
+            Assert.AreEqual(null, ssg_InvolvedParty.MiddleName);
+            Assert.AreEqual(null, ssg_InvolvedParty.OtherName);
+            Assert.AreEqual("InvolvedPartyNotes", ssg_InvolvedParty.Notes);
+            Assert.AreEqual(null, ssg_InvolvedParty.OrganizationName);
+            Assert.AreEqual(null, ssg_InvolvedParty.PartyDescription);
+            Assert.AreEqual(null, ssg_InvolvedParty.PartyTypeCode);
+        }
+
+        [Test]
         public void gender_null_RelatedPerson_should_map_to_SSG_Identity_correctly()
         {
             var relatedPerson = new RelatedPerson()
@@ -989,8 +1237,6 @@ namespace DynamicsAdapter.Web.Test.Mapping
         {
             var dp = new SSG_SearchapiRequestDataProvider()
             {
-                Name = "dp1",
-                SuppliedByValue = 1,
                 AdaptorName = "data provider 1"
             };
             DataProvider provider = _mapper.Map<DataProvider>(dp);

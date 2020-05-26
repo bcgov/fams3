@@ -5,6 +5,7 @@ using Fams3Adapter.Dynamics.AssetOwner;
 using Fams3Adapter.Dynamics.BankInfo;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
+using Fams3Adapter.Dynamics.InsuranceClaim;
 using Fams3Adapter.Dynamics.Name;
 using Fams3Adapter.Dynamics.OtherAsset;
 using Fams3Adapter.Dynamics.Person;
@@ -31,7 +32,7 @@ namespace DynamicsAdapter.Web.PersonSearch
         private readonly ISearchRequestService _searchRequestService;
         private readonly IMapper _mapper;
 
-        public SearchResultService(ISearchRequestService searchRequestService,ILogger<SearchResultService> logger, IMapper mapper)
+        public SearchResultService(ISearchRequestService searchRequestService, ILogger<SearchResultService> logger, IMapper mapper)
         {
             _searchRequestService = searchRequestService;
             _logger = logger;
@@ -41,8 +42,8 @@ namespace DynamicsAdapter.Web.PersonSearch
         public async Task<bool> ProcessPersonFound(Person person, ProviderProfile providerProfile, SSG_SearchRequest request, CancellationToken concellationToken)
         {
             if (person == null) return true;
-            
-            int? providerDynamicsID  = providerProfile.DynamicsID();
+
+            int? providerDynamicsID = providerProfile.DynamicsID();
             PersonEntity ssg_person = _mapper.Map<PersonEntity>(person);
             ssg_person.SearchRequest = request;
             ssg_person.InformationSource = providerDynamicsID;
@@ -79,6 +80,9 @@ namespace DynamicsAdapter.Web.PersonSearch
             _logger.LogDebug($"Attempting to create compnsation claims records for SearchRequest[{request.SearchRequestId}]");
             await UploadCompensationClaims(person, request, returnedPerson, providerDynamicsID, concellationToken);
 
+            _logger.LogDebug($"Attempting to create insurance claims records for SearchRequest[{request.SearchRequestId}]");
+            await UploadInsuranceClaims(person, request, returnedPerson, providerDynamicsID, concellationToken);
+
             return true;
         }
 
@@ -96,7 +100,8 @@ namespace DynamicsAdapter.Web.PersonSearch
                     var identifer = await _searchRequestService.CreateIdentifier(identifier, concellationToken);
                 }
                 return true;
-            }catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
                 return false;
@@ -117,17 +122,19 @@ namespace DynamicsAdapter.Web.PersonSearch
                     var uploadedAddr = await _searchRequestService.CreateAddress(addr, concellationToken);
                 }
                 return true;
-            }catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
                 return false;
             }
-}
+        }
 
         private async Task<bool> UploadPhoneNumbers(Person person, SSG_SearchRequest request, SSG_Person ssg_person, int? providerDynamicsID, CancellationToken concellationToken)
         {
             if (person.Phones == null) return true;
-            try { 
+            try
+            {
                 foreach (var phone in person.Phones)
                 {
                     SSG_PhoneNumber ph = _mapper.Map<SSG_PhoneNumber>(phone);
@@ -176,7 +183,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                     e.SearchRequest = request;
                     e.InformationSource = providerDynamicsID;
                     e.Person = ssg_person;
-                    SSG_Employment ssg_employment  = await _searchRequestService.CreateEmployment(e, concellationToken);
+                    SSG_Employment ssg_employment = await _searchRequestService.CreateEmployment(e, concellationToken);
 
                     if (employment.Employer != null)
                     {
@@ -218,7 +225,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                 return false;
             }
         }
-        
+
         private async Task<bool> UploadBankInfos(Person person, SSG_SearchRequest request, SSG_Person ssg_person, int? providerDynamicsID, CancellationToken concellationToken)
         {
             if (person.BankInfos == null) return true;
@@ -323,7 +330,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                     {
                         EmploymentEntity employ = _mapper.Map<EmploymentEntity>(claim.Employer);
                         employ.InformationSource = providerDynamicsID;
-                        employ.Date1= claim.ReferenceDates?.SingleOrDefault(m => m.Index == 0)?.Value.DateTime;
+                        employ.Date1 = claim.ReferenceDates?.SingleOrDefault(m => m.Index == 0)?.Value.DateTime;
                         employ.Date1Label = claim.ReferenceDates?.SingleOrDefault(m => m.Index == 0)?.Key;
                         ssg_employment = await _searchRequestService.CreateEmployment(employ, concellationToken);
                         if (claim.Employer.Phones != null)
@@ -353,5 +360,49 @@ namespace DynamicsAdapter.Web.PersonSearch
                 return false;
             }
         }
+
+        private async Task<bool> UploadInsuranceClaims(Person person, SSG_SearchRequest request, SSG_Person ssg_person, int? providerDynamicsID, CancellationToken concellationToken)
+        {
+            if (person.InsuranceClaims == null) return true;
+            try
+            {
+                foreach (InsuranceClaim claim in person.InsuranceClaims)
+                {
+                    ICBCClaimEntity icbcClaim = _mapper.Map<ICBCClaimEntity>(claim);
+                    icbcClaim.SearchRequest = request;
+                    icbcClaim.InformationSource = providerDynamicsID;
+                    icbcClaim.Person = ssg_person;
+                    SSG_Asset_ICBCClaim ssg_claim = await _searchRequestService.CreateInsuranceClaim(icbcClaim, concellationToken);
+
+                    if (claim.ClaimCentre != null && claim.ClaimCentre.ContactNumber!=null)
+                    {
+                        foreach(Phone phone in claim.ClaimCentre.ContactNumber)
+                        {
+                            SSG_SimplePhoneNumber phoneForAsset = _mapper.Map<SSG_SimplePhoneNumber>(phone);
+                            phoneForAsset.SSG_Asset_ICBCClaim = ssg_claim;
+                            await _searchRequestService.CreateSimplePhoneNumber(phoneForAsset, concellationToken);
+                        }
+                    }
+
+                    if (claim.InsuredParties != null)
+                    {
+                        foreach(InvolvedParty party in claim.InsuredParties)
+                        {
+                            SSG_InvolvedParty involvedParty = _mapper.Map<SSG_InvolvedParty>(party);
+                            involvedParty.SSG_Asset_ICBCClaim = ssg_claim;
+                            await _searchRequestService.CreateInvolvedParty(involvedParty, concellationToken);
+                        }
+                    }
+
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return false;
+            }
+        }
+
     }
 }

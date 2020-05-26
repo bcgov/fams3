@@ -63,7 +63,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _searchRequestServiceMock = new Mock<ISearchRequestService>();
             _mapper = new Mock<IMapper>();
             var validRequestId = Guid.NewGuid();
-            var invalidRequestId = Guid.NewGuid();
+
             var validVehicleId = Guid.NewGuid();
             var validOtherAssetId = Guid.NewGuid();
             var validBankInformationId = Guid.NewGuid();
@@ -381,9 +381,6 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _mapper.Setup(m => m.Map<SSG_SimplePhoneNumber>(It.Is<Phone>(m => m.PhoneNumber == "9999")))
                    .Returns(_fakeSimplePhone);
 
-            _searchRequestServiceMock.Setup(x => x.CreateIdentifier(It.Is<SSG_Identifier>(x => x.SearchRequest.SearchRequestId == invalidRequestId), It.IsAny<CancellationToken>()))
-                .Throws(new Exception("random exception"));
-
             _searchRequestServiceMock.Setup(x => x.CreateAddress(It.Is<SSG_Address>(x => x.SearchRequest.SearchRequestId == validRequestId), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<SSG_Address>(new SSG_Address()
                 {
@@ -621,6 +618,272 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 .Verify(x => x.CreateSimplePhoneNumber(It.IsAny<SSG_SimplePhoneNumber>(), It.IsAny<CancellationToken>()), Times.Never);
 
             Assert.AreEqual(true, result);
+        }
+
+        [Test]
+        public async Task exception_should_be_caught_correctly()
+        {
+            Guid invalidRequestId = Guid.NewGuid();
+      
+            SSG_SearchRequest invalidSearchRequest = new SSG_SearchRequest
+            {
+                SearchRequestId = invalidRequestId
+            };
+            Person exceptionPerson = new Person()
+            {
+                Identifiers = new List<PersonalIdentifier>()
+                {
+                    new PersonalIdentifier()
+                    {
+                        Value = "exceptionID"
+                    }
+                },
+                Addresses = new List<Address>()
+                {
+                    new Address()
+                    {
+                        AddressLine1 = "AddressLine1",                        
+                    }
+                },
+                Phones = new List<Phone>()
+                {
+                    new Phone()
+                    {
+                        PhoneNumber = "4005678900"
+                    }
+                },
+                Names = new List<Name>()
+                {
+                    new Name()
+                    {
+                        FirstName = "firstName"
+                    }
+                },
+                RelatedPersons = new List<RelatedPerson>()
+                {
+                    new RelatedPerson() { FirstName = "firstName" }
+                },
+            };
+
+            _searchRequestServiceMock.Setup(x => x.CreateIdentifier(It.Is<SSG_Identifier>(x => x.SearchRequest.SearchRequestId == invalidRequestId), It.IsAny<CancellationToken>()))
+                 .Throws(new Exception("identifier random exception"));
+            _searchRequestServiceMock.Setup(x => x.CreateAddress(It.Is<SSG_Address>(x => x.SearchRequest.SearchRequestId == invalidRequestId), It.IsAny<CancellationToken>()))
+                .Throws(new Exception("address random exception"));
+            _searchRequestServiceMock.Setup(x => x.CreatePhoneNumber(It.Is<SSG_PhoneNumber>(x => x.SearchRequest.SearchRequestId == invalidRequestId), It.IsAny<CancellationToken>()))
+                .Throws(new Exception("phone random exception"));
+            _searchRequestServiceMock.Setup(x => x.CreateName(It.Is<SSG_Aliase>(x => x.SearchRequest.SearchRequestId == invalidRequestId), It.IsAny<CancellationToken>()))
+                .Throws(new Exception("name random exception"));
+            _searchRequestServiceMock.Setup(x => x.CreateRelatedPerson(It.Is<SSG_Identity>(x => x.SearchRequest.SearchRequestId == invalidRequestId), It.IsAny<CancellationToken>()))
+                .Throws(new Exception("relatedPerson random exception"));
+
+            var result = await _sut.ProcessPersonFound(exceptionPerson, _providerProfile, invalidSearchRequest, _fakeToken);
+
+            _searchRequestServiceMock
+              .Verify(x => x.SavePerson(It.IsAny<PersonEntity>(), It.IsAny<CancellationToken>()), Times.Once);
+
+            _searchRequestServiceMock
+                .Verify(x => x.CreateIdentifier(It.IsAny<SSG_Identifier>(), It.IsAny<CancellationToken>()), Times.Once);
+
+            _loggerMock.VerifyLog(LogLevel.Error, "identifier random exception", Times.Once());
+            _loggerMock.VerifyLog(LogLevel.Error, "address random exception", Times.Once());
+            _loggerMock.VerifyLog(LogLevel.Error, "phone random exception", Times.Once());
+            _loggerMock.VerifyLog(LogLevel.Error, "name random exception", Times.Once());
+            _loggerMock.VerifyLog(LogLevel.Error, "relatedPerson random exception", Times.Once());
+            Assert.AreEqual(true, result);
+        }
+
+        [Test]
+        public async Task exception_compensation_should_be_caught_correctly()
+        {
+            Guid invalidRequestId = Guid.NewGuid();
+
+            SSG_SearchRequest invalidSearchRequest = new SSG_SearchRequest
+            {
+                SearchRequestId = invalidRequestId
+            };
+            Person exceptionPerson = new Person()
+            {
+                CompensationClaims = new List<CompensationClaim>()
+                {
+                    new CompensationClaim()
+                    {
+                        ClaimNumber = "claimNumber"
+                    }
+                }
+            };
+
+            _searchRequestServiceMock.Setup(x => x.CreateCompensationClaim(It.Is<SSG_Asset_WorkSafeBcClaim>(x => x.SearchRequest.SearchRequestId == invalidRequestId), It.IsAny<CancellationToken>()))
+                 .Throws(new Exception("compensation random exception"));
+    
+            var result = await _sut.ProcessPersonFound(exceptionPerson, _providerProfile, invalidSearchRequest, _fakeToken);
+
+            _searchRequestServiceMock
+              .Verify(x => x.SavePerson(It.IsAny<PersonEntity>(), It.IsAny<CancellationToken>()), Times.Once);
+
+            _searchRequestServiceMock
+                .Verify(x => x.CreateCompensationClaim(It.IsAny<SSG_Asset_WorkSafeBcClaim>(), It.IsAny<CancellationToken>()), Times.Once);
+
+            _loggerMock.VerifyLog(LogLevel.Error, "compensation random exception", Times.Once());
+ 
+            Assert.AreEqual(true, result);
+        }
+
+        [Test]
+        public async Task exception_insurance_should_be_caught_correctly()
+        {
+            Guid invalidRequestId = Guid.NewGuid();
+
+            SSG_SearchRequest invalidSearchRequest = new SSG_SearchRequest
+            {
+                SearchRequestId = invalidRequestId
+            };
+            Person exceptionPerson = new Person()
+            {
+                InsuranceClaims = new List<InsuranceClaim>()
+                {
+                    new InsuranceClaim()
+                    {
+                        ClaimNumber = "claimNumber"
+                    }
+                }
+            };
+
+            _searchRequestServiceMock.Setup(x => x.CreateInsuranceClaim(It.Is<ICBCClaimEntity>(x => x.SearchRequest.SearchRequestId == invalidRequestId), It.IsAny<CancellationToken>()))
+                 .Throws(new Exception("insurance random exception"));
+
+            var result = await _sut.ProcessPersonFound(exceptionPerson, _providerProfile, invalidSearchRequest, _fakeToken);
+
+            _searchRequestServiceMock
+              .Verify(x => x.SavePerson(It.IsAny<PersonEntity>(), It.IsAny<CancellationToken>()), Times.Once);
+
+            _searchRequestServiceMock
+                .Verify(x => x.CreateInsuranceClaim(It.IsAny<ICBCClaimEntity>(), It.IsAny<CancellationToken>()), Times.Once);
+
+            _loggerMock.VerifyLog(LogLevel.Error, "insurance random exception", Times.Once());
+
+            Assert.AreEqual(true, result);
+        }
+
+        [Test]
+        public async Task exception_simplePhoneNumber_should_be_caught_correctly()
+        {
+            Guid invalidRequestId = Guid.NewGuid();
+            Guid invalidClaimId = Guid.NewGuid();
+
+            SSG_SearchRequest invalidSearchRequest = new SSG_SearchRequest
+            {
+                SearchRequestId = invalidRequestId
+            };
+            Person exceptionPerson = new Person()
+            {
+                InsuranceClaims = new List<InsuranceClaim>()
+                {
+                    new InsuranceClaim()
+                    {
+                        ClaimNumber = "claimNumber",
+                        ClaimCentre=new ClaimCentre()
+                        {
+                            ContactNumber=new List<Phone>()
+                            {
+                                new Phone(){PhoneNumber="9999"}
+                            }
+                        }
+                    }
+                }
+            };
+
+            _searchRequestServiceMock.Setup(x => x.CreateInsuranceClaim(It.Is<ICBCClaimEntity>(x => x.SearchRequest.SearchRequestId == invalidRequestId), It.IsAny<CancellationToken>()))
+                 .Returns(Task.FromResult<SSG_Asset_ICBCClaim>(new SSG_Asset_ICBCClaim()
+                 {
+                     ICBCClaimId = invalidClaimId
+                 }));
+
+            _searchRequestServiceMock.Setup(x => x.CreateSimplePhoneNumber(It.Is<SSG_SimplePhoneNumber>(x => x.SSG_Asset_ICBCClaim.ICBCClaimId == invalidClaimId), It.IsAny<CancellationToken>()))
+                 .Throws(new Exception("simplePhoneNumber random exception"));
+
+            var result = await _sut.ProcessPersonFound(exceptionPerson, _providerProfile, invalidSearchRequest, _fakeToken);
+
+            _searchRequestServiceMock
+              .Verify(x => x.SavePerson(It.IsAny<PersonEntity>(), It.IsAny<CancellationToken>()), Times.Once);
+
+            _searchRequestServiceMock
+                .Verify(x => x.CreateInsuranceClaim(It.IsAny<ICBCClaimEntity>(), It.IsAny<CancellationToken>()), Times.Once);
+
+            _searchRequestServiceMock
+                .Verify(x => x.CreateSimplePhoneNumber(It.IsAny<SSG_SimplePhoneNumber>(), It.IsAny<CancellationToken>()), Times.Once);
+
+            _loggerMock.VerifyLog(LogLevel.Error, "simplePhoneNumber random exception", Times.Once());
+
+            Assert.AreEqual(true, result);
+        }
+
+        [Test]
+        public async Task exception_involvedParty_should_be_caught_correctly()
+        {
+            Guid invalidRequestId = Guid.NewGuid();
+            Guid invalidClaimId = Guid.NewGuid();
+
+            SSG_SearchRequest invalidSearchRequest = new SSG_SearchRequest
+            {
+                SearchRequestId = invalidRequestId
+            };
+            Person exceptionPerson = new Person()
+            {
+                InsuranceClaims = new List<InsuranceClaim>()
+                {
+                    new InsuranceClaim()
+                    {
+                        InsuredParties=new List<InvolvedParty>()
+                        {
+                            new InvolvedParty(){Organization="insuranceClaimOrg"}
+                        }
+                    }
+                }
+            };
+
+            _searchRequestServiceMock.Setup(x => x.CreateInsuranceClaim(It.Is<ICBCClaimEntity>(x => x.SearchRequest.SearchRequestId == invalidRequestId), It.IsAny<CancellationToken>()))
+                 .Returns(Task.FromResult<SSG_Asset_ICBCClaim>(new SSG_Asset_ICBCClaim()
+                 {
+                     ICBCClaimId = invalidClaimId
+                 }));
+
+            _searchRequestServiceMock.Setup(x => x.CreateInvolvedParty(It.Is<SSG_InvolvedParty>(x => x.SSG_Asset_ICBCClaim.ICBCClaimId == invalidClaimId), It.IsAny<CancellationToken>()))
+                 .Throws(new Exception("involved party random exception"));
+
+            var result = await _sut.ProcessPersonFound(exceptionPerson, _providerProfile, invalidSearchRequest, _fakeToken);
+
+            _searchRequestServiceMock
+              .Verify(x => x.SavePerson(It.IsAny<PersonEntity>(), It.IsAny<CancellationToken>()), Times.Once);
+
+            _searchRequestServiceMock
+                .Verify(x => x.CreateInsuranceClaim(It.IsAny<ICBCClaimEntity>(), It.IsAny<CancellationToken>()), Times.Once);
+
+            _searchRequestServiceMock
+                .Verify(x => x.CreateInvolvedParty(It.IsAny<SSG_InvolvedParty>(), It.IsAny<CancellationToken>()), Times.Once);
+
+            _loggerMock.VerifyLog(LogLevel.Error, "involved party random exception", Times.Once());
+
+            Assert.AreEqual(true, result);
+        }
+    }
+
+
+    public static class MockLoggerExtensions
+    {
+        public static void VerifyLog<T>(this Mock<ILogger<T>> loggerMock, LogLevel level, string message, string failMessage = null)
+        {
+            loggerMock.VerifyLog(level, message, Times.Once(), failMessage);
+        }
+        public static void VerifyLog<T>(this Mock<ILogger<T>> loggerMock, LogLevel level, string message, Times times, string failMessage = null)
+        {
+            loggerMock.Verify(l => l.Log(level, It.IsAny<EventId>(),
+                       It.Is<It.IsAnyType>((o, _) => o.ToString() == message), It.IsAny<Exception>(),
+                       It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)),
+                   times, failMessage);
+            //  .NET Core 2.1
+            //   loggerMock.Verify(l => l.Log(level, It.IsAny<EventId>(), It.Is<object>(o => o.ToString() == message), null,
+            //           It.IsAny<Func<object, Exception, string>>()),
+            //       times, failMessage);
         }
     }
 }

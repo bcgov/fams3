@@ -374,30 +374,24 @@ namespace DynamicsAdapter.Web.PersonSearch
                     icbcClaim.Person = ssg_person;
                     SSG_Asset_ICBCClaim ssg_claim = await _searchRequestService.CreateInsuranceClaim(icbcClaim, concellationToken);
 
-                    if (claim.ClaimCentre != null)
+                    if (claim.ClaimCentre != null && claim.ClaimCentre.ContactNumber!=null)
                     {
-                        claim.ClaimCentre.ContactNumber?.ToList<Phone>().ForEach
-                        (
-                            async m =>
-                            {
-                                SSG_SimplePhoneNumber phoneForAsset = _mapper.Map<SSG_SimplePhoneNumber>(m);
-                                phoneForAsset.SSG_Asset_ICBCClaim = ssg_claim;
-                                await _searchRequestService.CreateSimplePhoneNumber(phoneForAsset, concellationToken);
-                            }
-                        );
+                        foreach(Phone phone in claim.ClaimCentre.ContactNumber)
+                        {
+                            SSG_SimplePhoneNumber phoneForAsset = _mapper.Map<SSG_SimplePhoneNumber>(phone);
+                            phoneForAsset.SSG_Asset_ICBCClaim = ssg_claim;
+                            await _searchRequestService.CreateSimplePhoneNumber(phoneForAsset, concellationToken);
+                        }
                     }
 
                     if (claim.InsuredParties != null)
                     {
-                        claim.InsuredParties.ToList<InvolvedParty>().ForEach
-                        (
-                            async m =>
-                            {
-                                SSG_InvolvedParty involvedParty = _mapper.Map<SSG_InvolvedParty>(m);
-                                involvedParty.SSG_Asset_ICBCClaim = ssg_claim;
-                                await _searchRequestService.CreateInvolvedParty(involvedParty, concellationToken);
-                            }
-                        );
+                        foreach(InvolvedParty party in claim.InsuredParties)
+                        {
+                            SSG_InvolvedParty involvedParty = _mapper.Map<SSG_InvolvedParty>(party);
+                            involvedParty.SSG_Asset_ICBCClaim = ssg_claim;
+                            await _searchRequestService.CreateInvolvedParty(involvedParty, concellationToken);
+                        }
                     }
 
                 }

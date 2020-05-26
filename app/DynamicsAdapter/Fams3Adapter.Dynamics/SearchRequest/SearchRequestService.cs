@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.AssetOwner;
 using Fams3Adapter.Dynamics.BankInfo;
@@ -15,6 +11,8 @@ using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.RelatedPerson;
 using Fams3Adapter.Dynamics.Vehicle;
 using Simple.OData.Client;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Fams3Adapter.Dynamics.SearchRequest
 {

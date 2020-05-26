@@ -546,8 +546,8 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 PhoneNumber = "6904005678",
                 Type = "home",
                 Extension = "123",
-                Description = "Description"
-
+                Description = "Description",
+                Notes = "notes"
 
             };
             SSG_PhoneNumber sSG_PhoneNumber = _mapper.Map<SSG_PhoneNumber>(phoneNumber);
@@ -557,6 +557,8 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(TelephoneNumberType.Home.Value, sSG_PhoneNumber.TelephoneNumberType);
             Assert.AreEqual(1, sSG_PhoneNumber.StatusCode);
             Assert.AreEqual(0, sSG_PhoneNumber.StateCode);
+            Assert.AreEqual("Description", sSG_PhoneNumber.Description);
+            Assert.AreEqual("notes", sSG_PhoneNumber.Notes);
         }
 
         [Test]
@@ -907,7 +909,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 {
                     Address = new Address
                     {
-                        AddressLine1 = "compensation Employer Address 1",                        
+                        AddressLine1 = "compensation Employer Address 1",
                         City = "compensation Employer City",
                         StateProvince = "AB",
                         CountryRegion = "Canada",
@@ -983,29 +985,29 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 ClaimNumber = "claimNumber",
                 ClaimType = "claimType",
                 ClaimStatus = "claimStatus",
-                Adjustor = new Name() { FirstName="adjusterFirstName", LastName="adjusterLastName", MiddleName="adjusterMiddleName", OtherName="adjusterOtherName"},
-                AdjustorPhone=new Phone() {PhoneNumber="adjusterPhoneNumber", Extension="adjusterPhoneExtension" },
-                ClaimCentre=new ClaimCentre()
+                Adjustor = new Name() { FirstName = "adjusterFirstName", LastName = "adjusterLastName", MiddleName = "adjusterMiddleName", OtherName = "adjusterOtherName" },
+                AdjustorPhone = new Phone() { PhoneNumber = "adjusterPhoneNumber", Extension = "adjusterPhoneExtension" },
+                ClaimCentre = new ClaimCentre()
                 {
-                    Location="claimCenterLocation",
-                    ContactAddress=new Address() 
-                    { 
-                        AddressLine1="claimCenterAddressLine1",
-                        AddressLine2="claimCenterAddressLine2",
-                        AddressLine3="claimCenterAddressLine3",
-                        City="city",
-                        StateProvince="province",
-                        CountryRegion="claimCenterCountry",
-                        ZipPostalCode="claimCenterPostalCode"
+                    Location = "claimCenterLocation",
+                    ContactAddress = new Address()
+                    {
+                        AddressLine1 = "claimCenterAddressLine1",
+                        AddressLine2 = "claimCenterAddressLine2",
+                        AddressLine3 = "claimCenterAddressLine3",
+                        City = "city",
+                        StateProvince = "province",
+                        CountryRegion = "claimCenterCountry",
+                        ZipPostalCode = "claimCenterPostalCode"
                     },
-                    ContactNumber=new List<Phone>()
+                    ContactNumber = new List<Phone>()
                     {
                         new Phone(){PhoneNumber="claimCenterContactPhoneNumber1", Extension="claimCenterContactPhoneExt1", Type="Phone"},
                         new Phone(){PhoneNumber="claimCenterContactFaxNumber", Extension="", Type="Fax"}
                     }
                 },
-                Identifiers=new List<PersonalIdentifier>()
-                { 
+                Identifiers = new List<PersonalIdentifier>()
+                {
                     new PersonalIdentifier()
                     {
                         Value="InsuranceClaimBCDLNumber",
@@ -1025,12 +1027,12 @@ namespace DynamicsAdapter.Web.Test.Mapping
                     new PersonalIdentifier()
                     {
                         Value="InsuranceClaimPHNNumber",
-                        Type=PersonalIdentifierType.PersonalHealthNumber,   
+                        Type=PersonalIdentifierType.PersonalHealthNumber,
                         TypeCode="phn"
                     }
                 },
-                InsuredParties=new List<InvolvedParty>() 
-                { 
+                InsuredParties = new List<InvolvedParty>()
+                {
                     new InvolvedParty()
                     {
                         Name=new Name(){ FirstName="InvolvedPartyFirstName", LastName="InvolvedPartLastName", MiddleName="InvolvedPartyMiddleName", OtherName="InvolvedPartyOtherName"},
@@ -1098,7 +1100,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
         {
             var claim = new InsuranceClaim()
             {
-              ClaimCentre = new ClaimCentre()
+                ClaimCentre = new ClaimCentre()
                 {
                     ContactAddress = null,
                     ContactNumber = null
@@ -1142,7 +1144,9 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 ClaimCentre = null,
                 Identifiers = null,
                 InsuredParties = null,
-                ReferenceDates = null
+                ReferenceDates = null,
+                Adjustor=null,
+                AdjustorPhone=null
             };
             ICBCClaimEntity icbcClaim = _mapper.Map<ICBCClaimEntity>(claim);
             Assert.AreEqual(null, icbcClaim.BCDLExpiryDate);
@@ -1161,6 +1165,12 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(null, icbcClaim.Date2);
             Assert.AreEqual(null, icbcClaim.Date1Label);
             Assert.AreEqual(null, icbcClaim.Date2Label);
+            Assert.AreEqual(null, icbcClaim.AdjusterFirstName);
+            Assert.AreEqual(null, icbcClaim.AdjusterLastName);
+            Assert.AreEqual(null, icbcClaim.AdjusterMiddleName);
+            Assert.AreEqual(null, icbcClaim.AdjusterOtherName);
+            Assert.AreEqual(null, icbcClaim.AdjusterPhoneNumber);
+            Assert.AreEqual(null, icbcClaim.AdjusterPhoneNumberExt);
         }
 
         [Test]
@@ -1188,6 +1198,26 @@ namespace DynamicsAdapter.Web.Test.Mapping
         }
 
         [Test]
+        public void InvolvedParty_with_null_name_should_map_to_SSG_InvolvedParty_correctly()
+        {
+            var party = new InvolvedParty()
+            {
+                Name = null,
+                Notes = "InvolvedPartyNotes",
+            };
+
+            SSG_InvolvedParty ssg_InvolvedParty = _mapper.Map<SSG_InvolvedParty>(party);
+            Assert.AreEqual(null, ssg_InvolvedParty.FirstName);
+            Assert.AreEqual(null, ssg_InvolvedParty.LastName);
+            Assert.AreEqual(null, ssg_InvolvedParty.MiddleName);
+            Assert.AreEqual(null, ssg_InvolvedParty.OtherName);
+            Assert.AreEqual("InvolvedPartyNotes", ssg_InvolvedParty.Notes);
+            Assert.AreEqual(null, ssg_InvolvedParty.OrganizationName);
+            Assert.AreEqual(null, ssg_InvolvedParty.PartyDescription);
+            Assert.AreEqual(null, ssg_InvolvedParty.PartyTypeCode);
+        }
+
+        [Test]
         public void gender_null_RelatedPerson_should_map_to_SSG_Identity_correctly()
         {
             var relatedPerson = new RelatedPerson()
@@ -1207,8 +1237,6 @@ namespace DynamicsAdapter.Web.Test.Mapping
         {
             var dp = new SSG_SearchapiRequestDataProvider()
             {
-                Name = "dp1",
-                SuppliedByValue = 1,
                 AdaptorName = "data provider 1"
             };
             DataProvider provider = _mapper.Map<DataProvider>(dp);

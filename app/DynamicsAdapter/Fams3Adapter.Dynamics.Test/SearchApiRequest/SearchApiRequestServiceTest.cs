@@ -67,7 +67,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchApiRequest
                     }.ToArray(),
                     DataProviders = new List<DataProvider.SSG_SearchapiRequestDataProvider>()
                     {
-                        new DataProvider.SSG_SearchapiRequestDataProvider(){Name="ICBC", SuppliedByValue=111111}
+                        new DataProvider.SSG_SearchapiRequestDataProvider(){AdaptorName="ICBC"}
                     }.ToArray(),
                     SearchRequest = new SSG_SearchRequest() { FileId="fileId"}
                 }));

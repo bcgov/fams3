@@ -35,7 +35,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         Task<SSG_Asset_Other> CreateOtherAsset(AssetOtherEntity asset, CancellationToken cancellationToken);
         Task<SSG_Asset_WorkSafeBcClaim> CreateCompensationClaim(SSG_Asset_WorkSafeBcClaim claim, CancellationToken cancellationToken);
         Task<SSG_Asset_ICBCClaim> CreateInsuranceClaim(ICBCClaimEntity claim, CancellationToken cancellationToken);
-        Task<SSG_SimplePhoneNumber> CreateSimplePhoneNumber(SSG_SimplePhoneNumber phoneAsset, CancellationToken cancellationToken);
+        Task<SSG_SimplePhoneNumber> CreateSimplePhoneNumber(SSG_SimplePhoneNumber phone, CancellationToken cancellationToken);
         Task<SSG_InvolvedParty> CreateInvolvedParty(SSG_InvolvedParty involvedParty, CancellationToken cancellationToken);
     }
 
@@ -151,9 +151,9 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             return await this._oDataClient.For<SSG_Asset_ICBCClaim>().Set(claim).InsertEntryAsync(cancellationToken);
         }
 
-        public async Task<SSG_SimplePhoneNumber> CreateSimplePhoneNumber(SSG_SimplePhoneNumber assetPhone, CancellationToken cancellationToken)
+        public async Task<SSG_SimplePhoneNumber> CreateSimplePhoneNumber(SSG_SimplePhoneNumber phone, CancellationToken cancellationToken)
         {
-            return await this._oDataClient.For<SSG_SimplePhoneNumber>().Set(assetPhone).InsertEntryAsync(cancellationToken);
+            return await this._oDataClient.For<SSG_SimplePhoneNumber>().Set(phone).InsertEntryAsync(cancellationToken);
         }
 
         public async Task<SSG_InvolvedParty> CreateInvolvedParty(SSG_InvolvedParty involvedParty, CancellationToken cancellationToken)

@@ -542,6 +542,15 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         }
 
         [Test]
+        public async Task null_Person_should_return_true_correctly()
+        {
+
+            var result = await _sut.ProcessPersonFound(null, _providerProfile, _searchRequest, _fakeToken);
+  
+            Assert.AreEqual(true, result);
+        }
+
+        [Test]
         public async Task valid_Person_with_null_properties_should_be_processed_correctly()
         {
             Person fakePersonNull = new Person()

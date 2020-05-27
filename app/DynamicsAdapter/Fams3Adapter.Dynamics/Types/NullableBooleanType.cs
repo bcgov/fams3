@@ -1,7 +1,4 @@
 ﻿using Fams3Adapter.Dynamics.OptionSets.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Fams3Adapter.Dynamics.Types
 {

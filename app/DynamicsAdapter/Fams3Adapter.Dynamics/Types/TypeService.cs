@@ -1,14 +1,11 @@
-﻿using Fams3Adapter.Dynamics.OptionSets.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Fams3Adapter.Dynamics.Types
 {
-   public static  class TypeService
+    public static  class TypeService
     {
 
-        public static readonly List<string> TypeList = new List<string>()
+        public static List<string> TypeList = new List<string>()
         {
             "ssg_canadianprovincecodesimpletype" ,
             "ssg_identificationtypes" ,

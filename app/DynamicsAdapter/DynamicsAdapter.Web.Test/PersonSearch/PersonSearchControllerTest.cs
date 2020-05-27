@@ -256,6 +256,12 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         }
 
         [Test]
+        public void With_null_completed_event_should_throw_argument_null_()
+        {
+             Assert.ThrowsAsync<ArgumentNullException>(async () =>  await _sut.Completed(_testGuid, null));
+          
+        }
+        [Test]
         public async Task With_valid_accepted_event_it_should_return_ok()
         {
             var result = await _sut.Accepted(_testGuid, _fakePersonAcceptedEvent);

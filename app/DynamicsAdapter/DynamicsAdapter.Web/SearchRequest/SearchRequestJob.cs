@@ -6,11 +6,7 @@ using Microsoft.Extensions.Logging;
 using Quartz;
 using System.Threading.Tasks;
 using Fams3Adapter.Dynamics.SearchApiRequest;
-using OpenTracing;
-using Fams3Adapter.Dynamics.Identifier;
 using AutoMapper;
-using DynamicsAdapter.Web.PersonSearch.Models;
-using Serilog;
 using Serilog.Context;
 
 namespace DynamicsAdapter.Web.SearchRequest

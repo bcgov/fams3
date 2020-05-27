@@ -1,7 +1,5 @@
 using Newtonsoft.Json;
-using System;
 using Fams3Adapter.Dynamics.SearchRequest;
-using Fams3Adapter.Dynamics.SearchApiRequest;
 using Fams3Adapter.Dynamics.Person;
 
 namespace Fams3Adapter.Dynamics.Identifier

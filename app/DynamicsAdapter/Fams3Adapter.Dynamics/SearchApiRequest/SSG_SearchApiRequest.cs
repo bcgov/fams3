@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Fams3Adapter.Dynamics.DataProvider;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.SearchRequest;

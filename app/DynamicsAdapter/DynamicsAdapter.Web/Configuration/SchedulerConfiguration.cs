@@ -1,6 +1,4 @@
-﻿using Quartz;
-
-namespace DynamicsAdapter.Web.Configuration
+﻿namespace DynamicsAdapter.Web.Configuration
 {
     /// <summary>
     /// Represents the scheduler configuration

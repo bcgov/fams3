@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
-using Fams3Adapter.Dynamics.DataProvider;
 using Fams3Adapter.Dynamics.SearchApiEvent;
-using Fams3Adapter.Dynamics.SearchRequest;
 using Simple.OData.Client;
 
 using Entry = System.Collections.Generic.Dictionary<string, object>;

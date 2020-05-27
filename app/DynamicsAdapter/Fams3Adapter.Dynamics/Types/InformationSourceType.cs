@@ -11,11 +11,11 @@ namespace Fams3Adapter.Dynamics.Types
     public class InformationSourceType : Enumeration
     {
 
-        public readonly InformationSourceType Request = new InformationSourceType(867670000, "Request");
-        public readonly InformationSourceType ICBC = new InformationSourceType(867670001, "ICBC");
-        public readonly InformationSourceType Other = new InformationSourceType(867670003, "Other");
-        public readonly InformationSourceType BCHydro = new InformationSourceType(867670005, "BCHydro");
-        public readonly InformationSourceType MSDPR = new InformationSourceType(867670023, "MSDPR");
+        public static InformationSourceType Request = new InformationSourceType(867670000, "Request");
+        public static InformationSourceType ICBC = new InformationSourceType(867670001, "ICBC");
+        public static InformationSourceType Other = new InformationSourceType(867670003, "Other");
+        public static InformationSourceType BCHydro = new InformationSourceType(867670005, "BCHydro");
+        public static InformationSourceType MSDPR = new InformationSourceType(867670023, "MSDPR");
 
         protected InformationSourceType(int value, string name) : base(value, name)
         {

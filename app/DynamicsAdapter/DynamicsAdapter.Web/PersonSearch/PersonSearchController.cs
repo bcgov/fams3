@@ -62,7 +62,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                         SearchRequestId = searchRequestId
                     };
 
-                    if (personCompletedEvent.MatchedPersons != null)
+                    if (personCompletedEvent?.MatchedPersons != null)
                     {
                         //try following code, but automapper throws exception.Cannot access a disposed object.Object name: 'IServiceProvider'.
                         //Parallel.ForEach<Person>(personCompletedEvent.MatchedPersons, async p =>

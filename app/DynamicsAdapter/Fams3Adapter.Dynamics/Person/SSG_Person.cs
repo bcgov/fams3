@@ -1,8 +1,6 @@
 ﻿using Fams3Adapter.Dynamics.SearchRequest;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Fams3Adapter.Dynamics.Person
 {

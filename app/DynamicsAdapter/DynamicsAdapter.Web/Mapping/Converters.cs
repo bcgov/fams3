@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
-using DynamicsAdapter.Web.PersonSearch.Models;
-using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.Types;
 using Fams3Adapter.Dynamics.OptionSets.Models;
 
@@ -47,7 +45,7 @@ namespace DynamicsAdapter.Web.Mapping
 
     public class IDType
     {
-        public static readonly IDictionary<int, PersonalIdentifierType> IDTypeDictionary = new Dictionary<int, PersonalIdentifierType>
+        public static IDictionary<int, PersonalIdentifierType> IDTypeDictionary = new Dictionary<int, PersonalIdentifierType>
         {
             { IdentificationType.BCDriverLicense.Value, PersonalIdentifierType.BCDriverLicense },
             { IdentificationType.SocialInsuranceNumber.Value, PersonalIdentifierType.SocialInsuranceNumber },
@@ -130,7 +128,7 @@ namespace DynamicsAdapter.Web.Mapping
 
     public class AddressType
     {
-        public static readonly IDictionary<string, LocationType> AddressTypeDictionary = new Dictionary<string, LocationType>
+        public static  IDictionary<string, LocationType> AddressTypeDictionary = new Dictionary<string, LocationType>
         {
             { "mailing", LocationType.Mailing },
             { "residence", LocationType.Residence },

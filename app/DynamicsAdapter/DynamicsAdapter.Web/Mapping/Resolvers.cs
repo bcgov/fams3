@@ -1,14 +1,9 @@
 ﻿using AutoMapper;
-using DynamicsAdapter.Web.PersonSearch.Models;
 using Fams3Adapter.Dynamics;
-using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.Identifier;
-using Fams3Adapter.Dynamics.Name;
-using Fams3Adapter.Dynamics.Person;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace DynamicsAdapter.Web.Mapping
 {

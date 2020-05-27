@@ -49,15 +49,10 @@ namespace DynamicsAdapter.Web
 
                     if (!string.IsNullOrEmpty(splunkCollectorUrl) && !string.IsNullOrEmpty(splunkToken))
                     {
-                        // enable Splunk logger using Serilog
-                        //var fields = new Serilog.Sinks.Splunk.CustomFields();
-                        //if (!string.IsNullOrEmpty(hostingContext.Configuration["SPLUNK_CHANNEL"]))
-                        //{
-                        //    fields.CustomFieldList.Add(new Serilog.Sinks.Splunk.CustomField("channel", hostingContext.Configuration["SPLUNK_CHANNEL"]));
-                        //}
+                       
 
                         loggerConfiguration.WriteTo.EventCollector(
-                            splunkCollectorUrl,
+                            splunkCollectorUrl,   
                             splunkToken,
                             sourceType: "Dynadapter",
                             restrictedToMinimumLevel: LogEventLevel.Debug,

@@ -1,11 +1,8 @@
 ﻿using Fams3Adapter.Dynamics.OptionSets.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Fams3Adapter.Dynamics.Types
 {
-    
+
     public class LocationType : Enumeration
     {
         public static LocationType Business = new LocationType(867670002, "Business");

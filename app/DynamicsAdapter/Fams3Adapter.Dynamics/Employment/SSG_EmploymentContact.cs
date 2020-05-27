@@ -1,11 +1,4 @@
-﻿using Fams3Adapter.Dynamics.Address;
-using Fams3Adapter.Dynamics.Person;
-using Fams3Adapter.Dynamics.PhoneNumber;
-using Fams3Adapter.Dynamics.SearchRequest;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Newtonsoft.Json;
 
 namespace Fams3Adapter.Dynamics.Employment
 {

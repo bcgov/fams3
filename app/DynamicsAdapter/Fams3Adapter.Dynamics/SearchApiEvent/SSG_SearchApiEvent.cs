@@ -1,6 +1,5 @@
 ﻿using System;
 using Fams3Adapter.Dynamics.SearchApiRequest;
-using Fams3Adapter.Dynamics.SearchRequest;
 using Newtonsoft.Json;
 
 namespace Fams3Adapter.Dynamics.SearchApiEvent

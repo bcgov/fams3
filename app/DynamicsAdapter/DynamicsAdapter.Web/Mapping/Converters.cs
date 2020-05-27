@@ -4,41 +4,42 @@ using System.Linq;
 using AutoMapper;
 using Fams3Adapter.Dynamics.Types;
 using Fams3Adapter.Dynamics.OptionSets.Models;
+using System.Text;
 
 namespace DynamicsAdapter.Web.Mapping
 {
     public class InformationSourceConverter : IValueConverter<int?, string>
     {
-        public string Convert(int? source, ResolutionContext context)
+        public string Convert(int? sourceMember, ResolutionContext context)
         {
-            return Enumeration.GetAll<InformationSourceType>().FirstOrDefault(m => m.Value == source)?.Name;
+            return Enumeration.GetAll<InformationSourceType>().FirstOrDefault(m => m.Value == sourceMember)?.Name;
         }
     }
 
 
     public class IssuedByTypeConverter : IValueConverter<string, int?>
     {
-        public int? Convert(string source, ResolutionContext context)
+        public int? Convert(string sourceMember, ResolutionContext context)
         {
-            InformationSourceType sourceType = Enumeration.GetAll<InformationSourceType>().FirstOrDefault(m => m.Name.Equals(source, StringComparison.OrdinalIgnoreCase));
+            InformationSourceType sourceType = Enumeration.GetAll<InformationSourceType>().FirstOrDefault(m => m.Name.Equals(sourceMember, StringComparison.OrdinalIgnoreCase));
             return (sourceType == null) ? InformationSourceType.Other.Value : sourceType.Value;
         }
     }
 
     public class SuppliedByIDConverter : IValueConverter<int?, string>
     {
-        public string Convert(int? source, ResolutionContext context)
+        public string Convert(int? sourceMember, ResolutionContext context)
         {
-            InformationSourceType sourceType = Enumeration.GetAll<InformationSourceType>().FirstOrDefault(m => m.Value == source);
+            InformationSourceType sourceType = Enumeration.GetAll<InformationSourceType>().FirstOrDefault(m => m.Value == sourceMember);
             return (sourceType == null) ? InformationSourceType.Other.Name : sourceType.Name;
         }
     }
 
     public class SuppliedByValueConverter : IValueConverter<string, int?>
     {
-        public int? Convert(string source, ResolutionContext context)
+        public int? Convert(string sourceMember, ResolutionContext context)
         {
-            InformationSourceType sourceType = Enumeration.GetAll<InformationSourceType>().FirstOrDefault(m => m.Name.Equals(source, StringComparison.OrdinalIgnoreCase));
+            InformationSourceType sourceType = Enumeration.GetAll<InformationSourceType>().FirstOrDefault(m => m.Name.Equals(sourceMember, StringComparison.OrdinalIgnoreCase));
             return (sourceType == null) ? InformationSourceType.Other.Value : sourceType.Value;
         }
     }
@@ -64,23 +65,23 @@ namespace DynamicsAdapter.Web.Mapping
 
     public class IdentifierTypeConverter : IValueConverter<int?, PersonalIdentifierType>
     {
-        public PersonalIdentifierType Convert(int? source, ResolutionContext context)
+        public PersonalIdentifierType Convert(int? sourceMember, ResolutionContext context)
         {
-            return source == null ? PersonalIdentifierType.Other : IDType.IDTypeDictionary[(int)source];
+            return sourceMember == null ? PersonalIdentifierType.Other : IDType.IDTypeDictionary[(int)sourceMember];
         }
     }
 
     public class PersonalIdentifierTypeConverter : IValueConverter<PersonalIdentifierType, int?>
     {
-        public int? Convert(PersonalIdentifierType source, ResolutionContext context)
+        public int? Convert(PersonalIdentifierType sourceMember, ResolutionContext context)
         {
-            return IDType.IDTypeDictionary.FirstOrDefault(m => m.Value == source).Key;
+            return IDType.IDTypeDictionary.FirstOrDefault(m => m.Value == sourceMember).Key;
         }
     }
 
     public class IssuedByConverter : IValueConverter<string, int?>
     {
-        public int? Convert(string source, ResolutionContext context)
+        public int? Convert(string sourceMember, ResolutionContext context)
         {
             return null;
         }
@@ -88,41 +89,41 @@ namespace DynamicsAdapter.Web.Mapping
 
     public class TelephoneNumberIdConverter : IValueConverter<string, int?>
     {
-        public int? Convert(string source, ResolutionContext context)
+        public int? Convert(string sourceMember, ResolutionContext context)
         {
-            return Enumeration.GetAll<TelephoneNumberType>().FirstOrDefault(m => m.Name.Equals(source, StringComparison.OrdinalIgnoreCase))?.Value;
+            return Enumeration.GetAll<TelephoneNumberType>().FirstOrDefault(m => m.Name.Equals(sourceMember, StringComparison.OrdinalIgnoreCase))?.Value;
         }
     }
 
     public class TelephoneNumberValueConverter : IValueConverter<int?, string>
     {
-        public string Convert(int? source, ResolutionContext context)
+        public string Convert(int? sourceMember, ResolutionContext context)
         {
-            return Enumeration.GetAll<TelephoneNumberType>().FirstOrDefault(m => m.Value == source)?.Name;
+            return Enumeration.GetAll<TelephoneNumberType>().FirstOrDefault(m => m.Value == sourceMember)?.Name;
         }
     }
 
     public class ProvinceConverter : IValueConverter<string, int?>
     {
-        public int? Convert(string source, ResolutionContext context)
+        public int? Convert(string sourceMember, ResolutionContext context)
         {
-            return Enumeration.GetAll<CanadianProvinceType>().FirstOrDefault(m => m.Name.Equals(source, StringComparison.OrdinalIgnoreCase))?.Value;
+            return Enumeration.GetAll<CanadianProvinceType>().FirstOrDefault(m => m.Name.Equals(sourceMember, StringComparison.OrdinalIgnoreCase))?.Value;
         }
     }
 
     public class ProvinceValueConverter : IValueConverter<int?, string>
     {
-        public string Convert(int? source, ResolutionContext context)
+        public string Convert(int? sourceMember, ResolutionContext context)
         {
-            return Enumeration.GetAll<CanadianProvinceType>().FirstOrDefault(m => m.Value == source)?.Name;
+            return Enumeration.GetAll<CanadianProvinceType>().FirstOrDefault(m => m.Value == sourceMember)?.Name;
         }
     }
 
     public class AddressTypeConverter : IValueConverter<string, int?>
     {
-        public int? Convert(string source, ResolutionContext context)
+        public int? Convert(string sourceMember, ResolutionContext context)
         {
-            return source == null ? null : (int?)(AddressType.AddressTypeDictionary[source.ToLower()].Value);
+            return sourceMember == null ? null : (int?)(AddressType.AddressTypeDictionary[sourceMember.ToLower()].Value);
         }
     }
 
@@ -142,26 +143,26 @@ namespace DynamicsAdapter.Web.Mapping
 
     public class AddressTypeValueConverter : IValueConverter<int?, string>
     {
-        public string Convert(int? source, ResolutionContext context)
+        public string Convert(int? sourceMember, ResolutionContext context)
         {
-            return Enumeration.GetAll<LocationType>().FirstOrDefault(m => m.Value == source)?.Name;
+            return Enumeration.GetAll<LocationType>().FirstOrDefault(m => m.Value == sourceMember)?.Name;
         }
     }
 
     public class DateTimeOffsetConverter : IValueConverter<DateTimeOffset?, DateTime?>
     {
-        public DateTime? Convert(DateTimeOffset? source, ResolutionContext context)
+        public DateTime? Convert(DateTimeOffset? sourceMember, ResolutionContext context)
         {
-            return source == null ? null : (DateTime?)(((DateTimeOffset)source).DateTime);
+            return sourceMember == null ? null : (DateTime?)(((DateTimeOffset)sourceMember).DateTime);
         }
     }
 
     public class NameCategoryConverter : IValueConverter<string, int?>
     {
-        public int? Convert(string source, ResolutionContext context)
+        public int? Convert(string sourceMember, ResolutionContext context)
         {
             return
-                source.ToLower() switch
+                sourceMember.ToLower() switch
                 {
                     "legal" => PersonNameCategory.LegalName.Value,
                     "alias" => PersonNameCategory.Alias.Value,
@@ -173,10 +174,10 @@ namespace DynamicsAdapter.Web.Mapping
 
     public class PhoneTypeConverter : IValueConverter<string, int?>
     {
-        public int? Convert(string source, ResolutionContext context)
+        public int? Convert(string sourceMember, ResolutionContext context)
         {
             return
-                source.ToLower() switch
+                sourceMember.ToLower() switch
                 {
                     "cell" => TelephoneNumberType.Cell.Value,
                     "home" => TelephoneNumberType.Home.Value,
@@ -193,12 +194,12 @@ namespace DynamicsAdapter.Web.Mapping
     }
     public class IncaceratedConverter : IValueConverter<string, int?>
     {
-        public int? Convert(string source, ResolutionContext context)
+        public int? Convert(string sourceMember, ResolutionContext context)
         {
-            if (!string.IsNullOrEmpty(source))
+            if (!string.IsNullOrEmpty(sourceMember))
             {
-                return 
-                    source.ToLower() switch
+                return
+                    sourceMember.ToLower() switch
                     {
                         "yes" => NullableBooleanType.Yes.Value,
                         "no" => NullableBooleanType.No.Value,
@@ -212,15 +213,15 @@ namespace DynamicsAdapter.Web.Mapping
 
     public class RelatedPersonCategoryConverter : IValueConverter<string, int?>
     {
-        public int? Convert(string source, ResolutionContext context)
+        public int? Convert(string sourceMember, ResolutionContext context)
         {
-            if (source == null) return null;
+            if (sourceMember == null) return null;
 
-            if ("aunt/uncle".Contains(source.ToLower())) 
+            if ("aunt/uncle".Contains(sourceMember.ToLower())) 
                 return PersonRelationType.AuntUncle.Value;
             else
                 return
-                    source.ToLower() switch
+                    sourceMember.ToLower() switch
                     {
                         "spouse" => PersonRelationType.Spouse.Value,
                         "parent" => PersonRelationType.Parent.Value,
@@ -235,11 +236,11 @@ namespace DynamicsAdapter.Web.Mapping
 
     public class PersonGenderConverter : IValueConverter<string, int?>
     {
-        public int? Convert(string source, ResolutionContext context)
+        public int? Convert(string sourceMember, ResolutionContext context)
         {
-            if (source == null) return null;
+            if (sourceMember == null) return null;
             return
-                source.ToLower() switch
+                sourceMember.ToLower() switch
                 {
                     "m" => GenderType.Male.Value,
                     "f" => GenderType.Female.Value,
@@ -251,31 +252,31 @@ namespace DynamicsAdapter.Web.Mapping
 
     public class PersonSearchCompletedMessageConvertor : IValueConverter<IEnumerable<Person>, string>
     {
-        public string Convert(IEnumerable<Person> source, ResolutionContext context)
+        public string Convert(IEnumerable<Person> sourceMember, ResolutionContext context)
         {
-            if(source==null)
+            var strbuilder = new StringBuilder();
+            if (sourceMember==null)
                 return $"Auto search processing completed successfully. 0 Matched Persons found.";
 
-            string msg = $"Auto search processing completed successfully. {source.Count()} Matched Persons found.\n";
+            strbuilder.Append($"Auto search processing completed successfully. {sourceMember.Count()} Matched Persons found.\n");
             int i = 1;
-            foreach(Person p in source)
+            foreach(Person p in sourceMember)
             {
-                msg = msg 
-                    + $"For Matched Person {i} : "
-                    + $"{(p.Identifiers == null ? 0 : p.Identifiers.Count)} identifier(s) found.  "
-                    + $"{(p.Addresses == null ? 0 : p.Addresses.Count)} addresses found. "
-                    + $"{(p.Phones == null ? 0 : p.Phones.Count)} phone number(s) found. "
-                    + $"{(p.Names == null ? 0 : p.Names.Count)} name(s) found. " 
-                    + $"{(p.Employments == null ? 0 : p.Employments.Count)} employment(s) found. " 
-                    + $"{(p.RelatedPersons == null ? 0 : p.RelatedPersons.Count)} related person(s) found. "
-                    + $"{(p.BankInfos == null ? 0 : p.BankInfos.Count)} bank info(s) found. "
-                    + $"{(p.Vehicles == null ? 0 : p.Vehicles.Count)} vehicle(s) found. "
-                    + $"{(p.OtherAssets == null ? 0 : p.OtherAssets.Count)} other asset(s) found. "
-                    + $"{(p.CompensationClaims == null ? 0 : p.CompensationClaims.Count)} compensation claim(s) found. "
-                    + $"{(p.InsuranceClaims == null ? 0 : p.InsuranceClaims.Count)} insurance claim(s) found.\n";
+                strbuilder.Append($"For Matched Person {i} : ");
+                strbuilder.Append($"{(p.Identifiers == null ? 0 : p.Identifiers.Count)} identifier(s) found.  ");
+                strbuilder.Append($"{(p.Addresses == null ? 0 : p.Addresses.Count)} addresses found. ");
+                strbuilder.Append($"{(p.Phones == null ? 0 : p.Phones.Count)} phone number(s) found. ");
+                strbuilder.Append($"{(p.Names == null ? 0 : p.Names.Count)} name(s) found. ");
+                strbuilder.Append($"{(p.Employments == null ? 0 : p.Employments.Count)} employment(s) found. ");
+                strbuilder.Append($"{(p.RelatedPersons == null ? 0 : p.RelatedPersons.Count)} related person(s) found. ");
+                strbuilder.Append($"{(p.BankInfos == null ? 0 : p.BankInfos.Count)} bank info(s) found. ");
+                strbuilder.Append($"{(p.Vehicles == null ? 0 : p.Vehicles.Count)} vehicle(s) found. ");
+                strbuilder.Append($"{(p.OtherAssets == null ? 0 : p.OtherAssets.Count)} other asset(s) found. ");
+                strbuilder.Append($"{(p.CompensationClaims == null ? 0 : p.CompensationClaims.Count)} compensation claim(s) found. ");
+                strbuilder.Append($"{(p.InsuranceClaims == null ? 0 : p.InsuranceClaims.Count)} insurance claim(s) found.\n");
                 i++;
             };
-            return msg;
+            return strbuilder.ToString();
         }
     }
 }

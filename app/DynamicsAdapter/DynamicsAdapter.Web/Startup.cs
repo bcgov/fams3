@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using AutoMapper;
 using DynamicsAdapter.Web.ApiGateway;
 using DynamicsAdapter.Web.Auth;
@@ -17,6 +18,7 @@ using Jaeger.Samplers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -47,6 +49,7 @@ namespace DynamicsAdapter.Web
 
             services.AddMvc().AddNewtonsoftJson(options =>
             {
+               
                 options.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
             });
 
@@ -242,6 +245,19 @@ namespace DynamicsAdapter.Web
                 app.UseDeveloperExceptionPage();
                 app.UseSwaggerUi3();
             }
+            app.Use(async (context, next) =>
+            {
+                context.Response.GetTypedHeaders().CacheControl =
+                 new Microsoft.Net.Http.Headers.CacheControlHeaderValue()
+                 {
+                     NoStore = true,
+                     NoCache = true,
+                     MustRevalidate = true,
+                     MaxAge = TimeSpan.FromSeconds(0),
+                    
+                 };
+                await next();
+            });
 
             app.UseRouting();
 

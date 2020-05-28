@@ -15,12 +15,17 @@ namespace DynamicsAdapter.Web.Infrastructure
             this._serviceProvider = serviceProvider;
         }
 
-        public IJob NewJob(TriggerFiredBundle triggerFiredBundle, IScheduler scheduler)
+        public IJob NewJob(TriggerFiredBundle bundle, IScheduler scheduler)
         {
-            return _serviceProvider.GetRequiredService(triggerFiredBundle.JobDetail.JobType) as IJob;
+            return _serviceProvider.GetRequiredService(bundle.JobDetail.JobType) as IJob;
         }
-
-        public void ReturnJob(IJob job) { }
+        /// <summary>
+        /// Allows the the job factory to destroy/cleanup the job if needed.
+        /// </summary>
+        /// <param name="job"></param>
+        public void ReturnJob(IJob job) {
+            (job as IDisposable)?.Dispose();
+        }
 
 
     }

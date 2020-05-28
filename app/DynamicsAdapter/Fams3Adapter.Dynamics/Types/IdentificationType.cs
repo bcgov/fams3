@@ -5,18 +5,18 @@ namespace Fams3Adapter.Dynamics.Types
     
     public class IdentificationType : Enumeration
     { 
-        public readonly IdentificationType BCDriverLicense = new IdentificationType(867670000, "BC Driver's License");
-        public readonly IdentificationType SocialInsuranceNumber = new IdentificationType(867670006, "Social Insurance Number");
-        public readonly IdentificationType PersonalHealthNumber = new IdentificationType(867670001, "Personal Health Number");
-        public readonly IdentificationType BirthCertificate = new IdentificationType(867670008,  "Birth Certificate");
-        public readonly IdentificationType CorrectionsId = new IdentificationType(867670009, "Corrections ID");
-        public readonly IdentificationType NativeStatusCard = new IdentificationType(867670011,  "Native Status Card");
-        public readonly IdentificationType Passport = new IdentificationType(867670002,  "Passport");
-        public readonly IdentificationType WorkSafeBCCCN = new IdentificationType(867670015, "WorkSafeBC CCN");
-        public readonly IdentificationType BCID = new IdentificationType(867670003, "BCID");
-        public readonly IdentificationType BCHydroBP = new IdentificationType(867670004, "BC Hydro BP");      
-        public readonly IdentificationType Other = new IdentificationType(867670012,  "Other");
-        public readonly IdentificationType OutOfBCDriverLicense = new IdentificationType(867670005, "OOP Driver's License");
+        public static IdentificationType BCDriverLicense = new IdentificationType(867670000, "BC Driver's License");
+        public static IdentificationType SocialInsuranceNumber = new IdentificationType(867670006, "Social Insurance Number");
+        public static IdentificationType PersonalHealthNumber = new IdentificationType(867670001, "Personal Health Number");
+        public static IdentificationType BirthCertificate = new IdentificationType(867670008,  "Birth Certificate");
+        public static IdentificationType CorrectionsId = new IdentificationType(867670009, "Corrections ID");
+        public static IdentificationType NativeStatusCard = new IdentificationType(867670011,  "Native Status Card");
+        public static IdentificationType Passport = new IdentificationType(867670002,  "Passport");
+        public static IdentificationType WorkSafeBCCCN = new IdentificationType(867670015, "WorkSafeBC CCN");
+        public static IdentificationType BCID = new IdentificationType(867670003, "BCID");
+        public static IdentificationType BCHydroBP = new IdentificationType(867670004, "BC Hydro BP");      
+        public static IdentificationType Other = new IdentificationType(867670012,  "Other");
+        public static IdentificationType OutOfBCDriverLicense = new IdentificationType(867670005, "OOP Driver's License");
 
 
         protected IdentificationType(int value, string name) : base(value, name)

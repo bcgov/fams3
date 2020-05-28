@@ -46,7 +46,7 @@ namespace DynamicsAdapter.Web.Mapping
 
     public class IDType
     {
-        public static IDictionary<int, PersonalIdentifierType> IDTypeDictionary = new Dictionary<int, PersonalIdentifierType>
+        internal static IDictionary<int, PersonalIdentifierType> IDTypeDictionary = new Dictionary<int, PersonalIdentifierType>
         {
             { IdentificationType.BCDriverLicense.Value, PersonalIdentifierType.BCDriverLicense },
             { IdentificationType.SocialInsuranceNumber.Value, PersonalIdentifierType.SocialInsuranceNumber },
@@ -129,7 +129,7 @@ namespace DynamicsAdapter.Web.Mapping
 
     public class AddressType
     {
-        public static  IDictionary<string, LocationType> AddressTypeDictionary = new Dictionary<string, LocationType>
+        internal static  IDictionary<string, LocationType> AddressTypeDictionary = new Dictionary<string, LocationType>
         {
             { "mailing", LocationType.Mailing },
             { "residence", LocationType.Residence },

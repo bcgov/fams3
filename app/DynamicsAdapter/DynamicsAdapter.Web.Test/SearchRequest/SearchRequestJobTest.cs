@@ -6,8 +6,6 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using Quartz;
-using Serilog;
-using Serilog.Core;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -23,6 +21,8 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
         private Guid _validSearchApiRequestId;
         private Guid _validSearchRequestId;
         private Guid _exceptionSearchRequestId;
+        private Guid _searchAsyncExceptionSearchRequestId;
+        private Guid _emptySearchApiRequestId;
         private SearchRequestJob _sut;
         private Mock<ILogger<SearchRequestJob>> _loggerMock = new Mock<ILogger<SearchRequestJob>>();
         private Mock<IMapper> _mapperMock = new Mock<IMapper>();
@@ -34,6 +34,7 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
             _validSearchApiRequestId = Guid.NewGuid();
             _validSearchRequestId = Guid.NewGuid();
             _exceptionSearchRequestId = Guid.NewGuid();
+            _emptySearchApiRequestId = Guid.NewGuid();
 
             _fakeSearchApiRequests = new List<SSG_SearchApiRequest>()
             {
@@ -101,7 +102,7 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
             {
                 new SSG_SearchApiRequest()
                 {
-                    SearchApiRequestId=_validSearchApiRequestId,
+                    SearchApiRequestId=_emptySearchApiRequestId,
                     SearchRequestId=Guid.Empty,
                     SearchRequest = new SSG_SearchRequest(){FileId="111111"}
                 }
@@ -119,11 +120,11 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
             _searchApiClientMock
               .Verify(x => x.SearchAsync(
                   It.IsAny<PersonSearchRequest>(),
-                  It.IsAny<string>(),
+                  It.Is<string>(m => m == _emptySearchApiRequestId.ToString()),
                   It.IsAny<CancellationToken>()),
                   Times.Never);
 
-            _searchApiRequestServiceMock.Verify(x => x.MarkInProgress(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never);
+            _searchApiRequestServiceMock.Verify(x => x.MarkInProgress(It.Is<Guid>(m => m == _emptySearchApiRequestId), It.IsAny<CancellationToken>()), Times.Never);
         }
 
         [Test]
@@ -133,7 +134,7 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
             {
                 new SSG_SearchApiRequest()
                 {
-                    SearchApiRequestId=_exceptionSearchRequestId,
+                    SearchApiRequestId=_searchAsyncExceptionSearchRequestId,
                     SearchRequestId=_validSearchRequestId,
                     SearchRequest = new SSG_SearchRequest(){FileId="111111"}
                 }
@@ -144,7 +145,7 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
             _searchApiClientMock.Setup(
                 x => x.SearchAsync(
                     It.IsAny<PersonSearchRequest>(),
-                    It.Is<string>(m => m == _exceptionSearchRequestId.ToString()),
+                    It.Is<string>(m => m == _searchAsyncExceptionSearchRequestId.ToString()),
                     It.IsAny<CancellationToken>()))
                 .Throws(new Exception("search Async throws random exception"));
 
@@ -159,11 +160,11 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
             _searchApiClientMock
               .Verify(x => x.SearchAsync(
                   It.IsAny<PersonSearchRequest>(),
-                  It.IsAny<string>(),
+                  It.Is<string>(m => m == _searchAsyncExceptionSearchRequestId.ToString()),
                   It.IsAny<CancellationToken>()),
                   Times.Once);
 
-            _searchApiRequestServiceMock.Verify(x => x.MarkInProgress(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never);
+            _searchApiRequestServiceMock.Verify(x => x.MarkInProgress(It.Is<Guid>(m => m == _searchAsyncExceptionSearchRequestId), It.IsAny<CancellationToken>()), Times.Never);
 
             _loggerMock.VerifyLog(LogLevel.Error, $"search Async throws random exception", Times.Once());
         }
@@ -189,7 +190,7 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
                      It.IsAny<string>(),
                      It.IsAny<CancellationToken>()))
                  .Returns(Task.FromResult<PersonSearchResponse>(new PersonSearchResponse() { Id = _validSearchRequestId }));
-           
+
             _searchApiRequestServiceMock.Setup(
                     x => x.MarkInProgress(
                         It.Is<Guid>(x => x == _exceptionSearchRequestId),
@@ -207,11 +208,11 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
             _searchApiClientMock
               .Verify(x => x.SearchAsync(
                   It.IsAny<PersonSearchRequest>(),
-                  It.IsAny<string>(),
+                  It.Is<string>(m => m == _exceptionSearchRequestId.ToString()),
                   It.IsAny<CancellationToken>()),
                   Times.Once);
 
-            _searchApiRequestServiceMock.Verify(x => x.MarkInProgress(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Once);
+            _searchApiRequestServiceMock.Verify(x => x.MarkInProgress(It.Is<Guid>(m=>m== _exceptionSearchRequestId), It.IsAny<CancellationToken>()), Times.Once);
 
             _loggerMock.VerifyLog(LogLevel.Error, $"mark in progress throws random exception", Times.Once());
         }

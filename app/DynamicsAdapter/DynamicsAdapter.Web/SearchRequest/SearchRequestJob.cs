@@ -53,7 +53,7 @@ namespace DynamicsAdapter.Web.SearchRequest
                 {
                     if (ssgSearchRequest.SearchRequestId != Guid.Empty)
                     {                      
-                        using (LogContext.PushProperty("FileId", " - FileId: "+ssgSearchRequest.SearchRequest?.FileId ))
+                        using (LogContext.PushProperty("FileId", ssgSearchRequest.SearchRequest?.FileId ))
                         {
                             _logger.LogDebug(
                                $"Attempting to post person search for request {ssgSearchRequest.SearchApiRequestId}");

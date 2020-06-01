@@ -38,9 +38,12 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         public IEnumerable<Vehicle> Vehicles { get; set; }
         public IEnumerable<OtherAsset> OtherAssets { get; set; }
         public IEnumerable<CompensationClaim> CompensationClaims { get; set; }
-
         public IEnumerable<InsuranceClaim> InsuranceClaims { get; set; }
-
         public string Notes { get; set; }
+    }
+
+    public class FoundPerson : Person
+    {
+        public PersonalIdentifier SourcePersonalIdentifier { get; set; }
     }
 }

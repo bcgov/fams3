@@ -88,9 +88,9 @@ namespace SearchAdapter.Sample.SearchRequest
                 SearchRequestId = personSearchOrdered.SearchRequestId,
                 FileId = personSearchOrdered.FileId,
                 TimeStamp = DateTime.Now,
-                MatchedPersons = new List<Person>()
+                MatchedPersons = new List<FoundPerson>()
                 {
-                    new Person(){
+                    new FoundPerson(){
                         FirstName = personSearchOrdered.Person.FirstName,
                         LastName = personSearchOrdered.Person.LastName,
                         DateOfBirth = personSearchOrdered.Person.DateOfBirth,
@@ -108,6 +108,12 @@ namespace SearchAdapter.Sample.SearchRequest
                         HairColour = "Blonde",
                         WearGlasses = "No",
                         Weight= "200",
+                        SourcePersonalIdentifier = new PersonalIdentifier(){
+                                Type = PersonalIdentifierType.BCDriverLicense,
+                                TypeCode = "BCDL",
+                                IssuedBy = "BC",
+                                Value = new Random().Next(0, 50000).ToString()
+                        },
                         Identifiers = new List<PersonalIdentifier>()
                         {
 

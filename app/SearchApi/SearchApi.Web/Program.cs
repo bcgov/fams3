@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Serilog;
+using Serilog.Configuration;
+using Serilog.Core;
 using Serilog.Events;
 
 namespace SearchApi.Web
@@ -42,6 +44,7 @@ namespace SearchApi.Web
                 {
                     loggerConfiguration
                         .ReadFrom.Configuration(hostingContext.Configuration)
+                        .Enrich.WithPropertyFileId("FileId")
                         .Enrich.FromLogContext();
 
                     string splunkCollectorUrl = hostingContext.Configuration["SPLUNK_COLLECTOR_URL"];
@@ -72,5 +75,36 @@ namespace SearchApi.Web
                 {
                     webBuilder.UseStartup<Startup>();
                 });
+    }
+
+    public static class EnrichersExtensions
+    {
+        public static LoggerConfiguration WithPropertyFileId(this LoggerEnrichmentConfiguration enrichmentConfiguration, string propertyName)
+        {
+            return enrichmentConfiguration.With(new FileIdEnricher(propertyName));
+        }
+    }
+
+    public class FileIdEnricher : ILogEventEnricher
+    {
+        private readonly string innerPropertyName;
+
+        public FileIdEnricher(string innerPropertyName)
+        {
+            this.innerPropertyName = innerPropertyName;
+        }
+
+        public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
+        {
+            LogEventPropertyValue eventPropertyValue;
+            if (logEvent.Properties.TryGetValue(innerPropertyName, out eventPropertyValue))
+            {
+                var value = (eventPropertyValue as ScalarValue)?.Value as string;
+                if (!String.IsNullOrEmpty(value))
+                {
+                    logEvent.AddOrUpdateProperty(new LogEventProperty(innerPropertyName, new ScalarValue("FileId:" + value)));
+                }
+            }
+        }
     }
 }

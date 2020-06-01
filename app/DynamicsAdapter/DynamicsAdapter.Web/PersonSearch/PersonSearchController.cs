@@ -25,7 +25,7 @@ namespace DynamicsAdapter.Web.PersonSearch
         private readonly IMapper _mapper;
 
         public PersonSearchController(ISearchResultService searchResultService,
-            ISearchApiRequestService searchApiRequestService, ILogger<PersonSearchController> logger,  IMapper mapper)
+            ISearchApiRequestService searchApiRequestService, ILogger<PersonSearchController> logger, IMapper mapper)
         {
             _searchResultService = searchResultService;
             _searchApiRequestService = searchApiRequestService;
@@ -46,7 +46,8 @@ namespace DynamicsAdapter.Web.PersonSearch
             Guard.NotNull(personCompletedEvent, nameof(personCompletedEvent));
             if (personCompletedEvent != null)
             {
-                using (LogContext.PushProperty("FileId", " - FileId: " + personCompletedEvent?.FileId))
+                using (LogContext.PushProperty("FileId", personCompletedEvent?.FileId))
+                using (LogContext.PushProperty("DataPartner", personCompletedEvent?.ProviderProfile.Name))
                 {
                     _logger.LogInformation("Received Person search completed event with SearchRequestId is " + id);
                     var cts = new CancellationTokenSource();
@@ -95,7 +96,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             }
         }
 
-          
+
         [HttpPost]
         [Consumes("application/json")]
         [Produces("application/json")]
@@ -105,7 +106,8 @@ namespace DynamicsAdapter.Web.PersonSearch
         [OpenApiTag("Person Search Events API")]
         public async Task<IActionResult> Accepted(Guid id, [FromBody]PersonSearchAccepted personAcceptedEvent)
         {
-            using (LogContext.PushProperty("FileId", " - FileId: " + personAcceptedEvent?.FileId))
+            using (LogContext.PushProperty("FileId", personAcceptedEvent?.FileId))
+            using (LogContext.PushProperty("DataPartner", personAcceptedEvent?.ProviderProfile.Name))
             {
                 _logger.LogInformation($"Received new event for SearchApiRequest [{id}]");
 
@@ -137,7 +139,8 @@ namespace DynamicsAdapter.Web.PersonSearch
         [OpenApiTag("Person Search Events API")]
         public async Task<IActionResult> Failed(Guid id, [FromBody]PersonSearchFailed personFailedEvent)
         {
-            using (LogContext.PushProperty("FileId", " - FileId: " + personFailedEvent?.FileId))
+            using (LogContext.PushProperty("FileId", personFailedEvent?.FileId))
+            using (LogContext.PushProperty("DataPartner", personFailedEvent?.ProviderProfile.Name))
             {
                 _logger.LogInformation($"Received new event for SearchApiRequest [{id}]");
 
@@ -170,7 +173,7 @@ namespace DynamicsAdapter.Web.PersonSearch
         [OpenApiTag("Person Search Events API")]
         public async Task<IActionResult> Finalized(Guid id, [FromBody]PersonSearchFinalized personFinalizedEvent)
         {
-            using (LogContext.PushProperty("FileId", " - FileId: " + personFinalizedEvent?.FileId))
+            using (LogContext.PushProperty("FileId", personFinalizedEvent?.FileId))
             {
                 _logger.LogInformation($"Received new event for SearchApiRequest [{id}]");
 
@@ -201,7 +204,8 @@ namespace DynamicsAdapter.Web.PersonSearch
         [OpenApiTag("Person Search Events API")]
         public async Task<IActionResult> Rejected(Guid id, [FromBody]PersonSearchRejected personRejectedEvent)
         {
-            using (LogContext.PushProperty("FileId", " - FileId: " + personRejectedEvent?.FileId))
+            using (LogContext.PushProperty("FileId", personRejectedEvent?.FileId))
+            using (LogContext.PushProperty("DataPartner", personRejectedEvent?.ProviderProfile.Name))
             {
                 _logger.LogInformation($"Received new event for SearchApiRequest [{id}]");
 
@@ -226,6 +230,6 @@ namespace DynamicsAdapter.Web.PersonSearch
             }
         }
 
- 
+
     }
 }

@@ -1,0 +1,44 @@
+<form theme="dark">
+  <label>FAM3 Ops Dashboard</label>
+  <fieldset submitButton="false">
+    <input type="dropdown" token="ocEnv" searchWhenChanged="true">
+      <label>Environment</label>
+      <choice value="dev">Dev</choice>
+      <choice value="test">Test</choice>
+      <choice value="prod">Prod</choice>
+      <default>dev</default>
+      <initialValue>dev</initialValue>
+    </input>
+    <input type="text" token="FileID" searchWhenChanged="true">
+      <label>File ID</label>
+      <initialValue>000773</initialValue>
+    </input>
+    <input type="time" token="selectedTimeframe" searchWhenChanged="true">
+      <label>Select a timeframe:</label>
+      <default>
+        <earliest>-60m@m</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <table>
+        <search>
+          <query>index=$form.ocEnv$_fams "FileId: $form.FileID$" | table _time sourcetype DataPartner MessageTemplate | sort _time | rename sourcetype AS Application, DataPartner AS "Data Provider", MessageTemplate AS Message</query>
+          <earliest>$selectedTimeframe.earliest$</earliest>
+          <latest>$selectedTimeframe.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">20</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+</form>

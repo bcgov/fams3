@@ -4,6 +4,6 @@ namespace BcGov.Fams3.SearchApi.Contracts.PersonSearch
 {
    public  interface PersonSearchCompleted  : PersonSearchAdapterEvent
     {
-        IEnumerable<Person.Person> MatchedPersons { get; }
+        IEnumerable<Person.PersonFound> MatchedPersons { get; }
     }
 }

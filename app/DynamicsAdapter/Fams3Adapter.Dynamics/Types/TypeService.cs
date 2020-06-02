@@ -15,7 +15,8 @@ namespace Fams3Adapter.Dynamics.Types
             "ssg_personnamecategorycodes",
             "ssg_nullableboolean",
             "ssg_relationshipcategorycodes",
-            "ssg_gendertypes"
+            "ssg_gendertypes",
+            "ssg_employmentrecordtypes"
         };
 
        

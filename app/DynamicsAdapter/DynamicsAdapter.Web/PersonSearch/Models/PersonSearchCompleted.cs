@@ -4,7 +4,7 @@ namespace DynamicsAdapter.Web.PersonSearch.Models
 {
     public class PersonSearchCompleted : PersonSearchStatus
     {
-        public IEnumerable<Person> MatchedPersons { get; set; }
+        public IEnumerable<PersonFoundResult> MatchedPersons { get; set; }
 
     }
 }

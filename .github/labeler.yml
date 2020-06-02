@@ -9,3 +9,7 @@
 # Add 'DevOps' to changes in openshift folder
 'DevOps':
   - openshift/**/*
+
+  # Add 'Splunk' to changes in splunk folder
+'Splunk':
+  - splunk/**/*

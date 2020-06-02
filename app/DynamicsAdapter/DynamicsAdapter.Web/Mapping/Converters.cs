@@ -279,4 +279,15 @@ namespace DynamicsAdapter.Web.Mapping
             return strbuilder.ToString();
         }
     }
+
+    public class IncomeAssistanceConvertor : IValueConverter<bool?, int>
+    {
+        public int Convert(bool? sourceMember, ResolutionContext context)
+        {
+            if (sourceMember == null || sourceMember == false)
+                return EmploymentRecordType.Employment.Value;
+            else
+                return EmploymentRecordType.IncomeAssistance.Value;
+        }
+    }
 }

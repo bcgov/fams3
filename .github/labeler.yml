@@ -11,5 +11,5 @@
   - openshift/**/*
 
   # Add 'Splunk' to changes in splunk folder
-'DevOps':
+'Splunk':
   - splunk/**/*

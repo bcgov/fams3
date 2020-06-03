@@ -119,9 +119,9 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 {
                     Name = "TEST PROVIDER"
                 },
-                MatchedPersons = new List<Person>()
+                MatchedPersons = new List<PersonFound>()
                 {
-                    new Person(){
+                    new PersonFound(){
                         DateOfBirth = DateTime.Now,
                         FirstName = "TEST1",
                         LastName = "TEST2",

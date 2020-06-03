@@ -367,9 +367,9 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 {
                     Name = "completedProfile"
                 },
-                MatchedPersons = new List<Person>()
+                MatchedPersons = new List<PersonFound>()
                 {
-                    new Person(){
+                    new PersonFound(){
                         FirstName = "firstName",
                         LastName = "lastName",
                         DateOfBirth = new DateTime(2019, 3, 5),
@@ -408,7 +408,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                         CompensationClaims=null,
                         InsuranceClaims=null
                     },
-                    new Person(){
+                    new PersonFound(){
                         FirstName = "firstName",
                         LastName = "lastName",
                         DateOfBirth = new DateTime(2019, 3, 5),
@@ -461,7 +461,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 {
                     Name = "completedProfile"
                 },
-                MatchedPersons = new List<Person>()
+                MatchedPersons = new List<PersonFound>()
                 { }
             };
             SSG_SearchApiEvent searchEvent = _mapper.Map<SSG_SearchApiEvent>(completed);
@@ -483,9 +483,9 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 {
                     Name = "completedProfile"
                 },
-                MatchedPersons = new List<Person>()
+                MatchedPersons = new List<PersonFound>()
                 {
-                    new Person(){
+                    new PersonFound(){
                         FirstName = "firstName",
                         LastName = "lastName",
                         DateOfBirth = new DateTime(2019, 3, 5),

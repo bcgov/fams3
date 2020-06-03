@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace DynamicsAdapter.Web.PersonSearch.Models
 {
-    public class PersonFoundResult : Person
+    public class PersonFound : Person
     {
         public PersonalIdentifier SourcePersonalIdentifier { get; set; }
     }

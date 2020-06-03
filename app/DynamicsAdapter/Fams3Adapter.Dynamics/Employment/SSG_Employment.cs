@@ -37,7 +37,7 @@ namespace Fams3Adapter.Dynamics.Employment
         public string IncomeAssistanceStatus { get; set; }
 
         [JsonProperty("ssg_recordtype")]
-        public int IncomeAssistance { get; set; } = EmploymentRecordType.Employment.Value;
+        public int EmploymentType { get; set; } = EmploymentRecordType.Employment.Value;
 
         [JsonProperty("ssg_employmentowner")]
         public string BusinessOwner { get; set; }

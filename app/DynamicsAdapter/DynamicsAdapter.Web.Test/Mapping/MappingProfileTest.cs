@@ -144,11 +144,11 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual("testCity", ssg_empl.City);
             Assert.AreEqual("canada", ssg_empl.CountryText);
             Assert.AreEqual("p3p3p3", ssg_empl.PostalCode);
+            Assert.AreEqual(EmploymentRecordType.Employment.Value, ssg_empl.EmploymentType);
             Assert.AreEqual(1, ssg_empl.StatusCode);
             Assert.AreEqual(0, ssg_empl.StateCode);
             Assert.AreEqual("Start Date", ssg_empl.Date1Label);
             Assert.AreEqual("End Date", ssg_empl.Date2Label);
-            Assert.AreEqual(false, ssg_empl.IncomeAssistance);
             Assert.AreEqual(new DateTime(2019, 9, 1), ssg_empl.Date1);
             Assert.AreEqual(new DateTime(2020, 9, 1), ssg_empl.Date2);
         }
@@ -159,7 +159,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             var employment = new Employment()
             {
                 Employer = null,
-                IncomeAssistance = false,
+                IncomeAssistance = true,
                 EmploymentConfirmed = true,
                 IncomeAssistanceStatus = "Status",
                 Occupation = "Occupation",
@@ -176,7 +176,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(string.Empty, ssg_empl.BusinessName);
             Assert.AreEqual(string.Empty, ssg_empl.BusinessOwner);
             Assert.AreEqual(true, ssg_empl.EmploymentConfirmed);
-            Assert.AreEqual(false, ssg_empl.IncomeAssistance);
+            Assert.AreEqual(EmploymentRecordType.IncomeAssistance.Value, ssg_empl.EmploymentType);
             Assert.AreEqual("Occupation", ssg_empl.Occupation);
             Assert.AreEqual("Website", ssg_empl.Website);
             Assert.AreEqual("Status", ssg_empl.IncomeAssistanceStatus);
@@ -972,6 +972,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual("AB", employmentEntity.CountrySubdivisionText);
             Assert.AreEqual("VR4 123", employmentEntity.PostalCode);
             Assert.AreEqual(null, employmentEntity.Notes);
+            Assert.AreEqual(EmploymentRecordType.Employment.Value, employmentEntity.EmploymentType);
             Assert.AreEqual(1, employmentEntity.StatusCode);
             Assert.AreEqual(0, employmentEntity.StateCode);
 

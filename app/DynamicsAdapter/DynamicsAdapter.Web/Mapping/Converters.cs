@@ -8,13 +8,6 @@ using System.Text;
 
 namespace DynamicsAdapter.Web.Mapping
 {
-    public class InformationSourceConverter : IValueConverter<int?, string>
-    {
-        public string Convert(int? sourceMember, ResolutionContext context)
-        {
-            return Enumeration.GetAll<InformationSourceType>().FirstOrDefault(m => m.Value == sourceMember)?.Name;
-        }
-    }
 
     public class IDType
     {

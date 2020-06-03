@@ -43,55 +43,48 @@ namespace DynamicsAdapter.Web.PersonSearch
         [OpenApiTag("Person Search Events API")]
         public async Task<IActionResult> Completed(Guid id, [FromBody]PersonSearchCompleted personCompletedEvent)
         {
-            Guard.NotNull(personCompletedEvent, nameof(personCompletedEvent));
-            if (personCompletedEvent != null)
+            try
             {
+                Guard.NotNull(personCompletedEvent, nameof(personCompletedEvent));
                 using (LogContext.PushProperty("FileId", personCompletedEvent?.FileId))
                 using (LogContext.PushProperty("DataPartner", personCompletedEvent?.ProviderProfile.Name))
                 {
                     _logger.LogInformation("Received Person search completed event with SearchRequestId is " + id);
                     var cts = new CancellationTokenSource();
 
-                    try
+                    //update completed event
+                    var searchApiEvent = _mapper.Map<SSG_SearchApiEvent>(personCompletedEvent);
+                    _logger.LogDebug($"Attempting to create a new event for SearchApiRequest [{id}]");
+                    var result = await _searchApiRequestService.AddEventAsync(id, searchApiEvent, cts.Token);
+                    _logger.LogInformation($"Successfully created completed event for SearchApiRequest [{id}]");
+
+                    //upload search result to dynamic search api
+                    var searchRequestId = await _searchApiRequestService.GetLinkedSearchRequestIdAsync(id, cts.Token);
+                    SSG_SearchRequest searchRequest = new SSG_SearchRequest()
                     {
-                        //update completed event
-                        var searchApiEvent = _mapper.Map<SSG_SearchApiEvent>(personCompletedEvent);
-                        _logger.LogDebug($"Attempting to create a new event for SearchApiRequest [{id}]");
-                        var result = await _searchApiRequestService.AddEventAsync(id, searchApiEvent, cts.Token);
-                        _logger.LogInformation($"Successfully created completed event for SearchApiRequest [{id}]");
+                        SearchRequestId = searchRequestId
+                    };
 
-                        //upload search result to dynamic search api
-                        var searchRequestId = await _searchApiRequestService.GetLinkedSearchRequestIdAsync(id, cts.Token);
-                        SSG_SearchRequest searchRequest = new SSG_SearchRequest()
+                    if (personCompletedEvent?.MatchedPersons != null)
+                    {
+                        //try following code, but automapper throws exception.Cannot access a disposed object.Object name: 'IServiceProvider'.
+                        //Parallel.ForEach<Person>(personCompletedEvent.MatchedPersons, async p =>
+                        //{
+                        //    await _searchResultService.ProcessPersonFound(p, personCompletedEvent.ProviderProfile, searchRequest, cts.Token);
+                        //});
+                        foreach (Person p in personCompletedEvent.MatchedPersons)
                         {
-                            SearchRequestId = searchRequestId
-                        };
-
-                        if (personCompletedEvent?.MatchedPersons != null)
-                        {
-                            //try following code, but automapper throws exception.Cannot access a disposed object.Object name: 'IServiceProvider'.
-                            //Parallel.ForEach<Person>(personCompletedEvent.MatchedPersons, async p =>
-                            //{
-                            //    await _searchResultService.ProcessPersonFound(p, personCompletedEvent.ProviderProfile, searchRequest, cts.Token);
-                            //});
-                            foreach (Person p in personCompletedEvent.MatchedPersons)
-                            {
-                                await _searchResultService.ProcessPersonFound(p, personCompletedEvent.ProviderProfile, searchRequest, cts.Token);
-                            }
+                            await _searchResultService.ProcessPersonFound(p, personCompletedEvent.ProviderProfile, searchRequest, cts.Token);
                         }
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex.Message);
-                        return BadRequest();
-                    }
+                    }                   
 
                     return Ok();
                 }
 
             }
-            else
+            catch(Exception ex)
             {
+                _logger.LogError(ex.Message);
                 return BadRequest();
             }
         }

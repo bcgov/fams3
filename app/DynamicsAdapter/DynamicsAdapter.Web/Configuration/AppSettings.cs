@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Quartz;
+﻿using System.Collections.Generic;
 
 namespace DynamicsAdapter.Web.Configuration
 {
@@ -41,5 +37,5 @@ namespace DynamicsAdapter.Web.Configuration
         public string URL { get; set; }
     }
 
-  
+
 }

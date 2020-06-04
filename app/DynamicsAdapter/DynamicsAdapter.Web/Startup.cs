@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
+using BcGov.Fams3.Redis.Configuration;
+using BcGov.Fams3.Redis.DependencyInjection;
 using DynamicsAdapter.Web.ApiGateway;
 using DynamicsAdapter.Web.Auth;
 using DynamicsAdapter.Web.Configuration;
@@ -70,7 +72,10 @@ namespace DynamicsAdapter.Web
             this.ConfigureScheduler(services);
             this.ConfigureAutoMapper(services);
 
+            services.AddCacheService(Configuration.GetSection(Keys.REDIS_SECTION_SETTING_KEY).Get<RedisConfiguration>());
+
             services.AddTransient<ISearchResultService, SearchResultService>();
+            services.AddTransient<ISearchRequestRegister, SearchRequestRegister>();
         }
 
         private AppSettings ConfigureAppSettings(IServiceCollection services)
@@ -138,7 +143,6 @@ namespace DynamicsAdapter.Web
             services.AddTransient<ITokenService, TokenService>();
             services.AddTransient<ISearchApiRequestService, SearchApiRequestService>();
             services.AddTransient<ISearchRequestService, SearchRequestService>();
-            services.AddTransient<ISearchRequestRegister, SearchRequestRegister>();
 
         }
         /// <summary>

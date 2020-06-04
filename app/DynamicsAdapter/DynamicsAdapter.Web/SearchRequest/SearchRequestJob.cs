@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using AutoMapper;
 using Serilog.Context;
+using Fams3Adapter.Dynamics.Identifier;
 
 namespace DynamicsAdapter.Web.SearchRequest
 {
@@ -25,17 +26,20 @@ namespace DynamicsAdapter.Web.SearchRequest
 
         private readonly IMapper _mapper;
 
+        private readonly ISearchRequestRegister _register;
 
         public SearchRequestJob(ISearchApiClient searchApiClient,
             ISearchApiRequestService searchApiRequestService,
             ILogger<SearchRequestJob> logger,
-            IMapper mapper)
+            IMapper mapper,
+            ISearchRequestRegister register)
         {
             _logger = logger;
             _searchApiRequestService = searchApiRequestService;
      
             _searchApiClient = searchApiClient;
             _mapper = mapper;
+            _register = register;
         }
 
         public async Task Execute(IJobExecutionContext context)
@@ -58,9 +62,13 @@ namespace DynamicsAdapter.Web.SearchRequest
                             _logger.LogDebug(
                                $"Attempting to post person search for request {ssgSearchRequest.SearchApiRequestId}");
 
+                            SSG_SearchApiRequest request = _register.FilterDuplicatedIdentifier(ssgSearchRequest);
+
+                            _register.RegisterSearchRequest(request);
+
                             var result = await _searchApiClient.SearchAsync(
-                                _mapper.Map<PersonSearchRequest>(ssgSearchRequest),
-                                $"{ssgSearchRequest.SearchApiRequestId}",
+                                _mapper.Map<PersonSearchRequest>(request),
+                                $"{request.SearchApiRequestId}",
                                 cts.Token);
 
                             _logger.LogInformation($"Successfully posted person search id:{result.Id}");

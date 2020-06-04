@@ -66,6 +66,32 @@ namespace SearchApi.Core.Test.DependencyInjection
 
         }
 
+        [Test]
+        public void should_register_service_bus_for_inbound()
+        {
+
+            services.AddProvider(configuration, (provider) => new SearchRequestConsumer(provider.GetRequiredService<IValidator<Person>>(),
+                                 provider.GetRequiredService<IOptions<ProviderProfileOptions>>(),
+                                 provider.GetRequiredService<ILogger<SearchRequestConsumer>>()),IServiceCollectionExtensions.ProviderQueueType.Inbound);
+
+            Assert.IsTrue(services.Any(x => x.ServiceType == typeof(IBusControl)));
+
+
+        }
+
+        [Test]
+        public void should_register_service_bus_for_passing_normal()
+        {
+
+            services.AddProvider(configuration, (provider) => new SearchRequestConsumer(provider.GetRequiredService<IValidator<Person>>(),
+                                 provider.GetRequiredService<IOptions<ProviderProfileOptions>>(),
+                                 provider.GetRequiredService<ILogger<SearchRequestConsumer>>()), IServiceCollectionExtensions.ProviderQueueType.Normal);
+
+            Assert.IsTrue(services.Any(x => x.ServiceType == typeof(IBusControl)));
+
+
+        }
+
 
     }
 }

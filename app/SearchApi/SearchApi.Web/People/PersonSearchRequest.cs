@@ -31,11 +31,11 @@ namespace SearchApi.Web.Controllers
             IEnumerable<DataProvider> dataProviders,
             string fileID)
         {
-            this.FirstName = firstName;
-            this.LastName = lastName;
-            this.DateOfBirth = dateOfBirth;
-            this.Identifiers = identifiers;
-            this.Phones = phones;
+            FirstName = firstName;
+            LastName = lastName;
+            DateOfBirth = dateOfBirth;
+            Identifiers = identifiers;
+            Phones = phones;
             this.Names = names;
             this.Addresses = addresses;
             this.Employments = employments;         

@@ -1,12 +1,12 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <Authors>PathFinder</Authors>
     <Company>BcGov</Company>
     <Description>A core Librairy for BCGOV SearchApi Related Products</Description>
-    <Version>1.0.31</Version>
-    <PackageVersion>1.0.31</PackageVersion>
+    <Version>1.0.32</Version>
+    <PackageVersion>1.0.32</PackageVersion>
   </PropertyGroup>
 
   <ItemGroup>

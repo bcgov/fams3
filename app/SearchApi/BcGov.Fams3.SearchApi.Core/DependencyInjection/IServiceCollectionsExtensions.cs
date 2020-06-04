@@ -29,7 +29,7 @@ namespace BcGov.Fams3.SearchApi.Core.DependencyInjection
         /// <param name="configuration"></param>
         /// <param name="function"></param>
 
-        public static void AddProvider(this IServiceCollection services, IConfiguration configuration, Func<IServiceProvider, IConsumer<PersonSearchOrdered>> function, ProviderQueueType type = ProviderQueueType.Inbound)
+        public static void AddProvider(this IServiceCollection services, IConfiguration configuration, Func<IServiceProvider, IConsumer<PersonSearchOrdered>> function, ProviderQueueType type = ProviderQueueType.Normal)
         {
 
             var rabbitMqSettings = configuration.GetSection(Keys.RABBITMQ_SECTION_SETTING_KEY).Get<RabbitMqConfiguration>();

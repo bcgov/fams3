@@ -129,62 +129,6 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
         }
 
         [Test]
-        public async Task duplicatedIdentifier_in_searchapiRequest_execute_only_unique_identifiers_successfully()
-        {
-            List<SSG_SearchApiRequest> duplicateIdentifierSearchRequests = new List<SSG_SearchApiRequest>()
-            {
-                new SSG_SearchApiRequest
-                {
-                    SearchApiRequestId=_validSearchApiRequestId,
-                    SearchRequestId=_validSearchRequestId,
-                    SearchRequest = new SSG_SearchRequest(){FileId="111111"},
-                    Identifiers=new List<SSG_Identifier>()
-                    {
-                        new SSG_Identifier()
-                        {
-                            Identification="1234567",
-                            IdentifierType=IdentificationType.BCDriverLicense.Value,
-                            IssuedBy="BC"
-                        },
-                        new SSG_Identifier()
-                        {
-                            Identification="1234567",
-                            IdentifierType=IdentificationType.BCDriverLicense.Value,
-                            IssuedBy="bc"
-                        },
-                        new SSG_Identifier()
-                        {
-                            Identification="1234567",
-                            IdentifierType=IdentificationType.BirthCertificate.Value,
-                            IssuedBy="bc"
-                        }
-                    }.ToArray()
-                }
-            };
-
-            _searchApiRequestServiceMock.Setup(x => x.GetAllReadyForSearchAsync(It.IsAny<CancellationToken>()))
-                .Returns(Task.FromResult<IEnumerable<SSG_SearchApiRequest>>(duplicateIdentifierSearchRequests));
-
-            _sut = new SearchRequestJob(
-                _searchApiClientMock.Object,
-                _searchApiRequestServiceMock.Object,
-                _loggerMock.Object,
-                _mapperMock.Object,
-                _searchApiReqestRegisterMock.Object);
-
-            await _sut.Execute(_jobContext.Object);
-            _searchApiClientMock
-              .Verify(x => x.SearchAsync(
-                  It.IsAny<PersonSearchRequest>(),
-                  It.Is<string>(m => m == _validSearchApiRequestId.ToString()),
-                  It.IsAny<CancellationToken>()),
-                  Times.Once);
-
-            _searchApiRequestServiceMock.Verify(x => x.MarkInProgress(It.Is<Guid>(m => m == _validSearchApiRequestId), It.IsAny<CancellationToken>()), Times.Once);
-            _loggerMock.VerifyLog(LogLevel.Debug, $"Attempting to post person search for request {_validSearchApiRequestId}", Times.Once());
-        }
-
-        [Test]
         public async Task searchapiRequest_not_have_SearchRequestId_execute_run_successfully()
         {
             List<SSG_SearchApiRequest> noSearchRequestIDRequests = new List<SSG_SearchApiRequest>()

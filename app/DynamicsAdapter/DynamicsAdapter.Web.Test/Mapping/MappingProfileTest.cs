@@ -73,10 +73,10 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 PersonGivenName = "firstName",
                 PersonSurname = "lastName",
                 PersonBirthDate = new DateTime(2002, 2, 2),
-                Identifiers = new SSG_Identifier[]
+                Identifiers = new SSG_Identifier_WithGuid[]
                 {
-                    new SSG_Identifier(){ },
-                    new SSG_Identifier(){ }
+                    new SSG_Identifier_WithGuid(){ },
+                    new SSG_Identifier_WithGuid(){ }
                 },
                 DataProviders = new SSG_SearchapiRequestDataProvider[]
                 {

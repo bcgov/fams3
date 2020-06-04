@@ -1,8 +1,10 @@
-﻿using DynamicsAdapter.Web.SearchRequest;
+﻿using BcGov.Fams3.Redis;
+using DynamicsAdapter.Web.SearchRequest;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Fams3Adapter.Dynamics.Types;
+using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -11,13 +13,13 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
 {
     public class SearchRequestRegisterTest
     {
-        SearchRequestRegister _sut;
+        private SearchRequestRegister _sut;
+        private readonly Mock<ICacheService> _cacheServiceMock = new Mock<ICacheService>();
 
         [SetUp]
         public void Init()
         {
-            _sut = new SearchRequestRegister();
-
+            _sut = new SearchRequestRegister(_cacheServiceMock.Object);
         }
 
         [Test]

@@ -67,6 +67,11 @@ namespace BcGov.Fams3.SearchApi.Core.DependencyInjection
                            {
                                e.Consumer(() => function.Invoke(provider));
                            });
+
+                            cfg.ReceiveEndpoint($"{nameof(PersonSearchOrdered)}_{providerConfiguration.Name}", e =>
+                            {
+                                e.Consumer(() => function.Invoke(provider));
+                            });
                         }
                         else
                         {

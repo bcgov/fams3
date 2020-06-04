@@ -1,14 +1,13 @@
+using AutoMapper;
+using Fams3Adapter.Dynamics.SearchApiRequest;
+using Microsoft.Extensions.Logging;
+using Quartz;
+using Serilog.Context;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using Microsoft.Extensions.Logging;
-using Quartz;
 using System.Threading.Tasks;
-using Fams3Adapter.Dynamics.SearchApiRequest;
-using AutoMapper;
-using Serilog.Context;
-using Fams3Adapter.Dynamics.Identifier;
 
 namespace DynamicsAdapter.Web.SearchRequest
 {
@@ -28,6 +27,7 @@ namespace DynamicsAdapter.Web.SearchRequest
 
         private readonly ISearchRequestRegister _register;
 
+
         public SearchRequestJob(ISearchApiClient searchApiClient,
             ISearchApiRequestService searchApiRequestService,
             ILogger<SearchRequestJob> logger,
@@ -36,7 +36,7 @@ namespace DynamicsAdapter.Web.SearchRequest
         {
             _logger = logger;
             _searchApiRequestService = searchApiRequestService;
-     
+
             _searchApiClient = searchApiClient;
             _mapper = mapper;
             _register = register;
@@ -44,27 +44,27 @@ namespace DynamicsAdapter.Web.SearchRequest
 
         public async Task Execute(IJobExecutionContext context)
         {
-                       
+
             _logger.LogInformation("Search Request started!");
 
             var cts = new CancellationTokenSource();
 
-            try 
+            try
             {
                 List<SSG_SearchApiRequest> requestList = await GetAllReadyForSearchAsync(cts.Token);
 
                 foreach (SSG_SearchApiRequest ssgSearchRequest in requestList)
                 {
                     if (ssgSearchRequest.SearchRequestId != Guid.Empty)
-                    {                      
-                        using (LogContext.PushProperty("FileId", ssgSearchRequest.SearchRequest?.FileId ))
+                    {
+                        using (LogContext.PushProperty("FileId", ssgSearchRequest.SearchRequest?.FileId))
                         {
                             _logger.LogDebug(
                                $"Attempting to post person search for request {ssgSearchRequest.SearchApiRequestId}");
 
                             SSG_SearchApiRequest request = _register.FilterDuplicatedIdentifier(ssgSearchRequest);
 
-                            _register.RegisterSearchRequest(request);
+                            await _register.RegisterSearchApiRequest(request);
 
                             var result = await _searchApiClient.SearchAsync(
                                 _mapper.Map<PersonSearchRequest>(request),
@@ -78,7 +78,7 @@ namespace DynamicsAdapter.Web.SearchRequest
                     }
                 }
             }
-            catch(Exception e) 
+            catch (Exception e)
             {
                 _logger.LogError(e, e.Message, null);
             }

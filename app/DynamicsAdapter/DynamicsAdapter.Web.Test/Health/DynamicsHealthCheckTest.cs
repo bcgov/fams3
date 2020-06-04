@@ -1,8 +1,4 @@
-﻿using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using DynamicsAdapter.Web.Health;
-using DynamicsAdapter.Web.SearchRequest;
+﻿using DynamicsAdapter.Web.Health;
 using DynamicsAdapter.Web.Test.FakeMessages;
 using Fams3Adapter.Dynamics.OptionSets;
 using Fams3Adapter.Dynamics.OptionSets.Models;
@@ -11,6 +7,9 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 
 namespace DynamicsAdapter.Web.Test.Health
@@ -27,9 +26,9 @@ namespace DynamicsAdapter.Web.Test.Health
 
             _statusReasonServiceMock.Setup(x => x.GetAllStatusCode(It.IsAny<string>(), CancellationToken.None))
                 .Returns(Task.FromResult(FakeHttpMessageResponse.GetFakeInvalidReason()));
-            _sut = new DynamicsHealthCheck(_statusReasonServiceMock.Object,_statusReasonServiceLogger.Object);
+            _sut = new DynamicsHealthCheck(_statusReasonServiceMock.Object, _statusReasonServiceLogger.Object);
 
-            var result = await _sut.CheckHealthAsync(new HealthCheckContext() ,CancellationToken.None);
+            var result = await _sut.CheckHealthAsync(new HealthCheckContext(), CancellationToken.None);
             Assert.AreEqual(HealthStatus.Unhealthy, result.Status);
         }
 
@@ -42,7 +41,7 @@ namespace DynamicsAdapter.Web.Test.Health
 
             var fakeIdentificationTypes = Enumeration.GetAll<IdentificationType>().ToList();
             fakeIdentificationTypes.RemoveAt(0);
-            
+
             _statusReasonServiceMock.Setup(x => x.GetAllOptions("ssgidentificationtypes", CancellationToken.None))
                 .Returns(Task.FromResult(fakeIdentificationTypes.AsEnumerable().Select(x => new GenericOption(x.Value, x.Name))));
             _sut = new DynamicsHealthCheck(_statusReasonServiceMock.Object, _statusReasonServiceLogger.Object);
@@ -84,6 +83,9 @@ namespace DynamicsAdapter.Web.Test.Health
 
             _statusReasonServiceMock.Setup(x => x.GetAllOptions("ssg_gendertypes", CancellationToken.None))
             .Returns(Task.FromResult(Enumeration.GetAll<GenderType>().Select(x => new GenericOption(x.Value, x.Name))));
+
+            _statusReasonServiceMock.Setup(x => x.GetAllOptions("ssg_employmentrecordtypes", CancellationToken.None))
+            .Returns(Task.FromResult(Enumeration.GetAll<EmploymentRecordType>().Select(x => new GenericOption(x.Value, x.Name))));
 
             _sut = new DynamicsHealthCheck(_statusReasonServiceMock.Object, _statusReasonServiceLogger.Object);
 

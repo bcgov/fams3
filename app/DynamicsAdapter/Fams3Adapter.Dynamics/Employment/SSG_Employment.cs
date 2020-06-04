@@ -1,6 +1,7 @@
 ﻿using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.SearchRequest;
+using Fams3Adapter.Dynamics.Types;
 using Newtonsoft.Json;
 using System;
 
@@ -35,8 +36,8 @@ namespace Fams3Adapter.Dynamics.Employment
         [JsonProperty("ssg_incomeassistancestatus")]
         public string IncomeAssistanceStatus { get; set; }
 
-        [JsonProperty("ssg_incomeassistance")]
-        public bool? IncomeAssistance { get; set; }
+        [JsonProperty("ssg_recordtype")]
+        public int EmploymentType { get; set; } = EmploymentRecordType.Employment.Value;
 
         [JsonProperty("ssg_employmentowner")]
         public string BusinessOwner { get; set; }

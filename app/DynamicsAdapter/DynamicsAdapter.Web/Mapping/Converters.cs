@@ -8,41 +8,6 @@ using System.Text;
 
 namespace DynamicsAdapter.Web.Mapping
 {
-    public class InformationSourceConverter : IValueConverter<int?, string>
-    {
-        public string Convert(int? sourceMember, ResolutionContext context)
-        {
-            return Enumeration.GetAll<InformationSourceType>().FirstOrDefault(m => m.Value == sourceMember)?.Name;
-        }
-    }
-
-
-    public class IssuedByTypeConverter : IValueConverter<string, int?>
-    {
-        public int? Convert(string sourceMember, ResolutionContext context)
-        {
-            InformationSourceType sourceType = Enumeration.GetAll<InformationSourceType>().FirstOrDefault(m => m.Name.Equals(sourceMember, StringComparison.OrdinalIgnoreCase));
-            return (sourceType == null) ? InformationSourceType.Other.Value : sourceType.Value;
-        }
-    }
-
-    public class SuppliedByIDConverter : IValueConverter<int?, string>
-    {
-        public string Convert(int? sourceMember, ResolutionContext context)
-        {
-            InformationSourceType sourceType = Enumeration.GetAll<InformationSourceType>().FirstOrDefault(m => m.Value == sourceMember);
-            return (sourceType == null) ? InformationSourceType.Other.Name : sourceType.Name;
-        }
-    }
-
-    public class SuppliedByValueConverter : IValueConverter<string, int?>
-    {
-        public int? Convert(string sourceMember, ResolutionContext context)
-        {
-            InformationSourceType sourceType = Enumeration.GetAll<InformationSourceType>().FirstOrDefault(m => m.Name.Equals(sourceMember, StringComparison.OrdinalIgnoreCase));
-            return (sourceType == null) ? InformationSourceType.Other.Value : sourceType.Value;
-        }
-    }
 
     public class IDType
     {
@@ -277,6 +242,17 @@ namespace DynamicsAdapter.Web.Mapping
                 i++;
             };
             return strbuilder.ToString();
+        }
+    }
+
+    public class IncomeAssistanceConvertor : IValueConverter<bool?, int>
+    {
+        public int Convert(bool? sourceMember, ResolutionContext context)
+        {
+            if (sourceMember == null || sourceMember == false)
+                return EmploymentRecordType.Employment.Value;
+            else
+                return EmploymentRecordType.IncomeAssistance.Value;
         }
     }
 }

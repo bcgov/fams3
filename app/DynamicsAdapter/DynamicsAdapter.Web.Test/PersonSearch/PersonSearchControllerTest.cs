@@ -256,10 +256,10 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         }
 
         [Test]
-        public void With_null_completed_event_should_throw_argument_null_()
+        public async Task With_null_completed_event_should_return_bad_request_()
         {
-             Assert.ThrowsAsync<ArgumentNullException>(async () =>  await _sut.Completed(_testGuid, null));
-          
+            var result = await _sut.Completed(_exceptionGuid, null);
+            Assert.IsInstanceOf(typeof(BadRequestResult), result);
         }
         [Test]
         public async Task With_valid_accepted_event_it_should_return_ok()

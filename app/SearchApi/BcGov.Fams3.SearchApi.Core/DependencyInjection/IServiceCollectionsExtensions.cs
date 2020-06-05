@@ -24,7 +24,7 @@ namespace BcGov.Fams3.SearchApi.Core.DependencyInjection
         /// <param name="configuration"></param>
         /// <param name="function"></param>
 
-        public static void AddProvider(this IServiceCollection services, IConfiguration configuration, Func<IServiceProvider, IConsumer<PersonSearchOrdered>> ordered, Func<IServiceProvider, IConsumer<PersonSearchRecieved>> recieved = null)
+        public static void AddProvider(this IServiceCollection services, IConfiguration configuration, Func<IServiceProvider, IConsumer<PersonSearchOrdered>> ordered, Func<IServiceProvider, IConsumer<PersonSearchReceived>> recieved = null)
         {
             if (ordered == null) throw new ArgumentNullException("Consumer for search ordered cannot be null");
             var rabbitMqSettings = configuration.GetSection(Keys.RABBITMQ_SECTION_SETTING_KEY).Get<RabbitMqConfiguration>();
@@ -65,7 +65,7 @@ namespace BcGov.Fams3.SearchApi.Core.DependencyInjection
                         }
                         else
                         {
-                            cfg.ReceiveEndpoint($"{nameof(PersonSearchRecieved)}_{providerConfiguration.Name}", e =>
+                            cfg.ReceiveEndpoint($"{nameof(PersonSearchReceived)}_{providerConfiguration.Name}", e =>
                             {
                                 e.Consumer(() => recieved.Invoke(provider));
                             });

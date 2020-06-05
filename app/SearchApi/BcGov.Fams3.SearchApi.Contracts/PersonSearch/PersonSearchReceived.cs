@@ -4,7 +4,7 @@ using System.Text;
 
 namespace BcGov.Fams3.SearchApi.Contracts.PersonSearch
 {
-   public interface PersonSearchRecieved : PersonSearchEvent
+   public interface PersonSearchReceived : PersonSearchEvent
     {
         Person.PersonFound Person { get; }
     }

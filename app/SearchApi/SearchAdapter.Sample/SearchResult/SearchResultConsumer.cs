@@ -15,7 +15,7 @@ namespace SearchAdapter.Sample.SearchResult
 
   
   
-    public class SearchResultConsumer : IConsumer<PersonSearchRecieved>
+    public class SearchResultConsumer : IConsumer<PersonSearchReceived>
     {
 
         private readonly ILogger<SearchResultConsumer> _logger;
@@ -31,7 +31,7 @@ namespace SearchAdapter.Sample.SearchResult
             _logger = logger;
         }
 
-        public async Task Consume(ConsumeContext<PersonSearchRecieved> context)
+        public async Task Consume(ConsumeContext<PersonSearchReceived> context)
         {
             _logger.LogInformation($"Successfully handling  search result [{context.Message.Person}]");
 
@@ -39,7 +39,7 @@ namespace SearchAdapter.Sample.SearchResult
 
             await context.Publish<PersonSearchCompleted>(BuildFakePersonSearchCompleted(context.Message));
         }
-        public PersonSearchCompleted BuildFakePersonSearchCompleted(PersonSearchRecieved personSearchOrdered)
+        public PersonSearchCompleted BuildFakePersonSearchCompleted(PersonSearchReceived personSearchOrdered)
         {
 
             return new PersonSearchCompletedSample()

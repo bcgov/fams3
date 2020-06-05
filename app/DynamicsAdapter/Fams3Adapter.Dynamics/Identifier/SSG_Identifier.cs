@@ -1,6 +1,7 @@
-using Newtonsoft.Json;
-using Fams3Adapter.Dynamics.SearchRequest;
 using Fams3Adapter.Dynamics.Person;
+using Fams3Adapter.Dynamics.SearchRequest;
+using Newtonsoft.Json;
+using System;
 
 namespace Fams3Adapter.Dynamics.Identifier
 {
@@ -33,6 +34,12 @@ namespace Fams3Adapter.Dynamics.Identifier
         [JsonProperty("ssg_informationsourcetext")]
         public int? InformationSource { get; set; }
 
-     }
+    }
+
+    public class SSG_Identifier_WithGuid : SSG_Identifier
+    {
+        [JsonProperty("ssg_identifierid")]
+        public Guid IdentifierId { get; set; }
+    }
 
 }

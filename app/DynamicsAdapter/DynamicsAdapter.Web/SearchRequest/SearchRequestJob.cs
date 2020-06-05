@@ -37,7 +37,6 @@ namespace DynamicsAdapter.Web.SearchRequest
         {
             _logger = logger;
             _searchApiRequestService = searchApiRequestService;
-
             _searchApiClient = searchApiClient;
             _mapper = mapper;
             _register = register;
@@ -65,16 +64,23 @@ namespace DynamicsAdapter.Web.SearchRequest
 
                             SSG_SearchApiRequest request = _register.FilterDuplicatedIdentifier(ssgSearchRequest);
 
-                            await _register.RegisterSearchApiRequest(request);
+                            bool registerSuccessfully = await _register.RegisterSearchApiRequest(request);
 
-                            var result = await _searchApiClient.SearchAsync(
-                                _mapper.Map<PersonSearchRequest>(request),
-                                $"{request.SearchApiRequestId}",
-                                cts.Token);
+                            if(registerSuccessfully)
+                            {
+                                var result = await _searchApiClient.SearchAsync(
+                                    _mapper.Map<PersonSearchRequest>(request),
+                                    $"{request.SearchApiRequestId}",
+                                    cts.Token);
 
-                            _logger.LogInformation($"Successfully posted person search id:{result.Id}");
+                                _logger.LogInformation($"Successfully posted person search id:{result.Id}");
 
-                            await MarkInProgress(ssgSearchRequest, cts.Token);
+                                await MarkInProgress(ssgSearchRequest, cts.Token);
+                            }
+                            else
+                            {
+                                throw new RegisterFailedException("Register SearchApiRequest to cache failed.");
+                            }
                         }
                     }
                 }

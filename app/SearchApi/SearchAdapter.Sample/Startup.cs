@@ -18,6 +18,7 @@ using SearchAdapter.Sample.SearchRequest;
 using BcGov.Fams3.SearchApi.Core.Adapters.Configuration;
 using BcGov.Fams3.SearchApi.Core.Configuration;
 using BcGov.Fams3.SearchApi.Core.DependencyInjection;
+using SearchAdapter.Sample.SearchResult;
 
 namespace SearchAdapter.Sample
 {
@@ -58,9 +59,23 @@ namespace SearchAdapter.Sample
 
             this.ConfigureOpenTracing(services);
 
-            services.AddProvider(Configuration, (provider) => new SearchRequestConsumer(provider.GetRequiredService<IValidator<Person>>(),
-                                  provider.GetRequiredService<IOptions<ProviderProfileOptions>>(),
-                                  provider.GetRequiredService<ILogger<SearchRequestConsumer>>()));
+            ProviderProfileOptions conf = Configuration.GetSection("ProviderProfile").Get<ProviderProfileOptions>();
+
+            if (conf.Name == "SAMPLE")
+            {
+
+                services.AddProvider(Configuration, (provider) => new SearchRequestConsumer(provider.GetRequiredService<IValidator<Person>>(),
+                                      provider.GetRequiredService<IOptions<ProviderProfileOptions>>(),
+                                      provider.GetRequiredService<ILogger<SearchRequestConsumer>>()));
+            }
+            else
+            {
+                services.AddProvider(Configuration, (provider) => new SearchRequestConsumer(provider.GetRequiredService<IValidator<Person>>(),
+                                         provider.GetRequiredService<IOptions<ProviderProfileOptions>>(),
+                                         provider.GetRequiredService<ILogger<SearchRequestConsumer>>()), (provider) => new SearchResultConsumer(
+                                        provider.GetRequiredService<IOptions<ProviderProfileOptions>>(),
+                                        provider.GetRequiredService<ILogger<SearchResultConsumer>>()));
+            }
         }
 
         private void ConfigureHealthChecks(IServiceCollection services)

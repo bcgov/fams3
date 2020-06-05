@@ -33,7 +33,9 @@ namespace SearchAdapter.Sample.Test
             public DateTime TimeStamp { get; set; }
             public string FileId { get; set; }
 
-            public IEnumerable<PersonFound> MatchedPersons { get; set; }
+            public string ReceivedPayload { get; set; }
+
+
         }
 
         [OneTimeSetUp]
@@ -55,17 +57,7 @@ namespace SearchAdapter.Sample.Test
                 SearchRequestId = validGuid,
                 TimeStamp = DateTime.Now,
                 FileId = "FileId",
-                MatchedPersons = new List<PersonFound>()
-                {
-                    new PersonFound()
-                    {
-
-
-                        FirstName = "firstName",
-                        LastName = "lastName",
-                        DateOfBirth = new DateTime(2001, 1, 1)
-                    }
-                }
+                ReceivedPayload = "{json string}"
             });
 
          

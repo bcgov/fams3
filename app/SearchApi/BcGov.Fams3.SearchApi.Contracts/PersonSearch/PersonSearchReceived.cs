@@ -6,6 +6,6 @@ namespace BcGov.Fams3.SearchApi.Contracts.PersonSearch
 {
    public interface PersonSearchReceived : PersonSearchEvent
     {
-        IEnumerable<Person.PersonFound> MatchedPersons { get; }
+        string ReceivedPayload { get; }
     }
 }

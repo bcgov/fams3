@@ -1,5 +1,6 @@
 ﻿using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.SearchApiRequest;
+using System;
 using System.Linq;
 
 namespace DynamicsAdapter.Web.SearchRequest
@@ -24,7 +25,7 @@ namespace DynamicsAdapter.Web.SearchRequest
 
         public bool RegisterSearchRequest(SSG_SearchApiRequest request)
         {
-            return true;
+            throw new NotImplementedException();
         }
     }
 }

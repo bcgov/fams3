@@ -8,6 +8,7 @@ using Moq;
 using NUnit.Framework;
 using SearchAdapter.Sample.SearchResult;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -30,8 +31,9 @@ namespace SearchAdapter.Sample.Test
         {
             public Guid SearchRequestId { get; set; }
             public DateTime TimeStamp { get; set; }
-            public PersonFound Person { get; set; }
             public string FileId { get; set; }
+
+            public IEnumerable<PersonFound> MatchedPersons { get; set; }
         }
 
         [OneTimeSetUp]
@@ -52,13 +54,18 @@ namespace SearchAdapter.Sample.Test
             {
                 SearchRequestId = validGuid,
                 TimeStamp = DateTime.Now,
-                Person = new PersonFound()
+                FileId = "FileId",
+                MatchedPersons = new List<PersonFound>()
                 {
-                    FirstName = "firstName",
-                    LastName = "lastName",
-                    DateOfBirth = new DateTime(2001, 1, 1)
-                },
-                FileId = "FileId"
+                    new PersonFound()
+                    {
+
+
+                        FirstName = "firstName",
+                        LastName = "lastName",
+                        DateOfBirth = new DateTime(2001, 1, 1)
+                    }
+                }
             });
 
          

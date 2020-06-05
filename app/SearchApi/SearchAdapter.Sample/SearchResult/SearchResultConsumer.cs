@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using SearchAdapter.Sample.SearchRequest;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Threading.Tasks;
 
@@ -35,27 +36,27 @@ namespace SearchAdapter.Sample.SearchResult
         {
             _logger.LogInformation($"Successfully handling  search result");
 
-            _logger.LogInformation($"Successfully handling  search result [{context.Message.Person}]");
+            _logger.LogInformation($"Successfully handling  search result [{context.Message.MatchedPersons.Count()}]");
 
             _logger.LogWarning("Sample Adapter, do not use in PRODUCTION.");
 
             await context.Publish<PersonSearchCompleted>(BuildFakePersonSearchCompleted(context.Message));
         }
-        public PersonSearchCompleted BuildFakePersonSearchCompleted(PersonSearchReceived personSearchOrdered)
+        public PersonSearchCompleted BuildFakePersonSearchCompleted(PersonSearchReceived personSearchReceived)
         {
 
             return new PersonSearchCompletedSample()
             {
                 ProviderProfile = _profile,
-                SearchRequestId = personSearchOrdered.SearchRequestId,
-                FileId = personSearchOrdered.FileId,
+                SearchRequestId = personSearchReceived.SearchRequestId,
+                FileId = personSearchReceived.FileId,
                 TimeStamp = DateTime.Now,
                 MatchedPersons = new List<PersonFound>()
                 {
                     new PersonFound(){
-                        FirstName = personSearchOrdered.Person.FirstName,
-                        LastName = personSearchOrdered.Person.LastName,
-                        DateOfBirth = personSearchOrdered.Person.DateOfBirth,
+                        FirstName = personSearchReceived.MatchedPersons.First().FirstName,
+                        LastName = personSearchReceived.MatchedPersons.First().LastName,
+                        DateOfBirth = personSearchReceived.MatchedPersons.First().DateOfBirth,
                         Incacerated = "N",
                         DateDeathConfirmed = false,
                         DateOfDeath = null,

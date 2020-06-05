@@ -1,7 +1,10 @@
 ﻿using BcGov.Fams3.Redis;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.SearchApiRequest;
+<<<<<<< HEAD
 using Newtonsoft.Json;
+=======
+>>>>>>> master
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -36,9 +39,13 @@ namespace DynamicsAdapter.Web.SearchRequest
 
         public async Task<bool> RegisterSearchApiRequest(SSG_SearchApiRequest request)
         {
+<<<<<<< HEAD
             if (request == null) return false;
             await _cache.Save(request.SearchApiRequestId.ToString(), request);
             return true;
+=======
+            throw new NotImplementedException();
+>>>>>>> master
         }
 
         public async Task<SSG_SearchApiRequest> GetSearchApiRequest(Guid guid) 

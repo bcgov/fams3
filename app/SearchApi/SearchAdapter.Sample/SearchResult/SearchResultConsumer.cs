@@ -33,6 +33,8 @@ namespace SearchAdapter.Sample.SearchResult
 
         public async Task Consume(ConsumeContext<PersonSearchReceived> context)
         {
+            _logger.LogInformation($"Successfully handling  search result");
+
             _logger.LogInformation($"Successfully handling  search result [{context.Message.Person}]");
 
             _logger.LogWarning("Sample Adapter, do not use in PRODUCTION.");

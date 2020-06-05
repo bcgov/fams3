@@ -13,6 +13,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using BcGov.Fams3.SearchApi.Contracts.Person;
+using SearchAdapter.Sample.SearchResult;
+using System;
 
 namespace SearchApi.Core.Test.DependencyInjection
 {
@@ -72,7 +74,7 @@ namespace SearchApi.Core.Test.DependencyInjection
 
             services.AddProvider(configuration, (provider) => new SearchRequestConsumer(provider.GetRequiredService<IValidator<Person>>(),
                                  provider.GetRequiredService<IOptions<ProviderProfileOptions>>(),
-                                 provider.GetRequiredService<ILogger<SearchRequestConsumer>>()),IServiceCollectionExtensions.ProviderQueueType.Inbound);
+                                 provider.GetRequiredService<ILogger<SearchRequestConsumer>>()));
 
             Assert.IsTrue(services.Any(x => x.ServiceType == typeof(IBusControl)));
 
@@ -85,10 +87,34 @@ namespace SearchApi.Core.Test.DependencyInjection
 
             services.AddProvider(configuration, (provider) => new SearchRequestConsumer(provider.GetRequiredService<IValidator<Person>>(),
                                  provider.GetRequiredService<IOptions<ProviderProfileOptions>>(),
-                                 provider.GetRequiredService<ILogger<SearchRequestConsumer>>()), IServiceCollectionExtensions.ProviderQueueType.Normal);
+                                 provider.GetRequiredService<ILogger<SearchRequestConsumer>>()), (provider) => new SearchResultConsumer(
+                                 provider.GetRequiredService<IOptions<ProviderProfileOptions>>(),
+                                 provider.GetRequiredService<ILogger<SearchResultConsumer>>()));
 
             Assert.IsTrue(services.Any(x => x.ServiceType == typeof(IBusControl)));
+          
 
+
+        }
+
+        [Test]
+        public void should_throw_exception_if_null_ordered_consumer()
+        {
+
+            Assert.Throws<ArgumentNullException>( () => services.AddProvider(configuration, null, (provider) => new SearchResultConsumer(
+                                  provider.GetRequiredService<IOptions<ProviderProfileOptions>>(),
+                                  provider.GetRequiredService<ILogger<SearchResultConsumer>>())));
+        }
+
+        [Test]
+        public void should_register_one_consumer_if_null_recieved_consumer()
+        {
+
+         services.AddProvider(configuration, (provider) => new SearchRequestConsumer(provider.GetRequiredService<IValidator<Person>>(),
+                                 provider.GetRequiredService<IOptions<ProviderProfileOptions>>(),
+                                 provider.GetRequiredService<ILogger<SearchRequestConsumer>>()));
+
+            Assert.IsTrue(services.Any(x => x.ServiceType == typeof(IBusControl)));
 
         }
 

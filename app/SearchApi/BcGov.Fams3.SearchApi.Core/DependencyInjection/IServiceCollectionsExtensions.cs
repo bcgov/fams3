@@ -16,11 +16,6 @@ namespace BcGov.Fams3.SearchApi.Core.DependencyInjection
     public static class IServiceCollectionExtensions
     {
 
-        public enum ProviderQueueType
-        {
-            Normal,
-            Inbound
-        }
         /// <summary>
         /// Configure MassTransit Service Bus
         /// http://masstransit-project.com/
@@ -29,9 +24,9 @@ namespace BcGov.Fams3.SearchApi.Core.DependencyInjection
         /// <param name="configuration"></param>
         /// <param name="function"></param>
 
-        public static void AddProvider(this IServiceCollection services, IConfiguration configuration, Func<IServiceProvider, IConsumer<PersonSearchOrdered>> function, ProviderQueueType type = ProviderQueueType.Normal)
+        public static void AddProvider(this IServiceCollection services, IConfiguration configuration, Func<IServiceProvider, IConsumer<PersonSearchOrdered>> ordered, Func<IServiceProvider, IConsumer<PersonSearchRecieved>> recieved = null)
         {
-
+            if (ordered == null) throw new ArgumentNullException("Consumer for search ordered cannot be null");
             var rabbitMqSettings = configuration.GetSection(Keys.RABBITMQ_SECTION_SETTING_KEY).Get<RabbitMqConfiguration>();
             var providerConfiguration = configuration.GetSection(Keys.PROVIDER_SECTION_SETTING_KEY).Get<ProviderProfileOptions>();
 
@@ -61,23 +56,23 @@ namespace BcGov.Fams3.SearchApi.Core.DependencyInjection
                             hostConfigurator.Username(rabbitMqSettings.Username);
                             hostConfigurator.Password(rabbitMqSettings.Password);
                         });
-                        if (type == ProviderQueueType.Inbound)
+                        if (recieved == null)
                         {
-                            cfg.ReceiveEndpoint($"{nameof(PersonSearchOrdered)}_Inbound_{providerConfiguration.Name}", e =>
-                           {
-                               e.Consumer(() => function.Invoke(provider));
-                           });
-
                             cfg.ReceiveEndpoint($"{nameof(PersonSearchOrdered)}_{providerConfiguration.Name}", e =>
                             {
-                                e.Consumer(() => function.Invoke(provider));
+                                e.Consumer(() => ordered.Invoke(provider));
                             });
                         }
                         else
                         {
+                            cfg.ReceiveEndpoint($"{nameof(PersonSearchRecieved)}_{providerConfiguration.Name}", e =>
+                            {
+                                e.Consumer(() => recieved.Invoke(provider));
+                            });
+
                             cfg.ReceiveEndpoint($"{nameof(PersonSearchOrdered)}_{providerConfiguration.Name}", e =>
                             {
-                                e.Consumer(() => function.Invoke(provider));
+                                e.Consumer(() => ordered.Invoke(provider));
                             });
                         }
 

@@ -1,4 +1,5 @@
 using AutoMapper;
+using DynamicsAdapter.Web.Register;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using Microsoft.Extensions.Logging;
 using Quartz;

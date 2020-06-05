@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using DynamicsAdapter.Web.Register;
 using DynamicsAdapter.Web.SearchRequest;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.SearchApiRequest;

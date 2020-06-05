@@ -6,7 +6,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DynamicsAdapter.Web.SearchRequest
+namespace DynamicsAdapter.Web.Register
 {
     public interface ISearchRequestRegister
     {
@@ -43,8 +43,8 @@ namespace DynamicsAdapter.Web.SearchRequest
 
         public async Task<SSG_SearchApiRequest> GetSearchApiRequest(Guid guid) 
         {
-            if (guid == null) return null;
             string data = await _cache.Get(guid.ToString());
+            if (String.IsNullOrEmpty(data)) return null;
             return JsonConvert.DeserializeObject<SSG_SearchApiRequest>(data);
         }
 

@@ -38,7 +38,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         private PersonSearchFinalized _fakePersonFinalizedEvent;
         private SSG_SearchApiEvent _fakeSearchApiEvent;
         private IdentifierEntity _fakePersoneIdentifier;
-        private SSG_Address _fakePersonAddress;
+        private AddressEntity _fakePersonAddress;
         private SSG_PhoneNumber _fakePersonPhoneNumber;
         private SSG_Aliase _fakeName;
         private SSG_Person _fakePerson;
@@ -68,7 +68,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 }
             };
 
-            _fakePersonAddress = new SSG_Address
+            _fakePersonAddress = new AddressEntity
             {
                 SearchRequest = new SSG_SearchRequest
                 {
@@ -185,7 +185,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _mapper.Setup(m => m.Map<SSG_PhoneNumber>(It.IsAny<Phone>()))
                              .Returns(_fakePersonPhoneNumber);
 
-            _mapper.Setup(m => m.Map<SSG_Address>(It.IsAny<Address>()))
+            _mapper.Setup(m => m.Map<AddressEntity>(It.IsAny<Address>()))
                               .Returns(_fakePersonAddress);
 
             _mapper.Setup(m => m.Map<SSG_Aliase>(It.IsAny<Name>()))

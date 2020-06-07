@@ -19,7 +19,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
     public interface ISearchRequestService
     {
         Task<IdentifierEntity> CreateIdentifier(IdentifierEntity identifier, CancellationToken cancellationToken);
-        Task<SSG_Address> CreateAddress(SSG_Address address, CancellationToken cancellationToken);
+        Task<AddressEntity> CreateAddress(AddressEntity address, CancellationToken cancellationToken);
         Task<SSG_PhoneNumber> CreatePhoneNumber(SSG_PhoneNumber phoneNumber, CancellationToken cancellationToken);
         Task<SSG_Aliase> CreateName(SSG_Aliase name, CancellationToken cancellationToken);
         Task<SSG_Identity> CreateRelatedPerson(SSG_Identity name, CancellationToken cancellationToken);
@@ -69,7 +69,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             return await this._oDataClient.For<SSG_PhoneNumber>().Set(phone).InsertEntryAsync(cancellationToken);
         }
 
-        public async Task<SSG_Address> CreateAddress(SSG_Address address, CancellationToken cancellationToken)
+        public async Task<AddressEntity> CreateAddress(AddressEntity address, CancellationToken cancellationToken)
         {
             string countryName = address.CountryText;
             var country = await _oDataClient.For<SSG_Country>()

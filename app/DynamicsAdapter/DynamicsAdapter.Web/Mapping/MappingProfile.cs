@@ -96,7 +96,7 @@ namespace DynamicsAdapter.Web.Mapping
                .ForMember(dest => dest.Message, opt => opt.ConvertUsing(new PersonSearchCompletedMessageConvertor(), src => src.MatchedPersons));
 
 
-            CreateMap<Address, SSG_Address>()
+            CreateMap<Address, AddressEntity>()
                  .ForMember(dest => dest.AddressLine1, opt => opt.MapFrom(src => src.AddressLine1))
                  .ForMember(dest => dest.AddressLine2, opt => opt.MapFrom(src => src.AddressLine2))
                  .ForMember(dest => dest.AddressLine3, opt => opt.MapFrom(src => src.AddressLine3))

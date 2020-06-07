@@ -247,7 +247,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 Description = "description",
                 Notes = "notes"
             };
-            SSG_Address ssg_addr = _mapper.Map<SSG_Address>(address);
+            AddressEntity ssg_addr = _mapper.Map<AddressEntity>(address);
             Assert.AreEqual("AddressLine1", ssg_addr.AddressLine1);
             Assert.AreEqual("AddressLine2", ssg_addr.AddressLine2);
             Assert.AreEqual("AddressLine3", ssg_addr.AddressLine3);

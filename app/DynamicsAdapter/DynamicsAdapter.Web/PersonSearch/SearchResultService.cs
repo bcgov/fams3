@@ -115,7 +115,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             {
                 foreach (var address in person.Addresses)
                 {
-                    SSG_Address addr = _mapper.Map<SSG_Address>(address);
+                    AddressEntity addr = _mapper.Map<AddressEntity>(address);
                     addr.SearchRequest = request;
                     addr.InformationSource = providerDynamicsID;
                     addr.Person = ssg_person;

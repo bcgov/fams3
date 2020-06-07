@@ -39,9 +39,9 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         {
             odataClientMock = new Mock<IODataClient>();
 
-            odataClientMock.Setup(x => x.For<IdentifierEntity>(null).Set(It.Is<IdentifierEntity>(x => x.Identification == "identificationtest"))
+            odataClientMock.Setup(x => x.For<SSG_Identifier>(null).Set(It.Is<IdentifierEntity>(x => x.Identification == "identificationtest"))
             .InsertEntryAsync(It.IsAny<CancellationToken>()))
-            .Returns(Task.FromResult(new IdentifierEntity()
+            .Returns(Task.FromResult(new SSG_Identifier()
             {
                 Identification = "test"
             })
@@ -65,7 +65,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
                     Name = "British Columbia"
                 }));
 
-            odataClientMock.Setup(x => x.For<SSG_Address>(null).Set(It.Is<SSG_Address>(x => x.AddressLine1 == "address full text"))
+            odataClientMock.Setup(x => x.For<SSG_Address>(null).Set(It.Is<AddressEntity>(x => x.AddressLine1 == "address full text"))
             .InsertEntryAsync(It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult(new SSG_Address()
             {
@@ -257,7 +257,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         [Test]
         public async Task with_correct_searchRequestid_upload_address_should_success()
         {
-            var address = new SSG_Address()
+            var address = new AddressEntity()
             {
                 AddressLine1 = "address full text",
                 CountryText = "canada",

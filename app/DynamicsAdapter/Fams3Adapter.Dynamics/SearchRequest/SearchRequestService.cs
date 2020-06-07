@@ -56,7 +56,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         /// <returns></returns>
         public async Task<IdentifierEntity> CreateIdentifier(IdentifierEntity identifier, CancellationToken cancellationToken)
         {
-            return await this._oDataClient.For<IdentifierEntity>().Set(identifier).InsertEntryAsync(cancellationToken);
+            return await this._oDataClient.For<SSG_Identifier>().Set(identifier).InsertEntryAsync(cancellationToken);
         }
 
         public async Task<SSG_Person> SavePerson(PersonEntity person, CancellationToken cancellationToken)

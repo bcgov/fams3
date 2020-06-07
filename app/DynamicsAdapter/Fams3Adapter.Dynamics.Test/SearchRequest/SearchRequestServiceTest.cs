@@ -39,9 +39,9 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         {
             odataClientMock = new Mock<IODataClient>();
 
-            odataClientMock.Setup(x => x.For<SSG_Identifier>(null).Set(It.Is<SSG_Identifier>(x => x.Identification == "identificationtest"))
+            odataClientMock.Setup(x => x.For<IdentifierEntity>(null).Set(It.Is<IdentifierEntity>(x => x.Identification == "identificationtest"))
             .InsertEntryAsync(It.IsAny<CancellationToken>()))
-            .Returns(Task.FromResult(new SSG_Identifier()
+            .Returns(Task.FromResult(new IdentifierEntity()
             {
                 Identification = "test"
             })
@@ -193,7 +193,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         [Test]
         public async Task with_correct_searchRequestid_upload_identifier_should_success()
         {
-            var identifier = new SSG_Identifier()
+            var identifier = new IdentifierEntity()
             {
                 Identification = "identificationtest",
                 //IdentificationEffectiveDate = DateTime.Now,

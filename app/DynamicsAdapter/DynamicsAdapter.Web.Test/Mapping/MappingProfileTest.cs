@@ -40,7 +40,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
         [Test]
         public void SSG_Identifier_should_map_to_PersonalIdentifier_correctly()
         {
-            SSG_Identifier sSG_Identifier = new SSG_Identifier()
+            IdentifierEntity sSG_Identifier = new IdentifierEntity()
             {
                 Identification = "testIdentification",
                 Date1 = new DateTime(2001, 1, 1),
@@ -73,10 +73,10 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 PersonGivenName = "firstName",
                 PersonSurname = "lastName",
                 PersonBirthDate = new DateTime(2002, 2, 2),
-                Identifiers = new SSG_Identifier_WithGuid[]
+                Identifiers = new SSG_Identifier[]
                 {
-                    new SSG_Identifier_WithGuid(){ },
-                    new SSG_Identifier_WithGuid(){ }
+                    new SSG_Identifier(){ },
+                    new SSG_Identifier(){ }
                 },
                 DataProviders = new SSG_SearchapiRequestDataProvider[]
                 {
@@ -522,7 +522,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                     new ReferenceDate(){Index=1, Key="endDate", Value=new DateTime(2014,1,1) },
                 }
             };
-            SSG_Identifier sSG_Identifier = _mapper.Map<SSG_Identifier>(identifier);
+            IdentifierEntity sSG_Identifier = _mapper.Map<IdentifierEntity>(identifier);
             Assert.AreEqual("1111111", sSG_Identifier.Identification);
             Assert.AreEqual("description", sSG_Identifier.Description);
             Assert.AreEqual("notes", sSG_Identifier.Notes);

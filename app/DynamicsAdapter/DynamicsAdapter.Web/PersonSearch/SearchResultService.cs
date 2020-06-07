@@ -93,7 +93,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             {
                 foreach (var matchFoundPersonId in person.Identifiers)
                 {
-                    SSG_Identifier identifier = _mapper.Map<SSG_Identifier>(matchFoundPersonId);
+                    IdentifierEntity identifier = _mapper.Map<IdentifierEntity>(matchFoundPersonId);
                     identifier.SearchRequest = request;
                     identifier.InformationSource = providerDynamicsID;
                     identifier.Person = ssg_person;

@@ -53,14 +53,14 @@ namespace Fams3Adapter.Dynamics.Test.SearchApiRequest
                 {                      
                     SearchApiRequestId = _testId,
                     PersonGivenName = "personGivenName1",
-                    Identifiers = new List<Identifier.SSG_Identifier_WithGuid>(){
-                        new Identifier.SSG_Identifier_WithGuid()
+                    Identifiers = new List<Identifier.SSG_Identifier>(){
+                        new Identifier.SSG_Identifier()
                         {
                             Identification="identification1",
                             StatusCode = 1,
                             IdentifierId = Guid.NewGuid()
                         },
-                        new Identifier.SSG_Identifier_WithGuid()
+                        new Identifier.SSG_Identifier()
                         {
                             Identification="identification2",
                             StatusCode = 1,

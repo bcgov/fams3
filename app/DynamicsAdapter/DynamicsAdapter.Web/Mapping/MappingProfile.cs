@@ -26,7 +26,7 @@ namespace DynamicsAdapter.Web.Mapping
     {
         public MappingProfile()
         {
-            CreateMap<SSG_Identifier, PersonalIdentifier>()
+            CreateMap<IdentifierEntity, PersonalIdentifier>()
                  .ForMember(dest => dest.Value, opt => opt.MapFrom(src => src.Identification))
                  .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
                  .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
@@ -43,7 +43,7 @@ namespace DynamicsAdapter.Web.Mapping
                .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => 0))
                .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1));
 
-            CreateMap<PersonalIdentifier, SSG_Identifier>()
+            CreateMap<PersonalIdentifier, IdentifierEntity>()
                .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
                .ForMember(dest => dest.Identification, opt => opt.MapFrom(src => src.Value))
                .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))

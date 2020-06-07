@@ -550,7 +550,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 Notes = "notes"
 
             };
-            SSG_PhoneNumber sSG_PhoneNumber = _mapper.Map<SSG_PhoneNumber>(phoneNumber);
+            PhoneNumberEntity sSG_PhoneNumber = _mapper.Map<PhoneNumberEntity>(phoneNumber);
             Assert.AreEqual("6904005678", sSG_PhoneNumber.TelePhoneNumber);
             Assert.AreEqual("123", sSG_PhoneNumber.PhoneExtension);
             Assert.AreEqual("home", sSG_PhoneNumber.SupplierTypeCode);
@@ -573,7 +573,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
 
 
             };
-            SSG_PhoneNumber sSG_PhoneNumber = _mapper.Map<SSG_PhoneNumber>(phoneNumber);
+            PhoneNumberEntity sSG_PhoneNumber = _mapper.Map<PhoneNumberEntity>(phoneNumber);
             Assert.AreEqual("6904005678", sSG_PhoneNumber.TelePhoneNumber);
             Assert.AreEqual("123", sSG_PhoneNumber.PhoneExtension);
             Assert.AreEqual("Phone", sSG_PhoneNumber.SupplierTypeCode);

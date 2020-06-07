@@ -73,7 +73,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             })
             );
 
-            odataClientMock.Setup(x => x.For<SSG_PhoneNumber>(null).Set(It.Is<SSG_PhoneNumber>(x => x.TelePhoneNumber == "4007678231"))
+            odataClientMock.Setup(x => x.For<SSG_PhoneNumber>(null).Set(It.Is<PhoneNumberEntity>(x => x.TelePhoneNumber == "4007678231"))
            .InsertEntryAsync(It.IsAny<CancellationToken>()))
            .Returns(Task.FromResult(new SSG_PhoneNumber()
            {
@@ -235,7 +235,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         [Test]
         public async Task with_correct_searchRequestid_upload_phone_number_should_success()
         {
-            var phone = new SSG_PhoneNumber()
+            var phone = new PhoneNumberEntity()
             {
 
                 Date1 = DateTime.Now,

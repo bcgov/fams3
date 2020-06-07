@@ -33,7 +33,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
 
         private IdentifierEntity _fakePersoneIdentifier;
         private AddressEntity _fakePersonAddress;
-        private SSG_PhoneNumber _fakePersonPhoneNumber;
+        private PhoneNumberEntity _fakePersonPhoneNumber;
         private AliasEntity _fakeName;
         private SSG_Identity _fakeRelatedPerson;
         private EmploymentEntity _fakeEmployment;
@@ -97,7 +97,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 PhoneNumber = "11111111"
             };
 
-            _fakePersonPhoneNumber = new SSG_PhoneNumber
+            _fakePersonPhoneNumber = new PhoneNumberEntity
             {
                 SearchRequest = new SSG_SearchRequest
                 {
@@ -333,7 +333,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _mapper.Setup(m => m.Map<IdentifierEntity>(It.IsAny<PersonalIdentifier>()))
                                .Returns(_fakePersoneIdentifier);
 
-            _mapper.Setup(m => m.Map<SSG_PhoneNumber>(It.IsAny<Phone>()))
+            _mapper.Setup(m => m.Map<PhoneNumberEntity>(It.IsAny<Phone>()))
                              .Returns(_fakePersonPhoneNumber);
 
             _mapper.Setup(m => m.Map<AddressEntity>(It.IsAny<Address>()))
@@ -387,7 +387,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                     AddressLine1 = "test full line"
                 }));
 
-            _searchRequestServiceMock.Setup(x => x.CreatePhoneNumber(It.Is<SSG_PhoneNumber>(x => x.SearchRequest.SearchRequestId == validRequestId), It.IsAny<CancellationToken>()))
+            _searchRequestServiceMock.Setup(x => x.CreatePhoneNumber(It.Is<PhoneNumberEntity>(x => x.SearchRequest.SearchRequestId == validRequestId), It.IsAny<CancellationToken>()))
               .Returns(Task.FromResult<SSG_PhoneNumber>(new SSG_PhoneNumber()
               {
                   TelePhoneNumber = "4007678231"
@@ -496,7 +496,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                  .Verify(x => x.CreateAddress(It.IsAny<AddressEntity>(), It.IsAny<CancellationToken>()), Times.Once);
 
             _searchRequestServiceMock
-                .Verify(x => x.CreatePhoneNumber(It.IsAny<SSG_PhoneNumber>(), It.IsAny<CancellationToken>()), Times.Once);
+                .Verify(x => x.CreatePhoneNumber(It.IsAny<PhoneNumberEntity>(), It.IsAny<CancellationToken>()), Times.Once);
 
             _searchRequestServiceMock
                 .Verify(x => x.CreateName(It.IsAny<AliasEntity>(), It.IsAny<CancellationToken>()), Times.Once);
@@ -579,7 +579,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                  .Verify(x => x.CreateAddress(It.IsAny<AddressEntity>(), It.IsAny<CancellationToken>()), Times.Never);
 
             _searchRequestServiceMock
-                .Verify(x => x.CreatePhoneNumber(It.IsAny<SSG_PhoneNumber>(), It.IsAny<CancellationToken>()), Times.Never);
+                .Verify(x => x.CreatePhoneNumber(It.IsAny<PhoneNumberEntity>(), It.IsAny<CancellationToken>()), Times.Never);
 
             _searchRequestServiceMock
                 .Verify(x => x.CreateName(It.IsAny<AliasEntity>(), It.IsAny<CancellationToken>()), Times.Never);
@@ -669,7 +669,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                  .Throws(new Exception("identifier random exception"));
             _searchRequestServiceMock.Setup(x => x.CreateAddress(It.Is<AddressEntity>(x => x.SearchRequest.SearchRequestId == invalidRequestId), It.IsAny<CancellationToken>()))
                 .Throws(new Exception("address random exception"));
-            _searchRequestServiceMock.Setup(x => x.CreatePhoneNumber(It.Is<SSG_PhoneNumber>(x => x.SearchRequest.SearchRequestId == invalidRequestId), It.IsAny<CancellationToken>()))
+            _searchRequestServiceMock.Setup(x => x.CreatePhoneNumber(It.Is<PhoneNumberEntity>(x => x.SearchRequest.SearchRequestId == invalidRequestId), It.IsAny<CancellationToken>()))
                 .Throws(new Exception("phone random exception"));
             _searchRequestServiceMock.Setup(x => x.CreateName(It.Is<AliasEntity>(x => x.SearchRequest.SearchRequestId == invalidRequestId), It.IsAny<CancellationToken>()))
                 .Throws(new Exception("name random exception"));

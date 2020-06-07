@@ -137,7 +137,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             {
                 foreach (var phone in person.Phones)
                 {
-                    SSG_PhoneNumber ph = _mapper.Map<SSG_PhoneNumber>(phone);
+                    PhoneNumberEntity ph = _mapper.Map<PhoneNumberEntity>(phone);
                     ph.SearchRequest = request;
                     ph.InformationSource = providerDynamicsID;
                     ph.Person = ssg_person;

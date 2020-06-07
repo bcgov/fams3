@@ -137,7 +137,7 @@ namespace DynamicsAdapter.Web.Mapping
                 .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1));
             //.IncludeBase<PersonalInfo, DynamicsEntity>();
 
-            CreateMap<Phone, SSG_PhoneNumber>()
+            CreateMap<Phone, PhoneNumberEntity>()
                 .ForMember(dest => dest.TelePhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
                  .ForMember(dest => dest.PhoneExtension, opt => opt.MapFrom(src => src.Extension))
                  .ForMember(dest => dest.SupplierTypeCode, opt => opt.MapFrom(src => src.Type))

@@ -2,10 +2,11 @@
 using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Newtonsoft.Json;
+using System;
 
 namespace Fams3Adapter.Dynamics.BankInfo
 {
-    public class SSG_Asset_WorkSafeBcClaim : DynamicsEntity
+    public class CompensationClaimEntity : DynamicsEntity
     {
         [JsonProperty("ssg_suppliertypecode")]
         public string ClaimType { get; set; }
@@ -39,5 +40,11 @@ namespace Fams3Adapter.Dynamics.BankInfo
 
         [JsonProperty("ssg_Employment")]
         public virtual SSG_Employment Employment { get; set; }
+    }
+
+    public class SSG_Asset_WorkSafeBcClaim : CompensationClaimEntity
+    {
+        [JsonProperty("ssg_asset_worksafebcclaimid")]
+        public Guid CompensationClaimId{ get; set; }
     }
 }

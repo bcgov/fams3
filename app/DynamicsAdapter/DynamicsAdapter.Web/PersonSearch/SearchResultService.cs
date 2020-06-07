@@ -344,7 +344,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                         }
                     }
 
-                    SSG_Asset_WorkSafeBcClaim ssg_claim = _mapper.Map<SSG_Asset_WorkSafeBcClaim>(claim);
+                    CompensationClaimEntity ssg_claim = _mapper.Map<CompensationClaimEntity>(claim);
                     ssg_claim.SearchRequest = request;
                     ssg_claim.InformationSource = providerDynamicsID;
                     ssg_claim.Person = ssg_person;

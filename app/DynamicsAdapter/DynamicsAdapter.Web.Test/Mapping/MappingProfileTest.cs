@@ -923,7 +923,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                                      }
                 }
             };
-            SSG_Asset_WorkSafeBcClaim bcClaim = _mapper.Map<SSG_Asset_WorkSafeBcClaim>(claim);
+            CompensationClaimEntity bcClaim = _mapper.Map<CompensationClaimEntity>(claim);
             Assert.AreEqual("claimNumber", bcClaim.ClaimNumber);
             Assert.AreEqual("claimant121", bcClaim.ClaimantNumber);
             Assert.AreEqual("Processing", bcClaim.ClaimStatus);

@@ -241,7 +241,7 @@ namespace DynamicsAdapter.Web.Mapping
                   .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
                   .IncludeBase<PersonalInfo, DynamicsEntity>();
 
-            CreateMap<CompensationClaim, SSG_Asset_WorkSafeBcClaim>()
+            CreateMap<CompensationClaim, CompensationClaimEntity>()
                   .ForMember(dest => dest.ClaimType, opt => opt.MapFrom(src => src.ClaimType))
                   .ForMember(dest => dest.ClaimantNumber, opt => opt.MapFrom(src => src.ClaimantNumber))
                   .ForMember(dest => dest.ClaimNumber, opt => opt.MapFrom(src => src.ClaimNumber))

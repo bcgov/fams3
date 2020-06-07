@@ -18,8 +18,8 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 {
     public interface ISearchRequestService
     {
-        Task<IdentifierEntity> CreateIdentifier(IdentifierEntity identifier, CancellationToken cancellationToken);
-        Task<AddressEntity> CreateAddress(AddressEntity address, CancellationToken cancellationToken);
+        Task<SSG_Identifier> CreateIdentifier(IdentifierEntity identifier, CancellationToken cancellationToken);
+        Task<SSG_Address> CreateAddress(AddressEntity address, CancellationToken cancellationToken);
         Task<SSG_PhoneNumber> CreatePhoneNumber(SSG_PhoneNumber phoneNumber, CancellationToken cancellationToken);
         Task<SSG_Aliase> CreateName(SSG_Aliase name, CancellationToken cancellationToken);
         Task<SSG_Identity> CreateRelatedPerson(SSG_Identity name, CancellationToken cancellationToken);
@@ -31,7 +31,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         Task<SSG_Asset_Vehicle> CreateVehicle(VehicleEntity vehicle, CancellationToken cancellationToken);
         Task<SSG_AssetOwner> CreateAssetOwner(SSG_AssetOwner owner, CancellationToken cancellationToken);
         Task<SSG_Asset_Other> CreateOtherAsset(AssetOtherEntity asset, CancellationToken cancellationToken);
-        Task<SSG_Asset_WorkSafeBcClaim> CreateCompensationClaim(SSG_Asset_WorkSafeBcClaim claim, CancellationToken cancellationToken);
+        Task<SSG_Asset_WorkSafeBcClaim> CreateCompensationClaim(CompensationClaimEntity claim, CancellationToken cancellationToken);
         Task<SSG_Asset_ICBCClaim> CreateInsuranceClaim(ICBCClaimEntity claim, CancellationToken cancellationToken);
         Task<SSG_SimplePhoneNumber> CreateSimplePhoneNumber(SSG_SimplePhoneNumber phone, CancellationToken cancellationToken);
         Task<SSG_InvolvedParty> CreateInvolvedParty(SSG_InvolvedParty involvedParty, CancellationToken cancellationToken);
@@ -54,7 +54,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public async Task<IdentifierEntity> CreateIdentifier(IdentifierEntity identifier, CancellationToken cancellationToken)
+        public async Task<SSG_Identifier> CreateIdentifier(IdentifierEntity identifier, CancellationToken cancellationToken)
         {
             return await this._oDataClient.For<SSG_Identifier>().Set(identifier).InsertEntryAsync(cancellationToken);
         }
@@ -69,7 +69,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             return await this._oDataClient.For<SSG_PhoneNumber>().Set(phone).InsertEntryAsync(cancellationToken);
         }
 
-        public async Task<AddressEntity> CreateAddress(AddressEntity address, CancellationToken cancellationToken)
+        public async Task<SSG_Address> CreateAddress(AddressEntity address, CancellationToken cancellationToken)
         {
             string countryName = address.CountryText;
             var country = await _oDataClient.For<SSG_Country>()
@@ -139,7 +139,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             return await this._oDataClient.For<SSG_Asset_Other>().Set(otherAsset).InsertEntryAsync(cancellationToken);
         }
 
-        public async Task<SSG_Asset_WorkSafeBcClaim> CreateCompensationClaim(SSG_Asset_WorkSafeBcClaim claim, CancellationToken cancellationToken)
+        public async Task<SSG_Asset_WorkSafeBcClaim> CreateCompensationClaim(CompensationClaimEntity claim, CancellationToken cancellationToken)
         {
             return await this._oDataClient.For<SSG_Asset_WorkSafeBcClaim>().Set(claim).InsertEntryAsync(cancellationToken);
         }

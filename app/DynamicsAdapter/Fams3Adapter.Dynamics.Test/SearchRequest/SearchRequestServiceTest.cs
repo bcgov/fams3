@@ -154,7 +154,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
              })
              );
 
-            odataClientMock.Setup(x => x.For<SSG_Asset_WorkSafeBcClaim>(null).Set(It.Is<SSG_Asset_WorkSafeBcClaim>(x => x.ClaimNumber == "compensationClaimNumber"))
+            odataClientMock.Setup(x => x.For<SSG_Asset_WorkSafeBcClaim>(null).Set(It.Is<CompensationClaimEntity>(x => x.ClaimNumber == "compensationClaimNumber"))
              .InsertEntryAsync(It.IsAny<CancellationToken>()))
              .Returns(Task.FromResult(new SSG_Asset_WorkSafeBcClaim()
              {
@@ -442,7 +442,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         [Test]
         public async Task with_correct_bankInfomationId_upload_worksafebcClaim_should_success()
         {
-            var claim = new SSG_Asset_WorkSafeBcClaim()
+            var claim = new CompensationClaimEntity()
             {
                 ClaimNumber = "compensationClaimNumber",
                 BankingInformation = new SSG_Asset_BankingInformation() { BankingInformationId = testBankInfoId },

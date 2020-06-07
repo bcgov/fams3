@@ -35,7 +35,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         private AddressEntity _fakePersonAddress;
         private PhoneNumberEntity _fakePersonPhoneNumber;
         private AliasEntity _fakeName;
-        private SSG_Identity _fakeRelatedPerson;
+        private RelatedPersonEntity _fakeRelatedPerson;
         private EmploymentEntity _fakeEmployment;
         private EmploymentEntity _fakeCompensationEmployment;
         private SSG_EmploymentContact _fakeEmploymentContact;
@@ -105,7 +105,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 }
             };
 
-            _fakeRelatedPerson = new SSG_Identity
+            _fakeRelatedPerson = new RelatedPersonEntity
             {
                 SearchRequest = new SSG_SearchRequest
                 {
@@ -354,7 +354,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _mapper.Setup(m => m.Map<SSG_EmploymentContact>(It.IsAny<Phone>()))
                 .Returns(_fakeEmploymentContact);
 
-            _mapper.Setup(m => m.Map<SSG_Identity>(It.IsAny<RelatedPerson>()))
+            _mapper.Setup(m => m.Map<RelatedPersonEntity>(It.IsAny<RelatedPerson>()))
                    .Returns(_fakeRelatedPerson);
 
             _mapper.Setup(m => m.Map<BankingInformationEntity>(It.IsAny<BankInfo>()))
@@ -418,7 +418,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 PhoneNumber = "4007678231"
             }));
 
-            _searchRequestServiceMock.Setup(x => x.CreateRelatedPerson(It.Is<SSG_Identity>(x => x.SearchRequest.SearchRequestId == validRequestId), It.IsAny<CancellationToken>()))
+            _searchRequestServiceMock.Setup(x => x.CreateRelatedPerson(It.Is<RelatedPersonEntity>(x => x.SearchRequest.SearchRequestId == validRequestId), It.IsAny<CancellationToken>()))
               .Returns(Task.FromResult<SSG_Identity>(new SSG_Identity()
               {
                   FirstName = "firstName"
@@ -502,7 +502,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 .Verify(x => x.CreateName(It.IsAny<AliasEntity>(), It.IsAny<CancellationToken>()), Times.Once);
 
             _searchRequestServiceMock
-               .Verify(x => x.CreateRelatedPerson(It.IsAny<SSG_Identity>(), It.IsAny<CancellationToken>()), Times.Once);
+               .Verify(x => x.CreateRelatedPerson(It.IsAny<RelatedPersonEntity>(), It.IsAny<CancellationToken>()), Times.Once);
 
             _searchRequestServiceMock
               .Verify(x => x.CreateEmployment(It.IsAny<EmploymentEntity>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
@@ -585,7 +585,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 .Verify(x => x.CreateName(It.IsAny<AliasEntity>(), It.IsAny<CancellationToken>()), Times.Never);
 
             _searchRequestServiceMock
-               .Verify(x => x.CreateRelatedPerson(It.IsAny<SSG_Identity>(), It.IsAny<CancellationToken>()), Times.Never);
+               .Verify(x => x.CreateRelatedPerson(It.IsAny<RelatedPersonEntity>(), It.IsAny<CancellationToken>()), Times.Never);
 
             _searchRequestServiceMock
               .Verify(x => x.CreateEmployment(It.IsAny<EmploymentEntity>(), It.IsAny<CancellationToken>()), Times.Never);
@@ -673,7 +673,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 .Throws(new Exception("phone random exception"));
             _searchRequestServiceMock.Setup(x => x.CreateName(It.Is<AliasEntity>(x => x.SearchRequest.SearchRequestId == invalidRequestId), It.IsAny<CancellationToken>()))
                 .Throws(new Exception("name random exception"));
-            _searchRequestServiceMock.Setup(x => x.CreateRelatedPerson(It.Is<SSG_Identity>(x => x.SearchRequest.SearchRequestId == invalidRequestId), It.IsAny<CancellationToken>()))
+            _searchRequestServiceMock.Setup(x => x.CreateRelatedPerson(It.Is<RelatedPersonEntity>(x => x.SearchRequest.SearchRequestId == invalidRequestId), It.IsAny<CancellationToken>()))
                 .Throws(new Exception("relatedPerson random exception"));
 
             var result = await _sut.ProcessPersonFound(exceptionPerson, _providerProfile, invalidSearchRequest, _fakeToken);

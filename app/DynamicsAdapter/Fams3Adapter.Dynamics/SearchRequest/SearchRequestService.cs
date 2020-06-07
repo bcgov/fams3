@@ -22,7 +22,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         Task<SSG_Address> CreateAddress(AddressEntity address, CancellationToken cancellationToken);
         Task<SSG_PhoneNumber> CreatePhoneNumber(PhoneNumberEntity phoneNumber, CancellationToken cancellationToken);
         Task<SSG_Aliase> CreateName(AliasEntity name, CancellationToken cancellationToken);
-        Task<SSG_Identity> CreateRelatedPerson(SSG_Identity name, CancellationToken cancellationToken);
+        Task<SSG_Identity> CreateRelatedPerson(RelatedPersonEntity name, CancellationToken cancellationToken);
 
         Task<SSG_Person> SavePerson(PersonEntity person, CancellationToken cancellationToken);
         Task<SSG_Employment> CreateEmployment(EmploymentEntity employment, CancellationToken cancellationToken);
@@ -114,7 +114,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             return await this._oDataClient.For<SSG_EmploymentContact>().Set(employmentContact).InsertEntryAsync(cancellationToken);
         }
 
-        public async Task<SSG_Identity> CreateRelatedPerson(SSG_Identity relatedPerson, CancellationToken cancellationToken)
+        public async Task<SSG_Identity> CreateRelatedPerson(RelatedPersonEntity relatedPerson, CancellationToken cancellationToken)
         {
             return await this._oDataClient.For<SSG_Identity>().Set(relatedPerson).InsertEntryAsync(cancellationToken);
         }

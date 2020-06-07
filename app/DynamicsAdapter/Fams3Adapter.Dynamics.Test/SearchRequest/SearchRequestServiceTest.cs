@@ -98,7 +98,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
           })
           );
 
-        odataClientMock.Setup(x => x.For<SSG_Identity>(null).Set(It.Is<SSG_Identity>(x => x.FirstName == "First"))
+        odataClientMock.Setup(x => x.For<SSG_Identity>(null).Set(It.Is<RelatedPersonEntity>(x => x.FirstName == "First"))
         .InsertEntryAsync(It.IsAny<CancellationToken>()))
         .Returns(Task.FromResult(new SSG_Identity()
         {
@@ -298,7 +298,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         [Test]
         public async Task with_correct_searchRequestid_upload_related_person_should_success()
         {
-            var relatedPerson = new SSG_Identity()
+            var relatedPerson = new RelatedPersonEntity()
             {
                 FirstName = "First",
                 LastName = "lastName",

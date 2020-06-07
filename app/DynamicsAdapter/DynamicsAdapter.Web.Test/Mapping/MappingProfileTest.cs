@@ -742,7 +742,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                     new ReferenceDate(){Index=1, Key="relation end date", Value=new DateTimeOffset(new DateTime(2014,1,1) )}
                 }
             };
-            SSG_Identity ssg_relatedPerson = _mapper.Map<SSG_Identity>(relatedPerson);
+            RelatedPersonEntity ssg_relatedPerson = _mapper.Map<RelatedPersonEntity>(relatedPerson);
             Assert.AreEqual("FirstName", ssg_relatedPerson.FirstName);
             Assert.AreEqual("LastName", ssg_relatedPerson.LastName);
             Assert.AreEqual("MiddleName", ssg_relatedPerson.MiddleName);
@@ -1228,7 +1228,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 Notes = "notes",
                 Gender = null,
             };
-            SSG_Identity ssg_relatedPerson = _mapper.Map<SSG_Identity>(relatedPerson);
+            RelatedPersonEntity ssg_relatedPerson = _mapper.Map<RelatedPersonEntity>(relatedPerson);
             Assert.AreEqual(null, ssg_relatedPerson.Gender);
         }
 

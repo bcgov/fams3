@@ -211,7 +211,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             {
                 foreach (var relatedPerson in person.RelatedPersons)
                 {
-                    SSG_Identity n = _mapper.Map<SSG_Identity>(relatedPerson);
+                    RelatedPersonEntity n = _mapper.Map<RelatedPersonEntity>(relatedPerson);
                     n.SearchRequest = request;
                     n.InformationSource = providerDynamicsID;
                     n.Person = ssg_person;

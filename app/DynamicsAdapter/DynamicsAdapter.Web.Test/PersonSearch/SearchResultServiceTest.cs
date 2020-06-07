@@ -34,7 +34,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         private IdentifierEntity _fakePersoneIdentifier;
         private AddressEntity _fakePersonAddress;
         private SSG_PhoneNumber _fakePersonPhoneNumber;
-        private SSG_Aliase _fakeName;
+        private AliasEntity _fakeName;
         private SSG_Identity _fakeRelatedPerson;
         private EmploymentEntity _fakeEmployment;
         private EmploymentEntity _fakeCompensationEmployment;
@@ -113,7 +113,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 }
             };
 
-            _fakeName = new SSG_Aliase
+            _fakeName = new AliasEntity
             {
                 SearchRequest = new SSG_SearchRequest
                 {
@@ -339,7 +339,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _mapper.Setup(m => m.Map<AddressEntity>(It.IsAny<Address>()))
                               .Returns(_fakePersonAddress);
 
-            _mapper.Setup(m => m.Map<SSG_Aliase>(It.IsAny<Name>()))
+            _mapper.Setup(m => m.Map<AliasEntity>(It.IsAny<Name>()))
                   .Returns(_fakeName);
 
             _mapper.Setup(m => m.Map<PersonEntity>(It.IsAny<Person>()))
@@ -499,7 +499,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 .Verify(x => x.CreatePhoneNumber(It.IsAny<SSG_PhoneNumber>(), It.IsAny<CancellationToken>()), Times.Once);
 
             _searchRequestServiceMock
-                .Verify(x => x.CreateName(It.IsAny<SSG_Aliase>(), It.IsAny<CancellationToken>()), Times.Once);
+                .Verify(x => x.CreateName(It.IsAny<AliasEntity>(), It.IsAny<CancellationToken>()), Times.Once);
 
             _searchRequestServiceMock
                .Verify(x => x.CreateRelatedPerson(It.IsAny<SSG_Identity>(), It.IsAny<CancellationToken>()), Times.Once);
@@ -582,7 +582,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 .Verify(x => x.CreatePhoneNumber(It.IsAny<SSG_PhoneNumber>(), It.IsAny<CancellationToken>()), Times.Never);
 
             _searchRequestServiceMock
-                .Verify(x => x.CreateName(It.IsAny<SSG_Aliase>(), It.IsAny<CancellationToken>()), Times.Never);
+                .Verify(x => x.CreateName(It.IsAny<AliasEntity>(), It.IsAny<CancellationToken>()), Times.Never);
 
             _searchRequestServiceMock
                .Verify(x => x.CreateRelatedPerson(It.IsAny<SSG_Identity>(), It.IsAny<CancellationToken>()), Times.Never);
@@ -671,7 +671,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 .Throws(new Exception("address random exception"));
             _searchRequestServiceMock.Setup(x => x.CreatePhoneNumber(It.Is<SSG_PhoneNumber>(x => x.SearchRequest.SearchRequestId == invalidRequestId), It.IsAny<CancellationToken>()))
                 .Throws(new Exception("phone random exception"));
-            _searchRequestServiceMock.Setup(x => x.CreateName(It.Is<SSG_Aliase>(x => x.SearchRequest.SearchRequestId == invalidRequestId), It.IsAny<CancellationToken>()))
+            _searchRequestServiceMock.Setup(x => x.CreateName(It.Is<AliasEntity>(x => x.SearchRequest.SearchRequestId == invalidRequestId), It.IsAny<CancellationToken>()))
                 .Throws(new Exception("name random exception"));
             _searchRequestServiceMock.Setup(x => x.CreateRelatedPerson(It.Is<SSG_Identity>(x => x.SearchRequest.SearchRequestId == invalidRequestId), It.IsAny<CancellationToken>()))
                 .Throws(new Exception("relatedPerson random exception"));

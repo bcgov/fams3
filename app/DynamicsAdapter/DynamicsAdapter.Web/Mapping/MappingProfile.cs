@@ -146,7 +146,7 @@ namespace DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.TelephoneNumberType, opt => opt.ConvertUsing(new PhoneTypeConverter(), src => src.Type))
                .IncludeBase<PersonalInfo, DynamicsEntity>();
 
-            CreateMap<Name, SSG_Aliase>()
+            CreateMap<Name, AliasEntity>()
                  .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
                  .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
                  .ForMember(dest => dest.MiddleName, opt => opt.MapFrom(src => src.MiddleName))

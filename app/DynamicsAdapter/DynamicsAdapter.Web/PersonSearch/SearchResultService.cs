@@ -158,7 +158,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             {
                 foreach (var name in person.Names)
                 {
-                    SSG_Aliase n = _mapper.Map<SSG_Aliase>(name);
+                    AliasEntity n = _mapper.Map<AliasEntity>(name);
                     n.SearchRequest = request;
                     n.InformationSource = providerDynamicsID;
                     n.Person = ssg_person;

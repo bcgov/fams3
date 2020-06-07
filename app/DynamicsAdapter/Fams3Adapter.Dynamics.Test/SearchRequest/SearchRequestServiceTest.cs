@@ -81,7 +81,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
            })
            );
 
-            odataClientMock.Setup(x => x.For<SSG_Aliase>(null).Set(It.Is<SSG_Aliase>(x => x.FirstName == "firstName"))
+            odataClientMock.Setup(x => x.For<SSG_Aliase>(null).Set(It.Is<AliasEntity>(x => x.FirstName == "firstName"))
             .InsertEntryAsync(It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult(new SSG_Aliase()
             {
@@ -274,7 +274,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         [Test]
         public async Task with_correct_searchRequestid_upload_name_should_success()
         {
-            var name = new SSG_Aliase()
+            var name = new AliasEntity()
             {
                 FirstName = "firstName",
                 LastName = "lastName",

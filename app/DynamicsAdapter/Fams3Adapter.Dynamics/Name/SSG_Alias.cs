@@ -1,13 +1,14 @@
 ﻿using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Newtonsoft.Json;
+using System;
 
 namespace Fams3Adapter.Dynamics.Name
 {
-    //We have to use SSG_Aliase 
-    //if we use SSG_Alias, as Simple.OData.Client will use url "ssg_alias". If we use SSG_Aliase, Simple.OData.Client will visit url ssg_aliases.
+    //We have to use AliasEntity 
+    //if we use SSG_Alias, as Simple.OData.Client will use url "ssg_alias". If we use AliasEntity, Simple.OData.Client will visit url ssg_aliases.
     //while Dynamics needs url /api/data/v9.0/ssg_aliases
-    public class SSG_Aliase : DynamicsEntity
+    public class AliasEntity : DynamicsEntity
     {
         [JsonProperty("ssg_informationsourcetext")]
         public int? InformationSource { get; set; }
@@ -41,5 +42,11 @@ namespace Fams3Adapter.Dynamics.Name
 
         [JsonProperty("ssg_notes")]
         public string Notes { get; set; }
+    }
+
+    public class SSG_Aliase : AliasEntity
+    {
+        [JsonProperty("ssg_aliasid")]
+        public Guid AliasId { get; set; }
     }
 }

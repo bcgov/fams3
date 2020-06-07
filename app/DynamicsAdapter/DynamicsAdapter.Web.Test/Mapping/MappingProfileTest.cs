@@ -706,7 +706,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                     new ReferenceDate(){Index=1, Key="endDate", Value=new DateTime(2014,1,1) },
                 }
             };
-            SSG_Aliase ssg_name = _mapper.Map<SSG_Aliase>(name);
+            AliasEntity ssg_name = _mapper.Map<AliasEntity>(name);
             Assert.AreEqual("FirstName", ssg_name.FirstName);
             Assert.AreEqual("LastName", ssg_name.LastName);
             Assert.AreEqual("MiddleName", ssg_name.MiddleName);

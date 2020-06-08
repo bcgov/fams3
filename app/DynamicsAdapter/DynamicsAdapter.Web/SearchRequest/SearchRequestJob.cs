@@ -57,30 +57,37 @@ namespace DynamicsAdapter.Web.SearchRequest
                 {
                     if (ssgSearchRequest.SearchRequestId != Guid.Empty)
                     {
-                        using (LogContext.PushProperty("FileId", ssgSearchRequest.SearchRequest?.FileId))
+                        try
                         {
-                            _logger.LogDebug(
-                               $"Attempting to post person search for request {ssgSearchRequest.SearchApiRequestId}");
-
-                            SSG_SearchApiRequest request = _register.FilterDuplicatedIdentifier(ssgSearchRequest);
-
-                            bool registerSuccessfully = await _register.RegisterSearchApiRequest(request);
-
-                            if(registerSuccessfully)
+                            using (LogContext.PushProperty("FileId", ssgSearchRequest.SearchRequest?.FileId))
                             {
-                                var result = await _searchApiClient.SearchAsync(
-                                    _mapper.Map<PersonSearchRequest>(request),
-                                    $"{request.SearchApiRequestId}",
-                                    cts.Token);
+                                _logger.LogDebug(
+                                   $"Attempting to post person search for request {ssgSearchRequest.SearchApiRequestId}");
 
-                                _logger.LogInformation($"Successfully posted person search id:{result.Id}");
+                                SSG_SearchApiRequest request = _register.FilterDuplicatedIdentifier(ssgSearchRequest);
 
-                                await MarkInProgress(ssgSearchRequest, cts.Token);
+                                bool registerSuccessfully = await _register.RegisterSearchApiRequest(request);
+
+                                if (registerSuccessfully)
+                                {
+                                    var result = await _searchApiClient.SearchAsync(
+                                        _mapper.Map<PersonSearchRequest>(request),
+                                        $"{request.SearchApiRequestId}",
+                                        cts.Token);
+
+                                    _logger.LogInformation($"Successfully posted person search id:{result.Id}");
+
+                                    await MarkInProgress(ssgSearchRequest, cts.Token);
+                                }
+                                else
+                                {
+                                    throw new RegisterFailedException("Register SearchApiRequest to cache failed.");
+                                }
                             }
-                            else
-                            {
-                                throw new RegisterFailedException("Register SearchApiRequest to cache failed.");
-                            }
+                        }
+                        catch (Exception e)
+                        {
+                            _logger.LogError(e, e.Message, null);
                         }
                     }
                 }

@@ -1,10 +1,11 @@
 ﻿using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Newtonsoft.Json;
+using System;
 
 namespace Fams3Adapter.Dynamics.PhoneNumber
 {
-    public class SSG_PhoneNumber : DynamicsEntity
+    public class PhoneNumberEntity : DynamicsEntity
     {
         [JsonProperty("ssg_PersonId")]
         public virtual SSG_Person Person { get; set; }
@@ -33,7 +34,11 @@ namespace Fams3Adapter.Dynamics.PhoneNumber
         [JsonProperty("ssg_notes")]
         public string Notes { get; set; }
 
+    }
 
-
+    public class SSG_PhoneNumber : PhoneNumberEntity
+    {
+        [JsonProperty("ssg_phonenumberid")]
+        public Guid PhoneNumberId { get; set; }
     }
 }

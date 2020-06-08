@@ -53,23 +53,23 @@ namespace DynamicsAdapter.Web.Test.Register
             SSG_SearchApiRequest request = new SSG_SearchApiRequest
             {
                 SearchRequest = new SSG_SearchRequest() { FileId = "111111" },
-                Identifiers = new List<SSG_Identifier_WithGuid>()
+                Identifiers = new List<SSG_Identifier>()
                     {
-                        new SSG_Identifier_WithGuid()
+                        new SSG_Identifier()
                         {
                             Identification="1234567",
                             IdentifierType=IdentificationType.BCDriverLicense.Value,
                             IssuedBy="BC",
                             IdentifierId=identifier1Guid
                         },
-                        new SSG_Identifier_WithGuid()
+                        new SSG_Identifier()
                         {
                             Identification="1234567",
                             IdentifierType=IdentificationType.BCDriverLicense.Value,
                             IssuedBy="bc",
                             IdentifierId=identifier2Guid
                         },
-                        new SSG_Identifier_WithGuid()
+                        new SSG_Identifier()
                         {
                             Identification="1234567",
                             IdentifierType=IdentificationType.BirthCertificate.Value,
@@ -96,23 +96,23 @@ namespace DynamicsAdapter.Web.Test.Register
             SSG_SearchApiRequest request = new SSG_SearchApiRequest
             {
                 SearchRequest = new SSG_SearchRequest() { FileId = "111111" },
-                Identifiers = new List<SSG_Identifier_WithGuid>()
+                Identifiers = new List<SSG_Identifier>()
                     {
-                        new SSG_Identifier_WithGuid()
+                        new SSG_Identifier()
                         {
                             Identification="333123456",
                             IdentifierType=IdentificationType.BCDriverLicense.Value,
                             IssuedBy="BC",
                             IdentifierId=Guid.NewGuid()
                         },
-                        new SSG_Identifier_WithGuid()
+                        new SSG_Identifier()
                         {
                             Identification = "1234567",
                             IdentifierType = IdentificationType.BCDriverLicense.Value,
                             IssuedBy = "bc",
                             IdentifierId=Guid.NewGuid()
                         },
-                        new SSG_Identifier_WithGuid()
+                        new SSG_Identifier()
                         {
                             Identification = "1234567",
                             IdentifierType = IdentificationType.BirthCertificate.Value,

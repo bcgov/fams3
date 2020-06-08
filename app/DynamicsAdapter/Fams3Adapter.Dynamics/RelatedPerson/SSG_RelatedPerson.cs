@@ -5,7 +5,7 @@ using System;
 
 namespace Fams3Adapter.Dynamics.RelatedPerson
 {
-    public class SSG_Identity : DynamicsEntity
+    public class RelatedPersonEntity : DynamicsEntity
     {
         [JsonProperty("ssg_informationsourcetext")]
         public int? InformationSource { get; set; }
@@ -45,5 +45,11 @@ namespace Fams3Adapter.Dynamics.RelatedPerson
 
         [JsonProperty("ssg_notes")]
         public string Notes { get; set; }
+    }
+
+    public class SSG_Identity : RelatedPersonEntity
+    {
+        [JsonProperty("ssg_identityid")]
+        public Guid RelatedPersonId { get; set; }
     }
 }

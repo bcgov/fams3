@@ -39,7 +39,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         {
             odataClientMock = new Mock<IODataClient>();
 
-            odataClientMock.Setup(x => x.For<SSG_Identifier>(null).Set(It.Is<SSG_Identifier>(x => x.Identification == "identificationtest"))
+            odataClientMock.Setup(x => x.For<SSG_Identifier>(null).Set(It.Is<IdentifierEntity>(x => x.Identification == "identificationtest"))
             .InsertEntryAsync(It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult(new SSG_Identifier()
             {
@@ -65,7 +65,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
                     Name = "British Columbia"
                 }));
 
-            odataClientMock.Setup(x => x.For<SSG_Address>(null).Set(It.Is<SSG_Address>(x => x.AddressLine1 == "address full text"))
+            odataClientMock.Setup(x => x.For<SSG_Address>(null).Set(It.Is<AddressEntity>(x => x.AddressLine1 == "address full text"))
             .InsertEntryAsync(It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult(new SSG_Address()
             {
@@ -73,7 +73,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             })
             );
 
-            odataClientMock.Setup(x => x.For<SSG_PhoneNumber>(null).Set(It.Is<SSG_PhoneNumber>(x => x.TelePhoneNumber == "4007678231"))
+            odataClientMock.Setup(x => x.For<SSG_PhoneNumber>(null).Set(It.Is<PhoneNumberEntity>(x => x.TelePhoneNumber == "4007678231"))
            .InsertEntryAsync(It.IsAny<CancellationToken>()))
            .Returns(Task.FromResult(new SSG_PhoneNumber()
            {
@@ -81,7 +81,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
            })
            );
 
-            odataClientMock.Setup(x => x.For<SSG_Aliase>(null).Set(It.Is<SSG_Aliase>(x => x.FirstName == "firstName"))
+            odataClientMock.Setup(x => x.For<SSG_Aliase>(null).Set(It.Is<AliasEntity>(x => x.FirstName == "firstName"))
             .InsertEntryAsync(It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult(new SSG_Aliase()
             {
@@ -98,7 +98,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
           })
           );
 
-        odataClientMock.Setup(x => x.For<SSG_Identity>(null).Set(It.Is<SSG_Identity>(x => x.FirstName == "First"))
+        odataClientMock.Setup(x => x.For<SSG_Identity>(null).Set(It.Is<RelatedPersonEntity>(x => x.FirstName == "First"))
         .InsertEntryAsync(It.IsAny<CancellationToken>()))
         .Returns(Task.FromResult(new SSG_Identity()
         {
@@ -154,7 +154,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
              })
              );
 
-            odataClientMock.Setup(x => x.For<SSG_Asset_WorkSafeBcClaim>(null).Set(It.Is<SSG_Asset_WorkSafeBcClaim>(x => x.ClaimNumber == "compensationClaimNumber"))
+            odataClientMock.Setup(x => x.For<SSG_Asset_WorkSafeBcClaim>(null).Set(It.Is<CompensationClaimEntity>(x => x.ClaimNumber == "compensationClaimNumber"))
              .InsertEntryAsync(It.IsAny<CancellationToken>()))
              .Returns(Task.FromResult(new SSG_Asset_WorkSafeBcClaim()
              {
@@ -193,7 +193,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         [Test]
         public async Task with_correct_searchRequestid_upload_identifier_should_success()
         {
-            var identifier = new SSG_Identifier()
+            var identifier = new IdentifierEntity()
             {
                 Identification = "identificationtest",
                 //IdentificationEffectiveDate = DateTime.Now,
@@ -235,7 +235,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         [Test]
         public async Task with_correct_searchRequestid_upload_phone_number_should_success()
         {
-            var phone = new SSG_PhoneNumber()
+            var phone = new PhoneNumberEntity()
             {
 
                 Date1 = DateTime.Now,
@@ -257,7 +257,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         [Test]
         public async Task with_correct_searchRequestid_upload_address_should_success()
         {
-            var address = new SSG_Address()
+            var address = new AddressEntity()
             {
                 AddressLine1 = "address full text",
                 CountryText = "canada",
@@ -274,7 +274,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         [Test]
         public async Task with_correct_searchRequestid_upload_name_should_success()
         {
-            var name = new SSG_Aliase()
+            var name = new AliasEntity()
             {
                 FirstName = "firstName",
                 LastName = "lastName",
@@ -298,7 +298,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         [Test]
         public async Task with_correct_searchRequestid_upload_related_person_should_success()
         {
-            var relatedPerson = new SSG_Identity()
+            var relatedPerson = new RelatedPersonEntity()
             {
                 FirstName = "First",
                 LastName = "lastName",
@@ -442,7 +442,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         [Test]
         public async Task with_correct_bankInfomationId_upload_worksafebcClaim_should_success()
         {
-            var claim = new SSG_Asset_WorkSafeBcClaim()
+            var claim = new CompensationClaimEntity()
             {
                 ClaimNumber = "compensationClaimNumber",
                 BankingInformation = new SSG_Asset_BankingInformation() { BankingInformationId = testBankInfoId },

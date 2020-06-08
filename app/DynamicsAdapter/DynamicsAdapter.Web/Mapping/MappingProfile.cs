@@ -26,7 +26,7 @@ namespace DynamicsAdapter.Web.Mapping
     {
         public MappingProfile()
         {
-            CreateMap<SSG_Identifier, PersonalIdentifier>()
+            CreateMap<IdentifierEntity, PersonalIdentifier>()
                  .ForMember(dest => dest.Value, opt => opt.MapFrom(src => src.Identification))
                  .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
                  .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
@@ -43,7 +43,7 @@ namespace DynamicsAdapter.Web.Mapping
                .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => 0))
                .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1));
 
-            CreateMap<PersonalIdentifier, SSG_Identifier>()
+            CreateMap<PersonalIdentifier, IdentifierEntity>()
                .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
                .ForMember(dest => dest.Identification, opt => opt.MapFrom(src => src.Value))
                .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
@@ -96,7 +96,7 @@ namespace DynamicsAdapter.Web.Mapping
                .ForMember(dest => dest.Message, opt => opt.ConvertUsing(new PersonSearchCompletedMessageConvertor(), src => src.MatchedPersons));
 
 
-            CreateMap<Address, SSG_Address>()
+            CreateMap<Address, AddressEntity>()
                  .ForMember(dest => dest.AddressLine1, opt => opt.MapFrom(src => src.AddressLine1))
                  .ForMember(dest => dest.AddressLine2, opt => opt.MapFrom(src => src.AddressLine2))
                  .ForMember(dest => dest.AddressLine3, opt => opt.MapFrom(src => src.AddressLine3))
@@ -137,7 +137,7 @@ namespace DynamicsAdapter.Web.Mapping
                 .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1));
             //.IncludeBase<PersonalInfo, DynamicsEntity>();
 
-            CreateMap<Phone, SSG_PhoneNumber>()
+            CreateMap<Phone, PhoneNumberEntity>()
                 .ForMember(dest => dest.TelePhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
                  .ForMember(dest => dest.PhoneExtension, opt => opt.MapFrom(src => src.Extension))
                  .ForMember(dest => dest.SupplierTypeCode, opt => opt.MapFrom(src => src.Type))
@@ -146,7 +146,7 @@ namespace DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.TelephoneNumberType, opt => opt.ConvertUsing(new PhoneTypeConverter(), src => src.Type))
                .IncludeBase<PersonalInfo, DynamicsEntity>();
 
-            CreateMap<Name, SSG_Aliase>()
+            CreateMap<Name, AliasEntity>()
                  .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
                  .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
                  .ForMember(dest => dest.MiddleName, opt => opt.MapFrom(src => src.MiddleName))
@@ -157,7 +157,7 @@ namespace DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
                  .IncludeBase<PersonalInfo, DynamicsEntity>();
 
-            CreateMap<RelatedPerson, SSG_Identity>()
+            CreateMap<RelatedPerson, RelatedPersonEntity>()
                  .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
                  .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
                  .ForMember(dest => dest.MiddleName, opt => opt.MapFrom(src => src.MiddleName))
@@ -241,7 +241,7 @@ namespace DynamicsAdapter.Web.Mapping
                   .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
                   .IncludeBase<PersonalInfo, DynamicsEntity>();
 
-            CreateMap<CompensationClaim, SSG_Asset_WorkSafeBcClaim>()
+            CreateMap<CompensationClaim, CompensationClaimEntity>()
                   .ForMember(dest => dest.ClaimType, opt => opt.MapFrom(src => src.ClaimType))
                   .ForMember(dest => dest.ClaimantNumber, opt => opt.MapFrom(src => src.ClaimantNumber))
                   .ForMember(dest => dest.ClaimNumber, opt => opt.MapFrom(src => src.ClaimNumber))

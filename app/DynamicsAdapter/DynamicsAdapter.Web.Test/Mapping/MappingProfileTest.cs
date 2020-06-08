@@ -40,7 +40,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
         [Test]
         public void SSG_Identifier_should_map_to_PersonalIdentifier_correctly()
         {
-            SSG_Identifier sSG_Identifier = new SSG_Identifier()
+            IdentifierEntity sSG_Identifier = new IdentifierEntity()
             {
                 Identification = "testIdentification",
                 Date1 = new DateTime(2001, 1, 1),
@@ -73,10 +73,10 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 PersonGivenName = "firstName",
                 PersonSurname = "lastName",
                 PersonBirthDate = new DateTime(2002, 2, 2),
-                Identifiers = new SSG_Identifier_WithGuid[]
+                Identifiers = new SSG_Identifier[]
                 {
-                    new SSG_Identifier_WithGuid(){ },
-                    new SSG_Identifier_WithGuid(){ }
+                    new SSG_Identifier(){ },
+                    new SSG_Identifier(){ }
                 },
                 DataProviders = new SSG_SearchapiRequestDataProvider[]
                 {
@@ -247,7 +247,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 Description = "description",
                 Notes = "notes"
             };
-            SSG_Address ssg_addr = _mapper.Map<SSG_Address>(address);
+            AddressEntity ssg_addr = _mapper.Map<AddressEntity>(address);
             Assert.AreEqual("AddressLine1", ssg_addr.AddressLine1);
             Assert.AreEqual("AddressLine2", ssg_addr.AddressLine2);
             Assert.AreEqual("AddressLine3", ssg_addr.AddressLine3);
@@ -522,7 +522,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                     new ReferenceDate(){Index=1, Key="endDate", Value=new DateTime(2014,1,1) },
                 }
             };
-            SSG_Identifier sSG_Identifier = _mapper.Map<SSG_Identifier>(identifier);
+            IdentifierEntity sSG_Identifier = _mapper.Map<IdentifierEntity>(identifier);
             Assert.AreEqual("1111111", sSG_Identifier.Identification);
             Assert.AreEqual("description", sSG_Identifier.Description);
             Assert.AreEqual("notes", sSG_Identifier.Notes);
@@ -550,7 +550,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 Notes = "notes"
 
             };
-            SSG_PhoneNumber sSG_PhoneNumber = _mapper.Map<SSG_PhoneNumber>(phoneNumber);
+            PhoneNumberEntity sSG_PhoneNumber = _mapper.Map<PhoneNumberEntity>(phoneNumber);
             Assert.AreEqual("6904005678", sSG_PhoneNumber.TelePhoneNumber);
             Assert.AreEqual("123", sSG_PhoneNumber.PhoneExtension);
             Assert.AreEqual("home", sSG_PhoneNumber.SupplierTypeCode);
@@ -573,7 +573,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
 
 
             };
-            SSG_PhoneNumber sSG_PhoneNumber = _mapper.Map<SSG_PhoneNumber>(phoneNumber);
+            PhoneNumberEntity sSG_PhoneNumber = _mapper.Map<PhoneNumberEntity>(phoneNumber);
             Assert.AreEqual("6904005678", sSG_PhoneNumber.TelePhoneNumber);
             Assert.AreEqual("123", sSG_PhoneNumber.PhoneExtension);
             Assert.AreEqual("Phone", sSG_PhoneNumber.SupplierTypeCode);
@@ -706,7 +706,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                     new ReferenceDate(){Index=1, Key="endDate", Value=new DateTime(2014,1,1) },
                 }
             };
-            SSG_Aliase ssg_name = _mapper.Map<SSG_Aliase>(name);
+            AliasEntity ssg_name = _mapper.Map<AliasEntity>(name);
             Assert.AreEqual("FirstName", ssg_name.FirstName);
             Assert.AreEqual("LastName", ssg_name.LastName);
             Assert.AreEqual("MiddleName", ssg_name.MiddleName);
@@ -742,7 +742,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                     new ReferenceDate(){Index=1, Key="relation end date", Value=new DateTimeOffset(new DateTime(2014,1,1) )}
                 }
             };
-            SSG_Identity ssg_relatedPerson = _mapper.Map<SSG_Identity>(relatedPerson);
+            RelatedPersonEntity ssg_relatedPerson = _mapper.Map<RelatedPersonEntity>(relatedPerson);
             Assert.AreEqual("FirstName", ssg_relatedPerson.FirstName);
             Assert.AreEqual("LastName", ssg_relatedPerson.LastName);
             Assert.AreEqual("MiddleName", ssg_relatedPerson.MiddleName);
@@ -923,7 +923,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                                      }
                 }
             };
-            SSG_Asset_WorkSafeBcClaim bcClaim = _mapper.Map<SSG_Asset_WorkSafeBcClaim>(claim);
+            CompensationClaimEntity bcClaim = _mapper.Map<CompensationClaimEntity>(claim);
             Assert.AreEqual("claimNumber", bcClaim.ClaimNumber);
             Assert.AreEqual("claimant121", bcClaim.ClaimantNumber);
             Assert.AreEqual("Processing", bcClaim.ClaimStatus);
@@ -1228,7 +1228,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 Notes = "notes",
                 Gender = null,
             };
-            SSG_Identity ssg_relatedPerson = _mapper.Map<SSG_Identity>(relatedPerson);
+            RelatedPersonEntity ssg_relatedPerson = _mapper.Map<RelatedPersonEntity>(relatedPerson);
             Assert.AreEqual(null, ssg_relatedPerson.Gender);
         }
 

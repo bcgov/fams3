@@ -1,10 +1,11 @@
 ﻿using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Newtonsoft.Json;
+using System;
 
 namespace Fams3Adapter.Dynamics.Address
 {
-    public class SSG_Address : DynamicsEntity
+    public class AddressEntity : DynamicsEntity
     {
 
         [JsonProperty("ssg_addresscategorytext")]
@@ -57,5 +58,11 @@ namespace Fams3Adapter.Dynamics.Address
 
         [JsonProperty("ssg_notes")]
         public string Notes { get; set; }
+    }
+
+    public class SSG_Address : AddressEntity
+    {
+        [JsonProperty("ssg_addressid")]
+        public Guid AddressId { get; set; }
     }
 }

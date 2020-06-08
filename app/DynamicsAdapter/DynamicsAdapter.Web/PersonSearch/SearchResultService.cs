@@ -93,7 +93,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             {
                 foreach (var matchFoundPersonId in person.Identifiers)
                 {
-                    SSG_Identifier identifier = _mapper.Map<SSG_Identifier>(matchFoundPersonId);
+                    IdentifierEntity identifier = _mapper.Map<IdentifierEntity>(matchFoundPersonId);
                     identifier.SearchRequest = request;
                     identifier.InformationSource = providerDynamicsID;
                     identifier.Person = ssg_person;
@@ -115,7 +115,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             {
                 foreach (var address in person.Addresses)
                 {
-                    SSG_Address addr = _mapper.Map<SSG_Address>(address);
+                    AddressEntity addr = _mapper.Map<AddressEntity>(address);
                     addr.SearchRequest = request;
                     addr.InformationSource = providerDynamicsID;
                     addr.Person = ssg_person;
@@ -137,7 +137,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             {
                 foreach (var phone in person.Phones)
                 {
-                    SSG_PhoneNumber ph = _mapper.Map<SSG_PhoneNumber>(phone);
+                    PhoneNumberEntity ph = _mapper.Map<PhoneNumberEntity>(phone);
                     ph.SearchRequest = request;
                     ph.InformationSource = providerDynamicsID;
                     ph.Person = ssg_person;
@@ -158,7 +158,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             {
                 foreach (var name in person.Names)
                 {
-                    SSG_Aliase n = _mapper.Map<SSG_Aliase>(name);
+                    AliasEntity n = _mapper.Map<AliasEntity>(name);
                     n.SearchRequest = request;
                     n.InformationSource = providerDynamicsID;
                     n.Person = ssg_person;
@@ -211,7 +211,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             {
                 foreach (var relatedPerson in person.RelatedPersons)
                 {
-                    SSG_Identity n = _mapper.Map<SSG_Identity>(relatedPerson);
+                    RelatedPersonEntity n = _mapper.Map<RelatedPersonEntity>(relatedPerson);
                     n.SearchRequest = request;
                     n.InformationSource = providerDynamicsID;
                     n.Person = ssg_person;
@@ -344,7 +344,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                         }
                     }
 
-                    SSG_Asset_WorkSafeBcClaim ssg_claim = _mapper.Map<SSG_Asset_WorkSafeBcClaim>(claim);
+                    CompensationClaimEntity ssg_claim = _mapper.Map<CompensationClaimEntity>(claim);
                     ssg_claim.SearchRequest = request;
                     ssg_claim.InformationSource = providerDynamicsID;
                     ssg_claim.Person = ssg_person;

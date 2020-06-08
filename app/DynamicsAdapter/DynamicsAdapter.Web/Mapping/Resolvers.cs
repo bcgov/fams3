@@ -44,9 +44,9 @@ namespace DynamicsAdapter.Web.Mapping
 
   
 
-    public class PersonalIdentifier_ReferenceDateResolver : IValueResolver<SSG_Identifier, PersonalIdentifier, ICollection<ReferenceDate>>
+    public class PersonalIdentifier_ReferenceDateResolver : IValueResolver<IdentifierEntity, PersonalIdentifier, ICollection<ReferenceDate>>
     {
-        public ICollection<ReferenceDate> Resolve(SSG_Identifier source, PersonalIdentifier dest, ICollection<ReferenceDate> dates, ResolutionContext context)
+        public ICollection<ReferenceDate> Resolve(IdentifierEntity source, PersonalIdentifier dest, ICollection<ReferenceDate> dates, ResolutionContext context)
         {
             List<ReferenceDate> referDates = new List<ReferenceDate>();
             if (source.Date1 != null)

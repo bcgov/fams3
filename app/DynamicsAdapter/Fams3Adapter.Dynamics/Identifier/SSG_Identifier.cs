@@ -5,7 +5,7 @@ using System;
 
 namespace Fams3Adapter.Dynamics.Identifier
 {
-    public class SSG_Identifier : DynamicsEntity
+    public class IdentifierEntity : DynamicsEntity
     {
         [JsonProperty("ssg_identification")]
         public string Identification { get; set; }
@@ -36,7 +36,7 @@ namespace Fams3Adapter.Dynamics.Identifier
 
     }
 
-    public class SSG_Identifier_WithGuid : SSG_Identifier
+    public class SSG_Identifier : IdentifierEntity
     {
         [JsonProperty("ssg_identifierid")]
         public Guid IdentifierId { get; set; }

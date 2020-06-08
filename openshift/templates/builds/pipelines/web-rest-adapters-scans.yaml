@@ -106,6 +106,34 @@ objects:
             // The name of the "stash" containing the ZAP report
             def ZAP_REPORT_STASH = "zap-report"
 
+            // Selenium/Cucumber testing framwork BDD
+            def SELENIUM_ENABLED = "true"
+            if ("${SELENIUM_ENABLED}"!="false") {
+              node("selenium-maven") {
+                stage('Cucumber/Selenium') {
+                  timeout(time: 10, unit: 'MINUTES') {
+                    dir('zap') {
+                      git url: "${GIT_SOURCE_URL}", branch: "master", credentialsId: "${GIT_CREDENTIALS_ID}"
+                      withCredentials([file(credentialsId: 'frjeow-tools-selenium-maven-config', variable: 'CONFIG_PROPERTIES')]) {
+                          def retVal = sh (
+                            returnStatus: true,
+                            script: """
+                              cd test-automation/fams3-frontend-automation/
+                              cp \$CONFIG_PROPERTIES src/main/java/com/fams3/qa/config/config.properties
+                              cat src/main/java/com/fams3/qa/config/config.properties
+                              sed -ri "s/chromeOptions.setHeadless\\(true\\);/chromeOptions.setHeadless\\(false\\);/" src/main/java/com/fams3/qa/util/DriverClass.java
+                              mvn clean install
+                              cat test-output/extent/HtmlReport/ExtentHtml.html
+                              # sleep 3600
+                            """
+                          )
+                      }
+                    }
+                  }
+                }
+              }
+            }
+
             node("zap") {
               stage('ZAP Security Scan') {
                 timeout(time: 60, unit: 'MINUTES') {

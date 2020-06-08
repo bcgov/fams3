@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Template
+labels:
+  template: selenium-maven-config
+message: |-
+  selenium-maven config template.
+metadata:
+  annotations:
+    description: |-
+      selenium-maven config template.
+    tags: selenium-maven-config
+    template: selenium-maven-config
+  name: selenium-maven-config
+
+# Parameters
+parameters:
+- name: file
+  required: true
+  value: "c2V0LmZpbGU="
+# Objects
+objects:
+
+- apiVersion: v1
+  data:
+    filename: >-
+      ${file}
+  kind: Secret
+  metadata:
+    name: selenium-maven-config
+    labels:
+      credential.sync.jenkins.openshift.io: 'true'

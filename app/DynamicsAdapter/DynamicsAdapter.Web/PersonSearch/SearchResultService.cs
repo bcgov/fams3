@@ -23,7 +23,12 @@ namespace DynamicsAdapter.Web.PersonSearch
 {
     public interface ISearchResultService
     {
-        Task<bool> ProcessPersonFound(Person person, ProviderProfile providerProfile, SSG_SearchRequest searchRequest, CancellationToken cancellationToken);
+        Task<bool> ProcessPersonFound(
+            Person person, 
+            ProviderProfile providerProfile, 
+            SSG_SearchRequest searchRequest,
+            CancellationToken cancellationToken,
+            SSG_Identifier sourceIdentifier=null);
     }
 
     public class SearchResultService : ISearchResultService
@@ -39,7 +44,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             _mapper = mapper;
         }
 
-        public async Task<bool> ProcessPersonFound(Person person, ProviderProfile providerProfile, SSG_SearchRequest request, CancellationToken concellationToken)
+        public async Task<bool> ProcessPersonFound(Person person, ProviderProfile providerProfile, SSG_SearchRequest request, CancellationToken concellationToken, SSG_Identifier sourceIdentifier= null)
         {
             if (person == null) return true;
 

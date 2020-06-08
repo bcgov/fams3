@@ -46,7 +46,14 @@ namespace BcGov.Fams3.Redis.Test
             _distributedCacheMock.Setup(x => x.GetAsync(_existedReqestGuid.ToString(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(bytesSearch));
 
+            _distributedCacheMock.Setup(x => x.GetAsync("key", It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult(Encoding.ASCII.GetBytes("data")));
+
             _distributedCacheMock.Setup(x => x.RemoveAsync(_existedReqestGuid.ToString(),
+                It.IsAny<CancellationToken>()))
+               .Verifiable();
+
+            _distributedCacheMock.Setup(x => x.RemoveAsync("key",
                 It.IsAny<CancellationToken>()))
                .Verifiable();
 
@@ -139,6 +146,78 @@ namespace BcGov.Fams3.Redis.Test
         public void when_there_null_GetRequest_throws_it()
         {
             Assert.ThrowsAsync<ArgumentNullException>(() => _sut.GetRequest(new Guid()));
+        }
+
+        [Test]
+        public void with_correct_key_data_save_successfully()
+        {
+            string key = "key";
+            string data = "data";
+            _sut.Save(key, data);
+            _distributedCacheMock.Verify(x => x.SetAsync(key,
+                It.IsAny<byte[]>(),
+                It.IsAny<DistributedCacheEntryOptions>(),
+                It.IsAny<CancellationToken>()), Times.AtLeastOnce());
+        }
+
+        [Test]
+        public void with_null_key_save_throw_exception()
+        {
+            string data = "data";
+            Assert.ThrowsAsync<ArgumentNullException>(() => _sut.Save(null, data));
+        }
+
+        [Test]
+        public void with_null_data_save_throw_exception()
+        {
+            string key = "key";
+            Assert.ThrowsAsync<ArgumentNullException>(() => _sut.Save(key, null));
+        }
+
+        [Test]
+        public void with_correct_key_get_successfully()
+        {
+            string key = "key";
+            string data = _sut.Get(key).Result;
+            Assert.AreEqual("data", data);
+        }
+
+        [Test]
+        public void with_incorrect_key_get_empty_string()
+        {
+            string key = "lala";
+            string data = _sut.Get(key).Result;
+            Assert.AreEqual("", data);
+        }
+
+        [Test]
+        public void with_null_key_get_throw_exception()
+        {
+            string key = null;
+            Assert.ThrowsAsync<ArgumentNullException>(() => _sut.Get(key));
+        }
+
+        [Test]
+        public void with_existed_key_delete_successfully()
+        {
+            string key = "key";
+            _sut.Delete(key);
+            _distributedCacheMock.Verify(x => x.RemoveAsync(key, new CancellationToken()), Times.Once);
+        }
+
+        [Test]
+        public void with_nonexisted_key_delete_successfully()
+        {
+            string key = "lala";
+            _sut.Delete(key);
+            _distributedCacheMock.Verify(x => x.RemoveAsync(key, new CancellationToken()), Times.Once);
+        }
+
+        [Test]
+        public void when_null_key_delete_throws_it()
+        {
+            Assert.ThrowsAsync<ArgumentNullException>(() => _sut.Delete(null));
+
         }
     }
 }

@@ -40,6 +40,19 @@ oc process -o=yaml \
   -p namespacePrefix=${NAMESPACE_PREFIX}  \
   | oc apply -f - -n ${TOOLS_NAMESPACE}
 ```
+### selenium-maven slave
+```shell script
+export NAMESPACE_PREFIX=
+export TOOLS_NAMESPACE=${NAMESPACE_PREFIX}-tools
+export GIT_REPO="bcgov/fams3"
+export GIT_BRANCH="master"
+export GIT_URL="https://raw.githubusercontent.com/${GIT_REPO}/${GIT_BRANCH}"
+
+oc process -o=yaml \
+  -f ${GIT_URL}/openshift/templates/jenkins-slave-selenium-maven.yaml \
+  -p namespacePrefix=${NAMESPACE_PREFIX}  \
+  | oc apply -f - -n ${TOOLS_NAMESPACE}
+```
 ## Sonarqube
 ```shell script
 export NAMESPACE_PREFIX=
@@ -52,6 +65,40 @@ oc process -o=yaml \
   -f ${GIT_URL}/openshift/templates/sonarqube-postgresql-template.yaml \
   | oc apply -f - -n ${TOOLS_NAMESPACE}
 ```
+**NOTE:** Plugins are lost when permanent storage is mounted on plugins directory. To reinstall plugins:
+```shell script
+cd /opt/sonarqube/extensions/plugins
+# ZAP
+curl -o sonar-zap-plugin-1.2.0.jar https://github.com/Coveros/zap-sonar-plugin/releases/download/sonar-zap-plugin-1.2.0/sonar-zap-plugin-1.2.0.jar
+# Then add csharp plugin from marketplace in the UI and restart sonarqube
+```
+## Selenium
+Using templates from https://github.com/akroon3r/selenium-openshift-templates
+### Selenium Hub
+```shell script
+export NAMESPACE_PREFIX=
+export TOOLS_NAMESPACE=${NAMESPACE_PREFIX}-tools
+export GIT_REPO="akroon3r/selenium-openshift-templates"
+export GIT_BRANCH="master"
+export GIT_URL="https://raw.githubusercontent.com/${GIT_REPO}/${GIT_BRANCH}"
+
+oc process -o=yaml \
+  -f ${GIT_URL}/selenium-hub.yaml \
+  | oc apply -f - -n ${TOOLS_NAMESPACE}
+```
+### Selenium Chrome Node
+```shell script
+export NAMESPACE_PREFIX=
+export TOOLS_NAMESPACE=${NAMESPACE_PREFIX}-tools
+export GIT_REPO="akroon3r/selenium-openshift-templates"
+export GIT_BRANCH="master"
+export GIT_URL="https://raw.githubusercontent.com/${GIT_REPO}/${GIT_BRANCH}"
+
+oc process -o=yaml \
+  -f ${GIT_URL}/selenium-node-chrome.yaml \
+  | oc apply -f - -n ${TOOLS_NAMESPACE}
+```
+**NOTE:** the node might have to be restarted if there are session timeout errors
 # Deploy Applications
 ## RabbitMQ
 Need access to create service account and role binding in target namespace
@@ -285,6 +332,21 @@ export GIT_BRANCH="master"
 export GIT_URL="https://raw.githubusercontent.com/${GIT_REPO}/${GIT_BRANCH}"
 
 # Configuration evn/secrets
+## Create secrets synchronized with Jenkins
+## Option 1:
+### Pass base64 value of private key.
+### config.properties is taken from private-repo://test-automation/fams3-frontend-automation/src/main/java/com/fams3/qa/config/config.properties
+cat config.properties | base64 | tr -d '\n'
+### Copy the output and pass as argument for file
+oc process -o=yaml \
+  -f ${GIT_URL}/openshift/templates/config/selenium-maven-config.yaml \
+  -p file=  \
+  | oc apply -f - -n ${TOOLS_NAMESPACE}
+
+## Option 2:
+oc create secret generic selenium-maven-config --from-file=filename=config.properties
+oc label secret selenium-maven-config credential.sync.jenkins.openshift.io=true
+
 oc process -o=yaml \
   -f ${GIT_URL}/openshift/templates/config/aspnet-env.yaml \
   -p ENVIRONMENT=  \
@@ -402,10 +464,19 @@ export GIT_BRANCH="master"
 export GIT_URL="https://raw.githubusercontent.com/${GIT_REPO}/${GIT_BRANCH}"
 
 # Configuration evn/secrets
+## Create secrets synchronized with Jenkins
+## Option 1:
+### Pass base64 value of private key.
+cat id_rsa | base64 | tr -d '\n'
+### Copy the output and pass as argument for gitSshPrivateKey
 oc process -o=yaml \
   -f ${GIT_URL}/openshift/templates/config/fams3-github-key.yaml \
   -p gitSshPrivateKey=  \
   | oc apply -f - -n ${TOOLS_NAMESPACE}
+
+## Option 2:
+oc create secret generic fams3-github-key --from-file=ssh-privatekey=id_rsa --type=kubernetes.io/ssh-auth
+oc label secret fams3-github-key credential.sync.jenkins.openshift.io=true
 
 # Pipeline
 oc process -o=yaml \

@@ -9,6 +9,7 @@ using Fams3Adapter.Dynamics.OtherAsset;
 using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.RelatedPerson;
+using Fams3Adapter.Dynamics.ResultTransaction;
 using Fams3Adapter.Dynamics.Vehicle;
 using Simple.OData.Client;
 using System.Threading;
@@ -35,6 +36,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         Task<SSG_Asset_ICBCClaim> CreateInsuranceClaim(ICBCClaimEntity claim, CancellationToken cancellationToken);
         Task<SSG_SimplePhoneNumber> CreateSimplePhoneNumber(SSG_SimplePhoneNumber phone, CancellationToken cancellationToken);
         Task<SSG_InvolvedParty> CreateInvolvedParty(SSG_InvolvedParty involvedParty, CancellationToken cancellationToken);
+        Task<SSG_SearchRequestResultTransaction> CreateTransaction(SSG_SearchRequestResultTransaction transaction, CancellationToken cancellationToken);
     }
 
     /// <summary>
@@ -67,6 +69,11 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         public async Task<SSG_PhoneNumber> CreatePhoneNumber(PhoneNumberEntity phone, CancellationToken cancellationToken)
         {
             return await this._oDataClient.For<SSG_PhoneNumber>().Set(phone).InsertEntryAsync(cancellationToken);
+        }
+
+        public async Task<SSG_SearchRequestResultTransaction> CreateTransaction(SSG_SearchRequestResultTransaction transaction, CancellationToken cancellationToken)
+        {
+            return await this._oDataClient.For<SSG_SearchRequestResultTransaction>().Set(transaction).InsertEntryAsync(cancellationToken);
         }
 
         public async Task<SSG_Address> CreateAddress(AddressEntity address, CancellationToken cancellationToken)

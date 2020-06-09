@@ -484,7 +484,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         public async Task valid_Person_should_be_processed_correctly()
         {
 
-            var result = await _sut.ProcessPersonFound(_fakePerson, _providerProfile, _searchRequest, _fakeToken);
+            var result = await _sut.ProcessPersonFound(_fakePerson, _providerProfile, _searchRequest,Guid.NewGuid(), _fakeToken);
 
             _searchRequestServiceMock
               .Verify(x => x.SavePerson(It.IsAny<PersonEntity>(), It.IsAny<CancellationToken>()), Times.Once);
@@ -542,7 +542,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         public async Task null_Person_should_return_true_correctly()
         {
 
-            var result = await _sut.ProcessPersonFound(null, _providerProfile, _searchRequest, _fakeToken);
+            var result = await _sut.ProcessPersonFound(null, _providerProfile, _searchRequest, Guid.NewGuid(),_fakeToken);
   
             Assert.AreEqual(true, result);
         }
@@ -567,7 +567,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 CompensationClaims = null,
                 InsuranceClaims = null
             };
-            var result = await _sut.ProcessPersonFound(fakePersonNull, _providerProfile, _searchRequest, _fakeToken);
+            var result = await _sut.ProcessPersonFound(fakePersonNull, _providerProfile, _searchRequest,Guid.NewGuid(), _fakeToken);
 
             _searchRequestServiceMock
               .Verify(x => x.SavePerson(It.IsAny<PersonEntity>(), It.IsAny<CancellationToken>()), Times.Once);
@@ -676,7 +676,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _searchRequestServiceMock.Setup(x => x.CreateRelatedPerson(It.Is<RelatedPersonEntity>(x => x.SearchRequest.SearchRequestId == invalidRequestId), It.IsAny<CancellationToken>()))
                 .Throws(new Exception("relatedPerson random exception"));
 
-            var result = await _sut.ProcessPersonFound(exceptionPerson, _providerProfile, invalidSearchRequest, _fakeToken);
+            var result = await _sut.ProcessPersonFound(exceptionPerson, _providerProfile, invalidSearchRequest, Guid.NewGuid(),_fakeToken);
 
             _searchRequestServiceMock
               .Verify(x => x.SavePerson(It.IsAny<PersonEntity>(), It.IsAny<CancellationToken>()), Times.Once);
@@ -715,7 +715,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _searchRequestServiceMock.Setup(x => x.CreateCompensationClaim(It.Is<CompensationClaimEntity>(x => x.SearchRequest.SearchRequestId == invalidRequestId), It.IsAny<CancellationToken>()))
                  .Throws(new Exception("compensation random exception"));
     
-            var result = await _sut.ProcessPersonFound(exceptionPerson, _providerProfile, invalidSearchRequest, _fakeToken);
+            var result = await _sut.ProcessPersonFound(exceptionPerson, _providerProfile, invalidSearchRequest, Guid.NewGuid(), _fakeToken);
 
             _searchRequestServiceMock
               .Verify(x => x.SavePerson(It.IsAny<PersonEntity>(), It.IsAny<CancellationToken>()), Times.Once);
@@ -751,7 +751,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _searchRequestServiceMock.Setup(x => x.CreateInsuranceClaim(It.Is<ICBCClaimEntity>(x => x.SearchRequest.SearchRequestId == invalidRequestId), It.IsAny<CancellationToken>()))
                  .Throws(new Exception("insurance random exception"));
 
-            var result = await _sut.ProcessPersonFound(exceptionPerson, _providerProfile, invalidSearchRequest, _fakeToken);
+            var result = await _sut.ProcessPersonFound(exceptionPerson, _providerProfile, invalidSearchRequest, Guid.NewGuid(), _fakeToken);
 
             _searchRequestServiceMock
               .Verify(x => x.SavePerson(It.IsAny<PersonEntity>(), It.IsAny<CancellationToken>()), Times.Once);
@@ -801,7 +801,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _searchRequestServiceMock.Setup(x => x.CreateSimplePhoneNumber(It.Is<SSG_SimplePhoneNumber>(x => x.SSG_Asset_ICBCClaim.ICBCClaimId == invalidClaimId), It.IsAny<CancellationToken>()))
                  .Throws(new Exception("simplePhoneNumber random exception"));
 
-            var result = await _sut.ProcessPersonFound(exceptionPerson, _providerProfile, invalidSearchRequest, _fakeToken);
+            var result = await _sut.ProcessPersonFound(exceptionPerson, _providerProfile, invalidSearchRequest, Guid.NewGuid(), _fakeToken);
 
             _searchRequestServiceMock
               .Verify(x => x.SavePerson(It.IsAny<PersonEntity>(), It.IsAny<CancellationToken>()), Times.Once);
@@ -850,7 +850,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _searchRequestServiceMock.Setup(x => x.CreateInvolvedParty(It.Is<SSG_InvolvedParty>(x => x.SSG_Asset_ICBCClaim.ICBCClaimId == invalidClaimId), It.IsAny<CancellationToken>()))
                  .Throws(new Exception("involved party random exception"));
 
-            var result = await _sut.ProcessPersonFound(exceptionPerson, _providerProfile, invalidSearchRequest, _fakeToken);
+            var result = await _sut.ProcessPersonFound(exceptionPerson, _providerProfile, invalidSearchRequest,Guid.NewGuid(), _fakeToken);
 
             _searchRequestServiceMock
               .Verify(x => x.SavePerson(It.IsAny<PersonEntity>(), It.IsAny<CancellationToken>()), Times.Once);

@@ -4,6 +4,7 @@ using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Fams3Adapter.Dynamics.Types;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -24,6 +25,7 @@ namespace DynamicsAdapter.Web.Test.Register
         private SSG_SearchApiRequest _fakeRequest;
         private PersonalIdentifier _fakeIdentifier;
         private PersonalIdentifier _wrongIdentifier;
+        private Mock<ILogger<SearchRequestRegister>> _loggerMock;
 
         [SetUp]
         public void Init()
@@ -67,7 +69,8 @@ namespace DynamicsAdapter.Web.Test.Register
             _cacheServiceMock.Setup(x => x.Get(It.Is<string>(m => m.ToString() == _wrongSearchApiRequestGuid.ToString())))
              .Returns(Task.FromResult(""));
 
-            _sut = new SearchRequestRegister(_cacheServiceMock.Object);
+            _loggerMock = new Mock<ILogger<SearchRequestRegister>>();
+            _sut = new SearchRequestRegister(_cacheServiceMock.Object, _loggerMock.Object);
         }
 
         [Test]

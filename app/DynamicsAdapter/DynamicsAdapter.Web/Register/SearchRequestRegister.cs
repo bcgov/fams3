@@ -2,6 +2,7 @@
 using DynamicsAdapter.Web.Mapping;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.SearchApiRequest;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Linq;
@@ -20,16 +21,18 @@ namespace DynamicsAdapter.Web.Register
     public class SearchRequestRegister : ISearchRequestRegister
     {
         private readonly ICacheService _cache;
+        private readonly ILogger<SearchRequestRegister> _logger;
 
-        public SearchRequestRegister(ICacheService cache)
+        public SearchRequestRegister(ICacheService cache, ILogger<SearchRequestRegister> logger )
         {
             _cache = cache;
+            _logger = logger;
         }
 
         public SSG_SearchApiRequest FilterDuplicatedIdentifier(SSG_SearchApiRequest request)
         {
             SSG_Identifier[] uniqueIdentifers = request.Identifiers
-                               .GroupBy(x => (x.Identification, x.IdentifierType, x.IssuedBy.ToLower()))
+                               .GroupBy(x => (x.Identification, x.IdentifierType, x.IssuedBy?.ToLower()))
                                .Select(y => y.First()).ToArray<SSG_Identifier>();
 
             request.Identifiers = uniqueIdentifers;
@@ -53,9 +56,16 @@ namespace DynamicsAdapter.Web.Register
         public async Task<SSG_Identifier> GetMatchedSourceIdentifier(PersonalIdentifier identifer, Guid searchApiRequestId)
         {
             SSG_SearchApiRequest searchApiReqeust = await GetSearchApiRequest(searchApiRequestId);
+            if (searchApiReqeust == null)
+            {
+                _logger.LogError("Cannot find the searchApiRequest in Redis Cache.");
+                return null;
+            }
+
+            int? type = IDType.IDTypeDictionary.FirstOrDefault(m => m.Value == identifer.Type).Key;
             return searchApiReqeust.Identifiers.FirstOrDefault(
                 m => m.Identification == identifer.Value
-                     && m.IdentifierType == IDType.IDTypeDictionary.FirstOrDefault(m => m.Value == identifer.Type).Key);
+                     && m.IdentifierType == type);
         }  
     }
 }

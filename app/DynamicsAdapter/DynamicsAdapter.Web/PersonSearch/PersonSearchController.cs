@@ -184,6 +184,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                 {
                     var result = await _searchApiRequestService.MarkComplete(id, token.Token);
                     _logger.LogInformation($"Successfully finalized Person Search [{id}]");
+                    await _register.RemoveSearchApiRequest(id);
                 }
                 catch (Exception ex)
                 {

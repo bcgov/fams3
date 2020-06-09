@@ -15,6 +15,7 @@ namespace DynamicsAdapter.Web.Register
         SSG_SearchApiRequest FilterDuplicatedIdentifier(SSG_SearchApiRequest request);
         Task<bool> RegisterSearchApiRequest(SSG_SearchApiRequest request);
         Task<SSG_SearchApiRequest> GetSearchApiRequest(Guid guid);
+        Task<bool> RemoveSearchApiRequest(Guid guid);
         Task<SSG_Identifier> GetMatchedSourceIdentifier(PersonalIdentifier identifer, Guid searchApiRequestId);
     }
 
@@ -66,6 +67,12 @@ namespace DynamicsAdapter.Web.Register
             return searchApiReqeust.Identifiers.FirstOrDefault(
                 m => m.Identification == identifer.Value
                      && m.IdentifierType == type);
+        }
+
+        public async Task<bool> RemoveSearchApiRequest(Guid guid)
+        {
+            await _cache.Delete(Keys.REDIS_KEY_PREFIX + guid.ToString());
+            return true;
         }
     }
 }

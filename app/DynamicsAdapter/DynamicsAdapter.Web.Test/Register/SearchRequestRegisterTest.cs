@@ -66,6 +66,9 @@ namespace DynamicsAdapter.Web.Test.Register
             _cacheServiceMock.Setup(x => x.Get(It.Is<string>(m => m.ToString() == _validSearchApiRequestGuid.ToString())))
              .Returns(Task.FromResult(JsonConvert.SerializeObject(_fakeRequest)));
 
+            _cacheServiceMock.Setup(x => x.Delete(It.Is<string>(m => m.ToString() == _validSearchApiRequestGuid.ToString())))
+            .Returns(Task.FromResult(true));
+
             _cacheServiceMock.Setup(x => x.Get(It.Is<string>(m => m.ToString() == _wrongSearchApiRequestGuid.ToString())))
              .Returns(Task.FromResult(""));
 
@@ -204,6 +207,13 @@ namespace DynamicsAdapter.Web.Test.Register
             SSG_Identifier result = await _sut.GetMatchedSourceIdentifier(_fakeIdentifier, _wrongSearchApiRequestGuid);
             _loggerMock.VerifyLog(LogLevel.Error, "Cannot find the searchApiRequest in Redis Cache.", Times.Once());
             Assert.AreEqual(null, result);
+        }
+
+        [Test]
+        public async Task valid_searchApiRequestId_will_be_removed_successfully()
+        {
+            bool result = await _sut.RemoveSearchApiRequest(_validSearchApiRequestGuid);
+            Assert.AreEqual(true, result);
         }
     }
 }

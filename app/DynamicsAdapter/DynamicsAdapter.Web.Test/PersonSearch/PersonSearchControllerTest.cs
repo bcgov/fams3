@@ -237,6 +237,9 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _registerMock.Setup(x => x.GetMatchedSourceIdentifier(It.IsAny<PersonalIdentifier>(), It.IsAny<Guid>()))
                 .Returns(Task.FromResult(_fakeSourceIdentifier));
 
+            _registerMock.Setup(x => x.RemoveSearchApiRequest(It.IsAny<Guid>()))
+                .Returns(Task.FromResult(true));
+
             _sut = new PersonSearchController(_searchResultServiceMock.Object, _searchApiRequestServiceMock.Object, _loggerMock.Object,_mapper.Object,_registerMock.Object);
 
         }
@@ -259,6 +262,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             var result = await _sut.Finalized(_testGuid, _fakePersonFinalizedEvent);
            _searchApiRequestServiceMock
                 .Verify(x => x.MarkComplete(It.Is<Guid>(x => x == _testGuid), It.IsAny<CancellationToken>()), Times.Once);
+            _registerMock.Verify(x => x.RemoveSearchApiRequest(It.IsAny<Guid>()), Times.Once);
             Assert.IsInstanceOf(typeof(OkResult), result);
         }
 

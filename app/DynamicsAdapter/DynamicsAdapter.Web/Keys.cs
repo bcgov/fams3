@@ -9,5 +9,6 @@
         public static string EVENT_COMPLETED = "Completed";
         public static string EVENT_FAILED = "Failed";
         public static string REDIS_SECTION_SETTING_KEY = "Redis";
+        public static string REDIS_KEY_PREFIX= "dyna_";
     }
 }

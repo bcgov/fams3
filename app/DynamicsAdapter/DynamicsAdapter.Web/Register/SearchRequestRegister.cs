@@ -23,7 +23,7 @@ namespace DynamicsAdapter.Web.Register
         private readonly ICacheService _cache;
         private readonly ILogger<SearchRequestRegister> _logger;
 
-        public SearchRequestRegister(ICacheService cache, ILogger<SearchRequestRegister> logger )
+        public SearchRequestRegister(ICacheService cache, ILogger<SearchRequestRegister> logger)
         {
             _cache = cache;
             _logger = logger;
@@ -42,13 +42,13 @@ namespace DynamicsAdapter.Web.Register
         public async Task<bool> RegisterSearchApiRequest(SSG_SearchApiRequest request)
         {
             if (request == null) return false;
-            await _cache.Save(request.SearchApiRequestId.ToString(), request);
+            await _cache.Save(Keys.REDIS_KEY_PREFIX + request.SearchApiRequestId.ToString(), request);
             return true;
         }
 
-        public async Task<SSG_SearchApiRequest> GetSearchApiRequest(Guid guid) 
+        public async Task<SSG_SearchApiRequest> GetSearchApiRequest(Guid guid)
         {
-            string data = await _cache.Get(guid.ToString());
+            string data = await _cache.Get(Keys.REDIS_KEY_PREFIX + guid.ToString());
             if (String.IsNullOrEmpty(data)) return null;
             return JsonConvert.DeserializeObject<SSG_SearchApiRequest>(data);
         }
@@ -66,6 +66,6 @@ namespace DynamicsAdapter.Web.Register
             return searchApiReqeust.Identifiers.FirstOrDefault(
                 m => m.Identification == identifer.Value
                      && m.IdentifierType == type);
-        }  
+        }
     }
 }

@@ -82,7 +82,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                         foreach (PersonFound p in personCompletedEvent.MatchedPersons)
                         {
                             SSG_Identifier sourceIdentifer = await _register.GetMatchedSourceIdentifier(p.SourcePersonalIdentifier, id);
-                            await _searchResultService.ProcessPersonFound(p, personCompletedEvent.ProviderProfile, searchRequest, cts.Token, sourceIdentifer);
+                            await _searchResultService.ProcessPersonFound(p, personCompletedEvent.ProviderProfile, searchRequest, id, cts.Token, sourceIdentifer);
                         }
                     }                   
 
@@ -184,6 +184,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                 {
                     var result = await _searchApiRequestService.MarkComplete(id, token.Token);
                     _logger.LogInformation($"Successfully finalized Person Search [{id}]");
+                    await _register.RemoveSearchApiRequest(id);
                 }
                 catch (Exception ex)
                 {

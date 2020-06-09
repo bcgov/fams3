@@ -11,6 +11,8 @@ using Fams3Adapter.Dynamics.OtherAsset;
 using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.RelatedPerson;
+using Fams3Adapter.Dynamics.ResultTransaction;
+using Fams3Adapter.Dynamics.SearchApiRequest;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Fams3Adapter.Dynamics.Vehicle;
 using Microsoft.Extensions.Logging;
@@ -27,6 +29,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             Person person, 
             ProviderProfile providerProfile, 
             SSG_SearchRequest searchRequest,
+            Guid searchApiRequestId,
             CancellationToken cancellationToken,
             SSG_Identifier sourceIdentifier=null);
     }
@@ -37,72 +40,126 @@ namespace DynamicsAdapter.Web.PersonSearch
         private readonly ISearchRequestService _searchRequestService;
         private readonly IMapper _mapper;
 
+        private SSG_Person _returnedPerson;
+        private SSG_Identifier _sourceIdentifier;
+        private int? _providerDynamicsID;
+        private SSG_SearchRequest _searchRequest;
+        private SSG_SearchApiRequest _searchApiRequest;
+        private Person _foundPerson;
+        private CancellationToken _cancellationToken;
+
         public SearchResultService(ISearchRequestService searchRequestService, ILogger<SearchResultService> logger, IMapper mapper)
         {
             _searchRequestService = searchRequestService;
             _logger = logger;
             _mapper = mapper;
+            _returnedPerson = null;
+            _sourceIdentifier = null;
+            _providerDynamicsID = null;
+            _searchApiRequest = null;
+            _searchRequest = null;
+            _foundPerson = null;
         }
 
-        public async Task<bool> ProcessPersonFound(Person person, ProviderProfile providerProfile, SSG_SearchRequest request, CancellationToken concellationToken, SSG_Identifier sourceIdentifier= null)
+        public async Task<bool> ProcessPersonFound(
+            Person person, 
+            ProviderProfile providerProfile, 
+            SSG_SearchRequest request, 
+            Guid searchApiRequestId, 
+            CancellationToken concellationToken, 
+            SSG_Identifier sourceIdentifier= null)
         {
             if (person == null) return true;
 
-            int? providerDynamicsID = providerProfile.DynamicsID();
-            PersonEntity ssg_person = _mapper.Map<PersonEntity>(person);
-            ssg_person.SearchRequest = request;
-            ssg_person.InformationSource = providerDynamicsID;
-            _logger.LogDebug($"Attempting to create the found person record for SearchRequest[{request.SearchRequestId}]");
-            SSG_Person returnedPerson = await _searchRequestService.SavePerson(ssg_person, concellationToken);
+            _foundPerson = person;
+            _providerDynamicsID = providerProfile.DynamicsID();
+            _searchRequest = request;
+            _sourceIdentifier = sourceIdentifier;
+            _searchApiRequest = new SSG_SearchApiRequest() { SearchApiRequestId = searchApiRequestId };
+            _cancellationToken = concellationToken;
 
-            _logger.LogDebug($"Attempting to create found identifier records for SearchRequest[{request.SearchRequestId}]");
-            await UploadIdentifiers(person, request, returnedPerson, providerDynamicsID, concellationToken);
+            _returnedPerson = await UploadPerson();
 
-            _logger.LogDebug($"Attempting to create found adddress records for SearchRequest[{request.SearchRequestId}]");
-            await UploadAddresses(person, request, returnedPerson, providerDynamicsID, concellationToken);
+            await UploadIdentifiers( );
 
-            _logger.LogDebug($"Attempting to create found phone records for SearchRequest[{request.SearchRequestId}]");
-            await UploadPhoneNumbers(person, request, returnedPerson, providerDynamicsID, concellationToken);
+            await UploadAddresses();
 
-            _logger.LogDebug($"Attempting to create found name records for SearchRequest[{request.SearchRequestId}]");
-            await UploadNames(person, request, returnedPerson, providerDynamicsID, concellationToken);
+            await UploadPhoneNumbers();
 
-            _logger.LogDebug($"Attempting to create found employment records for SearchRequest[{request.SearchRequestId}]");
-            await UploadEmployment(person, request, returnedPerson, providerDynamicsID, concellationToken);
+            await UploadNames( );
 
-            _logger.LogDebug($"Attempting to create found related person records for SearchRequest[{request.SearchRequestId}]");
-            await UploadRelatedPersons(person, request, returnedPerson, providerDynamicsID, concellationToken);
+            await UploadEmployment( );
 
-            _logger.LogDebug($"Attempting to create bank info records for SearchRequest[{request.SearchRequestId}]");
-            await UploadBankInfos(person, request, returnedPerson, providerDynamicsID, concellationToken);
+            await UploadRelatedPersons();
 
-            _logger.LogDebug($"Attempting to create vehicles records for SearchRequest[{request.SearchRequestId}]");
-            await UploadVehicles(person, request, returnedPerson, providerDynamicsID, concellationToken);
+            await UploadBankInfos();
 
-            _logger.LogDebug($"Attempting to create other assets records for SearchRequest[{request.SearchRequestId}]");
-            await UploadOtherAssets(person, request, returnedPerson, providerDynamicsID, concellationToken);
+            await UploadVehicles();
 
-            _logger.LogDebug($"Attempting to create compnsation claims records for SearchRequest[{request.SearchRequestId}]");
-            await UploadCompensationClaims(person, request, returnedPerson, providerDynamicsID, concellationToken);
+            await UploadOtherAssets();
 
-            _logger.LogDebug($"Attempting to create insurance claims records for SearchRequest[{request.SearchRequestId}]");
-            await UploadInsuranceClaims(person, request, returnedPerson, providerDynamicsID, concellationToken);
+            await UploadCompensationClaims();
+
+            await UploadInsuranceClaims();
 
             return true;
         }
 
-        private async Task<bool> UploadIdentifiers(Person person, SSG_SearchRequest request, SSG_Person ssg_person, int? providerDynamicsID, CancellationToken concellationToken)
+        private async Task<bool> CreateResultTransaction(Object o)
         {
-            if (person.Identifiers == null) return true;
+            if (_sourceIdentifier != null)
+            {
+                SSG_SearchRequestResultTransaction trans = new SSG_SearchRequestResultTransaction()
+                {
+                    SourceIdentifier = _sourceIdentifier,
+                    SearchApiRequest = _searchApiRequest
+                };
+                switch (o.GetType().Name) {
+                    case "SSG_Person": trans.Person = (SSG_Person)o; break;
+                    case "SSG_Identifier": trans.ResultIdentifier = (SSG_Identifier)o; break;
+                    case "SSG_Address": trans.Address = (SSG_Address)o; break;
+                    case "SSG_PhoneNumber": trans.PhoneNumber = (SSG_PhoneNumber)o; break;
+                    case "SSG_Aliase": trans.Name = (SSG_Aliase)o; break;
+                    case "SSG_Employment": trans.Employment = (SSG_Employment)o; break;
+                    case "SSG_Identity": trans.RelatedPerson = (SSG_Identity)o; break;
+                    case "SSG_Asset_BankingInformation": trans.BankInfo = (SSG_Asset_BankingInformation)o; break;
+                    case "SSG_Asset_Vehicle": trans.Vehicle = (SSG_Asset_Vehicle)o; break;
+                    case "SSG_Asset_Other": trans.OtherAsset = (SSG_Asset_Other)o; break;
+                    case "SSG_Asset_WorkSafeBcClaim": trans.CompensationClaim = (SSG_Asset_WorkSafeBcClaim)o; break;
+                    case "SSG_Asset_ICBCClaim": trans.InsuranceClaim = (SSG_Asset_ICBCClaim)o; break;
+                    default: return false;
+                }
+                await _searchRequestService.CreateTransaction(trans, _cancellationToken);
+                return true;
+            }
+            return false;
+        }
+        private async Task<SSG_Person> UploadPerson()
+        {
+            _logger.LogDebug($"Attempting to create the found person record for SearchRequest[{_searchRequest.SearchRequestId}]");
+            PersonEntity ssg_person = _mapper.Map<PersonEntity>(_foundPerson);
+            ssg_person.SearchRequest = _searchRequest;
+            ssg_person.InformationSource = _providerDynamicsID;
+            SSG_Person returnedPerson = await _searchRequestService.SavePerson(ssg_person, _cancellationToken);
+            await CreateResultTransaction(returnedPerson);
+            return returnedPerson;
+        }
+
+        private async Task<bool> UploadIdentifiers()
+        {
+            if (_foundPerson.Identifiers == null) return true;
             try
             {
-                foreach (var matchFoundPersonId in person.Identifiers)
+                _logger.LogDebug($"Attempting to create found identifier records for SearchRequest[{_searchRequest.SearchRequestId}]");
+
+                foreach (var matchFoundPersonId in _foundPerson.Identifiers)
                 {
                     IdentifierEntity identifier = _mapper.Map<IdentifierEntity>(matchFoundPersonId);
-                    identifier.SearchRequest = request;
-                    identifier.InformationSource = providerDynamicsID;
-                    identifier.Person = ssg_person;
-                    var identifer = await _searchRequestService.CreateIdentifier(identifier, concellationToken);
+                    identifier.SearchRequest = _searchRequest;
+                    identifier.InformationSource = _providerDynamicsID;
+                    identifier.Person = _returnedPerson;
+                    SSG_Identifier identifer = await _searchRequestService.CreateIdentifier(identifier, _cancellationToken);
+                    await CreateResultTransaction(identifer);
                 }
                 return true;
             }
@@ -113,18 +170,21 @@ namespace DynamicsAdapter.Web.PersonSearch
             }
         }
 
-        private async Task<bool> UploadAddresses(Person person, SSG_SearchRequest request, SSG_Person ssg_person, int? providerDynamicsID, CancellationToken concellationToken)
+        private async Task<bool> UploadAddresses( )
         {
-            if (person.Addresses == null) return true;
+            if (_foundPerson.Addresses == null) return true;
             try
             {
-                foreach (var address in person.Addresses)
+                _logger.LogDebug($"Attempting to create found adddress records for SearchRequest[{_searchRequest.SearchRequestId}]");
+
+                foreach (var address in _foundPerson.Addresses)
                 {
                     AddressEntity addr = _mapper.Map<AddressEntity>(address);
-                    addr.SearchRequest = request;
-                    addr.InformationSource = providerDynamicsID;
-                    addr.Person = ssg_person;
-                    var uploadedAddr = await _searchRequestService.CreateAddress(addr, concellationToken);
+                    addr.SearchRequest = _searchRequest;
+                    addr.InformationSource = _providerDynamicsID;
+                    addr.Person = _returnedPerson;
+                    SSG_Address uploadedAddr = await _searchRequestService.CreateAddress(addr, _cancellationToken);
+                    await CreateResultTransaction(uploadedAddr);
                 }
                 return true;
             }
@@ -135,18 +195,21 @@ namespace DynamicsAdapter.Web.PersonSearch
             }
         }
 
-        private async Task<bool> UploadPhoneNumbers(Person person, SSG_SearchRequest request, SSG_Person ssg_person, int? providerDynamicsID, CancellationToken concellationToken)
+        private async Task<bool> UploadPhoneNumbers()
         {
-            if (person.Phones == null) return true;
+            if (_foundPerson.Phones == null) return true;
             try
             {
-                foreach (var phone in person.Phones)
+                _logger.LogDebug($"Attempting to create found phone records for SearchRequest[{_searchRequest.SearchRequestId}]");
+
+                foreach (var phone in _foundPerson.Phones)
                 {
                     PhoneNumberEntity ph = _mapper.Map<PhoneNumberEntity>(phone);
-                    ph.SearchRequest = request;
-                    ph.InformationSource = providerDynamicsID;
-                    ph.Person = ssg_person;
-                    await _searchRequestService.CreatePhoneNumber(ph, concellationToken);
+                    ph.SearchRequest = _searchRequest;
+                    ph.InformationSource = _providerDynamicsID;
+                    ph.Person = _returnedPerson;
+                    SSG_PhoneNumber phoneNumber = await _searchRequestService.CreatePhoneNumber(ph, _cancellationToken);
+                    await CreateResultTransaction(phoneNumber);
                 }
                 return true;
             }
@@ -156,18 +219,20 @@ namespace DynamicsAdapter.Web.PersonSearch
                 return false;
             }
         }
-        private async Task<bool> UploadNames(Person person, SSG_SearchRequest request, SSG_Person ssg_person, int? providerDynamicsID, CancellationToken concellationToken)
+        private async Task<bool> UploadNames( )
         {
-            if (person.Names == null) return true;
+            if (_foundPerson.Names == null) return true;
             try
             {
-                foreach (var name in person.Names)
+                _logger.LogDebug($"Attempting to create found name records for SearchRequest[{_searchRequest.SearchRequestId}]");
+                foreach (var name in _foundPerson.Names)
                 {
                     AliasEntity n = _mapper.Map<AliasEntity>(name);
-                    n.SearchRequest = request;
-                    n.InformationSource = providerDynamicsID;
-                    n.Person = ssg_person;
-                    await _searchRequestService.CreateName(n, concellationToken);
+                    n.SearchRequest = _searchRequest;
+                    n.InformationSource = _providerDynamicsID;
+                    n.Person = _returnedPerson;
+                    SSG_Aliase alias = await _searchRequestService.CreateName(n, _cancellationToken);
+                    await CreateResultTransaction(alias);
                 }
                 return true;
             }
@@ -177,18 +242,20 @@ namespace DynamicsAdapter.Web.PersonSearch
                 return false;
             }
         }
-        private async Task<bool> UploadEmployment(Person person, SSG_SearchRequest request, SSG_Person ssg_person, int? providerDynamicsID, CancellationToken concellationToken)
+        private async Task<bool> UploadEmployment( )
         {
-            if (person.Employments == null) return true;
+            if (_foundPerson.Employments == null) return true;
             try
             {
-                foreach (var employment in person.Employments)
+                _logger.LogDebug($"Attempting to create found employment records for SearchRequest[{_searchRequest.SearchRequestId}]");
+
+                foreach (var employment in _foundPerson.Employments)
                 {
                     EmploymentEntity e = _mapper.Map<EmploymentEntity>(employment);
-                    e.SearchRequest = request;
-                    e.InformationSource = providerDynamicsID;
-                    e.Person = ssg_person;
-                    SSG_Employment ssg_employment = await _searchRequestService.CreateEmployment(e, concellationToken);
+                    e.SearchRequest = _searchRequest;
+                    e.InformationSource = _providerDynamicsID;
+                    e.Person = _returnedPerson;
+                    SSG_Employment ssg_employment = await _searchRequestService.CreateEmployment(e, _cancellationToken);
 
                     if (employment.Employer != null)
                     {
@@ -196,9 +263,11 @@ namespace DynamicsAdapter.Web.PersonSearch
                         {
                             SSG_EmploymentContact p = _mapper.Map<SSG_EmploymentContact>(phone);
                             p.Employment = ssg_employment;
-                            await _searchRequestService.CreateEmploymentContact(p, concellationToken);
+                            await _searchRequestService.CreateEmploymentContact(p, _cancellationToken);
                         }
                     }
+
+                    await CreateResultTransaction(ssg_employment);
                 }
                 return true;
             }
@@ -209,18 +278,21 @@ namespace DynamicsAdapter.Web.PersonSearch
             }
         }
 
-        private async Task<bool> UploadRelatedPersons(Person person, SSG_SearchRequest request, SSG_Person ssg_person, int? providerDynamicsID, CancellationToken concellationToken)
+        private async Task<bool> UploadRelatedPersons()
         {
-            if (person.RelatedPersons == null) return true;
+            if (_foundPerson.RelatedPersons == null) return true;
             try
             {
-                foreach (var relatedPerson in person.RelatedPersons)
+                _logger.LogDebug($"Attempting to create found related person records for SearchRequest[{_searchRequest.SearchRequestId}]");
+
+                foreach (var relatedPerson in _foundPerson.RelatedPersons)
                 {
                     RelatedPersonEntity n = _mapper.Map<RelatedPersonEntity>(relatedPerson);
-                    n.SearchRequest = request;
-                    n.InformationSource = providerDynamicsID;
-                    n.Person = ssg_person;
-                    await _searchRequestService.CreateRelatedPerson(n, concellationToken);
+                    n.SearchRequest = _searchRequest;
+                    n.InformationSource = _providerDynamicsID;
+                    n.Person = _returnedPerson;
+                    SSG_Identity relate = await _searchRequestService.CreateRelatedPerson(n, _cancellationToken);
+                    await CreateResultTransaction(relate);
                 }
                 return true;
             }
@@ -231,18 +303,20 @@ namespace DynamicsAdapter.Web.PersonSearch
             }
         }
 
-        private async Task<bool> UploadBankInfos(Person person, SSG_SearchRequest request, SSG_Person ssg_person, int? providerDynamicsID, CancellationToken concellationToken)
+        private async Task<bool> UploadBankInfos()
         {
-            if (person.BankInfos == null) return true;
+            if (_foundPerson.BankInfos == null) return true;
             try
             {
-                foreach (var bankInfo in person.BankInfos)
+                _logger.LogDebug($"Attempting to create bank info records for SearchRequest[{_searchRequest.SearchRequestId}]");
+                foreach (var bankInfo in _foundPerson.BankInfos)
                 {
                     BankingInformationEntity bank = _mapper.Map<BankingInformationEntity>(bankInfo);
-                    bank.SearchRequest = request;
-                    bank.InformationSource = providerDynamicsID;
-                    bank.Person = ssg_person;
-                    await _searchRequestService.CreateBankInfo(bank, concellationToken);
+                    bank.SearchRequest = _searchRequest;
+                    bank.InformationSource = _providerDynamicsID;
+                    bank.Person = _returnedPerson;
+                    SSG_Asset_BankingInformation ssgBank = await _searchRequestService.CreateBankInfo(bank, _cancellationToken);
+                    await CreateResultTransaction(ssgBank);
                 }
                 return true;
             }
@@ -253,27 +327,31 @@ namespace DynamicsAdapter.Web.PersonSearch
             }
         }
 
-        private async Task<bool> UploadVehicles(Person person, SSG_SearchRequest request, SSG_Person ssg_person, int? providerDynamicsID, CancellationToken concellationToken)
+        private async Task<bool> UploadVehicles()
         {
-            if (person.Vehicles == null) return true;
+            if (_foundPerson.Vehicles == null) return true;
             try
             {
-                foreach (var v in person.Vehicles)
+                _logger.LogDebug($"Attempting to create vehicles records for SearchRequest[{_searchRequest.SearchRequestId}]");
+
+                foreach (var v in _foundPerson.Vehicles)
                 {
                     VehicleEntity vehicle = _mapper.Map<VehicleEntity>(v);
-                    vehicle.SearchRequest = request;
-                    vehicle.InformationSource = providerDynamicsID;
-                    vehicle.Person = ssg_person;
-                    SSG_Asset_Vehicle ssgVehicle = await _searchRequestService.CreateVehicle(vehicle, concellationToken);
+                    vehicle.SearchRequest = _searchRequest;
+                    vehicle.InformationSource = _providerDynamicsID;
+                    vehicle.Person = _returnedPerson;
+                    SSG_Asset_Vehicle ssgVehicle = await _searchRequestService.CreateVehicle(vehicle, _cancellationToken);
                     if (v.Owners != null)
                     {
                         foreach (var owner in v.Owners)
                         {
                             SSG_AssetOwner assetOwner = _mapper.Map<SSG_AssetOwner>(owner);
                             assetOwner.Vehicle = ssgVehicle;
-                            await _searchRequestService.CreateAssetOwner(assetOwner, concellationToken);
+                            await _searchRequestService.CreateAssetOwner(assetOwner, _cancellationToken);
                         }
                     }
+                    await CreateResultTransaction(ssgVehicle);
+
                 }
                 return true;
             }
@@ -284,27 +362,31 @@ namespace DynamicsAdapter.Web.PersonSearch
             }
         }
 
-        private async Task<bool> UploadOtherAssets(Person person, SSG_SearchRequest request, SSG_Person ssg_person, int? providerDynamicsID, CancellationToken concellationToken)
+        private async Task<bool> UploadOtherAssets()
         {
-            if (person.OtherAssets == null) return true;
+            if (_foundPerson.OtherAssets == null) return true;
             try
             {
-                foreach (OtherAsset asset in person.OtherAssets)
+                _logger.LogDebug($"Attempting to create other assets records for SearchRequest[{_searchRequest.SearchRequestId}]");
+
+                foreach (OtherAsset asset in _foundPerson.OtherAssets)
                 {
                     AssetOtherEntity other = _mapper.Map<AssetOtherEntity>(asset);
-                    other.SearchRequest = request;
-                    other.InformationSource = providerDynamicsID;
-                    other.Person = ssg_person;
-                    SSG_Asset_Other ssgOtherAsset = await _searchRequestService.CreateOtherAsset(other, concellationToken);
+                    other.SearchRequest = _searchRequest;
+                    other.InformationSource = _providerDynamicsID;
+                    other.Person = _returnedPerson;
+                    SSG_Asset_Other ssgOtherAsset = await _searchRequestService.CreateOtherAsset(other, _cancellationToken);
                     if (asset.Owners != null)
                     {
                         foreach (var owner in asset.Owners)
                         {
                             SSG_AssetOwner assetOwner = _mapper.Map<SSG_AssetOwner>(owner);
                             assetOwner.OtherAsset = ssgOtherAsset;
-                            await _searchRequestService.CreateAssetOwner(assetOwner, concellationToken);
+                            await _searchRequestService.CreateAssetOwner(assetOwner, _cancellationToken);
                         }
                     }
+
+                    await CreateResultTransaction(ssgOtherAsset);
                 }
                 return true;
             }
@@ -315,47 +397,51 @@ namespace DynamicsAdapter.Web.PersonSearch
             }
         }
 
-        private async Task<bool> UploadCompensationClaims(Person person, SSG_SearchRequest request, SSG_Person ssg_person, int? providerDynamicsID, CancellationToken concellationToken)
+        private async Task<bool> UploadCompensationClaims()
         {
-            if (person.CompensationClaims == null) return true;
+            if (_foundPerson.CompensationClaims == null) return true;
             try
             {
-                foreach (CompensationClaim claim in person.CompensationClaims)
+                _logger.LogDebug($"Attempting to create compnsation claims records for SearchRequest[{_searchRequest.SearchRequestId}]");
+
+                foreach (CompensationClaim claim in _foundPerson.CompensationClaims)
                 {
                     SSG_Asset_BankingInformation ssg_bank = null;
                     if (claim.BankInfo != null)
                     {
                         BankingInformationEntity bank = _mapper.Map<BankingInformationEntity>(claim.BankInfo);
-                        bank.InformationSource = providerDynamicsID;
-                        ssg_bank = await _searchRequestService.CreateBankInfo(bank, concellationToken);
+                        bank.InformationSource = _providerDynamicsID;
+                        ssg_bank = await _searchRequestService.CreateBankInfo(bank, _cancellationToken);
                     }
 
                     SSG_Employment ssg_employment = null;
                     if (claim.Employer != null)
                     {
                         EmploymentEntity employ = _mapper.Map<EmploymentEntity>(claim.Employer);
-                        employ.InformationSource = providerDynamicsID;
+                        employ.InformationSource = _providerDynamicsID;
                         employ.Date1 = claim.ReferenceDates?.SingleOrDefault(m => m.Index == 0)?.Value.DateTime;
                         employ.Date1Label = claim.ReferenceDates?.SingleOrDefault(m => m.Index == 0)?.Key;
-                        ssg_employment = await _searchRequestService.CreateEmployment(employ, concellationToken);
+                        ssg_employment = await _searchRequestService.CreateEmployment(employ, _cancellationToken);
                         if (claim.Employer.Phones != null)
                         {
                             foreach (var phone in claim.Employer.Phones)
                             {
                                 SSG_EmploymentContact p = _mapper.Map<SSG_EmploymentContact>(phone);
                                 p.Employment = ssg_employment;
-                                await _searchRequestService.CreateEmploymentContact(p, concellationToken);
+                                await _searchRequestService.CreateEmploymentContact(p, _cancellationToken);
                             }
                         }
                     }
 
                     CompensationClaimEntity ssg_claim = _mapper.Map<CompensationClaimEntity>(claim);
-                    ssg_claim.SearchRequest = request;
-                    ssg_claim.InformationSource = providerDynamicsID;
-                    ssg_claim.Person = ssg_person;
+                    ssg_claim.SearchRequest = _searchRequest;
+                    ssg_claim.InformationSource = _providerDynamicsID;
+                    ssg_claim.Person =  _returnedPerson;
                     ssg_claim.BankingInformation = ssg_bank;
                     ssg_claim.Employment = ssg_employment;
-                    await _searchRequestService.CreateCompensationClaim(ssg_claim, concellationToken);
+                    SSG_Asset_WorkSafeBcClaim ssgClaim = await _searchRequestService.CreateCompensationClaim(ssg_claim, _cancellationToken);
+
+                    await CreateResultTransaction(ssgClaim);
                 }
                 return true;
             }
@@ -366,18 +452,21 @@ namespace DynamicsAdapter.Web.PersonSearch
             }
         }
 
-        private async Task<bool> UploadInsuranceClaims(Person person, SSG_SearchRequest request, SSG_Person ssg_person, int? providerDynamicsID, CancellationToken concellationToken)
+        private async Task<bool> UploadInsuranceClaims()
         {
-            if (person.InsuranceClaims == null) return true;
+            if (_foundPerson.InsuranceClaims == null) return true;
             try
             {
-                foreach (InsuranceClaim claim in person.InsuranceClaims)
+                _logger.LogDebug($"Attempting to create insurance claims records for SearchRequest[{_searchRequest.SearchRequestId}]");
+
+                foreach (InsuranceClaim claim in _foundPerson.InsuranceClaims)
                 {
                     ICBCClaimEntity icbcClaim = _mapper.Map<ICBCClaimEntity>(claim);
-                    icbcClaim.SearchRequest = request;
-                    icbcClaim.InformationSource = providerDynamicsID;
-                    icbcClaim.Person = ssg_person;
-                    SSG_Asset_ICBCClaim ssg_claim = await _searchRequestService.CreateInsuranceClaim(icbcClaim, concellationToken);
+                    icbcClaim.SearchRequest = _searchRequest;
+                    icbcClaim.InformationSource = _providerDynamicsID;
+                    icbcClaim.Person = _returnedPerson;
+                    SSG_Asset_ICBCClaim ssg_claim = await _searchRequestService.CreateInsuranceClaim(icbcClaim, _cancellationToken);
+                    await CreateResultTransaction(ssg_claim);
 
                     if (claim.ClaimCentre != null && claim.ClaimCentre.ContactNumber!=null)
                     {
@@ -385,7 +474,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                         {
                             SSG_SimplePhoneNumber phoneForAsset = _mapper.Map<SSG_SimplePhoneNumber>(phone);
                             phoneForAsset.SSG_Asset_ICBCClaim = ssg_claim;
-                            await _searchRequestService.CreateSimplePhoneNumber(phoneForAsset, concellationToken);
+                            await _searchRequestService.CreateSimplePhoneNumber(phoneForAsset, _cancellationToken);
                         }
                     }
 
@@ -395,10 +484,9 @@ namespace DynamicsAdapter.Web.PersonSearch
                         {
                             SSG_InvolvedParty involvedParty = _mapper.Map<SSG_InvolvedParty>(party);
                             involvedParty.SSG_Asset_ICBCClaim = ssg_claim;
-                            await _searchRequestService.CreateInvolvedParty(involvedParty, concellationToken);
+                            await _searchRequestService.CreateInvolvedParty(involvedParty, _cancellationToken);
                         }
                     }
-
                 }
                 return true;
             }

@@ -4,6 +4,7 @@ using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Fams3Adapter.Dynamics.Types;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -24,6 +25,7 @@ namespace DynamicsAdapter.Web.Test.Register
         private SSG_SearchApiRequest _fakeRequest;
         private PersonalIdentifier _fakeIdentifier;
         private PersonalIdentifier _wrongIdentifier;
+        private Mock<ILogger<SearchRequestRegister>> _loggerMock;
 
         [SetUp]
         public void Init()
@@ -61,13 +63,17 @@ namespace DynamicsAdapter.Web.Test.Register
             _cacheServiceMock.Setup(x => x.Save(It.IsAny<string>(), It.IsAny<object>()))
              .Returns(Task.FromResult(true));
 
-            _cacheServiceMock.Setup(x => x.Get(It.Is<string>(m => m.ToString() == _validSearchApiRequestGuid.ToString())))
+            _cacheServiceMock.Setup(x => x.Get(It.Is<string>(m => m.ToString() == Keys.REDIS_KEY_PREFIX+_validSearchApiRequestGuid.ToString())))
              .Returns(Task.FromResult(JsonConvert.SerializeObject(_fakeRequest)));
 
-            _cacheServiceMock.Setup(x => x.Get(It.Is<string>(m => m.ToString() == _wrongSearchApiRequestGuid.ToString())))
+            _cacheServiceMock.Setup(x => x.Delete(It.Is<string>(m => m.ToString() == Keys.REDIS_KEY_PREFIX + _validSearchApiRequestGuid.ToString())))
+            .Returns(Task.FromResult(true));
+
+            _cacheServiceMock.Setup(x => x.Get(It.Is<string>(m => m.ToString() == Keys.REDIS_KEY_PREFIX + _wrongSearchApiRequestGuid.ToString())))
              .Returns(Task.FromResult(""));
 
-            _sut = new SearchRequestRegister(_cacheServiceMock.Object);
+            _loggerMock = new Mock<ILogger<SearchRequestRegister>>();
+            _sut = new SearchRequestRegister(_cacheServiceMock.Object, _loggerMock.Object);
         }
 
         [Test]
@@ -193,6 +199,21 @@ namespace DynamicsAdapter.Web.Test.Register
         {
             SSG_Identifier result = await _sut.GetMatchedSourceIdentifier(_wrongIdentifier, _validSearchApiRequestGuid);
             Assert.AreEqual(null, result);
+        }
+
+        [Test]
+        public async Task wrong_searchApiRequestId_will_get_null_ssgIdentifier()
+        {
+            SSG_Identifier result = await _sut.GetMatchedSourceIdentifier(_fakeIdentifier, _wrongSearchApiRequestGuid);
+            _loggerMock.VerifyLog(LogLevel.Error, "Cannot find the searchApiRequest in Redis Cache.", Times.Once());
+            Assert.AreEqual(null, result);
+        }
+
+        [Test]
+        public async Task valid_searchApiRequestId_will_be_removed_successfully()
+        {
+            bool result = await _sut.RemoveSearchApiRequest(_validSearchApiRequestGuid);
+            Assert.AreEqual(true, result);
         }
     }
 }

@@ -197,6 +197,14 @@ namespace DynamicsAdapter.Web.Test.Register
             SSG_Identifier result = await _sut.GetMatchedSourceIdentifier(_wrongIdentifier, _validSearchApiRequestGuid);
             Assert.AreEqual(null, result);
         }
+
+        [Test]
+        public async Task wrong_searchApiRequestId_will_get_null_ssgIdentifier()
+        {
+            SSG_Identifier result = await _sut.GetMatchedSourceIdentifier(_fakeIdentifier, _wrongSearchApiRequestGuid);
+            _loggerMock.VerifyLog(LogLevel.Error, "Cannot find the searchApiRequest in Redis Cache.", Times.Once());
+            Assert.AreEqual(null, result);
+        }
     }
 }
 

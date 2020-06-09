@@ -9,6 +9,7 @@ using Fams3Adapter.Dynamics.OtherAsset;
 using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.RelatedPerson;
+using Fams3Adapter.Dynamics.ResultTransaction;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Fams3Adapter.Dynamics.Types;
 using Fams3Adapter.Dynamics.Vehicle;
@@ -186,6 +187,13 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             })
             );
 
+            odataClientMock.Setup(x => x.For<SSG_SearchRequestResultTransaction>(null).Set(It.IsAny<SSG_SearchRequestResultTransaction>())
+            .InsertEntryAsync(It.IsAny<CancellationToken>()))
+            .Returns(Task.FromResult(new SSG_SearchRequestResultTransaction()
+            {
+                SourceIdentifier = new SSG_Identifier() { Identification="11111"}
+            })
+            );
             _sut = new SearchRequestService(odataClientMock.Object);
         }
 
@@ -501,6 +509,17 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             var result = await _sut.CreateInvolvedParty(party, CancellationToken.None);
 
             Assert.AreEqual("party", result.OrganizationName);
+        }
+
+
+        [Test]
+        public async Task upload_ResultTransaction_should_success()
+        {
+            var trans = new SSG_SearchRequestResultTransaction(){};
+
+            var result = await _sut.CreateTransaction(trans, CancellationToken.None);
+
+            Assert.AreEqual("11111", result.SourceIdentifier.Identification);
         }
     }
 }

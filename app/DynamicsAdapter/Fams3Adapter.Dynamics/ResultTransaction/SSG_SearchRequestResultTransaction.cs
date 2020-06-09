@@ -61,5 +61,8 @@ namespace Fams3Adapter.Dynamics.ResultTransaction
 
         [JsonProperty("ssg_SearchAPIRequest")]
         public virtual SSG_SearchApiRequest SearchApiRequest { get; set; }
+
+        [JsonProperty("ssg_suppliedby")]
+        public int? InformationSource { get; set; }
     }
 }

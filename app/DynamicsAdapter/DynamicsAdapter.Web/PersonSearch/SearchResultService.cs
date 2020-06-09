@@ -112,7 +112,8 @@ namespace DynamicsAdapter.Web.PersonSearch
                 SSG_SearchRequestResultTransaction trans = new SSG_SearchRequestResultTransaction()
                 {
                     SourceIdentifier = _sourceIdentifier,
-                    SearchApiRequest = _searchApiRequest
+                    SearchApiRequest = _searchApiRequest,
+                    InformationSource = _providerDynamicsID
                 };
                 switch (o.GetType().Name) {
                     case "SSG_Person": trans.Person = (SSG_Person)o; break;

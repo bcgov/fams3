@@ -63,13 +63,13 @@ namespace DynamicsAdapter.Web.Test.Register
             _cacheServiceMock.Setup(x => x.Save(It.IsAny<string>(), It.IsAny<object>()))
              .Returns(Task.FromResult(true));
 
-            _cacheServiceMock.Setup(x => x.Get(It.Is<string>(m => m.ToString() == _validSearchApiRequestGuid.ToString())))
+            _cacheServiceMock.Setup(x => x.Get(It.Is<string>(m => m.ToString() == Keys.REDIS_KEY_PREFIX+_validSearchApiRequestGuid.ToString())))
              .Returns(Task.FromResult(JsonConvert.SerializeObject(_fakeRequest)));
 
-            _cacheServiceMock.Setup(x => x.Delete(It.Is<string>(m => m.ToString() == _validSearchApiRequestGuid.ToString())))
+            _cacheServiceMock.Setup(x => x.Delete(It.Is<string>(m => m.ToString() == Keys.REDIS_KEY_PREFIX + _validSearchApiRequestGuid.ToString())))
             .Returns(Task.FromResult(true));
 
-            _cacheServiceMock.Setup(x => x.Get(It.Is<string>(m => m.ToString() == _wrongSearchApiRequestGuid.ToString())))
+            _cacheServiceMock.Setup(x => x.Get(It.Is<string>(m => m.ToString() == Keys.REDIS_KEY_PREFIX + _wrongSearchApiRequestGuid.ToString())))
              .Returns(Task.FromResult(""));
 
             _loggerMock = new Mock<ILogger<SearchRequestRegister>>();

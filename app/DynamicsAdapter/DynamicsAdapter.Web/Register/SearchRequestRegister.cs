@@ -1,4 +1,5 @@
 ﻿using BcGov.Fams3.Redis;
+using DynamicsAdapter.Web.Mapping;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using Newtonsoft.Json;
@@ -13,6 +14,7 @@ namespace DynamicsAdapter.Web.Register
         SSG_SearchApiRequest FilterDuplicatedIdentifier(SSG_SearchApiRequest request);
         Task<bool> RegisterSearchApiRequest(SSG_SearchApiRequest request);
         Task<SSG_SearchApiRequest> GetSearchApiRequest(Guid guid);
+        Task<SSG_Identifier> GetMatchedSourceIdentifier(PersonalIdentifier identifer, Guid searchApiRequestId);
     }
 
     public class SearchRequestRegister : ISearchRequestRegister
@@ -48,5 +50,12 @@ namespace DynamicsAdapter.Web.Register
             return JsonConvert.DeserializeObject<SSG_SearchApiRequest>(data);
         }
 
+        public async Task<SSG_Identifier> GetMatchedSourceIdentifier(PersonalIdentifier identifer, Guid searchApiRequestId)
+        {
+            SSG_SearchApiRequest searchApiReqeust = await GetSearchApiRequest(searchApiRequestId);
+            return searchApiReqeust.Identifiers.FirstOrDefault(
+                m => m.Identification == identifer.Value
+                     && m.IdentifierType == IDType.IDTypeDictionary.FirstOrDefault(m => m.Value == identifer.Type).Key);
+        }  
     }
 }

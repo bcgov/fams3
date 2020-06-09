@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using DynamicsAdapter.Web.PersonSearch.Models;
+using DynamicsAdapter.Web.Register;
 using Fams3Adapter.Dynamics;
+using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.SearchApiEvent;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using Fams3Adapter.Dynamics.SearchRequest;
@@ -23,14 +25,19 @@ namespace DynamicsAdapter.Web.PersonSearch
         private readonly ISearchResultService _searchResultService;
         private readonly ISearchApiRequestService _searchApiRequestService;
         private readonly IMapper _mapper;
+        private readonly ISearchRequestRegister _register;
 
         public PersonSearchController(ISearchResultService searchResultService,
-            ISearchApiRequestService searchApiRequestService, ILogger<PersonSearchController> logger, IMapper mapper)
+            ISearchApiRequestService searchApiRequestService,
+            ILogger<PersonSearchController> logger, 
+            IMapper mapper,
+            ISearchRequestRegister register)
         {
             _searchResultService = searchResultService;
             _searchApiRequestService = searchApiRequestService;
             _logger = logger;
             _mapper = mapper;
+            _register = register;
         }
 
         //POST: Completed/id
@@ -72,9 +79,10 @@ namespace DynamicsAdapter.Web.PersonSearch
                         //{
                         //    await _searchResultService.ProcessPersonFound(p, personCompletedEvent.ProviderProfile, searchRequest, cts.Token);
                         //});
-                        foreach (Person p in personCompletedEvent.MatchedPersons)
+                        foreach (PersonFound p in personCompletedEvent.MatchedPersons)
                         {
-                            await _searchResultService.ProcessPersonFound(p, personCompletedEvent.ProviderProfile, searchRequest, cts.Token);
+                            SSG_Identifier sourceIdentifer = await _register.GetMatchedSourceIdentifier(p.SourcePersonalIdentifier, id);
+                            await _searchResultService.ProcessPersonFound(p, personCompletedEvent.ProviderProfile, searchRequest, cts.Token, sourceIdentifer);
                         }
                     }                   
 

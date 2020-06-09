@@ -18,18 +18,44 @@ namespace DynamicsAdapter.Web.Test.Register
         private SearchRequestRegister _sut;
         private readonly Mock<ICacheService> _cacheServiceMock = new Mock<ICacheService>();
         private Guid _validSearchApiRequestGuid;
+        private Guid _validSouceIdentifierGuid;
         private Guid _wrongSearchApiRequestGuid;
+        private Guid _wrongSourceIdentifierGuid;
         private SSG_SearchApiRequest _fakeRequest;
+        private PersonalIdentifier _fakeIdentifier;
+        private PersonalIdentifier _wrongIdentifier;
 
         [SetUp]
         public void Init()
         {
             _validSearchApiRequestGuid = Guid.NewGuid();
+            _validSouceIdentifierGuid = Guid.NewGuid();
             _wrongSearchApiRequestGuid = Guid.NewGuid();
+            _wrongSourceIdentifierGuid = Guid.NewGuid();
 
             _fakeRequest = new SSG_SearchApiRequest
             {
                 SearchRequest = new SSG_SearchRequest() { FileId = "111111" },
+                Identifiers = new List<SSG_Identifier>()
+                {
+                    new SSG_Identifier() { 
+                        Identification = "1234567", 
+                        IdentifierType = IdentificationType.BirthCertificate.Value,
+                        IdentifierId = _validSouceIdentifierGuid
+                    }
+                }.ToArray()
+            };
+
+            _fakeIdentifier = new PersonalIdentifier
+            {
+                Value = "1234567",
+                Type = PersonalIdentifierType.BirthCertificate
+            };
+
+            _wrongIdentifier = new PersonalIdentifier
+            {
+                Value ="7654321",
+                Type= PersonalIdentifierType.BCDriverLicense
             };
 
             _cacheServiceMock.Setup(x => x.Save(It.IsAny<string>(), It.IsAny<object>()))
@@ -150,6 +176,22 @@ namespace DynamicsAdapter.Web.Test.Register
         public async Task wrong_guid_wont_get_searchApiRequest()
         {
             SSG_SearchApiRequest result = await _sut.GetSearchApiRequest(_wrongSearchApiRequestGuid);
+            Assert.AreEqual(null, result);
+        }
+
+        [Test]
+        public async Task correct_sourceId_will_get_correct_ssgIdentifier()
+        {
+            SSG_Identifier result = await _sut.GetMatchedSourceIdentifier(_fakeIdentifier, _validSearchApiRequestGuid);
+            Assert.AreEqual(IdentificationType.BirthCertificate.Value, result.IdentifierType);
+            Assert.AreEqual("1234567", result.Identification);
+            Assert.AreEqual(_validSouceIdentifierGuid, result.IdentifierId);
+        }
+
+        [Test]
+        public async Task wrong_sourceId_will_get_null_ssgIdentifier()
+        {
+            SSG_Identifier result = await _sut.GetMatchedSourceIdentifier(_wrongIdentifier, _validSearchApiRequestGuid);
             Assert.AreEqual(null, result);
         }
     }

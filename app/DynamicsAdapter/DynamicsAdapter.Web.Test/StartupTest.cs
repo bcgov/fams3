@@ -45,9 +45,4 @@ namespace DynamicsAdapter.Web.Test
             Assert.IsNotNull(webHost.Services.GetService<ISearchRequestRegister>());
         }
     }
-
-    //public class MyStartup : Startup
-    //{
-    //    public MyStartup(IConfiguration config) : base(config) { }
-    //}
 }

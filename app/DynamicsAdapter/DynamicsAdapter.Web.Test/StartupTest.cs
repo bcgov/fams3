@@ -30,7 +30,7 @@ namespace DynamicsAdapter.Web.Test
         [Test]
         public void startup_should_registered_all_required_services()
         {
-            var webHost = Microsoft.AspNetCore.WebHost.CreateDefaultBuilder().UseStartup<MyStartup>().Build();
+            var webHost = Microsoft.AspNetCore.WebHost.CreateDefaultBuilder().UseStartup<Startup>().Build();
             Assert.IsNotNull(webHost);
             Assert.IsNotNull(webHost.Services.GetService<HealthCheckService>());
             Assert.IsNotNull(webHost.Services.GetService<ITracer>());
@@ -46,8 +46,8 @@ namespace DynamicsAdapter.Web.Test
         }
     }
 
-    public class MyStartup : Startup
-    {
-        public MyStartup(IConfiguration config) : base(config) { }
-    }
+    //public class MyStartup : Startup
+    //{
+    //    public MyStartup(IConfiguration config) : base(config) { }
+    //}
 }

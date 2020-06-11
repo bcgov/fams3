@@ -61,9 +61,6 @@ namespace DynamicsAdapter.Web
 
             services.AddHealthChecks().AddCheck<DynamicsHealthCheck>("status_reason_health_check",failureStatus:HealthStatus.Degraded);
 
-            // configure strongly typed settings objects
-            var appSettings = ConfigureAppSettings(services);
-
             this.ConfigureOpenTracing(services);
             this.ConfigureOpenApi(services);
             this.ConfigureSearchApi(services);
@@ -77,12 +74,6 @@ namespace DynamicsAdapter.Web
 
             services.AddTransient<ISearchResultService, SearchResultService>();
             services.AddTransient<ISearchRequestRegister, SearchRequestRegister>();
-        }
-
-        private AppSettings ConfigureAppSettings(IServiceCollection services)
-        {
-           return Configuration.GetSection("AppSettings").Get<AppSettings>(); 
-     
         }
 
         public void ConfigureAutoMapper(IServiceCollection services)

@@ -87,6 +87,9 @@
             },
             "searchRequestKey": {
               "type": "string"
+            },
+            "sequenceNumber": {
+              "type": "string"
             }
           }
         }

@@ -83,7 +83,8 @@ namespace DynamicsAdapter.Web.Test.Mapping
                     new SSG_SearchapiRequestDataProvider(){AdaptorName="ICBC"},
                     new SSG_SearchapiRequestDataProvider(){AdaptorName="BC Hydro"}
                 },
-                SearchRequest = new SSG_SearchRequest() { FileId = "testFileId" }
+                SearchRequest = new SSG_SearchRequest() { FileId = "testFileId" },
+                SequenceNumber = "123456"
             };
             PersonSearchRequest personSearchRequest = _mapper.Map<PersonSearchRequest>(sSG_SearchApiRequest);
             Assert.AreEqual("firstName", personSearchRequest.FirstName);
@@ -92,6 +93,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(2, personSearchRequest.Identifiers.Count);
             Assert.AreEqual(2, personSearchRequest.DataProviders.Count);
             Assert.AreEqual("testFileId", personSearchRequest.FileID);
+            Assert.AreEqual("123456", personSearchRequest.SequenceNumber);
         }
 
         [Test]

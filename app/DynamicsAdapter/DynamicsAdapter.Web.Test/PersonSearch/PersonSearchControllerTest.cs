@@ -216,7 +216,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                .Returns(Task.FromResult<SSG_SearchApiRequest>(new SSG_SearchApiRequest()
                {
                   SearchApiRequestId = _testGuid,
-                   Name = "Random Event"
+                  SequenceNumber="1234567"
                }));
 
             _searchResultServiceMock.Setup(x => x.ProcessPersonFound(It.Is<Person>(x => x.FirstName == "TEST1"),It.IsAny<ProviderProfile>(), It.IsAny<SSG_SearchRequest>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>(), It.IsAny<SSG_Identifier>()))

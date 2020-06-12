@@ -36,7 +36,7 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
         public int StatusCode { get; set; }
 
         [JsonProperty("ssg_name")]
-        public string Name { get; set; }
+        public string SequenceNumber{ get; set; }
 
        [JsonProperty("ssg_ssg_identifier_ssg_searchapirequest")]
         public SSG_Identifier[] Identifiers { get; set; }

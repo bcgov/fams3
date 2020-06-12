@@ -79,7 +79,7 @@ namespace SearchApi.Web.Test.Messaging
                         Completed = false
                     }
                 },
-                "FileID"), Guid.NewGuid());
+                "FileID","123456"), Guid.NewGuid());
 
 
             sendEndpointMock.Verify(x => x.Send<PersonSearchOrdered>(It.IsAny<PersonSearchOrdered>(), It.IsAny<CancellationToken>()),
@@ -109,7 +109,7 @@ namespace SearchApi.Web.Test.Messaging
                     new DataProvider() {Name = "TEST4", Completed =false},
                     new DataProvider() {Name = "TEST5", Completed=false}
                 },
-                "FileID"), Guid.NewGuid());
+                "FileID", "123456"), Guid.NewGuid());
 
 
             sendEndpointMock.Verify(x => x.Send<PersonSearchOrdered>(It.IsAny<PersonSearchOrdered>(), It.IsAny<CancellationToken>()),
@@ -131,7 +131,7 @@ namespace SearchApi.Web.Test.Messaging
                 new List<Name>(),
                 new List<RelatedPerson>(),
                 new List<Employment>(),
-                new List<DataProvider>(), "FileID"), Guid.NewGuid());
+                new List<DataProvider>(), "FileID", "123456"), Guid.NewGuid());
 
 
             sendEndpointMock.Verify(x => x.Send<PersonSearchOrdered>(It.IsAny<PersonSearchOrdered>(), It.IsAny<CancellationToken>()),
@@ -153,7 +153,7 @@ namespace SearchApi.Web.Test.Messaging
                 new List<Name>(),
                 new List<RelatedPerson>(),
                 new List<Employment>(),
-                null, "FileID"), Guid.NewGuid());
+                null, "FileID", "123456"), Guid.NewGuid());
 
 
             sendEndpointMock.Verify(x => x.Send<PersonSearchOrdered>(It.IsAny<PersonSearchOrdered>(), It.IsAny<CancellationToken>()),
@@ -185,7 +185,7 @@ namespace SearchApi.Web.Test.Messaging
                 new List<Name>(),
                 new List<RelatedPerson>(),
                 new List<Employment>(),
-                null, "FileID"), new Guid()));
+                null, "FileID", "123456"), new Guid()));
 
         }
 

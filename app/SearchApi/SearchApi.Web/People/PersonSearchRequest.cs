@@ -17,6 +17,8 @@ namespace SearchApi.Web.Controllers
         public IEnumerable<DataProvider> DataProviders { get; set; }
         public string FileID { get; set; }
 
+        public string SequenceNumber { get; set; }
+
         [JsonConstructor]
         public PersonSearchRequest(
             string firstName,
@@ -29,7 +31,8 @@ namespace SearchApi.Web.Controllers
             IEnumerable<RelatedPerson> relatedPersons,
             IEnumerable<Employment> employments,
             IEnumerable<DataProvider> dataProviders,
-            string fileID)
+            string fileID,
+            string sequenceNumber)
         {
             FirstName = firstName;
             LastName = lastName;
@@ -42,6 +45,7 @@ namespace SearchApi.Web.Controllers
             this.RelatedPersons = relatedPersons;
             this.DataProviders = dataProviders;
             this.FileID = fileID;
+            SequenceNumber = sequenceNumber;
         }
 
     }

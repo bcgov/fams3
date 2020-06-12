@@ -1,5 +1,5 @@
 <form theme="dark">
-  <label>FAM3 Ops Dashboard</label>
+  <label>FAMS3 Ops Dashboard</label>
   <fieldset submitButton="false">
     <input type="dropdown" token="ocEnv" searchWhenChanged="true">
       <label>Environment</label>

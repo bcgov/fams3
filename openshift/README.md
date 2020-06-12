@@ -62,7 +62,7 @@ export GIT_BRANCH="master"
 export GIT_URL="https://raw.githubusercontent.com/${GIT_REPO}/${GIT_BRANCH}"
 
 oc process -o=yaml \
-  -f ${GIT_URL}/openshift/templates/sonarqube-postgresql-template.yaml \
+  -f ${GIT_URL}/openshift/templates/sonarqube-postgresql.yaml \
   | oc apply -f - -n ${TOOLS_NAMESPACE}
 ```
 **NOTE:** Plugins are lost when permanent storage is mounted on plugins directory. To reinstall plugins:

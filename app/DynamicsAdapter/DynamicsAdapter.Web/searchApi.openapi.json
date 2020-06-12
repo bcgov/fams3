@@ -87,6 +87,9 @@
             },
             "fileID": {
               "type": "string"
+            },
+            "sequenceNumber": {
+              "type": "string"
             }
           }
         }

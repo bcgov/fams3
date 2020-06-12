@@ -61,7 +61,7 @@ namespace SearchApi.Web.Test.People
         public void With_valid_payload_should_return_created()
         {
             var result =
-                (AcceptedResult)this._sut.Search(null, new PersonSearchRequest("firstName", "lastName", null, new List<PersonalIdentifier>(), new List<Address>(), new List<Phone>(), new List<Name>(), new List<RelatedPerson>(), new List<Employment>(), new List<DataProvider>(),"fileId")).Result;
+                (AcceptedResult)this._sut.Search(null, new PersonSearchRequest("firstName", "lastName", null, new List<PersonalIdentifier>(), new List<Address>(), new List<Phone>(), new List<Name>(), new List<RelatedPerson>(), new List<Employment>(), new List<DataProvider>(),"fileId", "123456")).Result;
 
             Assert.IsInstanceOf<PersonSearchResponse>(result.Value);
             Assert.IsNotNull(((PersonSearchResponse)result.Value).Id);
@@ -74,7 +74,7 @@ namespace SearchApi.Web.Test.People
         public void With_valid_payload_and_id_should_return_created()
         {
             var result =
-                (AcceptedResult)this._sut.Search($"{expectedId}", new PersonSearchRequest("firstName", "lastName", null, new List<PersonalIdentifier>(), new List<Address>(), new List<Phone>(), new List<Name>(), new List<RelatedPerson>(), new List<Employment>(), new List<DataProvider>() , "fileId")).Result;
+                (AcceptedResult)this._sut.Search($"{expectedId}", new PersonSearchRequest("firstName", "lastName", null, new List<PersonalIdentifier>(), new List<Address>(), new List<Phone>(), new List<Name>(), new List<RelatedPerson>(), new List<Employment>(), new List<DataProvider>() , "fileId", "123456")).Result;
 
             Assert.IsInstanceOf<PersonSearchResponse>(result.Value);
             Assert.AreEqual(expectedId, ((PersonSearchResponse)result.Value).Id);

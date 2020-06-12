@@ -14,7 +14,7 @@ namespace BcGov.Fams3.Redis.DependencyInjection
 
       
             services.AddDistributedRedisCache(options =>
-            {
+            { 
                 options.Configuration = $"{redisConfig.Host}:{redisConfig.Port},Password={redisConfig.Password}";
               
             });

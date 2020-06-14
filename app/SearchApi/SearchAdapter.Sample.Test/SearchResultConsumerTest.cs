@@ -31,7 +31,7 @@ namespace SearchAdapter.Sample.Test
         {
             public Guid SearchRequestId { get; set; }
             public DateTime TimeStamp { get; set; }
-            public string FileId { get; set; }
+            public string SearchRequestKey { get; set; }
 
             public string ReceivedPayload { get; set; }
 
@@ -56,7 +56,7 @@ namespace SearchAdapter.Sample.Test
             {
                 SearchRequestId = validGuid,
                 TimeStamp = DateTime.Now,
-                FileId = "FileId",
+                SearchRequestKey = "SearchRequestKey",
                 ReceivedPayload = "{json string}"
             });
 

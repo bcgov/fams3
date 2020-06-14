@@ -66,7 +66,7 @@ namespace SearchApi.Web.Test.Notifications
             _mapper = new Mock<IMapper>();
                 fakePersonSearchStatus = new FakePersonSearchAccepted()
                 {
-                    FileId = "fileId",
+                    SearchRequestKey = "SearchRequestKey",
                     SearchRequestId = Guid.NewGuid(),
                     TimeStamp = DateTime.Now
                 };

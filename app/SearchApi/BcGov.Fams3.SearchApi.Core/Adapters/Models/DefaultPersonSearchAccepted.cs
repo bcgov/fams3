@@ -5,16 +5,16 @@ namespace BcGov.Fams3.SearchApi.Core.Adapters.Models
 {
     public class DefaultPersonSearchAccepted : PersonSearchAccepted
     {
-        public DefaultPersonSearchAccepted(Guid searchRequestId, ProviderProfile providerProfile, string fileId)
+        public DefaultPersonSearchAccepted(Guid searchRequestId, ProviderProfile providerProfile, string SearchRequestKey)
         {
             TimeStamp = DateTime.Now;
             SearchRequestId = searchRequestId;
             ProviderProfile = providerProfile;
-            FileId = fileId;
+            SearchRequestKey = SearchRequestKey;
         }
 
         public Guid SearchRequestId { get; }
-        public String FileId { get; }
+        public String SearchRequestKey { get; }
         public DateTime TimeStamp { get; }
         public ProviderProfile ProviderProfile { get; }
     }

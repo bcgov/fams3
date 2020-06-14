@@ -15,9 +15,10 @@ namespace SearchApi.Web.Controllers
     {
 
         public IEnumerable<DataProvider> DataProviders { get; set; }
-        public string FileID { get; set; }
-
-        public string SequenceNumber { get; set; }
+        /// <summary>
+        /// This is the key to identify this search request, it is composed of fileId_SequenceNumber
+        /// </summary>
+        public string SearchRequestKey { get; set; }
 
         [JsonConstructor]
         public PersonSearchRequest(
@@ -31,8 +32,7 @@ namespace SearchApi.Web.Controllers
             IEnumerable<RelatedPerson> relatedPersons,
             IEnumerable<Employment> employments,
             IEnumerable<DataProvider> dataProviders,
-            string fileID,
-            string sequenceNumber)
+            string searchRequestKey)
         {
             FirstName = firstName;
             LastName = lastName;
@@ -44,8 +44,7 @@ namespace SearchApi.Web.Controllers
             this.Employments = employments;         
             this.RelatedPersons = relatedPersons;
             this.DataProviders = dataProviders;
-            this.FileID = fileID;
-            SequenceNumber = sequenceNumber;
+            this.SearchRequestKey = searchRequestKey;
         }
 
     }

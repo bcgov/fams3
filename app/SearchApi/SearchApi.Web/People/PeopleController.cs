@@ -62,7 +62,7 @@ namespace SearchApi.Web.Controllers
         [OpenApiTag("People API")]
         public async Task<IActionResult> Search([FromHeader(Name = "X-RequestId")] string id, [FromBody]PersonSearchRequest personSearchRequest)
         {
-            using (LogContext.PushProperty("FileId", personSearchRequest?.FileID))
+            using (LogContext.PushProperty("SearchRequestKey", personSearchRequest?.SearchRequestKey))
             {
                 if (id == null || !Guid.TryParse(id, out var searchRequestId))
                 {
@@ -77,7 +77,7 @@ namespace SearchApi.Web.Controllers
                 {
                     Person = personSearchRequest,
                     SearchRequestId = searchRequestId,
-                    FileId = personSearchRequest.FileID,
+                    SearchRequestKey = personSearchRequest.SearchRequestKey,
                     DataPartners = personSearchRequest.DataProviders.Select(x => new DataPartner { Name = x.Name, Completed = false })
                 };
 
@@ -97,15 +97,15 @@ namespace SearchApi.Web.Controllers
         public class PersonSearchOrderEvent : PersonSearchOrdered
         {
 
-            public PersonSearchOrderEvent(Guid searchRequestId, string fileID)
+            public PersonSearchOrderEvent(Guid searchRequestId, string SearchRequestKey)
             {
                 SearchRequestId = searchRequestId;
                 TimeStamp = DateTime.Now;
-                this.FileId = fileID;
+                this.SearchRequestKey = SearchRequestKey;
             }
 
             public Guid SearchRequestId { get; }
-            public string FileId { get; set; }
+            public string SearchRequestKey { get; set; }
             public DateTime TimeStamp { get; }
             public Person Person { get; set; }
         }

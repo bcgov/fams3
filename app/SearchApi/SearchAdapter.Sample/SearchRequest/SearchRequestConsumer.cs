@@ -46,7 +46,7 @@ namespace SearchAdapter.Sample.SearchRequest
                 if (string.Equals(context.Message.Person.FirstName, "exception", StringComparison.InvariantCultureIgnoreCase))
                     throw new Exception("Exception from Sample Adapter, Your name is no exception");
                
-                await context.Publish(FakePersonBuilder.BuildFakePersonSearchCompleted(context.Message.SearchRequestId, context.Message.FileId, context.Message.Person.FirstName, context.Message.Person.LastName, (DateTime)context.Message.Person.DateOfBirth, _profile));
+                await context.Publish(FakePersonBuilder.BuildFakePersonSearchCompleted(context.Message.SearchRequestId, context.Message.SearchRequestKey, context.Message.Person.FirstName, context.Message.Person.LastName, (DateTime)context.Message.Person.DateOfBirth, _profile));
             }
         }
 
@@ -58,13 +58,13 @@ namespace SearchAdapter.Sample.SearchRequest
 
             if (validation.IsValid)
             {
-                await context.Publish<PersonSearchAccepted>(new DefaultPersonSearchAccepted(context.Message.SearchRequestId, _profile, context.Message.FileId));
+                await context.Publish<PersonSearchAccepted>(new DefaultPersonSearchAccepted(context.Message.SearchRequestId, _profile, context.Message.SearchRequestKey));
             }
             else
             {
                 _logger.LogInformation("PersonSearch does not have sufficient information for the adapter to proceed the search.");
 
-                var rejectionEvent = new PersonSearchRejectedEvent(context.Message.SearchRequestId, context.Message.FileId, _profile);
+                var rejectionEvent = new PersonSearchRejectedEvent(context.Message.SearchRequestId, context.Message.SearchRequestKey, _profile);
 
                 validation.Errors.ToList().ForEach(x => rejectionEvent.AddValidationResult(new DefaultValidationResult()
                 {

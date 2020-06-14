@@ -60,7 +60,7 @@ namespace SearchApi.Web.Notifications
                         if (eventName == EventName.Finalized) {
                             PersonSearchEvent finalizedSearch = new PersonSearchFinalizedEvent()
                             {
-                                FileId=eventStatus.FileId,
+                                SearchRequestKey=eventStatus.SearchRequestKey,
                                 Message = "Search Request Finalized",
                                 SearchRequestId= eventStatus.SearchRequestId,
                                 TimeStamp=DateTime.Now

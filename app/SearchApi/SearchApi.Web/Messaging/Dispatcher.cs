@@ -51,7 +51,7 @@ namespace SearchApi.Web.Messaging
             {
                 var endpoint = await getEndpointAddress(requestDataProvider.Name);
 
-                await endpoint.Send<PersonSearchOrdered>(new PeopleController.PersonSearchOrderEvent(searchRequestId, personSearchRequest.FileID)
+                await endpoint.Send<PersonSearchOrdered>(new PeopleController.PersonSearchOrderEvent(searchRequestId, personSearchRequest.SearchRequestKey)
                 {
                     Person = personSearchRequest
                 });

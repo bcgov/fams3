@@ -92,8 +92,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(new DateTimeOffset(new DateTime(2002, 2, 2)), personSearchRequest.DateOfBirth);
             Assert.AreEqual(2, personSearchRequest.Identifiers.Count);
             Assert.AreEqual(2, personSearchRequest.DataProviders.Count);
-            Assert.AreEqual("testFileId", personSearchRequest.FileID);
-            Assert.AreEqual("123456", personSearchRequest.SequenceNumber);
+            Assert.AreEqual("testFileId_123456", personSearchRequest.SearchRequestKey);
         }
 
         [Test]

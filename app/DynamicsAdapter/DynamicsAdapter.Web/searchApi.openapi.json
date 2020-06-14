@@ -85,10 +85,7 @@
                 "$ref": "#/definitions/DataProvider"
               }
             },
-            "fileID": {
-              "type": "string"
-            },
-            "sequenceNumber": {
+            "searchRequestKey": {
               "type": "string"
             }
           }

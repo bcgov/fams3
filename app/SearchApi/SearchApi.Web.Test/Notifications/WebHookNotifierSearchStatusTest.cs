@@ -63,7 +63,7 @@ namespace SearchApi.Web.Test.Notifications
                 new DataPartner { Name = "BCHydro", Completed = false }
                 }
                 };
-            _mapper = new Mock<IMapper>();
+                _mapper = new Mock<IMapper>();
                 fakePersonSearchStatus = new FakePersonSearchAccepted()
                 {
                     SearchRequestKey = "SearchRequestKey",
@@ -101,7 +101,7 @@ namespace SearchApi.Web.Test.Notifications
 
                 await _sut.NotifyEventAsync(fakePersonSearchStatus.SearchRequestKey, fakePersonSearchStatus, "Accepted",CancellationToken.None);
 
-                var expectedUri = new Uri($"http://test:1234/Accepted/{fakePersonSearchStatus.SearchRequestId}");
+                var expectedUri = new Uri($"http://test:1234/Accepted/{fakePersonSearchStatus.SearchRequestKey}");
 
                 handlerMock.Protected().Verify(
                     "SendAsync",
@@ -195,7 +195,7 @@ namespace SearchApi.Web.Test.Notifications
 
             await _sut.NotifyEventAsync(fakePersonSearchStatus.SearchRequestKey, fakePersonSearchStatus, "Finalized", CancellationToken.None);
 
-            var expectedUri = new Uri($"http://test:1234/Finalized/{fakePersonSearchStatus.SearchRequestId}");
+            var expectedUri = new Uri($"http://test:1234/Finalized/{fakePersonSearchStatus.SearchRequestKey}");
 
             handlerMock.Protected().Verify(
                 "SendAsync",
@@ -240,7 +240,7 @@ namespace SearchApi.Web.Test.Notifications
 
                 await _sut.NotifyEventAsync(fakePersonSearchStatus.SearchRequestKey, fakePersonSearchStatus, "Accepted",CancellationToken.None);
 
-                var expectedUri = new Uri($"http://test:1234/Event/Accepted/{fakePersonSearchStatus.SearchRequestId}");
+                var expectedUri = new Uri($"http://test:1234/Event/Accepted/{fakePersonSearchStatus.SearchRequestKey}");
 
                 handlerMock.Protected().Verify(
                     "SendAsync",
@@ -288,8 +288,8 @@ namespace SearchApi.Web.Test.Notifications
 
                 await _sut.NotifyEventAsync(fakePersonSearchStatus.SearchRequestKey, fakePersonSearchStatus, "Accepted", CancellationToken.None);
             //
-                var expectedUri = new Uri($"http://test:1234/Accepted/{fakePersonSearchStatus.SearchRequestId}");
-                var expectedUri2 = new Uri($"http://test:5678/Accepted/{fakePersonSearchStatus.SearchRequestId}");
+                var expectedUri = new Uri($"http://test:1234/Accepted/{fakePersonSearchStatus.SearchRequestKey}");
+                var expectedUri2 = new Uri($"http://test:5678/Accepted/{fakePersonSearchStatus.SearchRequestKey}");
 
                 handlerMock.Protected().Verify(
                     "SendAsync",
@@ -379,7 +379,7 @@ namespace SearchApi.Web.Test.Notifications
                 _sut = new WebHookNotifierSearchEventStatus(httpClient, _searchApiOptionsMock.Object, _loggerMock.Object, _cacheServiceMock.Object);
 
                 await _sut.NotifyEventAsync(fakePersonSearchStatus.SearchRequestKey, fakePersonSearchStatus, "Accepted", CancellationToken.None);
-                var expectedUri = new Uri($"http://test:1234/Accepted/{fakePersonSearchStatus.SearchRequestId}");
+                var expectedUri = new Uri($"http://test:1234/Accepted/{fakePersonSearchStatus.SearchRequestKey}");
 
                 handlerMock.Protected().Verify(
                     "SendAsync",
@@ -424,7 +424,7 @@ namespace SearchApi.Web.Test.Notifications
                 _sut = new WebHookNotifierSearchEventStatus(httpClient, _searchApiOptionsMock.Object, _loggerMock.Object, _cacheServiceMock.Object);
 
                 await _sut.NotifyEventAsync(fakePersonSearchStatus.SearchRequestKey, fakePersonSearchStatus, "Accepted",CancellationToken.None);
-                var expectedUri = new Uri($"http://test:1234/Accepted/{fakePersonSearchStatus.SearchRequestId}");
+                var expectedUri = new Uri($"http://test:1234/Accepted/{fakePersonSearchStatus.SearchRequestKey}");
 
                 handlerMock.Protected().Verify(
                     "SendAsync",

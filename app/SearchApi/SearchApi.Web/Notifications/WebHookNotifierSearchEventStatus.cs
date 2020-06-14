@@ -31,13 +31,13 @@ namespace SearchApi.Web.Notifications
             
         }
 
-        public async Task NotifyEventAsync(Guid searchRequestId, PersonSearchAdapterEvent eventStatus, string eventName,
+        public async Task NotifyEventAsync(string searchRequestKey, PersonSearchAdapterEvent eventStatus, string eventName,
            CancellationToken cancellationToken)
         {
             var webHookName = "PersonSearch";
 
-            await UpdateDataPartner(searchRequestId, eventStatus, eventName);
-            if (await IsAllDataPartnerCompletedOrSearchInProgress(searchRequestId, eventName))
+            await UpdateDataPartner(searchRequestKey, eventStatus, eventName);
+            if (await IsAllDataPartnerCompletedOrSearchInProgress(searchRequestKey, eventName))
             {
 
                 foreach (var webHook in _searchApiOptions.WebHooks)
@@ -45,7 +45,7 @@ namespace SearchApi.Web.Notifications
                     _logger.LogDebug(
                        $"The webHook {webHookName} notification is attempting to send status {eventName} event for {webHook.Name} webhook.");
 
-                    if (!URLHelper.TryCreateUri(webHook.Uri, eventName, $"{searchRequestId}", out var endpoint))
+                    if (!URLHelper.TryCreateUri(webHook.Uri, eventName, $"{searchRequestKey}", out var endpoint))
                     {
                         _logger.LogWarning(
                             $"The webHook {webHookName} notification uri is not established or is not an absolute Uri for {webHook.Name}. Set the WebHook.Uri value on SearchApi.WebHooks settings.");
@@ -97,58 +97,58 @@ namespace SearchApi.Web.Notifications
                         _logger.LogError($"The webHook {webHookName} notification failed for status {eventName} for {webHook.Name} webHook. [{exception.Message}]");
                     }
                 }
-                DeleteFromCache(searchRequestId, eventName);
+                DeleteFromCache(searchRequestKey, eventName);
             }
 
         }
 
-        private async Task<bool> IsAllDataPartnerCompletedOrSearchInProgress(Guid searchRequestId, string eventName)
+        private async Task<bool> IsAllDataPartnerCompletedOrSearchInProgress(string searchRequestKey, string eventName)
         {
             try
             {
                 if (eventName.Equals(EventName.Finalized))
                 {
-                    return JsonConvert.SerializeObject(await _cacheService.GetRequest(searchRequestId)).AllPartnerCompleted();
+                    return JsonConvert.SerializeObject(await _cacheService.GetRequest(searchRequestKey)).AllPartnerCompleted();
                 }
                 return true;
             }
             catch (Exception exception)
             {
-                _logger.LogError($"Check Data Partner Status Failed. [{eventName}] for {searchRequestId}. [{exception.Message}]");
+                _logger.LogError($"Check Data Partner Status Failed. [{eventName}] for {searchRequestKey}. [{exception.Message}]");
                 return false;
             }
         }
-        private async void DeleteFromCache(Guid searchRequestId, string eventName)
+        private async void DeleteFromCache(string searchRequestKey, string eventName)
         {
             try
             {
                 if (eventName.Equals(EventName.Finalized))
                 {
-                    await _cacheService.DeleteRequest(searchRequestId);
+                    await _cacheService.DeleteRequest(searchRequestKey);
                 }
             }
             catch (Exception exception)
             {
-                _logger.LogError($"Delete search request failed. [{eventName}] for {searchRequestId}. [{exception.Message}]");
+                _logger.LogError($"Delete search request failed. [{eventName}] for {searchRequestKey}. [{exception.Message}]");
                 
             }
 
         }
 
 
-        private async Task UpdateDataPartner(Guid searchRequestId, PersonSearchAdapterEvent eventStatus, string eventName)
+        private async Task UpdateDataPartner(string searchRequestKey, PersonSearchAdapterEvent eventStatus, string eventName)
         {
             try
             {
                 if (eventName.Equals(EventName.Completed) || eventName.Equals(EventName.Rejected))
                 {
-                    var searchRequest = JsonConvert.SerializeObject(await _cacheService.GetRequest(searchRequestId)).UpdateDataPartner(eventStatus.ProviderProfile.Name);
+                    var searchRequest = JsonConvert.SerializeObject(await _cacheService.GetRequest(searchRequestKey)).UpdateDataPartner(eventStatus.ProviderProfile.Name);
                     await _cacheService.SaveRequest(searchRequest);
                 }
             }
             catch (Exception exception)
             {
-                _logger.LogError($"Update Data Partner Status Failed. [{eventName}] for {searchRequestId}. [{exception.Message}]");
+                _logger.LogError($"Update Data Partner Status Failed. [{eventName}] for {searchRequestKey}. [{exception.Message}]");
                 
             }
         }

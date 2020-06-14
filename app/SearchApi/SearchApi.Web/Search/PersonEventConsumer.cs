@@ -29,7 +29,7 @@ namespace SearchApi.Web.Search
             {
                 var cts = new CancellationTokenSource();
                 _logger.LogInformation($"received new {nameof(PersonSearchAdapterEvent)} event from {context.Message.ProviderProfile?.Name}");
-                await _searchApiNotifier.NotifyEventAsync(context.Message.SearchRequestId, context.Message, eventName,
+                await _searchApiNotifier.NotifyEventAsync(context.Message.SearchRequestKey, context.Message, eventName,
                     cts.Token);
             }
         }

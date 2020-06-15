@@ -26,7 +26,7 @@ objects:
 - apiVersion: v1
   kind: Secret
   metadata:
-    name: ${APP_NAME}-rest-inbound-adapter-config
+    name: ${APP_NAME}-rest-inbound-config
     label:
       app: ${APP_NAME}
   stringData:

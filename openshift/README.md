@@ -388,6 +388,76 @@ oc process -o=yaml \
   -p dataPartnerService=${DATAPARTNERSERVICE}  \
   | oc apply -f - -n ${TOOLS_NAMESPACE}
 ```
+
+### Rest Inbound adapter deployment pipeline
+```shell script
+export NAMESPACE_PREFIX=
+export NAMESPACE_SUFFIX=
+export TARGET_NAMESPACE=${NAMESPACE_PREFIX}-${NAMESPACE_SUFFIX}
+export TOOLS_NAMESPACE=${NAMESPACE_PREFIX}-tools
+export DATAPARTNERSERVICE=
+export GIT_REPO="bcgov/fams3"
+export GIT_BRANCH="master"
+export GIT_URL="https://raw.githubusercontent.com/${GIT_REPO}/${GIT_BRANCH}"
+
+# Configuration evn/secrets
+## Create secrets synchronized with Jenkins
+## Option 1:
+### Pass base64 value of private key.
+### config.properties is taken from private-repo://test-automation/fams3-frontend-automation/src/main/java/com/fams3/qa/config/config.properties
+cat config.properties | base64 | tr -d '\n'
+### Copy the output and pass as argument for file
+oc process -o=yaml \
+  -f ${GIT_URL}/openshift/templates/config/selenium-maven-config.yaml \
+  -p file=  \
+  | oc apply -f - -n ${TOOLS_NAMESPACE}
+
+## Option 2:
+oc create secret generic selenium-maven-config --from-file=filename=config.properties
+oc label secret selenium-maven-config credential.sync.jenkins.openshift.io=true
+
+oc process -o=yaml \
+  -f ${GIT_URL}/openshift/templates/config/aspnet-env.yaml \
+  -p ENVIRONMENT=  \
+  | oc apply -f - -n ${TARGET_NAMESPACE}
+
+oc process -o=yaml \
+  -f ${GIT_URL}/openshift/templates/config/rest-inbound-config.yaml \
+  -p APP_NAME=  \
+  -p URL=  \
+  -p CODE=  \
+  -p USERNAME=  \
+  -p PASSWORD=  \
+  | oc apply -f - -n ${TARGET_NAMESPACE}
+
+oc process -o=yaml \
+  -f ${GIT_URL}/openshift/templates/config/jeager-config.yaml \
+  -p URL=  \
+  -p TYPE=  \
+  | oc apply -f - -n ${TARGET_NAMESPACE}
+
+# Image stream
+oc process -o=yaml \
+  -f ${GIT_URL}/openshift/templates/builds/images/rest-inbound-adapter.yaml \
+  -p namespacePrefix=${NAMESPACE_PREFIX}  \
+  -p dataPartnerService=${DATAPARTNERSERVICE}  \
+  | oc apply -f - -n ${TOOLS_NAMESPACE}
+
+# Build config
+oc process -o=yaml \
+  -f ${GIT_URL}/openshift/templates/builds/builds/rest-inbound-adapter.yaml \
+  -p namespacePrefix=${NAMESPACE_PREFIX}  \
+  -p dataPartnerService=${DATAPARTNERSERVICE}  \
+  | oc apply -f - -n ${TOOLS_NAMESPACE}
+
+# Pipeline
+oc process -o=yaml \
+  -f ${GIT_URL}/openshift/templates/builds/pipelines/rest-inbound-adapter.yaml \
+  -p namespacePrefix=${NAMESPACE_PREFIX}  \
+  -p dataPartnerService=${DATAPARTNERSERVICE}  \
+  | oc apply -f - -n ${TOOLS_NAMESPACE}
+```
+
 ### Web adapter deployment pipeline
 ```shell script
 export NAMESPACE_PREFIX=

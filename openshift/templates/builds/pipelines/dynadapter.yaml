@@ -182,7 +182,7 @@ objects:
           }
 
           // Deploy application to environment
-          def deploy(String buildConfigPath, String serviceConfigPath, String routeConfigPath, String appName, String sourceNamespace, String targetNamespace, String routeType, String version) {
+          def deploy(String deploymentConfigPath, String serviceConfigPath, String routeConfigPath, String appName, String sourceNamespace, String targetNamespace, String routeType, String version) {
             dir("${appName}") {
 
               sh "echo Creating DeploymentConfig in ${targetNamespace}"
@@ -213,9 +213,7 @@ objects:
               }else{
                 sh "echo ${appName} Service Configuration not found in ${targetNamespace}, performing baseline template deploy"
                 // deploy generic Service
-                sh "oc process -f ${serviceConfigPath} \
-                  -p namespacePrefix=${namespacePrefix} \
-                  -p TAG=${version} | oc apply -f - -n ${targetNamespace}"
+                sh "oc process -f ${serviceConfigPath} | oc apply -f - -n ${targetNamespace}"
               }
 
               if(routeExists){

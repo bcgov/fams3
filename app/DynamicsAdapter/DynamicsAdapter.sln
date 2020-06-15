@@ -15,10 +15,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fams3Adapter.Dynamics", "Fa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fams3Adapter.Dynamics.Test", "Fams3Adapter.Dynamics.Test\Fams3Adapter.Dynamics.Test.csproj", "{F0A1BDFD-08C2-4A1E-A6CB-BD996B2274CF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BcGov.Fams3.Redis", "..\SearchApi\BcGov.Fams3.Redis\BcGov.Fams3.Redis.csproj", "{64468F81-A11E-4849-8AB3-22168A4E3A86}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BcGov.Fams3.Redis.Test", "..\SearchApi\BcGov.Fams3.Redis.Test\BcGov.Fams3.Redis.Test.csproj", "{B65A6F0F-8BBA-4201-9292-332A521A417B}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,14 +37,6 @@ Global
 		{F0A1BDFD-08C2-4A1E-A6CB-BD996B2274CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F0A1BDFD-08C2-4A1E-A6CB-BD996B2274CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F0A1BDFD-08C2-4A1E-A6CB-BD996B2274CF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{64468F81-A11E-4849-8AB3-22168A4E3A86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{64468F81-A11E-4849-8AB3-22168A4E3A86}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{64468F81-A11E-4849-8AB3-22168A4E3A86}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{64468F81-A11E-4849-8AB3-22168A4E3A86}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B65A6F0F-8BBA-4201-9292-332A521A417B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B65A6F0F-8BBA-4201-9292-332A521A417B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B65A6F0F-8BBA-4201-9292-332A521A417B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B65A6F0F-8BBA-4201-9292-332A521A417B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -58,8 +46,6 @@ Global
 		{6283EFDD-21EC-4FE5-B01E-54588BBB8FCD} = {1BE19189-029E-4D64-973E-9885F1F82B08}
 		{64CD5D00-7677-4F3B-BBAA-8F70B68DB4A7} = {8E50E690-382C-414E-AC59-30874FA77929}
 		{F0A1BDFD-08C2-4A1E-A6CB-BD996B2274CF} = {1BE19189-029E-4D64-973E-9885F1F82B08}
-		{64468F81-A11E-4849-8AB3-22168A4E3A86} = {8E50E690-382C-414E-AC59-30874FA77929}
-		{B65A6F0F-8BBA-4201-9292-332A521A417B} = {1BE19189-029E-4D64-973E-9885F1F82B08}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6CE74247-B29B-4644-BC6F-79C7B36D2C2C}

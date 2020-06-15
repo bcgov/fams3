@@ -82,7 +82,7 @@ namespace DynamicsAdapter.Web.Test.Register
             _cacheServiceMock.Setup(x => x.Get(It.Is<string>(m => m.ToString() == Keys.REDIS_KEY_PREFIX + _wrongSearchApiRequestGuid.ToString())))
              .Returns(Task.FromResult(""));
 
-            _cacheServiceMock.Setup(x => x.Get(It.Is<string>(m => m.ToString() == $"{Keys.REDIS_KEY_PREFIX}{_validSearchRequestKey}")))
+            _cacheServiceMock.Setup(x => x.Get(It.Is<string>(m => m.ToString() == $"{Keys.REDIS_KEY_PREFIX}{_invalidSearchRequestKey}")))
              .Returns(Task.FromResult(""));
 
             _loggerMock = new Mock<ILogger<SearchRequestRegister>>();

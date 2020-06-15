@@ -18,6 +18,7 @@ namespace DynamicsAdapter.Web.Register
         Task<SSG_SearchApiRequest> GetSearchApiRequest(string searchRequestKey);
         Task<bool> RemoveSearchApiRequest(Guid guid);
         Task<bool> RemoveSearchApiRequest(string searchRequestKey);
+        Task<SSG_Identifier> GetMatchedSourceIdentifier(PersonalIdentifier identifer, string searchReqeustKey);
         Task<SSG_Identifier> GetMatchedSourceIdentifier(PersonalIdentifier identifer, Guid searchApiRequestId);
     }
 

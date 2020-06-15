@@ -48,7 +48,7 @@ namespace DynamicsAdapter.Web.PersonSearch
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Route("Completed/{key}")]
         [OpenApiTag("Person Search Events API")]
-        public async Task<IActionResult> Completed(Guid key, [FromBody]PersonSearchCompleted personCompletedEvent)
+        public async Task<IActionResult> Completed(string key, [FromBody]PersonSearchCompleted personCompletedEvent)
         {
             try
             {
@@ -139,7 +139,7 @@ namespace DynamicsAdapter.Web.PersonSearch
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Route("Failed/{key}")]
         [OpenApiTag("Person Search Events API")]
-        public async Task<IActionResult> Failed(Guid key, [FromBody]PersonSearchFailed personFailedEvent)
+        public async Task<IActionResult> Failed(string key, [FromBody]PersonSearchFailed personFailedEvent)
         {
             using (LogContext.PushProperty("SearchRequestKey", personFailedEvent?.SearchRequestKey))
             using (LogContext.PushProperty("DataPartner", personFailedEvent?.ProviderProfile.Name))

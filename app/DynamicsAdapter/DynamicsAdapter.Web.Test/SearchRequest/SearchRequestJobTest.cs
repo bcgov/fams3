@@ -95,11 +95,11 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
                .Returns(Task.FromResult<SSG_SearchApiRequest>(new SSG_SearchApiRequest()
                {
                    SearchApiRequestId = _validSearchRequestId,
-                   Name = "Random Event"
+                   SequenceNumber = "1234567"
                }));
 
             _mapperMock.Setup(x => x.Map<PersonSearchRequest>(It.IsAny<SSG_SearchApiRequest>()))
-                .Returns(new PersonSearchRequest() { FileID = "fileId" });
+                .Returns(new PersonSearchRequest() { SearchRequestKey = "fileId" });
 
             _sut = new SearchRequestJob(
                 _searchApiClientMock.Object,

@@ -43,8 +43,15 @@ namespace DynamicsAdapter.Web.Register
         public async Task<bool> RegisterSearchApiRequest(SSG_SearchApiRequest request)
         {
             if (request == null) return false;
-            await _cache.Save(Keys.REDIS_KEY_PREFIX + request.SearchApiRequestId.ToString(), request);
+            await _cache.Save($"{Keys.REDIS_KEY_PREFIX}{request.SearchRequest.FileId}_{request.SequenceNumber}", request);
             return true;
+        }
+
+        public async Task<SSG_SearchApiRequest> GetSearchApiRequest(string fileId, string sequenceNumber)
+        {
+            string data = await _cache.Get($"{Keys.REDIS_KEY_PREFIX}{fileId}_{sequenceNumber}");
+            if (String.IsNullOrEmpty(data)) return null;
+            return JsonConvert.DeserializeObject<SSG_SearchApiRequest>(data);
         }
 
         public async Task<SSG_SearchApiRequest> GetSearchApiRequest(Guid guid)
@@ -69,9 +76,30 @@ namespace DynamicsAdapter.Web.Register
                      && m.IdentifierType == type);
         }
 
+        public async Task<SSG_Identifier> GetMatchedSourceIdentifier(PersonalIdentifier identifer, string fileId, string sequenceNumber)
+        {
+            SSG_SearchApiRequest searchApiReqeust = await GetSearchApiRequest(fileId, sequenceNumber);
+            if (searchApiReqeust == null)
+            {
+                _logger.LogError("Cannot find the searchApiRequest in Redis Cache.");
+                return null;
+            }
+
+            int? type = IDType.IDTypeDictionary.FirstOrDefault(m => m.Value == identifer.Type).Key;
+            return searchApiReqeust.Identifiers.FirstOrDefault(
+                m => m.Identification == identifer.Value
+                     && m.IdentifierType == type);
+        }
+
         public async Task<bool> RemoveSearchApiRequest(Guid guid)
         {
             await _cache.Delete(Keys.REDIS_KEY_PREFIX + guid.ToString());
+            return true;
+        }
+
+        public async Task<bool> RemoveSearchApiRequest(string fileId, string sequenceNumber)
+        {
+            await _cache.Delete($"{Keys.REDIS_KEY_PREFIX}{fileId}_{sequenceNumber}");
             return true;
         }
     }

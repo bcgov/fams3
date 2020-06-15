@@ -85,7 +85,7 @@
                 "$ref": "#/definitions/DataProvider"
               }
             },
-            "fileID": {
+            "searchRequestKey": {
               "type": "string"
             }
           }

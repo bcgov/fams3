@@ -424,10 +424,7 @@ oc process -o=yaml \
 oc process -o=yaml \
   -f ${GIT_URL}/openshift/templates/config/rest-inbound-config.yaml \
   -p APP_NAME=  \
-  -p URL=  \
-  -p CODE=  \
-  -p USERNAME=  \
-  -p PASSWORD=  \
+  -p PROFILE_NAME=  \
   | oc apply -f - -n ${TARGET_NAMESPACE}
 
 oc process -o=yaml \

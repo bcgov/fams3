@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Template
+labels:
+  template: rest-inbound-adapter-template
+message: |-
+  A Jenkins server must be instantiated in this project to manage
+  the Pipeline BuildConfig created by this template. You will be able to log in to
+  it using your OpenShift user credentials.
+metadata:
+  annotations:
+    openshift.io/display-name: rest-inbound-adapter template
+    description: |-
+      This is a template for rest-inbound-adapter.
+    iconClass: icon-jenkins
+    tags: instant-app,jenkins
+  name: rest-inbound-adapter-template
+parameters:
+- description: Data partner service name.
+  displayName: Name of the data partner service
+  name: dataPartnerService
+  required: true
+  value:
+objects:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      description: Exposes and load balances the application pods
+    labels:
+      app: ${dataPartnerService}-rest-inbound-adapter
+      template: meta-service
+    name: ${dataPartnerService}-rest-inbound-adapter
+  spec:
+    ports:
+    - name: web
+      port: 80
+      protocol: TCP
+      targetPort: 8080
+    selector:
+      deploymentconfig: ${dataPartnerService}-rest-inbound-adapter
+    sessionAffinity: None
+    type: ClusterIP

@@ -46,27 +46,27 @@ namespace DynamicsAdapter.Web.PersonSearch
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Route("Completed/{id}")]
+        [Route("Completed/{key}")]
         [OpenApiTag("Person Search Events API")]
-        public async Task<IActionResult> Completed(Guid id, [FromBody]PersonSearchCompleted personCompletedEvent)
+        public async Task<IActionResult> Completed(Guid key, [FromBody]PersonSearchCompleted personCompletedEvent)
         {
             try
             {
                 Guard.NotNull(personCompletedEvent, nameof(personCompletedEvent));
-                using (LogContext.PushProperty("FileId", personCompletedEvent?.FileId))
+                using (LogContext.PushProperty("SearchRequestKey", personCompletedEvent?.SearchRequestKey))
                 using (LogContext.PushProperty("DataPartner", personCompletedEvent?.ProviderProfile.Name))
                 {
-                    _logger.LogInformation("Received Person search completed event with SearchRequestId is " + id);
+                    _logger.LogInformation("Received Person search completed event");
                     var cts = new CancellationTokenSource();
-
+                    SSG_SearchApiRequest request = await _register.GetSearchApiRequest(key);
                     //update completed event
                     var searchApiEvent = _mapper.Map<SSG_SearchApiEvent>(personCompletedEvent);
-                    _logger.LogDebug($"Attempting to create a new event for SearchApiRequest [{id}]");
-                    var result = await _searchApiRequestService.AddEventAsync(id, searchApiEvent, cts.Token);
-                    _logger.LogInformation($"Successfully created completed event for SearchApiRequest [{id}]");
+                    _logger.LogDebug($"Attempting to create a new event for SearchApiRequest");
+                    var result = await _searchApiRequestService.AddEventAsync(request.SearchApiRequestId, searchApiEvent, cts.Token);
+                    _logger.LogInformation($"Successfully created completed event for SearchApiRequest");
 
                     //upload search result to dynamic search api
-                    var searchRequestId = await _searchApiRequestService.GetLinkedSearchRequestIdAsync(id, cts.Token);
+                    var searchRequestId = await _searchApiRequestService.GetLinkedSearchRequestIdAsync(request.SearchApiRequestId, cts.Token);
                     SSG_SearchRequest searchRequest = new SSG_SearchRequest()
                     {
                         SearchRequestId = searchRequestId
@@ -81,8 +81,8 @@ namespace DynamicsAdapter.Web.PersonSearch
                         //});
                         foreach (PersonFound p in personCompletedEvent.MatchedPersons)
                         {
-                            SSG_Identifier sourceIdentifer = await _register.GetMatchedSourceIdentifier(p.SourcePersonalIdentifier, id);
-                            await _searchResultService.ProcessPersonFound(p, personCompletedEvent.ProviderProfile, searchRequest, id, cts.Token, sourceIdentifer);
+                            SSG_Identifier sourceIdentifer = await _register.GetMatchedSourceIdentifier(p.SourcePersonalIdentifier, key);
+                            await _searchResultService.ProcessPersonFound(p, personCompletedEvent.ProviderProfile, searchRequest, request.SearchApiRequestId, cts.Token, sourceIdentifer);
                         }
                     }                   
 
@@ -103,23 +103,24 @@ namespace DynamicsAdapter.Web.PersonSearch
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Route("Accepted/{id}")]
+        [Route("Accepted/{key}")]
         [OpenApiTag("Person Search Events API")]
-        public async Task<IActionResult> Accepted(Guid id, [FromBody]PersonSearchAccepted personAcceptedEvent)
+        public async Task<IActionResult> Accepted(string key, [FromBody]PersonSearchAccepted personAcceptedEvent)
         {
-            using (LogContext.PushProperty("FileId", personAcceptedEvent?.FileId))
+            using (LogContext.PushProperty("SearchRequestKey", personAcceptedEvent?.SearchRequestKey))
             using (LogContext.PushProperty("DataPartner", personAcceptedEvent?.ProviderProfile.Name))
             {
-                _logger.LogInformation($"Received new event for SearchApiRequest [{id}]");
+                _logger.LogInformation($"Received new event for SearchApiRequest");
 
                 var token = new CancellationTokenSource();
 
                 try
                 {
+                    SSG_SearchApiRequest request = await _register.GetSearchApiRequest(key);
                     var searchApiEvent = _mapper.Map<SSG_SearchApiEvent>(personAcceptedEvent);
-                    _logger.LogDebug($"Attempting to create a new event for SearchApiRequest [{id}]");
-                    var result = await _searchApiRequestService.AddEventAsync(id, searchApiEvent, token.Token);
-                    _logger.LogInformation($"Successfully created accepted event for SearchApiRequest [{id}]");
+                    _logger.LogDebug($"Attempting to create a new event for SearchApiRequest");
+                    var result = await _searchApiRequestService.AddEventAsync(request.SearchApiRequestId, searchApiEvent, token.Token);
+                    _logger.LogInformation($"Successfully created accepted event for SearchApiRequest");
                 }
                 catch (Exception ex)
                 {
@@ -136,23 +137,24 @@ namespace DynamicsAdapter.Web.PersonSearch
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Route("Failed/{id}")]
+        [Route("Failed/{key}")]
         [OpenApiTag("Person Search Events API")]
-        public async Task<IActionResult> Failed(Guid id, [FromBody]PersonSearchFailed personFailedEvent)
+        public async Task<IActionResult> Failed(Guid key, [FromBody]PersonSearchFailed personFailedEvent)
         {
-            using (LogContext.PushProperty("FileId", personFailedEvent?.FileId))
+            using (LogContext.PushProperty("SearchRequestKey", personFailedEvent?.SearchRequestKey))
             using (LogContext.PushProperty("DataPartner", personFailedEvent?.ProviderProfile.Name))
             {
-                _logger.LogInformation($"Received new event for SearchApiRequest [{id}]");
+                _logger.LogInformation($"Received new event for SearchApiRequest.");
 
                 var token = new CancellationTokenSource();
 
                 try
                 {
+                    SSG_SearchApiRequest request = await _register.GetSearchApiRequest(key);
                     var searchApiEvent = _mapper.Map<SSG_SearchApiEvent>(personFailedEvent);
-                    _logger.LogDebug($"Attempting to create a new event for SearchApiRequest [{id}]");
-                    var result = await _searchApiRequestService.AddEventAsync(id, searchApiEvent, token.Token);
-                    _logger.LogInformation($"Successfully created failed event for SearchApiRequest [{id}]");
+                    _logger.LogDebug($"Attempting to create a new event for SearchApiRequest.");
+                    var result = await _searchApiRequestService.AddEventAsync(request.SearchApiRequestId, searchApiEvent, token.Token);
+                    _logger.LogInformation($"Successfully created failed event for SearchApiRequest");
                 }
                 catch (Exception ex)
                 {
@@ -172,19 +174,20 @@ namespace DynamicsAdapter.Web.PersonSearch
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Route("Finalized/{id}")]
         [OpenApiTag("Person Search Events API")]
-        public async Task<IActionResult> Finalized(Guid id, [FromBody]PersonSearchFinalized personFinalizedEvent)
+        public async Task<IActionResult> Finalized(string key, [FromBody]PersonSearchFinalized personFinalizedEvent)
         {
-            using (LogContext.PushProperty("FileId", personFinalizedEvent?.FileId))
+            using (LogContext.PushProperty("SearchRequestKey", personFinalizedEvent?.SearchRequestKey))
             {
-                _logger.LogInformation($"Received new event for SearchApiRequest [{id}]");
+                _logger.LogInformation($"Received new event for SearchApiRequest.");
 
                 var token = new CancellationTokenSource();
 
                 try
                 {
-                    var result = await _searchApiRequestService.MarkComplete(id, token.Token);
-                    _logger.LogInformation($"Successfully finalized Person Search [{id}]");
-                    await _register.RemoveSearchApiRequest(id);
+                    SSG_SearchApiRequest request = await _register.GetSearchApiRequest(key);
+                    var result = await _searchApiRequestService.MarkComplete(request.SearchApiRequestId, token.Token);
+                    _logger.LogInformation($"Successfully finalized Person Search.");
+                    await _register.RemoveSearchApiRequest(key);
                 }
                 catch (Exception ex)
                 {
@@ -202,23 +205,24 @@ namespace DynamicsAdapter.Web.PersonSearch
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Route("Rejected/{id}")]
+        [Route("Rejected/{key}")]
         [OpenApiTag("Person Search Events API")]
-        public async Task<IActionResult> Rejected(Guid id, [FromBody]PersonSearchRejected personRejectedEvent)
+        public async Task<IActionResult> Rejected(string key, [FromBody]PersonSearchRejected personRejectedEvent)
         {
-            using (LogContext.PushProperty("FileId", personRejectedEvent?.FileId))
+            using (LogContext.PushProperty("SearchRequestKey", personRejectedEvent?.SearchRequestKey))
             using (LogContext.PushProperty("DataPartner", personRejectedEvent?.ProviderProfile.Name))
             {
-                _logger.LogInformation($"Received new event for SearchApiRequest [{id}]");
+                _logger.LogInformation($"Received new event for SearchApiRequest [{key}]");
 
                 var token = new CancellationTokenSource();
 
                 try
                 {
                     var searchApiEvent = _mapper.Map<SSG_SearchApiEvent>(personRejectedEvent);
-                    _logger.LogDebug($"Attempting to create a new event for SearchApiRequest [{id}]");
-                    var result = await _searchApiRequestService.AddEventAsync(id, searchApiEvent, token.Token);
-                    _logger.LogInformation($"Successfully created rejected event for SearchApiRequest [{id}]");
+                    _logger.LogDebug($"Attempting to create a new event for SearchApiRequest [{key}]");
+                    SSG_SearchApiRequest request = await _register.GetSearchApiRequest(key);
+                    var result = await _searchApiRequestService.AddEventAsync(request.SearchApiRequestId, searchApiEvent, token.Token);
+                    _logger.LogInformation($"Successfully created rejected event for SearchApiRequest [{key}]");
 
 
                 }

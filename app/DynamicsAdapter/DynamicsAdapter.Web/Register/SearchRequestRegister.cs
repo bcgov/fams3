@@ -15,7 +15,9 @@ namespace DynamicsAdapter.Web.Register
         SSG_SearchApiRequest FilterDuplicatedIdentifier(SSG_SearchApiRequest request);
         Task<bool> RegisterSearchApiRequest(SSG_SearchApiRequest request);
         Task<SSG_SearchApiRequest> GetSearchApiRequest(Guid guid);
+        Task<SSG_SearchApiRequest> GetSearchApiRequest(string searchRequestKey);
         Task<bool> RemoveSearchApiRequest(Guid guid);
+        Task<bool> RemoveSearchApiRequest(string searchRequestKey);
         Task<SSG_Identifier> GetMatchedSourceIdentifier(PersonalIdentifier identifer, Guid searchApiRequestId);
     }
 
@@ -47,9 +49,9 @@ namespace DynamicsAdapter.Web.Register
             return true;
         }
 
-        public async Task<SSG_SearchApiRequest> GetSearchApiRequest(string fileId, string sequenceNumber)
+        public async Task<SSG_SearchApiRequest> GetSearchApiRequest(string searchRequestKey)
         {
-            string data = await _cache.Get($"{Keys.REDIS_KEY_PREFIX}{fileId}_{sequenceNumber}");
+            string data = await _cache.Get($"{Keys.REDIS_KEY_PREFIX}{searchRequestKey}");
             if (String.IsNullOrEmpty(data)) return null;
             return JsonConvert.DeserializeObject<SSG_SearchApiRequest>(data);
         }
@@ -76,9 +78,9 @@ namespace DynamicsAdapter.Web.Register
                      && m.IdentifierType == type);
         }
 
-        public async Task<SSG_Identifier> GetMatchedSourceIdentifier(PersonalIdentifier identifer, string fileId, string sequenceNumber)
+        public async Task<SSG_Identifier> GetMatchedSourceIdentifier(PersonalIdentifier identifer, string searchRequestKey)
         {
-            SSG_SearchApiRequest searchApiReqeust = await GetSearchApiRequest(fileId, sequenceNumber);
+            SSG_SearchApiRequest searchApiReqeust = await GetSearchApiRequest(searchRequestKey);
             if (searchApiReqeust == null)
             {
                 _logger.LogError("Cannot find the searchApiRequest in Redis Cache.");
@@ -97,9 +99,9 @@ namespace DynamicsAdapter.Web.Register
             return true;
         }
 
-        public async Task<bool> RemoveSearchApiRequest(string fileId, string sequenceNumber)
+        public async Task<bool> RemoveSearchApiRequest(string searchRequestKey)
         {
-            await _cache.Delete($"{Keys.REDIS_KEY_PREFIX}{fileId}_{sequenceNumber}");
+            await _cache.Delete($"{Keys.REDIS_KEY_PREFIX}{searchRequestKey}");
             return true;
         }
     }

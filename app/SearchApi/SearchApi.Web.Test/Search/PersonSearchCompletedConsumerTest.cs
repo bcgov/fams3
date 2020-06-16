@@ -31,7 +31,7 @@ namespace SearchApi.Web.Test.Search
             _loggerMock = LoggerUtils.LoggerMock<PersonSearchCompletedConsumer>();
             _searchApiNotifierMock = new Mock<ISearchApiNotifier<PersonSearchAdapterEvent>>();
             _harness = new InMemoryTestHarness();
-            _requestKey = "111111-999999";
+            _requestKey = "111111_999999";
 
             var fakePersonSearchStatus = new FakePersonSearchCompleted
             {

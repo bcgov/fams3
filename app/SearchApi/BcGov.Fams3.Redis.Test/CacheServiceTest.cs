@@ -25,8 +25,8 @@ namespace BcGov.Fams3.Redis.Test
         [SetUp]
         public void SetUp()
         {
-            _existedRequestKey = "111111-000000";
-            _nonExistedRequestKey = "222222-111113";
+            _existedRequestKey = "111111_000000";
+            _nonExistedRequestKey = "222222_111113";
             
 
             _validSearchRequest = new SearchRequest() { Person = null, SearchRequestId = Guid.NewGuid(), SearchRequestKey=_existedRequestKey };

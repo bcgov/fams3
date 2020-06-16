@@ -172,7 +172,7 @@ namespace DynamicsAdapter.Web.PersonSearch
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Route("Finalized/{id}")]
+        [Route("Finalized/{key}")]
         [OpenApiTag("Person Search Events API")]
         public async Task<IActionResult> Finalized(string key, [FromBody]PersonSearchFinalized personFinalizedEvent)
         {

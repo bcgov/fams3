@@ -69,7 +69,7 @@ oc process -o=yaml \
 ```shell script
 cd /opt/sonarqube/extensions/plugins
 # ZAP
-curl -o sonar-zap-plugin-1.2.0.jar https://github.com/Coveros/zap-sonar-plugin/releases/download/sonar-zap-plugin-1.2.0/sonar-zap-plugin-1.2.0.jar
+curl -sSL -o sonar-zap-plugin-1.2.0.jar https://github.com/Coveros/zap-sonar-plugin/releases/download/sonar-zap-plugin-1.2.0/sonar-zap-plugin-1.2.0.jar
 # Then add csharp plugin from marketplace in the UI and restart sonarqube
 ```
 ## Selenium

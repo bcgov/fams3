@@ -44,7 +44,7 @@ namespace DynamicsAdapter.Web
                 {
                     loggerConfiguration
                         .ReadFrom.Configuration(hostingContext.Configuration)
-                        .Enrich.WithPropertyFileId("FileId")
+                        .Enrich.WithPropertySearchRequestKey("SearchRequestKey")
                         .Enrich.WithPropertyDataPartner("DataPartner")
                         .Enrich.FromLogContext();
 
@@ -75,9 +75,9 @@ namespace DynamicsAdapter.Web
 
     public static class EnrichersExtensions
     {
-        public static LoggerConfiguration WithPropertyFileId(this LoggerEnrichmentConfiguration enrichmentConfiguration, string propertyName)
+        public static LoggerConfiguration WithPropertySearchRequestKey(this LoggerEnrichmentConfiguration enrichmentConfiguration, string propertyName)
         {
-            return enrichmentConfiguration.With(new FileIdEnricher(propertyName));
+            return enrichmentConfiguration.With(new SearchRequestKeyEnricher(propertyName));
         }
 
         public static LoggerConfiguration WithPropertyDataPartner(this LoggerEnrichmentConfiguration enrichmentConfiguration, string propertyName)
@@ -87,11 +87,11 @@ namespace DynamicsAdapter.Web
 
     }
 
-    public class FileIdEnricher : ILogEventEnricher
+    public class SearchRequestKeyEnricher : ILogEventEnricher
     {
         private readonly string innerPropertyName;
 
-        public FileIdEnricher(string innerPropertyName)
+        public SearchRequestKeyEnricher(string innerPropertyName)
         {
             this.innerPropertyName = innerPropertyName;
         }
@@ -104,7 +104,7 @@ namespace DynamicsAdapter.Web
                 var value = (eventPropertyValue as ScalarValue)?.Value as string;
                 if (!String.IsNullOrEmpty(value))
                 {
-                    logEvent.AddOrUpdateProperty(new LogEventProperty(innerPropertyName, new ScalarValue("FileId:"+value)));
+                    logEvent.AddOrUpdateProperty(new LogEventProperty(innerPropertyName, new ScalarValue("SearchRequestKey:" + value)));
                 }
             }
         }

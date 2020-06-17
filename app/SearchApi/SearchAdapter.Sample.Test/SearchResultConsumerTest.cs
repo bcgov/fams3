@@ -33,7 +33,7 @@ namespace SearchAdapter.Sample.Test
             public DateTime TimeStamp { get; set; }
             public string SearchRequestKey { get; set; }
 
-            public string ReceivedPayload { get; set; }
+            public object ReceivedPayload { get; set; }
 
 
         }

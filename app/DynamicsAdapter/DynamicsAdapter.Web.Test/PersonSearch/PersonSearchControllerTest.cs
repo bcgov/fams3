@@ -26,6 +26,8 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
 
         private Guid _testGuid;
         private Guid _exceptionGuid;
+        private string _searchRequestKey;
+        private string _exceptionSearchRequestKey;
         private string _testFileId;
 
         private PersonSearchController _sut;
@@ -45,6 +47,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         private AliasEntity _fakeName;
         private SSG_Person _fakePerson;
         private SSG_Identifier _fakeSourceIdentifier;
+        private SSG_SearchApiRequest _fakeSearchApiRequest;
 
         private Mock<IMapper> _mapper;
 
@@ -53,12 +56,19 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         {
             _testGuid = Guid.NewGuid();
             _testFileId = "testFileId";
+            _searchRequestKey = "fileId_SequenceNumber";
+            _exceptionSearchRequestKey = "exception_seqNum";
             _exceptionGuid = Guid.NewGuid();
             _loggerMock = new Mock<ILogger<PersonSearchController>>();
             _searchApiRequestServiceMock = new Mock<ISearchApiRequestService>();
             _searchResultServiceMock = new Mock<ISearchResultService>();
             _mapper = new Mock<IMapper>();
             _registerMock = new Mock<ISearchRequestRegister>();
+
+            _fakeSearchApiRequest = new SSG_SearchApiRequest()
+            {
+                SearchApiRequestId = _testGuid
+            };
 
             var validRequestId = Guid.NewGuid();
             var invalidRequestId = Guid.NewGuid();
@@ -113,7 +123,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _fakePersonAcceptedEvent = new PersonSearchAccepted()
             {
                 SearchRequestId = Guid.NewGuid(),
-                FileId = _testFileId,
+                SearchRequestKey = _searchRequestKey,
                 TimeStamp = DateTime.Now,
                 ProviderProfile = new ProviderProfile()
                 {
@@ -124,7 +134,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _fakePersonCompletedEvent = new PersonSearchCompleted()
             {
                 SearchRequestId = Guid.NewGuid(),
-                FileId=_testFileId,
+                SearchRequestKey= _searchRequestKey,
                 TimeStamp = DateTime.Now,
                 ProviderProfile = new ProviderProfile()
                 {
@@ -147,7 +157,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _fakePersonFailedEvent = new PersonSearchFailed()
             {
                 SearchRequestId = Guid.NewGuid(),
-                FileId = _testFileId,
+                SearchRequestKey = _searchRequestKey,
                 TimeStamp = DateTime.Now,
                 ProviderProfile = new ProviderProfile()
                 {
@@ -159,7 +169,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _fakePersonRejectEvent = new PersonSearchRejected()
             {
                 SearchRequestId = Guid.NewGuid(),
-                FileId = _testFileId,
+                SearchRequestKey = _searchRequestKey,
                 TimeStamp = DateTime.Now,
                 ProviderProfile = new ProviderProfile()
                 {
@@ -171,7 +181,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _fakePersonFinalizedEvent = new PersonSearchFinalized()
             {
                 SearchRequestId = Guid.NewGuid(),
-                FileId = _testFileId,
+                SearchRequestKey = _searchRequestKey,
                 TimeStamp = DateTime.Now,
                 Message = "test message"
             };
@@ -234,6 +244,9 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                     It.IsAny<SSG_SearchApiEvent>(), It.IsAny<CancellationToken>()))
                 .Throws(new Exception("random exception"));
 
+            _registerMock.Setup(x => x.GetSearchApiRequest(It.Is<string>(m => m == _searchRequestKey)))
+                .Returns(Task.FromResult(_fakeSearchApiRequest));
+
             _registerMock.Setup(x => x.GetMatchedSourceIdentifier(It.IsAny<PersonalIdentifier>(), It.IsAny<Guid>()))
                 .Returns(Task.FromResult(_fakeSourceIdentifier));
 
@@ -248,7 +261,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         public async Task With_valid_completed_event_it_should_return_ok()
         {
 
-            var result = await _sut.Completed(_testGuid, _fakePersonCompletedEvent);
+            var result = await _sut.Completed(_searchRequestKey, _fakePersonCompletedEvent);
 
             _searchResultServiceMock.Verify(x => x.ProcessPersonFound(It.Is<Person>(x => x.FirstName == "TEST1"), It.IsAny<ProviderProfile>(), It.IsAny<SSG_SearchRequest>(),It.IsAny<Guid>(), It.IsAny<CancellationToken>(),It.IsAny<SSG_Identifier>()), Times.Once);
             _searchApiRequestServiceMock
@@ -259,30 +272,30 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         [Test]
         public async Task With_valid_finalized_event_it_should_return_ok()
         {
-            var result = await _sut.Finalized(_testGuid, _fakePersonFinalizedEvent);
+            var result = await _sut.Finalized(_searchRequestKey, _fakePersonFinalizedEvent);
            _searchApiRequestServiceMock
                 .Verify(x => x.MarkComplete(It.Is<Guid>(x => x == _testGuid), It.IsAny<CancellationToken>()), Times.Once);
-            _registerMock.Verify(x => x.RemoveSearchApiRequest(It.IsAny<Guid>()), Times.Once);
+            _registerMock.Verify(x => x.RemoveSearchApiRequest(It.IsAny<string>()), Times.Once);
             Assert.IsInstanceOf(typeof(OkResult), result);
         }
 
         [Test]
         public async Task With_exception_completed_event_should_return_badrequest()
         {
-            var result = await _sut.Completed(_exceptionGuid, _fakePersonCompletedEvent);
+            var result = await _sut.Completed(_exceptionSearchRequestKey, _fakePersonCompletedEvent);
             Assert.IsInstanceOf(typeof(BadRequestResult), result);
         }
 
         [Test]
         public async Task With_null_completed_event_should_return_bad_request_()
         {
-            var result = await _sut.Completed(_exceptionGuid, null);
+            var result = await _sut.Completed(_exceptionSearchRequestKey, null);
             Assert.IsInstanceOf(typeof(BadRequestResult), result);
         }
         [Test]
         public async Task With_valid_accepted_event_it_should_return_ok()
         {
-            var result = await _sut.Accepted(_testGuid, _fakePersonAcceptedEvent);
+            var result = await _sut.Accepted(_searchRequestKey, _fakePersonAcceptedEvent);
             _searchApiRequestServiceMock
                 .Verify(x => x.AddEventAsync(It.Is<Guid>(x => x == _testGuid), It.IsAny<SSG_SearchApiEvent>(), It.IsAny<CancellationToken>()), Times.Once);
 
@@ -293,7 +306,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         [Test]
         public async Task With_exception_event_it_should_return_badrequest()
         {
-            var result = await _sut.Accepted(_exceptionGuid, null);
+            var result = await _sut.Accepted(_exceptionSearchRequestKey, null);
             Assert.IsInstanceOf(typeof(BadRequestResult), result);
         }
 
@@ -301,7 +314,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         [Test]
         public async Task With_valid_failed_event_it_should_return_ok()
         {
-            var result = await _sut.Failed(_testGuid, _fakePersonFailedEvent);
+            var result = await _sut.Failed(_searchRequestKey, _fakePersonFailedEvent);
 
 
             _searchApiRequestServiceMock
@@ -314,14 +327,14 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         [Test]
         public async Task With_exception_failed_event_it_should_return_badrequest()
         {
-            var result = await _sut.Failed(_exceptionGuid, null);
+            var result = await _sut.Failed(_exceptionSearchRequestKey, null);
             Assert.IsInstanceOf(typeof(BadRequestResult), result);
         }
 
         [Test]
         public async Task With_valid_rejected_event_it_should_return_ok()
         {
-            var result = await _sut.Rejected(_testGuid, _fakePersonRejectEvent
+            var result = await _sut.Rejected(_searchRequestKey, _fakePersonRejectEvent
                 );
 
 
@@ -335,7 +348,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         [Test]
         public async Task With_exception_rejected_event_it_should_return_badrequest()
         {
-            var result = await _sut.Rejected(_exceptionGuid, null);
+            var result = await _sut.Rejected(_exceptionSearchRequestKey, null);
             Assert.IsInstanceOf(typeof(BadRequestResult), result);
         }
 

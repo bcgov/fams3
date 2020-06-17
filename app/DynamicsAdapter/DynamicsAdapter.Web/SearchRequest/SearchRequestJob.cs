@@ -59,7 +59,7 @@ namespace DynamicsAdapter.Web.SearchRequest
                     {
                         try
                         {
-                            using (LogContext.PushProperty("FileId", ssgSearchRequest.SearchRequest?.FileId))
+                            using (LogContext.PushProperty("SearchRequestKey", $"{ssgSearchRequest.SearchRequest?.FileId}_{ssgSearchRequest.SequenceNumber}"))
                             {
                                 _logger.LogDebug(
                                    $"Attempting to post person search for request {ssgSearchRequest.SearchApiRequestId}");

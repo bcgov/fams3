@@ -22,7 +22,7 @@ namespace SearchApi.Web.Test.Search
         private Mock<ILogger<PersonSearchFailedConsumer>> _loggerMock;
         private Mock<ISearchApiNotifier<PersonSearchAdapterEvent>> _searchApiNotifierMock;
 
-        private Guid _requestId;
+        private string _requestKey;
       
 
         [OneTimeSetUp]
@@ -31,11 +31,11 @@ namespace SearchApi.Web.Test.Search
             _loggerMock = LoggerUtils.LoggerMock<PersonSearchFailedConsumer>();
             _searchApiNotifierMock = new Mock<ISearchApiNotifier<PersonSearchAdapterEvent>>();
             _harness = new InMemoryTestHarness();
-            _requestId = Guid.NewGuid();
+            _requestKey = "111111_000000";
 
             var fakePersonSearchStatus = new FakePersonSearchFailed
             {
-                SearchRequestId = _requestId,
+                SearchRequestKey = _requestKey,
                 TimeStamp = DateTime.Now
             };
 
@@ -58,7 +58,7 @@ namespace SearchApi.Web.Test.Search
         public void Should_send_the_initial_message_to_the_consumer()
         {
             Assert.IsTrue(_harness.Consumed.Select<PersonSearchFailed>().Any());
-            _searchApiNotifierMock.Verify(x => x.NotifyEventAsync(It.Is<Guid>(x => x == _requestId), It.IsAny<PersonSearchFailed>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
+            _searchApiNotifierMock.Verify(x => x.NotifyEventAsync(It.Is<string>(x => x == _requestKey), It.IsAny<PersonSearchFailed>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
 

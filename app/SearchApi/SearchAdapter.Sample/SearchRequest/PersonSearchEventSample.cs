@@ -11,21 +11,21 @@ namespace SearchAdapter.Sample.SearchRequest
 
        
         public Guid SearchRequestId { get; set; }
-        public string FileId { get; set; }
+        public string SearchRequestKey { get; set; }
         public DateTime TimeStamp { get; set; }
         public ProviderProfile ProviderProfile { get; set; }
         public IEnumerable<PersonFound> MatchedPersons { get; set; }
     }
     public static class FakePersonBuilder
     {
-        public static PersonSearchCompleted BuildFakePersonSearchCompleted(Guid searchrequestId, string fileid, string firstname, string lastname, DateTime dob, ProviderProfile _profile)
+        public static PersonSearchCompleted BuildFakePersonSearchCompleted(Guid searchrequestId, string SearchRequestKey, string firstname, string lastname, DateTime dob, ProviderProfile _profile)
         {
 
             return new PersonSearchCompletedSample()
             {
                 ProviderProfile = _profile,
                 SearchRequestId = searchrequestId,
-                FileId = fileid,
+                SearchRequestKey = SearchRequestKey,
                 TimeStamp = DateTime.Now,
                 MatchedPersons = new List<PersonFound>()
                 {
@@ -463,12 +463,12 @@ namespace SearchAdapter.Sample.SearchRequest
 
         private readonly List<DefaultValidationResult> _validationResults = new List<DefaultValidationResult>();
 
-        public PersonSearchRejectedEvent(Guid searchRequestId, string fileId, ProviderProfile providerProfile)
+        public PersonSearchRejectedEvent(Guid searchRequestId, string SearchRequestKey, ProviderProfile providerProfile)
         {
             TimeStamp = DateTime.Now;
             SearchRequestId = searchRequestId;
             ProviderProfile = providerProfile;
-            FileId = fileId;
+            SearchRequestKey = SearchRequestKey;
         }
 
         public void AddValidationResult(DefaultValidationResult validationResult)
@@ -477,7 +477,7 @@ namespace SearchAdapter.Sample.SearchRequest
         }
 
         public Guid SearchRequestId { get; }
-        public string FileId { get; }
+        public string SearchRequestKey { get; }
 
         public DateTime TimeStamp { get; }
         public ProviderProfile ProviderProfile { get; }

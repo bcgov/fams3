@@ -25,11 +25,11 @@ namespace SearchApi.Web.Search
 
         public async Task Consume(ConsumeContext<PersonSearchAdapterEvent> context, string eventName)
         {
-            using (LogContext.PushProperty("FileId",context.Message?.FileId))
+            using (LogContext.PushProperty("SearchRequestKey",context.Message?.SearchRequestKey))
             {
                 var cts = new CancellationTokenSource();
                 _logger.LogInformation($"received new {nameof(PersonSearchAdapterEvent)} event from {context.Message.ProviderProfile?.Name}");
-                await _searchApiNotifier.NotifyEventAsync(context.Message.SearchRequestId, context.Message, eventName,
+                await _searchApiNotifier.NotifyEventAsync(context.Message.SearchRequestKey, context.Message, eventName,
                     cts.Token);
             }
         }

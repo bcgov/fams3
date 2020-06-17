@@ -11,10 +11,10 @@ namespace BcGov.Fams3.Redis
     public interface ICacheService
     {
         Task SaveRequest(SearchRequest searchRequest);
-
         Task SaveRequest(string data, string key);
-        Task<SearchRequest> GetRequest(Guid id);
-        Task DeleteRequest(Guid id);
+        Task<SearchRequest> GetRequest(string searchRequestKey);
+        Task DeleteRequest(string id);
+
         Task Save(string key, dynamic data);
         Task<string> Get(string key);
         Task Delete(string key);
@@ -38,36 +38,34 @@ namespace BcGov.Fams3.Redis
 
 
             if (searchRequest is null) throw new ArgumentNullException("SaveRequest : Search request cannot be null");
-            if (searchRequest.SearchRequestId.Equals(default(Guid))) throw new ArgumentNullException("SaveRequest : Search request id cannot be null");
-            await _distributedCache.SetStringAsync(searchRequest.SearchRequestId.ToString(), JsonConvert.SerializeObject(searchRequest), new CancellationToken());
+            if (string.IsNullOrEmpty(searchRequest.SearchRequestKey)) throw new ArgumentNullException("SaveRequest : Search request key cannot be null");
+            await _distributedCache.SetStringAsync(searchRequest.SearchRequestKey, JsonConvert.SerializeObject(searchRequest), new CancellationToken());
 
 
         }
 
         public async Task SaveRequest(string data, string key)
         {
-
-
             if (string.IsNullOrEmpty(data)) throw new ArgumentNullException("SaveRequest : Data cannot be empty");
             if (string.IsNullOrEmpty(key)) throw new ArgumentNullException("SaveRequest : Key cannot be null");
             await _distributedCache.SetStringAsync(key, data, new CancellationToken());
 
         }
 
-        public async Task DeleteRequest(Guid searchRequestId)
+        public async Task DeleteRequest(string searchRequestKey)
         {
 
-            if (searchRequestId.Equals(default(Guid))) throw new ArgumentNullException("DeleteRequest : Search request cannot be null");
-            await _distributedCache.RemoveAsync(searchRequestId.ToString(), new CancellationToken());
+            if (string.IsNullOrEmpty(searchRequestKey)) throw new ArgumentNullException("DeleteRequest : Search request key cannot be null");
+            await _distributedCache.RemoveAsync(searchRequestKey, new CancellationToken());
 
         }
 
-        public async Task<SearchRequest> GetRequest(Guid searchRequestId)
+        public async Task<SearchRequest> GetRequest(string searchRequestKey)
         {
 
-            if (searchRequestId.Equals(default(Guid))) throw new ArgumentNullException("GetRequest : Search request cannot be null");
+            if (string.IsNullOrEmpty(searchRequestKey)) throw new ArgumentNullException("GetRequest : Search request key cannot be null");
 
-            string searchRequestStr = await _distributedCache.GetStringAsync(searchRequestId.ToString(), new CancellationToken());
+            string searchRequestStr = await _distributedCache.GetStringAsync(searchRequestKey.ToString(), new CancellationToken());
             if (searchRequestStr == null) return null;
             return await Task.FromResult(JsonConvert.DeserializeObject<SearchRequest>(searchRequestStr));
 

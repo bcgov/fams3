@@ -39,7 +39,7 @@ namespace BcGov.Fams3.SearchApi.Core.Adapters.Middleware
         {
             _logger.LogError(exception, "Adapter Failed to execute person search.");
                 await context.Publish<PersonSearchFailed>(new DefaultPersonSearchFailed(context.Message.SearchRequestId,
-                    context.Message.FileId,
+                    context.Message.SearchRequestKey,
                     _providerProfile, exception.Message));
         }
     }

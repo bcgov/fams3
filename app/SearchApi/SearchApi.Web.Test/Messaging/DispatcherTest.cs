@@ -79,7 +79,7 @@ namespace SearchApi.Web.Test.Messaging
                         Completed = false
                     }
                 },
-                "FileID","123456"), Guid.NewGuid());
+                "SearchRequestKey"), Guid.NewGuid());
 
 
             sendEndpointMock.Verify(x => x.Send<PersonSearchOrdered>(It.IsAny<PersonSearchOrdered>(), It.IsAny<CancellationToken>()),
@@ -109,7 +109,7 @@ namespace SearchApi.Web.Test.Messaging
                     new DataProvider() {Name = "TEST4", Completed =false},
                     new DataProvider() {Name = "TEST5", Completed=false}
                 },
-                "FileID", "123456"), Guid.NewGuid());
+                "SearchRequestKey"), Guid.NewGuid());
 
 
             sendEndpointMock.Verify(x => x.Send<PersonSearchOrdered>(It.IsAny<PersonSearchOrdered>(), It.IsAny<CancellationToken>()),
@@ -131,7 +131,7 @@ namespace SearchApi.Web.Test.Messaging
                 new List<Name>(),
                 new List<RelatedPerson>(),
                 new List<Employment>(),
-                new List<DataProvider>(), "FileID", "123456"), Guid.NewGuid());
+                new List<DataProvider>(), "SearchRequestKey"), Guid.NewGuid());
 
 
             sendEndpointMock.Verify(x => x.Send<PersonSearchOrdered>(It.IsAny<PersonSearchOrdered>(), It.IsAny<CancellationToken>()),
@@ -153,7 +153,7 @@ namespace SearchApi.Web.Test.Messaging
                 new List<Name>(),
                 new List<RelatedPerson>(),
                 new List<Employment>(),
-                null, "FileID", "123456"), Guid.NewGuid());
+                null, "SearchRequestKey"), Guid.NewGuid());
 
 
             sendEndpointMock.Verify(x => x.Send<PersonSearchOrdered>(It.IsAny<PersonSearchOrdered>(), It.IsAny<CancellationToken>()),
@@ -185,7 +185,7 @@ namespace SearchApi.Web.Test.Messaging
                 new List<Name>(),
                 new List<RelatedPerson>(),
                 new List<Employment>(),
-                null, "FileID", "123456"), new Guid()));
+                null, "SearchRequestKey"), new Guid()));
 
         }
 

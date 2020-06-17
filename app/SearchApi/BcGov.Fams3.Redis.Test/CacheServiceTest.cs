@@ -16,8 +16,8 @@ namespace BcGov.Fams3.Redis.Test
         private Mock<IDistributedCache> _distributedCacheMock;
         private Mock<ILogger<CacheService>> _loggerMock;
         private ICacheService _sut;
-        private Guid _existedReqestGuid;
-        private Guid _nonExistedReqestGuid;
+        private string _existedRequestKey;
+        private string _nonExistedRequestKey;
         private SearchRequest _validSearchRequest;
         private string _validRequestString;
         byte[] bytesSearch = null;
@@ -25,17 +25,17 @@ namespace BcGov.Fams3.Redis.Test
         [SetUp]
         public void SetUp()
         {
-            _existedReqestGuid = Guid.Parse("6AE89FE6-9909-EA11-B813-00505683FBF4");
-            _nonExistedReqestGuid = Guid.Parse("66666666-9909-EA11-B813-00505683FBF4");
+            _existedRequestKey = "111111_000000";
+            _nonExistedRequestKey = "222222_111113";
             
 
-            _validSearchRequest = new SearchRequest() { Person = null, SearchRequestId = _existedReqestGuid };
+            _validSearchRequest = new SearchRequest() { Person = null, SearchRequestId = Guid.NewGuid(), SearchRequestKey=_existedRequestKey };
             _validRequestString = JsonConvert.SerializeObject(_validSearchRequest);
 
             _distributedCacheMock = new Mock<IDistributedCache>();
 
             bytesSearch = Encoding.UTF8.GetBytes(_validRequestString);
-            _distributedCacheMock.Setup(x => x.SetAsync(_existedReqestGuid.ToString(),
+            _distributedCacheMock.Setup(x => x.SetAsync(_existedRequestKey,
                 It.IsAny<byte[]>(), It.IsAny<DistributedCacheEntryOptions>(), It.IsAny<CancellationToken>()))
                 .Verifiable();
 
@@ -43,13 +43,13 @@ namespace BcGov.Fams3.Redis.Test
       It.IsAny<byte[]>(), It.IsAny<DistributedCacheEntryOptions>(), It.IsAny<CancellationToken>()))
       .Verifiable();
 
-            _distributedCacheMock.Setup(x => x.GetAsync(_existedReqestGuid.ToString(), It.IsAny<CancellationToken>()))
+            _distributedCacheMock.Setup(x => x.GetAsync(_existedRequestKey, It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(bytesSearch));
 
             _distributedCacheMock.Setup(x => x.GetAsync("key", It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(Encoding.ASCII.GetBytes("data")));
 
-            _distributedCacheMock.Setup(x => x.RemoveAsync(_existedReqestGuid.ToString(),
+            _distributedCacheMock.Setup(x => x.RemoveAsync(_existedRequestKey,
                 It.IsAny<CancellationToken>()))
                .Verifiable();
 
@@ -57,10 +57,10 @@ namespace BcGov.Fams3.Redis.Test
                 It.IsAny<CancellationToken>()))
                .Verifiable();
 
-            _distributedCacheMock.Setup(x => x.GetAsync(_nonExistedReqestGuid.ToString(), It.IsAny<CancellationToken>()))
+            _distributedCacheMock.Setup(x => x.GetAsync(_nonExistedRequestKey, It.IsAny<CancellationToken>()))
          .Returns(Task.FromResult<byte[]>(null));
 
-            _distributedCacheMock.Setup(x => x.RemoveAsync(_nonExistedReqestGuid.ToString(),
+            _distributedCacheMock.Setup(x => x.RemoveAsync(_nonExistedRequestKey,
             It.IsAny<CancellationToken>()))
            .Verifiable();
 
@@ -72,16 +72,16 @@ namespace BcGov.Fams3.Redis.Test
         }
 
         [Test]
-        public void with_existed_serachRequestId_getRequest_return_SearchRequest()
+        public void with_existed_serachRequestKey_getRequest_return_SearchRequest()
         {
-            SearchRequest sr = _sut.GetRequest(_existedReqestGuid).Result;
-            Assert.AreEqual(_existedReqestGuid, sr.SearchRequestId);
+            SearchRequest sr = _sut.GetRequest(_existedRequestKey).Result;
+            Assert.AreEqual(_existedRequestKey, sr.SearchRequestKey);
         }
 
         [Test]
         public void with_nonexisted_searchRequestId_getRequest_return_null()
         {
-            SearchRequest sr = _sut.GetRequest(_nonExistedReqestGuid).Result;
+            SearchRequest sr = _sut.GetRequest(_nonExistedRequestKey).Result;
             Assert.AreEqual(null, sr);
         }
 
@@ -101,7 +101,7 @@ namespace BcGov.Fams3.Redis.Test
         public void with_correct_searchRequest_saveRequest_successfully()
         {
             _sut.SaveRequest(_validSearchRequest);
-            _distributedCacheMock.Verify(x => x.SetAsync(_existedReqestGuid.ToString(), 
+            _distributedCacheMock.Verify(x => x.SetAsync(_existedRequestKey, 
                 It.IsAny<byte[]>(), 
                 It.IsAny<DistributedCacheEntryOptions>(), 
                 It.IsAny<CancellationToken>()), Times.AtLeastOnce ());
@@ -124,28 +124,28 @@ namespace BcGov.Fams3.Redis.Test
         [Test]
         public void with_existed_searchRequestId_deleteRequest_successfully()
         {
-            _sut.DeleteRequest(_existedReqestGuid);
-            _distributedCacheMock.Verify(x => x.RemoveAsync(_existedReqestGuid.ToString(), new CancellationToken()), Times.Once);
+            _sut.DeleteRequest(_existedRequestKey);
+            _distributedCacheMock.Verify(x => x.RemoveAsync(_existedRequestKey, new CancellationToken()), Times.Once);
         }
 
         [Test]
         public void with_nonexisted_serachRequestId_deleteRequest_successfully()
         {
-            _sut.DeleteRequest(_nonExistedReqestGuid);
-            _distributedCacheMock.Verify(x => x.RemoveAsync(_nonExistedReqestGuid.ToString(), new CancellationToken()), Times.Once);
+            _sut.DeleteRequest(_nonExistedRequestKey);
+            _distributedCacheMock.Verify(x => x.RemoveAsync(_nonExistedRequestKey, new CancellationToken()), Times.Once);
         }
 
         [Test]
         public void when_there_null_deleteRequest_throws_it()
         {
-            Assert.ThrowsAsync<ArgumentNullException>(() => _sut.DeleteRequest(new Guid()));
+            Assert.ThrowsAsync<ArgumentNullException>(() => _sut.DeleteRequest(""));
           
         }
 
         [Test]
         public void when_there_null_GetRequest_throws_it()
         {
-            Assert.ThrowsAsync<ArgumentNullException>(() => _sut.GetRequest(new Guid()));
+            Assert.ThrowsAsync<ArgumentNullException>(() => _sut.GetRequest(""));
         }
 
         [Test]

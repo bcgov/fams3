@@ -115,21 +115,48 @@ objects:
                     dir('zap') {
                       git url: "${GIT_SOURCE_URL}", branch: "master", credentialsId: "${GIT_CREDENTIALS_ID}"
                       withCredentials([file(credentialsId: 'frjeow-tools-selenium-maven-config', variable: 'CONFIG_PROPERTIES')]) {
-                          def retVal = sh (
-                            returnStatus: true,
-                            script: """
-                              cd test-automation/fams3-frontend-automation/
-                              cp \$CONFIG_PROPERTIES src/main/java/com/fams3/qa/config/config.properties
-                              cat src/main/java/com/fams3/qa/config/config.properties
-                              sed -ri "s/chromeOptions.setHeadless\\(true\\);/chromeOptions.setHeadless\\(false\\);/" src/main/java/com/fams3/qa/util/DriverClass.java
-                              mvn clean install
-                              cat test-output/extent/HtmlReport/ExtentHtml.html
-                              # sleep 3600
-                            """
-                          )
+                        def retVal = sh (
+                          returnStatus: true,
+                          script: """
+                            cd test-automation/fams3-frontend-automation/
+                            cp \$CONFIG_PROPERTIES src/main/java/com/fams3/qa/config/config.properties
+                            sed -ri "s/chromeOptions.setHeadless\\(true\\);/chromeOptions.setHeadless\\(false\\);/" src/main/java/com/fams3/qa/util/DriverClass.java
+                            mvn clean install
+                          """
+                        )
                       }
+                      // Copy the report into the Jenkins working directory so the Jenkins tools can access it.
+                      sh (
+                        returnStdout: true,
+                        script: "mkdir -p ./wrk/ && cp ./test-automation/fams3-frontend-automation/test-output/extent/HtmlReport/ExtentHtml.html ./wrk/"
+                      )
                     }
+                    // Stash the report for publishing in a different stage (which will run on a different pod).
+                    echo "Stash the report for the publishing stage ..."
+                    stash name: "CUCUMBER_REPORTS", includes: "cucumber/wrk/*.html"
                   }
+                }
+              }
+            }
+
+            node("base") {
+              stage('Publish reports') {
+                timeout(time: 60, unit: 'MINUTES') {
+                  echo "Preparing the report for the publishing ..."
+                  unstash name: "CUCUMBER_REPORTS"
+
+                  def retVal = sh (
+                    returnStatus: true,
+                    script: """
+                      export DATE_STAMP=\$(date +%Y-%m-%d-%H-%M-%S)
+                      sed -ri "s/http:/https:/g" cucumber/wrk/ExtentHtml.html
+                      [ -d "/var/www/html/reports/cucumber/" ] || mkdir -p /var/www/html/reports/cucumber
+                      mv cucumber/wrk/ExtentHtml.html /var/www/html/reports/cucumber/\${DATE_STAMP}-ExtentHtml.html
+                      cd /var/www/html/reports/cucumber/
+                      rm -f 0000-00-00-00-00-00-ExtentHtml.html
+                      ln -s \${DATE_STAMP}-ExtentHtml.html 0000-00-00-00-00-00-ExtentHtml.html
+                    """
+                  )
                 }
               }
             }
@@ -146,7 +173,7 @@ objects:
                         find
                         mkdir -p /zap/wrk/
                         mv src/SearchApi.Adapters/zap/options.conf /zap/wrk/options.conf
-                        sed -ir "s/replaceThisIdValue/${PI}/g" /zap/wrk/options.conf
+                        sed -ri "s/replaceThisIdValue/${PI}/g" /zap/wrk/options.conf
                         cat /zap/wrk/options.conf
                         mv src/SearchApi.Adapters/zap/default.context /zap/wrk/default.context
                         cat /zap/wrk/default.context
@@ -160,6 +187,7 @@ objects:
                           -f openapi \
                           -d \
                           -x ${ZAP_REPORT_NAME} \
+                          -r ${APP_NAME}-zap-report.html \
                           -z "-configfile /zap/wrk/options.conf -d /var/lib/jenkins" \
                           -n /zap/wrk/default.context
 
@@ -172,11 +200,41 @@ objects:
                       returnStdout: true,
                       script: "mkdir -p ./wrk/ && cp ${ZAP_REPORT_PATH} ./wrk/"
                     )
+                    // Copy the ZAP html report into the Jenkins working directory so the Jenkins tools can access it.
+                    sh (
+                      returnStdout: true,
+                      script: "mkdir -p ./wrk/ && cp /zap/wrk/${APP_NAME}-zap-report.html ./wrk/"
+                    )
                   }
 
                   // Stash the ZAP report for publishing in a different stage (which will run on a different pod).
                   echo "Stash the report for the publishing stage ..."
                   stash name: "${ZAP_REPORT_STASH}", includes: "zap/wrk/*.xml"
+                  // Stash the ZAP report for publishing in a different stage (which will run on a different pod).
+                  echo "Stash the report for the publishing stage ..."
+                  stash name: "ZAP_REPORTS", includes: "zap/wrk/*.html"
+                }
+              }
+            }
+
+            node("base") {
+              stage('Publish reports') {
+                timeout(time: 60, unit: 'MINUTES') {
+                  echo "Preparing the report for the publishing ..."
+                  unstash name: "ZAP_REPORTS"
+
+                  def retVal = sh (
+                    returnStatus: true,
+                    script: """
+                      export DATE_STAMP=\$(date +%Y-%m-%d-%H-%M-%S)
+                      sed -ri "s/http:/https:/g" zap/wrk/${APP_NAME}-zap-report.html
+                      [ -d "/var/www/html/reports/zap/" ] || mkdir -p /var/www/html/reports/zap
+                      mv zap/wrk/${APP_NAME}-zap-report.html /var/www/html/reports/zap/\${DATE_STAMP}-${APP_NAME}-zap-report.html
+                      cd /var/www/html/reports/zap/
+                      rm -f 0000-00-00-00-00-00-${APP_NAME}-zap-report.html
+                      ln -s \${DATE_STAMP}-${APP_NAME}-zap-report.html 0000-00-00-00-00-00-${APP_NAME}-zap-report.html
+                    """
+                  )
                 }
               }
             }

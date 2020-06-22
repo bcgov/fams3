@@ -1,5 +1,8 @@
-﻿namespace DynamicsAdapter.Web.Auth
+﻿using System;
+
+namespace DynamicsAdapter.Web.Auth
 {
+    [Serializable]
     public class OAuthApiException : System.Exception
     {
         public int StatusCode { get; private set; }

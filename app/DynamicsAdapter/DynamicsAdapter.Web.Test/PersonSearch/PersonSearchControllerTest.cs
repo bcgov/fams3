@@ -28,7 +28,6 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         private Guid _exceptionGuid;
         private string _searchRequestKey;
         private string _exceptionSearchRequestKey;
-        private string _testFileId;
 
         private PersonSearchController _sut;
         private Mock<ILogger<PersonSearchController>> _loggerMock ;
@@ -55,7 +54,6 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         public void Init()
         {
             _testGuid = Guid.NewGuid();
-            _testFileId = "testFileId";
             _searchRequestKey = "fileId_SequenceNumber";
             _exceptionSearchRequestKey = "exception_seqNum";
             _exceptionGuid = Guid.NewGuid();

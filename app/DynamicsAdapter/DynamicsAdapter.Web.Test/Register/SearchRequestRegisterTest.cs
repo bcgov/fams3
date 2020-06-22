@@ -238,9 +238,23 @@ namespace DynamicsAdapter.Web.Test.Register
         }
 
         [Test]
+        public async Task null_sourceId_will_get_null_ssgIdentifier()
+        {
+            SSG_Identifier result = await _sut.GetMatchedSourceIdentifier(null, _validSearchApiRequestGuid);
+            Assert.AreEqual(null, result);
+        }
+
+        [Test]
         public async Task wrong_sourceId_validFileId_will_get_null_ssgIdentifier()
         {
             SSG_Identifier result = await _sut.GetMatchedSourceIdentifier(_wrongIdentifier, _validSearchRequestKey);
+            Assert.AreEqual(null, result);
+        }
+
+        [Test]
+        public async Task null_sourceId_validSearchRequestKey_will_get_null_ssgIdentifier()
+        {
+            SSG_Identifier result = await _sut.GetMatchedSourceIdentifier(null, _validSearchRequestKey);
             Assert.AreEqual(null, result);
         }
 

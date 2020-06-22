@@ -64,19 +64,19 @@ namespace DynamicsAdapter.Web.PersonSearch
         public async Task<bool> ProcessPersonFound(
             Person person, 
             ProviderProfile providerProfile, 
-            SSG_SearchRequest request, 
+            SSG_SearchRequest searchRequest, 
             Guid searchApiRequestId, 
-            CancellationToken concellationToken, 
+            CancellationToken cancellationToken, 
             SSG_Identifier sourceIdentifier= null)
         {
             if (person == null) return true;
 
             _foundPerson = person;
             _providerDynamicsID = providerProfile.DynamicsID();
-            _searchRequest = request;
+            _searchRequest = searchRequest;
             _sourceIdentifier = sourceIdentifier;
             _searchApiRequest = new SSG_SearchApiRequest() { SearchApiRequestId = searchApiRequestId };
-            _cancellationToken = concellationToken;
+            _cancellationToken = cancellationToken;
 
             _returnedPerson = await UploadPerson();
 

@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace DynamicsAdapter.Web.Register
 {
@@ -16,9 +13,5 @@ namespace DynamicsAdapter.Web.Register
         {
         }
 
-        public RegisterFailedException(string message, Exception inner)
-            : base(message, inner)
-        {
-        }
     }
 }

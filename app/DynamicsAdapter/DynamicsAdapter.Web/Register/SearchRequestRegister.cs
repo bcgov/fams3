@@ -72,6 +72,11 @@ namespace DynamicsAdapter.Web.Register
                 _logger.LogError("Cannot find the searchApiRequest in Redis Cache.");
                 return null;
             }
+            if (identifer == null)
+            {
+                _logger.LogDebug("source identifier from personfound is null");
+                return null;
+            }
 
             int? type = IDType.IDTypeDictionary.FirstOrDefault(m => m.Value == identifer.Type).Key;
             return searchApiReqeust.Identifiers.FirstOrDefault(
@@ -85,6 +90,11 @@ namespace DynamicsAdapter.Web.Register
             if (searchApiReqeust == null)
             {
                 _logger.LogError("Cannot find the searchApiRequest in Redis Cache.");
+                return null;
+            }
+            if (identifer == null)
+            {
+                _logger.LogDebug("source identifier from personfound is null");
                 return null;
             }
 

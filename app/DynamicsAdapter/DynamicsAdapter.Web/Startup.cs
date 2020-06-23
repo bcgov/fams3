@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using AutoMapper;
 using BcGov.Fams3.Redis.Configuration;
 using BcGov.Fams3.Redis.DependencyInjection;
@@ -34,6 +31,8 @@ using Quartz;
 using Quartz.Impl;
 using Quartz.Spi;
 using Simple.OData.Client;
+using System;
+using System.Collections.Generic;
 
 namespace DynamicsAdapter.Web
 {
@@ -52,21 +51,21 @@ namespace DynamicsAdapter.Web
 
             services.AddMvc().AddNewtonsoftJson(options =>
             {
-               
+
                 options.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
             });
 
 
             services.AddControllers();
 
-            services.AddHealthChecks().AddCheck<DynamicsHealthCheck>("status_reason_health_check",failureStatus:HealthStatus.Degraded);
+            services.AddHealthChecks().AddCheck<DynamicsHealthCheck>("status_reason_health_check", failureStatus: HealthStatus.Degraded);
 
             this.ConfigureOpenTracing(services);
             this.ConfigureOpenApi(services);
             this.ConfigureSearchApi(services);
 
             this.ConfigureDynamicsClient(services);
-            
+
             this.ConfigureScheduler(services);
             this.ConfigureAutoMapper(services);
 
@@ -107,7 +106,7 @@ namespace DynamicsAdapter.Web
 
             var oAuthOptions = Configuration.GetSection("OAuth").Get<OAuthOptions>();
 
-            
+
             // Add OAuth Middleware
             services.AddTransient<OAuthHandler>();
 
@@ -251,7 +250,7 @@ namespace DynamicsAdapter.Web
                      NoCache = true,
                      MustRevalidate = true,
                      MaxAge = TimeSpan.FromSeconds(0),
-                    
+
                  };
                 await next();
             });

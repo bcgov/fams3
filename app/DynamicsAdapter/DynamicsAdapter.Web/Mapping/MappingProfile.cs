@@ -135,7 +135,6 @@ namespace DynamicsAdapter.Web.Mapping
                 .ForMember(dest => dest.FaxNumber, opt => opt.MapFrom(src => src.Type.Equals("fax", StringComparison.InvariantCultureIgnoreCase) ? src.PhoneNumber : null))
                 .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => 0))
                 .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1));
-            //.IncludeBase<PersonalInfo, DynamicsEntity>();
 
             CreateMap<Phone, PhoneNumberEntity>()
                 .ForMember(dest => dest.TelePhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
@@ -259,10 +258,10 @@ namespace DynamicsAdapter.Web.Mapping
                   .ForMember(dest => dest.AdjusterOtherName, opt => opt.MapFrom(src => src.Adjustor == null ? null : src.Adjustor.OtherName))
                   .ForMember(dest => dest.AdjusterPhoneNumber, opt => opt.MapFrom(src => src.AdjustorPhone==null?null:src.AdjustorPhone.PhoneNumber))
                   .ForMember(dest => dest.AdjusterPhoneNumberExt, opt => opt.MapFrom(src => src.AdjustorPhone == null ? null : src.AdjustorPhone.Extension))
-                  .ForMember(dest => dest.PHNNumber, opt=>opt.MapFrom(src=>src.Identifiers==null?null:src.Identifiers.Where<PersonalIdentifier>(m=>m.Type==PersonalIdentifierType.PersonalHealthNumber).FirstOrDefault().Value))
-                  .ForMember(dest => dest.BCDLNumber, opt => opt.MapFrom(src => src.Identifiers == null ? null : src.Identifiers.Where<PersonalIdentifier>(m => m.Type == PersonalIdentifierType.BCDriverLicense).FirstOrDefault().Value))
-                  .ForMember(dest => dest.BCDLStatus, opt => opt.MapFrom(src => src.Identifiers == null ? null : src.Identifiers.Where<PersonalIdentifier>(m => m.Type == PersonalIdentifierType.BCDriverLicense).FirstOrDefault().Description))
-                  .ForMember(dest => dest.BCDLExpiryDate, opt => opt.MapFrom(src => src.Identifiers == null ? null : src.Identifiers.Where<PersonalIdentifier>(m=>m.Type== PersonalIdentifierType.BCDriverLicense).FirstOrDefault().ReferenceDates.ElementAt(0).Value.ToString()))
+                  .ForMember(dest => dest.PHNNumber, opt=>opt.MapFrom(src=>src.Identifiers==null?null:src.Identifiers.FirstOrDefault<PersonalIdentifier>(m=>m.Type==PersonalIdentifierType.PersonalHealthNumber).Value))
+                  .ForMember(dest => dest.BCDLNumber, opt => opt.MapFrom(src => src.Identifiers == null ? null : src.Identifiers.FirstOrDefault<PersonalIdentifier>(m => m.Type == PersonalIdentifierType.BCDriverLicense).Value))
+                  .ForMember(dest => dest.BCDLStatus, opt => opt.MapFrom(src => src.Identifiers == null ? null : src.Identifiers.FirstOrDefault<PersonalIdentifier>(m => m.Type == PersonalIdentifierType.BCDriverLicense).Description))
+                  .ForMember(dest => dest.BCDLExpiryDate, opt => opt.MapFrom(src => src.Identifiers == null ? null : src.Identifiers.FirstOrDefault<PersonalIdentifier>(m=>m.Type== PersonalIdentifierType.BCDriverLicense).ReferenceDates.ElementAt(0).Value.ToString()))
                   .ForMember(dest => dest.ClaimCenterLocationCode, opt => opt.MapFrom(src => src.ClaimCentre==null? null:src.ClaimCentre.Location))
                   .ForMember(dest => dest.Description, opt=>opt.MapFrom(src=>src.Description))
                   .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))

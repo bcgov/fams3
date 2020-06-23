@@ -9,9 +9,9 @@ using System.Text;
 namespace DynamicsAdapter.Web.Mapping
 {
 
-    public class IDType
+    public static class IDType
     {
-        internal static IDictionary<int, PersonalIdentifierType> IDTypeDictionary = new Dictionary<int, PersonalIdentifierType>
+        internal static readonly IDictionary<int, PersonalIdentifierType> IDTypeDictionary = new Dictionary<int, PersonalIdentifierType>
         {
             { IdentificationType.BCDriverLicense.Value, PersonalIdentifierType.BCDriverLicense },
             { IdentificationType.SocialInsuranceNumber.Value, PersonalIdentifierType.SocialInsuranceNumber },
@@ -44,46 +44,6 @@ namespace DynamicsAdapter.Web.Mapping
         }
     }
 
-    public class IssuedByConverter : IValueConverter<string, int?>
-    {
-        public int? Convert(string sourceMember, ResolutionContext context)
-        {
-            return null;
-        }
-    }
-
-    public class TelephoneNumberIdConverter : IValueConverter<string, int?>
-    {
-        public int? Convert(string sourceMember, ResolutionContext context)
-        {
-            return Enumeration.GetAll<TelephoneNumberType>().FirstOrDefault(m => m.Name.Equals(sourceMember, StringComparison.OrdinalIgnoreCase))?.Value;
-        }
-    }
-
-    public class TelephoneNumberValueConverter : IValueConverter<int?, string>
-    {
-        public string Convert(int? sourceMember, ResolutionContext context)
-        {
-            return Enumeration.GetAll<TelephoneNumberType>().FirstOrDefault(m => m.Value == sourceMember)?.Name;
-        }
-    }
-
-    public class ProvinceConverter : IValueConverter<string, int?>
-    {
-        public int? Convert(string sourceMember, ResolutionContext context)
-        {
-            return Enumeration.GetAll<CanadianProvinceType>().FirstOrDefault(m => m.Name.Equals(sourceMember, StringComparison.OrdinalIgnoreCase))?.Value;
-        }
-    }
-
-    public class ProvinceValueConverter : IValueConverter<int?, string>
-    {
-        public string Convert(int? sourceMember, ResolutionContext context)
-        {
-            return Enumeration.GetAll<CanadianProvinceType>().FirstOrDefault(m => m.Value == sourceMember)?.Name;
-        }
-    }
-
     public class AddressTypeConverter : IValueConverter<string, int?>
     {
         public int? Convert(string sourceMember, ResolutionContext context)
@@ -92,9 +52,9 @@ namespace DynamicsAdapter.Web.Mapping
         }
     }
 
-    public class AddressType
+    public static class AddressType
     {
-        internal static  IDictionary<string, LocationType> AddressTypeDictionary = new Dictionary<string, LocationType>
+        internal static readonly IDictionary<string, LocationType> AddressTypeDictionary = new Dictionary<string, LocationType>
         {
             { "mailing", LocationType.Mailing },
             { "residence", LocationType.Residence },
@@ -104,22 +64,6 @@ namespace DynamicsAdapter.Web.Mapping
             { "home", LocationType.Residence },
             { "unknown", LocationType.Other }
         };
-    }
-
-    public class AddressTypeValueConverter : IValueConverter<int?, string>
-    {
-        public string Convert(int? sourceMember, ResolutionContext context)
-        {
-            return Enumeration.GetAll<LocationType>().FirstOrDefault(m => m.Value == sourceMember)?.Name;
-        }
-    }
-
-    public class DateTimeOffsetConverter : IValueConverter<DateTimeOffset?, DateTime?>
-    {
-        public DateTime? Convert(DateTimeOffset? sourceMember, ResolutionContext context)
-        {
-            return sourceMember == null ? null : (DateTime?)(((DateTimeOffset)sourceMember).DateTime);
-        }
     }
 
     public class NameCategoryConverter : IValueConverter<string, int?>
@@ -240,7 +184,7 @@ namespace DynamicsAdapter.Web.Mapping
                 strbuilder.Append($"{(p.CompensationClaims == null ? 0 : p.CompensationClaims.Count)} compensation claim(s) found. ");
                 strbuilder.Append($"{(p.InsuranceClaims == null ? 0 : p.InsuranceClaims.Count)} insurance claim(s) found.\n");
                 i++;
-            };
+            }
             return strbuilder.ToString();
         }
     }

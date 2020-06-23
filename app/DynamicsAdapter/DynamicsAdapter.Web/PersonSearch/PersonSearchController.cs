@@ -62,7 +62,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                     //update completed event
                     var searchApiEvent = _mapper.Map<SSG_SearchApiEvent>(personCompletedEvent);
                     _logger.LogDebug($"Attempting to create a new event for SearchApiRequest");
-                    var result = await _searchApiRequestService.AddEventAsync(request.SearchApiRequestId, searchApiEvent, cts.Token);
+                    await _searchApiRequestService.AddEventAsync(request.SearchApiRequestId, searchApiEvent, cts.Token);
                     _logger.LogInformation($"Successfully created completed event for SearchApiRequest");
 
                     //upload search result to dynamic search api
@@ -119,7 +119,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                     SSG_SearchApiRequest request = await _register.GetSearchApiRequest(key);
                     var searchApiEvent = _mapper.Map<SSG_SearchApiEvent>(personAcceptedEvent);
                     _logger.LogDebug($"Attempting to create a new event for SearchApiRequest");
-                    var result = await _searchApiRequestService.AddEventAsync(request.SearchApiRequestId, searchApiEvent, token.Token);
+                    await _searchApiRequestService.AddEventAsync(request.SearchApiRequestId, searchApiEvent, token.Token);
                     _logger.LogInformation($"Successfully created accepted event for SearchApiRequest");
                 }
                 catch (Exception ex)
@@ -153,7 +153,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                     SSG_SearchApiRequest request = await _register.GetSearchApiRequest(key);
                     var searchApiEvent = _mapper.Map<SSG_SearchApiEvent>(personFailedEvent);
                     _logger.LogDebug($"Attempting to create a new event for SearchApiRequest.");
-                    var result = await _searchApiRequestService.AddEventAsync(request.SearchApiRequestId, searchApiEvent, token.Token);
+                    await _searchApiRequestService.AddEventAsync(request.SearchApiRequestId, searchApiEvent, token.Token);
                     _logger.LogInformation($"Successfully created failed event for SearchApiRequest");
                 }
                 catch (Exception ex)
@@ -185,7 +185,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                 try
                 {
                     SSG_SearchApiRequest request = await _register.GetSearchApiRequest(key);
-                    var result = await _searchApiRequestService.MarkComplete(request.SearchApiRequestId, token.Token);
+                    await _searchApiRequestService.MarkComplete(request.SearchApiRequestId, token.Token);
                     _logger.LogInformation($"Successfully finalized Person Search.");
                     await _register.RemoveSearchApiRequest(key);
                 }
@@ -221,7 +221,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                     var searchApiEvent = _mapper.Map<SSG_SearchApiEvent>(personRejectedEvent);
                     _logger.LogDebug($"Attempting to create a new event for SearchApiRequest [{key}]");
                     SSG_SearchApiRequest request = await _register.GetSearchApiRequest(key);
-                    var result = await _searchApiRequestService.AddEventAsync(request.SearchApiRequestId, searchApiEvent, token.Token);
+                    await _searchApiRequestService.AddEventAsync(request.SearchApiRequestId, searchApiEvent, token.Token);
                     _logger.LogInformation($"Successfully created rejected event for SearchApiRequest [{key}]");
 
 

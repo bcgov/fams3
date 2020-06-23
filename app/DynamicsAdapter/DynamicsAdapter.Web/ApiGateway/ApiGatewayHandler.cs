@@ -1,11 +1,9 @@
-﻿using System;
-using System.IO;
+﻿using DynamicsAdapter.Web.Configuration;
+using Microsoft.Extensions.Options;
+using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using DynamicsAdapter.Web.Auth;
-using DynamicsAdapter.Web.Configuration;
-using Microsoft.Extensions.Options;
 
 namespace DynamicsAdapter.Web.ApiGateway
 {
@@ -22,15 +20,15 @@ namespace DynamicsAdapter.Web.ApiGateway
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            if(string.IsNullOrEmpty(_apiGatewayOptions.BasePath)) return await base.SendAsync(request, cancellationToken);
+            if (string.IsNullOrEmpty(_apiGatewayOptions.BasePath)) return await base.SendAsync(request, cancellationToken);
 
 
 
-            if (Uri.TryCreate(CombineUrls(_apiGatewayOptions.BasePath, request.RequestUri.PathAndQuery),  UriKind.Absolute, out var path))
+            if (Uri.TryCreate(CombineUrls(_apiGatewayOptions.BasePath, request.RequestUri.PathAndQuery), UriKind.Absolute, out var path))
             {
                 request.RequestUri = path;
             }
-            
+
             return await base.SendAsync(request, cancellationToken);
         }
 

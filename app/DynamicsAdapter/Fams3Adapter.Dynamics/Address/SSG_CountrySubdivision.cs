@@ -8,9 +8,6 @@ namespace Fams3Adapter.Dynamics.Address
         [JsonProperty("ssg_countrysubdivisionid")]
         public Guid CountrySubdivisionId { get; set; }
 
-        //[JsonProperty("ssg_countryid")]
-        //public Guid CountryId { get; set; }
-
         [JsonProperty("ssg_name")]
         public String Name { get; set; }
     }

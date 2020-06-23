@@ -1,6 +1,6 @@
 ﻿namespace Fams3Adapter.Dynamics
 {
-    public class Keys
+    public static class Keys
     {
         public const string DYNAMICS_STATUS_CODE_FIELD = "statuscode";
         public const string DYNAMICS_STATE_CODE_FIELD = "statecode";

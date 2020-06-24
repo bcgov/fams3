@@ -62,6 +62,7 @@ namespace DynamicsAdapter.Web
                             restrictedToMinimumLevel: LogEventLevel.Debug,
                             messageHandler: new HttpClientHandler
                             {
+
                                 ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
                             }
                         );

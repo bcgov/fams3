@@ -26,6 +26,7 @@ namespace DynamicsAdapter.Web.ApiGateway
 
             if (Uri.TryCreate(CombineUrls(_apiGatewayOptions.BasePath, request.RequestUri.PathAndQuery), UriKind.Absolute, out var path))
             {
+                request.Headers.Add("MSCRM.SuppressDuplicateDetection", "false");
                 request.RequestUri = path;
             }
 

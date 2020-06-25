@@ -117,13 +117,7 @@ namespace DynamicsAdapter.Web
             // Register IOAuthApiClient
             services.AddHttpClient<IOAuthApiClient, OAuthApiClient>();
 
-            //add header 
-            var settings = new ODataClientSettings(new Uri(oAuthOptions.ResourceUrl));
-            settings.BeforeRequest += delegate (HttpRequestMessage message)
-            {
-                message.Headers.Add("MSCRM.SuppressDuplicateDetection", "false");
-            };
-            settings.IgnoreUnmappedProperties = true;
+          
 
             // Register httpClient for OdataClient with OAuthHandler
             services.AddHttpClient<ODataClientSettings>(cfg => { cfg.BaseAddress = new Uri(oAuthOptions.ResourceUrl); })

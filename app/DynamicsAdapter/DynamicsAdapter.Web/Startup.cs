@@ -33,6 +33,7 @@ using Quartz.Spi;
 using Simple.OData.Client;
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 
 namespace DynamicsAdapter.Web
 {
@@ -115,6 +116,8 @@ namespace DynamicsAdapter.Web
 
             // Register IOAuthApiClient
             services.AddHttpClient<IOAuthApiClient, OAuthApiClient>();
+
+          
 
             // Register httpClient for OdataClient with OAuthHandler
             services.AddHttpClient<ODataClientSettings>(cfg => { cfg.BaseAddress = new Uri(oAuthOptions.ResourceUrl); })

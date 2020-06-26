@@ -138,7 +138,7 @@ namespace DynamicsAdapter.Web
             services.AddTransient<ITokenService, TokenService>();
             services.AddTransient<ISearchApiRequestService, SearchApiRequestService>();
             services.AddTransient<ISearchRequestService, SearchRequestService>();
-            services.AddTransient<IDuplicateDetectionConfigService, DuplicateDetectionConfigService>();
+            services.AddSingleton<IDuplicateDetectionConfigService, DuplicateDetectionConfigService>();
 
         }
         /// <summary>

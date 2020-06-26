@@ -10,12 +10,12 @@ namespace Fams3Adapter.Dynamics.Config
     public interface IDuplicateDetectionConfigService
     {
         Task<IEnumerable<SSG_DuplicateDetectionConfig>> GetDuplicateDetectionConfig(CancellationToken cancellationToken);
-
     }
 
     public class DuplicateDetectionConfigService : IDuplicateDetectionConfigService
     {
         private readonly IODataClient _oDataClient;
+        public static IEnumerable<SSG_DuplicateDetectionConfig> configs;
 
         public DuplicateDetectionConfigService(IODataClient oDataClient)
         {
@@ -29,9 +29,10 @@ namespace Fams3Adapter.Dynamics.Config
         /// <returns></returns>
         public async Task<IEnumerable<SSG_DuplicateDetectionConfig>> GetDuplicateDetectionConfig(CancellationToken cancellationToken)
         {
+            if (configs != null) return configs;
             IEnumerable<SSG_DuplicateDetectionConfig> duplicateConfigs = await _oDataClient.For<SSG_DuplicateDetectionConfig>()
                 .FindEntriesAsync(cancellationToken);
-
+            configs = duplicateConfigs;
             return duplicateConfigs;
         }
     }

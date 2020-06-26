@@ -1,6 +1,7 @@
 using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.AssetOwner;
 using Fams3Adapter.Dynamics.BankInfo;
+using Fams3Adapter.Dynamics.Config;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.InsuranceClaim;
@@ -26,6 +27,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
     public class SearchRequestServiceTest
     {
         private Mock<IODataClient> odataClientMock;
+        private Mock<IDuplicateDetectionConfigService> _duplicateConfigMock;
 
         private readonly Guid testId = Guid.Parse("6AE89FE6-9909-EA11-B813-00505683FBF4");
         private readonly Guid testPersonId = Guid.Parse("6AE89FE6-9909-EA11-1111-00505683FBF4");
@@ -39,6 +41,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         public void SetUp()
         {
             odataClientMock = new Mock<IODataClient>();
+            _duplicateConfigMock = new Mock<IDuplicateDetectionConfigService>();
 
             odataClientMock.Setup(x => x.For<SSG_Identifier>(null).Set(It.Is<IdentifierEntity>(x => x.Identification == "identificationtest"))
             .InsertEntryAsync(It.IsAny<CancellationToken>()))
@@ -194,7 +197,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
                 SourceIdentifier = new SSG_Identifier() { Identification="11111"}
             })
             );
-            _sut = new SearchRequestService(odataClientMock.Object);
+            _sut = new SearchRequestService(odataClientMock.Object, _duplicateConfigMock.Object);
         }
 
 

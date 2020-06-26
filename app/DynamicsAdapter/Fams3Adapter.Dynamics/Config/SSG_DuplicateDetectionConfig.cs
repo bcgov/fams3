@@ -12,5 +12,7 @@ namespace Fams3Adapter.Dynamics.Config
 
         [JsonProperty("ssg_fields")]
         public string DuplicateFields { get; set; }
+
+        public string[] DuplicateFieldList { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Fams3Adapter.Dynamics.Config;
+using Fams3Adapter.Dynamics.Person;
 using Moq;
 using NUnit.Framework;
 using Simple.OData.Client;
@@ -26,8 +27,8 @@ namespace Fams3Adapter.Dynamics.Test.Config
                 {
                      new SSG_DuplicateDetectionConfig()
                      {
-                         EntityName = "Person",
-                         DuplicateFields = "ssg_firstName|ssg_lastName|ssg_dateofBirth|ssg_dateOfDeath"
+                         EntityName = "ssg_person",
+                         DuplicateFields = "ssg_firstname|ssg_lastname|ssg_gender|ssg_dateofbirth|ssg_dateofdeath"
                      }
                 }));
 
@@ -37,12 +38,43 @@ namespace Fams3Adapter.Dynamics.Test.Config
 
 
         [Test]
-        public async Task GetDuplicateDetectionConfig_should_return_configs()
+        public async Task same_person_GetConcateHashData_should_return_same_string()
         {
-            IEnumerable<SSG_DuplicateDetectionConfig> configs = await _sut.GetDuplicateDetectionConfig(CancellationToken.None);
-            SSG_DuplicateDetectionConfig[] array = configs.ToArray<SSG_DuplicateDetectionConfig>();
-            Assert.AreEqual("Person", array[0].EntityName);
-            Assert.AreEqual("ssg_firstName|ssg_lastName|ssg_dateofBirth|ssg_dateOfDeath", array[0].DuplicateFields);
+            PersonEntity person1 = new PersonEntity()
+            {
+                FirstName = "test",
+                LastName = "lastname",
+                DateOfBirth = new DateTime(1999, 1, 1)
+            };
+            string str1 = await _sut.GetDuplicateDetectHashData(person1);
+            PersonEntity person2 = new PersonEntity()
+            {
+                FirstName = "test",
+                LastName = "lastname",
+                DateOfBirth = new DateTime(1999, 1, 1)
+            };
+            string str2 = await _sut.GetDuplicateDetectHashData(person2);
+            Assert.AreEqual(true,str1==str2);
+        }
+
+        [Test]
+        public async Task different_person_GetConcateHashData_should_return_different_string()
+        {
+            PersonEntity person1 = new PersonEntity()
+            {
+                FirstName = "test1",
+                LastName = "lastname",
+                DateOfBirth = new DateTime(1999, 1, 1)
+            };
+            string str1 = await _sut.GetDuplicateDetectHashData(person1);
+            PersonEntity person2 = new PersonEntity()
+            {
+                FirstName = "test2",
+                LastName = "lastname",
+                DateOfBirth = new DateTime(1999, 1, 1)
+            };
+            string str2 = await _sut.GetDuplicateDetectHashData(person2);
+            Assert.AreEqual(false, str1 == str2);
         }
     }
 }

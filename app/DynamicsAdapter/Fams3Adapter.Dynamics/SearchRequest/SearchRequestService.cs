@@ -66,6 +66,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
         public async Task<SSG_Person> SavePerson(PersonEntity person, CancellationToken cancellationToken)
         {
+            person.DuplicateDetectHash = await _duplicateConfig.GetDuplicateDetectHashData(person);
             return await this._oDataClient.For<SSG_Person>().Set(person).InsertEntryAsync(cancellationToken);
         }
 

@@ -1,6 +1,7 @@
 using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.AssetOwner;
 using Fams3Adapter.Dynamics.BankInfo;
+using Fams3Adapter.Dynamics.Config;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.InsuranceClaim;
@@ -45,10 +46,12 @@ namespace Fams3Adapter.Dynamics.SearchRequest
     public class SearchRequestService : ISearchRequestService
     {
         private readonly IODataClient _oDataClient;
+        private readonly IDuplicateDetectionConfigService _duplicateConfig;
 
-        public SearchRequestService(IODataClient oDataClient)
+        public SearchRequestService(IODataClient oDataClient, IDuplicateDetectionConfigService duplicateConfig)
         {
             this._oDataClient = oDataClient;
+            this._duplicateConfig = duplicateConfig;
         }
 
         /// <summary>

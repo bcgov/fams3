@@ -9,6 +9,7 @@ using DynamicsAdapter.Web.Infrastructure;
 using DynamicsAdapter.Web.PersonSearch;
 using DynamicsAdapter.Web.Register;
 using DynamicsAdapter.Web.SearchRequest;
+using Fams3Adapter.Dynamics.Config;
 using Fams3Adapter.Dynamics.OptionSets;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using Fams3Adapter.Dynamics.SearchRequest;
@@ -137,6 +138,7 @@ namespace DynamicsAdapter.Web
             services.AddTransient<ITokenService, TokenService>();
             services.AddTransient<ISearchApiRequestService, SearchApiRequestService>();
             services.AddTransient<ISearchRequestService, SearchRequestService>();
+            services.AddSingleton<IDuplicateDetectionConfigService, DuplicateDetectionConfigService>();
 
         }
         /// <summary>

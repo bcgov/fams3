@@ -197,6 +197,12 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
                 SourceIdentifier = new SSG_Identifier() { Identification="11111"}
             })
             );
+
+            _duplicateConfigMock.Setup(x => x.GetDuplicateDetectHashData(It.IsAny<object>()))
+                .Returns(
+                    Task.FromResult("correcthashdata")
+                );
+
             _sut = new SearchRequestService(odataClientMock.Object, _duplicateConfigMock.Object);
         }
 

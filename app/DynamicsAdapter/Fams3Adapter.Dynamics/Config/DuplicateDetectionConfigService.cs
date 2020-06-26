@@ -43,16 +43,19 @@ namespace Fams3Adapter.Dynamics.Config
             string name = type.Name switch 
                             { 
                                 "PersonEntity" => "ssg_person",
-                               _ => ""
+                                _ => ""
                             };
+
             SSG_DuplicateDetectionConfig config = _configs.FirstOrDefault(m => m.EntityName == name);
+            if (config == null) return null;
+
             IList<PropertyInfo> props = new List<PropertyInfo>(type.GetProperties());
             string concatedString = string.Empty;
             foreach (string field in config.DuplicateFieldList)
             {
                 foreach (PropertyInfo p in props)
                 {
-                    JsonPropertyAttribute attr = p.GetCustomAttributes<JsonPropertyAttribute>().FirstOrDefault(m => m.PropertyName == field);
+                    JsonPropertyAttribute attr = p.GetCustomAttributes<JsonPropertyAttribute>().FirstOrDefault(m => m.PropertyName.ToLower() == field.ToLower());
                     if (attr != null)
                     {
                         object value = p.GetValue(entity, null);
@@ -70,12 +73,14 @@ namespace Fams3Adapter.Dynamics.Config
             if (_configs != null) return true;
             IEnumerable<SSG_DuplicateDetectionConfig> duplicateConfigs = await _oDataClient.For<SSG_DuplicateDetectionConfig>()
                 .FindEntriesAsync(cancellationToken);
-            foreach (SSG_DuplicateDetectionConfig config in duplicateConfigs)
+
+            SSG_DuplicateDetectionConfig[] array = duplicateConfigs.ToArray();
+            for(int i=0; i<array.Count(); i++)
             {
-                 config.DuplicateFieldList = config.DuplicateFields.Split("|");
-                 //config.DuplicateFields.Split("|").ToList<string>().CopyTo(config.DuplicateFieldList);
+                array[i].DuplicateFieldList=array[i].DuplicateFields.Split("|");
             }
-            _configs = duplicateConfigs;
+
+            _configs = array.AsEnumerable<SSG_DuplicateDetectionConfig>();
             return true;
         }
 

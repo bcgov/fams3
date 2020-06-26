@@ -23,7 +23,7 @@ namespace Fams3Adapter.Dynamics.Config
         }
 
         /// <summary>
-        /// Gets all the search request in `Ready for Search` status
+        /// get all duplication config
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>

@@ -27,7 +27,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
     public class SearchRequestServiceTest
     {
         private Mock<IODataClient> odataClientMock;
-        private Mock<IDuplicateDetectionConfigService> _duplicateConfigMock;
+        private Mock<IDuplicateDetectionService> _duplicateConfigMock;
 
         private readonly Guid testId = Guid.Parse("6AE89FE6-9909-EA11-B813-00505683FBF4");
         private readonly Guid testPersonId = Guid.Parse("6AE89FE6-9909-EA11-1111-00505683FBF4");
@@ -41,7 +41,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         public void SetUp()
         {
             odataClientMock = new Mock<IODataClient>();
-            _duplicateConfigMock = new Mock<IDuplicateDetectionConfigService>();
+            _duplicateConfigMock = new Mock<IDuplicateDetectionService>();
 
             odataClientMock.Setup(x => x.For<SSG_Identifier>(null).Set(It.Is<IdentifierEntity>(x => x.Identification == "identificationtest"))
             .InsertEntryAsync(It.IsAny<CancellationToken>()))

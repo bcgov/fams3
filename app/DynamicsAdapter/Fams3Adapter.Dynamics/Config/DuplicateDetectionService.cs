@@ -12,17 +12,21 @@ using System.Threading.Tasks;
 
 namespace Fams3Adapter.Dynamics.Config
 {
-    public interface IDuplicateDetectionConfigService
+    public interface IDuplicateDetectionService
     {
         Task<string> GetDuplicateDetectHashData(object entity);
     }
 
-    public class DuplicateDetectionConfigService : IDuplicateDetectionConfigService
+    public class DuplicateDetectionService : IDuplicateDetectionService
     {
         private readonly IODataClient _oDataClient;
         public static IEnumerable<SSG_DuplicateDetectionConfig> _configs;
+        public static Dictionary<string, string> EntityNameMap = new Dictionary<string, string>
+        {
+            {"PersonEntity", "ssg_person" }
+        };
 
-        public DuplicateDetectionConfigService(IODataClient oDataClient)
+        public DuplicateDetectionService(IODataClient oDataClient)
         {
             this._oDataClient = oDataClient;
         }
@@ -40,18 +44,24 @@ namespace Fams3Adapter.Dynamics.Config
             if (_configs == null) await GetDuplicateDetectionConfig(CancellationToken.None);
 
             Type type = entity.GetType();
-            string name = type.Name switch 
-                            { 
-                                "PersonEntity" => "ssg_person",
-                                _ => ""
-                            };
+            string name;
+            if (!EntityNameMap.TryGetValue(type.Name, out name))
+            {
+                return null;
+            }
 
             SSG_DuplicateDetectionConfig config = _configs.FirstOrDefault(m => m.EntityName == name);
             if (config == null) return null;
 
-            IList<PropertyInfo> props = new List<PropertyInfo>(type.GetProperties());
+            IList<PropertyInfo> props = new List<PropertyInfo>(type.GetProperties());       
+
+            return hashstring(GetConcateFieldsStr(config.DuplicateFieldList, props, entity));
+        }
+
+        private string GetConcateFieldsStr(string[] duplicateFieldList, IList<PropertyInfo> props, object entity)
+        {
             string concatedString = string.Empty;
-            foreach (string field in config.DuplicateFieldList)
+            foreach (string field in duplicateFieldList)
             {
                 foreach (PropertyInfo p in props)
                 {
@@ -61,11 +71,11 @@ namespace Fams3Adapter.Dynamics.Config
                         object value = p.GetValue(entity, null);
                         if (value != null)
                             concatedString += value.ToString();
+                        break;
                     }
                 }
             }
-
-            return hashstring(concatedString);
+            return concatedString;
         }
 
         private async Task<bool> GetDuplicateDetectionConfig(CancellationToken cancellationToken)

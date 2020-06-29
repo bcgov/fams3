@@ -12,6 +12,7 @@ using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.RelatedPerson;
 using Fams3Adapter.Dynamics.ResultTransaction;
 using Fams3Adapter.Dynamics.Vehicle;
+using Newtonsoft.Json;
 using Simple.OData.Client;
 using System;
 using System.Net;
@@ -76,7 +77,9 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             {
                 if (IsDuplicateFoundException(ex))
                 {
-                    return await this._oDataClient.For<SSG_Person>().Filter(x => x.DuplicateDetectHash == person.DuplicateDetectHash).FindEntryAsync();
+                    string hashData = person.DuplicateDetectHash;
+                    SSG_Person p = await this._oDataClient.For<SSG_Person>().Filter(x => x.DuplicateDetectHash == hashData).FindEntryAsync();
+                    return p;
                 }
                 else
                 {
@@ -187,9 +190,8 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
         private bool IsDuplicateFoundException(WebRequestException ex)
         {
-            if (ex.Code == HttpStatusCode.PreconditionFailed)
+            if (ex.Code == HttpStatusCode.PreconditionFailed && ex.Response.Contains(Keys.DUPLICATE_DETECTED_ERROR_CODE) )
             {
-                
                 return true;
             }
             return false;

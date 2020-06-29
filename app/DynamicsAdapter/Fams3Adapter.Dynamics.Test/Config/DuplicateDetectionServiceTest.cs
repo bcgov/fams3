@@ -40,6 +40,7 @@ namespace Fams3Adapter.Dynamics.Test.Config
         [Test]
         public async Task same_person_GetDuplicateDetectHashData_should_return_same_string()
         {
+            DuplicateDetectionService._configs = null;
             PersonEntity person1 = new PersonEntity()
             {
                 FirstName = "test",
@@ -53,6 +54,7 @@ namespace Fams3Adapter.Dynamics.Test.Config
                 LastName = "lastname",
                 DateOfBirth = new DateTime(1999, 1, 1)
             };
+            
             string str2 = await _sut.GetDuplicateDetectHashData(person2);
             Assert.AreEqual(true,str1==str2);
         }
@@ -60,6 +62,7 @@ namespace Fams3Adapter.Dynamics.Test.Config
         [Test]
         public async Task different_person_GetDuplicateDetectHashData_should_return_different_string()
         {
+            DuplicateDetectionService._configs = null;
             PersonEntity person1 = new PersonEntity()
             {
                 FirstName = "test1",
@@ -80,6 +83,7 @@ namespace Fams3Adapter.Dynamics.Test.Config
         [Test]
         public async Task not_mapped_entity_GetDuplicateDetectHashData_return_null()
         {
+            DuplicateDetectionService._configs = null;
             TestEntity testEntity = new TestEntity()
             {               
             };
@@ -90,6 +94,7 @@ namespace Fams3Adapter.Dynamics.Test.Config
         [Test]
         public async Task config_not_contain_entity_GetDuplicateDetectHashData_return_null()
         {
+            DuplicateDetectionService._configs = null;
             odataClientMock.Setup(x => x.For<SSG_DuplicateDetectionConfig>(null)
                 .FindEntriesAsync(It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<IEnumerable<SSG_DuplicateDetectionConfig>>(new List<SSG_DuplicateDetectionConfig>()
@@ -114,6 +119,7 @@ namespace Fams3Adapter.Dynamics.Test.Config
         [Test]
         public async Task different_person_with_same_duplicate_detect_fields_GetDuplicateDetectHashData_return_same()
         {
+            DuplicateDetectionService._configs = null;
             PersonEntity person1 = new PersonEntity()
             {
                 FirstName = "test1",

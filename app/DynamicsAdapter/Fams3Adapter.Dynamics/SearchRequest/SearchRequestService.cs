@@ -76,7 +76,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             {
                 if (IsDuplicateFoundException(ex))
                 {
-                    return null;
+                    return await this._oDataClient.For<SSG_Person>().Filter(x => x.DuplicateDetectHash == person.DuplicateDetectHash).FindEntryAsync();
                 }
                 else
                 {

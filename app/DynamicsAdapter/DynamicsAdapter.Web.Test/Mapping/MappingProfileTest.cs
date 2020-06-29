@@ -358,6 +358,27 @@ namespace DynamicsAdapter.Web.Test.Mapping
         }
 
         [Test]
+        public void PersonSearchSubmitted_should_map_to_SSG_SearchApiEvent_correctly()
+        {
+            PersonSearchSubmitted submitted = new PersonSearchSubmitted()
+            {
+                SearchRequestId = Guid.NewGuid(),
+                TimeStamp = new DateTime(2003, 3, 3),
+                ProviderProfile = new ProviderProfile()
+                {
+                    Name = "submittedProfile"
+                },
+                Message = "SubmittedMessage"
+            };
+            SSG_SearchApiEvent searchEvent = _mapper.Map<SSG_SearchApiEvent>(submitted);
+            Assert.AreEqual("submittedProfile", searchEvent.ProviderName);
+            Assert.AreEqual(new DateTime(2003, 3, 3), searchEvent.TimeStamp);
+            Assert.AreEqual(Keys.EVENT_SUBMITTED, searchEvent.EventType);
+            Assert.AreEqual(Keys.SEARCH_API_EVENT_NAME, searchEvent.Name);
+            Assert.AreEqual("SubmittedMessage", searchEvent.Message);
+        }
+
+        [Test]
         public void PersonSearchCompleted_should_map_to_SSG_SearchApiEvent_correctly()
         {
             PersonSearchCompleted completed = new PersonSearchCompleted()

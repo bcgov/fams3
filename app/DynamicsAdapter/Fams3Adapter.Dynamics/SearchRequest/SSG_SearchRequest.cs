@@ -10,5 +10,10 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
         [JsonProperty("ssg_name")]
         public string FileId { get; set; }
+
+        public override string ToString()
+        {
+            return SearchRequestId.ToString();
+        }
     }
 }

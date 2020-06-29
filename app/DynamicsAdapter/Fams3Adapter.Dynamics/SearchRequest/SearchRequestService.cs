@@ -46,9 +46,9 @@ namespace Fams3Adapter.Dynamics.SearchRequest
     public class SearchRequestService : ISearchRequestService
     {
         private readonly IODataClient _oDataClient;
-        private readonly IDuplicateDetectionConfigService _duplicateConfig;
+        private readonly IDuplicateDetectionService _duplicateConfig;
 
-        public SearchRequestService(IODataClient oDataClient, IDuplicateDetectionConfigService duplicateConfig)
+        public SearchRequestService(IODataClient oDataClient, IDuplicateDetectionService duplicateConfig)
         {
             this._oDataClient = oDataClient;
             this._duplicateConfig = duplicateConfig;
@@ -66,6 +66,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
         public async Task<SSG_Person> SavePerson(PersonEntity person, CancellationToken cancellationToken)
         {
+            person.DuplicateDetectHash = await _duplicateConfig.GetDuplicateDetectHashData(person);
             return await this._oDataClient.For<SSG_Person>().Set(person).InsertEntryAsync(cancellationToken);
         }
 

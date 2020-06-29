@@ -71,6 +71,9 @@ namespace Fams3Adapter.Dynamics.Person
 
         [JsonProperty("ssg_complexion")]
         public string Complexion { get; set; }
+
+        [JsonProperty("ssg_duplicatedetectionhash")]
+        public string DuplicateDetectHash { get; set; }
     }
 
     public class SSG_Person : PersonEntity

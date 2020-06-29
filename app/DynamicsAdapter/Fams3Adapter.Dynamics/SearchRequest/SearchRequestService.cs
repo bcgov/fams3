@@ -49,12 +49,12 @@ namespace Fams3Adapter.Dynamics.SearchRequest
     public class SearchRequestService : ISearchRequestService
     {
         private readonly IODataClient _oDataClient;
-        private readonly IDuplicateDetectionService _duplicateConfig;
+        private readonly IDuplicateDetectionService _duplicateDetectService;
 
-        public SearchRequestService(IODataClient oDataClient, IDuplicateDetectionService duplicateConfig)
+        public SearchRequestService(IODataClient oDataClient, IDuplicateDetectionService duplicateDetectService)
         {
             this._oDataClient = oDataClient;
-            this._duplicateConfig = duplicateConfig;
+            this._duplicateDetectService = duplicateDetectService;
         }
 
         /// <summary>
@@ -71,14 +71,14 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         {
             try
             {
-                person.DuplicateDetectHash = await _duplicateConfig.GetDuplicateDetectHashData(person);
+                person.DuplicateDetectHash = await _duplicateDetectService.GetDuplicateDetectHashData(person);
                 return await this._oDataClient.For<SSG_Person>().Set(person).InsertEntryAsync(cancellationToken);
             }catch(WebRequestException ex)
             {
                 if (IsDuplicateFoundException(ex))
                 {
                     string hashData = person.DuplicateDetectHash;
-                    SSG_Person p = await this._oDataClient.For<SSG_Person>().Filter(x => x.DuplicateDetectHash == hashData).FindEntryAsync();
+                    SSG_Person p = await this._oDataClient.For<SSG_Person>().Filter(x => x.DuplicateDetectHash == hashData).FindEntryAsync(cancellationToken);
                     return p;
                 }
                 else

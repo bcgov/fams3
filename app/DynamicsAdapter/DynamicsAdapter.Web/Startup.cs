@@ -132,13 +132,17 @@ namespace DynamicsAdapter.Web
 
             // Register Odata client
             services.AddTransient<IODataClient>(provider =>
-                new ODataClient(provider.GetRequiredService<ODataClientSettings>()));
+             {
+                 var settings = provider.GetRequiredService<ODataClientSettings>();
+                 settings.IgnoreUnmappedProperties = true;
+                 return new ODataClient(settings); 
+             });
 
             // Add other Services
             services.AddTransient<ITokenService, TokenService>();
             services.AddTransient<ISearchApiRequestService, SearchApiRequestService>();
             services.AddTransient<ISearchRequestService, SearchRequestService>();
-            services.AddSingleton<IDuplicateDetectionConfigService, DuplicateDetectionConfigService>();
+            services.AddSingleton<IDuplicateDetectionService, DuplicateDetectionService>();
 
         }
         /// <summary>

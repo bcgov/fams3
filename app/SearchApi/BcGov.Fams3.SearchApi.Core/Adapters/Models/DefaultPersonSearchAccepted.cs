@@ -10,7 +10,7 @@ namespace BcGov.Fams3.SearchApi.Core.Adapters.Models
             TimeStamp = DateTime.Now;
             SearchRequestId = searchRequestId;
             ProviderProfile = providerProfile;
-            SearchRequestKey = SearchRequestKey;
+            this.SearchRequestKey = SearchRequestKey;
         }
 
         public Guid SearchRequestId { get; }

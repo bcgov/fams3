@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace BcGov.Fams3.Redis.Configuration
+﻿namespace BcGov.Fams3.Redis.Configuration
 {
     /// <summary>
     /// Represent the Redis configuration
@@ -35,7 +31,8 @@ namespace BcGov.Fams3.Redis.Configuration
 
         public string Password { get; set; }
 
-        public string ConnectionString {
+        public string ConnectionString
+        {
             get
             {
                 return $"{Host}:{ Port}";

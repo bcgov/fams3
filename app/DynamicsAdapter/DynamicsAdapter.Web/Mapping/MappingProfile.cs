@@ -61,39 +61,33 @@ namespace DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.DataProviders, opt => opt.MapFrom(src => src.DataProviders));
 
             CreateMap<PersonSearchAccepted, SSG_SearchApiEvent>()
-              .ForMember(dest => dest.Id, opt => opt.MapFrom(src => Guid.NewGuid()))
-              .ForMember(dest => dest.ProviderName, opt => opt.MapFrom(src => src.ProviderProfile.Name))
-              .ForMember(dest => dest.TimeStamp, opt => opt.MapFrom(src => src.TimeStamp))
               .ForMember(dest => dest.EventType, opt => opt.MapFrom(src => Keys.EVENT_ACCEPTED))
-              .ForMember(dest => dest.Name, opt => opt.MapFrom(src => Keys.SEARCH_API_EVENT_NAME))
               .ForMember(dest => dest.Message, opt => opt.MapFrom(src => "Auto search has been accepted for processing"))
-              .ReverseMap();
+              .IncludeBase<PersonSearchStatus, SSG_SearchApiEvent>();
 
             CreateMap<PersonSearchRejected, SSG_SearchApiEvent>()
-              .ForMember(dest => dest.Id, opt => opt.MapFrom(src => Guid.NewGuid()))
-              .ForMember(dest => dest.ProviderName, opt => opt.MapFrom(src => src.ProviderProfile.Name))
-              .ForMember(dest => dest.TimeStamp, opt => opt.MapFrom(src => src.TimeStamp))
-              .ForMember(dest => dest.Name, opt => opt.MapFrom(src => Keys.SEARCH_API_EVENT_NAME))
               .ForMember(dest => dest.EventType, opt => opt.MapFrom(src => Keys.EVENT_REJECTED))
               .ForMember(dest => dest.Message, opt => opt.MapFrom(src => src.Reasons == null ? "Auto search has been rejected." : "Auto search has been rejected. Reasons: " + string.Join(", ", src.Reasons.Select(x => $"{x.PropertyName} : {x.ErrorMessage}"))))
-              .ReverseMap();
+              .IncludeBase<PersonSearchStatus, SSG_SearchApiEvent>();
 
             CreateMap<PersonSearchFailed, SSG_SearchApiEvent>()
-             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => Guid.NewGuid()))
-             .ForMember(dest => dest.ProviderName, opt => opt.MapFrom(src => src.ProviderProfile.Name))
-             .ForMember(dest => dest.TimeStamp, opt => opt.MapFrom(src => src.TimeStamp))
-              .ForMember(dest => dest.Name, opt => opt.MapFrom(src => Keys.SEARCH_API_EVENT_NAME))
              .ForMember(dest => dest.EventType, opt => opt.MapFrom(src => Keys.EVENT_FAILED))
              .ForMember(dest => dest.Message, opt => opt.MapFrom(src => "Auto search processing failed. Reason: " + src.Cause))
-             .ReverseMap();
+             .IncludeBase<PersonSearchStatus, SSG_SearchApiEvent>();
 
             CreateMap<PersonSearchCompleted, SSG_SearchApiEvent>()
+               .ForMember(dest => dest.EventType, opt => opt.MapFrom(src => Keys.EVENT_COMPLETED))
+               .ForMember(dest => dest.Message, opt => opt.ConvertUsing(new PersonSearchCompletedMessageConvertor(), src => src.MatchedPersons))
+               .IncludeBase<PersonSearchStatus, SSG_SearchApiEvent>();
+
+            CreateMap<PersonSearchSubmitted, SSG_SearchApiEvent>()
+                .ForMember(dest => dest.EventType, opt => opt.MapFrom(src => Keys.EVENT_SUBMITTED))
+                .IncludeBase<PersonSearchStatus, SSG_SearchApiEvent>();
+
+            CreateMap<PersonSearchStatus, SSG_SearchApiEvent>()
                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => Guid.NewGuid()))
                .ForMember(dest => dest.ProviderName, opt => opt.MapFrom(src => src.ProviderProfile.Name))
-               .ForMember(dest => dest.TimeStamp, opt => opt.MapFrom(src => src.TimeStamp))
-                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => Keys.SEARCH_API_EVENT_NAME))
-               .ForMember(dest => dest.EventType, opt => opt.MapFrom(src => Keys.EVENT_COMPLETED))
-               .ForMember(dest => dest.Message, opt => opt.ConvertUsing(new PersonSearchCompletedMessageConvertor(), src => src.MatchedPersons));
+               .ForMember(dest => dest.Name, opt => opt.MapFrom(src => Keys.SEARCH_API_EVENT_NAME));
 
 
             CreateMap<Address, AddressEntity>()

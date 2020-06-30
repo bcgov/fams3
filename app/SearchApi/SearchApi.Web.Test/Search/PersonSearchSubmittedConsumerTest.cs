@@ -14,10 +14,10 @@ using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 
 namespace SearchApi.Web.Test.Search
 {
-    public class PersonSearchFailedConsumerTest
+    public class PersonSearchSubmittedConsumerTest
     {
         private InMemoryTestHarness _harness;
-        private Mock<ILogger<PersonSearchFailedConsumer>> _loggerMock;
+        private Mock<ILogger<PersonSearchSubmittedConsumer>> _loggerMock;
         private Mock<ISearchApiNotifier<PersonSearchAdapterEvent>> _searchApiNotifierMock;
 
         private string _requestKey;
@@ -26,23 +26,24 @@ namespace SearchApi.Web.Test.Search
         [OneTimeSetUp]
         public async Task A_consumer_is_being_tested()
         {
-            _loggerMock = LoggerUtils.LoggerMock<PersonSearchFailedConsumer>();
+            _loggerMock = LoggerUtils.LoggerMock<PersonSearchSubmittedConsumer>();
             _searchApiNotifierMock = new Mock<ISearchApiNotifier<PersonSearchAdapterEvent>>();
             _harness = new InMemoryTestHarness();
             _requestKey = "111111_000000";
 
-            var fakePersonSearchStatus = new FakePersonSearchFailed
+            var fakePersonSearchStatus = new FakePersonSearchSubmitted
             {
                 SearchRequestKey = _requestKey,
-                TimeStamp = DateTime.Now
+                TimeStamp = DateTime.Now,
+                Message = "fake person search submitted"
             };
 
 
-             _harness.Consumer(() => new PersonSearchFailedConsumer(_searchApiNotifierMock.Object, _loggerMock.Object));
+            _harness.Consumer(() => new PersonSearchSubmittedConsumer(_searchApiNotifierMock.Object, _loggerMock.Object));
 
             await _harness.Start();
 
-            await _harness.BusControl.Publish<PersonSearchFailed>(fakePersonSearchStatus) ;
+            await _harness.BusControl.Publish<PersonSearchSubmitted>(fakePersonSearchStatus) ;
 
         }
 
@@ -55,8 +56,8 @@ namespace SearchApi.Web.Test.Search
         [Test]
         public void Should_send_the_initial_message_to_the_consumer()
         {
-            Assert.IsTrue(_harness.Consumed.Select<PersonSearchFailed>().Any());
-            _searchApiNotifierMock.Verify(x => x.NotifyEventAsync(It.Is<string>(x => x == _requestKey), It.IsAny<PersonSearchFailed>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
+            Assert.IsTrue(_harness.Consumed.Select<PersonSearchSubmitted>().Any());
+            _searchApiNotifierMock.Verify(x => x.NotifyEventAsync(It.Is<string>(x => x == _requestKey), It.IsAny<PersonSearchSubmitted>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
 

@@ -14,5 +14,6 @@
         internal const string Failed = "Failed";
         internal const string Completed = "Completed";
         internal const string Finalized = "Finalized";
+        internal const string Submitted = "Submitted";
     }
 }

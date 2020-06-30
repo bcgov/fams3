@@ -6,13 +6,13 @@ namespace BcGov.Fams3.SearchApi.Core.Adapters.Models
     public class DefaultPersonSearchFailed : PersonSearchFailed
     {
 
-        public DefaultPersonSearchFailed(Guid searchRequestId, string SearchRequestKey, ProviderProfile providerProfile, string cause)
+        public DefaultPersonSearchFailed(Guid searchRequestId, string searchRequestKey, ProviderProfile providerProfile, string cause)
         {
             SearchRequestId = searchRequestId;
             ProviderProfile = providerProfile;
             Cause = cause;
-            this.TimeStamp = DateTime.Now;
-            this.SearchRequestKey = SearchRequestKey;
+            TimeStamp = DateTime.Now;
+            SearchRequestKey = searchRequestKey;
         }
 
         public Guid SearchRequestId { get; }

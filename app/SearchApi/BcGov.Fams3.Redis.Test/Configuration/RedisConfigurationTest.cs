@@ -21,10 +21,13 @@ namespace BcGov.Fams3.Redis.Test.Configuration
             {
                 Host = "host",
                 Port = 6666,
+                Password = "password"
             };
 
             Assert.AreEqual("host", sut.Host);
             Assert.AreEqual(6666, sut.Port);
+            Assert.AreEqual("password", sut.Password);
+            Assert.AreEqual("host:6666", sut.ConnectionString);
         }
     }
 }

@@ -186,33 +186,39 @@ namespace SearchApi.Web
                     cfg.PropagateOpenTracingContext();
 
 
-                    // Configure Person Search Accepted Consumer Consumer
+                    // Configure Person Search Accepted Consumer 
                     cfg.ReceiveEndpoint( $"{nameof(PersonSearchAccepted)}_queue", e =>
                     {
                         e.Consumer(() =>
                             new PersonSearchAcceptedConsumer(provider.GetRequiredService<ISearchApiNotifier<PersonSearchAdapterEvent>>(), provider.GetRequiredService<ILogger<PersonSearchAcceptedConsumer>>()));
                     });
-                    // Configure Person Search Accepted Consumer Consumer
+                    // Configure Person Search Accepted Consumer 
                     cfg.ReceiveEndpoint( $"{nameof(PersonSearchCompleted)}_queue", e =>
                     {
                         e.Consumer(() =>
                             new PersonSearchCompletedConsumer(provider.GetRequiredService<ISearchApiNotifier<PersonSearchAdapterEvent>>(), provider.GetRequiredService<ILogger<PersonSearchCompletedConsumer>>()));
                     });
 
-                    // Configure Person Search Rejected Consumer Consumer
+                    // Configure Person Search Rejected Consumer 
                     cfg.ReceiveEndpoint( $"{nameof(PersonSearchRejected)}_queue", e =>
                     {
                         e.Consumer(() =>
                             new PersonSearchRejectedConsumer(provider.GetRequiredService<ISearchApiNotifier<PersonSearchAdapterEvent>>(), provider.GetRequiredService<ILogger<PersonSearchRejectedConsumer>>()));
                     });
 
-                    // Configure Person Search Failed Consumer Consumer
+                    // Configure Person Search Failed Consumer 
                     cfg.ReceiveEndpoint( $"{nameof(PersonSearchFailed)}_queue", e =>
                     {
                         e.Consumer(() =>
                             new PersonSearchFailedConsumer(provider.GetRequiredService<ISearchApiNotifier<PersonSearchAdapterEvent>>(), provider.GetRequiredService<ILogger<PersonSearchFailedConsumer>>()));
                     });
 
+                    // Configure Person Search Submitted Consumer 
+                    cfg.ReceiveEndpoint($"{nameof(PersonSearchSubmitted)}_queue", e =>
+                    {
+                        e.Consumer(() =>
+                            new PersonSearchSubmittedConsumer(provider.GetRequiredService<ISearchApiNotifier<PersonSearchAdapterEvent>>(), provider.GetRequiredService<ILogger<PersonSearchSubmittedConsumer>>()));
+                    });
                 }));
             });
 

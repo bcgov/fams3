@@ -307,7 +307,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         }
 
         [Test]
-        public async Task with_nonDuplicatedException_SavePerson_should_throw_it()
+        public void With_nonDuplicatedException_SavePerson_should_throw_it()
         {
             var person = new PersonEntity()
             {
@@ -315,7 +315,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
                 SearchRequest = new SSG_SearchRequest() { SearchRequestId = testId }
             };
 
-            Assert.ThrowsAsync<WebRequestException>(async()=>await _sut.SavePerson(person, CancellationToken.None));
+            Assert.ThrowsAsync<WebRequestException>(async () => await _sut.SavePerson(person, CancellationToken.None));
         }
 
         [Test]

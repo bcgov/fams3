@@ -9,6 +9,7 @@
 
         public const string GLOBAL_STATUS_CODE_URL_TEMPLATE =
             "EntityDefinitions(LogicalName='{0}')/Attributes(LogicalName='statuscode')/Microsoft.Dynamics.CRM.StatusAttributeMetadata?$select=LogicalName&$expand=OptionSet";
+        public const string DUPLICATE_DETECTED_ERROR_CODE = "0x80040333";
 
     }
 }

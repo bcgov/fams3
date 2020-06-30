@@ -12,7 +12,10 @@ using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.RelatedPerson;
 using Fams3Adapter.Dynamics.ResultTransaction;
 using Fams3Adapter.Dynamics.Vehicle;
+using Newtonsoft.Json;
 using Simple.OData.Client;
+using System;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -46,12 +49,12 @@ namespace Fams3Adapter.Dynamics.SearchRequest
     public class SearchRequestService : ISearchRequestService
     {
         private readonly IODataClient _oDataClient;
-        private readonly IDuplicateDetectionService _duplicateConfig;
+        private readonly IDuplicateDetectionService _duplicateDetectService;
 
-        public SearchRequestService(IODataClient oDataClient, IDuplicateDetectionService duplicateConfig)
+        public SearchRequestService(IODataClient oDataClient, IDuplicateDetectionService duplicateDetectService)
         {
             this._oDataClient = oDataClient;
-            this._duplicateConfig = duplicateConfig;
+            this._duplicateDetectService = duplicateDetectService;
         }
 
         /// <summary>
@@ -66,8 +69,23 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
         public async Task<SSG_Person> SavePerson(PersonEntity person, CancellationToken cancellationToken)
         {
-            person.DuplicateDetectHash = await _duplicateConfig.GetDuplicateDetectHashData(person);
-            return await this._oDataClient.For<SSG_Person>().Set(person).InsertEntryAsync(cancellationToken);
+            try
+            {
+                person.DuplicateDetectHash = await _duplicateDetectService.GetDuplicateDetectHashData(person);
+                return await this._oDataClient.For<SSG_Person>().Set(person).InsertEntryAsync(cancellationToken);
+            }catch(WebRequestException ex)
+            {
+                if (IsDuplicateFoundException(ex))
+                {
+                    string hashData = person.DuplicateDetectHash;
+                    SSG_Person p = await this._oDataClient.For<SSG_Person>().Filter(x => x.DuplicateDetectHash == hashData).FindEntryAsync(cancellationToken);
+                    return p;
+                }
+                else
+                {
+                    throw ex;
+                }
+            }
         }
 
         public async Task<SSG_PhoneNumber> CreatePhoneNumber(PhoneNumberEntity phone, CancellationToken cancellationToken)
@@ -170,5 +188,13 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             return await this._oDataClient.For<SSG_InvolvedParty>().Set(involvedParty).InsertEntryAsync(cancellationToken);
         }
 
+        private bool IsDuplicateFoundException(WebRequestException ex)
+        {
+            if (ex.Code == HttpStatusCode.PreconditionFailed && ex.Response.Contains(Keys.DUPLICATE_DETECTED_ERROR_CODE) )
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }

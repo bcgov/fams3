@@ -27,7 +27,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
     public class SearchRequestServiceTest
     {
         private Mock<IODataClient> odataClientMock;
-        private Mock<IDuplicateDetectionService> _duplicateConfigMock;
+        private Mock<IDuplicateDetectionService> _duplicateServiceMock;
 
         private readonly Guid testId = Guid.Parse("6AE89FE6-9909-EA11-B813-00505683FBF4");
         private readonly Guid testPersonId = Guid.Parse("6AE89FE6-9909-EA11-1111-00505683FBF4");
@@ -41,7 +41,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         public void SetUp()
         {
             odataClientMock = new Mock<IODataClient>();
-            _duplicateConfigMock = new Mock<IDuplicateDetectionService>();
+            _duplicateServiceMock = new Mock<IDuplicateDetectionService>();
 
             odataClientMock.Setup(x => x.For<SSG_Identifier>(null).Set(It.Is<IdentifierEntity>(x => x.Identification == "identificationtest"))
             .InsertEntryAsync(It.IsAny<CancellationToken>()))
@@ -93,14 +93,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             })
             );
 
-            odataClientMock.Setup(x => x.For<SSG_Person>(null).Set(It.Is<PersonEntity>(x => x.FirstName == "First"))
-          .InsertEntryAsync(It.IsAny<CancellationToken>()))
-          .Returns(Task.FromResult(new SSG_Person()
-          {
-              FirstName = "FirstName",
-              PersonId = testPersonId
-          })
-          );
+
 
         odataClientMock.Setup(x => x.For<SSG_Identity>(null).Set(It.Is<RelatedPersonEntity>(x => x.FirstName == "First"))
         .InsertEntryAsync(It.IsAny<CancellationToken>()))
@@ -198,12 +191,60 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             })
             );
 
-            _duplicateConfigMock.Setup(x => x.GetDuplicateDetectHashData(It.IsAny<object>()))
+            //person - throw non-duplicated-exception
+            _duplicateServiceMock.Setup(x => x.GetDuplicateDetectHashData(It.Is<PersonEntity>(m => m.FirstName == "OtherException")))
                 .Returns(
-                    Task.FromResult("correcthashdata")
+                    Task.FromResult("exceptionDuplicatedPersonHashdata")
                 );
 
-            _sut = new SearchRequestService(odataClientMock.Object, _duplicateConfigMock.Object);
+            odataClientMock.Setup(x => x.For<SSG_Person>(null).Set(It.Is<PersonEntity>(x => x.DuplicateDetectHash == "exceptionDuplicatedPersonHashdata"))
+                .InsertEntryAsync(It.IsAny<CancellationToken>()))
+                .Throws(WebRequestException.CreateFromStatusCode(
+                    System.Net.HttpStatusCode.BadRequest,
+                    new WebRequestExceptionMessageSource(),
+                    ""
+                    ));
+
+
+            //person - throw duplicated-exception
+            _duplicateServiceMock.Setup(x => x.GetDuplicateDetectHashData(It.Is<PersonEntity>(m=>m.FirstName=="Duplicated")))
+                .Returns(
+                    Task.FromResult("duplicatedPersonHashdata")
+                );
+
+            odataClientMock.Setup(x => x.For<SSG_Person>(null).Set(It.Is<PersonEntity>(x => x.DuplicateDetectHash == "duplicatedPersonHashdata"))
+                .InsertEntryAsync(It.IsAny<CancellationToken>()))
+                .Throws(WebRequestException.CreateFromStatusCode(
+                    System.Net.HttpStatusCode.PreconditionFailed,
+                    new WebRequestExceptionMessageSource(),
+                    "{\"error\":{\"code\":\"0x80040333\",\"message\":\"A record was not created or updated because a duplicate of the current record already exists.\"}"
+                    ));
+
+            odataClientMock.Setup(x => x.For<SSG_Person>(null)
+                .Filter(It.IsAny<Expression<Func<SSG_Person, bool>>>())
+                .FindEntryAsync(It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult(new SSG_Person()
+                {
+                    FirstName = "FirstName",
+                    PersonId = testPersonId
+                }));
+
+            //person normal
+            _duplicateServiceMock.Setup(x => x.GetDuplicateDetectHashData(It.Is<PersonEntity>(m => m.FirstName == "First")))
+                .Returns(
+                    Task.FromResult("normalPersonHashdata")
+                );
+
+            odataClientMock.Setup(x => x.For<SSG_Person>(null).Set(It.Is<PersonEntity>(x => x.FirstName == "First"))
+                .InsertEntryAsync(It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult(new SSG_Person()
+                {
+                  FirstName = "FirstName",
+                  PersonId = testPersonId
+                })
+                );
+
+            _sut = new SearchRequestService(odataClientMock.Object, _duplicateServiceMock.Object);
         }
 
 
@@ -249,6 +290,34 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             Assert.AreEqual("FirstName", result.FirstName);
             Assert.AreEqual(testPersonId, result.PersonId);
         }
+
+        [Test]
+        public async Task with_duplicated_upload_person_should_return_original_person_guid()
+        {
+            var person = new PersonEntity()
+            {
+                FirstName = "Duplicated",
+                SearchRequest = new SSG_SearchRequest() { SearchRequestId = testId }
+            };
+
+            var result = await _sut.SavePerson(person, CancellationToken.None);
+
+            Assert.AreEqual("FirstName", result.FirstName);
+            Assert.AreEqual(testPersonId, result.PersonId);
+        }
+
+        [Test]
+        public async Task with_nonDuplicatedException_SavePerson_should_throw_it()
+        {
+            var person = new PersonEntity()
+            {
+                FirstName = "OtherException",
+                SearchRequest = new SSG_SearchRequest() { SearchRequestId = testId }
+            };
+
+            Assert.ThrowsAsync<WebRequestException>(async()=>await _sut.SavePerson(person, CancellationToken.None));
+        }
+
         [Test]
         public async Task with_correct_searchRequestid_upload_phone_number_should_success()
         {

@@ -468,7 +468,7 @@ namespace SearchAdapter.Sample.SearchRequest
             TimeStamp = DateTime.Now;
             SearchRequestId = searchRequestId;
             ProviderProfile = providerProfile;
-            SearchRequestKey = SearchRequestKey;
+            this.SearchRequestKey = SearchRequestKey;
         }
 
         public void AddValidationResult(DefaultValidationResult validationResult)

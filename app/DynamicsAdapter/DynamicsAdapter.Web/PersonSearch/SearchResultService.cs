@@ -68,7 +68,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             SSG_SearchRequest searchRequest, 
             Guid searchApiRequestId, 
             CancellationToken cancellationToken, 
-            SSG_Identifier sourceIdentifier= null)
+            SSG_Identifier sourceIdentifier = null)
         {
             if (person == null) return true;
 

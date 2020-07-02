@@ -59,7 +59,7 @@ namespace Fams3Adapter.Dynamics.Address
         [JsonProperty("ssg_notes")]
         public string Notes { get; set; }
 
-        public new string ToResultName()
+        public override string ToResultName()
         {
             return $"Duplicate | Address | {AddressLine1} {AddressLine2} {AddressLine3} {City} {CountrySubdivisionText} {CountryText} {PostalCode}";
         }

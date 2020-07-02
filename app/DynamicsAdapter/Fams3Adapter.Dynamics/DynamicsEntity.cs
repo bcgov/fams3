@@ -25,7 +25,7 @@ namespace Fams3Adapter.Dynamics
         [JsonProperty("ssg_duplicatedetectionhash")]
         public string DuplicateDetectHash { get; set; }
 
-        public string ToResultName()
+        public virtual string ToResultName()
         {
             return null;
         }

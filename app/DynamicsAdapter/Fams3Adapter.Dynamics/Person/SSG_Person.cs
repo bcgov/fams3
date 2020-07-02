@@ -71,5 +71,10 @@ namespace Fams3Adapter.Dynamics.Person
     {
         [JsonProperty("ssg_personid")]
         public Guid PersonId { get; set; }
+
+        public override string ToString()
+        {
+            return PersonId.ToString();
+        }
     }
 }

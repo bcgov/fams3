@@ -23,7 +23,8 @@ namespace Fams3Adapter.Dynamics.Config
         public static IEnumerable<SSG_DuplicateDetectionConfig> _configs;
         public static Dictionary<string, string> EntityNameMap = new Dictionary<string, string>
         {
-            {"PersonEntity", "ssg_person" }
+            {"PersonEntity", "ssg_person" },
+            {"AddressEntity", "ssg_address" }
         };
 
         public DuplicateDetectionService(IODataClient oDataClient)

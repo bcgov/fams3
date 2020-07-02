@@ -21,5 +21,13 @@ namespace Fams3Adapter.Dynamics
 
         [JsonProperty("ssg_datadatelabel2")]
         public string Date2Label { get; set; }
+
+        [JsonProperty("ssg_duplicatedetectionhash")]
+        public string DuplicateDetectHash { get; set; }
+
+        public string ToResultName()
+        {
+            return null;
+        }
     }
 }

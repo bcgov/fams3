@@ -112,7 +112,22 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                                          .FindEntryAsync(cancellationToken);
             address.CountrySubdivision = subdivision;
 
-            return await this._oDataClient.For<SSG_Address>().Set(address).InsertEntryAsync(cancellationToken);
+            try
+            {
+                address.DuplicateDetectHash = await _duplicateDetectService.GetDuplicateDetectHashData(address);
+                return await this._oDataClient.For<SSG_Address>().Set(address).InsertEntryAsync(cancellationToken);
+            }
+            catch (WebRequestException ex)
+            {
+                if (IsDuplicateFoundException(ex))
+                {
+                    return null;
+                }
+                else
+                {
+                    throw ex;
+                }
+            }
         }
 
         public async Task<SSG_Aliase> CreateName(AliasEntity name, CancellationToken cancellationToken)

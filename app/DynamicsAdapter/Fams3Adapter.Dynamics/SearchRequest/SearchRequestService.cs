@@ -106,7 +106,22 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
         public async Task<SSG_PhoneNumber> CreatePhoneNumber(PhoneNumberEntity phone, CancellationToken cancellationToken)
         {
-            return await this._oDataClient.For<SSG_PhoneNumber>().Set(phone).InsertEntryAsync(cancellationToken);
+            try
+            {
+                phone.DuplicateDetectHash = await _duplicateDetectService.GetDuplicateDetectHashData(phone);
+                return await this._oDataClient.For<SSG_PhoneNumber>().Set(phone).InsertEntryAsync(cancellationToken);
+            }
+            catch (WebRequestException ex)
+            {
+                if (IsDuplicateFoundException(ex))
+                {
+                    return null;
+                }
+                else
+                {
+                    throw ex;
+                }
+            }            
         }
 
         public async Task<SSG_SearchRequestResultTransaction> CreateTransaction(SSG_SearchRequestResultTransaction transaction, CancellationToken cancellationToken)

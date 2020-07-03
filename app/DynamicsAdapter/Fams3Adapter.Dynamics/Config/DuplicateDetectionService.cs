@@ -25,7 +25,8 @@ namespace Fams3Adapter.Dynamics.Config
         {
             {"PersonEntity", "ssg_person" },
             {"AddressEntity", "ssg_address" },
-            {"IdentifierEntity", "ssg_identifier" }
+            {"IdentifierEntity", "ssg_identifier" },
+            {"PhoneNumberEntity", "ssg_phonenumber" }
         };
 
         public DuplicateDetectionService(IODataClient oDataClient)

@@ -221,7 +221,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                     ph.InformationSource = _providerDynamicsID;
                     ph.Person = _returnedPerson;
                     SSG_PhoneNumber phoneNumber = await _searchRequestService.CreatePhoneNumber(ph, _cancellationToken);
-                    await CreateResultTransaction(phoneNumber);
+                    await CreateResultTransaction(phoneNumber,phoneNumber==null?ph:null);
                 }
                 return true;
             }

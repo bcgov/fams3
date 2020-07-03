@@ -34,6 +34,10 @@ namespace Fams3Adapter.Dynamics.PhoneNumber
         [JsonProperty("ssg_notes")]
         public string Notes { get; set; }
 
+        public override string ToResultName()
+        {
+            return $"Duplicate | PhoneNumber | {TelePhoneNumber} {PhoneExtension}";
+        }
     }
 
     public class SSG_PhoneNumber : PhoneNumberEntity

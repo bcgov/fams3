@@ -458,6 +458,8 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         }
         #endregion
 
+        #region phonenumber testcases
+
         [Test]
         public async Task with_correct_searchRequestid_upload_phone_number_should_success()
         {
@@ -479,6 +481,60 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
 
             Assert.AreEqual("4007678231", result.TelePhoneNumber);
         }
+
+        [Test]
+        public async Task with_duplicated_phonenumber_should_return_null()
+        {
+            _duplicateServiceMock.Setup(x => x.GetDuplicateDetectHashData(It.Is<PhoneNumberEntity>(m => m.TelePhoneNumber == "Duplicated")))
+                 .Returns(
+                     Task.FromResult("duplicatedphonenumberHashdata")
+                 );
+
+            odataClientMock.Setup(x => x.For<SSG_PhoneNumber>(null).Set(It.Is<PhoneNumberEntity>(x => x.DuplicateDetectHash == "duplicatedphonenumberHashdata"))
+                .InsertEntryAsync(It.IsAny<CancellationToken>()))
+                .Throws(WebRequestException.CreateFromStatusCode(
+                    System.Net.HttpStatusCode.PreconditionFailed,
+                    new WebRequestExceptionMessageSource(),
+                    "{\"error\":{\"code\":\"0x80040333\",\"message\":\"A record was not created or updated because a duplicate of the current record already exists.\"}"
+                    ));
+
+            var phone = new PhoneNumberEntity()
+            {
+                TelePhoneNumber= "Duplicated",
+                SearchRequest = new SSG_SearchRequest() { SearchRequestId = testId },
+                Person = new SSG_Person() { PersonId = testPersonId }
+            };
+
+            var result = await _sut.CreatePhoneNumber(phone, CancellationToken.None);
+            Assert.AreEqual(null, result);
+        }
+
+        [Test]
+        public void With_nonDuplicatedException_savePhoneNumber_should_throw_it()
+        {
+            _duplicateServiceMock.Setup(x => x.GetDuplicateDetectHashData(It.Is<PhoneNumberEntity>(m => m.TelePhoneNumber == "nonDuplicateException")))
+                 .Returns(
+                     Task.FromResult("exceptionduplicatedphonenumberHashdata")
+                 );
+
+            odataClientMock.Setup(x => x.For<SSG_PhoneNumber>(null).Set(It.Is<PhoneNumberEntity>(x => x.DuplicateDetectHash == "exceptionduplicatedphonenumberHashdata"))
+                .InsertEntryAsync(It.IsAny<CancellationToken>()))
+                .Throws(WebRequestException.CreateFromStatusCode(
+                    System.Net.HttpStatusCode.BadRequest,
+                    new WebRequestExceptionMessageSource(),
+                    ""
+                    ));
+
+            var phone = new PhoneNumberEntity()
+            {
+                TelePhoneNumber = "nonDuplicateException",
+                SearchRequest = new SSG_SearchRequest() { SearchRequestId = testId },
+                Person = new SSG_Person() { PersonId = testPersonId }
+            };
+
+            Assert.ThrowsAsync<WebRequestException>(async () => await _sut.CreatePhoneNumber(phone, CancellationToken.None));
+        }
+        #endregion
 
         [Test]
         public async Task with_correct_searchRequestid_upload_name_should_success()

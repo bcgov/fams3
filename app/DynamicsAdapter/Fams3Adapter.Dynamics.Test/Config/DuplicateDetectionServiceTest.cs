@@ -2,6 +2,7 @@
 using Fams3Adapter.Dynamics.Config;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.Person;
+using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.Types;
 using Moq;
 using NUnit.Framework;
@@ -42,6 +43,11 @@ namespace Fams3Adapter.Dynamics.Test.Config
                      {
                          EntityName = "ssg_identifier",
                          DuplicateFields = "ssg_identification|ssg_identificationcategorytext"
+                     },
+                     new SSG_DuplicateDetectionConfig()
+                     {
+                         EntityName = "ssg_phonenumber",
+                         DuplicateFields = "ssg_telephonenumber|ssg_phoneextension"
                      }
                 }));
 
@@ -50,48 +56,6 @@ namespace Fams3Adapter.Dynamics.Test.Config
         }
 
 
-        [Test]
-        public async Task same_person_GetDuplicateDetectHashData_should_return_same_string()
-        {
-            DuplicateDetectionService._configs = null;
-            PersonEntity person1 = new PersonEntity()
-            {
-                FirstName = "test",
-                LastName = "lastname",
-                DateOfBirth = new DateTime(1999, 1, 1)
-            };
-            string str1 = await _sut.GetDuplicateDetectHashData(person1);
-            PersonEntity person2 = new PersonEntity()
-            {
-                FirstName = "test",
-                LastName = "lastname",
-                DateOfBirth = new DateTime(1999, 1, 1)
-            };
-            
-            string str2 = await _sut.GetDuplicateDetectHashData(person2);
-            Assert.AreEqual(true,str1==str2);
-        }
-
-        [Test]
-        public async Task different_person_GetDuplicateDetectHashData_should_return_different_string()
-        {
-            DuplicateDetectionService._configs = null;
-            PersonEntity person1 = new PersonEntity()
-            {
-                FirstName = "test1",
-                LastName = "lastname",
-                DateOfBirth = new DateTime(1999, 1, 1)
-            };
-            string str1 = await _sut.GetDuplicateDetectHashData(person1);
-            PersonEntity person2 = new PersonEntity()
-            {
-                FirstName = "test2",
-                LastName = "lastname",
-                DateOfBirth = new DateTime(1999, 1, 1)
-            };
-            string str2 = await _sut.GetDuplicateDetectHashData(person2);
-            Assert.AreEqual(false, str1 == str2);
-        }
 
         [Test]
         public async Task not_mapped_entity_GetDuplicateDetectHashData_return_null()
@@ -129,6 +93,50 @@ namespace Fams3Adapter.Dynamics.Test.Config
             Assert.AreEqual(null, str);
         }
 
+        #region person testcases
+        [Test]
+        public async Task same_person_GetDuplicateDetectHashData_should_return_same_string()
+        {
+            DuplicateDetectionService._configs = null;
+            PersonEntity person1 = new PersonEntity()
+            {
+                FirstName = "test",
+                LastName = "lastname",
+                DateOfBirth = new DateTime(1999, 1, 1)
+            };
+            string str1 = await _sut.GetDuplicateDetectHashData(person1);
+            PersonEntity person2 = new PersonEntity()
+            {
+                FirstName = "test",
+                LastName = "lastname",
+                DateOfBirth = new DateTime(1999, 1, 1)
+            };
+
+            string str2 = await _sut.GetDuplicateDetectHashData(person2);
+            Assert.AreEqual(true, str1 == str2);
+        }
+
+        [Test]
+        public async Task different_person_GetDuplicateDetectHashData_should_return_different_string()
+        {
+            DuplicateDetectionService._configs = null;
+            PersonEntity person1 = new PersonEntity()
+            {
+                FirstName = "test1",
+                LastName = "lastname",
+                DateOfBirth = new DateTime(1999, 1, 1)
+            };
+            string str1 = await _sut.GetDuplicateDetectHashData(person1);
+            PersonEntity person2 = new PersonEntity()
+            {
+                FirstName = "test2",
+                LastName = "lastname",
+                DateOfBirth = new DateTime(1999, 1, 1)
+            };
+            string str2 = await _sut.GetDuplicateDetectHashData(person2);
+            Assert.AreEqual(false, str1 == str2);
+        }
+
         [Test]
         public async Task different_person_with_same_duplicate_detect_fields_GetDuplicateDetectHashData_return_same()
         {
@@ -151,7 +159,9 @@ namespace Fams3Adapter.Dynamics.Test.Config
             string str2 = await _sut.GetDuplicateDetectHashData(person2);
             Assert.AreEqual(str1, str2);
         }
+        #endregion
 
+        #region address testcases
         [Test]
         public async Task same_address_GetDuplicateDetectHashData_should_return_same_string()
         {
@@ -219,6 +229,9 @@ namespace Fams3Adapter.Dynamics.Test.Config
             Assert.AreEqual(str1, str2);
         }
 
+        #endregion
+
+        #region identifier testcases
         [Test]
         public async Task same_identifier_GetDuplicateDetectHashData_should_return_same_string()
         {
@@ -276,6 +289,68 @@ namespace Fams3Adapter.Dynamics.Test.Config
             string str2 = await _sut.GetDuplicateDetectHashData(id2);
             Assert.AreEqual(str1, str2);
         }
+        #endregion
+
+        #region phonenumber testcases
+        [Test]
+        public async Task same_phoneNumber_GetDuplicateDetectHashData_should_return_same_string()
+        {
+            DuplicateDetectionService._configs = null;
+            PhoneNumberEntity phone1 = new PhoneNumberEntity()
+            {
+                TelePhoneNumber="1234567",
+                PhoneExtension="123"
+            };
+            string str1 = await _sut.GetDuplicateDetectHashData(phone1);
+            PhoneNumberEntity phone2 = new PhoneNumberEntity()
+            {
+                TelePhoneNumber = "1234567",
+                PhoneExtension = "123"
+            };
+            string str2 = await _sut.GetDuplicateDetectHashData(phone2);
+            Assert.AreEqual(true, str1 == str2);
+        }
+
+        [Test]
+        public async Task different_phoneNumber_GetDuplicateDetectHashData_should_return_different_string()
+        {
+            DuplicateDetectionService._configs = null;
+            PhoneNumberEntity phone1 = new PhoneNumberEntity()
+            {
+                TelePhoneNumber = "1234567",
+                PhoneExtension = "1232"
+            };
+            string str1 = await _sut.GetDuplicateDetectHashData(phone1);
+            PhoneNumberEntity phone2 = new PhoneNumberEntity()
+            {
+                TelePhoneNumber = "1234567",
+                PhoneExtension = "123"
+            };
+            string str2 = await _sut.GetDuplicateDetectHashData(phone2);
+            Assert.AreEqual(false, str1 == str2);
+        }
+
+        
+        [Test]
+        public async Task different_PhoneNumber_with_same_duplicate_detect_fields_GetDuplicateDetectHashData_return_same()
+        {
+            DuplicateDetectionService._configs = null;
+            PhoneNumberEntity phone1 = new PhoneNumberEntity()
+            {
+                TelePhoneNumber = "1234567",
+                PhoneExtension = "123",
+                TelephoneNumberType = TelephoneNumberType.Cell.Value
+            };
+            string str1 = await _sut.GetDuplicateDetectHashData(phone1);
+            PhoneNumberEntity phone2 = new PhoneNumberEntity()
+            {
+                TelePhoneNumber = "1234567",
+                PhoneExtension = "123"
+            };
+            string str2 = await _sut.GetDuplicateDetectHashData(phone2);
+            Assert.AreEqual(str1, str2);
+        }
+        #endregion
     }
 
     public class TestEntity : DynamicsEntity

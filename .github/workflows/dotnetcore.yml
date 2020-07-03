@@ -17,7 +17,7 @@ jobs:
           NEXUS_REPO_PASSWORD: ${{ secrets.nexus_repo.password }}
           NEXUS_REPO_URL: ${{ secrets.nexus_repo.url }}
       - name: Build SearchApi
-        run: dotnet build --configuration Release --configfile ../NuGet.config
+        run: env; dotnet build --configuration Release --configfile ../NuGet.config
         working-directory: ./app/SearchApi
       - name: Test SearchApi
         run: dotnet test

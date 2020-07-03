@@ -58,11 +58,17 @@ namespace Fams3Adapter.Dynamics.Address
 
         [JsonProperty("ssg_notes")]
         public string Notes { get; set; }
+
+        public override string ToResultName()
+        {
+            return $"Duplicate | Address | {AddressLine1} {AddressLine2} {AddressLine3} {City} {CountrySubdivisionText} {CountryText} {PostalCode}";
+        }
     }
 
     public class SSG_Address : AddressEntity
     {
         [JsonProperty("ssg_addressid")]
         public Guid AddressId { get; set; }
+
     }
 }

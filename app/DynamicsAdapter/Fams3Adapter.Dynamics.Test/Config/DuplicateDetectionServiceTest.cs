@@ -1,4 +1,5 @@
-﻿using Fams3Adapter.Dynamics.Config;
+﻿using Fams3Adapter.Dynamics.Address;
+using Fams3Adapter.Dynamics.Config;
 using Fams3Adapter.Dynamics.Person;
 using Moq;
 using NUnit.Framework;
@@ -29,6 +30,11 @@ namespace Fams3Adapter.Dynamics.Test.Config
                      {
                          EntityName = "ssg_person",
                          DuplicateFields = "ssg_firstname|ssg_lastname|ssg_dateofbirth"
+                     },
+                     new SSG_DuplicateDetectionConfig()
+                     {
+                         EntityName = "ssg_address",
+                         DuplicateFields = "ssg_address|ssg_addresssecondaryunittext|ssg_locationcityname"
                      }
                 }));
 
@@ -136,6 +142,73 @@ namespace Fams3Adapter.Dynamics.Test.Config
                 DateOfDeath = null
             };
             string str2 = await _sut.GetDuplicateDetectHashData(person2);
+            Assert.AreEqual(str1, str2);
+        }
+
+        [Test]
+        public async Task same_address_GetDuplicateDetectHashData_should_return_same_string()
+        {
+            DuplicateDetectionService._configs = null;
+            AddressEntity address1 = new AddressEntity()
+            {
+                AddressLine1 = "line1",
+                AddressLine2 = "line2",
+                City = "city"
+            };
+            string str1 = await _sut.GetDuplicateDetectHashData(address1);
+            AddressEntity address2 = new AddressEntity()
+            {
+                AddressLine1 = "line1",
+                AddressLine2 = "line2",
+                City = "city"
+            };
+
+            string str2 = await _sut.GetDuplicateDetectHashData(address2);
+            Assert.AreEqual(true, str1 == str2);
+        }
+
+        [Test]
+        public async Task different_address_GetDuplicateDetectHashData_should_return_different_string()
+        {
+            DuplicateDetectionService._configs = null;
+            AddressEntity address1 = new AddressEntity()
+            {
+                AddressLine1 = "line1",
+                AddressLine2 = "line2",
+                City = "city"
+            };
+            string str1 = await _sut.GetDuplicateDetectHashData(address1);
+            AddressEntity address2 = new AddressEntity()
+            {
+                AddressLine1 = "line11",
+                AddressLine2 = "line22",
+                City = "city"
+            };
+
+            string str2 = await _sut.GetDuplicateDetectHashData(address2);
+            Assert.AreEqual(false, str1 == str2);
+        }
+
+        [Test]
+        public async Task different_address_with_same_duplicate_detect_fields_GetDuplicateDetectHashData_return_same()
+        {
+            DuplicateDetectionService._configs = null;
+            AddressEntity address1 = new AddressEntity()
+            {
+                AddressLine1 = "line1",
+                AddressLine2 = "line2",
+                City = "city",
+                CountryText="canada"
+            };
+            string str1 = await _sut.GetDuplicateDetectHashData(address1);
+            AddressEntity address2 = new AddressEntity()
+            {
+                AddressLine1 = "line1",
+                AddressLine2 = "line2",
+                City = "city",
+                CountryText = "usa"
+            };
+            string str2 = await _sut.GetDuplicateDetectHashData(address2);
             Assert.AreEqual(str1, str2);
         }
     }

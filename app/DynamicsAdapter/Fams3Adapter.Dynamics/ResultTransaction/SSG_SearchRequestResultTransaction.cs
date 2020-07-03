@@ -64,5 +64,11 @@ namespace Fams3Adapter.Dynamics.ResultTransaction
 
         [JsonProperty("ssg_suppliedby")]
         public int? InformationSource { get; set; }
+
+        [JsonProperty("ssg_name")]
+        public string ResultName { get; set; }
+
+        [JsonProperty("ssg_notes")]
+        public string Notes { get; set; }
     }
 }

@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Template
+labels:
+  template: nexus-config
+message: |-
+  nexus configuration template.
+metadata:
+  annotations:
+    description: |-
+      nexus configuration template.
+    tags: nexus-config
+    template: nexus-config
+  name: nexus-config
+
+# Parameters
+parameters:
+- name: URL
+  required: true
+  value: "http://nexus:8081"
+  description: nexus Url. Eg. http://nexus:8081
+- name: USER
+  required: true
+  value: "admin"
+  description: nexus admin user
+- name: PASSWORD
+  required: true
+  from: "[a-zA-Z0-9]{16}"
+  generate: expression
+  description: nexus admin passwork
+
+# Objects
+objects:
+- apiVersion: v1
+  stringData:
+    url: ${URL}
+    username: ${USER}
+    password: ${PASSWORD}
+  kind: Secret
+  metadata:
+    name: nexus-config
+    labels:
+      credential.sync.jenkins.openshift.io: 'true'

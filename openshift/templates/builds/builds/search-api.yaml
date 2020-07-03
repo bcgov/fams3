@@ -74,17 +74,17 @@ objects:
         - name: NEXUS_REPO_USER
           valueFrom:
             secretKeyRef:
-              key: NEXUS_ADMIN_USER
+              key: username
               name: nexus-config
         - name: NEXUS_REPO_PASSWORD
           valueFrom:
             secretKeyRef:
-              key: NEXUS_ADMIN_PASSWORD
+              key: password
               name: nexus-config
         - name: NEXUS_REPO_URL
           valueFrom:
             secretKeyRef:
-              key: NEXUS_URL
+              key: url
               name: nexus-config
         - name: NEXUS_REPO_API_KEY
           valueFrom:

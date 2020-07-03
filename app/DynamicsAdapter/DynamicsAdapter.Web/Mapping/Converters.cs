@@ -199,4 +199,20 @@ namespace DynamicsAdapter.Web.Mapping
                 return EmploymentRecordType.IncomeAssistance.Value;
         }
     }
+
+    public class IncomeAssistanceStatusConvertor : IValueConverter<string, int?>
+    {
+        public int? Convert(string sourceMember, ResolutionContext context)
+        {
+            if (!string.IsNullOrEmpty(sourceMember))
+            {
+                 int? source = Enumeration.GetAll<IncomeAssistanceStatusType>().FirstOrDefault(m => m.Name.Equals(sourceMember, StringComparison.OrdinalIgnoreCase))?.Value;
+
+              return  (source == null) ? IncomeAssistanceStatusType.Unknown.Value : source;
+
+            }
+            else
+                return IncomeAssistanceStatusType.Unknown.Value;
+        }
+    }
 }

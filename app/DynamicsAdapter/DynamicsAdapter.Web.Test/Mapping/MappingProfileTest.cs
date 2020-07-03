@@ -138,6 +138,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual("Occupation", ssg_empl.Occupation);
             Assert.AreEqual("Website", ssg_empl.Website);
             Assert.AreEqual("Status", ssg_empl.IncomeAssistanceStatus);
+            Assert.AreEqual(IncomeAssistanceStatusType.Unknown.Value, ssg_empl.IncomeAssistanceStatusOption);
             Assert.AreEqual("AddressLine1", ssg_empl.AddressLine1);
             Assert.AreEqual("AddressLine2", ssg_empl.AddressLine2);
             Assert.AreEqual("AddressLine3", ssg_empl.AddressLine3);
@@ -162,7 +163,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 Employer = null,
                 IncomeAssistance = true,
                 EmploymentConfirmed = true,
-                IncomeAssistanceStatus = "Status",
+                IncomeAssistanceStatus = "Active",
                 Occupation = "Occupation",
                 Website = "Website",
                 ReferenceDates = new List<ReferenceDate>(){
@@ -180,7 +181,8 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(EmploymentRecordType.IncomeAssistance.Value, ssg_empl.EmploymentType);
             Assert.AreEqual("Occupation", ssg_empl.Occupation);
             Assert.AreEqual("Website", ssg_empl.Website);
-            Assert.AreEqual("Status", ssg_empl.IncomeAssistanceStatus);
+            Assert.AreEqual("Active", ssg_empl.IncomeAssistanceStatus);
+            Assert.AreEqual(IncomeAssistanceStatusType.Active.Value, ssg_empl.IncomeAssistanceStatusOption);
             Assert.AreEqual(string.Empty, ssg_empl.AddressLine1);
             Assert.AreEqual(string.Empty, ssg_empl.AddressLine2);
             Assert.AreEqual(string.Empty, ssg_empl.AddressLine3);

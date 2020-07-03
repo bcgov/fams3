@@ -14,9 +14,9 @@ jobs:
           dotnet-version: 3.1.101
       - name: Build SearchApi
         env:
-          NEXUS_REPO_USER: ${{ secrets.nexus_repo.user }}
-          NEXUS_REPO_PASSWORD: ${{ secrets.nexus_repo.password }}
-          NEXUS_REPO_URL: ${{ secrets.nexus_repo.url }}
+          NEXUS_REPO_USER: ${{ secrets.nexus_repo_user }}
+          NEXUS_REPO_PASSWORD: ${{ secrets.nexus_repo_password }}
+          NEXUS_REPO_URL: ${{ secrets.nexus_repo_url }}
         run: env; dotnet build --configuration Release --configfile ../NuGet.config
         working-directory: ./app/SearchApi
       - name: Test SearchApi
@@ -24,9 +24,9 @@ jobs:
         working-directory: ./app/SearchApi
       - name: Build DynamicsAdapter
         env:
-          NEXUS_REPO_USER: ${{ secrets.nexus_repo.user }}
-          NEXUS_REPO_PASSWORD: ${{ secrets.nexus_repo.password }}
-          NEXUS_REPO_URL: ${{ secrets.nexus_repo.url }}
+          NEXUS_REPO_USER: ${{ secrets.nexus_repo_user }}
+          NEXUS_REPO_PASSWORD: ${{ secrets.nexus_repo_password }}
+          NEXUS_REPO_URL: ${{ secrets.nexus_repo_url }}
         run: dotnet build --configuration Release --configfile ../NuGet.config
         working-directory: ./app/DynamicsAdapter
       - name: Test DynamicsAdapter

@@ -1,6 +1,8 @@
 ﻿using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.Config;
+using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.Person;
+using Fams3Adapter.Dynamics.Types;
 using Moq;
 using NUnit.Framework;
 using Simple.OData.Client;
@@ -35,6 +37,11 @@ namespace Fams3Adapter.Dynamics.Test.Config
                      {
                          EntityName = "ssg_address",
                          DuplicateFields = "ssg_address|ssg_addresssecondaryunittext|ssg_locationcityname"
+                     },
+                     new SSG_DuplicateDetectionConfig()
+                     {
+                         EntityName = "ssg_identifier",
+                         DuplicateFields = "ssg_identification|ssg_identificationcategorytext"
                      }
                 }));
 
@@ -209,6 +216,64 @@ namespace Fams3Adapter.Dynamics.Test.Config
                 CountryText = "usa"
             };
             string str2 = await _sut.GetDuplicateDetectHashData(address2);
+            Assert.AreEqual(str1, str2);
+        }
+
+        [Test]
+        public async Task same_identifier_GetDuplicateDetectHashData_should_return_same_string()
+        {
+            DuplicateDetectionService._configs = null;
+            IdentifierEntity id1 = new IdentifierEntity()
+            {
+                Identification = "1111111",
+                IdentifierType = IdentificationType.BCDriverLicense.Value
+            };
+            string str1 = await _sut.GetDuplicateDetectHashData(id1);
+            IdentifierEntity id2 = new IdentifierEntity()
+            {
+                Identification="1111111",
+                IdentifierType = IdentificationType.BCDriverLicense.Value
+            };
+            string str2 = await _sut.GetDuplicateDetectHashData(id2);
+            Assert.AreEqual(true, str1 == str2);
+        }
+
+        [Test]
+        public async Task different_identifier_GetDuplicateDetectHashData_should_return_different_string()
+        {
+            DuplicateDetectionService._configs = null;
+            IdentifierEntity id1 = new IdentifierEntity()
+            {
+                Identification = "1111111",
+                IdentifierType = IdentificationType.BirthCertificate.Value
+            };
+            string str1 = await _sut.GetDuplicateDetectHashData(id1);
+            IdentifierEntity id2 = new IdentifierEntity()
+            {
+                Identification = "1111111",
+                IdentifierType = IdentificationType.BCDriverLicense.Value
+            };
+            string str2 = await _sut.GetDuplicateDetectHashData(id2);
+            Assert.AreEqual(false, str1 == str2);
+        }
+
+        [Test]
+        public async Task different_identifier_with_same_duplicate_detect_fields_GetDuplicateDetectHashData_return_same()
+        {
+            DuplicateDetectionService._configs = null;
+            IdentifierEntity id1 = new IdentifierEntity()
+            {
+                Identification = "1111111",
+                IdentifierType = IdentificationType.BCDriverLicense.Value,
+                Date1Label="expired date"
+            };
+            string str1 = await _sut.GetDuplicateDetectHashData(id1);
+            IdentifierEntity id2 = new IdentifierEntity()
+            {
+                Identification = "1111111",
+                IdentifierType = IdentificationType.BCDriverLicense.Value
+            };
+            string str2 = await _sut.GetDuplicateDetectHashData(id2);
             Assert.AreEqual(str1, str2);
         }
     }

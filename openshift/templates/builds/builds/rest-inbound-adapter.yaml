@@ -76,6 +76,28 @@ objects:
         - name: DOTNET_TOOLS
         - name: DOTNET_INCREMENTAL
           value: "true"
+        - name: DOTNET_RESTORE_CONFIGFILE
+          value: app/NuGet.config
+        - name: NEXUS_REPO_USER
+          valueFrom:
+            secretKeyRef:
+              key: NEXUS_ADMIN_USER
+              name: nexus-config
+        - name: NEXUS_REPO_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: NEXUS_ADMIN_PASSWORD
+              name: nexus-config
+        - name: NEXUS_REPO_URL
+          valueFrom:
+            secretKeyRef:
+              key: NEXUS_URL
+              name: nexus-config
+        - name: NEXUS_REPO_API_KEY
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: fams3-nuget-local
         from:
           kind: ImageStreamTag
           name: dotnet:3.1

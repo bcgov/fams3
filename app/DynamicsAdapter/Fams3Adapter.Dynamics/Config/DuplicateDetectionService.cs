@@ -24,7 +24,8 @@ namespace Fams3Adapter.Dynamics.Config
         public static Dictionary<string, string> EntityNameMap = new Dictionary<string, string>
         {
             {"PersonEntity", "ssg_person" },
-            {"AddressEntity", "ssg_address" }
+            {"AddressEntity", "ssg_address" },
+            {"IdentifierEntity", "ssg_identifier" }
         };
 
         public DuplicateDetectionService(IODataClient oDataClient)

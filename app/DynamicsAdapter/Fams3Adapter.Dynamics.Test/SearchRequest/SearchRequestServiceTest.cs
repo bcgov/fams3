@@ -343,6 +343,18 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         [Test]
         public async Task with_correct_searchRequestid_upload_address_should_success()
         {
+            _duplicateServiceMock.Setup(x => x.GetDuplicateDetectHashData(It.Is<AddressEntity>(m => m.AddressLine1 == "address full text")))
+                .Returns(
+                    Task.FromResult("normalPersonHashdata")
+                );
+
+            odataClientMock.Setup(x => x.For<SSG_Address>(null).Set(It.Is<AddressEntity>(x => x.DuplicateDetectHash == "normalPersonHashdata"))
+                .InsertEntryAsync(It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult(new SSG_Address()
+                {
+                    AddressLine1 = "line1",
+                })
+                );
             var address = new AddressEntity()
             {
                 AddressLine1 = "address full text",
@@ -354,7 +366,60 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
 
             var result = await _sut.CreateAddress(address, CancellationToken.None);
 
-            Assert.AreEqual("test", result.AddressLine1);
+            Assert.AreEqual("line1", result.AddressLine1);
+        }
+
+        [Test]
+        public async Task with_duplicated_address_should_return_null()
+        {
+            _duplicateServiceMock.Setup(x => x.GetDuplicateDetectHashData(It.Is<AddressEntity>(m => m.AddressLine1 == "Duplicated")))
+                 .Returns(
+                     Task.FromResult("duplicatedAddressHashdata")
+                 );
+
+            odataClientMock.Setup(x => x.For<SSG_Address>(null).Set(It.Is<AddressEntity>(x => x.DuplicateDetectHash == "duplicatedAddressHashdata"))
+                .InsertEntryAsync(It.IsAny<CancellationToken>()))
+                .Throws(WebRequestException.CreateFromStatusCode(
+                    System.Net.HttpStatusCode.PreconditionFailed,
+                    new WebRequestExceptionMessageSource(),
+                    "{\"error\":{\"code\":\"0x80040333\",\"message\":\"A record was not created or updated because a duplicate of the current record already exists.\"}"
+                    ));
+
+            var address = new AddressEntity()
+            {
+                AddressLine1 = "Duplicated",
+                SearchRequest = new SSG_SearchRequest() { SearchRequestId = testId },
+                Person = new SSG_Person() { PersonId = testPersonId }
+            };
+
+            var result = await _sut.CreateAddress(address, CancellationToken.None);
+            Assert.AreEqual(null, result);
+        }
+
+        [Test]
+        public void With_nonDuplicatedException_saveAddress_should_throw_it()
+        {
+            _duplicateServiceMock.Setup(x => x.GetDuplicateDetectHashData(It.Is<AddressEntity>(m => m.AddressLine1 == "OtherException")))
+                    .Returns(
+                        Task.FromResult("exceptionDuplicatedPersonHashdata")
+                    );
+
+            odataClientMock.Setup(x => x.For<SSG_Address>(null).Set(It.Is<AddressEntity>(x => x.DuplicateDetectHash == "exceptionDuplicatedPersonHashdata"))
+                .InsertEntryAsync(It.IsAny<CancellationToken>()))
+                .Throws(WebRequestException.CreateFromStatusCode(
+                    System.Net.HttpStatusCode.BadRequest,
+                    new WebRequestExceptionMessageSource(),
+                    ""
+                    ));
+
+            var address = new AddressEntity()
+            {
+                AddressLine1 = "OtherException",
+                SearchRequest = new SSG_SearchRequest() { SearchRequestId = testId },
+                Person = new SSG_Person() { PersonId = testPersonId }
+            };
+
+            Assert.ThrowsAsync<WebRequestException>(async () => await _sut.CreateAddress(address, CancellationToken.None));
         }
 
         [Test]

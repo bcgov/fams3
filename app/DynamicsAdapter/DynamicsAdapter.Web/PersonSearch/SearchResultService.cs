@@ -1,5 +1,6 @@
 using AutoMapper;
 using DynamicsAdapter.Web.PersonSearch.Models;
+using Fams3Adapter.Dynamics;
 using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.AssetOwner;
 using Fams3Adapter.Dynamics.BankInfo;
@@ -67,7 +68,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             SSG_SearchRequest searchRequest, 
             Guid searchApiRequestId, 
             CancellationToken cancellationToken, 
-            SSG_Identifier sourceIdentifier= null)
+            SSG_Identifier sourceIdentifier = null)
         {
             if (person == null) return true;
 
@@ -105,7 +106,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             return true;
         }
 
-        private async Task<bool> CreateResultTransaction(Object o)
+        private async Task<bool> CreateResultTransaction(DynamicsEntity o, DynamicsEntity originalObj =null)
         {
             if (_sourceIdentifier != null)
             {
@@ -115,20 +116,30 @@ namespace DynamicsAdapter.Web.PersonSearch
                     SearchApiRequest = _searchApiRequest,
                     InformationSource = _providerDynamicsID
                 };
-                switch (o.GetType().Name) {
-                    case "SSG_Person": trans.Person = (SSG_Person)o; break;
-                    case "SSG_Identifier": trans.ResultIdentifier = (SSG_Identifier)o; break;
-                    case "SSG_Address": trans.Address = (SSG_Address)o; break;
-                    case "SSG_PhoneNumber": trans.PhoneNumber = (SSG_PhoneNumber)o; break;
-                    case "SSG_Aliase": trans.Name = (SSG_Aliase)o; break;
-                    case "SSG_Employment": trans.Employment = (SSG_Employment)o; break;
-                    case "SSG_Identity": trans.RelatedPerson = (SSG_Identity)o; break;
-                    case "SSG_Asset_BankingInformation": trans.BankInfo = (SSG_Asset_BankingInformation)o; break;
-                    case "SSG_Asset_Vehicle": trans.Vehicle = (SSG_Asset_Vehicle)o; break;
-                    case "SSG_Asset_Other": trans.OtherAsset = (SSG_Asset_Other)o; break;
-                    case "SSG_Asset_WorkSafeBcClaim": trans.CompensationClaim = (SSG_Asset_WorkSafeBcClaim)o; break;
-                    case "SSG_Asset_ICBCClaim": trans.InsuranceClaim = (SSG_Asset_ICBCClaim)o; break;
-                    default: return false;
+                
+                if (o == null && originalObj != null) //duplicates found
+                {
+                    trans.ResultName = originalObj.ToResultName();
+                    trans.Notes = $"Duplicated Found using {_sourceIdentifier.Identification}({_sourceIdentifier.IdentifierType.ToString()})-{trans.ResultName}";
+                }
+                else //no duplicates
+                {
+                    switch (o.GetType().Name)
+                    {
+                        case "SSG_Person": trans.Person = (SSG_Person)o; break;
+                        case "SSG_Identifier": trans.ResultIdentifier = (SSG_Identifier)o; break;
+                        case "SSG_Address": trans.Address = (SSG_Address)o; break;
+                        case "SSG_PhoneNumber": trans.PhoneNumber = (SSG_PhoneNumber)o; break;
+                        case "SSG_Aliase": trans.Name = (SSG_Aliase)o; break;
+                        case "SSG_Employment": trans.Employment = (SSG_Employment)o; break;
+                        case "SSG_Identity": trans.RelatedPerson = (SSG_Identity)o; break;
+                        case "SSG_Asset_BankingInformation": trans.BankInfo = (SSG_Asset_BankingInformation)o; break;
+                        case "SSG_Asset_Vehicle": trans.Vehicle = (SSG_Asset_Vehicle)o; break;
+                        case "SSG_Asset_Other": trans.OtherAsset = (SSG_Asset_Other)o; break;
+                        case "SSG_Asset_WorkSafeBcClaim": trans.CompensationClaim = (SSG_Asset_WorkSafeBcClaim)o; break;
+                        case "SSG_Asset_ICBCClaim": trans.InsuranceClaim = (SSG_Asset_ICBCClaim)o; break;
+                        default: return false;
+                    }
                 }
                 await _searchRequestService.CreateTransaction(trans, _cancellationToken);
                 return true;
@@ -185,7 +196,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                     addr.InformationSource = _providerDynamicsID;
                     addr.Person = _returnedPerson;
                     SSG_Address uploadedAddr = await _searchRequestService.CreateAddress(addr, _cancellationToken);
-                    await CreateResultTransaction(uploadedAddr);
+                    await CreateResultTransaction(uploadedAddr, uploadedAddr==null ? addr : null);
                 }
                 return true;
             }

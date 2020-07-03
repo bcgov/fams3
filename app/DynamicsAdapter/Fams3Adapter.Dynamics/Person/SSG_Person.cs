@@ -7,14 +7,8 @@ namespace Fams3Adapter.Dynamics.Person
     //if we add PersonId in this class, when we do odataClient insert, it will fail with message personID cannot be null.
     //so, we have to move PersonId to SSG_Person class. When we do insert request, there is no personID (as we use SSG_Person_Upload)
     //and when we get the result, it has personId (as SSG_Person has personId.) 
-    public class PersonEntity
+    public class PersonEntity : DynamicsEntity
     {
-        [JsonProperty("statecode")]
-        public int StateCode { get; set; }
-
-        [JsonProperty("statuscode")]
-        public int StatusCode { get; set; }
-
         [JsonProperty("ssg_SearchRequest")]
         public virtual SSG_SearchRequest SearchRequest { get; set; }
 
@@ -71,14 +65,16 @@ namespace Fams3Adapter.Dynamics.Person
 
         [JsonProperty("ssg_complexion")]
         public string Complexion { get; set; }
-
-        [JsonProperty("ssg_duplicatedetectionhash")]
-        public string DuplicateDetectHash { get; set; }
     }
 
     public class SSG_Person : PersonEntity
     {
         [JsonProperty("ssg_personid")]
         public Guid PersonId { get; set; }
+
+        public override string ToString()
+        {
+            return PersonId.ToString();
+        }
     }
 }

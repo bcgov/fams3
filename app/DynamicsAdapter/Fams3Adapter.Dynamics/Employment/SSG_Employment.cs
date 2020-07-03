@@ -33,6 +33,9 @@ namespace Fams3Adapter.Dynamics.Employment
         [JsonProperty("ssg_suppliedby")]
         public int? InformationSource { get; set; }
 
+        [JsonProperty("ssg_incomeassistancestatusoptionset")]
+        public int? IncomeAssistanceStatusOption { get; set; }
+
         [JsonProperty("ssg_incomeassistancestatus")]
         public string IncomeAssistanceStatus { get; set; }
 

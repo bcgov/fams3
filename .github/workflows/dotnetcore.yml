@@ -12,14 +12,18 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 3.1.101
+        env:
+          NEXUS_REPO_USER: ${{ secrets.nexus_repo.user }}
+          NEXUS_REPO_PASSWORD: ${{ secrets.nexus_repo.password }}
+          NEXUS_REPO_URL: ${{ secrets.nexus_repo.url }}
       - name: Build SearchApi
-        run: dotnet build --configuration Release
+        run: dotnet build --configuration Release --configfile ./app/NuGet.config
         working-directory: ./app/SearchApi
       - name: Test SearchApi
         run: dotnet test
         working-directory: ./app/SearchApi
       - name: Build DynamicsAdapter
-        run: dotnet build --configuration Release
+        run: dotnet build --configuration Release --configfile ./app/NuGet.config
         working-directory: ./app/DynamicsAdapter
       - name: Test DynamicsAdapter
         run: dotnet test

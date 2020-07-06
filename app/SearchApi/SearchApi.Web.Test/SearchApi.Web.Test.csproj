@@ -25,7 +25,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BcGov.Fams3.SearchApi.Core\BcGov.Fams3.SearchApi.Core.csproj" />
     <ProjectReference Include="..\SearchApi.Core.Test\SearchApi.Core.Test.csproj" />
     <ProjectReference Include="..\SearchApi.Web\SearchApi.Web.csproj" />
   </ItemGroup>

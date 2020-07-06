@@ -64,7 +64,23 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         /// <returns></returns>
         public async Task<SSG_Identifier> CreateIdentifier(IdentifierEntity identifier, CancellationToken cancellationToken)
         {
-            return await this._oDataClient.For<SSG_Identifier>().Set(identifier).InsertEntryAsync(cancellationToken);
+            try
+            {
+                identifier.DuplicateDetectHash = await _duplicateDetectService.GetDuplicateDetectHashData(identifier);
+                return await this._oDataClient.For<SSG_Identifier>().Set(identifier).InsertEntryAsync(cancellationToken);
+
+            }
+            catch (WebRequestException ex)
+            {
+                if (IsDuplicateFoundException(ex))
+                {
+                    return null;
+                }
+                else
+                {
+                    throw ex;
+                }
+            }
         }
 
         public async Task<SSG_Person> SavePerson(PersonEntity person, CancellationToken cancellationToken)

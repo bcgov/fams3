@@ -247,26 +247,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             _sut = new SearchRequestService(odataClientMock.Object, _duplicateServiceMock.Object);
         }
 
-
-        [Test]
-        public async Task with_correct_searchRequestid_upload_identifier_should_success()
-        {
-            var identifier = new IdentifierEntity()
-            {
-                Identification = "identificationtest",
-                //IdentificationEffectiveDate = DateTime.Now,
-                StateCode = 0,
-                StatusCode = 1,
-                SearchRequest = new SSG_SearchRequest() { SearchRequestId = testId },
-                Person = new SSG_Person() { PersonId = testPersonId }
-            };
-
-            var result = await _sut.CreateIdentifier(identifier, CancellationToken.None);
-
-            Assert.AreEqual("test", result.Identification);
-        }
-
-
+        #region person testcases
         [Test]
         public async Task with_correct_searchRequestid_upload_person_should_success()
         {
@@ -317,29 +298,9 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
 
             Assert.ThrowsAsync<WebRequestException>(async () => await _sut.SavePerson(person, CancellationToken.None));
         }
+        #endregion
 
-        [Test]
-        public async Task with_correct_searchRequestid_upload_phone_number_should_success()
-        {
-            var phone = new PhoneNumberEntity()
-            {
-
-                Date1 = DateTime.Now,
-                Date1Label = "Effective Date",
-                Date2 = new DateTime(2001, 1, 1),
-                Date2Label = "Expiry Date",
-                TelePhoneNumber = "4007678231",
-                StateCode = 0,
-                StatusCode = 1,
-                SearchRequest = new SSG_SearchRequest() { SearchRequestId = testId },
-                Person = new SSG_Person() { PersonId = testPersonId }
-            };
-
-            var result = await _sut.CreatePhoneNumber(phone, CancellationToken.None);
-
-            Assert.AreEqual("4007678231", result.TelePhoneNumber);
-        }
-
+        #region address testcases
         [Test]
         public async Task with_correct_searchRequestid_upload_address_should_success()
         {
@@ -420,6 +381,103 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             };
 
             Assert.ThrowsAsync<WebRequestException>(async () => await _sut.CreateAddress(address, CancellationToken.None));
+        }
+        #endregion
+
+        #region identifier testcases
+
+        [Test]
+        public async Task with_correct_searchRequestid_upload_identifier_should_success()
+        {
+            var identifier = new IdentifierEntity()
+            {
+                Identification = "identificationtest",
+                //IdentificationEffectiveDate = DateTime.Now,
+                StateCode = 0,
+                StatusCode = 1,
+                SearchRequest = new SSG_SearchRequest() { SearchRequestId = testId },
+                Person = new SSG_Person() { PersonId = testPersonId }
+            };
+
+            var result = await _sut.CreateIdentifier(identifier, CancellationToken.None);
+
+            Assert.AreEqual("test", result.Identification);
+        }
+
+        [Test]
+        public async Task with_duplicated_identifier_should_return_null()
+        {
+            _duplicateServiceMock.Setup(x => x.GetDuplicateDetectHashData(It.Is<IdentifierEntity>(m => m.Identification == "Duplicated")))
+                 .Returns(
+                     Task.FromResult("duplicatedIdentifierHashdata")
+                 );
+
+            odataClientMock.Setup(x => x.For<SSG_Identifier>(null).Set(It.Is<IdentifierEntity>(x => x.DuplicateDetectHash == "duplicatedIdentifierHashdata"))
+                .InsertEntryAsync(It.IsAny<CancellationToken>()))
+                .Throws(WebRequestException.CreateFromStatusCode(
+                    System.Net.HttpStatusCode.PreconditionFailed,
+                    new WebRequestExceptionMessageSource(),
+                    "{\"error\":{\"code\":\"0x80040333\",\"message\":\"A record was not created or updated because a duplicate of the current record already exists.\"}"
+                    ));
+
+            var id = new IdentifierEntity()
+            {
+                Identification = "Duplicated",
+                SearchRequest = new SSG_SearchRequest() { SearchRequestId = testId },
+                Person = new SSG_Person() { PersonId = testPersonId }
+            };
+
+            var result = await _sut.CreateIdentifier(id, CancellationToken.None);
+            Assert.AreEqual(null, result);
+        }
+
+        [Test]
+        public void With_nonDuplicatedException_saveIdentifier_should_throw_it()
+        {
+            _duplicateServiceMock.Setup(x => x.GetDuplicateDetectHashData(It.Is<IdentifierEntity>(m => m.Identification == "OtherException")))
+                    .Returns(
+                        Task.FromResult("exceptionDuplicatedIdentifierHashdata")
+                    );
+
+            odataClientMock.Setup(x => x.For<SSG_Identifier>(null).Set(It.Is<IdentifierEntity>(x => x.DuplicateDetectHash == "exceptionDuplicatedIdentifierHashdata"))
+                .InsertEntryAsync(It.IsAny<CancellationToken>()))
+                .Throws(WebRequestException.CreateFromStatusCode(
+                    System.Net.HttpStatusCode.BadRequest,
+                    new WebRequestExceptionMessageSource(),
+                    ""
+                    ));
+
+            var id = new IdentifierEntity()
+            {
+                Identification = "OtherException",
+                SearchRequest = new SSG_SearchRequest() { SearchRequestId = testId },
+                Person = new SSG_Person() { PersonId = testPersonId }
+            };
+
+            Assert.ThrowsAsync<WebRequestException>(async () => await _sut.CreateIdentifier(id, CancellationToken.None));
+        }
+        #endregion
+
+        [Test]
+        public async Task with_correct_searchRequestid_upload_phone_number_should_success()
+        {
+            var phone = new PhoneNumberEntity()
+            {
+
+                Date1 = DateTime.Now,
+                Date1Label = "Effective Date",
+                Date2 = new DateTime(2001, 1, 1),
+                Date2Label = "Expiry Date",
+                TelePhoneNumber = "4007678231",
+                StateCode = 0,
+                StatusCode = 1,
+                SearchRequest = new SSG_SearchRequest() { SearchRequestId = testId },
+                Person = new SSG_Person() { PersonId = testPersonId }
+            };
+
+            var result = await _sut.CreatePhoneNumber(phone, CancellationToken.None);
+
+            Assert.AreEqual("4007678231", result.TelePhoneNumber);
         }
 
         [Test]

@@ -34,6 +34,10 @@ namespace Fams3Adapter.Dynamics.Identifier
         [JsonProperty("ssg_informationsourcetext")]
         public int? InformationSource { get; set; }
 
+        public override string ToResultName()
+        {
+            return $"Duplicate | Identifier | {Identification} {IdentifierType}";
+        }
     }
 
     public class SSG_Identifier : IdentifierEntity

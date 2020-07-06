@@ -73,6 +73,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
 
             _fakePersoneIdentifier = new IdentifierEntity
             {
+                Identification="1234567",
                 SearchRequest = new SSG_SearchRequest
                 {
                     SearchRequestId = validRequestId
@@ -999,6 +1000,50 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                     It.Is<SSG_SearchRequestResultTransaction>(
                         x => x.ResultName== "Duplicate | Address | addressLine1      " 
                           && x.Notes== "Duplicated Found using ()-Duplicate | Address | addressLine1      "), 
+                    It.IsAny<CancellationToken>()), Times.Once);
+
+            Assert.AreEqual(true, result);
+        }
+
+        [Test]
+        public async Task duplicated_identifier_transaction_result_should_contain_name_notes()
+        {
+            Guid duplicateRequestId = Guid.NewGuid();
+
+            SSG_SearchRequest duplicateSearchRequest = new SSG_SearchRequest
+            {
+                SearchRequestId = duplicateRequestId
+            };
+            Person duplicatedPerson = new Person()
+            {
+                Identifiers = new List<PersonalIdentifier>()
+                {
+                    new PersonalIdentifier()
+                    {
+                        Value = "duplicatedPerson"
+                    }
+                }
+            };
+
+            _searchRequestServiceMock.Setup(x => x.SavePerson(It.Is<PersonEntity>(x => x.SearchRequest.SearchRequestId == duplicateRequestId), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult<SSG_Person>(new SSG_Person()
+                {
+                    FirstName = "Duplicated"
+                }));
+
+            _searchRequestServiceMock.Setup(x => x.CreateIdentifier(It.Is<IdentifierEntity>(x => x.SearchRequest.SearchRequestId == duplicateRequestId), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult<SSG_Identifier>(null));
+
+            var result = await _sut.ProcessPersonFound(duplicatedPerson, _providerProfile, duplicateSearchRequest, Guid.NewGuid(), _fakeToken, _fakeSourceIdentifier);
+
+            _searchRequestServiceMock
+              .Verify(x => x.SavePerson(It.IsAny<PersonEntity>(), It.IsAny<CancellationToken>()), Times.Once);
+
+            _searchRequestServiceMock
+                .Verify(x => x.CreateTransaction(
+                    It.Is<SSG_SearchRequestResultTransaction>(
+                        x => x.ResultName == "Duplicate | Identifier | 1234567 "
+                          && x.Notes == "Duplicated Found using ()-Duplicate | Identifier | 1234567 "),
                     It.IsAny<CancellationToken>()), Times.Once);
 
             Assert.AreEqual(true, result);

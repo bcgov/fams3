@@ -170,8 +170,8 @@ namespace DynamicsAdapter.Web.PersonSearch
                     identifier.SearchRequest = _searchRequest;
                     identifier.InformationSource = _providerDynamicsID;
                     identifier.Person = _returnedPerson;
-                    SSG_Identifier identifer = await _searchRequestService.CreateIdentifier(identifier, _cancellationToken);
-                    await CreateResultTransaction(identifer);
+                    SSG_Identifier newIdentifier = await _searchRequestService.CreateIdentifier(identifier, _cancellationToken);
+                    await CreateResultTransaction(newIdentifier, newIdentifier == null? identifier:null);
                 }
                 return true;
             }

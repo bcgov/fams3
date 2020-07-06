@@ -10,8 +10,6 @@
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="3.0.2" />
     <PackageReference Include="AutoMapper" Version="9.0.0" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />
-    <PackageReference Include="BcGov.Fams3.Redis" Version="1.0.3" />
-    <PackageReference Include="BcGov.Fams3.SearchApi.Core" Version="1.0.40" />
     <PackageReference Include="Jaeger" Version="0.3.7" />
     <PackageReference Include="MassTransit.AspNetCore" Version="6.2.3" />
     <PackageReference Include="MassTransit.RabbitMQ" Version="6.2.3" />
@@ -34,6 +32,11 @@
     <PackageReference Include="Serilog.AspNetCore" Version="3.2.0" />
     <PackageReference Include="Serilog.Settings.Configuration" Version="3.1.0" />
     <PackageReference Include="Serilog.Sinks.Splunk" Version="3.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BcGov.Fams3.Redis\BcGov.Fams3.Redis.csproj" />
+    <ProjectReference Include="..\BcGov.Fams3.SearchApi.Core\BcGov.Fams3.SearchApi.Core.csproj" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>

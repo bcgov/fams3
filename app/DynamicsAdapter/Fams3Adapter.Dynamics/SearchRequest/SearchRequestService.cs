@@ -15,6 +15,7 @@ using Fams3Adapter.Dynamics.Vehicle;
 using Newtonsoft.Json;
 using Simple.OData.Client;
 using System;
+using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -94,8 +95,28 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                 if (IsDuplicateFoundException(ex))
                 {
                     string hashData = person.DuplicateDetectHash;
-                    SSG_Person p = await this._oDataClient.For<SSG_Person>().Filter(x => x.DuplicateDetectHash == hashData).FindEntryAsync(cancellationToken);
-                    return p;
+                    var p = await this._oDataClient.For<SSG_Person>()
+                            .Filter(x => x.DuplicateDetectHash == hashData)
+                            .FindEntryAsync(cancellationToken);
+
+                    var test = await _oDataClient.For<SSG_Person>()
+                                .Key(p.PersonId)
+                                .Expand(x => x.SSG_Addresses)
+                                .Expand(x => x.SSG_Identifiers)
+                                .Expand(x => x.SSG_Aliases)
+                                .Expand(x => x.SSG_Asset_BankingInformations)
+                                .Expand(x => x.SSG_Asset_ICBCClaims)
+                                .Expand(x => x.SSG_Asset_Others)
+                                .Expand(x => x.SSG_Asset_Vehicles)
+                                //.Expand(x => x.SSG_Asset_Vehicles.Select(y=>y.SSG_AssetOwners))
+                                .Expand(x => x.SSG_Asset_WorkSafeBcClaims)
+                                .Expand(x => x.SSG_Employments)
+                                .Expand(x => x.SSG_Identities)
+                                .Expand(x => x.SSG_PhoneNumbers)
+                                .Expand(x => x.SearchRequest)
+                                .FindEntryAsync(cancellationToken);
+                    
+                    return test;
                 }
                 else
                 {

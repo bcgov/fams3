@@ -1,4 +1,14 @@
-﻿using Fams3Adapter.Dynamics.SearchRequest;
+﻿using Fams3Adapter.Dynamics.Address;
+using Fams3Adapter.Dynamics.BankInfo;
+using Fams3Adapter.Dynamics.Employment;
+using Fams3Adapter.Dynamics.Identifier;
+using Fams3Adapter.Dynamics.InsuranceClaim;
+using Fams3Adapter.Dynamics.Name;
+using Fams3Adapter.Dynamics.OtherAsset;
+using Fams3Adapter.Dynamics.PhoneNumber;
+using Fams3Adapter.Dynamics.RelatedPerson;
+using Fams3Adapter.Dynamics.SearchRequest;
+using Fams3Adapter.Dynamics.Vehicle;
 using Newtonsoft.Json;
 using System;
 
@@ -65,12 +75,46 @@ namespace Fams3Adapter.Dynamics.Person
 
         [JsonProperty("ssg_complexion")]
         public string Complexion { get; set; }
+
     }
 
     public class SSG_Person : PersonEntity
     {
         [JsonProperty("ssg_personid")]
         public Guid PersonId { get; set; }
+
+        [JsonProperty("ssg_ssg_person_ssg_address")]
+        public SSG_Address[] SSG_Addresses { get; set; }
+
+        [JsonProperty("ssg_ssg_person_ssg_identifier")]
+        public SSG_Identifier[] SSG_Identifiers { get; set; }
+
+        [JsonProperty("ssg_person_ssg_asset_bankinginformation_Person")]
+        public SSG_Asset_BankingInformation[] SSG_Asset_BankingInformations { get; set; }
+
+        [JsonProperty("ssg_person_ssg_asset_other_Person")]
+        public SSG_Asset_Other[] SSG_Asset_Others { get; set; }
+
+        [JsonProperty("ssg_ssg_person_ssg_alias_PersonId")]
+        public SSG_Aliase[] SSG_Aliases { get; set; }
+
+        [JsonProperty("ssg_ssg_person_ssg_asset_icbcclaim_personid")]
+        public SSG_Asset_ICBCClaim[] SSG_Asset_ICBCClaims { get; set; }
+
+        [JsonProperty("ssg_ssg_person_ssg_asset_vehicle_PersonId")]
+        public SSG_Asset_Vehicle[] SSG_Asset_Vehicles { get; set; }
+
+        [JsonProperty("ssg_ssg_person_ssg_asset_worksafebcclaim_PersonId")]
+        public SSG_Asset_WorkSafeBcClaim[] SSG_Asset_WorkSafeBcClaims { get; set; }
+
+        [JsonProperty("ssg_ssg_person_ssg_employment")]
+        public SSG_Employment[] SSG_Employments { get; set; }
+
+        [JsonProperty("ssg_ssg_person_ssg_identity")]
+        public SSG_Identity[] SSG_Identities { get; set; }
+
+        [JsonProperty("ssg_ssg_person_ssg_phonenumber")]
+        public SSG_PhoneNumber[] SSG_PhoneNumbers { get; set; }
 
         public override string ToString()
         {

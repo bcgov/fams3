@@ -49,6 +49,7 @@ namespace Fams3Adapter.Dynamics.Config
         /// Example: config is : ssg_person, ssg_firstname|ssg_lastname
         ///     ssg_person person1: firstname="person1", lastname="lastname1"
         ///     it should return SHA512("person1lastname1")
+        /// This is mainly used for Person
         /// </summary>
         /// <param name="entity"></param>
         /// <returns>SHA512 </returns>
@@ -90,7 +91,7 @@ namespace Fams3Adapter.Dynamics.Config
                 return Guid.Empty;
             }
 
-            SSG_DuplicateDetectionConfig config = _configs.FirstOrDefault(m => m.EntityName == name);
+            SSG_DuplicateDetectionConfig config = _configs.FirstOrDefault(m => m.EntityName.ToLower() == name.ToLower());
             if (config == null) return Guid.Empty;
 
             IList<PropertyInfo> props = new List<PropertyInfo>(type.GetProperties());

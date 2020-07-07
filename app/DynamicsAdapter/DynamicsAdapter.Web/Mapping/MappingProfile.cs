@@ -218,7 +218,7 @@ namespace DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.Vin, opt => opt.MapFrom(src => src.Vin))
                  .IncludeBase<PersonalInfo, DynamicsEntity>();
 
-            CreateMap<InvolvedParty, SSG_AssetOwner>()
+            CreateMap<InvolvedParty, AssetOwnerEntity>()
                  .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
                  .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.Name.FirstName))
                  .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.Name.LastName))

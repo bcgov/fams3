@@ -40,5 +40,7 @@ namespace Fams3Adapter.Dynamics.Vehicle
 
         [JsonProperty("ssg_ssg_asset_vehicle_ssg_assetowner_Vehicle")]
         public SSG_AssetOwner[] SSG_AssetOwners { get; set; }
+
+        public bool IsDuplicated { get; set; }
     }
 }

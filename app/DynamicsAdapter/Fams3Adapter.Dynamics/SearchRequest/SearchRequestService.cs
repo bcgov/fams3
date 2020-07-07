@@ -35,7 +35,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         Task<SSG_EmploymentContact> CreateEmploymentContact(SSG_EmploymentContact employmentContact, CancellationToken cancellationToken);
         Task<SSG_Asset_BankingInformation> CreateBankInfo(BankingInformationEntity bankInfo, CancellationToken cancellationToken);
         Task<SSG_Asset_Vehicle> CreateVehicle(VehicleEntity vehicle, CancellationToken cancellationToken);
-        Task<SSG_AssetOwner> CreateAssetOwner(SSG_AssetOwner owner, CancellationToken cancellationToken);
+        Task<SSG_AssetOwner> CreateAssetOwner(AssetOwnerEntity owner, CancellationToken cancellationToken);
         Task<SSG_Asset_Other> CreateOtherAsset(AssetOtherEntity asset, CancellationToken cancellationToken);
         Task<SSG_Asset_WorkSafeBcClaim> CreateCompensationClaim(CompensationClaimEntity claim, CancellationToken cancellationToken);
         Task<SSG_Asset_ICBCClaim> CreateInsuranceClaim(ICBCClaimEntity claim, CancellationToken cancellationToken);
@@ -200,11 +200,30 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
         public async Task<SSG_Asset_Vehicle> CreateVehicle(VehicleEntity vehicle, CancellationToken cancellationToken)
         {
+            if (vehicle.Person.IsDuplicated)
+            {
+                Guid duplicatedVehicleId = await _duplicateDetectService.Exists(vehicle.Person, vehicle);
+                if (duplicatedVehicleId != Guid.Empty)
+                {
+                    var duplicatedVehicle = await _oDataClient.For<SSG_Asset_Vehicle>()
+                                .Key(duplicatedVehicleId)
+                                .Expand(x => x.SSG_AssetOwners)
+                                .FindEntryAsync(cancellationToken);
+                    duplicatedVehicle.IsDuplicated = true;
+                    return duplicatedVehicle;
+                }                   
+            }
             return await this._oDataClient.For<SSG_Asset_Vehicle>().Set(vehicle).InsertEntryAsync(cancellationToken);
         }
 
-        public async Task<SSG_AssetOwner> CreateAssetOwner(SSG_AssetOwner owner, CancellationToken cancellationToken)
+        public async Task<SSG_AssetOwner> CreateAssetOwner(AssetOwnerEntity owner, CancellationToken cancellationToken)
         {
+            if(owner.Vehicle!=null && owner.Vehicle.IsDuplicated)
+            {
+                Guid duplicatedOwnerId = await _duplicateDetectService.Exists(owner.Vehicle, owner);
+                if (duplicatedOwnerId != Guid.Empty)
+                    return new SSG_AssetOwner() { AssetOwnerId = duplicatedOwnerId };
+            }
             return await this._oDataClient.For<SSG_AssetOwner>().Set(owner).InsertEntryAsync(cancellationToken);
         }
 

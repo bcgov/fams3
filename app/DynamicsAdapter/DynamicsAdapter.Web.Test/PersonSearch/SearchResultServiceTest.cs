@@ -43,7 +43,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         private SSG_EmploymentContact _fakeEmploymentContact;
         private BankingInformationEntity _fakeBankInfo;
         private PersonEntity _ssg_fakePerson;
-        private SSG_AssetOwner _fakeAssetOwner;
+        private AssetOwnerEntity _fakeAssetOwner;
         private VehicleEntity _fakeVehicleEntity;
         private AssetOtherEntity _fakeOtherAsset;
         private CompensationClaimEntity _fakeWorkSafeBcClaim;
@@ -375,7 +375,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _mapper.Setup(m => m.Map<VehicleEntity>(It.IsAny<Vehicle>()))
                     .Returns(_fakeVehicleEntity);
 
-            _mapper.Setup(m => m.Map<SSG_AssetOwner>(It.IsAny<InvolvedParty>()))
+            _mapper.Setup(m => m.Map<AssetOwnerEntity>(It.IsAny<InvolvedParty>()))
                     .Returns(_fakeAssetOwner);
 
             _mapper.Setup(m => m.Map<AssetOtherEntity>(It.IsAny<OtherAsset>()))

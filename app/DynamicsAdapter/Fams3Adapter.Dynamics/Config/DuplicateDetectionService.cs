@@ -1,8 +1,10 @@
 ﻿using Fams3Adapter.Dynamics.Address;
+using Fams3Adapter.Dynamics.AssetOwner;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.Name;
 using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.PhoneNumber;
+using Fams3Adapter.Dynamics.Vehicle;
 using Newtonsoft.Json;
 using Simple.OData.Client;
 using System;
@@ -19,7 +21,7 @@ namespace Fams3Adapter.Dynamics.Config
     public interface IDuplicateDetectionService
     {
         Task<string> GetDuplicateDetectHashData(object entity);
-        Task<Guid> Exists(SSG_Person person, object entity);
+        Task<Guid> Exists(object fatherObj, object entity);
     }
 
     public class DuplicateDetectionService : IDuplicateDetectionService
@@ -68,14 +70,14 @@ namespace Fams3Adapter.Dynamics.Config
         }
 
         /// <summary>
-        /// check if existing person contains the same entity. The standard for "same" is the config from dynamics.
-        /// if there is duplicated entity in this person, then return its guid.
+        /// check if existing fatherObj contains the same entity. The standard for "same" is the config from dynamics.
+        /// if there is duplicated entity in this fatherObj, then return its guid.
         /// if no duplicate found, return guid.empty.
         /// </summary>
         /// <param name="person"></param>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public async Task<Guid> Exists(SSG_Person person, object entity)
+        public async Task<Guid> Exists(object fatherObj, object entity)
         {
             if (_configs == null) await GetDuplicateDetectionConfig(CancellationToken.None);
 
@@ -95,30 +97,41 @@ namespace Fams3Adapter.Dynamics.Config
             switch (type.Name)
             {
                 case "IdentifierEntity":
-                    foreach (SSG_Identifier identifier in person.SSG_Identifiers)
+                    foreach (SSG_Identifier identifier in ((SSG_Person)fatherObj).SSG_Identifiers)
                     {
                         if (GetConcateFieldsStr(config.DuplicateFieldList, props, identifier) == entityStr) return identifier.IdentifierId;
                     };
                     break;
                 case "PhoneNumberEntity":
-                    foreach (SSG_PhoneNumber phone in person.SSG_PhoneNumbers)
+                    foreach (SSG_PhoneNumber phone in ((SSG_Person)fatherObj).SSG_PhoneNumbers)
                     {
                         if (GetConcateFieldsStr(config.DuplicateFieldList, props, phone) == entityStr) return phone.PhoneNumberId;
                     };
                     break;
                 case "AddressEntity":
-                    foreach (SSG_Address addr in person.SSG_Addresses)
+                    foreach (SSG_Address addr in ((SSG_Person)fatherObj).SSG_Addresses)
                     {
                         if (GetConcateFieldsStr(config.DuplicateFieldList, props, addr) == entityStr) return addr.AddressId;
                     };
                     break;
                 case "AliasEntity":
-                    foreach (SSG_Aliase alias in person.SSG_Aliases)
+                    foreach (SSG_Aliase alias in ((SSG_Person)fatherObj).SSG_Aliases)
                     {
                         if (GetConcateFieldsStr(config.DuplicateFieldList, props, alias) == entityStr) return alias.AliasId;
                     };
                     break;
-
+                case "VehicleEntity":
+                    foreach (SSG_Asset_Vehicle v in ((SSG_Person)fatherObj).SSG_Asset_Vehicles)
+                    {
+                        if (GetConcateFieldsStr(config.DuplicateFieldList, props, v) == entityStr) return v.VehicleId;
+                    };
+                    break;
+                case "SSG_AssetOwner":
+                    foreach (SSG_AssetOwner owner in ((SSG_Asset_Vehicle)fatherObj).SSG_AssetOwners)
+                    {
+                        if (GetConcateFieldsStr(config.DuplicateFieldList, props, owner) == entityStr) return owner.AssetOwnerId;
+                    };
+                    break;
             }            
 
             return Guid.Empty;

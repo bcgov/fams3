@@ -135,7 +135,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
              })
              );
 
-            odataClientMock.Setup(x => x.For<SSG_AssetOwner>(null).Set(It.Is<SSG_AssetOwner>(x => x.FirstName == "firstName"))
+            odataClientMock.Setup(x => x.For<SSG_AssetOwner>(null).Set(It.Is<AssetOwnerEntity>(x => x.FirstName == "firstName"))
              .InsertEntryAsync(It.IsAny<CancellationToken>()))
              .Returns(Task.FromResult(new SSG_AssetOwner()
              {
@@ -615,7 +615,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         [Test]
         public async Task with_correct_vehicleID_upload_Assetowner_should_success()
         {
-            var owner = new SSG_AssetOwner()
+            var owner = new AssetOwnerEntity()
             {
                 FirstName = "firstName",
                 Notes = "notes",

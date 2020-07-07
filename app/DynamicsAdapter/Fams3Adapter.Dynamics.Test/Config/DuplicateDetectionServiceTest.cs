@@ -380,7 +380,7 @@ namespace Fams3Adapter.Dynamics.Test.Config
         }
 
         [Test]
-        public async Task fatherObj_not_contain_entity_type_should_throw_exception()
+        public void fatherObj_not_contain_entity_type_should_throw_exception()
         {
             DuplicateDetectionService._configs = null;
             Guid existedOwnerID = Guid.NewGuid();

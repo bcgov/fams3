@@ -34,7 +34,9 @@ namespace Fams3Adapter.Dynamics.Config
             {"AddressEntity", "ssg_address" },
             {"IdentifierEntity", "ssg_identifier" },
             {"PhoneNumberEntity", "ssg_phonenumber" },
-            {"AliasEntity", "ssg_alias"}
+            {"AliasEntity", "ssg_alias"},
+            {"VehicleEntity", "ssg_asset_vehicle"},
+            {"AssetOwnerEntity", "ssg_assetowner"}
         };
 
         public DuplicateDetectionService(IODataClient oDataClient)
@@ -126,7 +128,7 @@ namespace Fams3Adapter.Dynamics.Config
                         if (GetConcateFieldsStr(config.DuplicateFieldList, props, v) == entityStr) return v.VehicleId;
                     };
                     break;
-                case "SSG_AssetOwner":
+                case "AssetOwnerEntity":
                     foreach (SSG_AssetOwner owner in ((SSG_Asset_Vehicle)fatherObj).SSG_AssetOwners)
                     {
                         if (GetConcateFieldsStr(config.DuplicateFieldList, props, owner) == entityStr) return owner.AssetOwnerId;

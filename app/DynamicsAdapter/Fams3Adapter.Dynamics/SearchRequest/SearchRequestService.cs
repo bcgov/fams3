@@ -29,7 +29,6 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         Task<SSG_PhoneNumber> CreatePhoneNumber(PhoneNumberEntity phoneNumber, CancellationToken cancellationToken);
         Task<SSG_Aliase> CreateName(AliasEntity name, CancellationToken cancellationToken);
         Task<SSG_Identity> CreateRelatedPerson(RelatedPersonEntity name, CancellationToken cancellationToken);
-
         Task<SSG_Person> SavePerson(PersonEntity person, CancellationToken cancellationToken);
         Task<SSG_Employment> CreateEmployment(EmploymentEntity employment, CancellationToken cancellationToken);
         Task<SSG_EmploymentContact> CreateEmploymentContact(SSG_EmploymentContact employmentContact, CancellationToken cancellationToken);

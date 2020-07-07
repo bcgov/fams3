@@ -196,27 +196,28 @@ objects:
                     echo "Preparing the report for the publishing ..."
                     unstash name: "${ZAP_REPORT_STASH}"
 
-
-                    sh """
-                    echo ${GIT_COMMIT}
-                    ls -la
-                    cd ${APP_NAME}/app/DynamicsAdapter
-                    ls -la
-                    dotnet test --logger:"trx;LogFileName=TestResults.trx" \
-                                /p:CollectCoverage=true \
-                                /p:CoverletOutputFormat=opencover \
-                                /p:CoverletOutput=./TestResults/
-                    timeout -k 20 10 dotnet build-server shutdown || echo "Kill dotnet"
-                    find
-                    dotnet sonarscanner begin /k:"${SONAR_PROJECT_KEY}" \
-                      /d:sonar.login=${SONAR_TOKEN} \
-                      /d:sonar.host.url=${SONAR_URL} \
-                      /d:sonar.cs.opencover.reportsPaths=./*Test/TestResults/coverage.opencover.xml \
-                      /d:sonar.cs.vstest.reportsPaths=./*Test/TestResults/TestResults.trx \
-                      /d:sonar.zaproxy.reportPath=${WORKSPACE}${ZAP_REPORT_PATH}
-                    dotnet build
-                    dotnet sonarscanner end /d:sonar.login=${SONAR_TOKEN}
-                    """
+                    withCredentials([usernamePassword(credentialsId: 'frjeow-tools-nexus-config', usernameVariable: 'NEXUS_REPO_USER', passwordVariable: 'NEXUS_REPO_PASSWORD')]) {
+                      sh """
+                      export NEXUS_REPO_URL=http://nexus:8081
+                      echo ${GIT_COMMIT}
+                      cd ${APP_NAME}/app/DynamicsAdapter
+                      dotnet restore --configfile ../NuGet.config
+                      dotnet test --logger:"trx;LogFileName=TestResults.trx" \
+                                  /p:CollectCoverage=true \
+                                  /p:CoverletOutputFormat=opencover \
+                                  /p:CoverletOutput=./TestResults/
+                      timeout -k 20 10 dotnet build-server shutdown || echo "Kill dotnet"
+                      find
+                      dotnet sonarscanner begin /k:"${SONAR_PROJECT_KEY}" \
+                        /d:sonar.login=${SONAR_TOKEN} \
+                        /d:sonar.host.url=${SONAR_URL} \
+                        /d:sonar.cs.opencover.reportsPaths=./*Test/TestResults/coverage.opencover.xml \
+                        /d:sonar.cs.vstest.reportsPaths=./*Test/TestResults/TestResults.trx \
+                        /d:sonar.zaproxy.reportPath=${WORKSPACE}${ZAP_REPORT_PATH}
+                      dotnet build
+                      dotnet sonarscanner end /d:sonar.login=${SONAR_TOKEN}
+                      """
+                    }
                   }
                 }
               }

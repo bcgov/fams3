@@ -65,23 +65,13 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         /// <returns></returns>
         public async Task<SSG_Identifier> CreateIdentifier(IdentifierEntity identifier, CancellationToken cancellationToken)
         {
-            try
+            if ( identifier.Person.IsDuplicated )
             {
-                identifier.DuplicateDetectHash = await _duplicateDetectService.GetDuplicateDetectHashData(identifier);
-                return await this._oDataClient.For<SSG_Identifier>().Set(identifier).InsertEntryAsync(cancellationToken);
-
+                Guid duplicatedIdentifierId = await _duplicateDetectService.Exists(identifier.Person, identifier);
+                if(duplicatedIdentifierId != Guid.Empty)
+                    return new SSG_Identifier() { IdentifierId = duplicatedIdentifierId };
             }
-            catch (WebRequestException ex)
-            {
-                if (IsDuplicateFoundException(ex))
-                {
-                    return null;
-                }
-                else
-                {
-                    throw ex;
-                }
-            }
+            return await this._oDataClient.For<SSG_Identifier>().Set(identifier).InsertEntryAsync(cancellationToken);
         }
 
         public async Task<SSG_Person> SavePerson(PersonEntity person, CancellationToken cancellationToken)
@@ -99,7 +89,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                             .Filter(x => x.DuplicateDetectHash == hashData)
                             .FindEntryAsync(cancellationToken);
 
-                    var test = await _oDataClient.For<SSG_Person>()
+                    var duplicatedPerson = await _oDataClient.For<SSG_Person>()
                                 .Key(p.PersonId)
                                 .Expand(x => x.SSG_Addresses)
                                 .Expand(x => x.SSG_Identifiers)
@@ -108,15 +98,14 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                                 .Expand(x => x.SSG_Asset_ICBCClaims)
                                 .Expand(x => x.SSG_Asset_Others)
                                 .Expand(x => x.SSG_Asset_Vehicles)
-                                //.Expand(x => x.SSG_Asset_Vehicles.Select(y=>y.SSG_AssetOwners))
                                 .Expand(x => x.SSG_Asset_WorkSafeBcClaims)
                                 .Expand(x => x.SSG_Employments)
                                 .Expand(x => x.SSG_Identities)
                                 .Expand(x => x.SSG_PhoneNumbers)
                                 .Expand(x => x.SearchRequest)
                                 .FindEntryAsync(cancellationToken);
-                    
-                    return test;
+                    duplicatedPerson.IsDuplicated = true;
+                    return duplicatedPerson;
                 }
                 else
                 {
@@ -127,6 +116,12 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
         public async Task<SSG_PhoneNumber> CreatePhoneNumber(PhoneNumberEntity phone, CancellationToken cancellationToken)
         {
+            if (phone.Person.IsDuplicated)
+            {
+                Guid duplicatedPhoneId = await _duplicateDetectService.Exists(phone.Person, phone);
+                if (duplicatedPhoneId != Guid.Empty)
+                    return new SSG_PhoneNumber() { PhoneNumberId = duplicatedPhoneId };
+            }
             return await this._oDataClient.For<SSG_PhoneNumber>().Set(phone).InsertEntryAsync(cancellationToken);
         }
 
@@ -149,26 +144,24 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                                          .FindEntryAsync(cancellationToken);
             address.CountrySubdivision = subdivision;
 
-            try
+            if (address.Person.IsDuplicated)
             {
-                address.DuplicateDetectHash = await _duplicateDetectService.GetDuplicateDetectHashData(address);
-                return await this._oDataClient.For<SSG_Address>().Set(address).InsertEntryAsync(cancellationToken);
+                Guid duplicatedAddressId = await _duplicateDetectService.Exists(address.Person, address);
+                if (duplicatedAddressId != Guid.Empty)
+                    return new SSG_Address() { AddressId = duplicatedAddressId };
             }
-            catch (WebRequestException ex)
-            {
-                if (IsDuplicateFoundException(ex))
-                {
-                    return null;
-                }
-                else
-                {
-                    throw ex;
-                }
-            }
+            return await this._oDataClient.For<SSG_Address>().Set(address).InsertEntryAsync(cancellationToken);
+
         }
 
         public async Task<SSG_Aliase> CreateName(AliasEntity name, CancellationToken cancellationToken)
         {
+            if (name.Person.IsDuplicated)
+            {
+                Guid duplicatedNameId = await _duplicateDetectService.Exists(name.Person, name);
+                if (duplicatedNameId != Guid.Empty)
+                    return new SSG_Aliase() { AliasId = duplicatedNameId };
+            }
             return await this._oDataClient.For<SSG_Aliase>().Set(name).InsertEntryAsync(cancellationToken);
         }
 

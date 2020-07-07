@@ -116,6 +116,7 @@ namespace Fams3Adapter.Dynamics.Person
         [JsonProperty("ssg_ssg_person_ssg_phonenumber")]
         public SSG_PhoneNumber[] SSG_PhoneNumbers { get; set; }
 
+        public bool IsDuplicated { get; set; }
         public override string ToString()
         {
             return PersonId.ToString();

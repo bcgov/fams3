@@ -38,6 +38,11 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
                     Task.FromResult("normalPersonHashdata")
                 );
 
+            _odataClientMock.Setup(x => x.For<SSG_Person>(null)
+                .Filter(It.IsAny<Expression<Func<SSG_Person, bool>>>())
+                .FindEntryAsync(It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult<SSG_Person>(null));
+
             _odataClientMock.Setup(x => x.For<SSG_Person>(null).Set(It.Is<PersonEntity>(x => x.FirstName == "First"))
                 .InsertEntryAsync(It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(new SSG_Person()
@@ -46,6 +51,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
                     PersonId = _testPersonId
                 })
                 );
+
             var person = new PersonEntity()
             {
                 FirstName = "First",
@@ -70,19 +76,10 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         [Test]
         public async Task with_duplicated_upload_person_should_return_original_person_guid()
         {
-            //person - throw duplicated-exception
             _duplicateServiceMock.Setup(x => x.GetDuplicateDetectHashData(It.Is<PersonEntity>(m => m.FirstName == "Duplicated")))
                 .Returns(
                     Task.FromResult("duplicatedPersonHashdata")
                 );
-
-            _odataClientMock.Setup(x => x.For<SSG_Person>(null).Set(It.Is<PersonEntity>(x => x.DuplicateDetectHash == "duplicatedPersonHashdata"))
-                .InsertEntryAsync(It.IsAny<CancellationToken>()))
-                .Throws(WebRequestException.CreateFromStatusCode(
-                    System.Net.HttpStatusCode.PreconditionFailed,
-                    new WebRequestExceptionMessageSource(),
-                    "{\"error\":{\"code\":\"0x80040333\",\"message\":\"A record was not created or updated because a duplicate of the current record already exists.\"}"
-                    ));
 
             _odataClientMock.Setup(x => x.For<SSG_Person>(null)
                 .Filter(It.IsAny<Expression<Func<SSG_Person, bool>>>())
@@ -128,13 +125,18 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         }
 
         [Test]
-        public void With_nonDuplicatedException_SavePerson_should_throw_it()
+        public void With_Exception_SavePerson_should_throw_it()
         {
             //person - throw non-duplicated-exception
             _duplicateServiceMock.Setup(x => x.GetDuplicateDetectHashData(It.Is<PersonEntity>(m => m.FirstName == "OtherException")))
                 .Returns(
                     Task.FromResult("exceptionDuplicatedPersonHashdata")
                 );
+
+            _odataClientMock.Setup(x => x.For<SSG_Person>(null)
+                .Filter(It.IsAny<Expression<Func<SSG_Person, bool>>>())
+                .FindEntryAsync(It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult<SSG_Person>(null));
 
             _odataClientMock.Setup(x => x.For<SSG_Person>(null).Set(It.Is<PersonEntity>(x => x.DuplicateDetectHash == "exceptionDuplicatedPersonHashdata"))
                 .InsertEntryAsync(It.IsAny<CancellationToken>()))

@@ -75,42 +75,34 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
         public async Task<SSG_Person> SavePerson(PersonEntity person, CancellationToken cancellationToken)
         {
-            try
-            {
-                person.DuplicateDetectHash = await _duplicateDetectService.GetDuplicateDetectHashData(person);
-                return await this._oDataClient.For<SSG_Person>().Set(person).InsertEntryAsync(cancellationToken);
-            }catch(WebRequestException ex)
-            {
-                if (IsDuplicateFoundException(ex))
-                {
-                    string hashData = person.DuplicateDetectHash;
-                    var p = await this._oDataClient.For<SSG_Person>()
-                            .Filter(x => x.DuplicateDetectHash == hashData)
-                            .FindEntryAsync(cancellationToken);
+            person.DuplicateDetectHash = await _duplicateDetectService.GetDuplicateDetectHashData(person);
+            string hashData = person.DuplicateDetectHash;
+            var p = await this._oDataClient.For<SSG_Person>()
+                    .Filter(x => x.DuplicateDetectHash == hashData)
+                    .FindEntryAsync(cancellationToken);
 
-                    var duplicatedPerson = await _oDataClient.For<SSG_Person>()
-                                .Key(p.PersonId)
-                                .Expand(x => x.SSG_Addresses)
-                                .Expand(x => x.SSG_Identifiers)
-                                .Expand(x => x.SSG_Aliases)
-                                .Expand(x => x.SSG_Asset_BankingInformations)
-                                .Expand(x => x.SSG_Asset_ICBCClaims)
-                                .Expand(x => x.SSG_Asset_Others)
-                                .Expand(x => x.SSG_Asset_Vehicles)
-                                .Expand(x => x.SSG_Asset_WorkSafeBcClaims)
-                                .Expand(x => x.SSG_Employments)
-                                .Expand(x => x.SSG_Identities)
-                                .Expand(x => x.SSG_PhoneNumbers)
-                                .Expand(x => x.SearchRequest)
-                                .FindEntryAsync(cancellationToken);
-                    duplicatedPerson.IsDuplicated = true;
-                    return duplicatedPerson;
-                }
-                else
-                {
-                    throw ex;
-                }
-            }
+            if(p == null)
+                return await this._oDataClient.For<SSG_Person>().Set(person).InsertEntryAsync(cancellationToken);
+            else
+            {
+                var duplicatedPerson = await _oDataClient.For<SSG_Person>()
+                        .Key(p.PersonId)
+                        .Expand(x => x.SSG_Addresses)
+                        .Expand(x => x.SSG_Identifiers)
+                        .Expand(x => x.SSG_Aliases)
+                        .Expand(x => x.SSG_Asset_BankingInformations)
+                        .Expand(x => x.SSG_Asset_ICBCClaims)
+                        .Expand(x => x.SSG_Asset_Others)
+                        .Expand(x => x.SSG_Asset_Vehicles)
+                        .Expand(x => x.SSG_Asset_WorkSafeBcClaims)
+                        .Expand(x => x.SSG_Employments)
+                        .Expand(x => x.SSG_Identities)
+                        .Expand(x => x.SSG_PhoneNumbers)
+                        .Expand(x => x.SearchRequest)
+                        .FindEntryAsync(cancellationToken);
+                duplicatedPerson.IsDuplicated = true;
+                return duplicatedPerson;
+            }            
         }
 
         public async Task<SSG_PhoneNumber> CreatePhoneNumber(PhoneNumberEntity phone, CancellationToken cancellationToken)
@@ -251,13 +243,5 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             return await this._oDataClient.For<SSG_InvolvedParty>().Set(involvedParty).InsertEntryAsync(cancellationToken);
         }
 
-        private bool IsDuplicateFoundException(WebRequestException ex)
-        {
-            if (ex.Code == HttpStatusCode.PreconditionFailed && ex.Response.Contains(Keys.DUPLICATE_DETECTED_ERROR_CODE) )
-            {
-                return true;
-            }
-            return false;
-        }
     }
 }

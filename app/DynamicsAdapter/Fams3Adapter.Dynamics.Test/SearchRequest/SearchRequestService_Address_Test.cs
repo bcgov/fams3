@@ -1,7 +1,6 @@
 using Fams3Adapter.Dynamics.Address;
-using Fams3Adapter.Dynamics.Config;
+using Fams3Adapter.Dynamics.Duplicate;
 using Fams3Adapter.Dynamics.Person;
-using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Moq;
 using NUnit.Framework;

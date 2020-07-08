@@ -1,10 +1,11 @@
 ﻿using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.AssetOwner;
-using Fams3Adapter.Dynamics.Config;
+using Fams3Adapter.Dynamics.Duplicate;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.Name;
 using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.PhoneNumber;
+using Fams3Adapter.Dynamics.RelatedPerson;
 using Fams3Adapter.Dynamics.Types;
 using Fams3Adapter.Dynamics.Vehicle;
 using Moq;
@@ -16,7 +17,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Fams3Adapter.Dynamics.Test.Config
+namespace Fams3Adapter.Dynamics.Test.Duplicate
 {
     public class DuplicateDetectionServiceTest
     {
@@ -66,6 +67,11 @@ namespace Fams3Adapter.Dynamics.Test.Config
                      {
                          EntityName = "ssg_assetowner",
                          DuplicateFields = "ssg_lastname"
+                     },
+                     new SSG_DuplicateDetectionConfig()
+                     {
+                         EntityName = "ssg_identity",
+                         DuplicateFields = "ssg_persongivenname"
                      }
                 }));
 
@@ -274,7 +280,7 @@ namespace Fams3Adapter.Dynamics.Test.Config
         }
 
         [Test]
-        public async Task person_has_same_name_should_return_existed_entity_guid()
+        public async Task person_has_same_name_Exists_should_return_existed_entity_guid()
         {
             DuplicateDetectionService._configs = null;
             Guid existedAliasID = Guid.NewGuid();
@@ -368,6 +374,39 @@ namespace Fams3Adapter.Dynamics.Test.Config
             Guid guid = await _sut.Exists(vehicle, entity);
             Assert.AreEqual(Guid.Empty, guid);
         }
+
+        [Test]
+        public async Task person_has_same_relatedperson_Exists_should_return_existed_entity_guid()
+        {
+            DuplicateDetectionService._configs = null;
+            Guid existedRelatedPersonID = Guid.NewGuid();
+            SSG_Person person = new SSG_Person()
+            {
+                SSG_Identities = new List<SSG_Identity>() {
+                    new SSG_Identity(){FirstName="11111", RelatedPersonId=existedRelatedPersonID}
+                }.ToArray()
+            };
+            RelatedPersonEntity entity = new RelatedPersonEntity() { FirstName = "11111" };
+            Guid guid = await _sut.Exists(person, entity);
+            Assert.AreEqual(existedRelatedPersonID, guid);
+        }
+
+        [Test]
+        public async Task person_does_not_contain_same_relatedperson_Exists_should_return_empty_guid()
+        {
+            DuplicateDetectionService._configs = null;
+            Guid existedRelatedPersonID = Guid.NewGuid();
+            SSG_Person person = new SSG_Person()
+            {
+                SSG_Identities = new List<SSG_Identity>() {
+                    new SSG_Identity(){FirstName="11111", RelatedPersonId=existedRelatedPersonID}
+                }.ToArray()
+            };
+            RelatedPersonEntity entity = new RelatedPersonEntity() { FirstName = "11121" };
+            Guid guid = await _sut.Exists(person, entity);
+            Assert.AreEqual(Guid.Empty, guid);
+        }
+
 
         [Test]
         public async Task entity_not_having_config_Exists_should_return_empty_guid()

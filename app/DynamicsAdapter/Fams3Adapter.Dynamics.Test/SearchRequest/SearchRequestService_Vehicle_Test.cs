@@ -1,5 +1,4 @@
-using Fams3Adapter.Dynamics.Config;
-using Fams3Adapter.Dynamics.Name;
+using Fams3Adapter.Dynamics.Duplicate;
 using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Fams3Adapter.Dynamics.Vehicle;
@@ -90,7 +89,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
                   .FindEntryAsync(It.IsAny<CancellationToken>()))
                   .Returns(Task.FromResult(new SSG_Asset_Vehicle()
                   {
-                      VehicleId= originalGuid,
+                      VehicleId = originalGuid,
                       Vin = "original"
                   }));
 

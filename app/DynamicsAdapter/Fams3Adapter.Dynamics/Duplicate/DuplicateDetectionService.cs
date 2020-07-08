@@ -4,6 +4,7 @@ using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.Name;
 using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.PhoneNumber;
+using Fams3Adapter.Dynamics.RelatedPerson;
 using Fams3Adapter.Dynamics.Vehicle;
 using Newtonsoft.Json;
 using Simple.OData.Client;
@@ -16,7 +17,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Fams3Adapter.Dynamics.Config
+namespace Fams3Adapter.Dynamics.Duplicate
 {
     public interface IDuplicateDetectionService
     {
@@ -36,7 +37,8 @@ namespace Fams3Adapter.Dynamics.Config
             {"PhoneNumberEntity", "ssg_phonenumber" },
             {"AliasEntity", "ssg_alias"},
             {"VehicleEntity", "ssg_asset_vehicle"},
-            {"AssetOwnerEntity", "ssg_assetowner"}
+            {"AssetOwnerEntity", "ssg_assetowner"},
+            {"RelatedPersonEntity", "SSG_identity" }
         };
 
         public DuplicateDetectionService(IODataClient oDataClient)
@@ -133,6 +135,12 @@ namespace Fams3Adapter.Dynamics.Config
                     foreach (SSG_AssetOwner owner in ((SSG_Asset_Vehicle)fatherObj).SSG_AssetOwners)
                     {
                         if (GetConcateFieldsStr(config.DuplicateFieldList, props, owner) == entityStr) return owner.AssetOwnerId;
+                    };
+                    break;
+                case "RelatedPersonEntity":
+                    foreach (SSG_Identity relatedPerson in ((SSG_Person)fatherObj).SSG_Identities)
+                    {
+                        if (GetConcateFieldsStr(config.DuplicateFieldList, props, relatedPerson) == entityStr) return relatedPerson.RelatedPersonId;
                     };
                     break;
             }            

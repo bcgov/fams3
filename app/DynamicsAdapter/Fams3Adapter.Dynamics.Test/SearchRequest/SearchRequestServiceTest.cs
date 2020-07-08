@@ -1,19 +1,16 @@
 using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.AssetOwner;
 using Fams3Adapter.Dynamics.BankInfo;
-using Fams3Adapter.Dynamics.Config;
+using Fams3Adapter.Dynamics.Duplicate;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.InsuranceClaim;
-using Fams3Adapter.Dynamics.Name;
 using Fams3Adapter.Dynamics.OtherAsset;
 using Fams3Adapter.Dynamics.Person;
-using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.RelatedPerson;
 using Fams3Adapter.Dynamics.ResultTransaction;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Fams3Adapter.Dynamics.Types;
-using Fams3Adapter.Dynamics.Vehicle;
 using Moq;
 using NUnit.Framework;
 using Simple.OData.Client;
@@ -68,19 +65,19 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         })
         );
 
-         odataClientMock.Setup(x => x.For<SSG_Employment>(null).Set(It.Is<EmploymentEntity>(x => x.BusinessOwner == "Business Owner"))
-         .InsertEntryAsync(It.IsAny<CancellationToken>()))
-         .Returns(Task.FromResult(new SSG_Employment()
-         {
-             BusinessOwner = "Business Owner"
-         })
-         );
+            odataClientMock.Setup(x => x.For<SSG_Employment>(null).Set(It.Is<EmploymentEntity>(x => x.BusinessOwner == "Business Owner"))
+            .InsertEntryAsync(It.IsAny<CancellationToken>()))
+            .Returns(Task.FromResult(new SSG_Employment()
+            {
+                BusinessOwner = "Business Owner"
+            })
+            );
 
             odataClientMock.Setup(x => x.For<SSG_EmploymentContact>(null).Set(It.Is<SSG_EmploymentContact>(x => x.PhoneNumber == "12345678"))
             .InsertEntryAsync(It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult(new SSG_EmploymentContact()
             {
-             PhoneNumber = "12345678"
+                PhoneNumber = "12345678"
             })
             );
 
@@ -88,7 +85,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             .InsertEntryAsync(It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult(new SSG_Asset_BankingInformation()
             {
-              BankName = "bank",
+                BankName = "bank",
             })
             );
 
@@ -128,7 +125,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
              .InsertEntryAsync(It.IsAny<CancellationToken>()))
              .Returns(Task.FromResult(new SSG_SimplePhoneNumber()
              {
-                 PhoneNumber= "phone"
+                 PhoneNumber = "phone"
              })
              );
 
@@ -144,11 +141,11 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             .InsertEntryAsync(It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult(new SSG_SearchRequestResultTransaction()
             {
-                SourceIdentifier = new SSG_Identifier() { Identification="11111"}
+                SourceIdentifier = new SSG_Identifier() { Identification = "11111" }
             })
             );
 
-             _sut = new SearchRequestService(odataClientMock.Object, _duplicateServiceMock.Object);
+            _sut = new SearchRequestService(odataClientMock.Object, _duplicateServiceMock.Object);
         }
 
         [Test]
@@ -184,14 +181,14 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         {
             var employment = new EmploymentEntity()
             {
-                BusinessOwner= "Business Owner",
+                BusinessOwner = "Business Owner",
                 BusinessName = "Business Name",
                 Notes = "notes",
                 Date1 = new DateTime(2001, 1, 1),
                 Date1Label = "date1lable",
                 Date2 = new DateTime(2005, 1, 1),
                 Date2Label = "date2lable",
-        
+
                 SearchRequest = new SSG_SearchRequest() { SearchRequestId = testId },
                 Person = new SSG_Person() { PersonId = testPersonId }
             };
@@ -245,7 +242,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             {
                 AssetDescription = "asset description",
                 Description = "description",
-                TypeDescription="asset type description",
+                TypeDescription = "asset type description",
                 Notes = "notes",
                 Date1 = new DateTime(2001, 1, 1),
                 Date1Label = "date1lable",
@@ -274,7 +271,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
                 Date2Label = "date2lable",
                 SearchRequest = new SSG_SearchRequest() { SearchRequestId = testId },
                 Person = new SSG_Person() { PersonId = testPersonId }
-               
+
             };
 
             var result = await _sut.CreateCompensationClaim(claim, CancellationToken.None);
@@ -303,7 +300,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         {
             var phone = new SSG_SimplePhoneNumber()
             {
-                PhoneNumber="phone"
+                PhoneNumber = "phone"
             };
 
             var result = await _sut.CreateSimplePhoneNumber(phone, CancellationToken.None);
@@ -328,7 +325,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         [Test]
         public async Task upload_ResultTransaction_should_success()
         {
-            var trans = new SSG_SearchRequestResultTransaction(){};
+            var trans = new SSG_SearchRequestResultTransaction() { };
 
             var result = await _sut.CreateTransaction(trans, CancellationToken.None);
 

@@ -1,8 +1,12 @@
 ﻿using Fams3Adapter.Dynamics.Address;
+using Fams3Adapter.Dynamics.AssetOwner;
 using Fams3Adapter.Dynamics.Config;
 using Fams3Adapter.Dynamics.Identifier;
+using Fams3Adapter.Dynamics.Name;
 using Fams3Adapter.Dynamics.Person;
+using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.Types;
+using Fams3Adapter.Dynamics.Vehicle;
 using Moq;
 using NUnit.Framework;
 using Simple.OData.Client;
@@ -42,6 +46,26 @@ namespace Fams3Adapter.Dynamics.Test.Config
                      {
                          EntityName = "ssg_identifier",
                          DuplicateFields = "ssg_identification|ssg_identificationcategorytext"
+                     },
+                     new SSG_DuplicateDetectionConfig()
+                     {
+                         EntityName = "ssg_phonenumber",
+                         DuplicateFields = "ssg_telephonenumber|ssg_phoneextension"
+                     },
+                     new SSG_DuplicateDetectionConfig()
+                     {
+                         EntityName = "ssg_alias",
+                         DuplicateFields = "ssg_PersonSurName|ssg_persongivenname"
+                     },
+                     new SSG_DuplicateDetectionConfig()
+                     {
+                         EntityName = "ssg_asset_vehicle",
+                         DuplicateFields = "ssg_vin|ssg_licenseplate"
+                     },
+                     new SSG_DuplicateDetectionConfig()
+                     {
+                         EntityName = "ssg_assetowner",
+                         DuplicateFields = "ssg_lastname"
                      }
                 }));
 
@@ -152,129 +176,217 @@ namespace Fams3Adapter.Dynamics.Test.Config
             Assert.AreEqual(str1, str2);
         }
 
+
         [Test]
-        public async Task same_address_GetDuplicateDetectHashData_should_return_same_string()
+        public async Task person_has_same_identifier_Exists_should_return_existed_entity_guid()
         {
             DuplicateDetectionService._configs = null;
-            AddressEntity address1 = new AddressEntity()
+            Guid existedIdentifierID = Guid.NewGuid();
+            SSG_Person person = new SSG_Person()
             {
-                AddressLine1 = "line1",
-                AddressLine2 = "line2",
-                City = "city"
+                SSG_Identifiers = new List<SSG_Identifier>() {
+                    new SSG_Identifier(){Identification="11111",IdentifierType=IdentificationType.BCDriverLicense.Value, IdentifierId=existedIdentifierID}
+                }.ToArray()
             };
-            string str1 = await _sut.GetDuplicateDetectHashData(address1);
-            AddressEntity address2 = new AddressEntity()
-            {
-                AddressLine1 = "line1",
-                AddressLine2 = "line2",
-                City = "city"
-            };
-
-            string str2 = await _sut.GetDuplicateDetectHashData(address2);
-            Assert.AreEqual(true, str1 == str2);
+            IdentifierEntity entity = new IdentifierEntity() { Identification = "11111", IdentifierType = IdentificationType.BCDriverLicense.Value };
+            Guid guid = await _sut.Exists(person, entity);
+            Assert.AreEqual(existedIdentifierID, guid);
         }
 
         [Test]
-        public async Task different_address_GetDuplicateDetectHashData_should_return_different_string()
+        public async Task person_does_not_contain_same_identifier_Exists_should_return_empty_guid()
         {
             DuplicateDetectionService._configs = null;
-            AddressEntity address1 = new AddressEntity()
+            Guid existedIdentifierID = Guid.NewGuid();
+            SSG_Person person = new SSG_Person()
             {
-                AddressLine1 = "line1",
-                AddressLine2 = "line2",
-                City = "city"
+                SSG_Identifiers = new List<SSG_Identifier>() {
+                    new SSG_Identifier(){Identification="22111",IdentifierType=IdentificationType.BCDriverLicense.Value, IdentifierId=existedIdentifierID}
+                }.ToArray()
             };
-            string str1 = await _sut.GetDuplicateDetectHashData(address1);
-            AddressEntity address2 = new AddressEntity()
-            {
-                AddressLine1 = "line11",
-                AddressLine2 = "line22",
-                City = "city"
-            };
-
-            string str2 = await _sut.GetDuplicateDetectHashData(address2);
-            Assert.AreEqual(false, str1 == str2);
+            IdentifierEntity entity = new IdentifierEntity() { Identification = "11111", IdentifierType = IdentificationType.BCDriverLicense.Value };
+            Guid guid = await _sut.Exists(person, entity);
+            Assert.AreEqual(Guid.Empty, guid);
         }
 
         [Test]
-        public async Task different_address_with_same_duplicate_detect_fields_GetDuplicateDetectHashData_return_same()
+        public async Task person_has_same_phonenumber_should_return_existed_entity_guid()
         {
             DuplicateDetectionService._configs = null;
-            AddressEntity address1 = new AddressEntity()
+            Guid existedPhoneID = Guid.NewGuid();
+            SSG_Person person = new SSG_Person()
             {
-                AddressLine1 = "line1",
-                AddressLine2 = "line2",
-                City = "city",
-                CountryText="canada"
+                SSG_PhoneNumbers = new List<SSG_PhoneNumber>() {
+                    new SSG_PhoneNumber(){TelePhoneNumber="11111",PhoneExtension="111", PhoneNumberId=existedPhoneID}
+                }.ToArray()
             };
-            string str1 = await _sut.GetDuplicateDetectHashData(address1);
-            AddressEntity address2 = new AddressEntity()
-            {
-                AddressLine1 = "line1",
-                AddressLine2 = "line2",
-                City = "city",
-                CountryText = "usa"
-            };
-            string str2 = await _sut.GetDuplicateDetectHashData(address2);
-            Assert.AreEqual(str1, str2);
+            PhoneNumberEntity entity = new PhoneNumberEntity() { TelePhoneNumber = "11111", PhoneExtension = "111" };
+            Guid guid = await _sut.Exists(person, entity);
+            Assert.AreEqual(existedPhoneID, guid);
         }
 
         [Test]
-        public async Task same_identifier_GetDuplicateDetectHashData_should_return_same_string()
+        public async Task person_does_not_contain_same_phonenumber_Exists_should_return_empty_guid()
         {
             DuplicateDetectionService._configs = null;
-            IdentifierEntity id1 = new IdentifierEntity()
+            Guid existedPhoneID = Guid.NewGuid();
+            SSG_Person person = new SSG_Person()
             {
-                Identification = "1111111",
-                IdentifierType = IdentificationType.BCDriverLicense.Value
+                SSG_PhoneNumbers = new List<SSG_PhoneNumber>() {
+                    new SSG_PhoneNumber(){TelePhoneNumber="111112",PhoneExtension="111", PhoneNumberId=existedPhoneID}
+                }.ToArray()
             };
-            string str1 = await _sut.GetDuplicateDetectHashData(id1);
-            IdentifierEntity id2 = new IdentifierEntity()
-            {
-                Identification="1111111",
-                IdentifierType = IdentificationType.BCDriverLicense.Value
-            };
-            string str2 = await _sut.GetDuplicateDetectHashData(id2);
-            Assert.AreEqual(true, str1 == str2);
+            PhoneNumberEntity entity = new PhoneNumberEntity() { TelePhoneNumber = "11111", PhoneExtension = "111" };
+            Guid guid = await _sut.Exists(person, entity);
+            Assert.AreEqual(Guid.Empty, guid);
         }
 
         [Test]
-        public async Task different_identifier_GetDuplicateDetectHashData_should_return_different_string()
+        public async Task person_has_same_address_should_return_existed_entity_guid()
         {
             DuplicateDetectionService._configs = null;
-            IdentifierEntity id1 = new IdentifierEntity()
+            Guid existedAddressID = Guid.NewGuid();
+            SSG_Person person = new SSG_Person()
             {
-                Identification = "1111111",
-                IdentifierType = IdentificationType.BirthCertificate.Value
+                SSG_Addresses = new List<SSG_Address>() {
+                    new SSG_Address(){AddressLine1="11111",AddressLine2="111",City="city",CountryText="usa",AddressId=existedAddressID}
+                }.ToArray()
             };
-            string str1 = await _sut.GetDuplicateDetectHashData(id1);
-            IdentifierEntity id2 = new IdentifierEntity()
-            {
-                Identification = "1111111",
-                IdentifierType = IdentificationType.BCDriverLicense.Value
-            };
-            string str2 = await _sut.GetDuplicateDetectHashData(id2);
-            Assert.AreEqual(false, str1 == str2);
+            AddressEntity entity = new AddressEntity() { AddressLine1 = "11111", AddressLine2 = "111", City = "city" , CountryText = "canada"};
+            Guid guid = await _sut.Exists(person, entity);
+            Assert.AreEqual(existedAddressID, guid);
         }
 
         [Test]
-        public async Task different_identifier_with_same_duplicate_detect_fields_GetDuplicateDetectHashData_return_same()
+        public async Task person_does_not_contain_same_address_Exists_should_return_empty_guid()
         {
             DuplicateDetectionService._configs = null;
-            IdentifierEntity id1 = new IdentifierEntity()
+            Guid existedAddressID = Guid.NewGuid();
+            SSG_Person person = new SSG_Person()
             {
-                Identification = "1111111",
-                IdentifierType = IdentificationType.BCDriverLicense.Value,
-                Date1Label="expired date"
+                SSG_Addresses = new List<SSG_Address>() {
+                    new SSG_Address(){AddressLine1="11111",AddressLine2="111",City="city",CountryText="usa",AddressId=existedAddressID}
+                }.ToArray()
             };
-            string str1 = await _sut.GetDuplicateDetectHashData(id1);
-            IdentifierEntity id2 = new IdentifierEntity()
+            AddressEntity entity = new AddressEntity() { AddressLine1 = "11111", AddressLine2 = "111", CountryText = "canada" };
+            Guid guid = await _sut.Exists(person, entity);
+            Assert.AreEqual(Guid.Empty, guid);
+        }
+
+        [Test]
+        public async Task person_has_same_name_should_return_existed_entity_guid()
+        {
+            DuplicateDetectionService._configs = null;
+            Guid existedAliasID = Guid.NewGuid();
+            SSG_Person person = new SSG_Person()
             {
-                Identification = "1111111",
-                IdentifierType = IdentificationType.BCDriverLicense.Value
+                SSG_Aliases = new List<SSG_Aliase>() {
+                    new SSG_Aliase(){FirstName="firstname",MiddleName="middlename",LastName="lastName",AliasId=existedAliasID}
+                }.ToArray()
             };
-            string str2 = await _sut.GetDuplicateDetectHashData(id2);
-            Assert.AreEqual(str1, str2);
+            AliasEntity entity = new AliasEntity() { FirstName = "firstname", LastName = "lastName" };
+            Guid guid = await _sut.Exists(person, entity);
+            Assert.AreEqual(existedAliasID, guid);
+        }
+
+        [Test]
+        public async Task person_does_not_contain_same_name_Exists_should_return_empty_guid()
+        {
+            DuplicateDetectionService._configs = null;
+            Guid existedAliasID = Guid.NewGuid();
+            SSG_Person person = new SSG_Person()
+            {
+                SSG_Aliases = new List<SSG_Aliase>() {
+                    new SSG_Aliase(){FirstName="firstname",MiddleName="middlename",LastName="lastName",AliasId=existedAliasID}
+                }.ToArray()
+            };
+            AliasEntity entity = new AliasEntity() { FirstName = "firstnameNew", LastName = "lastName" };
+            Guid guid = await _sut.Exists(person, entity);
+            Assert.AreEqual(Guid.Empty, guid);
+        }
+
+        [Test]
+        public async Task person_has_same_vehicle_should_return_existed_entity_guid()
+        {
+            DuplicateDetectionService._configs = null;
+            Guid existedVehicleID = Guid.NewGuid();
+            SSG_Person person = new SSG_Person()
+            {
+                SSG_Asset_Vehicles = new List<SSG_Asset_Vehicle>() {
+                    new SSG_Asset_Vehicle(){Vin="vin",PlateNumber="platenumber",VehicleId=existedVehicleID}
+                }.ToArray()
+            };
+            VehicleEntity entity = new VehicleEntity() { Vin = "vin", PlateNumber = "platenumber" };
+            Guid guid = await _sut.Exists(person, entity);
+            Assert.AreEqual(existedVehicleID, guid);
+        }
+
+        [Test]
+        public async Task person_does_not_contain_same_vehicle_Exists_should_return_empty_guid()
+        {
+            DuplicateDetectionService._configs = null;
+            Guid existedVehicleID = Guid.NewGuid();
+            SSG_Person person = new SSG_Person()
+            {
+                SSG_Asset_Vehicles = new List<SSG_Asset_Vehicle>() {
+                    new SSG_Asset_Vehicle(){Vin="vin",PlateNumber="platenumber",VehicleId=existedVehicleID}
+                }.ToArray()
+            };
+            VehicleEntity entity = new VehicleEntity() { Vin = "vin", PlateNumber = "platenumber2" };
+            Guid guid = await _sut.Exists(person, entity);
+            Assert.AreEqual(Guid.Empty, guid);
+        }
+
+        [Test]
+        public async Task vehicle_has_same_owner_should_return_existed_entity_guid()
+        {
+            DuplicateDetectionService._configs = null;
+            Guid existedOwnerID = Guid.NewGuid();
+            SSG_Asset_Vehicle vehicle = new SSG_Asset_Vehicle()
+            {
+                SSG_AssetOwners = new List<SSG_AssetOwner>() {
+                    new SSG_AssetOwner(){LastName="ownerlastname",AssetOwnerId=existedOwnerID}
+                }.ToArray()
+            };
+            AssetOwnerEntity entity = new AssetOwnerEntity() { LastName = "ownerlastname",FirstName="test" };
+            Guid guid = await _sut.Exists(vehicle, entity);
+            Assert.AreEqual(existedOwnerID, guid);
+        }
+
+        [Test]
+        public async Task vehicle_does_not_contain_same_owner_Exists_should_return_empty_guid()
+        {
+            DuplicateDetectionService._configs = null;
+            Guid existedOwnerID = Guid.NewGuid();
+            SSG_Asset_Vehicle vehicle = new SSG_Asset_Vehicle()
+            {
+                SSG_AssetOwners = new List<SSG_AssetOwner>() {
+                    new SSG_AssetOwner(){LastName="ownerlastname",AssetOwnerId=existedOwnerID}
+                }.ToArray()
+            };
+            AssetOwnerEntity entity = new AssetOwnerEntity() { LastName = "ownerlastname1", FirstName = "test" };
+            Guid guid = await _sut.Exists(vehicle, entity);
+            Assert.AreEqual(Guid.Empty, guid);
+        }
+
+        [Test]
+        public async Task entity_not_having_config_Exists_should_return_empty_guid()
+        {
+            DuplicateDetectionService._configs = null;
+            SSG_Asset_Vehicle vehicle = new SSG_Asset_Vehicle(){};
+            TestEntity entity = new TestEntity() {  };
+            Guid guid = await _sut.Exists(vehicle, entity);
+            Assert.AreEqual(Guid.Empty, guid);
+        }
+
+        [Test]
+        public void fatherObj_not_contain_entity_type_should_throw_exception()
+        {
+            DuplicateDetectionService._configs = null;
+            Guid existedOwnerID = Guid.NewGuid();
+            SSG_Person person = new SSG_Person() {};
+            AssetOwnerEntity entity = new AssetOwnerEntity() { LastName = "ownerlastname1", FirstName = "test" };
+            Assert.ThrowsAsync<System.InvalidCastException>(async()=>await _sut.Exists(person, entity));
         }
     }
 

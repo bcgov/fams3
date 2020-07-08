@@ -357,7 +357,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                     {
                         foreach (var owner in v.Owners)
                         {
-                            SSG_AssetOwner assetOwner = _mapper.Map<SSG_AssetOwner>(owner);
+                            AssetOwnerEntity assetOwner = _mapper.Map<AssetOwnerEntity>(owner);
                             assetOwner.Vehicle = ssgVehicle;
                             await _searchRequestService.CreateAssetOwner(assetOwner, _cancellationToken);
                         }
@@ -392,7 +392,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                     {
                         foreach (var owner in asset.Owners)
                         {
-                            SSG_AssetOwner assetOwner = _mapper.Map<SSG_AssetOwner>(owner);
+                            AssetOwnerEntity assetOwner = _mapper.Map<AssetOwnerEntity>(owner);
                             assetOwner.OtherAsset = ssgOtherAsset;
                             await _searchRequestService.CreateAssetOwner(assetOwner, _cancellationToken);
                         }

@@ -1,4 +1,10 @@
-﻿using Fams3Adapter.Dynamics.Person;
+﻿using Fams3Adapter.Dynamics.Address;
+using Fams3Adapter.Dynamics.AssetOwner;
+using Fams3Adapter.Dynamics.Identifier;
+using Fams3Adapter.Dynamics.Name;
+using Fams3Adapter.Dynamics.Person;
+using Fams3Adapter.Dynamics.PhoneNumber;
+using Fams3Adapter.Dynamics.Vehicle;
 using Newtonsoft.Json;
 using Simple.OData.Client;
 using System;
@@ -15,6 +21,7 @@ namespace Fams3Adapter.Dynamics.Config
     public interface IDuplicateDetectionService
     {
         Task<string> GetDuplicateDetectHashData(object entity);
+        Task<Guid> Exists(object fatherObj, object entity);
     }
 
     public class DuplicateDetectionService : IDuplicateDetectionService
@@ -25,7 +32,11 @@ namespace Fams3Adapter.Dynamics.Config
         {
             {"PersonEntity", "ssg_person" },
             {"AddressEntity", "ssg_address" },
-            {"IdentifierEntity", "ssg_identifier" }
+            {"IdentifierEntity", "ssg_identifier" },
+            {"PhoneNumberEntity", "ssg_phonenumber" },
+            {"AliasEntity", "ssg_alias"},
+            {"VehicleEntity", "ssg_asset_vehicle"},
+            {"AssetOwnerEntity", "ssg_assetowner"}
         };
 
         public DuplicateDetectionService(IODataClient oDataClient)
@@ -38,6 +49,7 @@ namespace Fams3Adapter.Dynamics.Config
         /// Example: config is : ssg_person, ssg_firstname|ssg_lastname
         ///     ssg_person person1: firstname="person1", lastname="lastname1"
         ///     it should return SHA512("person1lastname1")
+        /// This is mainly used for Person
         /// </summary>
         /// <param name="entity"></param>
         /// <returns>SHA512 </returns>
@@ -58,6 +70,74 @@ namespace Fams3Adapter.Dynamics.Config
             IList<PropertyInfo> props = new List<PropertyInfo>(type.GetProperties());       
 
             return hashstring(GetConcateFieldsStr(config.DuplicateFieldList, props, entity));
+        }
+
+        /// <summary>
+        /// check if existing fatherObj contains the same entity. The standard for "same" is the config from dynamics.
+        /// if there is duplicated entity in this fatherObj, then return its guid.
+        /// if no duplicate found, return guid.empty.
+        /// </summary>
+        /// <param name="person"></param>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public async Task<Guid> Exists(object fatherObj, object entity)
+        {
+            if (_configs == null) await GetDuplicateDetectionConfig(CancellationToken.None);
+
+            Type type = entity.GetType();
+            string name;
+            if (!EntityNameMap.TryGetValue(type.Name, out name))
+            {
+                return Guid.Empty;
+            }
+
+            SSG_DuplicateDetectionConfig config = _configs.FirstOrDefault(m => m.EntityName.ToLower() == name.ToLower());
+            if (config == null) return Guid.Empty;
+
+            IList<PropertyInfo> props = new List<PropertyInfo>(type.GetProperties());
+            string entityStr = GetConcateFieldsStr(config.DuplicateFieldList, props, entity);
+
+            switch (type.Name)
+            {
+                case "IdentifierEntity":
+                    foreach (SSG_Identifier identifier in ((SSG_Person)fatherObj).SSG_Identifiers)
+                    {
+                        if (GetConcateFieldsStr(config.DuplicateFieldList, props, identifier) == entityStr) return identifier.IdentifierId;
+                    };
+                    break;
+                case "PhoneNumberEntity":
+                    foreach (SSG_PhoneNumber phone in ((SSG_Person)fatherObj).SSG_PhoneNumbers)
+                    {
+                        if (GetConcateFieldsStr(config.DuplicateFieldList, props, phone) == entityStr) return phone.PhoneNumberId;
+                    };
+                    break;
+                case "AddressEntity":
+                    foreach (SSG_Address addr in ((SSG_Person)fatherObj).SSG_Addresses)
+                    {
+                        if (GetConcateFieldsStr(config.DuplicateFieldList, props, addr) == entityStr) return addr.AddressId;
+                    };
+                    break;
+                case "AliasEntity":
+                    foreach (SSG_Aliase alias in ((SSG_Person)fatherObj).SSG_Aliases)
+                    {
+                        if (GetConcateFieldsStr(config.DuplicateFieldList, props, alias) == entityStr) return alias.AliasId;
+                    };
+                    break;
+                case "VehicleEntity":
+                    foreach (SSG_Asset_Vehicle v in ((SSG_Person)fatherObj).SSG_Asset_Vehicles)
+                    {
+                        if (GetConcateFieldsStr(config.DuplicateFieldList, props, v) == entityStr) return v.VehicleId;
+                    };
+                    break;
+                case "AssetOwnerEntity":
+                    foreach (SSG_AssetOwner owner in ((SSG_Asset_Vehicle)fatherObj).SSG_AssetOwners)
+                    {
+                        if (GetConcateFieldsStr(config.DuplicateFieldList, props, owner) == entityStr) return owner.AssetOwnerId;
+                    };
+                    break;
+            }            
+
+            return Guid.Empty;
         }
 
         private string GetConcateFieldsStr(string[] duplicateFieldList, IList<PropertyInfo> props, object entity)

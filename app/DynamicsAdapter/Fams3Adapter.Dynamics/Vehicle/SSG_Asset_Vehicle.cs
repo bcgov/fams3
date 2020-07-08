@@ -1,4 +1,5 @@
-﻿using Fams3Adapter.Dynamics.Person;
+﻿using Fams3Adapter.Dynamics.AssetOwner;
+using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Newtonsoft.Json;
 using System;
@@ -36,5 +37,10 @@ namespace Fams3Adapter.Dynamics.Vehicle
     {
         [JsonProperty("ssg_asset_vehicleid")]
         public Guid VehicleId { get; set; }
+
+        [JsonProperty("ssg_ssg_asset_vehicle_ssg_assetowner_Vehicle")]
+        public SSG_AssetOwner[] SSG_AssetOwners { get; set; }
+
+        public bool IsDuplicated { get; set; }
     }
 }

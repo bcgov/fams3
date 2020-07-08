@@ -885,7 +885,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 Type = "ownerType"
             };
 
-            SSG_AssetOwner assetOwner = _mapper.Map<SSG_AssetOwner>(owner);
+            AssetOwnerEntity assetOwner = _mapper.Map<AssetOwnerEntity>(owner);
             Assert.AreEqual("lastname", assetOwner.LastName);
             Assert.AreEqual("firstname", assetOwner.FirstName);
             Assert.AreEqual("middlename", assetOwner.MiddleName);

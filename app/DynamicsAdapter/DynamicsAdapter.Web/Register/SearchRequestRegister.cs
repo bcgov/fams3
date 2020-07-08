@@ -36,7 +36,7 @@ namespace DynamicsAdapter.Web.Register
         public SSG_SearchApiRequest FilterDuplicatedIdentifier(SSG_SearchApiRequest request)
         {
             SSG_Identifier[] uniqueIdentifers = request.Identifiers
-                               .GroupBy(x => (x.Identification, x.IdentifierType, x.IssuedBy?.ToLower()))
+                               .GroupBy(x => (x.Identification, x.IdentifierType))
                                .Select(y => y.First()).ToArray<SSG_Identifier>();
 
             request.Identifiers = uniqueIdentifers;

@@ -17,7 +17,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Fams3Adapter.Dynamics.Config
+namespace Fams3Adapter.Dynamics.Duplicate
 {
     public interface IDuplicateDetectionService
     {

@@ -1,7 +1,5 @@
 using Fams3Adapter.Dynamics.AssetOwner;
-using Fams3Adapter.Dynamics.Config;
-using Fams3Adapter.Dynamics.Name;
-using Fams3Adapter.Dynamics.Person;
+using Fams3Adapter.Dynamics.Duplicate;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Fams3Adapter.Dynamics.Vehicle;
 using Moq;

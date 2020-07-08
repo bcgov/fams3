@@ -1,14 +1,11 @@
-using Fams3Adapter.Dynamics.Config;
+using Fams3Adapter.Dynamics.Duplicate;
 using Fams3Adapter.Dynamics.Identifier;
-using Fams3Adapter.Dynamics.Name;
 using Fams3Adapter.Dynamics.Person;
-using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Moq;
 using NUnit.Framework;
 using Simple.OData.Client;
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -44,7 +41,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
                 );
             var id = new IdentifierEntity()
             {
-                Identification= "normal",
+                Identification = "normal",
                 Person = new SSG_Person() { IsDuplicated = false }
             };
             var result = await _sut.CreateIdentifier(id, CancellationToken.None);

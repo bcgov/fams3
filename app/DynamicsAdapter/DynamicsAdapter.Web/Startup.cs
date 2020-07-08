@@ -9,7 +9,7 @@ using DynamicsAdapter.Web.Infrastructure;
 using DynamicsAdapter.Web.PersonSearch;
 using DynamicsAdapter.Web.Register;
 using DynamicsAdapter.Web.SearchRequest;
-using Fams3Adapter.Dynamics.Config;
+using Fams3Adapter.Dynamics.Duplicate;
 using Fams3Adapter.Dynamics.OptionSets;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using Fams3Adapter.Dynamics.SearchRequest;

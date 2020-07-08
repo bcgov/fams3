@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Fams3Adapter.Dynamics.Config
+namespace Fams3Adapter.Dynamics.Duplicate
 {
     public class SSG_DuplicateDetectionConfig
     {

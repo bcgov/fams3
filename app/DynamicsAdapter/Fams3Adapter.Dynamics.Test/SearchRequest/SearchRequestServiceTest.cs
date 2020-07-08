@@ -42,8 +42,25 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             odataClientMock = new Mock<IODataClient>();
             _duplicateServiceMock = new Mock<IDuplicateDetectionService>();
 
+            odataClientMock.Setup(x => x.For<SSG_Country>(null)
+             .Filter(It.IsAny<Expression<Func<SSG_Country, bool>>>())
+             .FindEntryAsync(It.IsAny<CancellationToken>()))
+             .Returns(Task.FromResult<SSG_Country>(new SSG_Country()
+             {
+                 CountryId = Guid.NewGuid(),
+                 Name = "Canada"
+             }));
 
-        odataClientMock.Setup(x => x.For<SSG_Identity>(null).Set(It.Is<RelatedPersonEntity>(x => x.FirstName == "First"))
+            odataClientMock.Setup(x => x.For<SSG_CountrySubdivision>(null)
+                .Filter(It.IsAny<Expression<Func<SSG_CountrySubdivision, bool>>>())
+                .FindEntryAsync(It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult<SSG_CountrySubdivision>(new SSG_CountrySubdivision()
+                {
+                    CountrySubdivisionId = Guid.NewGuid(),
+                    Name = "British Columbia"
+                }));
+
+            odataClientMock.Setup(x => x.For<SSG_Identity>(null).Set(It.Is<RelatedPersonEntity>(x => x.FirstName == "First"))
         .InsertEntryAsync(It.IsAny<CancellationToken>()))
         .Returns(Task.FromResult(new SSG_Identity()
         {

@@ -181,6 +181,12 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
         public async Task<SSG_Identity> CreateRelatedPerson(RelatedPersonEntity relatedPerson, CancellationToken cancellationToken)
         {
+            if (relatedPerson.Person.IsDuplicated)
+            {
+                Guid duplicatedRelatedPersonId = await _duplicateDetectService.Exists(relatedPerson.Person, relatedPerson);
+                if (duplicatedRelatedPersonId != Guid.Empty)
+                    return new SSG_Identity() { RelatedPersonId = duplicatedRelatedPersonId };
+            }
             return await this._oDataClient.For<SSG_Identity>().Set(relatedPerson).InsertEntryAsync(cancellationToken);
         }
 

@@ -160,6 +160,13 @@ namespace DynamicsAdapter.Web.Test.Register
                         new SSG_Identifier()
                         {
                             Identification = "1234567",
+                            IdentifierType = IdentificationType.BCDriverLicense.Value,
+                            IssuedBy = "request",
+                            IdentifierId=Guid.NewGuid()
+                        },
+                        new SSG_Identifier()
+                        {
+                            Identification = "1234567",
                             IdentifierType = IdentificationType.BirthCertificate.Value,
                             IssuedBy = "bc",
                             IdentifierId=Guid.NewGuid()

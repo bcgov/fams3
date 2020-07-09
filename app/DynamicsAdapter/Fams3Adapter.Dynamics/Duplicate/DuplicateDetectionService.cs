@@ -165,7 +165,7 @@ namespace Fams3Adapter.Dynamics.Duplicate
                     }
                 }
             }
-            return concatedString;
+            return concatedString.ToLower();
         }
 
         private async Task<bool> GetDuplicateDetectionConfig(CancellationToken cancellationToken)

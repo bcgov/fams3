@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace DynamicsAdapter.Web.PersonSearch.Models
+﻿namespace DynamicsAdapter.Web.PersonSearch.Models
 {
     public class PersonSearchSubmitted : PersonSearchStatus
     {

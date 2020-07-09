@@ -71,7 +71,7 @@ namespace DynamicsAdapter.Web.Mapping
         public int? Convert(string sourceMember, ResolutionContext context)
         {
             return
-                sourceMember.ToLower() switch
+                sourceMember?.ToLower() switch
                 {
                     "legal" => PersonNameCategory.LegalName.Value,
                     "alias" => PersonNameCategory.Alias.Value,

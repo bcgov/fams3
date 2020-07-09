@@ -82,6 +82,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 }
             };
 
+
             _fakePersonAddress = new AddressEntity
             {
                 SearchRequest = new SSG_SearchRequest
@@ -148,7 +149,11 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                         Identifiers = new List<PersonalIdentifier>() { },
                         Addresses = new List<Address>(){ },
                         Phones = new List<Phone>(){ },
-                        Names = new List<Name>(){ }
+                        Names = new List<Name>(){ },
+                        SourcePersonalIdentifier = new PersonalIdentifier()
+                            {
+                                Value = "1234567"
+                            }
                     }
                 }
             };

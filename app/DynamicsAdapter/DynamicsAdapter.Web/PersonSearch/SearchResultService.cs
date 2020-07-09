@@ -106,7 +106,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             return true;
         }
 
-        private async Task<bool> CreateResultTransaction(DynamicsEntity o, DynamicsEntity originalObj =null)
+        private async Task<bool> CreateResultTransaction(DynamicsEntity o)
         {
             if (_sourceIdentifier != null)
             {
@@ -116,13 +116,8 @@ namespace DynamicsAdapter.Web.PersonSearch
                     SearchApiRequest = _searchApiRequest,
                     InformationSource = _providerDynamicsID
                 };
-                
-                if (o == null && originalObj != null) //duplicates found
-                {
-                    trans.ResultName = originalObj.ToResultName();
-                    trans.Notes = $"Duplicated Found using {_sourceIdentifier.Identification}({_sourceIdentifier.IdentifierType.ToString()})-{trans.ResultName}";
-                }
-                else //no duplicates
+
+                if (o != null)
                 {
                     switch (o.GetType().Name)
                     {
@@ -141,6 +136,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                         default: return false;
                     }
                 }
+
                 await _searchRequestService.CreateTransaction(trans, _cancellationToken);
                 return true;
             }
@@ -171,7 +167,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                     identifier.InformationSource = _providerDynamicsID;
                     identifier.Person = _returnedPerson;
                     SSG_Identifier newIdentifier = await _searchRequestService.CreateIdentifier(identifier, _cancellationToken);
-                    await CreateResultTransaction(newIdentifier, newIdentifier == null? identifier:null);
+                    await CreateResultTransaction(newIdentifier);
                 }
                 return true;
             }
@@ -196,7 +192,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                     addr.InformationSource = _providerDynamicsID;
                     addr.Person = _returnedPerson;
                     SSG_Address uploadedAddr = await _searchRequestService.CreateAddress(addr, _cancellationToken);
-                    await CreateResultTransaction(uploadedAddr, uploadedAddr==null ? addr : null);
+                    await CreateResultTransaction(uploadedAddr);
                 }
                 return true;
             }

@@ -12,11 +12,8 @@ using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.RelatedPerson;
 using Fams3Adapter.Dynamics.ResultTransaction;
 using Fams3Adapter.Dynamics.Vehicle;
-using Newtonsoft.Json;
 using Simple.OData.Client;
 using System;
-using System.Linq;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -64,10 +61,10 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         /// <returns></returns>
         public async Task<SSG_Identifier> CreateIdentifier(IdentifierEntity identifier, CancellationToken cancellationToken)
         {
-            if ( identifier.Person.IsDuplicated )
+            if (identifier.Person.IsDuplicated)
             {
                 Guid duplicatedIdentifierId = await _duplicateDetectService.Exists(identifier.Person, identifier);
-                if(duplicatedIdentifierId != Guid.Empty)
+                if (duplicatedIdentifierId != Guid.Empty)
                     return new SSG_Identifier() { IdentifierId = duplicatedIdentifierId };
             }
             return await this._oDataClient.For<SSG_Identifier>().Set(identifier).InsertEntryAsync(cancellationToken);
@@ -81,7 +78,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                     .Filter(x => x.DuplicateDetectHash == hashData)
                     .FindEntryAsync(cancellationToken);
 
-            if(p == null)
+            if (p == null)
                 return await this._oDataClient.For<SSG_Person>().Set(person).InsertEntryAsync(cancellationToken);
             else
             {
@@ -102,7 +99,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                         .FindEntryAsync(cancellationToken);
                 duplicatedPerson.IsDuplicated = true;
                 return duplicatedPerson;
-            }            
+            }
         }
 
         public async Task<SSG_PhoneNumber> CreatePhoneNumber(PhoneNumberEntity phone, CancellationToken cancellationToken)
@@ -208,14 +205,14 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                                 .FindEntryAsync(cancellationToken);
                     duplicatedVehicle.IsDuplicated = true;
                     return duplicatedVehicle;
-                }                   
+                }
             }
             return await this._oDataClient.For<SSG_Asset_Vehicle>().Set(vehicle).InsertEntryAsync(cancellationToken);
         }
 
         public async Task<SSG_AssetOwner> CreateAssetOwner(AssetOwnerEntity owner, CancellationToken cancellationToken)
         {
-            if(owner.Vehicle!=null && owner.Vehicle.IsDuplicated)
+            if (owner.Vehicle != null && owner.Vehicle.IsDuplicated)
             {
                 Guid duplicatedOwnerId = await _duplicateDetectService.Exists(owner.Vehicle, owner);
                 if (duplicatedOwnerId != Guid.Empty)

@@ -104,43 +104,43 @@ namespace Fams3Adapter.Dynamics.Duplicate
                 case "IdentifierEntity":
                     foreach (SSG_Identifier identifier in ((SSG_Person)fatherObj).SSG_Identifiers)
                     {
-                        if (GetConcateFieldsStr(config.DuplicateFieldList, props, identifier) == entityStr) return identifier.IdentifierId;
+                        if (GetConcateFieldsStr(config.DuplicateFieldList, props, identifier).Equals ( entityStr, StringComparison.OrdinalIgnoreCase)) return identifier.IdentifierId;
                     };
                     break;
                 case "PhoneNumberEntity":
                     foreach (SSG_PhoneNumber phone in ((SSG_Person)fatherObj).SSG_PhoneNumbers)
                     {
-                        if (GetConcateFieldsStr(config.DuplicateFieldList, props, phone) == entityStr) return phone.PhoneNumberId;
+                        if (GetConcateFieldsStr(config.DuplicateFieldList, props, phone).Equals(entityStr, StringComparison.OrdinalIgnoreCase)) return phone.PhoneNumberId;
                     };
                     break;
                 case "AddressEntity":
                     foreach (SSG_Address addr in ((SSG_Person)fatherObj).SSG_Addresses)
                     {
-                        if (GetConcateFieldsStr(config.DuplicateFieldList, props, addr) == entityStr) return addr.AddressId;
+                        if (GetConcateFieldsStr(config.DuplicateFieldList, props, addr).Equals(entityStr, StringComparison.OrdinalIgnoreCase)) return addr.AddressId;
                     };
                     break;
                 case "AliasEntity":
                     foreach (SSG_Aliase alias in ((SSG_Person)fatherObj).SSG_Aliases)
                     {
-                        if (GetConcateFieldsStr(config.DuplicateFieldList, props, alias) == entityStr) return alias.AliasId;
+                        if (GetConcateFieldsStr(config.DuplicateFieldList, props, alias).Equals(entityStr, StringComparison.OrdinalIgnoreCase)) return alias.AliasId;
                     };
                     break;
                 case "VehicleEntity":
                     foreach (SSG_Asset_Vehicle v in ((SSG_Person)fatherObj).SSG_Asset_Vehicles)
                     {
-                        if (GetConcateFieldsStr(config.DuplicateFieldList, props, v) == entityStr) return v.VehicleId;
+                        if (GetConcateFieldsStr(config.DuplicateFieldList, props, v).Equals(entityStr, StringComparison.OrdinalIgnoreCase)) return v.VehicleId;
                     };
                     break;
                 case "AssetOwnerEntity":
                     foreach (SSG_AssetOwner owner in ((SSG_Asset_Vehicle)fatherObj).SSG_AssetOwners)
                     {
-                        if (GetConcateFieldsStr(config.DuplicateFieldList, props, owner) == entityStr) return owner.AssetOwnerId;
+                        if (GetConcateFieldsStr(config.DuplicateFieldList, props, owner).Equals(entityStr, StringComparison.OrdinalIgnoreCase)) return owner.AssetOwnerId;
                     };
                     break;
                 case "RelatedPersonEntity":
                     foreach (SSG_Identity relatedPerson in ((SSG_Person)fatherObj).SSG_Identities)
                     {
-                        if (GetConcateFieldsStr(config.DuplicateFieldList, props, relatedPerson) == entityStr) return relatedPerson.RelatedPersonId;
+                        if (GetConcateFieldsStr(config.DuplicateFieldList, props, relatedPerson).Equals(entityStr, StringComparison.OrdinalIgnoreCase)) return relatedPerson.RelatedPersonId;
                     };
                     break;
             }            
@@ -165,7 +165,7 @@ namespace Fams3Adapter.Dynamics.Duplicate
                     }
                 }
             }
-            return concatedString.ToLower();
+            return concatedString;
         }
 
         private async Task<bool> GetDuplicateDetectionConfig(CancellationToken cancellationToken)

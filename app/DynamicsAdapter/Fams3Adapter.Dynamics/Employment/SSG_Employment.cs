@@ -80,5 +80,10 @@ namespace Fams3Adapter.Dynamics.Employment
     {
         [JsonProperty("ssg_employmentid")]
         public Guid EmploymentId { get; set; }
+
+        [JsonProperty("ssg_ssg_employment_ssg_employmentcontact_EmploymentId")]
+        public SSG_EmploymentContact[] SSG_EmploymentContacts { get; set; }
+
+        public bool IsDuplicated { get; set; }
     }
 }

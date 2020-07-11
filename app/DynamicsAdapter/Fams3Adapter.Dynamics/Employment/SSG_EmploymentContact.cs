@@ -1,8 +1,9 @@
 ﻿using Newtonsoft.Json;
+using System;
 
 namespace Fams3Adapter.Dynamics.Employment
 {
-    public class SSG_EmploymentContact 
+    public class EmploymentContactEntity
     {
 
         [JsonProperty("ssg_description")]
@@ -33,5 +34,10 @@ namespace Fams3Adapter.Dynamics.Employment
         public int StatusCode { get; set; }
     }
 
+    public class SSG_EmploymentContact : EmploymentContactEntity
+    {
+        [JsonProperty("ssg_employmentcontactid")]
+        public Guid EmploymentContactId { get; set; }
+    }
 
 }

@@ -124,7 +124,7 @@ namespace DynamicsAdapter.Web.Mapping
               .ForMember(dest => dest.ContactPerson, opt => opt.MapFrom(src => (src.Employer == null) ? string.Empty : src.Employer.ContactPerson))
               .IncludeBase<PersonalInfo, DynamicsEntity>();
 
-            CreateMap<Phone, SSG_EmploymentContact>()
+            CreateMap<Phone, EmploymentContactEntity>()
                 .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.Type.Equals("Phone", StringComparison.InvariantCultureIgnoreCase) ? src.PhoneNumber : null))
                 .ForMember(dest => dest.PhoneExtension, opt => opt.MapFrom(src => src.Extension))
                 .ForMember(dest => dest.FaxNumber, opt => opt.MapFrom(src => src.Type.Equals("fax", StringComparison.InvariantCultureIgnoreCase) ? src.PhoneNumber : null))

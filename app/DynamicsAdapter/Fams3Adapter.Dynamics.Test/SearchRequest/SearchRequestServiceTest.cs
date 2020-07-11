@@ -73,7 +73,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             })
             );
 
-            odataClientMock.Setup(x => x.For<SSG_EmploymentContact>(null).Set(It.Is<SSG_EmploymentContact>(x => x.PhoneNumber == "12345678"))
+            odataClientMock.Setup(x => x.For<SSG_EmploymentContact>(null).Set(It.Is<EmploymentContactEntity>(x => x.PhoneNumber == "12345678"))
             .InsertEntryAsync(It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult(new SSG_EmploymentContact()
             {
@@ -201,7 +201,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         [Test]
         public async Task with_correct_employmentid_upload_employmentcontact_should_succed()
         {
-            var employmentContact = new SSG_EmploymentContact()
+            var employmentContact = new EmploymentContactEntity()
             {
                 Employment = new SSG_Employment() { EmploymentId = testId },
                 PhoneNumber = "12345678"

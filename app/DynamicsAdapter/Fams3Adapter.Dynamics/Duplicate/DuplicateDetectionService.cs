@@ -1,5 +1,6 @@
 ﻿using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.AssetOwner;
+using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.Name;
 using Fams3Adapter.Dynamics.Person;
@@ -38,7 +39,9 @@ namespace Fams3Adapter.Dynamics.Duplicate
             {"AliasEntity", "ssg_alias"},
             {"VehicleEntity", "ssg_asset_vehicle"},
             {"AssetOwnerEntity", "ssg_assetowner"},
-            {"RelatedPersonEntity", "SSG_identity" }
+            {"RelatedPersonEntity", "SSG_identity" },
+            {"EmploymentEntity", "ssg_employment" },
+            {"EmploymentContactEntity","ssg_employmentcontact" }
         };
 
         public DuplicateDetectionService(IODataClient oDataClient)
@@ -141,6 +144,18 @@ namespace Fams3Adapter.Dynamics.Duplicate
                     foreach (SSG_Identity relatedPerson in ((SSG_Person)fatherObj).SSG_Identities)
                     {
                         if (GetConcateFieldsStr(config.DuplicateFieldList, props, relatedPerson).Equals(entityStr, StringComparison.OrdinalIgnoreCase)) return relatedPerson.RelatedPersonId;
+                    };
+                    break;
+                case "EmploymentEntity":
+                    foreach (SSG_Employment employment in ((SSG_Person)fatherObj).SSG_Employments)
+                    {
+                        if (GetConcateFieldsStr(config.DuplicateFieldList, props, employment).Equals(entityStr, StringComparison.OrdinalIgnoreCase)) return employment.EmploymentId;
+                    };
+                    break;
+                case "EmploymentContactEntity":
+                    foreach (SSG_EmploymentContact contacts in ((SSG_Employment)fatherObj).SSG_EmploymentContacts)
+                    {
+                        if (GetConcateFieldsStr(config.DuplicateFieldList, props, contacts).Equals(entityStr, StringComparison.OrdinalIgnoreCase)) return contacts.EmploymentContactId;
                     };
                     break;
             }            

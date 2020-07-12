@@ -271,7 +271,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                         {
                             EmploymentContactEntity p = _mapper.Map<EmploymentContactEntity>(phone);
                             p.Employment = ssg_employment;
-                            SSG_EmploymentContact saved = await _searchRequestService.CreateEmploymentContact(p, _cancellationToken);
+                            await _searchRequestService.CreateEmploymentContact(p, _cancellationToken);
                         }
                     }
 

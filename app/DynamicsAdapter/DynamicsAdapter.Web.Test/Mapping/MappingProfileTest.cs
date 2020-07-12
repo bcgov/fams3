@@ -207,7 +207,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 Type = "Phone",
                 Extension = "123",
             };
-            SSG_EmploymentContact sSG_EmploymentContact = _mapper.Map<SSG_EmploymentContact>(phoneNumber);
+            EmploymentContactEntity sSG_EmploymentContact = _mapper.Map<EmploymentContactEntity>(phoneNumber);
             Assert.AreEqual("6904005678", sSG_EmploymentContact.PhoneNumber);
             Assert.AreEqual("123", sSG_EmploymentContact.PhoneExtension);
             Assert.AreEqual(1, sSG_EmploymentContact.StatusCode);
@@ -223,7 +223,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 Type = "fax",
                 Extension = "123",
             };
-            SSG_EmploymentContact sSG_EmploymentContact = _mapper.Map<SSG_EmploymentContact>(phoneNumber);
+            EmploymentContactEntity sSG_EmploymentContact = _mapper.Map<EmploymentContactEntity>(phoneNumber);
             Assert.AreEqual("6904005678", sSG_EmploymentContact.FaxNumber);
             Assert.AreEqual("123", sSG_EmploymentContact.PhoneExtension);
             Assert.AreEqual(1, sSG_EmploymentContact.StatusCode);

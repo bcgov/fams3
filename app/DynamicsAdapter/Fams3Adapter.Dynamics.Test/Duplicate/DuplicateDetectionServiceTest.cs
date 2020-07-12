@@ -1,6 +1,7 @@
 ﻿using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.AssetOwner;
 using Fams3Adapter.Dynamics.Duplicate;
+using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.Name;
 using Fams3Adapter.Dynamics.Person;
@@ -72,6 +73,16 @@ namespace Fams3Adapter.Dynamics.Test.Duplicate
                      {
                          EntityName = "ssg_identity",
                          DuplicateFields = "ssg_persongivenname"
+                     },
+                     new SSG_DuplicateDetectionConfig()
+                     {
+                         EntityName = "ssg_employment",
+                         DuplicateFields = "ssg_websiteurl|ssg_address"
+                     },
+                     new SSG_DuplicateDetectionConfig()
+                     {
+                         EntityName = "ssg_employmentcontact",
+                         DuplicateFields = "ssg_phonenumber"
                      }
                 }));
 
@@ -407,6 +418,69 @@ namespace Fams3Adapter.Dynamics.Test.Duplicate
             Assert.AreEqual(Guid.Empty, guid);
         }
 
+        [Test]
+        public async Task person_has_same_employment_should_return_existed_entity_guid()
+        {
+            DuplicateDetectionService._configs = null;
+            Guid existedEmploymentID = Guid.NewGuid();
+            SSG_Person person = new SSG_Person()
+            {
+                SSG_Employments = new List<SSG_Employment>() {
+                    new SSG_Employment(){Website="web",AddressLine1="line1",AddressLine2="line2", EmploymentId=existedEmploymentID}
+                }.ToArray()
+            };
+            EmploymentEntity entity = new EmploymentEntity() { Website = "web", AddressLine1 = "line1" };
+            Guid guid = await _sut.Exists(person, entity);
+            Assert.AreEqual(existedEmploymentID, guid);
+        }
+
+        [Test]
+        public async Task person_does_not_contain_same_employment_Exists_should_return_empty_guid()
+        {
+            DuplicateDetectionService._configs = null;
+            Guid existedEmploymentID = Guid.NewGuid();
+            SSG_Person person = new SSG_Person()
+            {
+                SSG_Employments = new List<SSG_Employment>() {
+                    new SSG_Employment(){Website="web",AddressLine1="line1",AddressLine2="line2", EmploymentId=existedEmploymentID}
+                }.ToArray()
+            };
+            EmploymentEntity entity = new EmploymentEntity() { Website = "webdiffer", AddressLine1 = "line1" };
+            Guid guid = await _sut.Exists(person, entity);
+            Assert.AreEqual(Guid.Empty, guid);
+        }
+
+        [Test]
+        public async Task employment_has_same_employmentcontact_should_return_existed_entity_guid()
+        {
+            DuplicateDetectionService._configs = null;
+            Guid existedEmploymentContactID = Guid.NewGuid();
+            SSG_Employment employment = new SSG_Employment()
+            {
+                SSG_EmploymentContacts = new List<SSG_EmploymentContact>() {
+                    new SSG_EmploymentContact(){PhoneNumber="123456", EmploymentContactId=existedEmploymentContactID}
+                }.ToArray()
+            };
+            EmploymentContactEntity entity = new EmploymentContactEntity() { PhoneNumber = "123456" };
+            Guid guid = await _sut.Exists(employment, entity);
+            Assert.AreEqual(existedEmploymentContactID, guid);
+        }
+
+        [Test]
+        public async Task employment_does_not_contain_same_employmentcontact_Exists_should_return_empty_guid()
+        {
+            DuplicateDetectionService._configs = null;
+            Guid existedEmploymentContactID = Guid.NewGuid();
+            SSG_Employment employment = new SSG_Employment()
+            {
+                SSG_EmploymentContacts = new List<SSG_EmploymentContact>() {
+                    new SSG_EmploymentContact(){PhoneNumber="123456", EmploymentContactId=existedEmploymentContactID}
+                }.ToArray()
+            };
+            EmploymentContactEntity entity = new EmploymentContactEntity() { PhoneNumber = "12345678" };
+            Guid guid = await _sut.Exists(employment, entity);
+            Assert.AreEqual(Guid.Empty, guid);
+        }
 
         [Test]
         public async Task entity_not_having_config_Exists_should_return_empty_guid()

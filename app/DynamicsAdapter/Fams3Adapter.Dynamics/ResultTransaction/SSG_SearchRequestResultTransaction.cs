@@ -11,9 +11,6 @@ using Fams3Adapter.Dynamics.RelatedPerson;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using Fams3Adapter.Dynamics.Vehicle;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Fams3Adapter.Dynamics.ResultTransaction
 {
@@ -39,7 +36,7 @@ namespace Fams3Adapter.Dynamics.ResultTransaction
         public virtual SSG_Asset_BankingInformation BankInfo { get; set; }
 
         [JsonProperty("ssg_Employer")]
-        public virtual SSG_Employment Employment{ get; set; }
+        public virtual SSG_Employment Employment { get; set; }
 
         [JsonProperty("ssg_ICBCClaim")]
         public virtual SSG_Asset_ICBCClaim InsuranceClaim { get; set; }

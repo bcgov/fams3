@@ -2,15 +2,12 @@ using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.AssetOwner;
 using Fams3Adapter.Dynamics.BankInfo;
 using Fams3Adapter.Dynamics.Duplicate;
-using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.InsuranceClaim;
 using Fams3Adapter.Dynamics.OtherAsset;
 using Fams3Adapter.Dynamics.Person;
-using Fams3Adapter.Dynamics.RelatedPerson;
 using Fams3Adapter.Dynamics.ResultTransaction;
 using Fams3Adapter.Dynamics.SearchRequest;
-using Fams3Adapter.Dynamics.Types;
 using Moq;
 using NUnit.Framework;
 using Simple.OData.Client;
@@ -56,30 +53,6 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
                     CountrySubdivisionId = Guid.NewGuid(),
                     Name = "British Columbia"
                 }));
-
-            odataClientMock.Setup(x => x.For<SSG_Identity>(null).Set(It.Is<RelatedPersonEntity>(x => x.FirstName == "First"))
-        .InsertEntryAsync(It.IsAny<CancellationToken>()))
-        .Returns(Task.FromResult(new SSG_Identity()
-        {
-            FirstName = "FirstName"
-        })
-        );
-
-            odataClientMock.Setup(x => x.For<SSG_Employment>(null).Set(It.Is<EmploymentEntity>(x => x.BusinessOwner == "Business Owner"))
-            .InsertEntryAsync(It.IsAny<CancellationToken>()))
-            .Returns(Task.FromResult(new SSG_Employment()
-            {
-                BusinessOwner = "Business Owner"
-            })
-            );
-
-            odataClientMock.Setup(x => x.For<SSG_EmploymentContact>(null).Set(It.Is<EmploymentContactEntity>(x => x.PhoneNumber == "12345678"))
-            .InsertEntryAsync(It.IsAny<CancellationToken>()))
-            .Returns(Task.FromResult(new SSG_EmploymentContact()
-            {
-                PhoneNumber = "12345678"
-            })
-            );
 
             odataClientMock.Setup(x => x.For<SSG_Asset_BankingInformation>(null).Set(It.Is<BankingInformationEntity>(x => x.BankName == "bank"))
             .InsertEntryAsync(It.IsAny<CancellationToken>()))
@@ -148,69 +121,9 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             _sut = new SearchRequestService(odataClientMock.Object, _duplicateServiceMock.Object);
         }
 
-        [Test]
-        public async Task with_correct_searchRequestid_upload_related_person_should_success()
-        {
-            var relatedPerson = new RelatedPersonEntity()
-            {
-                FirstName = "First",
-                LastName = "lastName",
-                MiddleName = "middleName",
-                ThirdGivenName = "otherName",
-                Type = PersonRelationType.Friend.Value,
-                Notes = "notes",
-                SupplierRelationType = "friend",
-                Date1 = new DateTime(2001, 1, 1),
-                Date1Label = "date1lable",
-                Date2 = new DateTime(2005, 1, 1),
-                Date2Label = "date2lable",
-                Gender = GenderType.Female.Value,
-                Description = "description",
-                SearchRequest = new SSG_SearchRequest() { SearchRequestId = testId },
-                Person = new SSG_Person() { PersonId = testPersonId }
-            };
-
-            var result = await _sut.CreateRelatedPerson(relatedPerson, CancellationToken.None);
-
-            Assert.AreEqual("FirstName", result.FirstName);
-        }
 
 
-        [Test]
-        public async Task with_correct_searchRequestid_upload_employment_should_succed()
-        {
-            var employment = new EmploymentEntity()
-            {
-                BusinessOwner = "Business Owner",
-                BusinessName = "Business Name",
-                Notes = "notes",
-                Date1 = new DateTime(2001, 1, 1),
-                Date1Label = "date1lable",
-                Date2 = new DateTime(2005, 1, 1),
-                Date2Label = "date2lable",
 
-                SearchRequest = new SSG_SearchRequest() { SearchRequestId = testId },
-                Person = new SSG_Person() { PersonId = testPersonId }
-            };
-
-            var result = await _sut.CreateEmployment(employment, CancellationToken.None);
-
-            Assert.AreEqual("Business Owner", result.BusinessOwner);
-        }
-
-        [Test]
-        public async Task with_correct_employmentid_upload_employmentcontact_should_succed()
-        {
-            var employmentContact = new EmploymentContactEntity()
-            {
-                Employment = new SSG_Employment() { EmploymentId = testId },
-                PhoneNumber = "12345678"
-            };
-
-            var result = await _sut.CreateEmploymentContact(employmentContact, CancellationToken.None);
-
-            Assert.AreEqual("12345678", result.PhoneNumber);
-        }
 
         [Test]
         public async Task with_correct_searchRequestid_upload_bank_info_should_success()

@@ -153,9 +153,10 @@ namespace Fams3Adapter.Dynamics.Duplicate
                     };
                     break;
                 case "EmploymentContactEntity":
-                    foreach (SSG_EmploymentContact contacts in ((SSG_Employment)fatherObj).SSG_EmploymentContacts)
+                    foreach (SSG_EmploymentContact contact in ((SSG_Employment)fatherObj).SSG_EmploymentContacts)
                     {
-                        if (GetConcateFieldsStr(config.DuplicateFieldList, props, contacts).Equals(entityStr, StringComparison.OrdinalIgnoreCase)) return contacts.EmploymentContactId;
+                        string str = GetConcateFieldsStr(config.DuplicateFieldList, props, contact);
+                        if (GetConcateFieldsStr(config.DuplicateFieldList, props, contact).Equals(entityStr, StringComparison.OrdinalIgnoreCase)) return contact.EmploymentContactId;
                     };
                     break;
             }            

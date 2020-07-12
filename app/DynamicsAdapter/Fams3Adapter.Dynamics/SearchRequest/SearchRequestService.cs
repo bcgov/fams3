@@ -120,6 +120,13 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
         public async Task<SSG_Address> CreateAddress(AddressEntity address, CancellationToken cancellationToken)
         {
+            if (address.Person.IsDuplicated)
+            {
+                Guid duplicatedAddressId = await _duplicateDetectService.Exists(address.Person, address);
+                if (duplicatedAddressId != Guid.Empty)
+                    return new SSG_Address() { AddressId = duplicatedAddressId };
+            }
+
             string countryName = address.CountryText;
             var country = await _oDataClient.For<SSG_Country>()
                                          .Filter(x => x.Name == countryName)
@@ -132,12 +139,6 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                                          .FindEntryAsync(cancellationToken);
             address.CountrySubdivision = subdivision;
 
-            if (address.Person.IsDuplicated)
-            {
-                Guid duplicatedAddressId = await _duplicateDetectService.Exists(address.Person, address);
-                if (duplicatedAddressId != Guid.Empty)
-                    return new SSG_Address() { AddressId = duplicatedAddressId };
-            }
             return await this._oDataClient.For<SSG_Address>().Set(address).InsertEntryAsync(cancellationToken);
 
         }
@@ -155,17 +156,17 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
         public async Task<SSG_Employment> CreateEmployment(EmploymentEntity employment, CancellationToken cancellationToken)
         {
-            if (employment.Person.IsDuplicated)
+            if (employment.Person != null && employment.Person.IsDuplicated)
             {
                 Guid duplicatedEmploymentId = await _duplicateDetectService.Exists(employment.Person, employment);
                 if (duplicatedEmploymentId != Guid.Empty)
                 {
-                    var duplicatedVehicle = await _oDataClient.For<SSG_Employment>()
+                    var duplicatedEmployment = await _oDataClient.For<SSG_Employment>()
                                 .Key(duplicatedEmploymentId)
                                 .Expand(x => x.SSG_EmploymentContacts)
                                 .FindEntryAsync(cancellationToken);
-                    duplicatedVehicle.IsDuplicated = true;
-                    return duplicatedVehicle;
+                    duplicatedEmployment.IsDuplicated = true;
+                    return duplicatedEmployment;
                 }
             }
 

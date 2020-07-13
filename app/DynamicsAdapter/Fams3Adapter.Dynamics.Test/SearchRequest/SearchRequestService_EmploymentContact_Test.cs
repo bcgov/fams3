@@ -1,8 +1,6 @@
-using Fams3Adapter.Dynamics.AssetOwner;
 using Fams3Adapter.Dynamics.Duplicate;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.SearchRequest;
-using Fams3Adapter.Dynamics.Vehicle;
 using Moq;
 using NUnit.Framework;
 using Simple.OData.Client;

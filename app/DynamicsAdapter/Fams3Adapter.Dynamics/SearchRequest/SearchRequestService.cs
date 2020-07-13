@@ -244,6 +244,12 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
         public async Task<SSG_Asset_Other> CreateOtherAsset(AssetOtherEntity otherAsset, CancellationToken cancellationToken)
         {
+            if (otherAsset.Person.IsDuplicated)
+            {
+                Guid duplicatedOtherAssetId = await _duplicateDetectService.Exists(otherAsset.Person, otherAsset);
+                if (duplicatedOtherAssetId != Guid.Empty)
+                    return new SSG_Asset_Other() { AssetOtherId = duplicatedOtherAssetId };
+            }
             return await this._oDataClient.For<SSG_Asset_Other>().Set(otherAsset).InsertEntryAsync(cancellationToken);
         }
 

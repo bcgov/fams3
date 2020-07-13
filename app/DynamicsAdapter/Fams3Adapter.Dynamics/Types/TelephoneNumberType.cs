@@ -8,6 +8,7 @@ namespace Fams3Adapter.Dynamics.Types
         public static TelephoneNumberType Work = new TelephoneNumberType(867670002, "Work");
         public static TelephoneNumberType Home = new TelephoneNumberType(867670001, "Home");
         public static TelephoneNumberType Other = new TelephoneNumberType(867670003, "Other");
+        public static TelephoneNumberType Fax = new TelephoneNumberType(867670004, "Fax");
         protected TelephoneNumberType(int value, string name) : base(value, name)
         {
 

@@ -22,7 +22,10 @@ namespace Fams3Adapter.Dynamics.Employment
         public string PhoneNumber { get; set; }
 
         [JsonProperty("ssg_phonetype")]
-        public string PhoneType { get; set; }
+        public int? PhoneType { get; set; }
+
+        [JsonProperty("ssg_phonetypetext")]
+        public string SupplierTypeCode { get; set; }
 
         [JsonProperty("ssg_EmploymentId")]
         public virtual SSG_Employment Employment { get; set; }

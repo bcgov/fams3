@@ -86,7 +86,7 @@ namespace DynamicsAdapter.Web.Mapping
         public int? Convert(string sourceMember, ResolutionContext context)
         {
             return
-                sourceMember.ToLower() switch
+                sourceMember?.ToLower() switch
                 {
                     "cell" => TelephoneNumberType.Cell.Value,
                     "home" => TelephoneNumberType.Home.Value,
@@ -96,6 +96,7 @@ namespace DynamicsAdapter.Web.Mapping
                     "business" => TelephoneNumberType.Work.Value,
                     "unknown" => TelephoneNumberType.Other.Value,
                     "other" => TelephoneNumberType.Other.Value,
+                    "fax" => TelephoneNumberType.Fax.Value,
                     "blank" => (int?)null,
                     _ => TelephoneNumberType.Other.Value
                 };

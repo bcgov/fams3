@@ -60,7 +60,7 @@ namespace Fams3Adapter.Dynamics.Employment
         [JsonProperty("ssg_contactname")]
         public string ContactPerson { get; set; }
 
-        [JsonProperty("ssg_name")]
+        [JsonProperty("ssg_employerlegalname")]
         public string BusinessName { get; set; }
 
         [JsonProperty("ssg_address")]

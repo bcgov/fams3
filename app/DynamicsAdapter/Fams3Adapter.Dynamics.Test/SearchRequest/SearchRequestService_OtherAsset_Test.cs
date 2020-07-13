@@ -1,7 +1,6 @@
 using Fams3Adapter.Dynamics.Duplicate;
 using Fams3Adapter.Dynamics.OtherAsset;
 using Fams3Adapter.Dynamics.Person;
-using Fams3Adapter.Dynamics.RelatedPerson;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Moq;
 using NUnit.Framework;

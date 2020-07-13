@@ -269,7 +269,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                     {
                         foreach (var phone in employment.Employer.Phones)
                         {
-                            SSG_EmploymentContact p = _mapper.Map<SSG_EmploymentContact>(phone);
+                            EmploymentContactEntity p = _mapper.Map<EmploymentContactEntity>(phone);
                             p.Employment = ssg_employment;
                             await _searchRequestService.CreateEmploymentContact(p, _cancellationToken);
                         }
@@ -434,7 +434,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                         {
                             foreach (var phone in claim.Employer.Phones)
                             {
-                                SSG_EmploymentContact p = _mapper.Map<SSG_EmploymentContact>(phone);
+                                EmploymentContactEntity p = _mapper.Map<EmploymentContactEntity>(phone);
                                 p.Employment = ssg_employment;
                                 await _searchRequestService.CreateEmploymentContact(p, _cancellationToken);
                             }

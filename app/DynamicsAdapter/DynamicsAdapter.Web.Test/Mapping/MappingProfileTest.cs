@@ -207,11 +207,11 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 Type = "Phone",
                 Extension = "123",
             };
-            SSG_EmploymentContact sSG_EmploymentContact = _mapper.Map<SSG_EmploymentContact>(phoneNumber);
-            Assert.AreEqual("6904005678", sSG_EmploymentContact.PhoneNumber);
-            Assert.AreEqual("123", sSG_EmploymentContact.PhoneExtension);
-            Assert.AreEqual(1, sSG_EmploymentContact.StatusCode);
-            Assert.AreEqual(0, sSG_EmploymentContact.StateCode);
+            EmploymentContactEntity employmentContact = _mapper.Map<EmploymentContactEntity>(phoneNumber);
+            Assert.AreEqual("6904005678", employmentContact.PhoneNumber);
+            Assert.AreEqual("123", employmentContact.PhoneExtension);
+            Assert.AreEqual(1, employmentContact.StatusCode);
+            Assert.AreEqual(0, employmentContact.StateCode);
         }
 
         [Test]
@@ -223,11 +223,11 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 Type = "fax",
                 Extension = "123",
             };
-            SSG_EmploymentContact sSG_EmploymentContact = _mapper.Map<SSG_EmploymentContact>(phoneNumber);
-            Assert.AreEqual("6904005678", sSG_EmploymentContact.FaxNumber);
-            Assert.AreEqual("123", sSG_EmploymentContact.PhoneExtension);
-            Assert.AreEqual(1, sSG_EmploymentContact.StatusCode);
-            Assert.AreEqual(0, sSG_EmploymentContact.StateCode);
+            EmploymentContactEntity employmentContact = _mapper.Map<EmploymentContactEntity>(phoneNumber);
+            Assert.AreEqual("6904005678", employmentContact.FaxNumber);
+            Assert.AreEqual("123", employmentContact.PhoneExtension);
+            Assert.AreEqual(1, employmentContact.StatusCode);
+            Assert.AreEqual(0, employmentContact.StateCode);
         }
 
         [Test]
@@ -250,21 +250,24 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 Description = "description",
                 Notes = "notes"
             };
-            AddressEntity ssg_addr = _mapper.Map<AddressEntity>(address);
-            Assert.AreEqual("AddressLine1", ssg_addr.AddressLine1);
-            Assert.AreEqual("AddressLine2", ssg_addr.AddressLine2);
-            Assert.AreEqual("AddressLine3", ssg_addr.AddressLine3);
-            Assert.AreEqual("Manitoba", ssg_addr.CountrySubdivisionText);
-            Assert.AreEqual("testCity", ssg_addr.City);
-            Assert.AreEqual("canada", ssg_addr.CountryText);
-            Assert.AreEqual(LocationType.Residence.Value, ssg_addr.Category);
-            Assert.AreEqual("p3p3p3", ssg_addr.PostalCode);
-            Assert.AreEqual(1, ssg_addr.StatusCode);
-            Assert.AreEqual(0, ssg_addr.StateCode);
-            Assert.AreEqual("Start Date", ssg_addr.Date1Label);
-            Assert.AreEqual("End Date", ssg_addr.Date2Label);
-            Assert.AreEqual(new DateTime(2019, 9, 1), ssg_addr.Date1);
-            Assert.AreEqual(new DateTime(2020, 9, 1), ssg_addr.Date2);
+            AddressEntity addr = _mapper.Map<AddressEntity>(address);
+            Assert.AreEqual("AddressLine1", addr.AddressLine1);
+            Assert.AreEqual("AddressLine2", addr.AddressLine2);
+            Assert.AreEqual("AddressLine3", addr.AddressLine3);
+            Assert.AreEqual("Manitoba", addr.CountrySubdivisionText);
+            Assert.AreEqual("testCity", addr.City);
+            Assert.AreEqual("canada", addr.CountryText);
+            Assert.AreEqual(LocationType.Residence.Value, addr.Category);
+            Assert.AreEqual("p3p3p3", addr.PostalCode);
+            Assert.AreEqual(null, addr.Name);
+            Assert.AreEqual(1, addr.StatusCode);
+            Assert.AreEqual(0, addr.StateCode);
+            Assert.AreEqual("Start Date", addr.Date1Label);
+            Assert.AreEqual("End Date", addr.Date2Label);
+            Assert.AreEqual(new DateTime(2019, 9, 1), addr.Date1);
+            Assert.AreEqual(new DateTime(2020, 9, 1), addr.Date2);
+            Assert.AreEqual("description", addr.Description);
+            Assert.AreEqual("notes", addr.Notes);
         }
 
         [Test]

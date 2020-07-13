@@ -40,7 +40,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         private RelatedPersonEntity _fakeRelatedPerson;
         private EmploymentEntity _fakeEmployment;
         private EmploymentEntity _fakeCompensationEmployment;
-        private SSG_EmploymentContact _fakeEmploymentContact;
+        private EmploymentContactEntity _fakeEmploymentContact;
         private BankingInformationEntity _fakeBankInfo;
         private PersonEntity _ssg_fakePerson;
         private AssetOwnerEntity _fakeAssetOwner;
@@ -104,7 +104,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 }
             };
 
-            _fakeEmploymentContact = new SSG_EmploymentContact
+            _fakeEmploymentContact = new EmploymentContactEntity
             {
                 PhoneNumber = "11111111"
             };
@@ -363,7 +363,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _mapper.Setup(m => m.Map<EmploymentEntity>(It.IsAny<Employment>()))
               .Returns(_fakeEmployment);
 
-            _mapper.Setup(m => m.Map<SSG_EmploymentContact>(It.IsAny<Phone>()))
+            _mapper.Setup(m => m.Map<EmploymentContactEntity>(It.IsAny<Phone>()))
                 .Returns(_fakeEmploymentContact);
 
             _mapper.Setup(m => m.Map<RelatedPersonEntity>(It.IsAny<RelatedPerson>()))
@@ -429,7 +429,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 Occupation = "Occupation"
             }));
 
-            _searchRequestServiceMock.Setup(x => x.CreateEmploymentContact(It.IsAny<SSG_EmploymentContact>(), It.IsAny<CancellationToken>()))
+            _searchRequestServiceMock.Setup(x => x.CreateEmploymentContact(It.IsAny<EmploymentContactEntity>(), It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult<SSG_EmploymentContact>(new SSG_EmploymentContact()
             {
                 PhoneNumber = "4007678231"
@@ -530,7 +530,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
               .Verify(x => x.CreateEmployment(It.IsAny<EmploymentEntity>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
 
             _searchRequestServiceMock
-                .Verify(x => x.CreateEmploymentContact(It.IsAny<SSG_EmploymentContact>(), It.IsAny<CancellationToken>()), Times.Once);
+                .Verify(x => x.CreateEmploymentContact(It.IsAny<EmploymentContactEntity>(), It.IsAny<CancellationToken>()), Times.Once);
 
             _searchRequestServiceMock
                .Verify(x => x.CreateBankInfo(It.IsAny<BankingInformationEntity>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
@@ -590,7 +590,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
               .Verify(x => x.CreateEmployment(It.IsAny<EmploymentEntity>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
 
             _searchRequestServiceMock
-                .Verify(x => x.CreateEmploymentContact(It.IsAny<SSG_EmploymentContact>(), It.IsAny<CancellationToken>()), Times.Once);
+                .Verify(x => x.CreateEmploymentContact(It.IsAny<EmploymentContactEntity>(), It.IsAny<CancellationToken>()), Times.Once);
 
             _searchRequestServiceMock
                .Verify(x => x.CreateBankInfo(It.IsAny<BankingInformationEntity>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
@@ -674,7 +674,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
               .Verify(x => x.CreateEmployment(It.IsAny<EmploymentEntity>(), It.IsAny<CancellationToken>()), Times.Never);
 
             _searchRequestServiceMock
-                .Verify(x => x.CreateEmploymentContact(It.IsAny<SSG_EmploymentContact>(), It.IsAny<CancellationToken>()), Times.Never);
+                .Verify(x => x.CreateEmploymentContact(It.IsAny<EmploymentContactEntity>(), It.IsAny<CancellationToken>()), Times.Never);
 
             _searchRequestServiceMock
                .Verify(x => x.CreateBankInfo(It.IsAny<SSG_Asset_BankingInformation>(), It.IsAny<CancellationToken>()), Times.Never);

@@ -53,7 +53,7 @@ namespace Fams3Adapter.Dynamics.Test.Duplicate
                      new SSG_DuplicateDetectionConfig()
                      {
                          EntityName = "ssg_phonenumber",
-                         DuplicateFields = "ssg_telephonenumber|ssg_phoneextension"
+                         DuplicateFields = "ssg_originalphonenumber|ssg_phoneextension"
                      },
                      new SSG_DuplicateDetectionConfig()
                      {

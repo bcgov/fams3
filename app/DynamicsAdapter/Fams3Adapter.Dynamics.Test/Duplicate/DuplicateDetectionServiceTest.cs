@@ -1,5 +1,6 @@
 ﻿using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.AssetOwner;
+using Fams3Adapter.Dynamics.BankInfo;
 using Fams3Adapter.Dynamics.Duplicate;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
@@ -89,6 +90,11 @@ namespace Fams3Adapter.Dynamics.Test.Duplicate
                      {
                          EntityName = "ssg_asset_other",
                          DuplicateFields = "ssg_otherassettype"
+                     },
+                     new SSG_DuplicateDetectionConfig()
+                     {
+                         EntityName = "ssg_asset_bankinginformation",
+                         DuplicateFields = "ssg_accountnumber"
                      }
                 }));
 
@@ -518,6 +524,40 @@ namespace Fams3Adapter.Dynamics.Test.Duplicate
                 }.ToArray()
             };
             AssetOtherEntity entity = new AssetOtherEntity() { TypeDescription = "otherasset", Notes = "notes" };
+            Guid guid = await _sut.Exists(person, entity);
+            Assert.AreEqual(Guid.Empty, guid);
+        }
+
+        [Test]
+        public async Task person_has_same_bankInfo_should_return_existed_entity_guid()
+        {
+            DuplicateDetectionService._configs = null;
+            Guid existedBankInfoID = Guid.NewGuid();
+            SSG_Person person = new SSG_Person()
+            {
+                SSG_Asset_BankingInformations = new List<SSG_Asset_BankingInformation>() {
+                    new SSG_Asset_BankingInformation(){
+                        AccountNumber="accountnumber", BankingInformationId=existedBankInfoID}
+                }.ToArray()
+            };
+            BankingInformationEntity entity = new BankingInformationEntity() { AccountNumber = "accountnumber", Notes = "notes" };
+            Guid guid = await _sut.Exists(person, entity);
+            Assert.AreEqual(existedBankInfoID, guid);
+        }
+
+        [Test]
+        public async Task person_does_not_contain_same_bankInfo_Exists_should_return_empty_guid()
+        {
+            DuplicateDetectionService._configs = null;
+            Guid existedBankInfoID = Guid.NewGuid();
+            SSG_Person person = new SSG_Person()
+            {
+                SSG_Asset_BankingInformations = new List<SSG_Asset_BankingInformation>() {
+                    new SSG_Asset_BankingInformation(){
+                        AccountNumber="accountnumber111", BankingInformationId=existedBankInfoID}
+                }.ToArray()
+            };
+            BankingInformationEntity entity = new BankingInformationEntity() { AccountNumber = "accountnumber", Notes = "notes" };
             Guid guid = await _sut.Exists(person, entity);
             Assert.AreEqual(Guid.Empty, guid);
         }

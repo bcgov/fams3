@@ -210,7 +210,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
         public async Task<SSG_Asset_BankingInformation> CreateBankInfo(BankingInformationEntity bankInfo, CancellationToken cancellationToken)
         {
-            if (bankInfo.Person.IsDuplicated)
+            if (bankInfo.Person != null && bankInfo.Person.IsDuplicated)
             {
                 Guid duplicatedBankInfoId = await _duplicateDetectService.Exists(bankInfo.Person, bankInfo);
                 if (duplicatedBankInfoId != Guid.Empty)

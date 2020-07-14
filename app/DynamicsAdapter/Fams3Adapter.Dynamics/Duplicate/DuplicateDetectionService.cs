@@ -1,5 +1,6 @@
 ﻿using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.AssetOwner;
+using Fams3Adapter.Dynamics.BankInfo;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.Name;
@@ -43,7 +44,8 @@ namespace Fams3Adapter.Dynamics.Duplicate
             {"RelatedPersonEntity", "SSG_identity" },
             {"EmploymentEntity", "ssg_employment" },
             {"EmploymentContactEntity","ssg_employmentcontact" },
-            {"AssetOtherEntity","ssg_asset_other" }
+            {"AssetOtherEntity","ssg_asset_other" },
+            {"BankingInformationEntity","ssg_asset_bankinginformation"}
         };
 
         public DuplicateDetectionService(IODataClient oDataClient)
@@ -157,15 +159,19 @@ namespace Fams3Adapter.Dynamics.Duplicate
                 case "EmploymentContactEntity":
                     foreach (SSG_EmploymentContact contact in ((SSG_Employment)fatherObj).SSG_EmploymentContacts)
                     {
-                        string str = GetConcateFieldsStr(config.DuplicateFieldList, props, contact);
                         if (GetConcateFieldsStr(config.DuplicateFieldList, props, contact).Equals(entityStr, StringComparison.OrdinalIgnoreCase)) return contact.EmploymentContactId;
                     };
                     break;
                 case "AssetOtherEntity":
                     foreach (SSG_Asset_Other other in ((SSG_Person)fatherObj).SSG_Asset_Others)
                     {
-                        string str = GetConcateFieldsStr(config.DuplicateFieldList, props, other);
                         if (GetConcateFieldsStr(config.DuplicateFieldList, props, other).Equals(entityStr, StringComparison.OrdinalIgnoreCase)) return other.AssetOtherId;
+                    };
+                    break;
+                case "BankingInformationEntity":
+                    foreach (SSG_Asset_BankingInformation bankInfo in ((SSG_Person)fatherObj).SSG_Asset_BankingInformations)
+                    {
+                        if (GetConcateFieldsStr(config.DuplicateFieldList, props, bankInfo).Equals(entityStr, StringComparison.OrdinalIgnoreCase)) return bankInfo.BankingInformationId;
                     };
                     break;
             }            

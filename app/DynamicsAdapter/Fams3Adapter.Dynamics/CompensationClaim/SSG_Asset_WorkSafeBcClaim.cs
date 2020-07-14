@@ -1,10 +1,11 @@
-﻿using Fams3Adapter.Dynamics.Employment;
+﻿using Fams3Adapter.Dynamics.BankInfo;
+using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Newtonsoft.Json;
 using System;
 
-namespace Fams3Adapter.Dynamics.BankInfo
+namespace Fams3Adapter.Dynamics.CompensationClaim
 {
     public class CompensationClaimEntity : DynamicsEntity
     {

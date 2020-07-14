@@ -4,6 +4,7 @@ using Fams3Adapter.Dynamics.Duplicate;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.Name;
+using Fams3Adapter.Dynamics.OtherAsset;
 using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.RelatedPerson;
@@ -52,7 +53,7 @@ namespace Fams3Adapter.Dynamics.Test.Duplicate
                      new SSG_DuplicateDetectionConfig()
                      {
                          EntityName = "ssg_phonenumber",
-                         DuplicateFields = "ssg_telephonenumber|ssg_phoneextension"
+                         DuplicateFields = "ssg_originalphonenumber|ssg_phoneextension"
                      },
                      new SSG_DuplicateDetectionConfig()
                      {
@@ -83,6 +84,11 @@ namespace Fams3Adapter.Dynamics.Test.Duplicate
                      {
                          EntityName = "ssg_employmentcontact",
                          DuplicateFields = "ssg_phonenumber"
+                     },
+                     new SSG_DuplicateDetectionConfig()
+                     {
+                         EntityName = "ssg_asset_other",
+                         DuplicateFields = "ssg_otherassettype"
                      }
                 }));
 
@@ -479,6 +485,40 @@ namespace Fams3Adapter.Dynamics.Test.Duplicate
             };
             EmploymentContactEntity entity = new EmploymentContactEntity() { PhoneNumber = "12345678" };
             Guid guid = await _sut.Exists(employment, entity);
+            Assert.AreEqual(Guid.Empty, guid);
+        }
+
+        [Test]
+        public async Task person_has_same_otherasset_should_return_existed_entity_guid()
+        {
+            DuplicateDetectionService._configs = null;
+            Guid existedOtherAssetID = Guid.NewGuid();
+            SSG_Person person = new SSG_Person()
+            {
+                SSG_Asset_Others = new List<SSG_Asset_Other>() {
+                    new SSG_Asset_Other(){
+                        TypeDescription="otherasset", AssetOtherId=existedOtherAssetID}
+                }.ToArray()
+            };
+            AssetOtherEntity entity = new AssetOtherEntity() { TypeDescription = "otherasset", Notes="notes" };
+            Guid guid = await _sut.Exists(person, entity);
+            Assert.AreEqual(existedOtherAssetID, guid);
+        }
+
+        [Test]
+        public async Task person_does_not_contain_same_otherasset_Exists_should_return_empty_guid()
+        {
+            DuplicateDetectionService._configs = null;
+            Guid existedOtherAssetID = Guid.NewGuid();
+            SSG_Person person = new SSG_Person()
+            {
+                SSG_Asset_Others = new List<SSG_Asset_Other>() {
+                    new SSG_Asset_Other(){
+                        TypeDescription="otherasset111", AssetOtherId=existedOtherAssetID}
+                }.ToArray()
+            };
+            AssetOtherEntity entity = new AssetOtherEntity() { TypeDescription = "otherasset", Notes = "notes" };
+            Guid guid = await _sut.Exists(person, entity);
             Assert.AreEqual(Guid.Empty, guid);
         }
 

@@ -3,6 +3,7 @@ using Fams3Adapter.Dynamics.AssetOwner;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.Name;
+using Fams3Adapter.Dynamics.OtherAsset;
 using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.RelatedPerson;
@@ -41,7 +42,8 @@ namespace Fams3Adapter.Dynamics.Duplicate
             {"AssetOwnerEntity", "ssg_assetowner"},
             {"RelatedPersonEntity", "SSG_identity" },
             {"EmploymentEntity", "ssg_employment" },
-            {"EmploymentContactEntity","ssg_employmentcontact" }
+            {"EmploymentContactEntity","ssg_employmentcontact" },
+            {"AssetOtherEntity","ssg_asset_other" }
         };
 
         public DuplicateDetectionService(IODataClient oDataClient)
@@ -157,6 +159,13 @@ namespace Fams3Adapter.Dynamics.Duplicate
                     {
                         string str = GetConcateFieldsStr(config.DuplicateFieldList, props, contact);
                         if (GetConcateFieldsStr(config.DuplicateFieldList, props, contact).Equals(entityStr, StringComparison.OrdinalIgnoreCase)) return contact.EmploymentContactId;
+                    };
+                    break;
+                case "AssetOtherEntity":
+                    foreach (SSG_Asset_Other other in ((SSG_Person)fatherObj).SSG_Asset_Others)
+                    {
+                        string str = GetConcateFieldsStr(config.DuplicateFieldList, props, other);
+                        if (GetConcateFieldsStr(config.DuplicateFieldList, props, other).Equals(entityStr, StringComparison.OrdinalIgnoreCase)) return other.AssetOtherId;
                     };
                     break;
             }            

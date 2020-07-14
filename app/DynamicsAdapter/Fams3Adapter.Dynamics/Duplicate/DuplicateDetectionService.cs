@@ -39,7 +39,7 @@ namespace Fams3Adapter.Dynamics.Duplicate
             {"AddressEntity", "ssg_address" },
             {"IdentifierEntity", "ssg_identifier" },
             {"PhoneNumberEntity", "ssg_phonenumber" },
-            {"AliasEntity", "ssg_alias"},
+            {"AliasEntity", "ssg_aliase"},
             {"VehicleEntity", "ssg_asset_vehicle"},
             {"AssetOwnerEntity", "ssg_assetowner"},
             {"RelatedPersonEntity", "SSG_identity" },
@@ -194,7 +194,8 @@ namespace Fams3Adapter.Dynamics.Duplicate
             Type type = entity.GetType();
             string ssgName;
             if(!EntityNameMap.TryGetValue(type.Name, out ssgName)) return false;
-            if( ! ssgName.Equals(ssg.GetType().Name,StringComparison.InvariantCultureIgnoreCase)) return false;
+            if( !ssgName.Equals(ssg.GetType().Name,StringComparison.InvariantCultureIgnoreCase)) 
+                return false;
 
             SSG_DuplicateDetectionConfig config = _configs.FirstOrDefault(m => m.EntityName.ToLower() == ssgName.ToLower());
             if (config == null) return false;

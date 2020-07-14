@@ -37,7 +37,7 @@ namespace BcGov.Fams3.SearchApi.Core.Adapters.Middleware
 
         public async Task ConsumeFault(ConsumeContext<PersonSearchOrdered> context, Exception exception)
         {
-            _logger.LogError(exception, "Adapter Failed to save search request.");
+            _logger.LogError(exception, "Adapter Failed to execute person search.");
                 await context.Publish<PersonSearchFailed>(new DefaultPersonSearchFailed(context.Message.SearchRequestId,
                     context.Message.SearchRequestKey,
                     _providerProfile, exception.Message));

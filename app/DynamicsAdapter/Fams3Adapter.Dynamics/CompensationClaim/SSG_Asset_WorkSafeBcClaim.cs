@@ -40,11 +40,17 @@ namespace Fams3Adapter.Dynamics.BankInfo
 
         [JsonProperty("ssg_Employment")]
         public virtual SSG_Employment Employment { get; set; }
+
+        public EmploymentEntity EmploymentEntity { get; set; }
+        public BankingInformationEntity BankInformationEntity { get; set; }
     }
 
-    public class SSG_Asset_WorkSafeBcClaim : CompensationClaimEntity
+
+
+public class SSG_Asset_WorkSafeBcClaim : CompensationClaimEntity
     {
         [JsonProperty("ssg_asset_worksafebcclaimid")]
         public Guid CompensationClaimId{ get; set; }
+        public bool IsDuplicated { get; set; }
     }
 }

@@ -414,42 +414,56 @@ namespace DynamicsAdapter.Web.PersonSearch
 
                 foreach (CompensationClaim claim in _foundPerson.CompensationClaims)
                 {
-                    SSG_Asset_BankingInformation ssg_bank = null;
+                    BankingInformationEntity bankEntity=null;
                     if (claim.BankInfo != null)
                     {
-                        BankingInformationEntity bank = _mapper.Map<BankingInformationEntity>(claim.BankInfo);
-                        bank.InformationSource = _providerDynamicsID;
-                        ssg_bank = await _searchRequestService.CreateBankInfo(bank, _cancellationToken);
+                        bankEntity = _mapper.Map<BankingInformationEntity>(claim.BankInfo);
+                        bankEntity.InformationSource = _providerDynamicsID;
                     }
 
-                    SSG_Employment ssg_employment = null;
+                    EmploymentEntity employmentEntity = null;
                     if (claim.Employer != null)
                     {
-                        EmploymentEntity employ = _mapper.Map<EmploymentEntity>(claim.Employer);
-                        employ.InformationSource = _providerDynamicsID;
-                        employ.Date1 = claim.ReferenceDates?.SingleOrDefault(m => m.Index == 0)?.Value.DateTime;
-                        employ.Date1Label = claim.ReferenceDates?.SingleOrDefault(m => m.Index == 0)?.Key;
-                        ssg_employment = await _searchRequestService.CreateEmployment(employ, _cancellationToken);
-                        if (claim.Employer.Phones != null)
-                        {
-                            foreach (var phone in claim.Employer.Phones)
-                            {
-                                EmploymentContactEntity p = _mapper.Map<EmploymentContactEntity>(phone);
-                                p.Employment = ssg_employment;
-                                await _searchRequestService.CreateEmploymentContact(p, _cancellationToken);
-                            }
-                        }
+                        employmentEntity = _mapper.Map<EmploymentEntity>(claim.Employer);
+                        employmentEntity.InformationSource = _providerDynamicsID;
+                        employmentEntity.Date1 = claim.ReferenceDates?.SingleOrDefault(m => m.Index == 0)?.Value.DateTime;
+                        employmentEntity.Date1Label = claim.ReferenceDates?.SingleOrDefault(m => m.Index == 0)?.Key;
                     }
 
                     CompensationClaimEntity ssg_claim = _mapper.Map<CompensationClaimEntity>(claim);
                     ssg_claim.SearchRequest = _searchRequest;
                     ssg_claim.InformationSource = _providerDynamicsID;
                     ssg_claim.Person =  _returnedPerson;
-                    ssg_claim.BankingInformation = ssg_bank;
-                    ssg_claim.Employment = ssg_employment;
-                    SSG_Asset_WorkSafeBcClaim ssgClaim = await _searchRequestService.CreateCompensationClaim(ssg_claim, _cancellationToken);
+                    ssg_claim.BankInformationEntity = bankEntity;
+                    ssg_claim.EmploymentEntity = employmentEntity;
 
-                    await CreateResultTransaction(ssgClaim);
+                    SSG_Asset_WorkSafeBcClaim duplicatedClaim = await _searchRequestService.IsCompensationDuplicated(ssg_claim, _cancellationToken);
+                    SSG_Employment ssg_employment = null;
+                    if (duplicatedClaim != null && duplicatedClaim.IsDuplicated)
+                    {
+                        ssg_employment = duplicatedClaim.Employment;
+
+                        await CreateResultTransaction(duplicatedClaim);
+                    }
+                    else 
+                    {
+                        SSG_Asset_BankingInformation ssg_bank = await _searchRequestService.CreateBankInfo(bankEntity, _cancellationToken);
+                        ssg_employment = await _searchRequestService.CreateEmployment(employmentEntity, _cancellationToken);
+                        ssg_claim.BankingInformation = ssg_bank;
+                        ssg_claim.Employment = ssg_employment;
+                        SSG_Asset_WorkSafeBcClaim ssg_Claim = await _searchRequestService.CreateCompensationClaim(ssg_claim, _cancellationToken);
+                        await CreateResultTransaction(ssg_Claim);
+                    }
+
+                    if (claim.Employer.Phones != null)
+                    {
+                        foreach (var phone in claim.Employer.Phones)
+                        {
+                            EmploymentContactEntity p = _mapper.Map<EmploymentContactEntity>(phone);
+                            p.Employment = ssg_employment;
+                            await _searchRequestService.CreateEmploymentContact(p, _cancellationToken);
+                        }
+                    }
                 }
                 return true;
             }

@@ -26,6 +26,7 @@ namespace Fams3Adapter.Dynamics.Duplicate
     {
         Task<string> GetDuplicateDetectHashData(object entity);
         Task<Guid> Exists(object fatherObj, object entity);
+        Task<bool> Same(object entity, object ssg);
     }
 
     public class DuplicateDetectionService : IDuplicateDetectionService
@@ -45,7 +46,8 @@ namespace Fams3Adapter.Dynamics.Duplicate
             {"EmploymentEntity", "ssg_employment" },
             {"EmploymentContactEntity","ssg_employmentcontact" },
             {"AssetOtherEntity","ssg_asset_other" },
-            {"BankingInformationEntity","ssg_asset_bankinginformation"}
+            {"BankingInformationEntity","ssg_asset_bankinginformation"},
+            {"CompensationClaimEntity","ssg_asset_worksafebcclaim"}
         };
 
         public DuplicateDetectionService(IODataClient oDataClient)
@@ -100,83 +102,107 @@ namespace Fams3Adapter.Dynamics.Duplicate
                 return Guid.Empty;
             }
 
-            SSG_DuplicateDetectionConfig config = _configs.FirstOrDefault(m => m.EntityName.ToLower() == name.ToLower());
-            if (config == null) return Guid.Empty;
-
-            IList<PropertyInfo> props = new List<PropertyInfo>(type.GetProperties());
-            string entityStr = GetConcateFieldsStr(config.DuplicateFieldList, props, entity);
-
             switch (type.Name)
             {
                 case "IdentifierEntity":
                     foreach (SSG_Identifier identifier in ((SSG_Person)fatherObj).SSG_Identifiers)
                     {
-                        if (GetConcateFieldsStr(config.DuplicateFieldList, props, identifier).Equals ( entityStr, StringComparison.OrdinalIgnoreCase)) return identifier.IdentifierId;
+                        if (await Same(entity, identifier)) return identifier.IdentifierId;
                     };
                     break;
                 case "PhoneNumberEntity":
                     foreach (SSG_PhoneNumber phone in ((SSG_Person)fatherObj).SSG_PhoneNumbers)
                     {
-                        if (GetConcateFieldsStr(config.DuplicateFieldList, props, phone).Equals(entityStr, StringComparison.OrdinalIgnoreCase)) return phone.PhoneNumberId;
+                        if (await Same(entity, phone)) return phone.PhoneNumberId;
                     };
                     break;
                 case "AddressEntity":
                     foreach (SSG_Address addr in ((SSG_Person)fatherObj).SSG_Addresses)
                     {
-                        if (GetConcateFieldsStr(config.DuplicateFieldList, props, addr).Equals(entityStr, StringComparison.OrdinalIgnoreCase)) return addr.AddressId;
+                        if (await Same(entity, addr)) return addr.AddressId;
                     };
                     break;
                 case "AliasEntity":
                     foreach (SSG_Aliase alias in ((SSG_Person)fatherObj).SSG_Aliases)
                     {
-                        if (GetConcateFieldsStr(config.DuplicateFieldList, props, alias).Equals(entityStr, StringComparison.OrdinalIgnoreCase)) return alias.AliasId;
+                        if (await Same(entity, alias)) return alias.AliasId;
                     };
                     break;
                 case "VehicleEntity":
                     foreach (SSG_Asset_Vehicle v in ((SSG_Person)fatherObj).SSG_Asset_Vehicles)
                     {
-                        if (GetConcateFieldsStr(config.DuplicateFieldList, props, v).Equals(entityStr, StringComparison.OrdinalIgnoreCase)) return v.VehicleId;
+                        if (await Same(entity, v)) return v.VehicleId;
                     };
                     break;
                 case "AssetOwnerEntity":
                     foreach (SSG_AssetOwner owner in ((SSG_Asset_Vehicle)fatherObj).SSG_AssetOwners)
                     {
-                        if (GetConcateFieldsStr(config.DuplicateFieldList, props, owner).Equals(entityStr, StringComparison.OrdinalIgnoreCase)) return owner.AssetOwnerId;
+                        if (await Same(entity, owner)) return owner.AssetOwnerId;
                     };
                     break;
                 case "RelatedPersonEntity":
                     foreach (SSG_Identity relatedPerson in ((SSG_Person)fatherObj).SSG_Identities)
                     {
-                        if (GetConcateFieldsStr(config.DuplicateFieldList, props, relatedPerson).Equals(entityStr, StringComparison.OrdinalIgnoreCase)) return relatedPerson.RelatedPersonId;
+                        if (await Same(entity, relatedPerson)) return relatedPerson.RelatedPersonId;
                     };
                     break;
                 case "EmploymentEntity":
                     foreach (SSG_Employment employment in ((SSG_Person)fatherObj).SSG_Employments)
                     {
-                        if (GetConcateFieldsStr(config.DuplicateFieldList, props, employment).Equals(entityStr, StringComparison.OrdinalIgnoreCase)) return employment.EmploymentId;
+                        if (await Same(entity, employment)) return employment.EmploymentId;
                     };
                     break;
                 case "EmploymentContactEntity":
                     foreach (SSG_EmploymentContact contact in ((SSG_Employment)fatherObj).SSG_EmploymentContacts)
                     {
-                        if (GetConcateFieldsStr(config.DuplicateFieldList, props, contact).Equals(entityStr, StringComparison.OrdinalIgnoreCase)) return contact.EmploymentContactId;
+                        if (await Same(entity, contact)) return contact.EmploymentContactId;
                     };
                     break;
                 case "AssetOtherEntity":
                     foreach (SSG_Asset_Other other in ((SSG_Person)fatherObj).SSG_Asset_Others)
                     {
-                        if (GetConcateFieldsStr(config.DuplicateFieldList, props, other).Equals(entityStr, StringComparison.OrdinalIgnoreCase)) return other.AssetOtherId;
+                        if (await Same(entity, other)) return other.AssetOtherId;
                     };
                     break;
                 case "BankingInformationEntity":
                     foreach (SSG_Asset_BankingInformation bankInfo in ((SSG_Person)fatherObj).SSG_Asset_BankingInformations)
                     {
-                        if (GetConcateFieldsStr(config.DuplicateFieldList, props, bankInfo).Equals(entityStr, StringComparison.OrdinalIgnoreCase)) return bankInfo.BankingInformationId;
+                        if (await Same(entity, bankInfo)) return bankInfo.BankingInformationId;
+                    };
+                    break;
+                case "CompensationClaimEntity":
+                    foreach (SSG_Asset_WorkSafeBcClaim claim in ((SSG_Person)fatherObj).SSG_Asset_WorkSafeBcClaims)
+                    {
+                        if (await Same(entity, claim)) return claim.CompensationClaimId;
                     };
                     break;
             }            
 
             return Guid.Empty;
+        }
+
+        /// <summary>
+        /// This is to compare if an entity obj is the same as ssg obj. same means the configed properties are same value
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="ssg"></param>
+        /// <returns></returns>
+        public async Task<bool> Same(object entity, object ssg)
+        {
+            if (_configs == null) await GetDuplicateDetectionConfig(CancellationToken.None);
+
+            Type type = entity.GetType();
+            string ssgName;
+            if(!EntityNameMap.TryGetValue(type.Name, out ssgName)) return false;
+            if( ! ssgName.Equals(ssg.GetType().Name,StringComparison.InvariantCultureIgnoreCase)) return false;
+
+            SSG_DuplicateDetectionConfig config = _configs.FirstOrDefault(m => m.EntityName.ToLower() == ssgName.ToLower());
+            if (config == null) return false;
+
+            IList<PropertyInfo> props = new List<PropertyInfo>(type.GetProperties());
+            string entityStr = GetConcateFieldsStr(config.DuplicateFieldList, props, entity);
+            string ssgStr = GetConcateFieldsStr(config.DuplicateFieldList, props, ssg);
+            return entityStr.Equals(ssgStr, StringComparison.InvariantCultureIgnoreCase);
         }
 
         private string GetConcateFieldsStr(string[] duplicateFieldList, IList<PropertyInfo> props, object entity)

@@ -112,14 +112,14 @@ namespace BcGov.Fams3.SearchApi.Core.DependencyInjection
         {
             if (ordered == null) throw new ArgumentNullException("Consumer for search request ordered cannot be null");
             var rabbitMqSettings = configuration.GetSection(Keys.RABBITMQ_SECTION_SETTING_KEY).Get<RabbitMqConfiguration>();
-            var providerConfiguration = configuration.GetSection(Keys.PROVIDER_SECTION_SETTING_KEY).Get<ProviderProfileOptions>();
+           // var providerConfiguration = configuration.GetSection(Keys.PROVIDER_SECTION_SETTING_KEY).Get<ProviderProfileOptions>();
 
 
-            // Configures the Provider Profile Options
-            services
-                .AddOptions<ProviderProfileOptions>()
-                .Bind(configuration.GetSection(Keys.PROVIDER_SECTION_SETTING_KEY))
-                .ValidateDataAnnotations();
+            // Configures the Provider Profile Options - Agency / Provider information will be extracted from request
+            //services
+            //    .AddOptions<ProviderProfileOptions>()
+            //    .Bind(configuration.GetSection(Keys.PROVIDER_SECTION_SETTING_KEY))
+            //    .ValidateDataAnnotations();
 
 
             var rabbitBaseUri = $"amqp://{rabbitMqSettings.Host}:{rabbitMqSettings.Port}";
@@ -170,9 +170,8 @@ namespace BcGov.Fams3.SearchApi.Core.DependencyInjection
 
                     });
 
-                    bus.ConnectConsumeMessageObserver(new PersonSearchObserver(
-                        provider.GetRequiredService<IOptions<ProviderProfileOptions>>(),
-                        provider.GetRequiredService<ILogger<PersonSearchObserver>>()));
+                    bus.ConnectConsumeMessageObserver(new SearchRequestObserver(
+                        provider.GetRequiredService<ILogger<SearchRequestObserver>>()));
 
                     return bus;
 

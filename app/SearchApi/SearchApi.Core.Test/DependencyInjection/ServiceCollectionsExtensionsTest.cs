@@ -45,7 +45,7 @@ namespace SearchApi.Core.Test.DependencyInjection
         public void should_register_services()
         {
 
-            services.AddProvider(configuration, (provider) => new SearchRequestConsumer(provider.GetRequiredService<IValidator<Person>>(),
+            services.AddDataPartnerProvider(configuration, (provider) => new SearchRequestConsumer(provider.GetRequiredService<IValidator<Person>>(),
                                  provider.GetRequiredService<IOptions<ProviderProfileOptions>>(),
                                  provider.GetRequiredService<ILogger<SearchRequestConsumer>>()));
 
@@ -59,7 +59,7 @@ namespace SearchApi.Core.Test.DependencyInjection
         public void should_register_service_bus()
         {
 
-            services.AddProvider(configuration, (provider) => new SearchRequestConsumer(provider.GetRequiredService<IValidator<Person>>(),
+            services.AddDataPartnerProvider(configuration, (provider) => new SearchRequestConsumer(provider.GetRequiredService<IValidator<Person>>(),
                                  provider.GetRequiredService<IOptions<ProviderProfileOptions>>(),
                                  provider.GetRequiredService<ILogger<SearchRequestConsumer>>()));
 
@@ -72,7 +72,7 @@ namespace SearchApi.Core.Test.DependencyInjection
         public void should_register_service_bus_for_inbound()
         {
 
-            services.AddProvider(configuration, (provider) => new SearchRequestConsumer(provider.GetRequiredService<IValidator<Person>>(),
+            services.AddDataPartnerProvider(configuration, (provider) => new SearchRequestConsumer(provider.GetRequiredService<IValidator<Person>>(),
                                  provider.GetRequiredService<IOptions<ProviderProfileOptions>>(),
                                  provider.GetRequiredService<ILogger<SearchRequestConsumer>>()));
 
@@ -85,7 +85,7 @@ namespace SearchApi.Core.Test.DependencyInjection
         public void should_register_service_bus_for_passing_normal()
         {
 
-            services.AddProvider(configuration, (provider) => new SearchRequestConsumer(provider.GetRequiredService<IValidator<Person>>(),
+            services.AddDataPartnerProvider(configuration, (provider) => new SearchRequestConsumer(provider.GetRequiredService<IValidator<Person>>(),
                                  provider.GetRequiredService<IOptions<ProviderProfileOptions>>(),
                                  provider.GetRequiredService<ILogger<SearchRequestConsumer>>()), (provider) => new SearchResultConsumer(
                                  provider.GetRequiredService<IOptions<ProviderProfileOptions>>(),
@@ -101,7 +101,7 @@ namespace SearchApi.Core.Test.DependencyInjection
         public void should_throw_exception_if_null_ordered_consumer()
         {
 
-            Assert.Throws<ArgumentNullException>( () => services.AddProvider(configuration, null, (provider) => new SearchResultConsumer(
+            Assert.Throws<ArgumentNullException>( () => services.AddDataPartnerProvider(configuration, null, (provider) => new SearchResultConsumer(
                                   provider.GetRequiredService<IOptions<ProviderProfileOptions>>(),
                                   provider.GetRequiredService<ILogger<SearchResultConsumer>>())));
         }
@@ -110,7 +110,7 @@ namespace SearchApi.Core.Test.DependencyInjection
         public void should_register_one_consumer_if_null_recieved_consumer()
         {
 
-         services.AddProvider(configuration, (provider) => new SearchRequestConsumer(provider.GetRequiredService<IValidator<Person>>(),
+         services.AddDataPartnerProvider(configuration, (provider) => new SearchRequestConsumer(provider.GetRequiredService<IValidator<Person>>(),
                                  provider.GetRequiredService<IOptions<ProviderProfileOptions>>(),
                                  provider.GetRequiredService<ILogger<SearchRequestConsumer>>()));
 

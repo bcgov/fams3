@@ -621,6 +621,7 @@ namespace Fams3Adapter.Dynamics.Test.Duplicate
             Assert.ThrowsAsync<System.InvalidCastException>(async()=>await _sut.Exists(person, entity));
         }
 
+        [Test]
         public async Task entity_ssg_misMatched_Same_return_false()
         {
             DuplicateDetectionService._configs = null;
@@ -630,6 +631,7 @@ namespace Fams3Adapter.Dynamics.Test.Duplicate
             Assert.AreEqual(false, b);
         }
 
+        [Test]
         public async Task entity_no_config_Same_return_false()
         {
             DuplicateDetectionService._configs = null;
@@ -638,6 +640,8 @@ namespace Fams3Adapter.Dynamics.Test.Duplicate
             bool b = await _sut.Same(entity, vehicle);
             Assert.AreEqual(false, b);
         }
+
+        [Test]
         public async Task entity_ssg_matched_same_data_Same_return_true()
         {
             DuplicateDetectionService._configs = null;
@@ -647,12 +651,30 @@ namespace Fams3Adapter.Dynamics.Test.Duplicate
             Assert.AreEqual(true, b);
         }
 
+        [Test]
         public async Task entity_ssg_matched_different_data_Same_return_false()
         {
             DuplicateDetectionService._configs = null;
             SSG_Asset_Vehicle ssg = new SSG_Asset_Vehicle() { Vin = "vin", PlateNumber = "222", VehicleId = Guid.NewGuid() };
             VehicleEntity entity = new VehicleEntity() { Vin = "vin", PlateNumber = "111" };
             bool b = await _sut.Same(entity, ssg);
+            Assert.AreEqual(false, b);
+        }
+
+        [Test]
+        public async Task entity_ssg_both_null_data_Same_return_true()
+        {
+            DuplicateDetectionService._configs = null;
+            bool b = await _sut.Same(null, null);
+            Assert.AreEqual(true, b);
+        }
+
+        [Test]
+        public async Task entity_ssg_one_is_null_the_other_isNotNull_data_Same_return_false()
+        {
+            DuplicateDetectionService._configs = null;
+            VehicleEntity entity = new VehicleEntity() { Vin = "vin", PlateNumber = "111" };
+            bool b = await _sut.Same(entity,  null);
             Assert.AreEqual(false, b);
         }
     }

@@ -34,7 +34,6 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         Task<SSG_Asset_Vehicle> CreateVehicle(VehicleEntity vehicle, CancellationToken cancellationToken);
         Task<SSG_AssetOwner> CreateAssetOwner(AssetOwnerEntity owner, CancellationToken cancellationToken);
         Task<SSG_Asset_Other> CreateOtherAsset(AssetOtherEntity asset, CancellationToken cancellationToken);
-        Task<SSG_Asset_WorkSafeBcClaim> IsCompensationDuplicated(CompensationClaimEntity claim, CancellationToken cancellationToken);
         Task<SSG_Asset_WorkSafeBcClaim> CreateCompensationClaim(CompensationClaimEntity claim, CancellationToken cancellationToken);
         Task<SSG_Asset_ICBCClaim> CreateInsuranceClaim(ICBCClaimEntity claim, CancellationToken cancellationToken);
         Task<SSG_SimplePhoneNumber> CreateSimplePhoneNumber(SSG_SimplePhoneNumber phone, CancellationToken cancellationToken);
@@ -261,7 +260,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             return await this._oDataClient.For<SSG_Asset_Other>().Set(otherAsset).InsertEntryAsync(cancellationToken);
         }
 
-        public async Task<SSG_Asset_WorkSafeBcClaim> IsCompensationDuplicated(CompensationClaimEntity claim, CancellationToken cancellationToken)
+        private async Task<SSG_Asset_WorkSafeBcClaim> GetDuplicatedCompensation(CompensationClaimEntity claim, CancellationToken cancellationToken)
         {
             if (claim.Person != null && claim.Person.IsDuplicated)
             {
@@ -278,12 +277,15 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                         if( await _duplicateDetectService.Same(claim.EmploymentEntity, duplicatedClaim.Employment))
                         {
                             duplicatedClaim.IsDuplicated = true;
-                            Guid duplicatedEmploymentId = duplicatedClaim.Employment.EmploymentId;
-                            duplicatedClaim.Employment = await _oDataClient.For<SSG_Employment>()
-                                .Key(duplicatedEmploymentId)
-                                .Expand(x => x.SSG_EmploymentContacts)
-                                .FindEntryAsync(cancellationToken);
-                            duplicatedClaim.Employment.IsDuplicated = true;
+                            if (duplicatedClaim.Employment != null)
+                            {
+                                Guid duplicatedEmploymentId = duplicatedClaim.Employment.EmploymentId;
+                                duplicatedClaim.Employment = await _oDataClient.For<SSG_Employment>()
+                                    .Key(duplicatedEmploymentId)
+                                    .Expand(x => x.SSG_EmploymentContacts)
+                                    .FindEntryAsync(cancellationToken);
+                                duplicatedClaim.Employment.IsDuplicated = true;
+                            }
                             return duplicatedClaim;
                         }
                     }
@@ -294,7 +296,34 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
         public async Task<SSG_Asset_WorkSafeBcClaim> CreateCompensationClaim(CompensationClaimEntity claim, CancellationToken cancellationToken)
         {
-            return await this._oDataClient.For<SSG_Asset_WorkSafeBcClaim>().Set(claim).InsertEntryAsync(cancellationToken);
+            SSG_Asset_WorkSafeBcClaim returnedClaim = null;
+            SSG_Asset_WorkSafeBcClaim duplicatedClaim = await GetDuplicatedCompensation(claim, cancellationToken);
+
+            SSG_Employment ssg_employment = null;
+            if (duplicatedClaim != null && duplicatedClaim.IsDuplicated)
+            {
+                ssg_employment = duplicatedClaim.Employment;
+                returnedClaim = duplicatedClaim;
+            }
+            else
+            {
+                SSG_Asset_BankingInformation ssg_bank = claim.BankInformationEntity == null ? null : await CreateBankInfo(claim.BankInformationEntity, cancellationToken);
+                ssg_employment = claim.EmploymentEntity == null? null : await CreateEmployment(claim.EmploymentEntity, cancellationToken);
+                claim.BankingInformation = ssg_bank;
+                claim.Employment = ssg_employment;
+                SSG_Asset_WorkSafeBcClaim ssg_Claim = await this._oDataClient.For<SSG_Asset_WorkSafeBcClaim>().Set(claim).InsertEntryAsync(cancellationToken);
+                returnedClaim = ssg_Claim;
+            }
+
+            if (claim.EmploymentEntity != null && claim.EmploymentEntity.EmploymentContactEntities !=null)
+            {
+                foreach (EmploymentContactEntity contact in claim.EmploymentEntity.EmploymentContactEntities)
+                {
+                    contact.Employment = ssg_employment;
+                    await CreateEmploymentContact(contact, cancellationToken);
+                }
+            }
+            return returnedClaim;
         }
 
         public async Task<SSG_Asset_ICBCClaim> CreateInsuranceClaim(ICBCClaimEntity claim, CancellationToken cancellationToken)

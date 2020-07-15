@@ -190,6 +190,8 @@ namespace Fams3Adapter.Dynamics.Duplicate
         /// <returns></returns>
         public async Task<bool> Same(object entity, object ssg)
         {
+            if (entity == null && ssg == null) return true;
+            if (entity == null || ssg == null) return false;
             if (_configs == null) await GetDuplicateDetectionConfig(CancellationToken.None);
 
             Type type = entity.GetType();

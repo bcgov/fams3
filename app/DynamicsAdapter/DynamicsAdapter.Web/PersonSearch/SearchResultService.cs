@@ -19,6 +19,7 @@ using Fams3Adapter.Dynamics.SearchRequest;
 using Fams3Adapter.Dynamics.Vehicle;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -429,6 +430,16 @@ namespace DynamicsAdapter.Web.PersonSearch
                         employmentEntity.InformationSource = _providerDynamicsID;
                         employmentEntity.Date1 = claim.ReferenceDates?.SingleOrDefault(m => m.Index == 0)?.Value.DateTime;
                         employmentEntity.Date1Label = claim.ReferenceDates?.SingleOrDefault(m => m.Index == 0)?.Key;
+                        List<EmploymentContactEntity> contacts = new List<EmploymentContactEntity>();
+                        if (claim.Employer.Phones != null)
+                        {
+                            foreach (var phone in claim.Employer.Phones)
+                            {
+                                EmploymentContactEntity p = _mapper.Map<EmploymentContactEntity>(phone);
+                                contacts.Add(p);
+                            }
+                        }
+                        employmentEntity.EmploymentContactEntities = contacts.ToArray();
                     }
 
                     CompensationClaimEntity ssg_claim = _mapper.Map<CompensationClaimEntity>(claim);
@@ -438,33 +449,8 @@ namespace DynamicsAdapter.Web.PersonSearch
                     ssg_claim.BankInformationEntity = bankEntity;
                     ssg_claim.EmploymentEntity = employmentEntity;
 
-                    SSG_Asset_WorkSafeBcClaim duplicatedClaim = await _searchRequestService.IsCompensationDuplicated(ssg_claim, _cancellationToken);
-                    SSG_Employment ssg_employment = null;
-                    if (duplicatedClaim != null && duplicatedClaim.IsDuplicated)
-                    {
-                        ssg_employment = duplicatedClaim.Employment;
-
-                        await CreateResultTransaction(duplicatedClaim);
-                    }
-                    else 
-                    {
-                        SSG_Asset_BankingInformation ssg_bank = await _searchRequestService.CreateBankInfo(bankEntity, _cancellationToken);
-                        ssg_employment = await _searchRequestService.CreateEmployment(employmentEntity, _cancellationToken);
-                        ssg_claim.BankingInformation = ssg_bank;
-                        ssg_claim.Employment = ssg_employment;
-                        SSG_Asset_WorkSafeBcClaim ssg_Claim = await _searchRequestService.CreateCompensationClaim(ssg_claim, _cancellationToken);
-                        await CreateResultTransaction(ssg_Claim);
-                    }
-
-                    if (claim.Employer.Phones != null)
-                    {
-                        foreach (var phone in claim.Employer.Phones)
-                        {
-                            EmploymentContactEntity p = _mapper.Map<EmploymentContactEntity>(phone);
-                            p.Employment = ssg_employment;
-                            await _searchRequestService.CreateEmploymentContact(p, _cancellationToken);
-                        }
-                    }
+                    SSG_Asset_WorkSafeBcClaim ssg_Claim = await _searchRequestService.CreateCompensationClaim(ssg_claim, _cancellationToken);
+                    await CreateResultTransaction(ssg_Claim);
                 }
                 return true;
             }

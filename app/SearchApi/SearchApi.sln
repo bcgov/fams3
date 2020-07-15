@@ -23,9 +23,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BcGov.Fams3.SearchApi.Core"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BcGov.Fams3.SearchApi.Contracts", "BcGov.Fams3.SearchApi.Contracts\BcGov.Fams3.SearchApi.Contracts.csproj", "{2C588573-92C7-4DF5-9F1B-DF8F7104DB4D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BcGov.Fams3.Redis", "BcGov.Fams3.Redis\BcGov.Fams3.Redis.csproj", "{8088FBBA-D677-4A6E-92C3-5B0FB3A056DE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BcGov.Fams3.Redis", "BcGov.Fams3.Redis\BcGov.Fams3.Redis.csproj", "{8088FBBA-D677-4A6E-92C3-5B0FB3A056DE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BcGov.Fams3.Redis.Test", "BcGov.Fams3.Redis.Test\BcGov.Fams3.Redis.Test.csproj", "{49EF5C7D-140F-4111-8A8B-AD2D452059BD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BcGov.Fams3.Redis.Test", "BcGov.Fams3.Redis.Test\BcGov.Fams3.Redis.Test.csproj", "{49EF5C7D-140F-4111-8A8B-AD2D452059BD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SearchRequestAdaptor", "SearchRequestAdaptor\SearchRequestAdaptor.csproj", "{A9C68594-907F-481B-84A8-C1107EA1E4C3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,6 +71,10 @@ Global
 		{49EF5C7D-140F-4111-8A8B-AD2D452059BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{49EF5C7D-140F-4111-8A8B-AD2D452059BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{49EF5C7D-140F-4111-8A8B-AD2D452059BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9C68594-907F-481B-84A8-C1107EA1E4C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9C68594-907F-481B-84A8-C1107EA1E4C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9C68594-907F-481B-84A8-C1107EA1E4C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9C68594-907F-481B-84A8-C1107EA1E4C3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -83,6 +89,7 @@ Global
 		{2C588573-92C7-4DF5-9F1B-DF8F7104DB4D} = {B95A3792-2D10-4413-9E36-A4724231C3C7}
 		{8088FBBA-D677-4A6E-92C3-5B0FB3A056DE} = {B95A3792-2D10-4413-9E36-A4724231C3C7}
 		{49EF5C7D-140F-4111-8A8B-AD2D452059BD} = {93BFFE80-5160-4C9C-95DD-FF4F8AFFC10A}
+		{A9C68594-907F-481B-84A8-C1107EA1E4C3} = {B95A3792-2D10-4413-9E36-A4724231C3C7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EBAF0841-1352-4312-9DA4-74AC4AD9CE04}

@@ -2,13 +2,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BcGov.Fams3.SearchApi.Contracts.SearchRequest;
 using BcGov.Fams3.SearchApi.Core.Configuration;
+using BcGov.Fams3.SearchApi.Core.MassTransit;
+using BcGov.Fams3.SearchApi.Core.OpenTracing;
+using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace SearchRequestAdaptor
 {
@@ -27,6 +32,7 @@ namespace SearchRequestAdaptor
         {
             services.AddControllers();
             this.ConfigureHealthChecks(services);
+            this.ConfigureServiceBus(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -57,6 +63,47 @@ namespace SearchRequestAdaptor
                 .AddHealthChecks()
                 .AddRabbitMQ(
                     rabbitConnectionString: rabbitConnectionString);
+        }
+
+        /// <summary>
+        /// Configure MassTransit Service Bus
+        /// http://masstransit-project.com/
+        /// </summary>
+        /// <param name="services"></param>
+        private void ConfigureServiceBus(IServiceCollection services)
+        {
+
+            services.Configure<RabbitMqConfiguration>(Configuration.GetSection("RabbitMq"));
+
+            var rabbitMqSettings = Configuration.GetSection("RabbitMq").Get<RabbitMqConfiguration>();
+            var rabbitBaseUri = $"amqp://{rabbitMqSettings.Host}:{rabbitMqSettings.Port}";
+
+            services.AddMassTransit(x =>
+            {
+                // Add RabbitMq Service Bus
+                x.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(cfg =>
+                {
+
+                    var host = cfg.Host(new Uri(rabbitBaseUri), hostConfigurator =>
+                    {
+                        hostConfigurator.Username(rabbitMqSettings.Username);
+                        hostConfigurator.Password(rabbitMqSettings.Password);
+                    });
+
+                    // Add Diagnostic context for tracing
+                    cfg.PropagateOpenTracingContext();
+
+
+                    // Configure Person Search Accepted Consumer 
+                    cfg.ReceiveEndpoint($"{nameof(SearchRequestOrdered)}_queue", e =>
+                    {
+                        e.Consumer(() =>
+                            new SearchRequestOrderedConsumer(/*provider.GetRequiredService<ISearchApiNotifier<PersonSearchAdapterEvent>>(),*/ provider.GetRequiredService<ILogger<SearchRequestOrderedConsumer>>()));
+                    });
+                }));
+            });
+
+            services.AddHostedService<BusHostedService>();
         }
     }
 }

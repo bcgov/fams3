@@ -5,6 +5,7 @@ using Fams3Adapter.Dynamics.CompensationClaim;
 using Fams3Adapter.Dynamics.Duplicate;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
+using Fams3Adapter.Dynamics.InsuranceClaim;
 using Fams3Adapter.Dynamics.Name;
 using Fams3Adapter.Dynamics.OtherAsset;
 using Fams3Adapter.Dynamics.Person;
@@ -17,7 +18,6 @@ using NUnit.Framework;
 using Simple.OData.Client;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -33,7 +33,7 @@ namespace Fams3Adapter.Dynamics.Test.Duplicate
         public void SetUp()
         {
 
-            odataClientMock.Setup(x => x.For<SSG_DuplicateDetectionConfig>(null)                
+            odataClientMock.Setup(x => x.For<SSG_DuplicateDetectionConfig>(null)
                 .FindEntriesAsync(It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<IEnumerable<SSG_DuplicateDetectionConfig>>(new List<SSG_DuplicateDetectionConfig>()
                 {
@@ -101,6 +101,21 @@ namespace Fams3Adapter.Dynamics.Test.Duplicate
                      {
                          EntityName = "ssg_asset_worksafebcclaim",
                          DuplicateFields = "ssg_name"
+                     },
+                     new SSG_DuplicateDetectionConfig()
+                     {
+                         EntityName = "ssg_asset_icbcclaim",
+                         DuplicateFields = "ssg_name"
+                     },
+                     new SSG_DuplicateDetectionConfig()
+                     {
+                         EntityName = "ssg_simplephonenumber",
+                         DuplicateFields = "ssg_phonenumber|ssg_phoneextension"
+                     },
+                     new SSG_DuplicateDetectionConfig()
+                     {
+                         EntityName = "ssg_involvedparty",
+                         DuplicateFields = "ssg_firstname|ssg_lastname"
                      }
                 }));
 
@@ -126,9 +141,9 @@ namespace Fams3Adapter.Dynamics.Test.Duplicate
                 LastName = "lastname",
                 DateOfBirth = new DateTime(1999, 1, 1)
             };
-            
+
             string str2 = await _sut.GetDuplicateDetectHashData(person2);
-            Assert.AreEqual(true,str1==str2);
+            Assert.AreEqual(true, str1 == str2);
         }
 
         [Test]
@@ -157,7 +172,7 @@ namespace Fams3Adapter.Dynamics.Test.Duplicate
         {
             DuplicateDetectionService._configs = null;
             TestEntity testEntity = new TestEntity()
-            {               
+            {
             };
             string str = await _sut.GetDuplicateDetectHashData(testEntity);
             Assert.AreEqual(null, str);
@@ -197,7 +212,7 @@ namespace Fams3Adapter.Dynamics.Test.Duplicate
                 FirstName = "test1",
                 LastName = "lastname",
                 DateOfBirth = new DateTime(1999, 1, 1),
-                DateOfDeath = new DateTime(2025,1,1)
+                DateOfDeath = new DateTime(2025, 1, 1)
             };
             string str1 = await _sut.GetDuplicateDetectHashData(person1);
             PersonEntity person2 = new PersonEntity()
@@ -287,7 +302,7 @@ namespace Fams3Adapter.Dynamics.Test.Duplicate
                     new SSG_Address(){AddressLine1="11111",AddressLine2="111",City="city",CountryText="usa",AddressId=existedAddressID}
                 }.ToArray()
             };
-            AddressEntity entity = new AddressEntity() { AddressLine1 = "11111", AddressLine2 = "111", City = "city" , CountryText = "canada"};
+            AddressEntity entity = new AddressEntity() { AddressLine1 = "11111", AddressLine2 = "111", City = "city", CountryText = "canada" };
             Guid guid = await _sut.Exists(person, entity);
             Assert.AreEqual(existedAddressID, guid);
         }
@@ -383,7 +398,7 @@ namespace Fams3Adapter.Dynamics.Test.Duplicate
                     new SSG_AssetOwner(){LastName="ownerlastname",AssetOwnerId=existedOwnerID}
                 }.ToArray()
             };
-            AssetOwnerEntity entity = new AssetOwnerEntity() { LastName = "ownerlastname",FirstName="test" };
+            AssetOwnerEntity entity = new AssetOwnerEntity() { LastName = "ownerlastname", FirstName = "test" };
             Guid guid = await _sut.Exists(vehicle, entity);
             Assert.AreEqual(existedOwnerID, guid);
         }
@@ -512,7 +527,7 @@ namespace Fams3Adapter.Dynamics.Test.Duplicate
                         TypeDescription="otherasset", AssetOtherId=existedOtherAssetID}
                 }.ToArray()
             };
-            AssetOtherEntity entity = new AssetOtherEntity() { TypeDescription = "otherasset", Notes="notes" };
+            AssetOtherEntity entity = new AssetOtherEntity() { TypeDescription = "otherasset", Notes = "notes" };
             Guid guid = await _sut.Exists(person, entity);
             Assert.AreEqual(existedOtherAssetID, guid);
         }
@@ -600,13 +615,108 @@ namespace Fams3Adapter.Dynamics.Test.Duplicate
             Assert.AreEqual(Guid.Empty, guid);
         }
 
+        [Test]
+        public async Task person_has_same_insurance_Exists_should_return_existed_entity_guid()
+        {
+            DuplicateDetectionService._configs = null;
+            Guid existedInsuranceID = Guid.NewGuid();
+            SSG_Person person = new SSG_Person()
+            {
+                SSG_Asset_ICBCClaims = new List<SSG_Asset_ICBCClaim>() {
+                    new SSG_Asset_ICBCClaim(){ ClaimNumber="11111", ICBCClaimId=existedInsuranceID}
+                }.ToArray()
+            };
+            ICBCClaimEntity entity = new ICBCClaimEntity() { ClaimNumber = "11111" };
+            Guid guid = await _sut.Exists(person, entity);
+            Assert.AreEqual(existedInsuranceID, guid);
+        }
+
+        [Test]
+        public async Task person_does_not_contain_same_insurance_Exists_should_return_empty_guid()
+        {
+            DuplicateDetectionService._configs = null;
+            Guid existedInsuranceID = Guid.NewGuid();
+            SSG_Person person = new SSG_Person()
+            {
+                SSG_Asset_ICBCClaims = new List<SSG_Asset_ICBCClaim>() {
+                    new SSG_Asset_ICBCClaim(){ ClaimNumber="11111", ICBCClaimId=existedInsuranceID}
+                }.ToArray()
+            };
+            ICBCClaimEntity entity = new ICBCClaimEntity() { ClaimNumber = "22222" };
+            Guid guid = await _sut.Exists(person, entity);
+            Assert.AreEqual(Guid.Empty, guid);
+        }
+
+        [Test]
+        public async Task Insurance_has_same_simplePhone_Exists_should_return_existed_entity_guid()
+        {
+            DuplicateDetectionService._configs = null;
+            Guid existedSimplePhoneID = Guid.NewGuid();
+            SSG_Asset_ICBCClaim insurance = new SSG_Asset_ICBCClaim()
+            {
+                SSG_SimplePhoneNumbers = new List<SSG_SimplePhoneNumber>() {
+                    new SSG_SimplePhoneNumber(){ PhoneNumber="11111", Extension="333",SimplePhoneNumberId=existedSimplePhoneID}
+                }.ToArray()
+            };
+            SimplePhoneNumberEntity entity = new SimplePhoneNumberEntity() { PhoneNumber = "11111", Extension = "333" };
+            Guid guid = await _sut.Exists(insurance, entity);
+            Assert.AreEqual(existedSimplePhoneID, guid);
+        }
+
+        [Test]
+        public async Task insurance_does_not_contain_same_simplePhone_Exists_should_return_empty_guid()
+        {
+            DuplicateDetectionService._configs = null;
+            Guid existedSimplePhoneID = Guid.NewGuid();
+            SSG_Asset_ICBCClaim insurance = new SSG_Asset_ICBCClaim()
+            {
+                SSG_SimplePhoneNumbers = new List<SSG_SimplePhoneNumber>() {
+                    new SSG_SimplePhoneNumber(){ PhoneNumber="11111", Extension="444",SimplePhoneNumberId=existedSimplePhoneID}
+                }.ToArray()
+            };
+            SimplePhoneNumberEntity entity = new SimplePhoneNumberEntity() { PhoneNumber = "11111", Extension = "333" };
+            Guid guid = await _sut.Exists(insurance, entity);
+            Assert.AreEqual(Guid.Empty, guid);
+        }
+
+        [Test]
+        public async Task Insurance_has_same_involvedParty_Exists_should_return_existed_entity_guid()
+        {
+            DuplicateDetectionService._configs = null;
+            Guid existedInvolvedPartyID = Guid.NewGuid();
+            SSG_Asset_ICBCClaim insurance = new SSG_Asset_ICBCClaim()
+            {
+                SSG_InvolvedParties = new List<SSG_InvolvedParty>() {
+                    new SSG_InvolvedParty(){ FirstName="firstname", LastName="lastname",InvolvedPartyId=existedInvolvedPartyID}
+                }.ToArray()
+            };
+            InvolvedPartyEntity entity = new InvolvedPartyEntity() { FirstName = "firstname", LastName = "lastname" };
+            Guid guid = await _sut.Exists(insurance, entity);
+            Assert.AreEqual(existedInvolvedPartyID, guid);
+        }
+
+        [Test]
+        public async Task insurance_does_not_contain_same_involvedParty_Exists_should_return_empty_guid()
+        {
+            DuplicateDetectionService._configs = null;
+            Guid existedInvolvedPartyID = Guid.NewGuid();
+            SSG_Asset_ICBCClaim insurance = new SSG_Asset_ICBCClaim()
+            {
+                SSG_InvolvedParties = new List<SSG_InvolvedParty>() {
+                    new SSG_InvolvedParty(){ FirstName="firstname", LastName="lastname",InvolvedPartyId=existedInvolvedPartyID}
+                }.ToArray()
+            };
+            InvolvedPartyEntity entity = new InvolvedPartyEntity() { FirstName = "testfirstname", LastName = "lastname" };
+            Guid guid = await _sut.Exists(insurance, entity);
+            Assert.AreEqual(Guid.Empty, guid);
+        }
 
         [Test]
         public async Task entity_not_having_config_Exists_should_return_empty_guid()
         {
             DuplicateDetectionService._configs = null;
-            SSG_Asset_Vehicle vehicle = new SSG_Asset_Vehicle(){};
-            TestEntity entity = new TestEntity() {  };
+            SSG_Asset_Vehicle vehicle = new SSG_Asset_Vehicle() { };
+            TestEntity entity = new TestEntity() { };
             Guid guid = await _sut.Exists(vehicle, entity);
             Assert.AreEqual(Guid.Empty, guid);
         }
@@ -616,9 +726,9 @@ namespace Fams3Adapter.Dynamics.Test.Duplicate
         {
             DuplicateDetectionService._configs = null;
             Guid existedOwnerID = Guid.NewGuid();
-            SSG_Person person = new SSG_Person() {};
+            SSG_Person person = new SSG_Person() { };
             AssetOwnerEntity entity = new AssetOwnerEntity() { LastName = "ownerlastname1", FirstName = "test" };
-            Assert.ThrowsAsync<System.InvalidCastException>(async()=>await _sut.Exists(person, entity));
+            Assert.ThrowsAsync<System.InvalidCastException>(async () => await _sut.Exists(person, entity));
         }
 
         [Test]
@@ -645,7 +755,7 @@ namespace Fams3Adapter.Dynamics.Test.Duplicate
         public async Task entity_ssg_matched_same_data_Same_return_true()
         {
             DuplicateDetectionService._configs = null;
-            SSG_Asset_Vehicle ssg = new SSG_Asset_Vehicle() { Vin="vin",  PlateNumber="111", VehicleId=Guid.NewGuid()};
+            SSG_Asset_Vehicle ssg = new SSG_Asset_Vehicle() { Vin = "vin", PlateNumber = "111", VehicleId = Guid.NewGuid() };
             VehicleEntity entity = new VehicleEntity() { Vin = "vin", PlateNumber = "111" };
             bool b = await _sut.Same(entity, ssg);
             Assert.AreEqual(true, b);
@@ -674,12 +784,12 @@ namespace Fams3Adapter.Dynamics.Test.Duplicate
         {
             DuplicateDetectionService._configs = null;
             VehicleEntity entity = new VehicleEntity() { Vin = "vin", PlateNumber = "111" };
-            bool b = await _sut.Same(entity,  null);
+            bool b = await _sut.Same(entity, null);
             Assert.AreEqual(false, b);
         }
     }
 
     public class TestEntity : DynamicsEntity
-    { 
+    {
     }
 }

@@ -64,13 +64,13 @@ namespace SearchAdapter.Sample
             if (conf.Name == "SAMPLE")
             {
 
-                services.AddProvider(Configuration, (provider) => new SearchRequestConsumer(provider.GetRequiredService<IValidator<Person>>(),
+                services.AddDataPartnerProvider(Configuration, (provider) => new SearchRequestConsumer(provider.GetRequiredService<IValidator<Person>>(),
                                       provider.GetRequiredService<IOptions<ProviderProfileOptions>>(),
                                       provider.GetRequiredService<ILogger<SearchRequestConsumer>>()));
             }
             else
             {
-                services.AddProvider(Configuration, (provider) => new SearchRequestConsumer(provider.GetRequiredService<IValidator<Person>>(),
+                services.AddDataPartnerProvider(Configuration, (provider) => new SearchRequestConsumer(provider.GetRequiredService<IValidator<Person>>(),
                                          provider.GetRequiredService<IOptions<ProviderProfileOptions>>(),
                                          provider.GetRequiredService<ILogger<SearchRequestConsumer>>()), (provider) => new SearchResultConsumer(
                                         provider.GetRequiredService<IOptions<ProviderProfileOptions>>(),

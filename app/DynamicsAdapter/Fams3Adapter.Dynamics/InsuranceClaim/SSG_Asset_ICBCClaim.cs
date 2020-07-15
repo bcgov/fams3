@@ -98,5 +98,13 @@ namespace Fams3Adapter.Dynamics.InsuranceClaim
     {
         [JsonProperty("ssg_asset_icbcclaimid")]
         public Guid ICBCClaimId { get; set; }
+
+        [JsonProperty("ssg_ssg_asset_icbcclaim_ssg_simplephonenumber_ICBCClaim")]
+        public SSG_SimplePhoneNumber[] SSG_SimplePhoneNumbers { get; set; }
+
+        [JsonProperty("ssg_ssg_asset_icbcclaim_ssg_involvedparty_ICBCClaim")]
+        public SSG_InvolvedParty[] SSG_InvolvedParties { get; set; }
+
+        public bool IsDuplicated { get; set; }
     }
 }

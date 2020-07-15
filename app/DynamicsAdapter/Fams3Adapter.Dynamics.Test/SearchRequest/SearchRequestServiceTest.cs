@@ -62,7 +62,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
              })
              );
 
-            odataClientMock.Setup(x => x.For<SSG_SimplePhoneNumber>(null).Set(It.IsAny<SSG_SimplePhoneNumber>())
+            odataClientMock.Setup(x => x.For<SSG_SimplePhoneNumber>(null).Set(It.IsAny<SimplePhoneNumberEntity>())
              .InsertEntryAsync(It.IsAny<CancellationToken>()))
              .Returns(Task.FromResult(new SSG_SimplePhoneNumber()
              {
@@ -70,7 +70,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
              })
              );
 
-            odataClientMock.Setup(x => x.For<SSG_InvolvedParty>(null).Set(It.IsAny<SSG_InvolvedParty>())
+            odataClientMock.Setup(x => x.For<SSG_InvolvedParty>(null).Set(It.IsAny<InvolvedPartyEntity>())
             .InsertEntryAsync(It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult(new SSG_InvolvedParty()
             {
@@ -112,7 +112,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         [Test]
         public async Task upload_SimplePhoneNumber_should_success()
         {
-            var phone = new SSG_SimplePhoneNumber()
+            var phone = new SimplePhoneNumberEntity()
             {
                 PhoneNumber = "phone"
             };
@@ -125,7 +125,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         [Test]
         public async Task upload_InvolvedParty_should_success()
         {
-            var party = new SSG_InvolvedParty()
+            var party = new InvolvedPartyEntity()
             {
                 OrganizationName = "party"
             };

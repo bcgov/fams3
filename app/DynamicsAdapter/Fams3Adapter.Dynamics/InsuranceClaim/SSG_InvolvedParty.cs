@@ -1,8 +1,9 @@
 ﻿using Newtonsoft.Json;
+using System;
 
 namespace Fams3Adapter.Dynamics.InsuranceClaim
 {
-    public class SSG_InvolvedParty
+    public class InvolvedPartyEntity
     {
         [JsonProperty("ssg_firstname")]
         public string FirstName { get; set; }
@@ -30,5 +31,11 @@ namespace Fams3Adapter.Dynamics.InsuranceClaim
 
         [JsonProperty("ssg_ICBCClaim")]
         public virtual SSG_Asset_ICBCClaim SSG_Asset_ICBCClaim { get; set; }
+    }
+
+    public class SSG_InvolvedParty : InvolvedPartyEntity
+    {
+        [JsonProperty("ssg_involvedpartyid")]
+        public Guid InvolvedPartyId { get; set; }
     }
 }

@@ -36,8 +36,8 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         Task<SSG_Asset_Other> CreateOtherAsset(AssetOtherEntity asset, CancellationToken cancellationToken);
         Task<SSG_Asset_WorkSafeBcClaim> CreateCompensationClaim(CompensationClaimEntity claim, CancellationToken cancellationToken);
         Task<SSG_Asset_ICBCClaim> CreateInsuranceClaim(ICBCClaimEntity claim, CancellationToken cancellationToken);
-        Task<SSG_SimplePhoneNumber> CreateSimplePhoneNumber(SSG_SimplePhoneNumber phone, CancellationToken cancellationToken);
-        Task<SSG_InvolvedParty> CreateInvolvedParty(SSG_InvolvedParty involvedParty, CancellationToken cancellationToken);
+        Task<SSG_SimplePhoneNumber> CreateSimplePhoneNumber(SimplePhoneNumberEntity phone, CancellationToken cancellationToken);
+        Task<SSG_InvolvedParty> CreateInvolvedParty(InvolvedPartyEntity involvedParty, CancellationToken cancellationToken);
         Task<SSG_SearchRequestResultTransaction> CreateTransaction(SSG_SearchRequestResultTransaction transaction, CancellationToken cancellationToken);
     }
 
@@ -326,18 +326,44 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             return returnedClaim;
         }
 
-        public async Task<SSG_Asset_ICBCClaim> CreateInsuranceClaim(ICBCClaimEntity claim, CancellationToken cancellationToken)
+        public async Task<SSG_Asset_ICBCClaim> CreateInsuranceClaim(ICBCClaimEntity insurance, CancellationToken cancellationToken)
         {
-            return await this._oDataClient.For<SSG_Asset_ICBCClaim>().Set(claim).InsertEntryAsync(cancellationToken);
+            if (insurance.Person != null && insurance.Person.IsDuplicated)
+            {
+                Guid duplicatedInsuranceId = await _duplicateDetectService.Exists(insurance.Person, insurance);
+                if (duplicatedInsuranceId != Guid.Empty)
+                {
+                    var duplicatedInsurance = await _oDataClient.For<SSG_Asset_ICBCClaim>()
+                                .Key(duplicatedInsuranceId)
+                                .Expand(x => x.SSG_InvolvedParties)
+                                .Expand(x => x.SSG_SimplePhoneNumbers)
+                                .FindEntryAsync(cancellationToken);
+                    duplicatedInsurance.IsDuplicated = true;
+                    return duplicatedInsurance;
+                }
+            }
+            return await this._oDataClient.For<SSG_Asset_ICBCClaim>().Set(insurance).InsertEntryAsync(cancellationToken);
         }
 
-        public async Task<SSG_SimplePhoneNumber> CreateSimplePhoneNumber(SSG_SimplePhoneNumber phone, CancellationToken cancellationToken)
+        public async Task<SSG_SimplePhoneNumber> CreateSimplePhoneNumber(SimplePhoneNumberEntity phone, CancellationToken cancellationToken)
         {
+            if (phone.SSG_Asset_ICBCClaim != null && phone.SSG_Asset_ICBCClaim.IsDuplicated)
+            {
+                Guid duplicatedPhoneId = await _duplicateDetectService.Exists(phone.SSG_Asset_ICBCClaim, phone);
+                if (duplicatedPhoneId != Guid.Empty)
+                    return new SSG_SimplePhoneNumber() {  SimplePhoneNumberId = duplicatedPhoneId };
+            }
             return await this._oDataClient.For<SSG_SimplePhoneNumber>().Set(phone).InsertEntryAsync(cancellationToken);
         }
 
-        public async Task<SSG_InvolvedParty> CreateInvolvedParty(SSG_InvolvedParty involvedParty, CancellationToken cancellationToken)
+        public async Task<SSG_InvolvedParty> CreateInvolvedParty(InvolvedPartyEntity involvedParty, CancellationToken cancellationToken)
         {
+            if (involvedParty.SSG_Asset_ICBCClaim != null && involvedParty.SSG_Asset_ICBCClaim.IsDuplicated)
+            {
+                Guid duplicatedPartyId = await _duplicateDetectService.Exists(involvedParty.SSG_Asset_ICBCClaim, involvedParty);
+                if (duplicatedPartyId != Guid.Empty)
+                    return new SSG_InvolvedParty() {InvolvedPartyId  = duplicatedPartyId };
+            }
             return await this._oDataClient.For<SSG_InvolvedParty>().Set(involvedParty).InsertEntryAsync(cancellationToken);
         }
 

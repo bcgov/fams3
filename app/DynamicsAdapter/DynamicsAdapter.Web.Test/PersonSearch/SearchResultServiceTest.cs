@@ -388,7 +388,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _mapper.Setup(m => m.Map<ICBCClaimEntity>(It.IsAny<InsuranceClaim>()))
                     .Returns(_fakeIcbcClaim);
 
-            _mapper.Setup(m => m.Map<SSG_InvolvedParty>(It.Is<InvolvedParty>(m => m.Organization == "insuranceClaimOrg")))
+            _mapper.Setup(m => m.Map<InvolvedPartyEntity>(It.Is<InvolvedParty>(m => m.Organization == "insuranceClaimOrg")))
                     .Returns(_fakeInvolvedParty);
 
             _mapper.Setup(m => m.Map<SSG_SimplePhoneNumber>(It.Is<Phone>(m => m.PhoneNumber == "9999")))
@@ -935,7 +935,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                      ICBCClaimId = invalidClaimId
                  }));
 
-            _searchRequestServiceMock.Setup(x => x.CreateInvolvedParty(It.Is<SSG_InvolvedParty>(x => x.SSG_Asset_ICBCClaim.ICBCClaimId == invalidClaimId), It.IsAny<CancellationToken>()))
+            _searchRequestServiceMock.Setup(x => x.CreateInvolvedParty(It.Is<InvolvedPartyEntity>(x => x.SSG_Asset_ICBCClaim.ICBCClaimId == invalidClaimId), It.IsAny<CancellationToken>()))
                  .Throws(new Exception("involved party random exception"));
 
             var result = await _sut.ProcessPersonFound(exceptionPerson, _providerProfile, invalidSearchRequest,Guid.NewGuid(), _fakeToken);
@@ -947,7 +947,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 .Verify(x => x.CreateInsuranceClaim(It.IsAny<ICBCClaimEntity>(), It.IsAny<CancellationToken>()), Times.Once);
 
             _searchRequestServiceMock
-                .Verify(x => x.CreateInvolvedParty(It.IsAny<SSG_InvolvedParty>(), It.IsAny<CancellationToken>()), Times.Once);
+                .Verify(x => x.CreateInvolvedParty(It.IsAny<InvolvedPartyEntity>(), It.IsAny<CancellationToken>()), Times.Once);
 
             _loggerMock.VerifyLog(LogLevel.Error, "involved party random exception", Times.Once());
 

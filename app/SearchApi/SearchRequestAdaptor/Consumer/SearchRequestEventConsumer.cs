@@ -1,6 +1,7 @@
 ﻿using BcGov.Fams3.SearchApi.Contracts.SearchRequest;
 using MassTransit;
 using Microsoft.Extensions.Logging;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SearchRequestAdaptor.Consumer
@@ -17,7 +18,9 @@ namespace SearchRequestAdaptor.Consumer
 
         public async Task Consume(ConsumeContext<SearchRequestOrdered> context)
         {
-            _logger.LogInformation("get the searchRequestOrdered message.");
+           _logger.LogInformation("get the searchRequestOrdered message.");
+            //todo: following code is just to remove warning. When real code is in, need to remove it.
+            await Task.Delay(1000);
         }
 
     }

@@ -1,5 +1,7 @@
 ﻿using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.AssetOwner;
+using Fams3Adapter.Dynamics.BankInfo;
+using Fams3Adapter.Dynamics.CompensationClaim;
 using Fams3Adapter.Dynamics.Duplicate;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
@@ -57,7 +59,7 @@ namespace Fams3Adapter.Dynamics.Test.Duplicate
                      },
                      new SSG_DuplicateDetectionConfig()
                      {
-                         EntityName = "ssg_alias",
+                         EntityName = "ssg_aliase",
                          DuplicateFields = "ssg_PersonSurName|ssg_persongivenname"
                      },
                      new SSG_DuplicateDetectionConfig()
@@ -89,6 +91,16 @@ namespace Fams3Adapter.Dynamics.Test.Duplicate
                      {
                          EntityName = "ssg_asset_other",
                          DuplicateFields = "ssg_otherassettype"
+                     },
+                     new SSG_DuplicateDetectionConfig()
+                     {
+                         EntityName = "ssg_asset_bankinginformation",
+                         DuplicateFields = "ssg_accountnumber"
+                     },
+                     new SSG_DuplicateDetectionConfig()
+                     {
+                         EntityName = "ssg_asset_worksafebcclaim",
+                         DuplicateFields = "ssg_name"
                      }
                 }));
 
@@ -523,6 +535,73 @@ namespace Fams3Adapter.Dynamics.Test.Duplicate
         }
 
         [Test]
+        public async Task person_has_same_bankInfo_should_return_existed_entity_guid()
+        {
+            DuplicateDetectionService._configs = null;
+            Guid existedBankInfoID = Guid.NewGuid();
+            SSG_Person person = new SSG_Person()
+            {
+                SSG_Asset_BankingInformations = new List<SSG_Asset_BankingInformation>() {
+                    new SSG_Asset_BankingInformation(){
+                        AccountNumber="accountnumber", BankingInformationId=existedBankInfoID}
+                }.ToArray()
+            };
+            BankingInformationEntity entity = new BankingInformationEntity() { AccountNumber = "accountnumber", Notes = "notes" };
+            Guid guid = await _sut.Exists(person, entity);
+            Assert.AreEqual(existedBankInfoID, guid);
+        }
+
+        [Test]
+        public async Task person_does_not_contain_same_bankInfo_Exists_should_return_empty_guid()
+        {
+            DuplicateDetectionService._configs = null;
+            Guid existedBankInfoID = Guid.NewGuid();
+            SSG_Person person = new SSG_Person()
+            {
+                SSG_Asset_BankingInformations = new List<SSG_Asset_BankingInformation>() {
+                    new SSG_Asset_BankingInformation(){
+                        AccountNumber="accountnumber111", BankingInformationId=existedBankInfoID}
+                }.ToArray()
+            };
+            BankingInformationEntity entity = new BankingInformationEntity() { AccountNumber = "accountnumber", Notes = "notes" };
+            Guid guid = await _sut.Exists(person, entity);
+            Assert.AreEqual(Guid.Empty, guid);
+        }
+
+        [Test]
+        public async Task person_has_same_compensation_Exists_should_return_existed_entity_guid()
+        {
+            DuplicateDetectionService._configs = null;
+            Guid existedCompensationID = Guid.NewGuid();
+            SSG_Person person = new SSG_Person()
+            {
+                SSG_Asset_WorkSafeBcClaims = new List<SSG_Asset_WorkSafeBcClaim>() {
+                    new SSG_Asset_WorkSafeBcClaim(){ ClaimNumber="11111", CompensationClaimId=existedCompensationID}
+                }.ToArray()
+            };
+            CompensationClaimEntity entity = new CompensationClaimEntity() { ClaimNumber = "11111" };
+            Guid guid = await _sut.Exists(person, entity);
+            Assert.AreEqual(existedCompensationID, guid);
+        }
+
+        [Test]
+        public async Task person_does_not_contain_same_compensation_Exists_should_return_empty_guid()
+        {
+            DuplicateDetectionService._configs = null;
+            Guid existedCompensationID = Guid.NewGuid();
+            SSG_Person person = new SSG_Person()
+            {
+                SSG_Asset_WorkSafeBcClaims = new List<SSG_Asset_WorkSafeBcClaim>() {
+                    new SSG_Asset_WorkSafeBcClaim(){ ClaimNumber="2222", CompensationClaimId=existedCompensationID}
+                }.ToArray()
+            };
+            CompensationClaimEntity entity = new CompensationClaimEntity() { ClaimNumber = "11111" };
+            Guid guid = await _sut.Exists(person, entity);
+            Assert.AreEqual(Guid.Empty, guid);
+        }
+
+
+        [Test]
         public async Task entity_not_having_config_Exists_should_return_empty_guid()
         {
             DuplicateDetectionService._configs = null;
@@ -540,6 +619,63 @@ namespace Fams3Adapter.Dynamics.Test.Duplicate
             SSG_Person person = new SSG_Person() {};
             AssetOwnerEntity entity = new AssetOwnerEntity() { LastName = "ownerlastname1", FirstName = "test" };
             Assert.ThrowsAsync<System.InvalidCastException>(async()=>await _sut.Exists(person, entity));
+        }
+
+        [Test]
+        public async Task entity_ssg_misMatched_Same_return_false()
+        {
+            DuplicateDetectionService._configs = null;
+            SSG_Asset_Vehicle vehicle = new SSG_Asset_Vehicle() { };
+            AddressEntity entity = new AddressEntity() { };
+            bool b = await _sut.Same(entity, vehicle);
+            Assert.AreEqual(false, b);
+        }
+
+        [Test]
+        public async Task entity_no_config_Same_return_false()
+        {
+            DuplicateDetectionService._configs = null;
+            TestEntity entity = new TestEntity() { };
+            SSG_Asset_Vehicle vehicle = new SSG_Asset_Vehicle() { };
+            bool b = await _sut.Same(entity, vehicle);
+            Assert.AreEqual(false, b);
+        }
+
+        [Test]
+        public async Task entity_ssg_matched_same_data_Same_return_true()
+        {
+            DuplicateDetectionService._configs = null;
+            SSG_Asset_Vehicle ssg = new SSG_Asset_Vehicle() { Vin="vin",  PlateNumber="111", VehicleId=Guid.NewGuid()};
+            VehicleEntity entity = new VehicleEntity() { Vin = "vin", PlateNumber = "111" };
+            bool b = await _sut.Same(entity, ssg);
+            Assert.AreEqual(true, b);
+        }
+
+        [Test]
+        public async Task entity_ssg_matched_different_data_Same_return_false()
+        {
+            DuplicateDetectionService._configs = null;
+            SSG_Asset_Vehicle ssg = new SSG_Asset_Vehicle() { Vin = "vin", PlateNumber = "222", VehicleId = Guid.NewGuid() };
+            VehicleEntity entity = new VehicleEntity() { Vin = "vin", PlateNumber = "111" };
+            bool b = await _sut.Same(entity, ssg);
+            Assert.AreEqual(false, b);
+        }
+
+        [Test]
+        public async Task entity_ssg_both_null_data_Same_return_true()
+        {
+            DuplicateDetectionService._configs = null;
+            bool b = await _sut.Same(null, null);
+            Assert.AreEqual(true, b);
+        }
+
+        [Test]
+        public async Task entity_ssg_one_is_null_the_other_isNotNull_data_Same_return_false()
+        {
+            DuplicateDetectionService._configs = null;
+            VehicleEntity entity = new VehicleEntity() { Vin = "vin", PlateNumber = "111" };
+            bool b = await _sut.Same(entity,  null);
+            Assert.AreEqual(false, b);
         }
     }
 

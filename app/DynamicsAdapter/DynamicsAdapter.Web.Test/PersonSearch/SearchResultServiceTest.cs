@@ -4,6 +4,7 @@ using DynamicsAdapter.Web.PersonSearch.Models;
 using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.AssetOwner;
 using Fams3Adapter.Dynamics.BankInfo;
+using Fams3Adapter.Dynamics.CompensationClaim;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.InsuranceClaim;
@@ -527,13 +528,13 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                .Verify(x => x.CreateRelatedPerson(It.IsAny<RelatedPersonEntity>(), It.IsAny<CancellationToken>()), Times.Once);
 
             _searchRequestServiceMock
-              .Verify(x => x.CreateEmployment(It.IsAny<EmploymentEntity>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
+              .Verify(x => x.CreateEmployment(It.IsAny<EmploymentEntity>(), It.IsAny<CancellationToken>()), Times.Once);
 
             _searchRequestServiceMock
                 .Verify(x => x.CreateEmploymentContact(It.IsAny<EmploymentContactEntity>(), It.IsAny<CancellationToken>()), Times.Once);
 
             _searchRequestServiceMock
-               .Verify(x => x.CreateBankInfo(It.IsAny<BankingInformationEntity>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
+               .Verify(x => x.CreateBankInfo(It.IsAny<BankingInformationEntity>(), It.IsAny<CancellationToken>()), Times.Once);
 
             _searchRequestServiceMock
               .Verify(x => x.CreateVehicle(It.IsAny<VehicleEntity>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
@@ -587,13 +588,13 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                .Verify(x => x.CreateRelatedPerson(It.IsAny<RelatedPersonEntity>(), It.IsAny<CancellationToken>()), Times.Once);
 
             _searchRequestServiceMock
-              .Verify(x => x.CreateEmployment(It.IsAny<EmploymentEntity>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
+              .Verify(x => x.CreateEmployment(It.IsAny<EmploymentEntity>(), It.IsAny<CancellationToken>()), Times.Once);
 
             _searchRequestServiceMock
                 .Verify(x => x.CreateEmploymentContact(It.IsAny<EmploymentContactEntity>(), It.IsAny<CancellationToken>()), Times.Once);
 
             _searchRequestServiceMock
-               .Verify(x => x.CreateBankInfo(It.IsAny<BankingInformationEntity>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
+               .Verify(x => x.CreateBankInfo(It.IsAny<BankingInformationEntity>(), It.IsAny<CancellationToken>()), Times.Once);
 
             _searchRequestServiceMock
               .Verify(x => x.CreateVehicle(It.IsAny<VehicleEntity>(), It.IsAny<CancellationToken>()), Times.Exactly(2));

@@ -1,10 +1,11 @@
-﻿using Fams3Adapter.Dynamics.Employment;
+﻿using Fams3Adapter.Dynamics.BankInfo;
+using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Newtonsoft.Json;
 using System;
 
-namespace Fams3Adapter.Dynamics.BankInfo
+namespace Fams3Adapter.Dynamics.CompensationClaim
 {
     public class CompensationClaimEntity : DynamicsEntity
     {
@@ -40,11 +41,17 @@ namespace Fams3Adapter.Dynamics.BankInfo
 
         [JsonProperty("ssg_Employment")]
         public virtual SSG_Employment Employment { get; set; }
+
+        public EmploymentEntity EmploymentEntity { get; set; }
+        public BankingInformationEntity BankInformationEntity { get; set; }
     }
 
-    public class SSG_Asset_WorkSafeBcClaim : CompensationClaimEntity
+
+
+public class SSG_Asset_WorkSafeBcClaim : CompensationClaimEntity
     {
         [JsonProperty("ssg_asset_worksafebcclaimid")]
         public Guid CompensationClaimId{ get; set; }
+        public bool IsDuplicated { get; set; }
     }
 }

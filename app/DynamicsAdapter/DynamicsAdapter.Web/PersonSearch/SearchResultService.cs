@@ -4,6 +4,7 @@ using Fams3Adapter.Dynamics;
 using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.AssetOwner;
 using Fams3Adapter.Dynamics.BankInfo;
+using Fams3Adapter.Dynamics.CompensationClaim;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.InsuranceClaim;
@@ -18,6 +19,7 @@ using Fams3Adapter.Dynamics.SearchRequest;
 using Fams3Adapter.Dynamics.Vehicle;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -414,42 +416,41 @@ namespace DynamicsAdapter.Web.PersonSearch
 
                 foreach (CompensationClaim claim in _foundPerson.CompensationClaims)
                 {
-                    SSG_Asset_BankingInformation ssg_bank = null;
+                    BankingInformationEntity bankEntity=null;
                     if (claim.BankInfo != null)
                     {
-                        BankingInformationEntity bank = _mapper.Map<BankingInformationEntity>(claim.BankInfo);
-                        bank.InformationSource = _providerDynamicsID;
-                        ssg_bank = await _searchRequestService.CreateBankInfo(bank, _cancellationToken);
+                        bankEntity = _mapper.Map<BankingInformationEntity>(claim.BankInfo);
+                        bankEntity.InformationSource = _providerDynamicsID;
                     }
 
-                    SSG_Employment ssg_employment = null;
+                    EmploymentEntity employmentEntity = null;
                     if (claim.Employer != null)
                     {
-                        EmploymentEntity employ = _mapper.Map<EmploymentEntity>(claim.Employer);
-                        employ.InformationSource = _providerDynamicsID;
-                        employ.Date1 = claim.ReferenceDates?.SingleOrDefault(m => m.Index == 0)?.Value.DateTime;
-                        employ.Date1Label = claim.ReferenceDates?.SingleOrDefault(m => m.Index == 0)?.Key;
-                        ssg_employment = await _searchRequestService.CreateEmployment(employ, _cancellationToken);
+                        employmentEntity = _mapper.Map<EmploymentEntity>(claim.Employer);
+                        employmentEntity.InformationSource = _providerDynamicsID;
+                        employmentEntity.Date1 = claim.ReferenceDates?.SingleOrDefault(m => m.Index == 0)?.Value.DateTime;
+                        employmentEntity.Date1Label = claim.ReferenceDates?.SingleOrDefault(m => m.Index == 0)?.Key;
+                        List<EmploymentContactEntity> contacts = new List<EmploymentContactEntity>();
                         if (claim.Employer.Phones != null)
                         {
                             foreach (var phone in claim.Employer.Phones)
                             {
                                 EmploymentContactEntity p = _mapper.Map<EmploymentContactEntity>(phone);
-                                p.Employment = ssg_employment;
-                                await _searchRequestService.CreateEmploymentContact(p, _cancellationToken);
+                                contacts.Add(p);
                             }
                         }
+                        employmentEntity.EmploymentContactEntities = contacts.ToArray();
                     }
 
                     CompensationClaimEntity ssg_claim = _mapper.Map<CompensationClaimEntity>(claim);
                     ssg_claim.SearchRequest = _searchRequest;
                     ssg_claim.InformationSource = _providerDynamicsID;
                     ssg_claim.Person =  _returnedPerson;
-                    ssg_claim.BankingInformation = ssg_bank;
-                    ssg_claim.Employment = ssg_employment;
-                    SSG_Asset_WorkSafeBcClaim ssgClaim = await _searchRequestService.CreateCompensationClaim(ssg_claim, _cancellationToken);
+                    ssg_claim.BankInformationEntity = bankEntity;
+                    ssg_claim.EmploymentEntity = employmentEntity;
 
-                    await CreateResultTransaction(ssgClaim);
+                    SSG_Asset_WorkSafeBcClaim ssg_Claim = await _searchRequestService.CreateCompensationClaim(ssg_claim, _cancellationToken);
+                    await CreateResultTransaction(ssg_Claim);
                 }
                 return true;
             }

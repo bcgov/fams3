@@ -33,6 +33,7 @@ namespace SearchRequestAdaptor
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddWebHooks();
             this.ConfigureHealthChecks(services);
             this.ConfigureServiceBus(services);
         }
@@ -100,7 +101,9 @@ namespace SearchRequestAdaptor
                     cfg.ReceiveEndpoint($"{nameof(SearchRequestOrdered)}_queue", e =>
                     {
                         e.Consumer(() =>
-                            new SearchRequestOrderedConsumer(provider.GetRequiredService<ILogger<SearchRequestOrderedConsumer>>()));
+                            new SearchRequestOrderedConsumer(
+                                provider.GetRequiredService<ISearchRequestNotifier<SearchRequestEvent>>(),
+                                provider.GetRequiredService<ILogger<SearchRequestOrderedConsumer>>()));
                     });
                 }));
             });

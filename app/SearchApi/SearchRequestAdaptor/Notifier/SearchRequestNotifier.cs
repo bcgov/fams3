@@ -11,26 +11,26 @@ namespace SearchRequestAdaptor.Notifier
 {
     public interface ISearchRequestNotifier<T>
     {
-        Task NotifyEventAsync(string searchRequestKey, T notificationStatus, string eventName, CancellationToken cancellationToken);
+        Task NotifySearchRequestEventAsync(string searchRequestKey, T notificationStatus, string eventName, CancellationToken cancellationToken);
     }
 
-    public class WebHookNotifierSearchRequest : ISearchRequestNotifier<SearchRequestEvent>
+    public class WebHookSearchRequestNotifier : ISearchRequestNotifier<SearchRequestEvent>
     {
 
         private readonly HttpClient _httpClient;
-        private readonly ILogger<WebHookNotifierSearchRequest> _logger;
+        private readonly ILogger<WebHookSearchRequestNotifier> _logger;
 
 
-        public WebHookNotifierSearchRequest(HttpClient httpClient, ILogger<WebHookNotifierSearchRequest> logger)
+        public WebHookSearchRequestNotifier(HttpClient httpClient, ILogger<WebHookSearchRequestNotifier> logger)
         {
             _httpClient = httpClient;
             _logger = logger;
         }
 
-        public async Task NotifyEventAsync(string searchRequestKey, SearchRequestEvent searchRequestEvent, string eventName,
+        public async Task NotifySearchRequestEventAsync(string searchRequestKey, SearchRequestEvent searchRequestEvent, string eventName,
            CancellationToken cancellationToken)
         {
- 
+            _logger.LogInformation("got searchRequestEvent");
         }
     }
 }

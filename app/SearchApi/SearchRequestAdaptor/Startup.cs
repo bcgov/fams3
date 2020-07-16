@@ -96,11 +96,11 @@ namespace SearchRequestAdaptor
                     cfg.PropagateOpenTracingContext();
 
 
-                    // Configure Person Search Accepted Consumer 
+                    // Configure Search Request Ordered Consumer 
                     cfg.ReceiveEndpoint($"{nameof(SearchRequestOrdered)}_queue", e =>
                     {
                         e.Consumer(() =>
-                            new SearchRequestOrderedConsumer(provider.GetRequiredService<SearchRequestNotifier<SearchRequestEvent>>(), provider.GetRequiredService<ILogger<SearchRequestOrderedConsumer>>()));
+                            new SearchRequestOrderedConsumer(provider.GetRequiredService<ILogger<SearchRequestOrderedConsumer>>()));
                     });
                 }));
             });

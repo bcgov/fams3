@@ -9,12 +9,12 @@ using System.Threading.Tasks;
 
 namespace SearchRequestAdaptor.Notifier
 {
-    public interface SearchRequestNotifier<T>
+    public interface ISearchRequestNotifier<T>
     {
         Task NotifyEventAsync(string searchRequestKey, T notificationStatus, string eventName, CancellationToken cancellationToken);
     }
 
-    public class WebHookNotifierSearchRequest : SearchRequestNotifier<SearchRequestEvent>
+    public class WebHookNotifierSearchRequest : ISearchRequestNotifier<SearchRequestEvent>
     {
 
         private readonly HttpClient _httpClient;

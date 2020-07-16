@@ -1150,7 +1150,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 Type = "Phone"
             };
 
-            SSG_SimplePhoneNumber assetPhone = _mapper.Map<SSG_SimplePhoneNumber>(phone);
+            SimplePhoneNumberEntity assetPhone = _mapper.Map<SimplePhoneNumberEntity>(phone);
             Assert.AreEqual("claimCenterContactPhoneNumber1", assetPhone.PhoneNumber);
             Assert.AreEqual("claimCenterContactPhoneExt1", assetPhone.Extension);
             Assert.AreEqual("Phone", assetPhone.Type);
@@ -1247,7 +1247,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 TypeDescription = "InvolvedPartyTypeDescription"
             };
 
-            SSG_InvolvedParty ssg_InvolvedParty = _mapper.Map<SSG_InvolvedParty>(party);
+            InvolvedPartyEntity ssg_InvolvedParty = _mapper.Map<InvolvedPartyEntity>(party);
             Assert.AreEqual("InvolvedPartyFirstName", ssg_InvolvedParty.FirstName);
             Assert.AreEqual("InvolvedPartLastName", ssg_InvolvedParty.LastName);
             Assert.AreEqual("InvolvedPartyMiddleName", ssg_InvolvedParty.MiddleName);
@@ -1267,7 +1267,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 Notes = "InvolvedPartyNotes",
             };
 
-            SSG_InvolvedParty ssg_InvolvedParty = _mapper.Map<SSG_InvolvedParty>(party);
+            InvolvedPartyEntity ssg_InvolvedParty = _mapper.Map<InvolvedPartyEntity>(party);
             Assert.AreEqual(null, ssg_InvolvedParty.FirstName);
             Assert.AreEqual(null, ssg_InvolvedParty.LastName);
             Assert.AreEqual(null, ssg_InvolvedParty.MiddleName);

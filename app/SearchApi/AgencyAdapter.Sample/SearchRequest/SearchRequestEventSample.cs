@@ -1,0 +1,50 @@
+﻿using System;
+using System.Collections.Generic;
+using BcGov.Fams3.SearchApi.Contracts.Person;
+using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
+using BcGov.Fams3.SearchApi.Contracts.SearchRequest;
+using BcGov.Fams3.SearchApi.Core.Adapters.Models;
+
+namespace AgencyAdapter.Sample.SearchRequest
+{
+    public class SearchRequestNotificationSample : SearchRequestNotification
+    {
+
+
+        public Guid SearchRequestId { get; set; }
+        public string SearchRequestKey { get; set; }
+        public DateTime TimeStamp { get; set; }
+        public ProviderProfile ProviderProfile { get; set; }
+        public IEnumerable<PersonFound> MatchedPersons { get; set; }
+
+        public NotificationType Notification { get; set; }
+
+        public string RequestId { get; set; }
+    }
+    public class AgencySample : ProviderProfile
+    {
+        public string Name { get; set; }
+    }
+
+    public static class FakeSearchrequestResponseBuilder
+    {
+        public static SearchRequestNotification BuildFakeSearchRequestNotification(Guid searchrequestId, string searchRequestKey, string requestId, NotificationType notification, string agency)
+        {
+
+            return new SearchRequestNotificationSample()
+            {
+                ProviderProfile = new AgencySample { Name = agency },
+                SearchRequestId = searchrequestId,
+                SearchRequestKey = searchRequestKey,
+                RequestId = requestId,
+                TimeStamp = DateTime.Now,
+
+            };
+
+        }
+
+    }
+
+
+
+}

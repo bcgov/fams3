@@ -36,48 +36,6 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             odataClientMock = new Mock<IODataClient>();
             _duplicateServiceMock = new Mock<IDuplicateDetectionService>();
 
-            odataClientMock.Setup(x => x.For<SSG_Country>(null)
-             .Filter(It.IsAny<Expression<Func<SSG_Country, bool>>>())
-             .FindEntryAsync(It.IsAny<CancellationToken>()))
-             .Returns(Task.FromResult<SSG_Country>(new SSG_Country()
-             {
-                 CountryId = Guid.NewGuid(),
-                 Name = "Canada"
-             }));
-
-            odataClientMock.Setup(x => x.For<SSG_CountrySubdivision>(null)
-                .Filter(It.IsAny<Expression<Func<SSG_CountrySubdivision, bool>>>())
-                .FindEntryAsync(It.IsAny<CancellationToken>()))
-                .Returns(Task.FromResult<SSG_CountrySubdivision>(new SSG_CountrySubdivision()
-                {
-                    CountrySubdivisionId = Guid.NewGuid(),
-                    Name = "British Columbia"
-                }));
-
-            odataClientMock.Setup(x => x.For<SSG_Asset_ICBCClaim>(null).Set(It.IsAny<ICBCClaimEntity>())
-             .InsertEntryAsync(It.IsAny<CancellationToken>()))
-             .Returns(Task.FromResult(new SSG_Asset_ICBCClaim()
-             {
-                 ClaimNumber = "icbcClaim"
-             })
-             );
-
-            odataClientMock.Setup(x => x.For<SSG_SimplePhoneNumber>(null).Set(It.IsAny<SSG_SimplePhoneNumber>())
-             .InsertEntryAsync(It.IsAny<CancellationToken>()))
-             .Returns(Task.FromResult(new SSG_SimplePhoneNumber()
-             {
-                 PhoneNumber = "phone"
-             })
-             );
-
-            odataClientMock.Setup(x => x.For<SSG_InvolvedParty>(null).Set(It.IsAny<SSG_InvolvedParty>())
-            .InsertEntryAsync(It.IsAny<CancellationToken>()))
-            .Returns(Task.FromResult(new SSG_InvolvedParty()
-            {
-                OrganizationName = "party"
-            })
-            );
-
             odataClientMock.Setup(x => x.For<SSG_SearchRequestResultTransaction>(null).Set(It.IsAny<SSG_SearchRequestResultTransaction>())
             .InsertEntryAsync(It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult(new SSG_SearchRequestResultTransaction()
@@ -88,53 +46,6 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
 
             _sut = new SearchRequestService(odataClientMock.Object, _duplicateServiceMock.Object);
         }
-
-
-
-
-
-        [Test]
-        public async Task upload_ICBCClaimEntity_should_success()
-        {
-            var claim = new ICBCClaimEntity()
-            {
-                ClaimNumber = "icbcClaim",
-                SearchRequest = new SSG_SearchRequest() { SearchRequestId = testId },
-                Person = new SSG_Person() { PersonId = testPersonId }
-
-            };
-
-            var result = await _sut.CreateInsuranceClaim(claim, CancellationToken.None);
-
-            Assert.AreEqual("icbcClaim", result.ClaimNumber);
-        }
-
-        [Test]
-        public async Task upload_SimplePhoneNumber_should_success()
-        {
-            var phone = new SSG_SimplePhoneNumber()
-            {
-                PhoneNumber = "phone"
-            };
-
-            var result = await _sut.CreateSimplePhoneNumber(phone, CancellationToken.None);
-
-            Assert.AreEqual("phone", result.PhoneNumber);
-        }
-
-        [Test]
-        public async Task upload_InvolvedParty_should_success()
-        {
-            var party = new SSG_InvolvedParty()
-            {
-                OrganizationName = "party"
-            };
-
-            var result = await _sut.CreateInvolvedParty(party, CancellationToken.None);
-
-            Assert.AreEqual("party", result.OrganizationName);
-        }
-
 
         [Test]
         public async Task upload_ResultTransaction_should_success()

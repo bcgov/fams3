@@ -481,7 +481,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                     {
                         foreach(Phone phone in claim.ClaimCentre.ContactNumber)
                         {
-                            SSG_SimplePhoneNumber phoneForAsset = _mapper.Map<SSG_SimplePhoneNumber>(phone);
+                            SimplePhoneNumberEntity phoneForAsset = _mapper.Map<SimplePhoneNumberEntity>(phone);
                             phoneForAsset.SSG_Asset_ICBCClaim = ssg_claim;
                             await _searchRequestService.CreateSimplePhoneNumber(phoneForAsset, _cancellationToken);
                         }
@@ -491,7 +491,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                     {
                         foreach(InvolvedParty party in claim.InsuredParties)
                         {
-                            SSG_InvolvedParty involvedParty = _mapper.Map<SSG_InvolvedParty>(party);
+                            InvolvedPartyEntity involvedParty = _mapper.Map<InvolvedPartyEntity>(party);
                             involvedParty.SSG_Asset_ICBCClaim = ssg_claim;
                             await _searchRequestService.CreateInvolvedParty(involvedParty, _cancellationToken);
                         }

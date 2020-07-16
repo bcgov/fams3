@@ -4,6 +4,7 @@ using Fams3Adapter.Dynamics.BankInfo;
 using Fams3Adapter.Dynamics.CompensationClaim;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
+using Fams3Adapter.Dynamics.InsuranceClaim;
 using Fams3Adapter.Dynamics.Name;
 using Fams3Adapter.Dynamics.OtherAsset;
 using Fams3Adapter.Dynamics.Person;
@@ -48,7 +49,10 @@ namespace Fams3Adapter.Dynamics.Duplicate
             {"EmploymentContactEntity","ssg_employmentcontact" },
             {"AssetOtherEntity","ssg_asset_other" },
             {"BankingInformationEntity","ssg_asset_bankinginformation"},
-            {"CompensationClaimEntity","ssg_asset_worksafebcclaim"}
+            {"CompensationClaimEntity","ssg_asset_worksafebcclaim"},
+            {"ICBCClaimEntity","ssg_asset_icbcclaim"},
+            {"SimplePhoneNumberEntity","ssg_simplephonenumber" },
+            {"InvolvedPartyEntity","ssg_involvedparty" }
         };
 
         public DuplicateDetectionService(IODataClient oDataClient)
@@ -175,6 +179,24 @@ namespace Fams3Adapter.Dynamics.Duplicate
                     foreach (SSG_Asset_WorkSafeBcClaim claim in ((SSG_Person)fatherObj).SSG_Asset_WorkSafeBcClaims)
                     {
                         if (await Same(entity, claim)) return claim.CompensationClaimId;
+                    };
+                    break;
+                case "ICBCClaimEntity":
+                    foreach (SSG_Asset_ICBCClaim insurance in ((SSG_Person)fatherObj).SSG_Asset_ICBCClaims)
+                    {
+                        if (await Same(entity, insurance)) return insurance.ICBCClaimId;
+                    };
+                    break;
+                case "SimplePhoneNumberEntity":
+                    foreach (SSG_SimplePhoneNumber phone in ((SSG_Asset_ICBCClaim)fatherObj).SSG_SimplePhoneNumbers)
+                    {
+                        if (await Same(entity, phone)) return phone.SimplePhoneNumberId;
+                    };
+                    break;
+                case "InvolvedPartyEntity":
+                    foreach (SSG_InvolvedParty party in ((SSG_Asset_ICBCClaim)fatherObj).SSG_InvolvedParties)
+                    {
+                        if (await Same(entity, party)) return party.InvolvedPartyId;
                     };
                     break;
             }            

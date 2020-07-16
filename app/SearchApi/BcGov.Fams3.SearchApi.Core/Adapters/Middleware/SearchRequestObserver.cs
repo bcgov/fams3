@@ -12,25 +12,25 @@ namespace BcGov.Fams3.SearchApi.Core.Adapters.Middleware
 {
     public class SearchRequestObserver : IConsumeMessageObserver<SearchRequestOrdered>
     {
-        private readonly ProviderProfile _providerProfile;
+        //private readonly ProviderProfile _providerProfile;
         private readonly ILogger<SearchRequestObserver> _logger;
 
-        public SearchRequestObserver(IOptions<ProviderProfileOptions> providerProfile, ILogger<SearchRequestObserver> logger)
+        public SearchRequestObserver( ILogger<SearchRequestObserver> logger)
         {
             _logger = logger;
-            _providerProfile = providerProfile.Value;
+           // _providerProfile = providerProfile.Value;
         }
 
         public async Task PreConsume(ConsumeContext<SearchRequestOrdered> context)
         {
-            _logger.LogInformation($"Adapter {_providerProfile.Name} provider received new  search request.");
+            _logger.LogInformation($"Fams Search Request Adapter received new  search request.");
             await Task.FromResult(0);
             return;
         }
 
         public async Task PostConsume(ConsumeContext<SearchRequestOrdered> context)
         {
-            _logger.LogInformation($"Adapter {_providerProfile.Name} provider successfully processed new search request.");
+            _logger.LogInformation($"Fams Search Request Adapter successfully processed new search request.");
             await Task.FromResult(0);
             return;
         }
@@ -39,8 +39,7 @@ namespace BcGov.Fams3.SearchApi.Core.Adapters.Middleware
         {
             _logger.LogError(exception, "Adapter Failed to save search request.");
             await context.Publish<SearchRequestFailed>(new DefaultSearchRequestFailed(context.Message.SearchRequestId, context.Message.RequestId,
-                context.Message.SearchRequestKey,
-                _providerProfile, exception.Message));
+                context.Message.SearchRequestKey, exception.Message));
         }
     }
 }

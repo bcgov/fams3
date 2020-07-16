@@ -7,11 +7,11 @@ namespace BcGov.Fams3.SearchApi.Core.Adapters.Models
     public class DefaultSearchRequestFailed : SearchRequestFailed
     {
 
-        public DefaultSearchRequestFailed(Guid searchRequestId, string requestId, string searchRequestKey, ProviderProfile providerProfile, string cause)
+        public DefaultSearchRequestFailed(Guid searchRequestId, string requestId, string searchRequestKey, string cause)
         {
             RequestId = requestId;
             SearchRequestId = searchRequestId;
-            ProviderProfile = providerProfile;
+         
             Cause = cause;
             TimeStamp = DateTime.Now;
             SearchRequestKey = searchRequestKey;
@@ -24,5 +24,7 @@ namespace BcGov.Fams3.SearchApi.Core.Adapters.Models
         public string Cause { get; }
 
         public string RequestId { get; }
+
+       
     }
 }

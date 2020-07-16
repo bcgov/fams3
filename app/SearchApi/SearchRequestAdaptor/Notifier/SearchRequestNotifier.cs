@@ -1,8 +1,5 @@
 ﻿using BcGov.Fams3.SearchApi.Contracts.SearchRequest;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -31,6 +28,7 @@ namespace SearchRequestAdaptor.Notifier
            CancellationToken cancellationToken)
         {
             _logger.LogInformation("got searchRequestEvent");
+
         }
     }
 }

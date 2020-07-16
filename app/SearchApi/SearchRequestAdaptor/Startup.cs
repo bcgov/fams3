@@ -98,7 +98,7 @@ namespace SearchRequestAdaptor
                     cfg.ReceiveEndpoint($"{nameof(SearchRequestOrdered)}_queue", e =>
                     {
                         e.Consumer(() =>
-                            new SearchRequestOrderedConsumer(/*provider.GetRequiredService<ISearchApiNotifier<PersonSearchAdapterEvent>>(),*/ provider.GetRequiredService<ILogger<SearchRequestOrderedConsumer>>()));
+                            new SearchRequestOrderedConsumer(provider.GetRequiredService<ISearchRequestNotifier<SearchRequestEvent>>(), provider.GetRequiredService<ILogger<SearchRequestOrderedConsumer>>()));
                     });
                 }));
             });

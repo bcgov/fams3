@@ -27,13 +27,8 @@ namespace SearchRequestAdaptor.Notifier
         public async Task NotifySearchRequestEventAsync(string searchRequestKey, SearchRequestEvent searchRequestEvent, string eventName,
            CancellationToken cancellationToken)
         {
-<<<<<<< HEAD
             //todo: following code is just to remove warning. When real code is in, need to remove it.
             await Task.Delay(1000);
-=======
-            _logger.LogInformation("got searchRequestEvent");
-
->>>>>>> webhook4SR
         }
     }
 }

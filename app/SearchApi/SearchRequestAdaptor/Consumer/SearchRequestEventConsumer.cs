@@ -1,19 +1,20 @@
 ﻿using BcGov.Fams3.SearchApi.Contracts.SearchRequest;
 using MassTransit;
 using Microsoft.Extensions.Logging;
+using SearchRequestAdaptor.Notifier;
 using Serilog.Context;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SearchRequestAdaptor
+namespace SearchRequestAdaptor.Consumer
 {
     public abstract class SearchRequestEventConsumer
     {
 
         private readonly ILogger<SearchRequestEventConsumer> _logger;
-        private readonly ISearchRequestNotifier<SearchRequestEvent> _searchRequestNotifier;
+        private readonly SearchRequestNotifier<SearchRequestEvent> _searchRequestNotifier;
 
-        public SearchRequestEventConsumer(ISearchRequestNotifier<SearchRequestEvent> searchRequestNotifier, ILogger<SearchRequestEventConsumer> logger)
+        public SearchRequestEventConsumer(SearchRequestNotifier<SearchRequestEvent> searchRequestNotifier, ILogger<SearchRequestEventConsumer> logger)
         {
             _searchRequestNotifier = searchRequestNotifier;
             _logger = logger;
@@ -35,9 +36,9 @@ namespace SearchRequestAdaptor
     public class SearchRequestOrderedConsumer : SearchRequestEventConsumer, IConsumer<SearchRequestOrdered>
     {
         private readonly ILogger<SearchRequestOrderedConsumer> _logger;
-        private readonly ISearchRequestNotifier<SearchRequestEvent> _searchRequestNotifier;
+        private readonly SearchRequestNotifier<SearchRequestEvent> _searchRequestNotifier;
 
-        public SearchRequestOrderedConsumer(ISearchRequestNotifier<SearchRequestEvent> searchRequestNotifier, ILogger<SearchRequestOrderedConsumer> logger) : base(searchRequestNotifier, logger)
+        public SearchRequestOrderedConsumer(SearchRequestNotifier<SearchRequestEvent> searchRequestNotifier, ILogger<SearchRequestOrderedConsumer> logger) : base(searchRequestNotifier, logger)
         {
             _searchRequestNotifier = searchRequestNotifier;
             _logger = logger;

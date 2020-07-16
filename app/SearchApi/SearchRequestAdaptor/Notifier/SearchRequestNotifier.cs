@@ -7,14 +7,14 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SearchRequestAdaptor
+namespace SearchRequestAdaptor.Notifier
 {
-    public interface ISearchRequestNotifier<T>
+    public interface SearchRequestNotifier<T>
     {
         Task NotifyEventAsync(string searchRequestKey, T notificationStatus, string eventName, CancellationToken cancellationToken);
     }
 
-    public class WebHookNotifierSearchRequest : ISearchRequestNotifier<SearchRequestEvent>
+    public class WebHookNotifierSearchRequest : SearchRequestNotifier<SearchRequestEvent>
     {
 
         private readonly HttpClient _httpClient;

@@ -14,6 +14,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using SearchRequestAdaptor.Consumer;
+using SearchRequestAdaptor.Notifier;
 
 namespace SearchRequestAdaptor
 {
@@ -98,7 +100,7 @@ namespace SearchRequestAdaptor
                     cfg.ReceiveEndpoint($"{nameof(SearchRequestOrdered)}_queue", e =>
                     {
                         e.Consumer(() =>
-                            new SearchRequestOrderedConsumer(provider.GetRequiredService<ISearchRequestNotifier<SearchRequestEvent>>(), provider.GetRequiredService<ILogger<SearchRequestOrderedConsumer>>()));
+                            new SearchRequestOrderedConsumer(provider.GetRequiredService<SearchRequestNotifier<SearchRequestEvent>>(), provider.GetRequiredService<ILogger<SearchRequestOrderedConsumer>>()));
                     });
                 }));
             });

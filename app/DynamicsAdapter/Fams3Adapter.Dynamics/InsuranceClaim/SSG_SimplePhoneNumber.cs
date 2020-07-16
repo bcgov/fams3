@@ -1,8 +1,9 @@
 ﻿using Newtonsoft.Json;
+using System;
 
 namespace Fams3Adapter.Dynamics.InsuranceClaim
 {
-    public class SSG_SimplePhoneNumber
+    public class SimplePhoneNumberEntity
     {
         [JsonProperty("ssg_phonenumber")]
         public string PhoneNumber { get; set; }
@@ -15,5 +16,11 @@ namespace Fams3Adapter.Dynamics.InsuranceClaim
 
         [JsonProperty("ssg_ICBCClaim")]
         public virtual SSG_Asset_ICBCClaim SSG_Asset_ICBCClaim { get; set; }
+    }
+
+    public class SSG_SimplePhoneNumber : SimplePhoneNumberEntity
+    {
+        [JsonProperty("ssg_simplephonenumberid")]
+        public Guid SimplePhoneNumberId { get; set; }
     }
 }

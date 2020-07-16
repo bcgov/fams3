@@ -272,12 +272,12 @@ namespace DynamicsAdapter.Web.Mapping
                   .ForMember(dest => dest.SupplierCountrySubdivisionCode, opt => opt.MapFrom(src => src.ClaimCentre == null ? null : src.ClaimCentre.ContactAddress == null ? null : src.ClaimCentre.ContactAddress.StateProvince))
                   .IncludeBase<PersonalInfo, DynamicsEntity>();
 
-            CreateMap<Phone, SSG_SimplePhoneNumber>()
+            CreateMap<Phone, SimplePhoneNumberEntity>()
                   .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
                   .ForMember(dest => dest.Extension, opt => opt.MapFrom(src => src.Extension))
                   .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type));
 
-            CreateMap<InvolvedParty, SSG_InvolvedParty>()
+            CreateMap<InvolvedParty, InvolvedPartyEntity>()
                   .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.Name==null? null: src.Name.FirstName))
                   .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.Name == null ? null : src.Name.LastName))
                   .ForMember(dest => dest.MiddleName, opt => opt.MapFrom(src => src.Name == null ? null : src.Name.MiddleName))

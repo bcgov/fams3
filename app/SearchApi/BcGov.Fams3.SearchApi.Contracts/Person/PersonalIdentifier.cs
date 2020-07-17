@@ -17,5 +17,8 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         [Description("The issuer of the identifier")]
         public string IssuedBy { get; set; }
 
+        [Description("The owner of the ID e.g. Applicant, Person Sought, e.t.c")]
+        public OwnerType Owner { get; set; }
+
     }
 }

@@ -15,4 +15,13 @@
         BCHydroBP,
         OtherDriverLicense
     }
+
+    public enum OwnerType
+    {
+        Applicant,
+        PersonSought,
+        InvolvedPerson,
+        NotApplicable
+
+    }
 }

@@ -6,6 +6,7 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
 {
     public class Person
     {
+        public Agency Agency { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string MiddleName { get; set; }

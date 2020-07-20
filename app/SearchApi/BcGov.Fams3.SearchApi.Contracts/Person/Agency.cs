@@ -42,6 +42,8 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         [Description("agent email")]
         public string Email { get; set; }
 
+       
+
 
 
 

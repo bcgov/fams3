@@ -39,6 +39,9 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         [Description("Phone and fax of agent")]
         public IEnumerable<Phone> AgentContact { get; set; }
 
+        [Description("agent email")]
+        public string Email { get; set; }
+
 
 
 

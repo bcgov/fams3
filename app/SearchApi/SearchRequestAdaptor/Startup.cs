@@ -11,8 +11,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using SearchRequestAdaptor.Configuration;
 using SearchRequestAdaptor.Consumer;
 using SearchRequestAdaptor.Notifier;
+using SearchRequestAdaptor.Publisher;
 
 namespace SearchRequestAdaptor
 {
@@ -30,9 +32,13 @@ namespace SearchRequestAdaptor
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddOptions<SearchRequestAdaptorOptions>().Bind(Configuration.GetSection(Keys.SEARCHREQUEST_SECTION_SETTING_KEY));
             services.AddWebHooks();
+            
+            
             this.ConfigureHealthChecks(services);
             this.ConfigureServiceBus(services);
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -106,6 +112,7 @@ namespace SearchRequestAdaptor
             });
 
             services.AddHostedService<BusHostedService>();
+            services.AddTransient<ISearchRequestEventPublisher, SearchRequestEventPublisher>();
         }
     }
 }

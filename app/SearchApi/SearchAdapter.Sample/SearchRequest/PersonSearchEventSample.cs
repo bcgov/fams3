@@ -64,6 +64,7 @@ namespace SearchAdapter.Sample.SearchRequest
                                 Description = "Sample Identifier Description",
                                 Notes = "Sample Identifier Notes",
                                 IssuedBy = "BC",
+                                Owner = OwnerType.NotApplicable,
                                 Value = new Random().Next(0, 50000).ToString(),
                                 ReferenceDates = new List<ReferenceDate>(){
                                     new ReferenceDate(){ Index=0, Key="Effective Date", Value=new DateTime(2019,9,1) },
@@ -79,6 +80,7 @@ namespace SearchAdapter.Sample.SearchRequest
                                 Description = "Sample Identifier Description",
                                 Notes = "Sample Identifier Notes",
                                 IssuedBy = "BC",
+                                Owner = OwnerType.NotApplicable,
                                 Value = new Random().Next(0, 50000).ToString(),
                                 ReferenceDates = new List<ReferenceDate>(){
                                     new ReferenceDate(){ Index=0, Key="Effective Date", Value=new DateTime(2019,9,1) },
@@ -129,6 +131,7 @@ namespace SearchAdapter.Sample.SearchRequest
                                         Description = "Sample Identifier Description",
                                         Notes = "Sample Identifier Notes",
                                         IssuedBy = "BC",
+                                        Owner = OwnerType.NotApplicable,
                                         Value = new Random().Next(0, 50000).ToString()
                                     },
                                     new PersonalIdentifier
@@ -138,6 +141,7 @@ namespace SearchAdapter.Sample.SearchRequest
                                         Description = "Sample Identifier Description",
                                         Notes = "Sample Identifier Notes",
                                         IssuedBy = "BC",
+                                        Owner = OwnerType.NotApplicable,
                                         Value = new Random().Next(0, 50000).ToString()
                                     },
 

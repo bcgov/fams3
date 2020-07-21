@@ -19,6 +19,8 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         [Description("the type of the names")]
         public string Type { get; set; }
 
+        [Description("The owner of the name e.g. Applicant, Person Sought, e.t.c")]
+        public OwnerType Owner { get; set; }
 
 
     }

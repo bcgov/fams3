@@ -6,8 +6,6 @@ using BcGov.Fams3.SearchApi.Contracts.Person;
 using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 using BcGov.Fams3.SearchApi.Core.Configuration;
 using MassTransit;
-using MassTransit.Pipeline.Filters.Outbox;
-using MassTransit.Transports;
 using Microsoft.Extensions.Options;
 using Moq;
 using NUnit.Framework;

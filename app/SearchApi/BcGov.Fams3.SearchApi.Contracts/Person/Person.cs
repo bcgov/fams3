@@ -6,6 +6,7 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
 {
     public class Person
     {
+        public Agency Agency { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string MiddleName { get; set; }
@@ -28,6 +29,8 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         public string DistinguishingFeatures { get; set; }
         public string WearGlasses { get; set; }
 
+       public string Type { get; set; }
+
         public IEnumerable<PersonalIdentifier> Identifiers { get; set; }
         public IEnumerable<Address> Addresses { get; set; }
         public IEnumerable<Phone> Phones { get; set; }
@@ -38,6 +41,8 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         public IEnumerable<Vehicle> Vehicles { get; set; }
         public IEnumerable<OtherAsset> OtherAssets { get; set; }
         public IEnumerable<CompensationClaim> CompensationClaims { get; set; }
+
+
 
         public IEnumerable<InsuranceClaim> InsuranceClaims { get; set; }
 

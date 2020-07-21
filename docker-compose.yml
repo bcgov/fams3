@@ -28,6 +28,9 @@ services:
       context: app/SearchApi
       args:
         PROJECT_NAME: SearchApi.Web
+        NEXUS_REPO_URL: ${NEXUS_REPO_URL}
+        NEXUS_REPO_USER: ${NEXUS_REPO_USER}
+        NEXUS_REPO_PASSWORD: ${NEXUS_REPO_PASSWORD}
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       RABBITMQ__HOST: rabbitmq
@@ -50,11 +53,36 @@ services:
     networks:
       - search-api-net
 
+  sample-request-adapter:
+    build:
+      context: app/SearchApi
+      args:
+        PROJECT_NAME: AgencyAdapter.Sample
+        NEXUS_REPO_URL: ${NEXUS_REPO_URL}
+        NEXUS_REPO_USER: ${NEXUS_REPO_USER}
+        NEXUS_REPO_PASSWORD: ${NEXUS_REPO_PASSWORD}
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      RABBITMQ__HOST: rabbitmq
+      RABBITMQ__PORT: 5672
+      RABBITMQ__USERNAME: guest
+      RABBITMQ__PASSWORD: guest
+      JAEGER_SERVICE_NAME: sample-adapter
+      JAEGER_SAMPLER_TYPE: const
+      JAEGER_ENDPOINT: http://jaeger-collector:14268/api/traces
+    ports:
+      - "5053:80"
+    restart: always
+    networks:
+      - search-api-net
   sample-adapter:
     build:
       context: app/SearchApi
       args:
         PROJECT_NAME: SearchAdapter.Sample
+        NEXUS_REPO_URL: ${NEXUS_REPO_URL}
+        NEXUS_REPO_USER: ${NEXUS_REPO_USER}
+        NEXUS_REPO_PASSWORD: ${NEXUS_REPO_PASSWORD}
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       RABBITMQ__HOST: rabbitmq
@@ -73,6 +101,11 @@ services:
   dynadapter:
     build:
       context: app/DynamicsAdapter
+      args: 
+        PROJECT_NAME: DynamicsAdapter.Web
+        NEXUS_REPO_URL: ${NEXUS_REPO_URL}
+        NEXUS_REPO_USER: ${NEXUS_REPO_USER}
+        NEXUS_REPO_PASSWORD: ${NEXUS_REPO_PASSWORD}
     ports:
       - "5060:80"
     environment:

@@ -142,7 +142,6 @@ namespace SearchAdapter.Sample.SearchRequest
                                         Notes = "Sample Identifier Notes",
                                         IssuedBy = "BC",
                                         Owner = OwnerType.NotApplicable,
-                                        Owner = OwnerType.NotApplicable,
                                         Value = new Random().Next(0, 50000).ToString()
                                     },
 

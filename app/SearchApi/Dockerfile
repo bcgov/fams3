@@ -5,6 +5,10 @@ EXPOSE 80
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 ARG PROJECT_NAME
 
+ARG NEXUS_REPO_URL
+ARG NEXUS_REPO_USER
+ARG NEXUS_REPO_PASSWORD
+
 WORKDIR /src
 COPY . .
 RUN dotnet restore "${PROJECT_NAME}/${PROJECT_NAME}.csproj"

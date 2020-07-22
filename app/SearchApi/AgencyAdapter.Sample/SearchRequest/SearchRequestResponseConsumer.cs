@@ -30,7 +30,7 @@ namespace AgencyAdapter.Sample.SearchRequest
 
             _logger.LogInformation($"Send message out to agency");
 
-            await context.Publish(FakeSearchrequestResponseBuilder.BuildFakeSearchRequestNotification(context.Message.SearchRequestId, context.Message.SearchRequestKey, context.Message.RequestId, NotificationType.RequestAssignedToFSO, "FMEP"));
+            await context.Publish(FakeSearchrequestResponseBuilder.BuildFakeSearchRequestNotification(context.Message.SearchRequestId, context.Message.SearchRequestKey, context.Message.RequestId, NotificationType.RequestAssignedToFSO, "FMEP", BcGov.Fams3.SearchApi.Contracts.Person.RequestAction.UPDATE));
 
         }
     }

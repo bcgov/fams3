@@ -20,8 +20,6 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         [Description("agency request Id")]
         public string RequestId { get; set; }
 
-        [Description("action requested by agency, new, update, cancel, notify")]
-        public  RequestAction Action { get; set; }
 
         [Description("agency search requeston reason code")]
         public string ReasonCode { get; set; }

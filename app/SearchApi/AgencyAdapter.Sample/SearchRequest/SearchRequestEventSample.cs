@@ -20,6 +20,7 @@ namespace AgencyAdapter.Sample.SearchRequest
         public NotificationType Notification { get; set; }
 
         public string RequestId { get; set; }
+        public RequestAction Action { get; set; }
     }
     public class AgencySample : ProviderProfile
     {
@@ -28,7 +29,7 @@ namespace AgencyAdapter.Sample.SearchRequest
 
     public static class FakeSearchrequestResponseBuilder
     {
-        public static SearchRequestNotification BuildFakeSearchRequestNotification(Guid searchrequestId, string searchRequestKey, string requestId, NotificationType notification, string agency)
+        public static SearchRequestNotification BuildFakeSearchRequestNotification(Guid searchrequestId, string searchRequestKey, string requestId, NotificationType notification, string agency, RequestAction action)
         {
 
             return new SearchRequestNotificationSample()
@@ -38,7 +39,8 @@ namespace AgencyAdapter.Sample.SearchRequest
                 SearchRequestKey = searchRequestKey,
                 RequestId = requestId,
                 TimeStamp = DateTime.Now,
-
+                Notification = notification,
+                Action = action
             };
 
         }

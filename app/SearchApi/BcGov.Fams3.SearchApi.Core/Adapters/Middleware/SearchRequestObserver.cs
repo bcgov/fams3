@@ -39,7 +39,7 @@ namespace BcGov.Fams3.SearchApi.Core.Adapters.Middleware
         {
             _logger.LogError(exception, "Adapter Failed to save search request.");
             await context.Publish<SearchRequestFailed>(new DefaultSearchRequestFailed(context.Message.SearchRequestId, context.Message.RequestId,
-                context.Message.SearchRequestKey, exception.Message));
+                context.Message.SearchRequestKey,  exception.Message, context.Message.Action));
         }
     }
 }

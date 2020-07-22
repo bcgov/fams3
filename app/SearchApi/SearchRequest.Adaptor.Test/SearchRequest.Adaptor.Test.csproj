@@ -16,7 +16,6 @@
   <ItemGroup>
     <Folder Include="Consumer\" />
     <Folder Include="Configuration\" />
-    <Folder Include="Notifier\" />
   </ItemGroup>
 
   <ItemGroup>

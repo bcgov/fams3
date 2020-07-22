@@ -1,4 +1,5 @@
-﻿using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
+﻿using BcGov.Fams3.SearchApi.Contracts.Person;
+using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 using BcGov.Fams3.SearchApi.Contracts.SearchRequest;
 using System;
 
@@ -12,6 +13,7 @@ namespace SearchRequestAdaptor.Publisher.Models
             this.SearchRequestId = baseEvent.SearchRequestId;
             this.TimeStamp = DateTime.Now;
             this.SearchRequestKey = baseEvent.SearchRequestKey;
+            this.Action = baseEvent.Action;
         }
 
         public string RequestId { get; set; }
@@ -25,5 +27,7 @@ namespace SearchRequestAdaptor.Publisher.Models
         public ProviderProfile ProviderProfile { get; set; }
 
         public String Message { get; set; }
+
+        public RequestAction Action { get; set; }
     }
 }

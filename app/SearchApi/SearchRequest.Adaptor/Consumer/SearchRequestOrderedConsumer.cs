@@ -23,8 +23,7 @@ namespace SearchRequestAdaptor.Consumer
         {
             _logger.LogInformation("get the searchRequestOrdered message.");
             var cts = new CancellationTokenSource();
-            await _searchRequestNotifier.NotifySearchRequestEventAsync(context.Message.SearchRequestKey, context.Message, "SearchRequestOrdered",
-                cts.Token);
+            await _searchRequestNotifier.NotifySearchRequestEventAsync(context.Message.SearchRequestKey, context.Message, cts.Token);
         }
 
     }

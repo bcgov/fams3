@@ -1,5 +1,4 @@
-﻿using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
-using BcGov.Fams3.SearchApi.Contracts.SearchRequest;
+﻿using BcGov.Fams3.SearchApi.Contracts.SearchRequest;
 using BcGov.Fams3.SearchApi.Core.Configuration;
 using MassTransit;
 using Microsoft.Extensions.Logging;
@@ -54,14 +53,14 @@ namespace SearchRequest.Adaptor.Test.Publisher
             _sendEndpointMock.Setup(x => x.Send<SearchRequestFailedEvent>(It.IsAny<SearchRequestFailed>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(_sendEndpointMock));
 
-            _baseEvent = new TestSearchRequestEvent() { SearchRequestKey = "key" };
+            _baseEvent = new FakeSearchRequestEvent() { SearchRequestKey = "key" };
 
             _sut = new SearchRequestEventPublisher(_sendEndpointProviderMock.Object, _rabbitMqConfigurationMock.Object, _loggerMock.Object);
         }
 
         [Test]
         public async Task PublishSearchRequestFailed_should_pubish_failedEvent()
-        {            
+        {
             await _sut.PublishSearchRequestFailed(_baseEvent, "failed");
             _sendEndpointMock.Verify(x => x.Send<SearchRequestFailed>(It.IsAny<SearchRequestFailedEvent>(), It.IsAny<CancellationToken>()),
                 () => { return Times.Once(); });
@@ -70,7 +69,7 @@ namespace SearchRequest.Adaptor.Test.Publisher
         [Test]
         public async Task PublishSearchRequestRejected_should_pubish_rejectedEvent()
         {
-            List<ValidationResultData> validationResults= new List<ValidationResultData>() { 
+            List<ValidationResultData> validationResults = new List<ValidationResultData>() {
                 new ValidationResultData(){ }
             };
             await _sut.PublishSearchRequestRejected(_baseEvent, validationResults);
@@ -115,16 +114,5 @@ namespace SearchRequest.Adaptor.Test.Publisher
         }
     }
 
-    public class TestSearchRequestEvent : SearchRequestEvent
-    {
-        public string RequestId { get; set; }
 
-        public string SearchRequestKey { get; set; }
-
-        public Guid SearchRequestId { get; set; }
-
-        public DateTime TimeStamp { get; set; }
-
-        public ProviderProfile ProviderProfile { get; set; }
-    }
 }

@@ -16,10 +16,10 @@ namespace SearchRequestAdaptor.Notifier
 {
     public interface ISearchRequestNotifier<T>
     {
-        Task NotifySearchRequestEventAsync(string searchRequestKey, T notificationStatus, string eventName, CancellationToken cancellationToken);
+        Task NotifySearchRequestEventAsync(string searchRequestKey, T notificationStatus, CancellationToken cancellationToken);
     }
 
-    public class WebHookSearchRequestNotifier : ISearchRequestNotifier<SearchRequestEvent>
+    public class WebHookSearchRequestNotifier : ISearchRequestNotifier<SearchRequestOrdered>
     {
 
         private readonly HttpClient _httpClient;
@@ -36,10 +36,13 @@ namespace SearchRequestAdaptor.Notifier
             _searchRequestEventPublisher = searchRequestEventPublisher;
         }
 
-        public async Task NotifySearchRequestEventAsync(string searchRequestKey, SearchRequestEvent searchRequestEvent, string eventName,
+        public async Task NotifySearchRequestEventAsync(string searchRequestKey, SearchRequestOrdered searchRequestOrdered,
            CancellationToken cancellationToken)
         {
             var webHookName = "SearchRequest";
+            string eventName = "SearchRequestOrdered";
+
+            if (searchRequestOrdered == null) throw new ArgumentNullException(nameof(SearchRequestOrdered));
 
             foreach (var webHook in _searchRequestOptions.WebHooks)
             {
@@ -51,7 +54,7 @@ namespace SearchRequestAdaptor.Notifier
                     _logger.LogWarning(
                         $"The webHook {webHookName} notification uri is not established or is not an absolute Uri for {webHook.Name}. Set the WebHook.Uri value on SearchApi.WebHooks settings.");
                     await _searchRequestEventPublisher.PublishSearchRequestFailed(
-                       searchRequestEvent, "notification uri is not established or is not an absolute Uri."
+                       searchRequestOrdered, "notification uri is not established or is not an absolute Uri."
                         );
                     return;
                 }
@@ -60,7 +63,7 @@ namespace SearchRequestAdaptor.Notifier
 
                 try
                 {
-                    StringContent content = new StringContent(JsonConvert.SerializeObject(searchRequestEvent));
+                    StringContent content = new StringContent(JsonConvert.SerializeObject(searchRequestOrdered));
 
                     content.Headers.ContentType =
                         System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
@@ -76,21 +79,21 @@ namespace SearchRequestAdaptor.Notifier
                         _logger.LogError(
                             $"The webHook {webHookName} notification has not executed status {eventName} successfully for {webHook.Name} webHook. The error code is {response.StatusCode.GetHashCode()}.");
                         await _searchRequestEventPublisher.PublishSearchRequestRejected(
-                                searchRequestEvent,
+                                searchRequestOrdered,
                                 new List<ValidationResult>()
                                 {
-                                    new ValidationResultData(){ PropertyName=response.StatusCode.ToString(), ErrorMessage=response.ReasonPhrase}
+                                    new ValidationResultData(){ PropertyName=response.StatusCode.ToString(), ErrorMessage=await response.Content.ReadAsStringAsync()}
                                 });
                         return;
                     }
 
                     _logger.LogInformation(
                         $"The webHook {webHookName} notification has executed status {eventName} successfully for {webHook.Name} webHook.");
-                    await _searchRequestEventPublisher.PublishSearchRequestSubmitted(searchRequestEvent, "Search Request has been submitted successfully.");
+                    await _searchRequestEventPublisher.PublishSearchRequestSubmitted(searchRequestOrdered, "Search Request has been submitted successfully.");
                 }
                 catch (Exception exception)
                 {
-                    await _searchRequestEventPublisher.PublishSearchRequestFailed(searchRequestEvent, exception.Message);
+                    await _searchRequestEventPublisher.PublishSearchRequestFailed(searchRequestOrdered, exception.Message);
                     _logger.LogError($"The webHook {webHookName} notification failed for status {eventName} for {webHook.Name} webHook. [{exception.Message}]");
                 }
             }

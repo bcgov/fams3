@@ -14,11 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Consumer\" />
-    <Folder Include="Configuration\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\SearchRequest.Adaptor\SearchRequest.Adaptor.csproj" />
   </ItemGroup>
 

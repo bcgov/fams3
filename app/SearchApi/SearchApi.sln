@@ -27,7 +27,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BcGov.Fams3.Redis", "BcGov.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BcGov.Fams3.Redis.Test", "BcGov.Fams3.Redis.Test\BcGov.Fams3.Redis.Test.csproj", "{49EF5C7D-140F-4111-8A8B-AD2D452059BD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SearchRequestAdaptor", "SearchRequestAdaptor\SearchRequestAdaptor.csproj", "{A9C68594-907F-481B-84A8-C1107EA1E4C3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SearchRequest.Adaptor", "SearchRequest.Adaptor\SearchRequest.Adaptor.csproj", "{A9C68594-907F-481B-84A8-C1107EA1E4C3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgencyAdapter.Sample", "AgencyAdapter.Sample\AgencyAdapter.Sample.csproj", "{B9153F94-7EEF-4D96-B4BB-A805D2EE555D}"
 EndProject

@@ -1,4 +1,5 @@
-﻿using BcGov.Fams3.SearchApi.Contracts.SearchRequest;
+﻿using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
+using BcGov.Fams3.SearchApi.Contracts.SearchRequest;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -6,6 +7,7 @@ using SearchRequestAdaptor.Configuration;
 using SearchRequestAdaptor.Publisher;
 using SearchRequestAdaptor.Publisher.Models;
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -73,12 +75,18 @@ namespace SearchRequestAdaptor.Notifier
                     {
                         _logger.LogError(
                             $"The webHook {webHookName} notification has not executed status {eventName} successfully for {webHook.Name} webHook. The error code is {response.StatusCode.GetHashCode()}.");
+                        await _searchRequestEventPublisher.PublishSearchRequestRejected(
+                                searchRequestEvent,
+                                new List<ValidationResult>()
+                                {
+                                    new ValidationResultData(){ PropertyName=response.StatusCode.ToString(), ErrorMessage=response.ReasonPhrase}
+                                });
                         return;
                     }
 
                     _logger.LogInformation(
                         $"The webHook {webHookName} notification has executed status {eventName} successfully for {webHook.Name} webHook.");
-
+                    await _searchRequestEventPublisher.PublishSearchRequestSubmitted(searchRequestEvent, "Search Request has been submitted successfully.");
                 }
                 catch (Exception exception)
                 {

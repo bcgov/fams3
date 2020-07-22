@@ -96,19 +96,19 @@ namespace SearchRequest.Adaptor.Test.Publisher
         }
 
         [Test]
-        public async Task with_null_baseEvent_PublishSearchRequestSubmitted_should_throw_exception()
+        public void with_null_baseEvent_PublishSearchRequestSubmitted_should_throw_exception()
         {
             Assert.ThrowsAsync<ArgumentNullException>(() => _sut.PublishSearchRequestSubmitted(null, "submitted"));
         }
 
         [Test]
-        public async Task with_null_baseEvent_PublishSearchRequestFailed_should_throw_exception()
+        public void with_null_baseEvent_PublishSearchRequestFailed_should_throw_exception()
         {
             Assert.ThrowsAsync<ArgumentNullException>(() => _sut.PublishSearchRequestFailed(null, "failed"));
         }
 
         [Test]
-        public async Task with_null_baseEvent_PublishSearchRequestRejected_should_throw_exception()
+        public void with_null_baseEvent_PublishSearchRequestRejected_should_throw_exception()
         {
             Assert.ThrowsAsync<ArgumentNullException>(() => _sut.PublishSearchRequestRejected(null, null));
         }

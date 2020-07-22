@@ -188,7 +188,7 @@ namespace SearchRequest.Adaptor.Test.Notifier
         }
 
         [Test]
-        public async Task NotifySearchRequestEventAsync_should_throw_exception_when_searchREquestOrdered_is_null()
+        public void NotifySearchRequestEventAsync_should_throw_exception_when_searchREquestOrdered_is_null()
         {
             _sut = new WebHookSearchRequestNotifier(_httpClient, _searchRequestOptionsMock.Object, _loggerMock.Object, _searchRquestEventPublisherMock.Object);
 

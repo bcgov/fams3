@@ -16,14 +16,14 @@ namespace SearchRequest.Adaptor.Test.Consumer
     {
         private InMemoryTestHarness _harness;
         private Mock<ILogger<SearchRequestOrderedConsumer>> _loggerMock;
-        private Mock<ISearchRequestNotifier<SearchRequestEvent>> _searchRequestNotifierMock;
+        private Mock<ISearchRequestNotifier<SearchRequestOrdered>> _searchRequestNotifierMock;
 
 
         [OneTimeSetUp]
         public async Task A_consumer_is_being_tested()
         {
             _loggerMock = new Mock<ILogger<SearchRequestOrderedConsumer>>();
-            _searchRequestNotifierMock = new Mock<ISearchRequestNotifier<SearchRequestEvent>>();
+            _searchRequestNotifierMock = new Mock<ISearchRequestNotifier<SearchRequestOrdered>>();
             _harness = new InMemoryTestHarness();
            
             _harness.Consumer(() => new SearchRequestOrderedConsumer(_searchRequestNotifierMock.Object, _loggerMock.Object));

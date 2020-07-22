@@ -105,7 +105,7 @@ namespace SearchRequestAdaptor
                     {
                         e.Consumer(() =>
                             new SearchRequestOrderedConsumer(
-                                provider.GetRequiredService<ISearchRequestNotifier<SearchRequestEvent>>(),
+                                provider.GetRequiredService<ISearchRequestNotifier<SearchRequestOrdered>>(),
                                 provider.GetRequiredService<ILogger<SearchRequestOrderedConsumer>>()));
                     });
                 }));

@@ -10,9 +10,9 @@ namespace SearchRequestAdaptor.Consumer
     public class SearchRequestOrderedConsumer : IConsumer<SearchRequestOrdered>
     {
         private readonly ILogger<SearchRequestOrderedConsumer> _logger;
-        private readonly ISearchRequestNotifier<SearchRequestEvent> _searchRequestNotifier;
+        private readonly ISearchRequestNotifier<SearchRequestOrdered> _searchRequestNotifier;
 
-        public SearchRequestOrderedConsumer(ISearchRequestNotifier<SearchRequestEvent> searchRequestNotifier, ILogger<SearchRequestOrderedConsumer> logger)
+        public SearchRequestOrderedConsumer(ISearchRequestNotifier<SearchRequestOrdered> searchRequestNotifier, ILogger<SearchRequestOrderedConsumer> logger)
         {
             _logger = logger;
             _searchRequestNotifier = searchRequestNotifier;

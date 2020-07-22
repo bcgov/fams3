@@ -16,7 +16,7 @@ namespace SearchRequestAdaptor.Notifier
 {
     public interface ISearchRequestNotifier<T>
     {
-        Task NotifySearchRequestEventAsync(string searchRequestKey, T notificationStatus, CancellationToken cancellationToken);
+        Task NotifySearchRequestEventAsync(string searchRequestKey, T searchRequestOrdered, CancellationToken cancellationToken);
     }
 
     public class WebHookSearchRequestNotifier : ISearchRequestNotifier<SearchRequestOrdered>

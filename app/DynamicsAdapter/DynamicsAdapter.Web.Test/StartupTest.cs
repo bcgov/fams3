@@ -1,27 +1,17 @@
 ﻿
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using NUnit.Framework;
-using DynamicsAdapter.Web;
-using Microsoft.Extensions.DependencyInjection;
-using DynamicsAdapter.Web.PersonSearch;
-using OpenTracing;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
-using NSwag.Generation;
-using DynamicsAdapter.Web.Auth;
-using DynamicsAdapter.Web.ApiGateway;
-using Fams3Adapter.Dynamics.OptionSets;
-using Simple.OData.Client;
-using Fams3Adapter.Dynamics.SearchApiRequest;
-using Fams3Adapter.Dynamics.SearchRequest;
-using Microsoft.Extensions.Caching.Distributed;
-using Quartz.Spi;
-using Quartz;
-using DynamicsAdapter.Web.SearchRequest;
-using DynamicsAdapter.Web.Infrastructure;
 using AutoMapper;
 using BcGov.Fams3.Redis;
+using DynamicsAdapter.Web.ApiGateway;
 using DynamicsAdapter.Web.Register;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using NSwag.Generation;
+using NUnit.Framework;
+using OpenTracing;
+using Quartz;
+using Quartz.Spi;
 
 namespace DynamicsAdapter.Web.Test
 {
@@ -36,7 +26,7 @@ namespace DynamicsAdapter.Web.Test
             Assert.IsNotNull(webHost.Services.GetService<ITracer>());
             Assert.IsNotNull(webHost.Services.GetService<IOpenApiDocumentGenerator>());
             Assert.IsNotNull(webHost.Services.GetService<ISearchApiClient>());
-            Assert.IsNotNull(webHost.Services.GetService<ApiGatewayHandler>());           
+            Assert.IsNotNull(webHost.Services.GetService<ApiGatewayHandler>());
             Assert.IsNotNull(webHost.Services.GetService<IDistributedCache>());
             Assert.IsNotNull(webHost.Services.GetService<IJobFactory>());
             Assert.IsNotNull(webHost.Services.GetService<ISchedulerFactory>());

@@ -35,7 +35,6 @@ namespace SearchRequestAdaptor.Publisher
         }
         public async Task PublishSearchRequestFailed(SearchRequestEvent baseEvent, string message)
         {
-            SearchRequestFailedEvent failedEvent = new SearchRequestFailedEvent(baseEvent) { Cause = message };
             if (baseEvent == null) throw new ArgumentNullException(nameof(SearchRequestEvent));
 
             var endpoint = await getSearchRequestFailedEndpoint();

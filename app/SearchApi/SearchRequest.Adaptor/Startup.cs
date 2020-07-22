@@ -1,4 +1,3 @@
-using System;
 using BcGov.Fams3.SearchApi.Contracts.SearchRequest;
 using BcGov.Fams3.SearchApi.Core.Configuration;
 using BcGov.Fams3.SearchApi.Core.MassTransit;
@@ -15,6 +14,7 @@ using SearchRequestAdaptor.Configuration;
 using SearchRequestAdaptor.Consumer;
 using SearchRequestAdaptor.Notifier;
 using SearchRequestAdaptor.Publisher;
+using System;
 
 namespace SearchRequestAdaptor
 {
@@ -34,11 +34,11 @@ namespace SearchRequestAdaptor
             services.AddControllers();
             services.AddOptions<SearchRequestAdaptorOptions>().Bind(Configuration.GetSection(Keys.SEARCHREQUEST_SECTION_SETTING_KEY));
             services.AddWebHooks();
-            
-            
+
+
             this.ConfigureHealthChecks(services);
             this.ConfigureServiceBus(services);
-            
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

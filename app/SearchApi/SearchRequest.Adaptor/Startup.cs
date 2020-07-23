@@ -1,4 +1,3 @@
-using System;
 using BcGov.Fams3.SearchApi.Contracts.SearchRequest;
 using BcGov.Fams3.SearchApi.Core.Configuration;
 using BcGov.Fams3.SearchApi.Core.MassTransit;
@@ -11,8 +10,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using SearchRequestAdaptor.Configuration;
 using SearchRequestAdaptor.Consumer;
 using SearchRequestAdaptor.Notifier;
+using SearchRequestAdaptor.Publisher;
+using System;
 
 namespace SearchRequestAdaptor
 {
@@ -30,9 +32,13 @@ namespace SearchRequestAdaptor
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddOptions<SearchRequestAdaptorOptions>().Bind(Configuration.GetSection(Keys.SEARCHREQUEST_SECTION_SETTING_KEY));
             services.AddWebHooks();
+
+
             this.ConfigureHealthChecks(services);
             this.ConfigureServiceBus(services);
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -99,13 +105,14 @@ namespace SearchRequestAdaptor
                     {
                         e.Consumer(() =>
                             new SearchRequestOrderedConsumer(
-                                provider.GetRequiredService<ISearchRequestNotifier<SearchRequestEvent>>(),
+                                provider.GetRequiredService<ISearchRequestNotifier<SearchRequestOrdered>>(),
                                 provider.GetRequiredService<ILogger<SearchRequestOrderedConsumer>>()));
                     });
                 }));
             });
 
             services.AddHostedService<BusHostedService>();
+            services.AddTransient<ISearchRequestEventPublisher, SearchRequestEventPublisher>();
         }
     }
 }

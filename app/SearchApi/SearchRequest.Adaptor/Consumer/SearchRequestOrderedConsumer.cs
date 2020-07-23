@@ -10,9 +10,9 @@ namespace SearchRequestAdaptor.Consumer
     public class SearchRequestOrderedConsumer : IConsumer<SearchRequestOrdered>
     {
         private readonly ILogger<SearchRequestOrderedConsumer> _logger;
-        private readonly ISearchRequestNotifier<SearchRequestEvent> _searchRequestNotifier;
+        private readonly ISearchRequestNotifier<SearchRequestOrdered> _searchRequestNotifier;
 
-        public SearchRequestOrderedConsumer(ISearchRequestNotifier<SearchRequestEvent> searchRequestNotifier, ILogger<SearchRequestOrderedConsumer> logger)
+        public SearchRequestOrderedConsumer(ISearchRequestNotifier<SearchRequestOrdered> searchRequestNotifier, ILogger<SearchRequestOrderedConsumer> logger)
         {
             _logger = logger;
             _searchRequestNotifier = searchRequestNotifier;
@@ -23,8 +23,7 @@ namespace SearchRequestAdaptor.Consumer
         {
             _logger.LogInformation("get the searchRequestOrdered message.");
             var cts = new CancellationTokenSource();
-            await _searchRequestNotifier.NotifySearchRequestEventAsync(context.Message.SearchRequestKey, context.Message, "SearchRequestOrdered",
-                cts.Token);
+            await _searchRequestNotifier.NotifySearchRequestEventAsync(context.Message.SearchRequestKey, context.Message, cts.Token);
         }
 
     }

@@ -37,7 +37,7 @@ namespace SearchRequestAdaptor.Publisher
         {
             if (baseEvent == null) throw new ArgumentNullException(nameof(SearchRequestEvent));
 
-            var endpoint = await getSearchRequestFailedEndpoint();
+            var endpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri($"rabbitmq://{this._rabbitMqConfiguration.Host}:{this._rabbitMqConfiguration.Port}/SearchRequestFailed_queue"));
 
             await endpoint.Send<SearchRequestFailed>(new SearchRequestFailedEvent(baseEvent)
             {
@@ -49,7 +49,7 @@ namespace SearchRequestAdaptor.Publisher
         {
             if (baseEvent == null) throw new ArgumentNullException(nameof(SearchRequestEvent));
 
-            var endpoint = await getSearchRequestRejectedEndpoint();
+            var endpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri($"rabbitmq://{this._rabbitMqConfiguration.Host}:{this._rabbitMqConfiguration.Port}/SearchRequestRejected_queue"));
 
             await endpoint.Send<SearchRequestRejected>(new SearchRequestRejectedEvent(baseEvent)
             {
@@ -61,27 +61,12 @@ namespace SearchRequestAdaptor.Publisher
         {
             if (baseEvent == null) throw new ArgumentNullException(nameof(SearchRequestEvent));
 
-            var endpoint = await getSearchRequestSubmittedEndpoint();
+            var endpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri($"rabbitmq://{this._rabbitMqConfiguration.Host}:{this._rabbitMqConfiguration.Port}/SearchRequestSubmitted_queue"));
 
             await endpoint.Send<SearchRequestSubmitted>(new SearchRequestSubmittedEvent(baseEvent)
             {
                 Message = message
             });
-        }
-
-        private Task<ISendEndpoint> getSearchRequestFailedEndpoint()
-        {
-            return _sendEndpointProvider.GetSendEndpoint(new Uri($"rabbitmq://{this._rabbitMqConfiguration.Host}:{this._rabbitMqConfiguration.Port}/SearchRequestFailed_queue"));
-        }
-
-        private Task<ISendEndpoint> getSearchRequestSubmittedEndpoint()
-        {
-            return _sendEndpointProvider.GetSendEndpoint(new Uri($"rabbitmq://{this._rabbitMqConfiguration.Host}:{this._rabbitMqConfiguration.Port}/SearchRequestSubmitted_queue"));
-        }
-
-        private Task<ISendEndpoint> getSearchRequestRejectedEndpoint()
-        {
-            return _sendEndpointProvider.GetSendEndpoint(new Uri($"rabbitmq://{this._rabbitMqConfiguration.Host}:{this._rabbitMqConfiguration.Port}/SearchRequestRejected_queue"));
         }
     }
 }

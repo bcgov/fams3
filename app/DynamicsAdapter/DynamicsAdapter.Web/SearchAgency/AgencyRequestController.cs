@@ -37,7 +37,7 @@ namespace DynamicsAdapter.Web.SearchAgency
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Route("CreateSearchRequest/{key}")]
         [OpenApiTag("Agency Search Reqeust API")]
-        public async Task<IActionResult> CreateSearchRequest(string key, [FromBody]SearchRequestOrdered personCompletedEvent)
+        public async Task<IActionResult> CreateSearchRequest(string key, [FromBody]SearchRequestOrdered searchRequestOrdered)
         {
             return Ok();
         }

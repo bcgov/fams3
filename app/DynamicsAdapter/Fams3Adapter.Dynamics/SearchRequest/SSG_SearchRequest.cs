@@ -119,11 +119,14 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         [JsonProperty("ssg_personsextext")]
         public int? PersonSoughtGender { get; set; }
 
-        [JsonProperty("ssg_personhaircolorcode")]
-        public int? PersonSoughtHairColor { get; set; }
+        [JsonProperty("ssg_personsoughthaircolor")]
+        public string PersonSoughtHairColor { get; set; }
 
-        [JsonProperty("ssg_personeyecolorcode")]
-        public int? PersonSoughtEyeColor { get; set; }
+        [JsonProperty("ssg_personsoughteyecolor")]
+        public string PersonSoughtEyeColor { get; set; }
+
+        [JsonProperty("ssg_createdbyopenshift")]
+        public bool CreatedByApi { get; set; }
     }
 
     public class SSG_SearchRequest : SearchRequestEntity

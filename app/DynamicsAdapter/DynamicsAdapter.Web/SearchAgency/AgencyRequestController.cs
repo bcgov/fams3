@@ -1,11 +1,12 @@
 ﻿using AutoMapper;
 using DynamicsAdapter.Web.PersonSearch;
 using DynamicsAdapter.Web.SearchAgency.Models;
-using Fams3Adapter.Dynamics.SearchApiRequest;
+using Fams3Adapter.Dynamics.SearchRequest;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NSwag.Annotations;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DynamicsAdapter.Web.SearchAgency
@@ -15,17 +16,17 @@ namespace DynamicsAdapter.Web.SearchAgency
     public class AgencyRequestController : ControllerBase
     {
         private readonly ILogger<PersonSearchController> _logger;
-        private readonly ISearchApiRequestService _searchApiRequestService;
+        private readonly ISearchRequestService _searchRequestService;
         private readonly IMapper _mapper;
 
         public AgencyRequestController(
-                ISearchApiRequestService searchApiRequestService,
+                ISearchRequestService searchRequestService,
                 ILogger<PersonSearchController> logger,
                 IMapper mapper
                 )
         {
 
-            _searchApiRequestService = searchApiRequestService;
+            _searchRequestService = searchRequestService;
             _logger = logger;
             _mapper = mapper;
         }
@@ -39,6 +40,15 @@ namespace DynamicsAdapter.Web.SearchAgency
         [OpenApiTag("Agency Search Reqeust API")]
         public async Task<IActionResult> CreateSearchRequest(string key, [FromBody]SearchRequestOrdered searchRequestOrdered)
         {
+            if (string.IsNullOrEmpty(key)) return BadRequest();
+            if (searchRequestOrdered.Action != RequestAction.NEW) return BadRequest();
+
+            SearchRequestEntity searchRequestEntity = _mapper.Map<SearchRequestEntity>(searchRequestOrdered);
+            searchRequestEntity.CreatedByApi = true;
+
+            var cts = new CancellationTokenSource();
+            
+            await _searchRequestService.CreateSearchRequest(searchRequestEntity, cts.Token );
 
             return Ok();
         }

@@ -39,6 +39,7 @@ namespace DynamicsAdapter.Web.SearchAgency
         [OpenApiTag("Agency Search Reqeust API")]
         public async Task<IActionResult> CreateSearchRequest(string key, [FromBody]SearchRequestOrdered searchRequestOrdered)
         {
+
             return Ok();
         }
 

@@ -58,7 +58,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                             new Phone(){PhoneNumber="agentFaxNumber", Type="Fax"}
                         },
                         Notes = "agency notes",
-                        RequestPriority = RequestPriority.Normal,
+                        RequestPriority = RequestPriority.Rush,
                         Code = "FMEP",
                         RequestId = "QFP-12422509096920180928083433",
                         ReasonCode = "EnfPayAgr",
@@ -84,11 +84,42 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(true, entity.LocationRequested);
             Assert.AreEqual(true, entity.PHNRequested);
             Assert.AreEqual(true, entity.DriverLicenseRequested);
+            Assert.AreEqual("FMEP", entity.AgencyCode);
+            Assert.AreEqual("EnfPayAgr", entity.SearchReasonCode);
+            Assert.AreEqual(RequestPriorityType.Rush.Value, entity.RequestPriority);
         }
 
         [Test]
         public void Agency_null_SearchRequestOrdered_should_return_null()
         {
+            SearchRequestOrdered searchRequestOrdered = new SearchRequestOrdered()
+            {
+                Action = RequestAction.NEW,
+                RequestId = "requestId",
+                SearchRequestKey = "requestKey",
+                SearchRequestId = Guid.NewGuid(),
+                TimeStamp = DateTime.Now,
+                Person = new Person()
+                {
+                    Agency = null
+                },
+            };
+            Assert.Throws<ArgumentNullException>(()=> _mapper.Map<SearchRequestEntity>(searchRequestOrdered));
+        }
+
+        [Test]
+        public void Person_null_SearchRequestOrdered_should_return_null()
+        {
+            SearchRequestOrdered searchRequestOrdered = new SearchRequestOrdered()
+            {
+                Action = RequestAction.NEW,
+                RequestId = "requestId",
+                SearchRequestKey = "requestKey",
+                SearchRequestId = Guid.NewGuid(),
+                TimeStamp = DateTime.Now,
+                Person = null,
+            };
+            Assert.Throws<ArgumentNullException>(() => _mapper.Map<SearchRequestEntity>(searchRequestOrdered));
         }
     }
 }

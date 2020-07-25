@@ -216,4 +216,19 @@ namespace DynamicsAdapter.Web.Mapping
                 return IncomeAssistanceStatusType.Unknown.Value;
         }
     }
+
+    public class RequestPriorityConverter : IValueConverter<RequestPriority, int?>
+    {
+        public int? Convert(RequestPriority sourceMember, ResolutionContext context)
+        {
+            return
+                sourceMember.ToString().ToLower() switch
+                {
+                    "urgent" => RequestPriorityType.Urgent.Value,
+                    "rush" => RequestPriorityType.Rush.Value,
+                    "normal" => RequestPriorityType.Regular.Value,
+                    _ => RequestPriorityType.Regular.Value
+                };
+        }
+    }
 }

@@ -95,25 +95,18 @@ namespace DynamicsAdapter.Web.Mapping
 
             CreateMap<SearchRequestOrdered, SearchRequestEntity>()
                .ConstructUsing(m => Contructors.ConstructSearchRequestEntity(m))
-               .ForMember(dest => dest.OriginalRequestorReference, opt => opt.MapFrom( src => src.Person.Agency.RequestId))
+               .ForMember(dest => dest.OriginalRequestorReference, opt => opt.MapFrom(src => src.Person.Agency.RequestId))
                .ForMember(dest => dest.RequestDate, opt => opt.MapFrom(src => src.Person.Agency.RequestDate.DateTime))
+               .ForMember(dest => dest.SearchReasonCode, opt => opt.MapFrom(src => src.Person.Agency.ReasonCode))
+               .ForMember(dest => dest.AgencyCode, opt => opt.MapFrom(src => src.Person.Agency.Code))
                .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Person.Agency.Notes))
                .ForMember(dest => dest.PersonSoughtDateOfBirth, opt => opt.MapFrom(src => src.Person.DateOfBirth))
                .ForMember(dest => dest.PersonSoughtEyeColor, opt => opt.MapFrom(src => src.Person.EyeColour))
                .ForMember(dest => dest.PersonSoughtHairColor, opt => opt.MapFrom(src => src.Person.HairColour))
                .ForMember(dest => dest.PersonSoughtFirstName, opt => opt.MapFrom(src => src.Person.FirstName))
                .ForMember(dest => dest.PersonSoughtLastName, opt => opt.MapFrom(src => src.Person.LastName))
-                //.ForMember(dest => dest.AgentLastName, opt => opt.MapFrom(src => src.Person == null ? null : src.Person.Agency == null ? null : src.Person.Agency.Agent == null ? null : src.Person.Agency.Agent.LastName))
-                //.ForMember(dest => dest.AgentPhoneNumber, opt => opt.MapFrom<SearchRequestEntity_AgentPhoneNumberResolver>())
-                //.ForMember(dest => dest.AgentPhoneExtension, opt => opt.MapFrom<SearchRequestEntity_AgentPhoneExtResolver>())
-                //.ForMember(dest => dest.AgentFax, opt => opt.MapFrom<SearchRequestEntity_AgentFaxResolver>())
-                //.ForMember(dest => dest.ApplicantAddressLine1, opt => opt.MapFrom<SearchRequestEntity_ApplicantAddress1Resolver>())
-                //.ForMember(dest => dest.ApplicantAddressLine2, opt => opt.MapFrom<SearchRequestEntity_ApplicantAddress2Resolver>())
-                //.ForMember(dest => dest.ApplicantCity, opt => opt.MapFrom<SearchRequestEntity_ApplicantCityResolver>())
-                //.ForMember(dest => dest.ApplicantFirstName, opt => opt.MapFrom<SearchRequestEntity_ApplicantFirstNameResolver>())
-                ;
-
-
+               .ForMember(dest => dest.RequestPriority, opt => opt.ConvertUsing(new RequestPriorityConverter(), src => src.Person.Agency.RequestPriority))
+               ;
 
             CreateMap<Address, AddressEntity>()
                  .ForMember(dest => dest.AddressLine1, opt => opt.MapFrom(src => src.AddressLine1))

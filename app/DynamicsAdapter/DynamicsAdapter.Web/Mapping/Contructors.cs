@@ -12,7 +12,7 @@ namespace DynamicsAdapter.Web.Mapping
     {
         public static SearchRequestEntity ConstructSearchRequestEntity(SearchRequestOrdered src)
         {
-            if (src?.Person?.Agency?.RequestId == null) return null;
+            if (src?.Person?.Agency?.RequestId == null) throw new ArgumentNullException("SearchRequestOrdered.Person, Agency or RequestID are not allowed Null.");
             SearchRequestEntity entity = new SearchRequestEntity();
             #region agency part
             entity.AgentEmail = src.Person.Agency.Email;

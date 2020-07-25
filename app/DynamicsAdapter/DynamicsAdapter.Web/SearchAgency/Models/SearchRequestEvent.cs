@@ -10,16 +10,16 @@ namespace DynamicsAdapter.Web.SearchAgency.Models
         /// <summary>
         /// This is Data Partner Id for the SearchRequest
         /// </summary>
-        string RequestId { get;  }
+        public string RequestId { get; set; }
         /// <summary>
         /// This is the Key to identify the searchRequest in dynamics it is made of FileId_SequenceNumber
         /// </summary>
-        string SearchRequestKey { get; }
+        public string SearchRequestKey { get; set; }
         /// <summary>
         /// This is Guid of the search request
         /// </summary>
-        Guid SearchRequestId { get; }
-        DateTime TimeStamp { get; }
+        public Guid SearchRequestId { get; set; }
+        public DateTime TimeStamp { get; set; }
         ////
         /// <summary>
         ///   action requested by agency, new, update, cancel, notify"

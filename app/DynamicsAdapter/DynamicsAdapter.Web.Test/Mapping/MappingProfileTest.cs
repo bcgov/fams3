@@ -1206,8 +1206,8 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 Identifiers = null,
                 InsuredParties = null,
                 ReferenceDates = null,
-                Adjustor=null,
-                AdjustorPhone=null
+                Adjustor = null,
+                AdjustorPhone = null
             };
             ICBCClaimEntity icbcClaim = _mapper.Map<ICBCClaimEntity>(claim);
             Assert.AreEqual(null, icbcClaim.BCDLExpiryDate);

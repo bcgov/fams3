@@ -35,6 +35,12 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         [JsonProperty("ssg_applicantpersonsurname")]
         public string ApplicantLastName { get; set; }
 
+        [JsonProperty("ssg_applicantcountrysubdivisiontext")]
+        public string ApplicantProvince { get; set; }
+
+        [JsonProperty("ssg_locationcountrytext")]
+        public string ApplicantCountry { get; set; }
+
         [JsonProperty("ssg_driverslicensenumber")]
         public string PersonSoughtBCDL { get; set; }
 
@@ -95,6 +101,9 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         [JsonProperty("ssg_contactpersontelephonesuffixid")]
         public string AgentPhoneExtension { get; set; }
 
+        [JsonProperty("ssg_agentfax")]
+        public string AgentFax { get; set; }
+
         [JsonProperty("ssg_agentpersonsurname")]
         public string AgentLastName { get; set; }
 
@@ -127,6 +136,10 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
         [JsonProperty("ssg_createdbyopenshift")]
         public bool CreatedByApi { get; set; }
+
+        public string AgencyCode { get; set; } //used to link ssg_agency entity
+
+        public string SearchReasonCode { get; set; } //used to link ssg_searchrequestreason
     }
 
     public class SSG_SearchRequest : SearchRequestEntity

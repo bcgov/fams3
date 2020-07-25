@@ -20,7 +20,7 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         public string Type { get; set; }
 
         [Description("The owner of the name e.g. Applicant, Person Sought, e.t.c")]
-        public OwnerType Owner { get; set; }
+        public OwnerType Owner { get; set; } = OwnerType.NotApplicable;
 
 
     }

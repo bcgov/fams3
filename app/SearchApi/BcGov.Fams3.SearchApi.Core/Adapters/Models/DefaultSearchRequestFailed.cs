@@ -26,5 +26,7 @@ namespace BcGov.Fams3.SearchApi.Core.Adapters.Models
 
         public string RequestId { get; }
         public RequestAction Action { get; set ; }
+        public int QueuePosition { get; set; }
+        public DateTime EstimatedCompletion { get; set; }
     }
 }

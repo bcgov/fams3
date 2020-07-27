@@ -29,5 +29,7 @@ namespace SearchRequestAdaptor.Publisher.Models
         public String Message { get; set; }
 
         public RequestAction Action { get; set; }
+        public int QueuePosition { get; set; }
+        public DateTime EstimatedCompletion { get; set; }
     }
 }

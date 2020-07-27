@@ -74,7 +74,7 @@ namespace DynamicsAdapter.Web.Mapping
             }
             #endregion
 
-            #region applicant part
+
             if (src.Person.Addresses != null)
             {
                 Address applicantAddress = src.Person.Addresses.FirstOrDefault<Address>(m => m.Owner == OwnerType.Applicant);
@@ -83,7 +83,7 @@ namespace DynamicsAdapter.Web.Mapping
                 entity.ApplicantCity = applicantAddress?.City;
                 entity.ApplicantPostalCode = applicantAddress?.ZipPostalCode;
                 entity.ApplicantProvince = applicantAddress?.StateProvince;
-                entity.ApplicantCountry = applicantAddress?.CountryRegion;
+                entity.ApplicantCountry = "canada";
             }
             
             if (src.Person.Names != null)
@@ -95,18 +95,20 @@ namespace DynamicsAdapter.Web.Mapping
             }
             if(src.Person.Phones != null)
             {
-                entity.ApplicantPhoneNumber = src.Person.Phones.FirstOrDefault<Phone>(m=>m.Owner == OwnerType.Applicant).PhoneNumber;
+                entity.ApplicantPhoneNumber = src.Person.Phones.FirstOrDefault<Phone>(m=>m.Owner == OwnerType.Applicant)?.PhoneNumber;
             }
             if( src.Person.Identifiers != null)
             {
                 entity.ApplicantSIN = src.Person.Identifiers.FirstOrDefault<PersonalIdentifier>(
-                    m => m.Owner == OwnerType.Applicant && m.Type==PersonalIdentifierType.SocialInsuranceNumber).Value;
+                    m => m.Owner == OwnerType.Applicant && m.Type==PersonalIdentifierType.SocialInsuranceNumber)?.Value;
+                entity.PersonSoughtSIN = src.Person.Identifiers.FirstOrDefault<PersonalIdentifier>(
+                    m => m.Owner == OwnerType.PersonSought && m.Type == PersonalIdentifierType.SocialInsuranceNumber)?.Value;
+                entity.PersonSoughtBCDL = src.Person.Identifiers.FirstOrDefault<PersonalIdentifier>(
+                    m => m.Owner == OwnerType.PersonSought && m.Type == PersonalIdentifierType.BCDriverLicense)?.Value;
+                entity.PersonSoughtBCID = src.Person.Identifiers.FirstOrDefault<PersonalIdentifier>(
+                    m => m.Owner == OwnerType.PersonSought && m.Type == PersonalIdentifierType.BCID)?.Value;
             }
-            #endregion
 
-            #region person sought
-            
-            #endregion
             return entity;
         }
     }

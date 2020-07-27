@@ -57,7 +57,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         public string PersonSoughtFirstName { get; set; }
 
         [JsonProperty("ssg_personbirthdate")]
-        public DateTime PersonSoughtDateOfBirth { get; set; }
+        public DateTime? PersonSoughtDateOfBirth { get; set; }
 
         [JsonProperty("ssg_inforequestedlocation")]
         public bool LocationRequested { get; set; }

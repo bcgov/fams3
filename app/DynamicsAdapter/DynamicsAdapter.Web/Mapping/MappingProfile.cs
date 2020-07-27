@@ -100,11 +100,12 @@ namespace DynamicsAdapter.Web.Mapping
                .ForMember(dest => dest.SearchReasonCode, opt => opt.MapFrom(src => src.Person.Agency.ReasonCode))
                .ForMember(dest => dest.AgencyCode, opt => opt.MapFrom(src => src.Person.Agency.Code))
                .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Person.Agency.Notes))
-               .ForMember(dest => dest.PersonSoughtDateOfBirth, opt => opt.MapFrom(src => src.Person.DateOfBirth))
+               .ForMember(dest => dest.PersonSoughtDateOfBirth, opt => opt.MapFrom(src => src.Person.DateOfBirth==null? (DateTime?)null: ((DateTimeOffset)(src.Person.DateOfBirth)).DateTime))
                .ForMember(dest => dest.PersonSoughtEyeColor, opt => opt.MapFrom(src => src.Person.EyeColour))
                .ForMember(dest => dest.PersonSoughtHairColor, opt => opt.MapFrom(src => src.Person.HairColour))
                .ForMember(dest => dest.PersonSoughtFirstName, opt => opt.MapFrom(src => src.Person.FirstName))
                .ForMember(dest => dest.PersonSoughtLastName, opt => opt.MapFrom(src => src.Person.LastName))
+               .ForMember(dest => dest.PersonSoughtGender, opt => opt.ConvertUsing(new PersonGenderConverter(), src => src.Person.Gender))
                .ForMember(dest => dest.RequestPriority, opt => opt.ConvertUsing(new RequestPriorityConverter(), src => src.Person.Agency.RequestPriority))
                ;
 

@@ -39,7 +39,6 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         Task<SSG_SimplePhoneNumber> CreateSimplePhoneNumber(SimplePhoneNumberEntity phone, CancellationToken cancellationToken);
         Task<SSG_InvolvedParty> CreateInvolvedParty(InvolvedPartyEntity involvedParty, CancellationToken cancellationToken);
         Task<SSG_SearchRequestResultTransaction> CreateTransaction(SSG_SearchRequestResultTransaction transaction, CancellationToken cancellationToken);
-
         Task<SSG_SearchRequest> CreateSearchRequest(SearchRequestEntity searchRequest, CancellationToken cancellationToken);
     }
 
@@ -371,8 +370,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
         public async Task<SSG_SearchRequest> CreateSearchRequest(SearchRequestEntity searchRequest, CancellationToken cancellationToken)
         {
-            SSG_SearchRequest ssgSearchRequest =  await this._oDataClient.For<SSG_SearchRequest>().Set(searchRequest).InsertEntryAsync(cancellationToken);
-            return ssgSearchRequest;
+            return await this._oDataClient.For<SSG_SearchRequest>().Set(searchRequest).InsertEntryAsync(cancellationToken);
         }
 
     }

@@ -1,12 +1,14 @@
 ﻿using AutoMapper;
 using DynamicsAdapter.Web.PersonSearch;
 using DynamicsAdapter.Web.SearchAgency.Models;
+using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NSwag.Annotations;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,19 +19,15 @@ namespace DynamicsAdapter.Web.SearchAgency
     public class AgencyRequestController : ControllerBase
     {
         private readonly ILogger<PersonSearchController> _logger;
-        private readonly ISearchRequestService _searchRequestService;
-        private readonly IMapper _mapper;
+        private readonly IAgencyRequestService _agencyRequestService;
 
-        public AgencyRequestController(
-                ISearchRequestService searchRequestService,
+        public AgencyRequestController(               
                 ILogger<PersonSearchController> logger,
-                IMapper mapper
+                IAgencyRequestService agencyRequestService
                 )
         {
-
-            _searchRequestService = searchRequestService;
             _logger = logger;
-            _mapper = mapper;
+            _agencyRequestService = agencyRequestService;
         }
 
         [HttpPost]
@@ -45,14 +43,8 @@ namespace DynamicsAdapter.Web.SearchAgency
             if (searchRequestOrdered.Action != RequestAction.NEW) return BadRequest();
             try
             {
-                SearchRequestEntity searchRequestEntity = _mapper.Map<SearchRequestEntity>(searchRequestOrdered);
-                searchRequestEntity.CreatedByApi = true;
-
-                var cts = new CancellationTokenSource();
-
-                await _searchRequestService.CreateSearchRequest(searchRequestEntity, cts.Token);
-
-                return Ok();
+               await _agencyRequestService.ProcessSearchRequestOrdered(searchRequestOrdered);
+               return Ok();
             }
             catch (Exception ex)
             {

@@ -371,9 +371,8 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
         public async Task<SSG_SearchRequest> CreateSearchRequest(SearchRequestEntity searchRequest, CancellationToken cancellationToken)
         {
-            //todo: Not implemented yet.
-            await Task.Delay(1);
-            return null;
+            SSG_SearchRequest ssgSearchRequest =  await this._oDataClient.For<SSG_SearchRequest>().Set(searchRequest).InsertEntryAsync(cancellationToken);
+            return ssgSearchRequest;
         }
 
     }

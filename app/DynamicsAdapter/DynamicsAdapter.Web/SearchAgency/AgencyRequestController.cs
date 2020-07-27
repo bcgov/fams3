@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NSwag.Annotations;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -42,15 +43,22 @@ namespace DynamicsAdapter.Web.SearchAgency
         {
             if (string.IsNullOrEmpty(key)) return BadRequest();
             if (searchRequestOrdered.Action != RequestAction.NEW) return BadRequest();
+            try
+            {
+                SearchRequestEntity searchRequestEntity = _mapper.Map<SearchRequestEntity>(searchRequestOrdered);
+                searchRequestEntity.CreatedByApi = true;
 
-            SearchRequestEntity searchRequestEntity = _mapper.Map<SearchRequestEntity>(searchRequestOrdered);
-            searchRequestEntity.CreatedByApi = true;
+                var cts = new CancellationTokenSource();
 
-            var cts = new CancellationTokenSource();
-            
-            await _searchRequestService.CreateSearchRequest(searchRequestEntity, cts.Token );
+                await _searchRequestService.CreateSearchRequest(searchRequestEntity, cts.Token);
 
-            return Ok();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest();
+            }
         }
 
         [HttpPost]

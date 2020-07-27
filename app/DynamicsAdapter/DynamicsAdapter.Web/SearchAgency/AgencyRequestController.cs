@@ -62,6 +62,8 @@ namespace DynamicsAdapter.Web.SearchAgency
         [OpenApiTag("Agency Search Reqeust API")]
         public async Task<IActionResult> UpdateSearchRequest(string key, [FromBody]SearchRequestOrdered personCompletedEvent)
         {
+            //todo: Not implemented yet.
+            await Task.Delay(1);
             return Ok();
         }
 
@@ -74,6 +76,8 @@ namespace DynamicsAdapter.Web.SearchAgency
         [OpenApiTag("Agency Search Reqeust API")]
         public async Task<IActionResult> CancelSearchRequest(string key, [FromBody]SearchRequestOrdered personCompletedEvent)
         {
+            //todo: Not implemented yet.
+            await Task.Delay(1);
             return Ok();
         }
     }

@@ -44,7 +44,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         [JsonProperty("ssg_driverslicensenumber")]
         public string PersonSoughtBCDL { get; set; }
 
-        [JsonProperty("ssg_??????")]
+        [JsonProperty("ssg_personalhealthnumber")] //todo: need confirm from FSO.
         public string PersonSoughtBCID { get; set; }
 
         [JsonProperty("ssg_socialinsurancenumber")]

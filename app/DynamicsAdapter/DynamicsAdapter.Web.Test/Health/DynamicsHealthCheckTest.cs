@@ -88,7 +88,13 @@ namespace DynamicsAdapter.Web.Test.Health
             .Returns(Task.FromResult(Enumeration.GetAll<EmploymentRecordType>().Select(x => new GenericOption(x.Value, x.Name))));
 
             _statusReasonServiceMock.Setup(x => x.GetAllOptions("ssg_incomeassistancestatus", CancellationToken.None))
-           .Returns(Task.FromResult(Enumeration.GetAll<IncomeAssistanceStatusType>().Select(x => new GenericOption(x.Value, x.Name))));
+            .Returns(Task.FromResult(Enumeration.GetAll<IncomeAssistanceStatusType>().Select(x => new GenericOption(x.Value, x.Name))));
+
+            _statusReasonServiceMock.Setup(x => x.GetAllOptions("ssg_payororreceiveroptions", CancellationToken.None))
+            .Returns(Task.FromResult(Enumeration.GetAll<PersonSoughtType>().Select(x => new GenericOption(x.Value, x.Name))));
+
+            _statusReasonServiceMock.Setup(x => x.GetAllOptions("ssg_requestpriorities", CancellationToken.None))
+            .Returns(Task.FromResult(Enumeration.GetAll<RequestPriorityType>().Select(x => new GenericOption(x.Value, x.Name))));
 
             _sut = new DynamicsHealthCheck(_statusReasonServiceMock.Object, _statusReasonServiceLogger.Object);
 

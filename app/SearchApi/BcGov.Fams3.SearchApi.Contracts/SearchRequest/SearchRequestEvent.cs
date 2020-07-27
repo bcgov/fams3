@@ -26,5 +26,9 @@ namespace BcGov.Fams3.SearchApi.Contracts.SearchRequest
         ///   action requested by agency, new, update, cancel, notify"
         /// </summary>
         public RequestAction Action { get; set; }
+
+        public int QueuePosition { get; set; }
+
+        public DateTime EstimatedCompletion { get; set; }
     }
 }

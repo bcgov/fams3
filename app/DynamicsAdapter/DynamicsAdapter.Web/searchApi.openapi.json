@@ -109,6 +109,9 @@
     "Person": {
       "type": "object",
       "properties": {
+        "agency": {
+          "$ref": "#/definitions/Agency"
+        },
         "firstName": {
           "type": "string"
         },
@@ -159,6 +162,9 @@
           "type": "string"
         },
         "wearGlasses": {
+          "type": "string"
+        },
+        "type": {
           "type": "string"
         },
         "identifiers": {
@@ -232,7 +238,85 @@
         }
       }
     },
-    "PersonalIdentifier": {
+    "Agency": {
+      "type": "object",
+      "required": [
+        "requestPriority",
+        "requestDate"
+      ],
+      "properties": {
+        "notes": {
+          "type": "string",
+          "description": "notes"
+        },
+        "requestPriority": {
+          "description": "request priority",
+          "allOf": [
+            {
+              "$ref": "#/definitions/RequestPriority"
+            }
+          ]
+        },
+        "code": {
+          "type": "string",
+          "description": "agency code"
+        },
+        "requestId": {
+          "type": "string",
+          "description": "agency request Id"
+        },
+        "reasonCode": {
+          "type": "string",
+          "description": "agency search requeston reason code"
+        },
+        "requestDate": {
+          "type": "string",
+          "description": "request date sent by agency",
+          "format": "date-time"
+        },
+        "informationRequested": {
+          "type": "array",
+          "description": "Information requested by agency",
+          "items": {
+            "type": "string"
+          }
+        },
+        "agent": {
+          "description": "first name and last name of agent",
+          "allOf": [
+            {
+              "$ref": "#/definitions/Name"
+            }
+          ]
+        },
+        "agentContact": {
+          "type": "array",
+          "description": "Phone and fax of agent",
+          "items": {
+            "$ref": "#/definitions/Phone"
+          }
+        },
+        "email": {
+          "type": "string",
+          "description": "agent email"
+        }
+      }
+    },
+    "RequestPriority": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Urgent",
+        "Rush",
+        "Normal"
+      ],
+      "enum": [
+        "Urgent",
+        "Rush",
+        "Normal"
+      ]
+    },
+    "Name": {
       "allOf": [
         {
           "$ref": "#/definitions/PersonalInfo"
@@ -240,63 +324,55 @@
         {
           "type": "object",
           "required": [
-            "type"
+            "owner"
           ],
           "properties": {
-            "value": {
+            "firstName": {
               "type": "string",
-              "description": "The value of the identifier"
+              "description": "The first name"
+            },
+            "lastName": {
+              "type": "string",
+              "description": "The last name"
+            },
+            "middleName": {
+              "type": "string",
+              "description": "The middle name"
+            },
+            "otherName": {
+              "type": "string",
+              "description": "The other name"
             },
             "type": {
-              "description": "The type of the identifier",
+              "type": "string",
+              "description": "the type of the names"
+            },
+            "owner": {
+              "description": "The owner of the name e.g. Applicant, Person Sought, e.t.c",
               "allOf": [
                 {
-                  "$ref": "#/definitions/PersonalIdentifierType"
+                  "$ref": "#/definitions/OwnerType"
                 }
               ]
-            },
-            "typeCode": {
-              "type": "string",
-              "description": "The type code of the identifier directly from data provider"
-            },
-            "issuedBy": {
-              "type": "string",
-              "description": "The issuer of the identifier"
             }
           }
         }
       ]
     },
-    "PersonalIdentifierType": {
+    "OwnerType": {
       "type": "string",
       "description": "",
       "x-enumNames": [
-        "BCDriverLicense",
-        "SocialInsuranceNumber",
-        "PersonalHealthNumber",
-        "BirthCertificate",
-        "CorrectionsId",
-        "NativeStatusCard",
-        "Passport",
-        "WorkSafeBCCCN",
-        "Other",
-        "BCID",
-        "BCHydroBP",
-        "OtherDriverLicense"
+        "Applicant",
+        "PersonSought",
+        "InvolvedPerson",
+        "NotApplicable"
       ],
       "enum": [
-        "BCDriverLicense",
-        "SocialInsuranceNumber",
-        "PersonalHealthNumber",
-        "BirthCertificate",
-        "CorrectionsId",
-        "NativeStatusCard",
-        "Passport",
-        "WorkSafeBCCCN",
-        "Other",
-        "BCID",
-        "BCHydroBP",
-        "OtherDriverLicense"
+        "Applicant",
+        "PersonSought",
+        "InvolvedPerson",
+        "NotApplicable"
       ]
     },
     "PersonalInfo": {
@@ -343,6 +419,117 @@
         }
       }
     },
+    "Phone": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/PersonalInfo"
+        },
+        {
+          "type": "object",
+          "required": [
+            "owner"
+          ],
+          "properties": {
+            "phoneNumber": {
+              "type": "string",
+              "description": "The Phone number"
+            },
+            "extension": {
+              "type": "string",
+              "description": "The extension number"
+            },
+            "type": {
+              "type": "string",
+              "description": "The phone number type"
+            },
+            "owner": {
+              "description": "The owner of the phone e.g. Applicant, Person Sought, e.t.c",
+              "allOf": [
+                {
+                  "$ref": "#/definitions/OwnerType"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "PersonalIdentifier": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/PersonalInfo"
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "owner"
+          ],
+          "properties": {
+            "value": {
+              "type": "string",
+              "description": "The value of the identifier"
+            },
+            "type": {
+              "description": "The type of the identifier",
+              "allOf": [
+                {
+                  "$ref": "#/definitions/PersonalIdentifierType"
+                }
+              ]
+            },
+            "typeCode": {
+              "type": "string",
+              "description": "The type code of the identifier directly from data provider"
+            },
+            "issuedBy": {
+              "type": "string",
+              "description": "The issuer of the identifier"
+            },
+            "owner": {
+              "description": "The owner of the ID e.g. Applicant, Person Sought, e.t.c",
+              "allOf": [
+                {
+                  "$ref": "#/definitions/OwnerType"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "PersonalIdentifierType": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "BCDriverLicense",
+        "SocialInsuranceNumber",
+        "PersonalHealthNumber",
+        "BirthCertificate",
+        "CorrectionsId",
+        "NativeStatusCard",
+        "Passport",
+        "WorkSafeBCCCN",
+        "Other",
+        "BCID",
+        "BCHydroBP",
+        "OtherDriverLicense"
+      ],
+      "enum": [
+        "BCDriverLicense",
+        "SocialInsuranceNumber",
+        "PersonalHealthNumber",
+        "BirthCertificate",
+        "CorrectionsId",
+        "NativeStatusCard",
+        "Passport",
+        "WorkSafeBCCCN",
+        "Other",
+        "BCID",
+        "BCHydroBP",
+        "OtherDriverLicense"
+      ]
+    },
     "Address": {
       "allOf": [
         {
@@ -350,6 +537,9 @@
         },
         {
           "type": "object",
+          "required": [
+            "owner"
+          ],
           "properties": {
             "type": {
               "type": "string",
@@ -382,62 +572,14 @@
             "zipPostalCode": {
               "type": "string",
               "description": "The Address Zip or Postal Code"
-            }
-          }
-        }
-      ]
-    },
-    "Phone": {
-      "allOf": [
-        {
-          "$ref": "#/definitions/PersonalInfo"
-        },
-        {
-          "type": "object",
-          "properties": {
-            "phoneNumber": {
-              "type": "string",
-              "description": "The Phone number"
             },
-            "extension": {
-              "type": "string",
-              "description": "The extension number"
-            },
-            "type": {
-              "type": "string",
-              "description": "The phone number type"
-            }
-          }
-        }
-      ]
-    },
-    "Name": {
-      "allOf": [
-        {
-          "$ref": "#/definitions/PersonalInfo"
-        },
-        {
-          "type": "object",
-          "properties": {
-            "firstName": {
-              "type": "string",
-              "description": "The first name"
-            },
-            "lastName": {
-              "type": "string",
-              "description": "The last name"
-            },
-            "middleName": {
-              "type": "string",
-              "description": "The middle name"
-            },
-            "otherName": {
-              "type": "string",
-              "description": "The other name"
-            },
-            "type": {
-              "type": "string",
-              "description": "the type of the names"
+            "owner": {
+              "description": "The owner of the address e.g. Applicant, Person Sought, e.t.c",
+              "allOf": [
+                {
+                  "$ref": "#/definitions/OwnerType"
+                }
+              ]
             }
           }
         }

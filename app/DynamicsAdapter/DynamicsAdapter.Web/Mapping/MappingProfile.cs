@@ -16,9 +16,11 @@ using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.RelatedPerson;
 using Fams3Adapter.Dynamics.SearchApiEvent;
 using Fams3Adapter.Dynamics.SearchApiRequest;
+using Fams3Adapter.Dynamics.SearchRequest;
 using Fams3Adapter.Dynamics.Vehicle;
 using System;
 using System.Linq;
+using DynamicsAdapter.Web.SearchAgency.Models;
 
 namespace DynamicsAdapter.Web.Mapping
 {
@@ -90,6 +92,22 @@ namespace DynamicsAdapter.Web.Mapping
                .ForMember(dest => dest.ProviderName, opt => opt.MapFrom(src => src.ProviderProfile.Name))
                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => Keys.SEARCH_API_EVENT_NAME));
 
+
+            CreateMap<SearchRequestOrdered, SearchRequestEntity>()
+               .ConstructUsing(m => Contructors.ConstructSearchRequestEntity(m))
+               .ForMember(dest => dest.OriginalRequestorReference, opt => opt.MapFrom(src => src.Person.Agency.RequestId))
+               .ForMember(dest => dest.RequestDate, opt => opt.MapFrom(src => src.Person.Agency.RequestDate.DateTime))
+               .ForMember(dest => dest.SearchReasonCode, opt => opt.MapFrom(src => src.Person.Agency.ReasonCode))
+               .ForMember(dest => dest.AgencyCode, opt => opt.MapFrom(src => src.Person.Agency.Code))
+               .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Person.Agency.Notes))
+               .ForMember(dest => dest.PersonSoughtDateOfBirth, opt => opt.MapFrom(src => src.Person.DateOfBirth==null? (DateTime?)null: ((DateTimeOffset)(src.Person.DateOfBirth)).DateTime))
+               .ForMember(dest => dest.PersonSoughtEyeColor, opt => opt.MapFrom(src => src.Person.EyeColour))
+               .ForMember(dest => dest.PersonSoughtHairColor, opt => opt.MapFrom(src => src.Person.HairColour))
+               .ForMember(dest => dest.PersonSoughtFirstName, opt => opt.MapFrom(src => src.Person.FirstName))
+               .ForMember(dest => dest.PersonSoughtLastName, opt => opt.MapFrom(src => src.Person.LastName))
+               .ForMember(dest => dest.PersonSoughtGender, opt => opt.ConvertUsing(new PersonGenderConverter(), src => src.Person.Gender))
+               .ForMember(dest => dest.RequestPriority, opt => opt.ConvertUsing(new RequestPriorityConverter(), src => src.Person.Agency.RequestPriority))
+               ;
 
             CreateMap<Address, AddressEntity>()
                  .ForMember(dest => dest.AddressLine1, opt => opt.MapFrom(src => src.AddressLine1))

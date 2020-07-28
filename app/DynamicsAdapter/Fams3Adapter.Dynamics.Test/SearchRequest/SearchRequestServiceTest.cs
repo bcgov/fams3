@@ -48,6 +48,24 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         }
 
         [Test]
+        public async Task upload_SearchRequest_should_success()
+        {
+            Guid guid = Guid.NewGuid();
+            var searchRequest = new SearchRequestEntity() {AgentFirstName="agentName" };
+            odataClientMock.Setup(x => x.For<SSG_SearchRequest>(null).Set(It.IsAny<SearchRequestEntity>())
+                .InsertEntryAsync(It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult(new SSG_SearchRequest()
+                {
+                    SearchRequestId = guid
+                })
+                );
+
+            var result = await _sut.CreateSearchRequest(searchRequest, CancellationToken.None);
+
+            Assert.AreEqual(guid, result.SearchRequestId);
+        }
+
+        [Test]
         public async Task upload_ResultTransaction_should_success()
         {
             var trans = new SSG_SearchRequestResultTransaction() { };

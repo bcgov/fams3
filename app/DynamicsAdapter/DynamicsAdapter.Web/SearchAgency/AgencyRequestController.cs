@@ -18,11 +18,11 @@ namespace DynamicsAdapter.Web.SearchAgency
     [ApiController]
     public class AgencyRequestController : ControllerBase
     {
-        private readonly ILogger<PersonSearchController> _logger;
+        private readonly ILogger<AgencyRequestController> _logger;
         private readonly IAgencyRequestService _agencyRequestService;
 
         public AgencyRequestController(               
-                ILogger<PersonSearchController> logger,
+                ILogger<AgencyRequestController> logger,
                 IAgencyRequestService agencyRequestService
                 )
         {

@@ -389,9 +389,9 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             {
                 //find agencylocation
                 //todo: We just currently use City as temp solution. expecting FMEP will provide office code later
-                string officeLocationCity = searchRequest.AgencyOfficeLocationText.Split(",")[1];
+                string officeLocationCity = searchRequest.AgencyOfficeLocationText.Split(",")[1].Trim();
                 var officeLocation = await _oDataClient.For<SSG_AgencyLocation>()
-                     .Filter(x => x.City == officeLocationCity)
+                     .Filter(x => x.City==officeLocationCity)
                      .FindEntryAsync(cancellationToken);
                 if (officeLocation != null)
                 {

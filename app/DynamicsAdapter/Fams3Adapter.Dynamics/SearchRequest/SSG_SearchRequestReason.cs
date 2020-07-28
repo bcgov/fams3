@@ -8,7 +8,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         [JsonProperty("ssg_searchrequestreasonid")]
         public Guid ReasonId { get; set; }
 
-        [JsonProperty("ssg_searchreasoncode")]
+        [JsonProperty("ssg_requestcategorycode")]
         public string ReasonCode { get; set; }
     }
 }

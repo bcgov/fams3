@@ -48,7 +48,8 @@ namespace DynamicsAdapter.Web.Test.Mapping
                         ReasonCode = "EnfPayAgr",
                         RequestDate = new DateTimeOffset(2018, 9, 28, 0, 0, 0, new TimeSpan(1, 0, 0)),
                         Email = "agencyemail@test.com",
-                        InformationRequested = new List<string> { "location", "phn", "DL" }
+                        InformationRequested = new List<string> { "location", "phn", "DL" },
+                        LocationAddress = "NORTHERN AND INTERIOR CLIENT OFFICE, KAMLOOPS, BC"
                     },
                     FirstName = "personSoughtFirstName",
                     LastName = "personSoughtLastName",
@@ -103,6 +104,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual("agentLastName", entity.AgentLastName);
             Assert.AreEqual("agentPhoneNumber", entity.AgentPhoneNumber);
             Assert.AreEqual("agentExt", entity.AgentPhoneExtension);
+            Assert.AreEqual("NORTHERN AND INTERIOR CLIENT OFFICE, KAMLOOPS, BC", entity.AgencyOfficeLocationText);
             Assert.AreEqual("agentFaxNumber", entity.AgentFax);
             Assert.AreEqual("agency notes", entity.Notes);
             Assert.AreEqual("QFP-12422509096920180928083433", entity.OriginalRequestorReference);

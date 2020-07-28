@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Fams3Adapter.Dynamics.Agency;
+using Newtonsoft.Json;
 using System;
 
 namespace Fams3Adapter.Dynamics.SearchRequest
@@ -139,7 +140,19 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
         public string AgencyCode { get; set; } //used to link ssg_agency entity
 
+        [JsonProperty("ssg_Agency")]
+        public virtual SSG_Agency Agency { get; set; }
+
         public string SearchReasonCode { get; set; } //used to link ssg_searchrequestreason
+        
+        [JsonProperty("ssg_RequestCategoryText")]
+        public virtual SSG_SearchRequestReason SearchReason { get; set; }
+
+        [JsonProperty("ssg_agencylocationstring")]
+        public string AgencyOfficeLocationText { get; set; } //used to link ssg_searchrequestreason
+
+        [JsonProperty("ssg_AgencyLocation")]
+        public virtual SSG_AgencyLocation AgencyLocation { get; set; }
     }
 
     public class SSG_SearchRequest : SearchRequestEntity

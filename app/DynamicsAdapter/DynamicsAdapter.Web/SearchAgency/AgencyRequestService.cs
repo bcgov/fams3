@@ -43,34 +43,25 @@ namespace DynamicsAdapter.Web.SearchAgency
 
         public async Task<bool> ProcessSearchRequestOrdered(SearchRequestOrdered searchRequestOrdered)
         {
-            try
-            {
-                _personSought = searchRequestOrdered.Person;
-                var cts = new CancellationTokenSource();
-                _cancellationToken = cts.Token;
+            _personSought = searchRequestOrdered.Person;
+            var cts = new CancellationTokenSource();
+            _cancellationToken = cts.Token;
 
-                SearchRequestEntity searchRequestEntity = _mapper.Map<SearchRequestEntity>(searchRequestOrdered);
-                searchRequestEntity.CreatedByApi = true;
-                _uploadedSearchRequest = await _searchRequestService.CreateSearchRequest(searchRequestEntity, cts.Token);
+            SearchRequestEntity searchRequestEntity = _mapper.Map<SearchRequestEntity>(searchRequestOrdered);
+            searchRequestEntity.CreatedByApi = true;
+            _uploadedSearchRequest = await _searchRequestService.CreateSearchRequest(searchRequestEntity, cts.Token);
 
-                PersonEntity personEntity = _mapper.Map<PersonEntity>(_personSought);
-                personEntity.SearchRequest = _uploadedSearchRequest;
-                personEntity.InformationSource = InformationSourceType.Request.Value;
-                _uploadedPerson = await _searchRequestService.SavePerson(personEntity, _cancellationToken);
+            PersonEntity personEntity = _mapper.Map<PersonEntity>(_personSought);
+            personEntity.SearchRequest = _uploadedSearchRequest;
+            personEntity.InformationSource = InformationSourceType.Request.Value;
+            _uploadedPerson = await _searchRequestService.SavePerson(personEntity, _cancellationToken);
 
-                await UploadIdentifiers();
-                await UploadAddresses();
-                await UploadPhones();
-                await UploadEmployment();
-                await UploadRelatedPersons();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                return false;
-            }
-
+            await UploadIdentifiers();
+            await UploadAddresses();
+            await UploadPhones();
+            await UploadEmployment();
+            await UploadRelatedPersons();
+            return true;
         }
 
         private async Task<bool> UploadIdentifiers()

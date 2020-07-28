@@ -28,16 +28,27 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
         private Mock<IMapper> _mapper;
 
         private SearchRequestOrdered _searchRequstOrdered;
-        private CancellationToken _fakeToken;
+        private Guid _validRequestId;
+        private IdentifierEntity _fakePersoneIdentifier;
+        private AddressEntity _fakePersonAddress;
+        private PhoneNumberEntity _fakePersonPhoneNumber;
+        private AliasEntity _fakeName;
+        private RelatedPersonEntity _fakeRelatedPerson;
+        private EmploymentEntity _fakeEmployment;
+        private EmploymentContactEntity _fakeEmploymentContact;
+        private PersonEntity _ssg_fakePerson;
+        private SearchRequestEntity _fakeSearchRequest;
+        private Person _searchRequestPerson;
 
         [SetUp]
         public void Init()
         {
+            _validRequestId = Guid.NewGuid();
             _loggerMock = new Mock<ILogger<AgencyRequestService>>();
             _searchRequestServiceMock = new Mock<ISearchRequestService>();
             _mapper = new Mock<IMapper>();
 
-            Person searchRequestPerson = new Person()
+            _searchRequestPerson = new Person()
             {
                 DateOfBirth = DateTime.Now,
                 FirstName = "TEST1",
@@ -109,11 +120,71 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 SearchRequestId = Guid.NewGuid(),
                 TimeStamp = new DateTime(2010, 1, 1),
                 SearchRequestKey = "key",
-                Person = searchRequestPerson
+                Person = _searchRequestPerson
             };
 
 
-            _fakeToken = new CancellationToken();
+            _fakePersoneIdentifier = new IdentifierEntity
+            {
+                Identification = "1234567",
+                SearchRequest = new SSG_SearchRequest
+                {
+                    SearchRequestId = _validRequestId
+                }
+            };
+            _fakePersonAddress = new AddressEntity
+            {
+                SearchRequest = new SSG_SearchRequest
+                {
+                    SearchRequestId = _validRequestId
+                },
+                AddressLine1 = "addressLine1"
+            };
+            _fakeEmployment = new EmploymentEntity
+            {
+                SearchRequest = new SSG_SearchRequest
+                {
+                    SearchRequestId = _validRequestId
+                }
+            };
+
+            _fakeEmploymentContact = new EmploymentContactEntity
+            {
+                PhoneNumber = "11111111"
+            };
+
+            _fakePersonPhoneNumber = new PhoneNumberEntity
+            {
+                SearchRequest = new SSG_SearchRequest
+                {
+                    SearchRequestId = _validRequestId
+                }
+            };
+
+            _fakeRelatedPerson = new RelatedPersonEntity
+            {
+                SearchRequest = new SSG_SearchRequest
+                {
+                    SearchRequestId = _validRequestId
+                }
+            };
+
+            _fakeName = new AliasEntity
+            {
+                SearchRequest = new SSG_SearchRequest
+                {
+                    SearchRequestId = _validRequestId
+                }
+            };
+
+            _fakeSearchRequest = new SearchRequestEntity()
+            {
+                AgencyCode = "FMEP"
+            };
+
+            _ssg_fakePerson = new PersonEntity
+            {
+            };
 
             _mapper.Setup(m => m.Map<IdentifierEntity>(It.IsAny<PersonalIdentifier>()))
                                .Returns(_fakePersoneIdentifier);
@@ -129,7 +200,8 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
 
             _mapper.Setup(m => m.Map<PersonEntity>(It.IsAny<Person>()))
                .Returns(_ssg_fakePerson);
-            _mapper.Setup(m => m.Map<ntEntity>(It.IsAny<Employment>()))
+
+            _mapper.Setup(m => m.Map<EmploymentEntity>(It.IsAny<Employment>()))
               .Returns(_fakeEmployment);
 
             _mapper.Setup(m => m.Map<EmploymentContactEntity>(It.IsAny<Phone>()))
@@ -138,46 +210,46 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             _mapper.Setup(m => m.Map<RelatedPersonEntity>(It.IsAny<RelatedPerson>()))
                    .Returns(_fakeRelatedPerson);
 
+            _mapper.Setup(m => m.Map<SearchRequestEntity>(It.IsAny<SearchRequestOrdered>()))
+                    .Returns(_fakeSearchRequest);
 
-
-
-
-
-
-
-
-
+            _searchRequestServiceMock.Setup(x => x.CreateSearchRequest(It.Is<SearchRequestEntity>(x => x.AgencyCode == "FMEP"), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult<SSG_SearchRequest>(new SSG_SearchRequest()
+                {
+                    SearchRequestId= _validRequestId,
+                    AgencyCode = "SUCCEED"
+                }));
 
             _searchRequestServiceMock.Setup(x => x.CreateIdentifier(It.IsAny<IdentifierEntity>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<SSG_Identifier>(new SSG_Identifier()
                 {
                 }));
 
-            _searchRequestServiceMock.Setup(x => x.CreateAddress(It.Is<AddressEntity>(x => x.SearchRequest.SearchRequestId == validRequestId), It.IsAny<CancellationToken>()))
+            _searchRequestServiceMock.Setup(x => x.CreateAddress(It.Is<AddressEntity>(x => x.SearchRequest.SearchRequestId == _validRequestId), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<SSG_Address>(new SSG_Address()
                 {
                     AddressLine1 = "test full line"
                 }));
 
-            _searchRequestServiceMock.Setup(x => x.CreatePhoneNumber(It.Is<PhoneNumberEntity>(x => x.SearchRequest.SearchRequestId == validRequestId), It.IsAny<CancellationToken>()))
+            _searchRequestServiceMock.Setup(x => x.CreatePhoneNumber(It.Is<PhoneNumberEntity>(x => x.SearchRequest.SearchRequestId == _validRequestId), It.IsAny<CancellationToken>()))
               .Returns(Task.FromResult<SSG_PhoneNumber>(new SSG_PhoneNumber()
               {
                   TelePhoneNumber = "4007678231"
               }));
 
-            _searchRequestServiceMock.Setup(x => x.CreateName(It.Is<AliasEntity>(x => x.SearchRequest.SearchRequestId == validRequestId), It.IsAny<CancellationToken>()))
+            _searchRequestServiceMock.Setup(x => x.CreateName(It.Is<AliasEntity>(x => x.SearchRequest.SearchRequestId == _validRequestId), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<SSG_Aliase>(new SSG_Aliase()
                 {
                     FirstName = "firstName"
                 }));
 
-            _searchRequestServiceMock.Setup(x => x.SavePerson(It.Is<PersonEntity>(x => x.SearchRequest.SearchRequestId == validRequestId), It.IsAny<CancellationToken>()))
+            _searchRequestServiceMock.Setup(x => x.SavePerson(It.Is<PersonEntity>(x => x.SearchRequest.SearchRequestId == _validRequestId), It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult<SSG_Person>(new SSG_Person()
             {
                 FirstName = "First"
             }));
 
-            _searchRequestServiceMock.Setup(x => x.CreateEmployment(It.Is<EmploymentEntity>(x => x.SearchRequest.SearchRequestId == validRequestId), It.IsAny<CancellationToken>()))
+            _searchRequestServiceMock.Setup(x => x.CreateEmployment(It.Is<EmploymentEntity>(x => x.SearchRequest.SearchRequestId == _validRequestId), It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult<SSG_Employment>(new SSG_Employment()
             {
                 EmploymentId = Guid.NewGuid(),
@@ -190,21 +262,71 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 PhoneNumber = "4007678231"
             }));
 
-            _searchRequestServiceMock.Setup(x => x.CreateRelatedPerson(It.Is<RelatedPersonEntity>(x => x.SearchRequest.SearchRequestId == validRequestId), It.IsAny<CancellationToken>()))
+            _searchRequestServiceMock.Setup(x => x.CreateRelatedPerson(It.Is<RelatedPersonEntity>(x => x.SearchRequest.SearchRequestId == _validRequestId), It.IsAny<CancellationToken>()))
               .Returns(Task.FromResult<SSG_Identity>(new SSG_Identity()
               {
                   FirstName = "firstName"
               }));
 
-            _searchRequestServiceMock.Setup(x => x.CreateEmployment(It.Is<EmploymentEntity>(x => x.BusinessName == COMPENSATION_BUISNESS_NAME && x.Date1 == new DateTime(2019, 9, 1)), It.IsAny<CancellationToken>()))
-                .Returns(Task.FromResult<SSG_Employment>(new SSG_Employment()
-                {
-                    EmploymentId = Guid.NewGuid(),
-
-                }));
             _sut = new AgencyRequestService(_searchRequestServiceMock.Object, _loggerMock.Object, _mapper.Object);
 
         }
 
+        [Test]
+        public async Task normal_searchRequestOrdered_ProcessSearchRequestOrdered_should_succeed()
+        {
+            bool result = await _sut.ProcessSearchRequestOrdered(_searchRequstOrdered);
+            _searchRequestServiceMock.Verify( m=>m.CreateSearchRequest(It.IsAny<SearchRequestEntity>(), It.IsAny<CancellationToken>()),Times.Once );
+            _searchRequestServiceMock.Verify(m => m.SavePerson(It.IsAny<PersonEntity>(), It.IsAny<CancellationToken>()), Times.Once);
+            _searchRequestServiceMock.Verify(m => m.CreateIdentifier(It.IsAny<IdentifierEntity>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
+            _searchRequestServiceMock.Verify(m => m.CreateAddress(It.IsAny<AddressEntity>(), It.IsAny<CancellationToken>()), Times.Once);
+            _searchRequestServiceMock.Verify(m => m.CreatePhoneNumber(It.IsAny<PhoneNumberEntity>(), It.IsAny<CancellationToken>()), Times.Never);
+            _searchRequestServiceMock.Verify(m => m.CreateEmployment(It.IsAny<EmploymentEntity>(), It.IsAny<CancellationToken>()), Times.Once);
+            _searchRequestServiceMock.Verify(m => m.CreateEmploymentContact(It.IsAny<EmploymentContactEntity>(), It.IsAny<CancellationToken>()), Times.Once);
+            _searchRequestServiceMock.Verify(m => m.CreateRelatedPerson(It.IsAny<RelatedPersonEntity>(), It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Test]
+        public async Task null_identifiers_addresses_phones_employments_relatedPersons_searchRequestOrdered_ProcessSearchRequestOrdered_should_succeed()
+        {
+            Person nullPerson = new Person()
+            {
+                DateOfBirth = DateTime.Now,
+                FirstName = "TEST1",
+                LastName = "TEST2",
+                Identifiers = null,
+                Addresses = null,
+                Phones = null,
+                Names = null,
+                RelatedPersons = null,
+                Employments = null
+            };
+            SearchRequestOrdered searchRequstOrdered = new SearchRequestOrdered()
+            {
+                Action = RequestAction.NEW,
+                RequestId = "1111111",
+                SearchRequestId = Guid.NewGuid(),
+                TimeStamp = new DateTime(2010, 1, 1),
+                SearchRequestKey = "key",
+                Person = nullPerson
+            };
+            bool result = await _sut.ProcessSearchRequestOrdered(searchRequstOrdered);
+            _searchRequestServiceMock.Verify(m => m.CreateSearchRequest(It.IsAny<SearchRequestEntity>(), It.IsAny<CancellationToken>()), Times.Once);
+            _searchRequestServiceMock.Verify(m => m.SavePerson(It.IsAny<PersonEntity>(), It.IsAny<CancellationToken>()), Times.Once);
+            _searchRequestServiceMock.Verify(m => m.CreateIdentifier(It.IsAny<IdentifierEntity>(), It.IsAny<CancellationToken>()), Times.Never);
+            _searchRequestServiceMock.Verify(m => m.CreateAddress(It.IsAny<AddressEntity>(), It.IsAny<CancellationToken>()), Times.Never);
+            _searchRequestServiceMock.Verify(m => m.CreatePhoneNumber(It.IsAny<PhoneNumberEntity>(), It.IsAny<CancellationToken>()), Times.Never);
+            _searchRequestServiceMock.Verify(m => m.CreateEmployment(It.IsAny<EmploymentEntity>(), It.IsAny<CancellationToken>()), Times.Never);
+            _searchRequestServiceMock.Verify(m => m.CreateEmploymentContact(It.IsAny<EmploymentContactEntity>(), It.IsAny<CancellationToken>()), Times.Never);
+            _searchRequestServiceMock.Verify(m => m.CreateRelatedPerson(It.IsAny<RelatedPersonEntity>(), It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+        [Test]
+        public async Task exception_searchRequestOrdered_ProcessSearchRequestOrdered_should_throw_exception()
+        {
+            _mapper.Setup(m => m.Map<SearchRequestEntity>(It.IsAny<SearchRequestOrdered>()))
+                    .Throws(new Exception("fakeException"));
+            Assert.ThrowsAsync<Exception>(async () => await _sut.ProcessSearchRequestOrdered(_searchRequstOrdered));
+        }
     }
 }

@@ -7,6 +7,10 @@ namespace BcGov.Fams3.SearchApi.Contracts.SearchRequest
    public interface SearchRequestNotification : SearchRequestEvent
     {
         NotificationType Notification { get; }
+
+        public int QueuePosition { get; set; }
+
+        public DateTime EstimatedCompletion { get; set; }
     }
 
     public enum NotificationType

@@ -322,7 +322,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
         }
 
         [Test]
-        public async Task exception_searchRequestOrdered_ProcessSearchRequestOrdered_should_throw_exception()
+        public void exception_searchRequestOrdered_ProcessSearchRequestOrdered_should_throw_exception()
         {
             _mapper.Setup(m => m.Map<SearchRequestEntity>(It.IsAny<SearchRequestOrdered>()))
                     .Throws(new Exception("fakeException"));

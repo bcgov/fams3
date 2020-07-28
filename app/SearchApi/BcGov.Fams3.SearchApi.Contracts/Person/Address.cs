@@ -29,6 +29,6 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         public string ZipPostalCode { get; set; }
 
         [Description("The owner of the address e.g. Applicant, Person Sought, e.t.c")]
-        public OwnerType Owner { get; set; } = OwnerType.NotApplicable;
+        public OwnerType Owner { get; set; }
     }
 }

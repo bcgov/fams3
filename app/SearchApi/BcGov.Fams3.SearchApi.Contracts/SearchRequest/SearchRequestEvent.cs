@@ -27,8 +27,5 @@ namespace BcGov.Fams3.SearchApi.Contracts.SearchRequest
         /// </summary>
         public RequestAction Action { get; set; }
 
-        public int QueuePosition { get; set; }
-
-        public DateTime EstimatedCompletion { get; set; }
     }
 }

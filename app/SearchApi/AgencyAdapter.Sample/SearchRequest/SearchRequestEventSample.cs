@@ -21,6 +21,8 @@ namespace AgencyAdapter.Sample.SearchRequest
 
         public string RequestId { get; set; }
         public RequestAction Action { get; set; }
+        public int QueuePosition { get; set; }
+        public DateTime EstimatedCompletion { get; set; }
     }
     public class AgencySample : ProviderProfile
     {

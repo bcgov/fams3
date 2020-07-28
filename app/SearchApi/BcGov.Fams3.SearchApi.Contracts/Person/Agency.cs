@@ -40,7 +40,13 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         [Description("agent email")]
         public string Email { get; set; }
 
-       
+
+        [Description("agency location code")]
+        public string LocationCode { get; set; }
+
+        [Description("agency location address")]
+        public string LocationAddress { get; set; }
+
 
 
 

@@ -1,11 +1,10 @@
-﻿using Fams3Adapter.Dynamics.Address;
-using Fams3Adapter.Dynamics.Agency;
+﻿using Fams3Adapter.Dynamics.Agency;
 using Newtonsoft.Json;
 using System;
 
 namespace Fams3Adapter.Dynamics.SearchRequest
 {
-    public class SearchRequestEntity 
+    public class SearchRequestEntity
     {
         [JsonProperty("ssg_requestpriority")]
         public int? RequestPriority { get; set; }
@@ -39,9 +38,6 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
         [JsonProperty("ssg_applicantcountrysubdivisiontext")]
         public string ApplicantProvince { get; set; }
-
-        [JsonProperty("ssg_ApplicantCountrySubdivision")]
-        public SSG_CountrySubdivision ApplicantCountrySubdivision { get; set; }
 
         [JsonProperty("ssg_locationcountrytext")]
         public string ApplicantCountry { get; set; }
@@ -148,7 +144,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         public virtual SSG_Agency Agency { get; set; }
 
         public string SearchReasonCode { get; set; } //used to link ssg_searchrequestreason
-        
+
         [JsonProperty("ssg_RequestCategoryText")]
         public virtual SSG_SearchRequestReason SearchReason { get; set; }
 

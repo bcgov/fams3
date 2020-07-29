@@ -61,7 +61,7 @@ namespace SearchRequest.Adaptor.Test.Notifier
             _fakeSearchRequestOrdered = new FakeSearchRequestOrdered()
             {
                 Action = BcGov.Fams3.SearchApi.Contracts.Person.RequestAction.NEW,
-                SearchRequestKey = "key"
+                RequestId = "id"
             };
         }
 
@@ -75,10 +75,10 @@ namespace SearchRequest.Adaptor.Test.Notifier
 
 
             await _sut.NotifySearchRequestEventAsync(
-                _fakeSearchRequestOrdered.SearchRequestKey,
+                _fakeSearchRequestOrdered.RequestId,
                 _fakeSearchRequestOrdered, CancellationToken.None);
 
-            var expectedUri = new Uri("http://test:1234/SearchRequestOrdered/key");
+            var expectedUri = new Uri("http://test:1234/CreateSearchRequest/id");
 
             _httpHandlerMock.Protected().Verify(
                 "SendAsync",
@@ -104,7 +104,7 @@ namespace SearchRequest.Adaptor.Test.Notifier
 
             _sut = new WebHookSearchRequestNotifier(_httpClient, _searchRequestOptionsMock.Object, _loggerMock.Object, _searchRquestEventPublisherMock.Object);
             await _sut.NotifySearchRequestEventAsync(
-                    _fakeSearchRequestOrdered.SearchRequestKey,
+                    _fakeSearchRequestOrdered.RequestId,
                     _fakeSearchRequestOrdered, CancellationToken.None);
 
             _httpHandlerMock.Protected().Verify(
@@ -142,7 +142,7 @@ namespace SearchRequest.Adaptor.Test.Notifier
 
             _sut = new WebHookSearchRequestNotifier(_httpClient, _searchRequestOptionsMock.Object, _loggerMock.Object, _searchRquestEventPublisherMock.Object);
            await _sut.NotifySearchRequestEventAsync(
-                    _fakeSearchRequestOrdered.SearchRequestKey,
+                    _fakeSearchRequestOrdered.RequestId,
                     _fakeSearchRequestOrdered, CancellationToken.None);
 
             _httpHandlerMock.Protected().Verify(
@@ -172,7 +172,7 @@ namespace SearchRequest.Adaptor.Test.Notifier
 
             _sut = new WebHookSearchRequestNotifier(_httpClient, _searchRequestOptionsMock.Object, _loggerMock.Object, _searchRquestEventPublisherMock.Object);
             await _sut.NotifySearchRequestEventAsync(
-                     _fakeSearchRequestOrdered.SearchRequestKey,
+                     _fakeSearchRequestOrdered.RequestId,
                      _fakeSearchRequestOrdered, CancellationToken.None);
 
             _httpHandlerMock.Protected().Verify(
@@ -193,7 +193,7 @@ namespace SearchRequest.Adaptor.Test.Notifier
             _sut = new WebHookSearchRequestNotifier(_httpClient, _searchRequestOptionsMock.Object, _loggerMock.Object, _searchRquestEventPublisherMock.Object);
 
             Assert.ThrowsAsync<ArgumentNullException>(() =>  _sut.NotifySearchRequestEventAsync(
-                _fakeSearchRequestOrdered.SearchRequestKey,
+                _fakeSearchRequestOrdered.RequestId,
                 null, CancellationToken.None));
 
         }

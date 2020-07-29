@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace SearchRequest.Adaptor.Test.Consumer
 {
-    public class SearchRequestOrderedConsumerTet
+    public class SearchRequestOrderedConsumerTest
     {
         private InMemoryTestHarness _harness;
         private Mock<ILogger<SearchRequestOrderedConsumer>> _loggerMock;
@@ -33,7 +33,7 @@ namespace SearchRequest.Adaptor.Test.Consumer
             await _harness.BusControl.Publish<SearchRequestOrdered>(new FakeSearchRequestOrdered()
             {
                 Action = BcGov.Fams3.SearchApi.Contracts.Person.RequestAction.NEW,
-                SearchRequestKey ="key",
+                RequestId = "id",
             });
 
         }
@@ -48,7 +48,7 @@ namespace SearchRequest.Adaptor.Test.Consumer
         public void Should_send_the_initial_message_to_the_consumer()
         {
             Assert.IsTrue(_harness.Consumed.Select<SearchRequestOrdered>().Any());
-            _searchRequestNotifierMock.Verify(x => x.NotifySearchRequestEventAsync(It.Is<string>(x => x == "key"), It.IsAny<SearchRequestOrdered>(), It.IsAny<CancellationToken>()), Times.Once);
+            _searchRequestNotifierMock.Verify(x => x.NotifySearchRequestEventAsync(It.Is<string>(x => x == "id"), It.IsAny<SearchRequestOrdered>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
 

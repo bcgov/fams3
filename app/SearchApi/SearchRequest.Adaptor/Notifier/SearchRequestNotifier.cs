@@ -1,4 +1,5 @@
-﻿using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
+﻿using BcGov.Fams3.SearchApi.Contracts.Person;
+using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 using BcGov.Fams3.SearchApi.Contracts.SearchRequest;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -16,7 +17,7 @@ namespace SearchRequestAdaptor.Notifier
 {
     public interface ISearchRequestNotifier<T>
     {
-        Task NotifySearchRequestEventAsync(string searchRequestKey, T searchRequestOrdered, CancellationToken cancellationToken);
+        Task NotifySearchRequestEventAsync(string requestId, T searchRequestOrdered, CancellationToken cancellationToken);
     }
 
     public class WebHookSearchRequestNotifier : ISearchRequestNotifier<SearchRequestOrdered>
@@ -36,20 +37,29 @@ namespace SearchRequestAdaptor.Notifier
             _searchRequestEventPublisher = searchRequestEventPublisher;
         }
 
-        public async Task NotifySearchRequestEventAsync(string searchRequestKey, SearchRequestOrdered searchRequestOrdered,
+        public async Task NotifySearchRequestEventAsync(string requestId, SearchRequestOrdered searchRequestOrdered,
            CancellationToken cancellationToken)
         {
             var webHookName = "SearchRequest";
-            string eventName = "SearchRequestOrdered";
 
+
+            if (string.IsNullOrEmpty(requestId)) throw new ArgumentNullException("invalid requestId");
             if (searchRequestOrdered == null) throw new ArgumentNullException(nameof(SearchRequestOrdered));
+
+            string eventName = searchRequestOrdered.Action switch
+                {
+                    RequestAction.NEW => "CreateSearchRequest",
+                    RequestAction.UPDATE => "UpdateSearchRequest",
+                    RequestAction.CANCEL => "CancelSearchRequest",
+                    _ => null
+                };
 
             foreach (var webHook in _searchRequestOptions.WebHooks)
             {
                 _logger.LogDebug(
                    $"The webHook {webHookName} notification is attempting to send status {eventName} event for {webHook.Name} webhook.");
 
-                if (!URLHelper.TryCreateUri(webHook.Uri, eventName, $"{searchRequestKey}", out var endpoint))
+                if (!URLHelper.TryCreateUri(webHook.Uri, eventName, $"{requestId}", out var endpoint))
                 {
                     _logger.LogWarning(
                         $"The webHook {webHookName} notification uri is not established or is not an absolute Uri for {webHook.Name}. Set the WebHook.Uri value on SearchApi.WebHooks settings.");

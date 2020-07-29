@@ -299,6 +299,14 @@
         "email": {
           "type": "string",
           "description": "agent email"
+        },
+        "locationCode": {
+          "type": "string",
+          "description": "agency location code"
+        },
+        "locationAddress": {
+          "type": "string",
+          "description": "agency location address"
         }
       }
     },

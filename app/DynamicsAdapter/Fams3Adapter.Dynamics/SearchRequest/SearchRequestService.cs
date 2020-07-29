@@ -1,4 +1,5 @@
 using Fams3Adapter.Dynamics.Address;
+using Fams3Adapter.Dynamics.Agency;
 using Fams3Adapter.Dynamics.AssetOwner;
 using Fams3Adapter.Dynamics.BankInfo;
 using Fams3Adapter.Dynamics.CompensationClaim;
@@ -39,7 +40,6 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         Task<SSG_SimplePhoneNumber> CreateSimplePhoneNumber(SimplePhoneNumberEntity phone, CancellationToken cancellationToken);
         Task<SSG_InvolvedParty> CreateInvolvedParty(InvolvedPartyEntity involvedParty, CancellationToken cancellationToken);
         Task<SSG_SearchRequestResultTransaction> CreateTransaction(SSG_SearchRequestResultTransaction transaction, CancellationToken cancellationToken);
-
         Task<SSG_SearchRequest> CreateSearchRequest(SearchRequestEntity searchRequest, CancellationToken cancellationToken);
     }
 
@@ -371,9 +371,38 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
         public async Task<SSG_SearchRequest> CreateSearchRequest(SearchRequestEntity searchRequest, CancellationToken cancellationToken)
         {
-            //todo: Not implemented yet.
-            await Task.Delay(1);
-            return null;
+            //find agencyCode in ssg_agency entity
+            string code = searchRequest.AgencyCode;
+            var agency = await _oDataClient.For<SSG_Agency>()
+                                         .Filter(x => x.AgencyCode == code)
+                                         .FindEntryAsync(cancellationToken);
+            searchRequest.Agency = agency;
+
+            //find reasoncode 
+            string reasonCode = searchRequest.SearchReasonCode;
+            var reason = await _oDataClient.For<SSG_SearchRequestReason>()
+                             .Filter(x => x.ReasonCode == reasonCode)
+                             .FindEntryAsync(cancellationToken);
+            searchRequest.SearchReason = reason;
+
+            try
+            {
+                //find agencylocation
+                //todo: We just currently use City as temp solution. expecting FMEP will provide office code later
+                string officeLocationCity = searchRequest.AgencyOfficeLocationText.Split(",")[1].Trim();
+                var officeLocation = await _oDataClient.For<SSG_AgencyLocation>()
+                     .Filter(x => x.City==officeLocationCity)
+                     .FindEntryAsync(cancellationToken);
+                if (officeLocation != null)
+                {
+                    searchRequest.AgencyLocation = officeLocation;
+                    searchRequest.AgencyOfficeLocationText = null;
+                }
+            }catch(Exception)
+            {               
+            }
+
+            return await this._oDataClient.For<SSG_SearchRequest>().Set(searchRequest).InsertEntryAsync(cancellationToken);
         }
 
     }

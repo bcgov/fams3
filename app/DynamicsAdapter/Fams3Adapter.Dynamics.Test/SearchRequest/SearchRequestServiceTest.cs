@@ -1,19 +1,11 @@
-using Fams3Adapter.Dynamics.Address;
-using Fams3Adapter.Dynamics.AssetOwner;
-using Fams3Adapter.Dynamics.BankInfo;
-using Fams3Adapter.Dynamics.CompensationClaim;
 using Fams3Adapter.Dynamics.Duplicate;
 using Fams3Adapter.Dynamics.Identifier;
-using Fams3Adapter.Dynamics.InsuranceClaim;
-using Fams3Adapter.Dynamics.OtherAsset;
-using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.ResultTransaction;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Moq;
 using NUnit.Framework;
 using Simple.OData.Client;
 using System;
-using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -23,11 +15,6 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
     {
         private Mock<IODataClient> odataClientMock;
         private Mock<IDuplicateDetectionService> _duplicateServiceMock;
-
-        private readonly Guid testId = Guid.Parse("6AE89FE6-9909-EA11-B813-00505683FBF4");
-        private readonly Guid testPersonId = Guid.Parse("6AE89FE6-9909-EA11-1111-00505683FBF4");
-        private readonly Guid testAssetOtherId = Guid.Parse("77789FE6-9909-EA11-1901-000056837777");
-
         private SearchRequestService _sut;
 
         [SetUp]

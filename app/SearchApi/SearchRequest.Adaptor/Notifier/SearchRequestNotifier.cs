@@ -97,9 +97,12 @@ namespace SearchRequestAdaptor.Notifier
                         return;
                     }
 
+                    string responseContent = await response.Content.ReadAsStringAsync();
+                    SearchRequestSubmitted submitted = (SearchRequestSubmitted)JsonConvert.DeserializeObject(responseContent);
+                    
                     _logger.LogInformation(
                         $"The webHook {webHookName} notification has executed status {eventName} successfully for {webHook.Name} webHook.");
-                    await _searchRequestEventPublisher.PublishSearchRequestSubmitted(searchRequestOrdered, "Search Request has been submitted successfully.");
+                    await _searchRequestEventPublisher.PublishSearchRequestSubmitted(submitted, "Search Request has been submitted successfully.");
                 }
                 catch (Exception exception)
                 {

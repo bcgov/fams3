@@ -8,6 +8,9 @@ namespace Fams3Adapter.Dynamics.InsuranceClaim
         [JsonProperty("ssg_phonenumber")]
         public string PhoneNumber { get; set; }
 
+        [JsonProperty("ssg_phonenumber_original")]
+        public string OriginalPhoneNumber { get; set; }
+
         [JsonProperty("ssg_phonenumbertype")]
         public string Type { get; set; }
 

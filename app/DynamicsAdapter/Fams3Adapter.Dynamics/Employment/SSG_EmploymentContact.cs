@@ -15,11 +15,17 @@ namespace Fams3Adapter.Dynamics.Employment
         [JsonProperty("ssg_faxnumber")]
         public string FaxNumber { get; set; }
 
+        [JsonProperty("ssg_faxnumber_original")]
+        public string OriginalFaxNumber { get; set; }
+
         [JsonProperty("ssg_phoneextension")]
         public string PhoneExtension { get; set; }
 
         [JsonProperty("ssg_phonenumber")]
         public string PhoneNumber { get; set; }
+
+        [JsonProperty("ssg_phoneNumber_original")]
+        public string OriginalPhoneNumber { get; set; }
 
         [JsonProperty("ssg_phonetype")]
         public int? PhoneType { get; set; }

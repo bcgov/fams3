@@ -4,7 +4,7 @@ using System;
 
 namespace Fams3Adapter.Dynamics.SearchRequest
 {
-    public class SearchRequestEntity 
+    public class SearchRequestEntity
     {
         [JsonProperty("ssg_requestpriority")]
         public int? RequestPriority { get; set; }
@@ -93,7 +93,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         [JsonProperty("ssg_inforequestedincarcerationstatus")]
         public bool CarcerationStatusRequested { get; set; }
 
-        [JsonProperty("contactpersonemailid")]
+        [JsonProperty("ssg_contactpersonemailid")]
         public string AgentEmail { get; set; }
 
         [JsonProperty("ssg_contactpersontelephonenumber")]
@@ -144,7 +144,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         public virtual SSG_Agency Agency { get; set; }
 
         public string SearchReasonCode { get; set; } //used to link ssg_searchrequestreason
-        
+
         [JsonProperty("ssg_RequestCategoryText")]
         public virtual SSG_SearchRequestReason SearchReason { get; set; }
 

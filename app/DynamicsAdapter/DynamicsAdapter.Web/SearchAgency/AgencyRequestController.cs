@@ -1,15 +1,9 @@
-﻿using AutoMapper;
-using DynamicsAdapter.Web.PersonSearch;
 using DynamicsAdapter.Web.SearchAgency.Models;
-using Fams3Adapter.Dynamics.Person;
-using Fams3Adapter.Dynamics.SearchRequest;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NSwag.Annotations;
 using System;
-using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace DynamicsAdapter.Web.SearchAgency
@@ -35,16 +29,16 @@ namespace DynamicsAdapter.Web.SearchAgency
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Route("CreateSearchRequest/{key}")]
+        [Route("CreateSearchRequest/{requestId}")]
         [OpenApiTag("Agency Search Reqeust API")]
-        public async Task<IActionResult> CreateSearchRequest(string key, [FromBody]SearchRequestOrdered searchRequestOrdered)
+        public async Task<IActionResult> CreateSearchRequest(string requestId, [FromBody]SearchRequestOrdered searchRequestOrdered)
         {
-            if (string.IsNullOrEmpty(key)) return BadRequest();
+            if (string.IsNullOrEmpty(requestId)) return BadRequest();
             if (searchRequestOrdered.Action != RequestAction.NEW) return BadRequest();
             try
             {
-               await _agencyRequestService.ProcessSearchRequestOrdered(searchRequestOrdered);
-               return Ok();
+                await _agencyRequestService.ProcessSearchRequestOrdered(searchRequestOrdered);
+                return Ok();
             }
             catch (Exception ex)
             {

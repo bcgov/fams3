@@ -1,4 +1,5 @@
 using DynamicsAdapter.Web.SearchAgency.Models;
+using Fams3Adapter.Dynamics.SearchRequest;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -37,8 +38,9 @@ namespace DynamicsAdapter.Web.SearchAgency
             if (searchRequestOrdered.Action != RequestAction.NEW) return BadRequest();
             try
             {
-                await _agencyRequestService.ProcessSearchRequestOrdered(searchRequestOrdered);
-                return Ok();
+                SSG_SearchRequest createdSearchRequest = await _agencyRequestService.ProcessSearchRequestOrdered(searchRequestOrdered);
+                 
+                return Ok(BuildSearchRequestSubmitted(createdSearchRequest, searchRequestOrdered));
             }
             catch (Exception ex)
             {
@@ -73,6 +75,21 @@ namespace DynamicsAdapter.Web.SearchAgency
             //todo: Not implemented yet.
             await Task.Delay(1);
             return Ok();
+        }
+
+        private SearchRequestSubmitted BuildSearchRequestSubmitted(SSG_SearchRequest createdSearchRequest, SearchRequestOrdered requestOrdered)
+        {
+            return new SearchRequestSubmitted()
+            {
+                Action = requestOrdered.Action,
+                RequestId = requestOrdered.RequestId,
+                SearchRequestKey = createdSearchRequest.FileId,
+                SearchRequestId = createdSearchRequest.SearchRequestId,
+                TimeStamp = DateTime.Now,
+                EstimatedCompletion = DateTime.Now.AddDays(60), //todo: need to implement when design is ready.
+                QueuePosition = 4,
+                Message = $"The new Search Request reference: {requestOrdered.RequestId} has been submitted successfully."
+            };
         }
     }
 }

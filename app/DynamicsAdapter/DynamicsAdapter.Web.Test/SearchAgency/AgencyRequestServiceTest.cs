@@ -275,7 +275,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
         [Test]
         public async Task normal_searchRequestOrdered_ProcessSearchRequestOrdered_should_succeed()
         {
-            bool result = await _sut.ProcessSearchRequestOrdered(_searchRequstOrdered);
+            SSG_SearchRequest ssgSearchRequest = await _sut.ProcessSearchRequestOrdered(_searchRequstOrdered);
             _searchRequestServiceMock.Verify( m=>m.CreateSearchRequest(It.IsAny<SearchRequestEntity>(), It.IsAny<CancellationToken>()),Times.Once );
             _searchRequestServiceMock.Verify(m => m.SavePerson(It.IsAny<PersonEntity>(), It.IsAny<CancellationToken>()), Times.Once);
             _searchRequestServiceMock.Verify(m => m.CreateIdentifier(It.IsAny<IdentifierEntity>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
@@ -310,7 +310,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 SearchRequestKey = "key",
                 Person = nullPerson
             };
-            bool result = await _sut.ProcessSearchRequestOrdered(searchRequstOrdered);
+            SSG_SearchRequest ssgSearchRequest = await _sut.ProcessSearchRequestOrdered(searchRequstOrdered);
             _searchRequestServiceMock.Verify(m => m.CreateSearchRequest(It.IsAny<SearchRequestEntity>(), It.IsAny<CancellationToken>()), Times.Once);
             _searchRequestServiceMock.Verify(m => m.SavePerson(It.IsAny<PersonEntity>(), It.IsAny<CancellationToken>()), Times.Once);
             _searchRequestServiceMock.Verify(m => m.CreateIdentifier(It.IsAny<IdentifierEntity>(), It.IsAny<CancellationToken>()), Times.Never);

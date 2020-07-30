@@ -210,6 +210,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             };
             EmploymentContactEntity employmentContact = _mapper.Map<EmploymentContactEntity>(phoneNumber);
             Assert.AreEqual("6904005678", employmentContact.PhoneNumber);
+            Assert.AreEqual("6904005678", employmentContact.OriginalPhoneNumber);
             Assert.AreEqual("123", employmentContact.PhoneExtension);
             Assert.AreEqual(1, employmentContact.StatusCode);
             Assert.AreEqual(0, employmentContact.StateCode);
@@ -226,6 +227,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             };
             EmploymentContactEntity employmentContact = _mapper.Map<EmploymentContactEntity>(phoneNumber);
             Assert.AreEqual("6904005678", employmentContact.FaxNumber);
+            Assert.AreEqual("6904005678", employmentContact.OriginalFaxNumber);
             Assert.AreEqual("123", employmentContact.PhoneExtension);
             Assert.AreEqual(1, employmentContact.StatusCode);
             Assert.AreEqual(0, employmentContact.StateCode);
@@ -1120,6 +1122,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual("adjusterMiddleName", icbcClaim.AdjusterMiddleName);
             Assert.AreEqual("adjusterOtherName", icbcClaim.AdjusterOtherName);
             Assert.AreEqual("adjusterPhoneNumber", icbcClaim.AdjusterPhoneNumber);
+            Assert.AreEqual("adjusterPhoneNumber", icbcClaim.OriginalAdjusterPhoneNumber);
             Assert.AreEqual("adjusterPhoneExtension", icbcClaim.AdjusterPhoneNumberExt);
             Assert.AreEqual(new DateTimeOffset(new DateTime(2002, 2, 2)).ToString(), icbcClaim.BCDLExpiryDate);
             Assert.AreEqual("InsuranceClaimBCDLNumber", icbcClaim.BCDLNumber);
@@ -1152,6 +1155,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
 
             SimplePhoneNumberEntity assetPhone = _mapper.Map<SimplePhoneNumberEntity>(phone);
             Assert.AreEqual("claimCenterContactPhoneNumber1", assetPhone.PhoneNumber);
+            Assert.AreEqual("claimCenterContactPhoneNumber1", assetPhone.OriginalPhoneNumber);
             Assert.AreEqual("claimCenterContactPhoneExt1", assetPhone.Extension);
             Assert.AreEqual("Phone", assetPhone.Type);
         }

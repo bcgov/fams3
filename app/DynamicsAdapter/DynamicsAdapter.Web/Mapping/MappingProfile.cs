@@ -146,8 +146,10 @@ namespace DynamicsAdapter.Web.Mapping
 
             CreateMap<Phone, EmploymentContactEntity>()
                 .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.Type.Equals("Phone", StringComparison.InvariantCultureIgnoreCase) ? src.PhoneNumber : null))
+                .ForMember(dest => dest.OriginalPhoneNumber, opt => opt.MapFrom(src => src.Type.Equals("Phone", StringComparison.InvariantCultureIgnoreCase) ? src.PhoneNumber : null))
                 .ForMember(dest => dest.PhoneExtension, opt => opt.MapFrom(src => src.Extension))
                 .ForMember(dest => dest.FaxNumber, opt => opt.MapFrom(src => src.Type.Equals("fax", StringComparison.InvariantCultureIgnoreCase) ? src.PhoneNumber : null))
+                .ForMember(dest => dest.OriginalFaxNumber, opt => opt.MapFrom(src => src.Type.Equals("fax", StringComparison.InvariantCultureIgnoreCase) ? src.PhoneNumber : null))
                 .ForMember(dest => dest.SupplierTypeCode, opt => opt.MapFrom(src => src.Type))
                 .ForMember(dest => dest.PhoneType, opt => opt.ConvertUsing(new PhoneTypeConverter(), src => src.Type))
                 .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => 0))
@@ -274,6 +276,7 @@ namespace DynamicsAdapter.Web.Mapping
                   .ForMember(dest => dest.AdjusterMiddleName, opt => opt.MapFrom(src => src.Adjustor == null ? null : src.Adjustor.MiddleName))
                   .ForMember(dest => dest.AdjusterOtherName, opt => opt.MapFrom(src => src.Adjustor == null ? null : src.Adjustor.OtherName))
                   .ForMember(dest => dest.AdjusterPhoneNumber, opt => opt.MapFrom(src => src.AdjustorPhone==null?null:src.AdjustorPhone.PhoneNumber))
+                  .ForMember(dest => dest.OriginalAdjusterPhoneNumber, opt => opt.MapFrom(src => src.AdjustorPhone == null ? null : src.AdjustorPhone.PhoneNumber))
                   .ForMember(dest => dest.AdjusterPhoneNumberExt, opt => opt.MapFrom(src => src.AdjustorPhone == null ? null : src.AdjustorPhone.Extension))
                   .ForMember(dest => dest.PHNNumber, opt=>opt.MapFrom(src=>src.Identifiers==null?null:src.Identifiers.FirstOrDefault<PersonalIdentifier>(m=>m.Type==PersonalIdentifierType.PersonalHealthNumber).Value))
                   .ForMember(dest => dest.BCDLNumber, opt => opt.MapFrom(src => src.Identifiers == null ? null : src.Identifiers.FirstOrDefault<PersonalIdentifier>(m => m.Type == PersonalIdentifierType.BCDriverLicense).Value))
@@ -293,6 +296,7 @@ namespace DynamicsAdapter.Web.Mapping
 
             CreateMap<Phone, SimplePhoneNumberEntity>()
                   .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
+                  .ForMember(dest => dest.OriginalPhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
                   .ForMember(dest => dest.Extension, opt => opt.MapFrom(src => src.Extension))
                   .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type));
 

@@ -31,6 +31,7 @@ namespace DynamicsAdapter.Web.SearchAgency
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Route("CreateSearchRequest/{requestId}")]
         [OpenApiTag("Agency Search Request API")]
         public async Task<IActionResult> CreateSearchRequest(string requestId, [FromBody]SearchRequestOrdered searchRequestOrdered)
@@ -40,8 +41,10 @@ namespace DynamicsAdapter.Web.SearchAgency
             try
             {
                 SSG_SearchRequest createdSearchRequest = await _agencyRequestService.ProcessSearchRequestOrdered(searchRequestOrdered);
-                 
-                return Ok(BuildSearchRequestSubmitted(createdSearchRequest, searchRequestOrdered));
+                if(createdSearchRequest == null ) 
+                    return StatusCode(StatusCodes.Status500InternalServerError);
+
+                return Ok(BuildSearchRequestSubmitted_Create(createdSearchRequest, searchRequestOrdered));
             }
             catch (Exception ex)
             {
@@ -82,19 +85,19 @@ namespace DynamicsAdapter.Web.SearchAgency
             if (String.IsNullOrEmpty(searchRequestOrdered.SearchRequestKey)) 
                 return BadRequest(new { Message = "FileId cannot be empty for cancelling request." });
 
+            SSG_SearchRequest cancelledSearchRequest = null;
             try
             {
-                SSG_SearchRequest cancelledSearchRequest = await _agencyRequestService.ProcessCancelSearchRequest(searchRequestOrdered);
-                return Ok(BuildSearchRequestSubmitted(cancelledSearchRequest, searchRequestOrdered));
+                cancelledSearchRequest = await _agencyRequestService.ProcessCancelSearchRequest(searchRequestOrdered);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                return BadRequest();
             }
+            return Ok(BuildSearchRequestSubmitted_Cancel(cancelledSearchRequest, searchRequestOrdered));
         }
 
-        private SearchRequestSubmitted BuildSearchRequestSubmitted(SSG_SearchRequest ssgSearchRequest, SearchRequestOrdered requestOrdered)
+        private SearchRequestSubmitted BuildSearchRequestSubmitted_Create(SSG_SearchRequest ssgSearchRequest, SearchRequestOrdered requestOrdered)
         {
             SearchRequestSubmitted submitted = 
                 new SearchRequestSubmitted()
@@ -104,25 +107,38 @@ namespace DynamicsAdapter.Web.SearchAgency
                         SearchRequestKey = ssgSearchRequest.FileId,
                         SearchRequestId = ssgSearchRequest.SearchRequestId,
                         TimeStamp = DateTime.Now,
+                        EstimatedCompletion = DateTime.Now.AddDays(60),
+                        QueuePosition = 4,
+                        Message = $"The new Search Request reference: {requestOrdered.RequestId} has been submitted successfully.",
                         ProviderProfile = new ProviderProfile() {
                             Name= requestOrdered?.Person?.Agency?.Code
                         }
                     };
-            if(requestOrdered.Action == RequestAction.NEW)
-            {
-                submitted.EstimatedCompletion = DateTime.Now.AddDays(60); //todo: need to implement when design is ready.
-                submitted.QueuePosition = 4;//todo: need to implement when design is ready.
-                submitted.Message = $"The new Search Request reference: {requestOrdered.RequestId} has been submitted successfully.";
-            }
-            else if(requestOrdered.Action == RequestAction.CANCEL)
-            {
-                if(ssgSearchRequest.StatusCode == SearchRequestStatusCode.AgencyCancelled.Value)
-                    submitted.Message = $"The Search Request {ssgSearchRequest.FileId} has been cancelled successfully upon the request {requestOrdered.RequestId}.";
-                else
-                    submitted.Message = $"The Search Request {ssgSearchRequest.FileId} cannot be cancelled upon the request {requestOrdered.RequestId}.";
-            }
-            return submitted;
+            return submitted;          
         }
 
+        private SearchRequestSubmitted BuildSearchRequestSubmitted_Cancel(SSG_SearchRequest ssgSearchRequest, SearchRequestOrdered requestOrdered)
+        {
+            SearchRequestSubmitted submitted =
+                new SearchRequestSubmitted()
+                {
+                    Action = requestOrdered.Action,
+                    RequestId = requestOrdered.RequestId,
+                    SearchRequestKey = requestOrdered.SearchRequestKey,
+                    SearchRequestId = ssgSearchRequest==null? Guid.Empty: ssgSearchRequest.SearchRequestId,
+                    TimeStamp = DateTime.Now,
+                    ProviderProfile = new ProviderProfile()
+                    {
+                        Name = requestOrdered?.Person?.Agency?.Code
+                    }
+                };
+
+                if (ssgSearchRequest != null && ssgSearchRequest.StatusCode == SearchRequestStatusCode.AgencyCancelled.Value)
+                    submitted.Message = $"The Search Request {requestOrdered.SearchRequestKey} has been cancelled successfully upon the request {requestOrdered.RequestId}.";
+                else
+                    submitted.Message = $"The Search Request {requestOrdered.SearchRequestKey} cannot be cancelled upon the request {requestOrdered.RequestId}.";
+
+            return submitted;
+        }
     }
 }

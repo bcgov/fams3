@@ -19,6 +19,8 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Entry = System.Collections.Generic.Dictionary<string, object>;
+
 namespace Fams3Adapter.Dynamics.SearchRequest
 {
     public interface ISearchRequestService
@@ -41,6 +43,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         Task<SSG_InvolvedParty> CreateInvolvedParty(InvolvedPartyEntity involvedParty, CancellationToken cancellationToken);
         Task<SSG_SearchRequestResultTransaction> CreateTransaction(SSG_SearchRequestResultTransaction transaction, CancellationToken cancellationToken);
         Task<SSG_SearchRequest> CreateSearchRequest(SearchRequestEntity searchRequest, CancellationToken cancellationToken);
+        Task<SSG_SearchRequest> CancelSearchRequest(string fileId, CancellationToken cancellationToken);
     }
 
     /// <summary>
@@ -405,5 +408,13 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             return await this._oDataClient.For<SSG_SearchRequest>().Set(searchRequest).InsertEntryAsync(cancellationToken);
         }
 
+        public async Task<SSG_SearchRequest> CancelSearchRequest(string fileId, CancellationToken cancellationToken)
+        {
+            return await _oDataClient
+                        .For<SSG_SearchRequest>()
+                        .Filter(x => x.FileId == fileId)
+                        .Set(new Entry { { Keys.DYNAMICS_STATUS_CODE_FIELD, SearchRequestStatusCode.AgencyCancelled.Value } })
+                        .UpdateEntryAsync(cancellationToken);
+        }
     }
 }

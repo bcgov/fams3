@@ -19,6 +19,7 @@ namespace DynamicsAdapter.Web.SearchAgency
     public interface IAgencyRequestService
     {
         Task<SSG_SearchRequest> ProcessSearchRequestOrdered(SearchRequestOrdered searchRequestOrdered);
+        Task<SSG_SearchRequest> ProcessCancelSearchRequest(SearchRequestOrdered cancelSearchRequest);
     }
 
     public class AgencyRequestService : IAgencyRequestService
@@ -62,6 +63,13 @@ namespace DynamicsAdapter.Web.SearchAgency
             await UploadEmployment();
             await UploadRelatedPersons();
             return _uploadedSearchRequest;
+        }
+
+        public async Task<SSG_SearchRequest> ProcessCancelSearchRequest(SearchRequestOrdered searchRequestOrdered)
+        {
+            var cts = new CancellationTokenSource();
+            _cancellationToken = cts.Token;
+            return await _searchRequestService.CancelSearchRequest(searchRequestOrdered.SearchRequestKey, _cancellationToken);       
         }
 
         private async Task<bool> UploadIdentifiers()

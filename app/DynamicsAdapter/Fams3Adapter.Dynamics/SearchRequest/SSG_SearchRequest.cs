@@ -153,6 +153,9 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
         [JsonProperty("ssg_AgencyLocation")]
         public virtual SSG_AgencyLocation AgencyLocation { get; set; }
+
+        [JsonProperty("statuscode")]
+        public int StatusCode { get; set; }
     }
 
     public class SSG_SearchRequest : SearchRequestEntity

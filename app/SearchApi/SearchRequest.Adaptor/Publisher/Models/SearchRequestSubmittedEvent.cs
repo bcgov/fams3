@@ -1,11 +1,11 @@
-﻿using BcGov.Fams3.SearchApi.Contracts.Person;
-using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
+using BcGov.Fams3.SearchApi.Contracts.Person;
 using BcGov.Fams3.SearchApi.Contracts.SearchRequest;
+using SearchRequest.Adaptor.Publisher.Models;
 using System;
 
 namespace SearchRequestAdaptor.Publisher.Models
 {
-    public class SearchRequestSubmittedEvent : SearchRequestSubmitted
+    public class SearchRequestSubmittedEvent 
     {
         public SearchRequestSubmittedEvent(SearchRequestEvent baseEvent)
         {

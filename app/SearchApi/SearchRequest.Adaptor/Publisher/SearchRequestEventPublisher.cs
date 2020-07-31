@@ -15,7 +15,7 @@ namespace SearchRequestAdaptor.Publisher
     public interface ISearchRequestEventPublisher
     {
         public Task PublishSearchRequestFailed(SearchRequestEvent baseEvent, string message);
-        public Task PublishSearchRequestSubmitted(SearchRequestSubmitted submittedEvent);
+        public Task PublishSearchRequestSubmitted(SearchRequestSubmittedEvent submittedEvent);
         public Task PublishSearchRequestRejected(SearchRequestEvent baseEvent, IEnumerable<ValidationResult> reasons);
 
     }
@@ -57,7 +57,7 @@ namespace SearchRequestAdaptor.Publisher
             });
         }
 
-        public async Task PublishSearchRequestSubmitted(SearchRequestSubmitted submittedEvent)
+        public async Task PublishSearchRequestSubmitted(SearchRequestSubmittedEvent submittedEvent)
         {
             if (submittedEvent == null) throw new ArgumentNullException(nameof(SearchRequestSubmitted));
 

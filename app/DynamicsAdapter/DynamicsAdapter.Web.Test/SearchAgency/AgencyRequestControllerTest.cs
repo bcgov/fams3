@@ -1,5 +1,6 @@
 ﻿using DynamicsAdapter.Web.SearchAgency;
 using DynamicsAdapter.Web.SearchAgency.Models;
+using Fams3Adapter.Dynamics.SearchRequest;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -25,25 +26,39 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
         }
 
         [Test]
-        public async Task With_valid_searchRequestOrdered_it_should_return_ok()
+        public async Task With_valid_searchRequestOrdered_it_should_return_ok_with_correct_content()
         {
             SearchRequestOrdered validSearchRequestOrdered = new SearchRequestOrdered()
             {
                 Action = RequestAction.NEW,
-                RequestId = Guid.NewGuid().ToString(),
+                RequestId = "121212121212",
                 TimeStamp = DateTime.Now,
                 Person = new Person()
                 {
                     Agency = new Agency()
                     {
-                        RequestId = "121212121212"
+                        RequestId = "121212121212",
+                        Code = "FMEP"
                     }
                 }
             };
+
+            _agencyRequestServiceMock.Setup(x => x.ProcessSearchRequestOrdered(It.IsAny<SearchRequestOrdered>()))
+                .Returns(Task.FromResult<SSG_SearchRequest>( new SSG_SearchRequest() { 
+                    FileId="fileId",
+                    SearchRequestId = Guid.NewGuid()
+                }));
+
             var result = await _sut.CreateSearchRequest("normalsearchRequest", validSearchRequestOrdered);
 
             _agencyRequestServiceMock.Verify(x => x.ProcessSearchRequestOrdered(It.IsAny<SearchRequestOrdered>()), Times.Once);
-            Assert.IsInstanceOf(typeof(OkResult), result);
+            var resultValue = result as OkObjectResult;
+            Assert.NotNull(resultValue);
+            var submitted = resultValue.Value as SearchRequestSubmitted;
+            Assert.NotNull(submitted);
+            Assert.AreEqual("fileId", submitted.SearchRequestKey);
+            Assert.AreEqual("FMEP", submitted.ProviderProfile.Name);
+            Assert.AreEqual("The new Search Request reference: 121212121212 has been submitted successfully.", submitted.Message);
         }
 
         [Test]

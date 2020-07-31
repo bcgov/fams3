@@ -35,7 +35,6 @@ using Quartz.Spi;
 using Simple.OData.Client;
 using System;
 using System.Collections.Generic;
-using System.Net.Http;
 
 namespace DynamicsAdapter.Web
 {

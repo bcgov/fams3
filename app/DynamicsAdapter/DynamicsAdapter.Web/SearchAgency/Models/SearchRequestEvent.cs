@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace DynamicsAdapter.Web.SearchAgency.Models
 {
@@ -25,6 +22,7 @@ namespace DynamicsAdapter.Web.SearchAgency.Models
         ///   action requested by agency, new, update, cancel, notify"
         /// </summary>
         public RequestAction Action { get; set; }
+        public DynamicsAdapter.Web.PersonSearch.Models.ProviderProfile ProviderProfile { get; set; }
     }
 
     public enum RequestAction

@@ -16,6 +16,10 @@ namespace SearchRequestAdaptor.Publisher.Models
             this.Action = baseEvent.Action;
         }
 
+        public SearchRequestSubmittedEvent()
+        {           
+        }
+
         public string RequestId { get; set; }
 
         public string SearchRequestKey { get; set; }

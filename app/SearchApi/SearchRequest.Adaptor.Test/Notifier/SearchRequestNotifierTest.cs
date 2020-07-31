@@ -8,6 +8,7 @@ using NUnit.Framework;
 using SearchRequestAdaptor.Configuration;
 using SearchRequestAdaptor.Notifier;
 using SearchRequestAdaptor.Publisher;
+using SearchRequestAdaptor.Publisher.Models;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -92,7 +93,7 @@ namespace SearchRequest.Adaptor.Test.Notifier
 
             _searchRquestEventPublisherMock.Verify(
                 x => x.PublishSearchRequestSubmitted(
-                It.IsAny<SearchRequestEvent>(), It.IsAny<string>()), Times.Once);
+                It.IsAny<SearchRequestSubmittedEvent>()), Times.Once);
         }
 
 

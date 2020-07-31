@@ -1,3 +1,4 @@
+using DynamicsAdapter.Web.PersonSearch.Models;
 using DynamicsAdapter.Web.SearchAgency.Models;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Microsoft.AspNetCore.Http;
@@ -87,8 +88,11 @@ namespace DynamicsAdapter.Web.SearchAgency
                 SearchRequestId = createdSearchRequest.SearchRequestId,
                 TimeStamp = DateTime.Now,
                 EstimatedCompletion = DateTime.Now.AddDays(60), //todo: need to implement when design is ready.
-                QueuePosition = 4,
-                Message = $"The new Search Request reference: {requestOrdered.RequestId} has been submitted successfully."
+                QueuePosition = 4,//todo: need to implement when design is ready.
+                Message = $"The new Search Request reference: {requestOrdered.RequestId} has been submitted successfully.",
+                ProviderProfile = new ProviderProfile() {
+                    Name= requestOrdered?.Person?.Agency?.Code
+                }
             };
         }
     }

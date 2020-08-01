@@ -410,9 +410,13 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
         public async Task<SSG_SearchRequest> CancelSearchRequest(string fileId, CancellationToken cancellationToken)
         {
+            SSG_SearchRequest searchRequest = await _oDataClient.For<SSG_SearchRequest>().Filter(x => x.FileId == fileId).FindEntryAsync(cancellationToken);
+
+            if (searchRequest == null) return null;
+
             return await _oDataClient
                         .For<SSG_SearchRequest>()
-                        .Filter(x => x.FileId == fileId)
+                        .Key(searchRequest.SearchRequestId)
                         .Set(new Entry { { Keys.DYNAMICS_STATUS_CODE_FIELD, SearchRequestStatusCode.AgencyCancelled.Value } })
                         .UpdateEntryAsync(cancellationToken);
         }

@@ -15,6 +15,7 @@ namespace SearchRequestAdaptor.Publisher.Models
             this.TimeStamp = DateTime.Now;
             this.SearchRequestKey = baseEvent.SearchRequestKey;
             this.Action = baseEvent.Action;
+            this.ProviderProfile = baseEvent.ProviderProfile;
         }
 
         public string RequestId { get; set; }

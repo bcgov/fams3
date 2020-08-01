@@ -36,8 +36,8 @@ namespace DynamicsAdapter.Web.SearchAgency
         [OpenApiTag("Agency Search Request API")]
         public async Task<IActionResult> CreateSearchRequest(string requestId, [FromBody]SearchRequestOrdered searchRequestOrdered)
         {
-            if (string.IsNullOrEmpty(requestId)) return BadRequest();
-            if (searchRequestOrdered.Action != RequestAction.NEW) return BadRequest();
+            if (string.IsNullOrEmpty(requestId)) return BadRequest(new { Message = "requestId cannot be empty." });
+            if (searchRequestOrdered.Action != RequestAction.NEW) return BadRequest(new { Message = "CreateSearchRequest should only get NEW request." });
             try
             {
                 SSG_SearchRequest createdSearchRequest = await _agencyRequestService.ProcessSearchRequestOrdered(searchRequestOrdered);
@@ -89,6 +89,8 @@ namespace DynamicsAdapter.Web.SearchAgency
             try
             {
                 cancelledSearchRequest = await _agencyRequestService.ProcessCancelSearchRequest(searchRequestOrdered);
+                if(cancelledSearchRequest == null)
+                    return BadRequest(new { Message = $"FileId ( {searchRequestOrdered.SearchRequestKey} ) is invalid." });
             }
             catch (Exception ex)
             {

@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Template
+labels:
+  template: request-api-template
+message: |-
+  A Jenkins server must be instantiated in this project to manage
+  the Pipeline BuildConfig created by this template. You will be able to log in to
+  it using your OpenShift user credentials.
+metadata:
+  annotations:
+    openshift.io/display-name: request-api template
+    description: |-
+      This is a template for request-api.
+    iconClass: icon-jenkins
+    tags: instant-app,jenkins
+  name: request-api-template
+objects:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      description: Exposes and load balances the application pods
+    labels:
+      app: request-api
+      template: meta-service
+    name: request-api
+  spec:
+    ports:
+    - name: web
+      port: 80
+      protocol: TCP
+      targetPort: 8080
+    selector:
+      deploymentconfig: request-api
+    sessionAffinity: None
+    type: ClusterIP

@@ -127,6 +127,32 @@ services:
     restart: always
     networks:
       - search-api-net
+  request-api:
+    build:
+      context: app/SearchApi
+      args: 
+        PROJECT_NAME: SearchRequest.Adaptor
+        NEXUS_REPO_URL: ${NEXUS_REPO_URL}
+        NEXUS_REPO_USER: ${NEXUS_REPO_USER}
+        NEXUS_REPO_PASSWORD: ${NEXUS_REPO_PASSWORD}
+    ports:
+      - "5070:80"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      RABBITMQ__HOST: rabbitmq
+      RABBITMQ__PORT: 5672
+      RABBITMQ__USERNAME: guest
+      RABBITMQ__PASSWORD: guest
+      JAEGER_SERVICE_NAME: search-api
+      JAEGER_SAMPLER_TYPE: const
+      JAEGER_ENDPOINT: http://jaeger-collector:14268/api/traces
+      SearchRequestAdaptor__WebHooks__0__Name: dynadapter
+      SearchRequestAdaptor__WebHooks__0__Uri: http://dynadapter/AgencyRequest
+      SPLUNK_COLLECTOR_URL: https://splunk:8088
+      SPLUNK_TOKEN: ${SPLUNK_TOKEN}
+    restart: always
+    networks:
+      - search-api-net
 
   rabbitmq:
     image: rabbitmq:3.7.15-management

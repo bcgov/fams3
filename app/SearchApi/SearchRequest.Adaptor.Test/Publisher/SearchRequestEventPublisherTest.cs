@@ -90,15 +90,16 @@ namespace SearchRequest.Adaptor.Test.Publisher
         [Test]
         public async Task PublishSearchRequestSubmitted_should_pubish_submittedEvent()
         {
-            await _sut.PublishSearchRequestSubmitted(_baseEvent, "submitted");
+            SearchRequestSubmittedEvent submittedEvent = new SearchRequestSubmittedEvent();
+            await _sut.PublishSearchRequestSubmitted(submittedEvent);
             _sendEndpointMock.Verify(x => x.Send<SearchRequestSubmitted>(It.IsAny<SearchRequestSubmittedEvent>(), It.IsAny<CancellationToken>()),
                 () => { return Times.Once(); });
         }
 
         [Test]
-        public void with_null_baseEvent_PublishSearchRequestSubmitted_should_throw_exception()
+        public void with_null_submittedEvent_PublishSearchRequestSubmitted_should_throw_exception()
         {
-            Assert.ThrowsAsync<ArgumentNullException>(() => _sut.PublishSearchRequestSubmitted(null, "submitted"));
+            Assert.ThrowsAsync<ArgumentNullException>(() => _sut.PublishSearchRequestSubmitted(null));
         }
 
         [Test]

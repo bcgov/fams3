@@ -4,15 +4,16 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using Moq.Protected;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using SearchRequestAdaptor.Configuration;
 using SearchRequestAdaptor.Notifier;
 using SearchRequestAdaptor.Publisher;
+using SearchRequestAdaptor.Publisher.Models;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -54,10 +55,18 @@ namespace SearchRequest.Adaptor.Test.Notifier
                 .ReturnsAsync(new HttpResponseMessage()
                 {
                     StatusCode = HttpStatusCode.OK,
-                    Content = new StringContent("worked!"),
+                    Content = new StringContent(JsonConvert.SerializeObject(
+                        new SearchRequestSubmittedEvent()
+                        {
+                            SearchRequestId = Guid.NewGuid(),
+                            SearchRequestKey = "fileId",
+                            RequestId = "requestId",
+                            ProviderProfile = new SearchRequest.Adaptor.Publisher.Models.ProviderProfile() { Name = "AgencyName" }
+                        })),
                 })
                 .Verifiable();
-            _httpClient= new HttpClient(_httpHandlerMock.Object);
+
+            _httpClient = new HttpClient(_httpHandlerMock.Object);
             _fakeSearchRequestOrdered = new FakeSearchRequestOrdered()
             {
                 Action = BcGov.Fams3.SearchApi.Contracts.Person.RequestAction.NEW,
@@ -92,7 +101,7 @@ namespace SearchRequest.Adaptor.Test.Notifier
 
             _searchRquestEventPublisherMock.Verify(
                 x => x.PublishSearchRequestSubmitted(
-                It.IsAny<SearchRequestEvent>(), It.IsAny<string>()), Times.Once);
+                It.IsAny<SearchRequestSubmittedEvent>()), Times.Once);
         }
 
 
@@ -141,9 +150,9 @@ namespace SearchRequest.Adaptor.Test.Notifier
                 .Verifiable();
 
             _sut = new WebHookSearchRequestNotifier(_httpClient, _searchRequestOptionsMock.Object, _loggerMock.Object, _searchRquestEventPublisherMock.Object);
-           await _sut.NotifySearchRequestEventAsync(
-                    _fakeSearchRequestOrdered.RequestId,
-                    _fakeSearchRequestOrdered, CancellationToken.None);
+            await _sut.NotifySearchRequestEventAsync(
+                     _fakeSearchRequestOrdered.RequestId,
+                     _fakeSearchRequestOrdered, CancellationToken.None);
 
             _httpHandlerMock.Protected().Verify(
                     "SendAsync",
@@ -192,7 +201,7 @@ namespace SearchRequest.Adaptor.Test.Notifier
         {
             _sut = new WebHookSearchRequestNotifier(_httpClient, _searchRequestOptionsMock.Object, _loggerMock.Object, _searchRquestEventPublisherMock.Object);
 
-            Assert.ThrowsAsync<ArgumentNullException>(() =>  _sut.NotifySearchRequestEventAsync(
+            Assert.ThrowsAsync<ArgumentNullException>(() => _sut.NotifySearchRequestEventAsync(
                 _fakeSearchRequestOrdered.RequestId,
                 null, CancellationToken.None));
 

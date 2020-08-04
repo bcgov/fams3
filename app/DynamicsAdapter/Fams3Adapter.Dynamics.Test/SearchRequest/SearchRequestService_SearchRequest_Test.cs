@@ -7,6 +7,7 @@ using Moq;
 using NUnit.Framework;
 using Simple.OData.Client;
 using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -70,11 +71,12 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
                 })
                 );
 
-            var searchRequest = new SearchRequestEntity() { 
-                AgencyCode="fmep",
-                SearchReasonCode="reason",
-                AgencyOfficeLocationText= "NORTHERN AND INTERIOR CLIENT OFFICE, KAMLOOPS, BC",
-                AgentFirstName = "agentName" 
+            var searchRequest = new SearchRequestEntity()
+            {
+                AgencyCode = "fmep",
+                SearchReasonCode = "reason",
+                AgencyOfficeLocationText = "NORTHERN AND INTERIOR CLIENT OFFICE, KAMLOOPS, BC",
+                AgentFirstName = "agentName"
             };
             var result = await _sut.CreateSearchRequest(searchRequest, CancellationToken.None);
 
@@ -235,8 +237,73 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
 
             var result = await _sut.CreateSearchRequest(searchRequest, CancellationToken.None);
             _odataClientMock.Verify(x => x.For<SSG_SearchRequest>(It.IsAny<string>())
-                .Set(It.Is<SearchRequestEntity>(m=>m.AgencyOfficeLocationText==null))
+                .Set(It.Is<SearchRequestEntity>(m => m.AgencyOfficeLocationText == null))
                 .InsertEntryAsync(It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Test]
+        public async Task cancel_correct_SearchRequest_should_success()
+        {
+            Guid searchRequestId = Guid.NewGuid();
+            _odataClientMock.Setup(x => x.For<SSG_SearchRequest>(null)
+                  .Filter(It.IsAny<Expression<Func<SSG_SearchRequest, bool>>>())
+                  .FindEntryAsync(It.IsAny<CancellationToken>()))
+                  .Returns(Task.FromResult<SSG_SearchRequest>(new SSG_SearchRequest()
+                  {
+                      SearchRequestId = searchRequestId
+                  }));
+
+            _odataClientMock.Setup(x => x.For<SSG_SearchRequest>(null)
+                .Key(searchRequestId)
+                .Set(new Dictionary<string, object>() { { Keys.DYNAMICS_STATUS_CODE_FIELD, SearchRequestStatusCode.AgencyCancelled.Value } })
+                .UpdateEntryAsync(It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult<SSG_SearchRequest>(new SSG_SearchRequest()
+                {
+                    StatusCode = SearchRequestStatusCode.AgencyCancelled.Value
+                }));
+
+
+            var result = await _sut.CancelSearchRequest("fileId", CancellationToken.None);
+
+            Assert.AreEqual(SearchRequestStatusCode.AgencyCancelled.Value, result.StatusCode);
+        }
+
+        [Test]
+        public async Task cancel_non_exist_SearchRequest_should_return_null()
+        {
+            _odataClientMock.Setup(x => x.For<SSG_SearchRequest>(null)
+                  .Filter(It.IsAny<Expression<Func<SSG_SearchRequest, bool>>>())
+                  .FindEntryAsync(It.IsAny<CancellationToken>()))
+                  .Returns(Task.FromResult<SSG_SearchRequest>(null));
+
+            var result = await _sut.CancelSearchRequest("fileId", CancellationToken.None);
+
+            Assert.AreEqual(null, result);
+        }
+
+        [Test]
+        public void exception_cancel_SearchRequest_should_throw_exception()
+        {
+            Guid searchRequestId = Guid.NewGuid();
+            _odataClientMock.Setup(x => x.For<SSG_SearchRequest>(null)
+                  .Filter(It.IsAny<Expression<Func<SSG_SearchRequest, bool>>>())
+                  .FindEntryAsync(It.IsAny<CancellationToken>()))
+                  .Returns(Task.FromResult<SSG_SearchRequest>(new SSG_SearchRequest()
+                  {
+                      SearchRequestId = searchRequestId
+                  }));
+
+            _odataClientMock.Setup(x => x.For<SSG_SearchRequest>(null)
+                .Key(searchRequestId)
+                .Set(new Dictionary<string, object>() { { Keys.DYNAMICS_STATUS_CODE_FIELD, SearchRequestStatusCode.AgencyCancelled.Value } })
+                .UpdateEntryAsync(It.IsAny<CancellationToken>()))
+                .Throws(WebRequestException.CreateFromStatusCode(
+                        System.Net.HttpStatusCode.NotFound,
+                        new WebRequestExceptionMessageSource(),
+                        ""
+                        ));
+
+            Assert.ThrowsAsync<WebRequestException>(async () => await _sut.CancelSearchRequest("fileId", CancellationToken.None));
         }
     }
 }

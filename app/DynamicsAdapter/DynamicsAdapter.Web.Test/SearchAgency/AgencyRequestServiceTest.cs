@@ -275,7 +275,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
         [Test]
         public async Task normal_searchRequestOrdered_ProcessSearchRequestOrdered_should_succeed()
         {
-            bool result = await _sut.ProcessSearchRequestOrdered(_searchRequstOrdered);
+            SSG_SearchRequest ssgSearchRequest = await _sut.ProcessSearchRequestOrdered(_searchRequstOrdered);
             _searchRequestServiceMock.Verify( m=>m.CreateSearchRequest(It.IsAny<SearchRequestEntity>(), It.IsAny<CancellationToken>()),Times.Once );
             _searchRequestServiceMock.Verify(m => m.SavePerson(It.IsAny<PersonEntity>(), It.IsAny<CancellationToken>()), Times.Once);
             _searchRequestServiceMock.Verify(m => m.CreateIdentifier(It.IsAny<IdentifierEntity>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
@@ -310,7 +310,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 SearchRequestKey = "key",
                 Person = nullPerson
             };
-            bool result = await _sut.ProcessSearchRequestOrdered(searchRequstOrdered);
+            SSG_SearchRequest ssgSearchRequest = await _sut.ProcessSearchRequestOrdered(searchRequstOrdered);
             _searchRequestServiceMock.Verify(m => m.CreateSearchRequest(It.IsAny<SearchRequestEntity>(), It.IsAny<CancellationToken>()), Times.Once);
             _searchRequestServiceMock.Verify(m => m.SavePerson(It.IsAny<PersonEntity>(), It.IsAny<CancellationToken>()), Times.Once);
             _searchRequestServiceMock.Verify(m => m.CreateIdentifier(It.IsAny<IdentifierEntity>(), It.IsAny<CancellationToken>()), Times.Never);
@@ -327,6 +327,26 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             _mapper.Setup(m => m.Map<SearchRequestEntity>(It.IsAny<SearchRequestOrdered>()))
                     .Throws(new Exception("fakeException"));
             Assert.ThrowsAsync<Exception>(async () => await _sut.ProcessSearchRequestOrdered(_searchRequstOrdered));
+        }
+
+        [Test]
+        public async Task normal_searchRequestOrdered_ProcessCancelSearchRequest_should_succeed()
+        {
+            _searchRequestServiceMock.Setup(x => x.CancelSearchRequest(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult<SSG_SearchRequest>(new SSG_SearchRequest()
+                {
+                    FileId = "fileId"
+                }));
+            SSG_SearchRequest ssgSearchRequest = await _sut.ProcessCancelSearchRequest(_searchRequstOrdered);
+            _searchRequestServiceMock.Verify(m => m.CancelSearchRequest(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Test]
+        public void exception_searchRequestOrdered_ProcessCancelSearchRequest_should_throw_exception()
+        {
+            _searchRequestServiceMock.Setup(x => x.CancelSearchRequest(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .Throws(new Exception("fakeException"));
+            Assert.ThrowsAsync<Exception>(async () => await _sut.ProcessCancelSearchRequest(_searchRequstOrdered));
         }
     }
 }

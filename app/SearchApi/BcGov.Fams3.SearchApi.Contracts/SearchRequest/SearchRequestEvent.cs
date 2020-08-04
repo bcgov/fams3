@@ -9,11 +9,11 @@ namespace BcGov.Fams3.SearchApi.Contracts.SearchRequest
 
     {
         /// <summary>
-        /// This is Data Partner Id for the SearchRequest
+        /// This is the agency search request Id for the SearchRequest
         /// </summary>
         string RequestId { get; }
         /// <summary>
-        /// This is the Key to identify the searchRequest in dynamics it is made of FileId_SequenceNumber
+        /// This is the Key to identify the searchRequest in dynamics it is FileId
         /// </summary>
         string SearchRequestKey { get; }
         /// <summary>
@@ -23,7 +23,7 @@ namespace BcGov.Fams3.SearchApi.Contracts.SearchRequest
         DateTime TimeStamp { get; }
         ////
         /// <summary>
-        ///   action requested by agency, new, update, cancel, notify"
+        ///   action requested by agency, new, update, cancel, notify
         /// </summary>
         public RequestAction Action { get; set; }
 

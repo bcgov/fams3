@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Template
+labels:
+  template: agency-outbound-api-webhook-config
+message: |-
+  agency outbound api webhook configuration template.
+metadata:
+  annotations:
+    description: |-
+      agency outbound api webhook configuration template.
+    tags: agency-outbound-api-webhook-config
+    template: agency-outbound-api-webhook-config
+  name: agency-outbound-api-webhook-config
+
+# Parameters
+parameters:
+- name: NAME
+  required: true
+  value: "set.name"
+- name: ACTION
+  required: true
+  value: "set.action"
+- name: URI
+  value: "set.uri"
+- name: PATH
+  value: "set.path"
+# Objects
+objects:
+
+- apiVersion: v1
+  stringData:
+    AgencyApi__WebHooks__0__Name: ${NAME}
+    AgencyApi__WebHooks__0__Endpoint__0__Action: ${ACTION}
+    AgencyApi__WebHooks__0__Endpoint__0__Uri: ${URL}
+    AgencyApi__WebHooks__0__Endpoint__0__Path: ${PATH}
+    AgencyApi__WebHooks__0__Endpoint__1__Action: ${ACTION}
+    AgencyApi__WebHooks__0__Endpoint__1__Uri: ${URL}
+    AgencyApi__WebHooks__0__Endpoint__1__Path: ${PATH}
+    AgencyApi__WebHooks__0__Endpoint__2__Action: ${ACTION}
+    AgencyApi__WebHooks__0__Endpoint__2__Uri: ${URL}
+    AgencyApi__WebHooks__0__Endpoint__2__Path: ${PATH}
+  kind: Secret
+  metadata:
+    name: agency-outbound-api-webhook-config

@@ -1,28 +1,23 @@
 apiVersion: v1
 kind: Template
 labels:
-  template: rest-inbound-adapter-template
+  template: request-api-template
 message: |-
   A Jenkins server must be instantiated in this project to manage
   the Pipeline BuildConfig created by this template. You will be able to log in to
   it using your OpenShift user credentials.
 metadata:
   annotations:
-    openshift.io/display-name: rest-inbound-adapter template
+    openshift.io/display-name: request-api template
     description: |-
-      This is a template for rest-inbound-adapter.
+      This is a template for request-api.
     iconClass: icon-jenkins
     tags: instant-app,jenkins
-  name: rest-inbound-adapter-template
+  name: request-api-template
 parameters:
 - description: The OpenShift Namespace prefix.
   displayName: Namespace Prefix (Prefix for each namespace ie prefix-tools, prefix-dev etc)
   name: namespacePrefix
-  required: true
-  value:
-- description: Data partner service name.
-  displayName: Name of the data partner service
-  name: dataPartnerService
   required: true
   value:
 objects:
@@ -32,9 +27,9 @@ objects:
     annotations:
       description: Defines how to build the application
     labels:
-      app: ${dataPartnerService}-rest-inbound-adapter
+      app: request-api
       template: master-build-pipeline
-    name: ${dataPartnerService}-rest-inbound-adapter
+    name: request-api
     namespace: ${namespacePrefix}-tools
   spec:
     completionDeadlineSeconds: 1800
@@ -43,7 +38,7 @@ objects:
     output:
       to:
         kind: ImageStreamTag
-        name: ${dataPartnerService}-rest-inbound-adapter:latest
+        name: request-api:latest
     postCommit: {}
     resources:
       limits:
@@ -56,15 +51,13 @@ objects:
     source:
       git:
         ref: master
-        uri: git@github.com:bcgov-c/fams3-openshift.git
-      sourceSecret:
-        name: fams3-github-key
+        uri: https://github.com/bcgov/fams3
       type: Git
     strategy:
       sourceStrategy:
         env:
         - name: DOTNET_STARTUP_PROJECT
-          value: src/SearchApi.Adapters/FMEP.Inbound.Adapter/FMEP.Inbound.Adapter.csproj
+          value: app/SearchApi/SearchRequest.Adaptor/SearchRequest.Adaptor.csproj
         - name: DOTNET_ASSEMBLY_NAME
         - name: DOTNET_NPM_TOOLS
         - name: DOTNET_TEST_PROJECTS

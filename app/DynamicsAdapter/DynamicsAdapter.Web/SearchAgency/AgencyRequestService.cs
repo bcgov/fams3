@@ -3,6 +3,7 @@ using DynamicsAdapter.Web.SearchAgency.Models;
 using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
+using Fams3Adapter.Dynamics.Notes;
 using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.RelatedPerson;
@@ -20,6 +21,7 @@ namespace DynamicsAdapter.Web.SearchAgency
     {
         Task<SSG_SearchRequest> ProcessSearchRequestOrdered(SearchRequestOrdered searchRequestOrdered);
         Task<SSG_SearchRequest> ProcessCancelSearchRequest(SearchRequestOrdered cancelSearchRequest);
+        Task<SSG_SearchRequest> ProcessUpdateSearchRequest(SearchRequestOrdered updateSearchRequest);
     }
 
     public class AgencyRequestService : IAgencyRequestService
@@ -70,6 +72,18 @@ namespace DynamicsAdapter.Web.SearchAgency
             var cts = new CancellationTokenSource();
             _cancellationToken = cts.Token;
             return await _searchRequestService.CancelSearchRequest(searchRequestOrdered.SearchRequestKey, _cancellationToken);       
+        }
+
+        public async Task<SSG_SearchRequest> ProcessUpdateSearchRequest(SearchRequestOrdered searchRequestOrdered)
+        {
+            _personSought = searchRequestOrdered.Person;
+            var cts = new CancellationTokenSource();
+            _cancellationToken = cts.Token;
+
+            SearchRequestEntity searchRequestEntity = _mapper.Map<SearchRequestEntity>(searchRequestOrdered);
+         
+
+            return await _searchRequestService.CreateNotes(searchRequestOrdered.SearchRequestKey, searchRequestEntity, cts.Token);
         }
 
         private async Task<bool> UploadIdentifiers()

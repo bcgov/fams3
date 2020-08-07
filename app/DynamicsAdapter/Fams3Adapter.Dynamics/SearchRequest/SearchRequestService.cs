@@ -8,11 +8,13 @@ using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.InsuranceClaim;
 using Fams3Adapter.Dynamics.Name;
+using Fams3Adapter.Dynamics.Notes;
 using Fams3Adapter.Dynamics.OtherAsset;
 using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.RelatedPerson;
 using Fams3Adapter.Dynamics.ResultTransaction;
+using Fams3Adapter.Dynamics.Types;
 using Fams3Adapter.Dynamics.Vehicle;
 using Simple.OData.Client;
 using System;
@@ -44,6 +46,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         Task<SSG_SearchRequestResultTransaction> CreateTransaction(SSG_SearchRequestResultTransaction transaction, CancellationToken cancellationToken);
         Task<SSG_SearchRequest> CreateSearchRequest(SearchRequestEntity searchRequest, CancellationToken cancellationToken);
         Task<SSG_SearchRequest> CancelSearchRequest(string fileId, CancellationToken cancellationToken);
+        Task<SSG_SearchRequest> CreateNotes(string fileId, SearchRequestEntity searchRequest, CancellationToken cancellationToken);
     }
 
     /// <summary>
@@ -419,6 +422,22 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                         .Key(searchRequest.SearchRequestId)
                         .Set(new Entry { { Keys.DYNAMICS_STATUS_CODE_FIELD, SearchRequestStatusCode.AgencyCancelled.Value } })
                         .UpdateEntryAsync(cancellationToken);
+        }
+
+        public async Task<SSG_SearchRequest> CreateNotes(string fileId, SearchRequestEntity searchRequest, CancellationToken cancellationToken)
+        {
+            SSG_SearchRequest ssgSearchRequest = await _oDataClient.For<SSG_SearchRequest>().Filter(x => x.FileId == fileId).FindEntryAsync(cancellationToken);
+
+            if (ssgSearchRequest == null) return null;
+
+            NotesEntity note = new NotesEntity();
+            note.StatusCode = 1;
+            note.Description = searchRequest.Notes;
+            note.InformationSource = InformationSourceType.Request.Value;
+            note.SearchRequest = ssgSearchRequest;
+            SSG_Notese notes = await this._oDataClient.For<SSG_Notese>().Set(note).InsertEntryAsync(cancellationToken);
+            if (notes != null) return ssgSearchRequest;
+            else return null;
         }
     }
 }

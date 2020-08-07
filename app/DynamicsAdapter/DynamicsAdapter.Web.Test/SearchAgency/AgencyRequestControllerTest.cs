@@ -236,7 +236,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             var submitted = resultValue.Value as SearchRequestSubmitted;
             Assert.NotNull(submitted);
             Assert.AreEqual("exceptionFileId", submitted.SearchRequestKey);
-            Assert.AreEqual("The Search Request exceptionFileId cannot be cancelled upon the request 23232321.", submitted.Message);
+            Assert.AreEqual("The Search Request exceptionFileId cannot be cancelled upon the request 23232321 as it is already closed or cancelled.", submitted.Message);
         }
     }
 }

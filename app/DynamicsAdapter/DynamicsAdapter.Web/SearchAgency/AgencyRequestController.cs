@@ -135,7 +135,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                     }
                 };
 
-                if (ssgSearchRequest != null && ssgSearchRequest.StatusCode == SearchRequestStatusCode.AgencyCancelled.Value)
+                if (ssgSearchRequest != null)
                     submitted.Message = $"The Search Request {requestOrdered.SearchRequestKey} has been cancelled successfully upon the request {requestOrdered.RequestId}.";
                 else
                     submitted.Message = $"The Search Request {requestOrdered.SearchRequestKey} cannot be cancelled upon the request {requestOrdered.RequestId}.";

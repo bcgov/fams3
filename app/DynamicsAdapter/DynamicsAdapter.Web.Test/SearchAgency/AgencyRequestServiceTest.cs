@@ -348,5 +348,25 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 .Throws(new Exception("fakeException"));
             Assert.ThrowsAsync<Exception>(async () => await _sut.ProcessCancelSearchRequest(_searchRequstOrdered));
         }
+
+        [Test]
+        public async Task normal_searchRequestOrdered_ProcessUpdateSearchRequest_should_succeed()
+        {
+            _searchRequestServiceMock.Setup(x => x.CreateNotes(It.IsAny<string>(), It.IsAny<SearchRequestEntity>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult<SSG_SearchRequest>(new SSG_SearchRequest()
+                {
+                    FileId = "fileId"
+                }));
+            SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(_searchRequstOrdered);
+            _searchRequestServiceMock.Verify(m => m.CreateNotes(It.IsAny<string>(), It.IsAny<SearchRequestEntity>(), It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Test]
+        public void exception_searchRequestOrdered_ProcessUpdateSearchRequest_should_throw_exception()
+        {
+            _searchRequestServiceMock.Setup(x => x.CreateNotes(It.IsAny<string>(), It.IsAny<SearchRequestEntity>(), It.IsAny<CancellationToken>()))
+                .Throws(new Exception("fakeException"));
+            Assert.ThrowsAsync<Exception>(async () => await _sut.ProcessUpdateSearchRequest(_searchRequstOrdered));
+        }
     }
 }

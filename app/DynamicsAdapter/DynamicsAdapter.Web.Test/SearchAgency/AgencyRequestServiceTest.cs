@@ -5,6 +5,7 @@ using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.Name;
+using Fams3Adapter.Dynamics.Notes;
 using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.RelatedPerson;
@@ -352,21 +353,48 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
         [Test]
         public async Task normal_searchRequestOrdered_ProcessUpdateSearchRequest_should_succeed()
         {
-            _searchRequestServiceMock.Setup(x => x.CreateNotes(It.IsAny<string>(), It.IsAny<SearchRequestEntity>(), It.IsAny<CancellationToken>()))
+            Guid guid = Guid.NewGuid();
+            _searchRequestServiceMock.Setup(x => x.GetSearchRequest(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<SSG_SearchRequest>(new SSG_SearchRequest()
                 {
-                    FileId = "fileId"
+                    SearchRequestId = guid
+                }));
+
+            _searchRequestServiceMock.Setup(x => x.CreateNotes(It.IsAny<NotesEntity>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult<SSG_Notese>(new SSG_Notese()
+                {
+                    NotesId = Guid.NewGuid()
                 }));
             SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(_searchRequstOrdered);
-            _searchRequestServiceMock.Verify(m => m.CreateNotes(It.IsAny<string>(), It.IsAny<SearchRequestEntity>(), It.IsAny<CancellationToken>()), Times.Once);
+            _searchRequestServiceMock.Verify(m => m.CreateNotes(It.IsAny<NotesEntity>(), It.IsAny<CancellationToken>()), Times.Once);
+            Assert.AreEqual(guid, ssgSearchRequest.SearchRequestId);
         }
 
         [Test]
         public void exception_searchRequestOrdered_ProcessUpdateSearchRequest_should_throw_exception()
         {
-            _searchRequestServiceMock.Setup(x => x.CreateNotes(It.IsAny<string>(), It.IsAny<SearchRequestEntity>(), It.IsAny<CancellationToken>()))
+            Guid guid = Guid.NewGuid();
+            _searchRequestServiceMock.Setup(x => x.GetSearchRequest(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult<SSG_SearchRequest>(new SSG_SearchRequest()
+                {
+                    SearchRequestId = guid
+                }));
+
+            _searchRequestServiceMock.Setup(x => x.CreateNotes(It.IsAny<NotesEntity>(), It.IsAny<CancellationToken>()))
                 .Throws(new Exception("fakeException"));
             Assert.ThrowsAsync<Exception>(async () => await _sut.ProcessUpdateSearchRequest(_searchRequstOrdered));
+        }
+
+        [Test]
+        public async Task wrong_fileId_searchRequestOrdered_ProcessUpdateSearchRequest_should_return_null()
+        {
+            Guid guid = Guid.NewGuid();
+            _searchRequestServiceMock.Setup(x => x.GetSearchRequest(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult<SSG_SearchRequest>(null));
+
+            SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(_searchRequstOrdered);
+            _searchRequestServiceMock.Verify(m => m.CreateNotes(It.IsAny<NotesEntity>(), It.IsAny<CancellationToken>()), Times.Never);
+            Assert.AreEqual(null, ssgSearchRequest);
         }
     }
 }

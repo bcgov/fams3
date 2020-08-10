@@ -76,14 +76,23 @@ namespace DynamicsAdapter.Web.SearchAgency
 
         public async Task<SSG_SearchRequest> ProcessUpdateSearchRequest(SearchRequestOrdered searchRequestOrdered)
         {
-            _personSought = searchRequestOrdered.Person;
             var cts = new CancellationTokenSource();
             _cancellationToken = cts.Token;
-
+            SSG_SearchRequest ssgSearchRequest = await _searchRequestService.GetSearchRequest(searchRequestOrdered.SearchRequestKey, _cancellationToken);
+            if (ssgSearchRequest == null) return null;
             SearchRequestEntity searchRequestEntity = _mapper.Map<SearchRequestEntity>(searchRequestOrdered);
-         
-
-            return await _searchRequestService.CreateNotes(searchRequestOrdered.SearchRequestKey, searchRequestEntity, cts.Token);
+            NotesEntity note = new NotesEntity
+            {
+                StatusCode = 1,
+                Description = searchRequestEntity.Notes,
+                InformationSource = InformationSourceType.Request.Value,
+                SearchRequest = ssgSearchRequest
+            };
+            SSG_Notese ssgNote = await _searchRequestService.CreateNotes(note, cts.Token);
+            if (ssgNote == null)
+                return null;
+            else
+                return ssgSearchRequest;
         }
 
         private async Task<bool> UploadIdentifiers()

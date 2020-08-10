@@ -46,7 +46,8 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         Task<SSG_SearchRequestResultTransaction> CreateTransaction(SSG_SearchRequestResultTransaction transaction, CancellationToken cancellationToken);
         Task<SSG_SearchRequest> CreateSearchRequest(SearchRequestEntity searchRequest, CancellationToken cancellationToken);
         Task<SSG_SearchRequest> CancelSearchRequest(string fileId, CancellationToken cancellationToken);
-        Task<SSG_SearchRequest> CreateNotes(string fileId, SearchRequestEntity searchRequest, CancellationToken cancellationToken);
+        Task<SSG_SearchRequest> GetSearchRequest(string fileId, CancellationToken cancellationToken);
+        Task<SSG_Notese> CreateNotes(NotesEntity searchRequest, CancellationToken cancellationToken);
     }
 
     /// <summary>
@@ -424,20 +425,16 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                         .UpdateEntryAsync(cancellationToken);
         }
 
-        public async Task<SSG_SearchRequest> CreateNotes(string fileId, SearchRequestEntity searchRequest, CancellationToken cancellationToken)
+        public async Task<SSG_SearchRequest> GetSearchRequest(string fileId, CancellationToken cancellationToken)
         {
             SSG_SearchRequest ssgSearchRequest = await _oDataClient.For<SSG_SearchRequest>().Filter(x => x.FileId == fileId).FindEntryAsync(cancellationToken);
-
             if (ssgSearchRequest == null) return null;
+            return ssgSearchRequest;
+        }
 
-            NotesEntity note = new NotesEntity();
-            note.StatusCode = 1;
-            note.Description = searchRequest.Notes;
-            note.InformationSource = InformationSourceType.Request.Value;
-            note.SearchRequest = ssgSearchRequest;
-            SSG_Notese notes = await this._oDataClient.For<SSG_Notese>().Set(note).InsertEntryAsync(cancellationToken);
-            if (notes != null) return ssgSearchRequest;
-            else return null;
+        public async Task<SSG_Notese> CreateNotes(NotesEntity note, CancellationToken cancellationToken)
+        {
+            return await this._oDataClient.For<SSG_Notese>().Set(note).InsertEntryAsync(cancellationToken);
         }
     }
 }

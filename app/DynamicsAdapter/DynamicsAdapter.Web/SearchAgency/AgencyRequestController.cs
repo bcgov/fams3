@@ -58,13 +58,31 @@ namespace DynamicsAdapter.Web.SearchAgency
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Route("UpdateSearchRequest/{key}")]
+        [Route("UpdateSearchRequest/{requestId}")]
         [OpenApiTag("Agency Search Request API")]
-        public async Task<IActionResult> UpdateSearchRequest(string key, [FromBody]SearchRequestOrdered searchRequestOrdered)
+        public async Task<IActionResult> UpdateSearchRequest(string requestId, [FromBody]SearchRequestOrdered searchRequestOrdered)
         {
-            //todo: Not implemented yet.
-            await Task.Delay(1);
-            return Ok();
+            if (string.IsNullOrEmpty(requestId))
+                return BadRequest(new { Message = "requestId cannot be empty." });
+
+            if (searchRequestOrdered.Action != RequestAction.UPDATE)
+                return BadRequest(new { Message = "UpdateSearchRequest should only get Update request." });
+
+            if (String.IsNullOrEmpty(searchRequestOrdered.SearchRequestKey))
+                return BadRequest(new { Message = "FileId cannot be empty for updating request." });
+
+            SSG_SearchRequest updatedSearchRequest = null;
+            try
+            {
+                updatedSearchRequest = await _agencyRequestService.ProcessUpdateSearchRequest(searchRequestOrdered);
+                if (updatedSearchRequest == null)
+                    return BadRequest(new { Message = $"FileId ( {searchRequestOrdered.SearchRequestKey} ) is invalid." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+            }
+            return Ok(BuildSearchRequestSubmitted_Update(updatedSearchRequest, searchRequestOrdered));
         }
 
         [HttpPost]
@@ -139,6 +157,30 @@ namespace DynamicsAdapter.Web.SearchAgency
                     submitted.Message = $"The Search Request {requestOrdered.SearchRequestKey} has been cancelled successfully upon the request {requestOrdered.RequestId}.";
                 else
                     submitted.Message = $"The Search Request {requestOrdered.SearchRequestKey} cannot be cancelled upon the request {requestOrdered.RequestId} as it is already closed or cancelled.";
+
+            return submitted;
+        }
+
+        private SearchRequestSubmitted BuildSearchRequestSubmitted_Update(SSG_SearchRequest ssgSearchRequest, SearchRequestOrdered requestOrdered)
+        {
+            SearchRequestSubmitted submitted =
+                new SearchRequestSubmitted()
+                {
+                    Action = requestOrdered.Action,
+                    RequestId = requestOrdered.RequestId,
+                    SearchRequestKey = requestOrdered.SearchRequestKey,
+                    SearchRequestId = ssgSearchRequest == null ? Guid.Empty : ssgSearchRequest.SearchRequestId,
+                    TimeStamp = DateTime.Now,
+                    ProviderProfile = new ProviderProfile()
+                    {
+                        Name = requestOrdered?.Person?.Agency?.Code
+                    }
+                };
+
+            if (ssgSearchRequest != null)
+                submitted.Message = $"The Search Request {requestOrdered.SearchRequestKey} has been updated successfully upon the request {requestOrdered.RequestId}.";
+            else
+                submitted.Message = $"The Search Request {requestOrdered.SearchRequestKey} cannot be updated upon the request {requestOrdered.RequestId}.";
 
             return submitted;
         }

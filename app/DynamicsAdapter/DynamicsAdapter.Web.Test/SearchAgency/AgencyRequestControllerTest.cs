@@ -238,5 +238,132 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             Assert.AreEqual("exceptionFileId", submitted.SearchRequestKey);
             Assert.AreEqual("The Search Request exceptionFileId cannot be cancelled upon the request 23232321 as it is already closed or cancelled.", submitted.Message);
         }
+
+        [Test]
+        public async Task With_valid_searchRequestOrdered_UpdateSearchRequest_should_return_ok_with_correct_content()
+        {
+            SearchRequestOrdered validSearchRequestOrdered = new SearchRequestOrdered()
+            {
+                Action = RequestAction.UPDATE,
+                RequestId = "121212121212",
+                SearchRequestKey = "fileId",
+                TimeStamp = DateTime.Now,
+                Person = new Person()
+                {
+                    Agency = new Agency()
+                    {
+                        RequestId = "121212121212",
+                        Code = "FMEP"
+                    }
+                }
+            };
+
+            _agencyRequestServiceMock.Setup(x => x.ProcessUpdateSearchRequest(It.IsAny<SearchRequestOrdered>()))
+                .Returns(Task.FromResult<SSG_SearchRequest>(new SSG_SearchRequest()
+                {
+                    FileId = "fileId",
+                    SearchRequestId = Guid.NewGuid()
+                }));
+
+            var result = await _sut.UpdateSearchRequest("121212121212", validSearchRequestOrdered);
+
+            _agencyRequestServiceMock.Verify(x => x.ProcessUpdateSearchRequest(It.IsAny<SearchRequestOrdered>()), Times.Once);
+            var resultValue = result as OkObjectResult;
+            Assert.NotNull(resultValue);
+            var submitted = resultValue.Value as SearchRequestSubmitted;
+            Assert.NotNull(submitted);
+            Assert.AreEqual("fileId", submitted.SearchRequestKey);
+            Assert.AreEqual("FMEP", submitted.ProviderProfile.Name);
+            Assert.AreEqual("The Search Request fileId has been updated successfully upon the request 121212121212.", submitted.Message);
+        }
+
+        [Test]
+        public async Task With_null_fileId_searchRequestOrdered_UpdateSearchRequest_should_return_BadRequest()
+        {
+            SearchRequestOrdered validSearchRequestOrdered = new SearchRequestOrdered()
+            {
+                Action = RequestAction.UPDATE,
+                RequestId = Guid.NewGuid().ToString(),
+                TimeStamp = DateTime.Now,
+            };
+            var result = await _sut.UpdateSearchRequest(null, validSearchRequestOrdered);
+
+            _agencyRequestServiceMock.Verify(x => x.ProcessUpdateSearchRequest(It.IsAny<SearchRequestOrdered>()), Times.Never);
+            Assert.IsInstanceOf(typeof(BadRequestObjectResult), result);
+        }
+
+        [Test]
+        public async Task With_cancel_action_searchRequestOrdered_UpdateSearchRequest_should_return_BadRequest()
+        {
+            SearchRequestOrdered updateSearchRequestOrdered = new SearchRequestOrdered()
+            {
+                Action = RequestAction.CANCEL,
+                RequestId = Guid.NewGuid().ToString(),
+                TimeStamp = DateTime.Now,
+            };
+            var result = await _sut.UpdateSearchRequest("requestId", updateSearchRequestOrdered);
+
+            _agencyRequestServiceMock.Verify(x => x.ProcessUpdateSearchRequest(It.IsAny<SearchRequestOrdered>()), Times.Never);
+            Assert.IsInstanceOf(typeof(BadRequestObjectResult), result);
+        }
+
+        [Test]
+        public async Task With_empty_fileID_searchRequestOrdered_UpdateSearchRequest_should_return_BadRequest()
+        {
+            SearchRequestOrdered updateSearchRequestOrdered = new SearchRequestOrdered()
+            {
+                Action = RequestAction.UPDATE,
+                RequestId = Guid.NewGuid().ToString(),
+                TimeStamp = DateTime.Now,
+            };
+            var result = await _sut.UpdateSearchRequest("requestId", updateSearchRequestOrdered);
+
+            _agencyRequestServiceMock.Verify(x => x.ProcessUpdateSearchRequest(It.IsAny<SearchRequestOrdered>()), Times.Never);
+            Assert.IsInstanceOf(typeof(BadRequestObjectResult), result);
+        }
+
+        [Test]
+        public async Task With_nonexist_fileID_searchRequestOrdered_UpdateSearchRequest_should_return_BadRequest()
+        {
+            SearchRequestOrdered updateSearchRequestOrdered = new SearchRequestOrdered()
+            {
+                Action = RequestAction.UPDATE,
+                RequestId = Guid.NewGuid().ToString(),
+                TimeStamp = DateTime.Now,
+                SearchRequestKey = "notexist"
+            };
+            _agencyRequestServiceMock.Setup(x => x.ProcessUpdateSearchRequest(It.IsAny<SearchRequestOrdered>()))
+                .Returns(Task.FromResult<SSG_SearchRequest>(null));
+            var result = await _sut.UpdateSearchRequest("requestId", updateSearchRequestOrdered);
+
+            _agencyRequestServiceMock.Verify(x => x.ProcessUpdateSearchRequest(It.IsAny<SearchRequestOrdered>()), Times.Once);
+            Assert.IsInstanceOf(typeof(BadRequestObjectResult), result);
+        }
+
+        [Test]
+        public async Task With_exception_UpdateSearchRequest_should_return_OK_with_failed_message()
+        {
+            SearchRequestOrdered updateSearchRequestOrdered = new SearchRequestOrdered()
+            {
+                Action = RequestAction.UPDATE,
+                RequestId = "23232321",
+                TimeStamp = DateTime.Now,
+                SearchRequestKey = "exceptionFileId"
+            };
+
+            _agencyRequestServiceMock.Setup(
+                x => x.ProcessUpdateSearchRequest(It.Is<SearchRequestOrdered>(x => x.SearchRequestKey == "exceptionFileId")))
+                .Throws(new Exception("exception throws"));
+
+            var result = await _sut.UpdateSearchRequest("requestId", updateSearchRequestOrdered);
+
+            _agencyRequestServiceMock.Verify(x => x.ProcessUpdateSearchRequest(It.IsAny<SearchRequestOrdered>()), Times.Once);
+            var resultValue = result as OkObjectResult;
+            Assert.NotNull(resultValue);
+            var submitted = resultValue.Value as SearchRequestSubmitted;
+            Assert.NotNull(submitted);
+            Assert.AreEqual("exceptionFileId", submitted.SearchRequestKey);
+            Assert.AreEqual("The Search Request exceptionFileId cannot be updated upon the request 23232321.", submitted.Message);
+        }
     }
 }

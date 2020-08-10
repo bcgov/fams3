@@ -3,6 +3,7 @@ using DynamicsAdapter.Web.SearchAgency.Models;
 using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
+using Fams3Adapter.Dynamics.Notes;
 using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.RelatedPerson;
@@ -20,6 +21,7 @@ namespace DynamicsAdapter.Web.SearchAgency
     {
         Task<SSG_SearchRequest> ProcessSearchRequestOrdered(SearchRequestOrdered searchRequestOrdered);
         Task<SSG_SearchRequest> ProcessCancelSearchRequest(SearchRequestOrdered cancelSearchRequest);
+        Task<SSG_SearchRequest> ProcessUpdateSearchRequest(SearchRequestOrdered updateSearchRequest);
     }
 
     public class AgencyRequestService : IAgencyRequestService
@@ -70,6 +72,27 @@ namespace DynamicsAdapter.Web.SearchAgency
             var cts = new CancellationTokenSource();
             _cancellationToken = cts.Token;
             return await _searchRequestService.CancelSearchRequest(searchRequestOrdered.SearchRequestKey, _cancellationToken);       
+        }
+
+        public async Task<SSG_SearchRequest> ProcessUpdateSearchRequest(SearchRequestOrdered searchRequestOrdered)
+        {
+            var cts = new CancellationTokenSource();
+            _cancellationToken = cts.Token;
+            SSG_SearchRequest ssgSearchRequest = await _searchRequestService.GetSearchRequest(searchRequestOrdered.SearchRequestKey, _cancellationToken);
+            if (ssgSearchRequest == null) return null;
+            SearchRequestEntity searchRequestEntity = _mapper.Map<SearchRequestEntity>(searchRequestOrdered);
+            NotesEntity note = new NotesEntity
+            {
+                StatusCode = 1,
+                Description = searchRequestEntity.Notes,
+                InformationSource = InformationSourceType.Request.Value,
+                SearchRequest = ssgSearchRequest
+            };
+            SSG_Notese ssgNote = await _searchRequestService.CreateNotes(note, cts.Token);
+            if (ssgNote == null)
+                return null;
+            else
+                return ssgSearchRequest;
         }
 
         private async Task<bool> UploadIdentifiers()

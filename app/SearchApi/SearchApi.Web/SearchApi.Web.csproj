@@ -37,6 +37,7 @@
   <ItemGroup>
     <ProjectReference Include="..\BcGov.Fams3.Redis\BcGov.Fams3.Redis.csproj" />
     <ProjectReference Include="..\BcGov.Fams3.SearchApi.Core\BcGov.Fams3.SearchApi.Core.csproj" />
+    <ProjectReference Include="..\BcGov.Fams3.Utils\BcGov.Fams3.Utils.csproj" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>

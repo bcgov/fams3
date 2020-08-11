@@ -61,8 +61,7 @@ namespace SearchRequestAdaptor.Publisher
         {
             if (savedEvent == null) throw new ArgumentNullException(nameof(SearchRequestSaved));
 
-            //var endpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri($"rabbitmq://{this._rabbitMqConfiguration.Host}:{this._rabbitMqConfiguration.Port}/SearchRequestSaved_queue"));
-            var endpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri($"rabbitmq://{this._rabbitMqConfiguration.Host}:{this._rabbitMqConfiguration.Port}/SearchRequestSubmitted_queue"));
+            var endpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri($"rabbitmq://{this._rabbitMqConfiguration.Host}:{this._rabbitMqConfiguration.Port}/SearchRequestSaved_queue"));
 
             await endpoint.Send<SearchRequestSaved>(savedEvent);
         }

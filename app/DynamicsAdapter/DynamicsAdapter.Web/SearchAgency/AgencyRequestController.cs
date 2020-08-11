@@ -17,7 +17,7 @@ namespace DynamicsAdapter.Web.SearchAgency
         private readonly ILogger<AgencyRequestController> _logger;
         private readonly IAgencyRequestService _agencyRequestService;
 
-        public AgencyRequestController(               
+        public AgencyRequestController(
                 ILogger<AgencyRequestController> logger,
                 IAgencyRequestService agencyRequestService
                 )
@@ -41,15 +41,15 @@ namespace DynamicsAdapter.Web.SearchAgency
             try
             {
                 SSG_SearchRequest createdSearchRequest = await _agencyRequestService.ProcessSearchRequestOrdered(searchRequestOrdered);
-                if(createdSearchRequest == null ) 
+                if (createdSearchRequest == null)
                     return StatusCode(StatusCodes.Status500InternalServerError);
 
-                return Ok(BuildSearchRequestSubmitted_Create(createdSearchRequest, searchRequestOrdered));
+                return Ok(BuildSearchRequestSaved_Create(createdSearchRequest, searchRequestOrdered));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                return BadRequest();
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = ex.Message });
             }
         }
 
@@ -79,10 +79,11 @@ namespace DynamicsAdapter.Web.SearchAgency
                     return BadRequest(new { Message = $"FileId ( {searchRequestOrdered.SearchRequestKey} ) is invalid." });
             }
             catch (Exception ex)
-            {
+            {                
                 _logger.LogError(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = ex.Message });
             }
-            return Ok(BuildSearchRequestSubmitted_Update(updatedSearchRequest, searchRequestOrdered));
+            return Ok(BuildSearchRequestSaved_Update(updatedSearchRequest, searchRequestOrdered));
         }
 
         [HttpPost]
@@ -94,77 +95,75 @@ namespace DynamicsAdapter.Web.SearchAgency
         [OpenApiTag("Agency Search Request API")]
         public async Task<IActionResult> CancelSearchRequest(string requestId, [FromBody]SearchRequestOrdered searchRequestOrdered)
         {
-            if (string.IsNullOrEmpty(requestId)) 
+            if (string.IsNullOrEmpty(requestId))
                 return BadRequest(new { Message = "requestId cannot be empty." });
 
-            if (searchRequestOrdered.Action != RequestAction.CANCEL) 
+            if (searchRequestOrdered.Action != RequestAction.CANCEL)
                 return BadRequest(new { Message = "CancelSearchRequest should only get Cancel request." });
 
-            if (String.IsNullOrEmpty(searchRequestOrdered.SearchRequestKey)) 
+            if (String.IsNullOrEmpty(searchRequestOrdered.SearchRequestKey))
                 return BadRequest(new { Message = "FileId cannot be empty for cancelling request." });
 
-            SSG_SearchRequest cancelledSearchRequest = null;
+            SSG_SearchRequest cancelledSearchRequest;
             try
             {
                 cancelledSearchRequest = await _agencyRequestService.ProcessCancelSearchRequest(searchRequestOrdered);
-                if(cancelledSearchRequest == null)
+                if (cancelledSearchRequest == null)
                     return BadRequest(new { Message = $"FileId ( {searchRequestOrdered.SearchRequestKey} ) is invalid." });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = ex.Message });
             }
-            return Ok(BuildSearchRequestSubmitted_Cancel(cancelledSearchRequest, searchRequestOrdered));
+            return Ok(BuildSearchRequestSaved_Cancel(cancelledSearchRequest, searchRequestOrdered));
         }
 
-        private SearchRequestSubmitted BuildSearchRequestSubmitted_Create(SSG_SearchRequest ssgSearchRequest, SearchRequestOrdered requestOrdered)
+        private SearchRequestSaved BuildSearchRequestSaved_Create(SSG_SearchRequest ssgSearchRequest, SearchRequestOrdered requestOrdered)
         {
-            SearchRequestSubmitted submitted = 
-                new SearchRequestSubmitted()
-                    {
-                        Action = requestOrdered.Action,
-                        RequestId = requestOrdered.RequestId,
-                        SearchRequestKey = ssgSearchRequest.FileId,
-                        SearchRequestId = ssgSearchRequest.SearchRequestId,
-                        TimeStamp = DateTime.Now,
-                        EstimatedCompletion = DateTime.Now.AddDays(60),
-                        QueuePosition = 4,
-                        Message = $"The new Search Request reference: {requestOrdered.RequestId} has been submitted successfully.",
-                        ProviderProfile = new ProviderProfile() {
-                            Name= requestOrdered?.Person?.Agency?.Code
-                        }
-                    };
-            return submitted;          
-        }
-
-        private SearchRequestSubmitted BuildSearchRequestSubmitted_Cancel(SSG_SearchRequest ssgSearchRequest, SearchRequestOrdered requestOrdered)
-        {
-            SearchRequestSubmitted submitted =
-                new SearchRequestSubmitted()
+            SearchRequestSaved saved =
+                new SearchRequestSaved()
                 {
                     Action = requestOrdered.Action,
                     RequestId = requestOrdered.RequestId,
-                    SearchRequestKey = requestOrdered.SearchRequestKey,
-                    SearchRequestId = ssgSearchRequest==null? Guid.Empty: ssgSearchRequest.SearchRequestId,
+                    SearchRequestKey = ssgSearchRequest.FileId,
+                    SearchRequestId = ssgSearchRequest.SearchRequestId,
                     TimeStamp = DateTime.Now,
+                    EstimatedCompletion = DateTime.Now.AddDays(60),
+                    QueuePosition = 4,
+                    Message = $"The new Search Request reference: {requestOrdered.RequestId} has been submitted successfully.",
                     ProviderProfile = new ProviderProfile()
                     {
                         Name = requestOrdered?.Person?.Agency?.Code
                     }
                 };
-
-                if (ssgSearchRequest != null)
-                    submitted.Message = $"The Search Request {requestOrdered.SearchRequestKey} has been cancelled successfully upon the request {requestOrdered.RequestId}.";
-                else
-                    submitted.Message = $"The Search Request {requestOrdered.SearchRequestKey} cannot be cancelled upon the request {requestOrdered.RequestId} as it is already closed or cancelled.";
-
-            return submitted;
+            return saved;
         }
 
-        private SearchRequestSubmitted BuildSearchRequestSubmitted_Update(SSG_SearchRequest ssgSearchRequest, SearchRequestOrdered requestOrdered)
+        private SearchRequestSaved BuildSearchRequestSaved_Cancel(SSG_SearchRequest ssgSearchRequest, SearchRequestOrdered requestOrdered)
         {
-            SearchRequestSubmitted submitted =
-                new SearchRequestSubmitted()
+            SearchRequestSaved saved =
+                new SearchRequestSaved()
+                {
+                    Action = requestOrdered.Action,
+                    RequestId = requestOrdered.RequestId,
+                    SearchRequestKey = requestOrdered.SearchRequestKey,
+                    SearchRequestId = ssgSearchRequest == null ? Guid.Empty : ssgSearchRequest.SearchRequestId,
+                    TimeStamp = DateTime.Now,
+                    ProviderProfile = new ProviderProfile()
+                    {
+                        Name = requestOrdered?.Person?.Agency?.Code
+                    },
+                    Message = $"The Search Request {requestOrdered.SearchRequestKey} has been cancelled successfully upon the request {requestOrdered.RequestId}."
+                };
+
+            return saved;
+        }
+
+        private SearchRequestSaved BuildSearchRequestSaved_Update(SSG_SearchRequest ssgSearchRequest, SearchRequestOrdered requestOrdered)
+        {
+            SearchRequestSaved saved =
+                new SearchRequestSaved()
                 {
                     Action = requestOrdered.Action,
                     RequestId = requestOrdered.RequestId,
@@ -178,11 +177,9 @@ namespace DynamicsAdapter.Web.SearchAgency
                 };
 
             if (ssgSearchRequest != null)
-                submitted.Message = $"The Search Request {requestOrdered.SearchRequestKey} has been updated successfully upon the request {requestOrdered.RequestId}.";
-            else
-                submitted.Message = $"The Search Request {requestOrdered.SearchRequestKey} cannot be updated upon the request {requestOrdered.RequestId}.";
-
-            return submitted;
+                saved.Message = $"The Search Request {requestOrdered.SearchRequestKey} has been updated successfully upon the request {requestOrdered.RequestId}.";
+          
+            return saved;
         }
     }
 }

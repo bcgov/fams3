@@ -54,11 +54,11 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             _agencyRequestServiceMock.Verify(x => x.ProcessSearchRequestOrdered(It.IsAny<SearchRequestOrdered>()), Times.Once);
             var resultValue = result as OkObjectResult;
             Assert.NotNull(resultValue);
-            var submitted = resultValue.Value as SearchRequestSubmitted;
-            Assert.NotNull(submitted);
-            Assert.AreEqual("fileId", submitted.SearchRequestKey);
-            Assert.AreEqual("FMEP", submitted.ProviderProfile.Name);
-            Assert.AreEqual("The new Search Request reference: 121212121212 has been submitted successfully.", submitted.Message);
+            var saved = resultValue.Value as SearchRequestSaved;
+            Assert.NotNull(saved);
+            Assert.AreEqual("fileId", saved.SearchRequestKey);
+            Assert.AreEqual("FMEP", saved.ProviderProfile.Name);
+            Assert.AreEqual("The new Search Request reference: 121212121212 has been submitted successfully.", saved.Message);
         }
 
         [Test]
@@ -92,7 +92,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
         }
 
         [Test]
-        public async Task With_exception_throws_searchRequestOrdered_CreateSearchRequest_should_return_BadRequest()
+        public async Task With_exception_throws_searchRequestOrdered_CreateSearchRequest_should_return_InternalServerError()
         {
             string requestId = "exception";
             SearchRequestOrdered updateSearchRequestOrdered = new SearchRequestOrdered()
@@ -108,7 +108,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
 
             var result = await _sut.CreateSearchRequest("exceptionrequest", updateSearchRequestOrdered);
             _agencyRequestServiceMock.Verify(x => x.ProcessSearchRequestOrdered(It.IsAny<SearchRequestOrdered>()), Times.Once);
-            Assert.IsInstanceOf(typeof(BadRequestResult), result);
+            Assert.AreEqual(500, ((ObjectResult)result).StatusCode);
         }
 
         [Test]
@@ -143,11 +143,11 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             _agencyRequestServiceMock.Verify(x => x.ProcessCancelSearchRequest(It.IsAny<SearchRequestOrdered>()), Times.Once);
             var resultValue = result as OkObjectResult;
             Assert.NotNull(resultValue);
-            var submitted = resultValue.Value as SearchRequestSubmitted;
-            Assert.NotNull(submitted);
-            Assert.AreEqual("fileId", submitted.SearchRequestKey);
-            Assert.AreEqual("FMEP", submitted.ProviderProfile.Name);
-            Assert.AreEqual("The Search Request fileId has been cancelled successfully upon the request 121212121212.", submitted.Message);
+            var saved = resultValue.Value as SearchRequestSaved;
+            Assert.NotNull(saved);
+            Assert.AreEqual("fileId", saved.SearchRequestKey);
+            Assert.AreEqual("FMEP", saved.ProviderProfile.Name);
+            Assert.AreEqual("The Search Request fileId has been cancelled successfully upon the request 121212121212.", saved.Message);
         }
 
         [Test]
@@ -231,12 +231,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             var result = await _sut.CancelSearchRequest("requestId", updateSearchRequestOrdered);
 
             _agencyRequestServiceMock.Verify(x => x.ProcessCancelSearchRequest(It.IsAny<SearchRequestOrdered>()), Times.Once);
-            var resultValue = result as OkObjectResult;
-            Assert.NotNull(resultValue);
-            var submitted = resultValue.Value as SearchRequestSubmitted;
-            Assert.NotNull(submitted);
-            Assert.AreEqual("exceptionFileId", submitted.SearchRequestKey);
-            Assert.AreEqual("The Search Request exceptionFileId cannot be cancelled upon the request 23232321 as it is already closed or cancelled.", submitted.Message);
+            Assert.AreEqual(500, ((ObjectResult)result).StatusCode);
         }
 
         [Test]
@@ -270,11 +265,11 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             _agencyRequestServiceMock.Verify(x => x.ProcessUpdateSearchRequest(It.IsAny<SearchRequestOrdered>()), Times.Once);
             var resultValue = result as OkObjectResult;
             Assert.NotNull(resultValue);
-            var submitted = resultValue.Value as SearchRequestSubmitted;
-            Assert.NotNull(submitted);
-            Assert.AreEqual("fileId", submitted.SearchRequestKey);
-            Assert.AreEqual("FMEP", submitted.ProviderProfile.Name);
-            Assert.AreEqual("The Search Request fileId has been updated successfully upon the request 121212121212.", submitted.Message);
+            var saved = resultValue.Value as SearchRequestSaved;
+            Assert.NotNull(saved);
+            Assert.AreEqual("fileId", saved.SearchRequestKey);
+            Assert.AreEqual("FMEP", saved.ProviderProfile.Name);
+            Assert.AreEqual("The Search Request fileId has been updated successfully upon the request 121212121212.", saved.Message);
         }
 
         [Test]
@@ -358,12 +353,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             var result = await _sut.UpdateSearchRequest("requestId", updateSearchRequestOrdered);
 
             _agencyRequestServiceMock.Verify(x => x.ProcessUpdateSearchRequest(It.IsAny<SearchRequestOrdered>()), Times.Once);
-            var resultValue = result as OkObjectResult;
-            Assert.NotNull(resultValue);
-            var submitted = resultValue.Value as SearchRequestSubmitted;
-            Assert.NotNull(submitted);
-            Assert.AreEqual("exceptionFileId", submitted.SearchRequestKey);
-            Assert.AreEqual("The Search Request exceptionFileId cannot be updated upon the request 23232321.", submitted.Message);
+            Assert.AreEqual(500, ((ObjectResult)result).StatusCode);
         }
     }
 }

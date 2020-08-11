@@ -98,12 +98,12 @@ namespace SearchRequestAdaptor.Notifier
                     }
 
                     string responseContent = await response.Content.ReadAsStringAsync();
-                    var submitted = JsonConvert.DeserializeObject<SearchRequestSubmittedEvent>(responseContent);
+                    var saved = JsonConvert.DeserializeObject<SearchRequestSavedEvent>(responseContent);
                     
                     _logger.LogInformation(
                         $"The webHook {webHookName} notification has executed status {eventName} successfully for {webHook.Name} webHook.");
                     
-                    await _searchRequestEventPublisher.PublishSearchRequestSubmitted(submitted);
+                    await _searchRequestEventPublisher.PublishSearchRequestSaved(saved);
                 }
                 catch (Exception exception)
                 {

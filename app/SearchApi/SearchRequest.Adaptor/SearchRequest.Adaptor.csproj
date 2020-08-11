@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BcGov.Fams3.SearchApi.Core\BcGov.Fams3.SearchApi.Core.csproj" />
+    <ProjectReference Include="..\BcGov.Fams3.Utils\BcGov.Fams3.Utils.csproj" />
   </ItemGroup>
 
 </Project>

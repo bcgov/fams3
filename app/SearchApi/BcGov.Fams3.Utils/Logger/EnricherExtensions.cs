@@ -17,6 +17,11 @@ namespace BcGov.Fams3.Utils.Logger
         {
             return enrichmentConfiguration.With(new DataPartnerEnricher(propertyName));
         }
+
+        public static LoggerConfiguration WithPropertyRequestRef(this LoggerEnrichmentConfiguration enrichmentConfiguration, string propertyName)
+        {
+            return enrichmentConfiguration.With(new RequestRefEnricher(propertyName));
+        }
     }
 
 }

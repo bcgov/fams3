@@ -1,13 +1,11 @@
-using System;
-using System.Net.Http;
 using BcGov.Fams3.Utils.Logger;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Serilog;
-using Serilog.Configuration;
-using Serilog.Core;
 using Serilog.Events;
+using System;
+using System.Net.Http;
 
 namespace SearchApi.Web
 {

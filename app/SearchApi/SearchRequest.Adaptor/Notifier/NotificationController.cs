@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using SearchRequestAdaptor.Publisher;
+using Serilog;
 
 namespace SearchRequest.Adaptor.Notifier
 {
@@ -11,9 +9,13 @@ namespace SearchRequest.Adaptor.Notifier
     [ApiController]
     public class NotificationController : ControllerBase
     {
-        public NotificationController()
+        private readonly ILogger<NotificationController> _logger;
+        private readonly ISearchRequestEventPublisher _publisher;
+    
+        public NotificationController(ISearchRequestEventPublisher searchRequestEventPublisher, ILogger<NotificationController> logger)
         {
-
+            _publisher = searchRequestEventPublisher;
+            _logger = logger;
         }
     }
 }

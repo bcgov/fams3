@@ -18,6 +18,8 @@ namespace SearchRequestAdaptor.Publisher
         public Task PublishSearchRequestSubmitted(SearchRequestSubmittedEvent submittedEvent);
         public Task PublishSearchRequestRejected(SearchRequestEvent baseEvent, IEnumerable<ValidationResult> reasons);
 
+        public Task PublishSearchRequestNotification(SearchRequestNotificationEvent baseEvent);
+
     }
 
     public class SearchRequestEventPublisher : ISearchRequestEventPublisher

@@ -178,7 +178,7 @@ if (ex.Message == "Service name must not be null or empty")
                             hostConfigurator.Password(rabbitMqSettings.Password);
                         });
 
-                        cfg.ReceiveEndpoint($"{nameof(SearchRequestSubmitted)}_queue", e =>
+                        cfg.ReceiveEndpoint($"{nameof(SearchRequestSaved)}_queue", e =>
                         {
                             e.Consumer(() =>
                              new SearchRequestResponseConsumer( provider.GetRequiredService<ILogger<SearchRequestResponseConsumer>>()));

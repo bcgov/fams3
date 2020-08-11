@@ -56,7 +56,7 @@ namespace SearchRequest.Adaptor.Test.Notifier
                 {
                     StatusCode = HttpStatusCode.OK,
                     Content = new StringContent(JsonConvert.SerializeObject(
-                        new SearchRequestSubmittedEvent()
+                        new SearchRequestSavedEvent()
                         {
                             SearchRequestId = Guid.NewGuid(),
                             SearchRequestKey = "fileId",
@@ -100,8 +100,8 @@ namespace SearchRequest.Adaptor.Test.Notifier
             );
 
             _searchRquestEventPublisherMock.Verify(
-                x => x.PublishSearchRequestSubmitted(
-                It.IsAny<SearchRequestSubmittedEvent>()), Times.Once);
+                x => x.PublishSearchRequestSaved(
+                It.IsAny<SearchRequestSavedEvent>()), Times.Once);
         }
 
 

@@ -45,6 +45,8 @@ namespace DynamicsAdapter.Web
                         .ReadFrom.Configuration(hostingContext.Configuration)
                         .Enrich.WithPropertySearchRequestKey("SearchRequestKey")
                         .Enrich.WithPropertyDataPartner("DataPartner")
+                        .Enrich.WithPropertyDataPartner("AgencyCode")
+                        .Enrich.WithPropertyRequestRef("RequestRef")
                         .Enrich.FromLogContext();
 
                     string splunkCollectorUrl = hostingContext.Configuration["SPLUNK_COLLECTOR_URL"];

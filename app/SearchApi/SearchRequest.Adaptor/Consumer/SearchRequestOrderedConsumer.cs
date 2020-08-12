@@ -24,6 +24,7 @@ namespace SearchRequestAdaptor.Consumer
         public async Task Consume(ConsumeContext<SearchRequestOrdered> context)
         {
             using (LogContext.PushProperty("RequestRef", $"{context.Message?.Person?.Agency?.RequestId}"))
+            using (LogContext.PushProperty("AgencyCode", $"{context.Message?.Person?.Agency?.Code}"))
             {
                 _logger.LogInformation("get the searchRequestOrdered message.");
                 var cts = new CancellationTokenSource();

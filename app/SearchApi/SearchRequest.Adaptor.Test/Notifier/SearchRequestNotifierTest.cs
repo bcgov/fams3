@@ -75,7 +75,7 @@ namespace SearchRequest.Adaptor.Test.Notifier
         }
 
         [Test]
-        public async Task NotifySearchRequestEventAsync_should_send_httpRequest_to_one_subscribers_and_publish_submitted()
+        public async Task NotifySearchRequestEventAsync_should_send_httpRequest_to_one_subscribers_and_not_publish_saved()
         {
             _searchRequestOptionsMock.Setup(x => x.Value).Returns(
                new SearchRequestAdaptorOptions().AddWebHook("test", "http://test:1234/"));
@@ -101,7 +101,7 @@ namespace SearchRequest.Adaptor.Test.Notifier
 
             _searchRquestEventPublisherMock.Verify(
                 x => x.PublishSearchRequestSaved(
-                It.IsAny<SearchRequestSavedEvent>()), Times.Once);
+                It.IsAny<SearchRequestSavedEvent>()), Times.Never);
         }
 
 

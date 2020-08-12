@@ -38,6 +38,7 @@ namespace DynamicsAdapter.Web.SearchAgency
         public async Task<IActionResult> CreateSearchRequest(string requestId, [FromBody]SearchRequestOrdered searchRequestOrdered)
         {
             using (LogContext.PushProperty("RequestRef", $"{requestId}"))
+            using (LogContext.PushProperty("AgencyCode", $"{searchRequestOrdered?.Person?.Agency?.Code}"))
             {
                 _logger.LogInformation("Get CreateSearchRequest");
                 if (string.IsNullOrEmpty(requestId)) return BadRequest(new { Message = "requestId cannot be empty." });
@@ -69,6 +70,8 @@ namespace DynamicsAdapter.Web.SearchAgency
         public async Task<IActionResult> UpdateSearchRequest(string requestId, [FromBody]SearchRequestOrdered searchRequestOrdered)
         {
             using (LogContext.PushProperty("RequestRef", $"{requestId}"))
+            using (LogContext.PushProperty("AgencyCode", $"{searchRequestOrdered?.Person?.Agency?.Code}"))
+            using (LogContext.PushProperty("SearchRequestKey", $"{searchRequestOrdered?.SearchRequestKey}"))
             {
                 _logger.LogInformation("Get UpdateSearchRequest");
                 if (string.IsNullOrEmpty(requestId))
@@ -107,6 +110,8 @@ namespace DynamicsAdapter.Web.SearchAgency
         public async Task<IActionResult> CancelSearchRequest(string requestId, [FromBody]SearchRequestOrdered searchRequestOrdered)
         {
             using (LogContext.PushProperty("RequestRef", $"{requestId}"))
+            using (LogContext.PushProperty("AgencyCode", $"{searchRequestOrdered?.Person?.Agency?.Code}"))
+            using (LogContext.PushProperty("SearchRequestKey", $"{searchRequestOrdered?.SearchRequestKey}"))
             {
                 _logger.LogInformation("Get CancelSearchRequest");
                 if (string.IsNullOrEmpty(requestId))

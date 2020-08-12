@@ -56,7 +56,7 @@ namespace SearchRequestAdaptor.Notifier
             foreach (var webHook in _searchRequestOptions.WebHooks)
             {
                 _logger.LogDebug(
-                   $"The webHook {webHookName} notification is attempting to send {eventName} event for {webHook.Name} webhook.");
+                   $"The webHook {webHookName} notification is attempting to send {eventName} for {webHook.Name} webhook.");
 
                 if (!URLHelper.TryCreateUri(webHook.Uri, eventName, $"{requestId}", out var endpoint))
                 {
@@ -96,14 +96,15 @@ namespace SearchRequestAdaptor.Notifier
                         return;
                     }
 
+                    _logger.LogInformation("get response successfully from webhook.");
                     string responseContent = await response.Content.ReadAsStringAsync();
                     var saved = JsonConvert.DeserializeObject<SearchRequestSavedEvent>(responseContent);
                     
-                    _logger.LogInformation(
-                        $"The webHook {webHookName} notification has send {eventName} successfully for {webHook.Name} webHook.");
-
+                    //the new action will get Notification, only failed or rejected are got published.
                     if (saved.Action != RequestAction.NEW)
                     {
+                        _logger.LogInformation(
+                            $"publish SearchRequestSaved");
                         await _searchRequestEventPublisher.PublishSearchRequestSaved(saved);
                     }
                 }

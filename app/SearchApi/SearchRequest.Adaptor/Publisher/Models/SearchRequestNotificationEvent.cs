@@ -17,9 +17,13 @@ namespace SearchRequest.Adaptor.Publisher.Models
             this.SearchRequestId = baseEvent.SearchRequestId;
             this.TimeStamp = DateTime.Now;
             this.SearchRequestKey = baseEvent.SearchRequestKey;
-            this.Action = baseEvent.Action;
+            
         }
 
+        public SearchRequestNotificationEvent()
+        {
+
+        }
         public string RequestId { get; set; }
 
         public string SearchRequestKey { get; set; }
@@ -30,10 +34,11 @@ namespace SearchRequest.Adaptor.Publisher.Models
 
         public ProviderProfile ProviderProfile { get; set; }
 
-        public RequestAction Action { get; set; }
-        public int QueuePosition { get; set; }
-        public DateTime EstimatedCompletion { get; set; }
+        public int? QueuePosition { get; set; }
+        public DateTime? EstimatedCompletion { get; set; }
 
         public NotificationType NotificationType { get; set; }
+
+        public string Message { get; set; }
     }
 }

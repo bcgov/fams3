@@ -2,6 +2,7 @@ using BcGov.Fams3.SearchApi.Contracts.SearchRequest;
 using BcGov.Fams3.SearchApi.Core.Configuration;
 using BcGov.Fams3.SearchApi.Core.MassTransit;
 using BcGov.Fams3.SearchApi.Core.OpenTracing;
+using FluentValidation;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -10,6 +11,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using SearchRequest.Adaptor.Notifier.Models;
+using SearchRequest.Adaptor.Notifier.Models.Validation;
 using SearchRequestAdaptor.Configuration;
 using SearchRequestAdaptor.Consumer;
 using SearchRequestAdaptor.Notifier;
@@ -34,7 +37,7 @@ namespace SearchRequestAdaptor
             services.AddControllers();
             services.AddOptions<SearchRequestAdaptorOptions>().Bind(Configuration.GetSection(Keys.SEARCHREQUEST_SECTION_SETTING_KEY));
             services.AddWebHooks();
-
+            services.AddTransient<IValidator<Notification>, NotificationValidator>();
 
             this.ConfigureHealthChecks(services);
             this.ConfigureServiceBus(services);

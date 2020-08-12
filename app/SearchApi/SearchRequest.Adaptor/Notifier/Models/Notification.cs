@@ -12,5 +12,9 @@ namespace SearchRequest.Adaptor.Notifier.Models
         public string FSOName { get; set; }
         public string Acvitity { get; set; }
         public DateTime ActivityDate { get; set; } 
+
+        public string Agency { get; set; }
+        public int? PositionInQueue { get;  set; }
+        public DateTime? EstimatedCompletionDate { get;  set; }
     }
 }

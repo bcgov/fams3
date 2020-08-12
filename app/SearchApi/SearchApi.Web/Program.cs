@@ -1,12 +1,11 @@
-using System;
-using System.Net.Http;
+using BcGov.Fams3.Utils.Logger;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Serilog;
-using Serilog.Configuration;
-using Serilog.Core;
 using Serilog.Events;
+using System;
+using System.Net.Http;
 
 namespace SearchApi.Web
 {
@@ -75,36 +74,5 @@ namespace SearchApi.Web
                 {
                     webBuilder.UseStartup<Startup>();
                 });
-    }
-
-    public static class EnrichersExtensions
-    {
-        public static LoggerConfiguration WithPropertySearchRequestKey(this LoggerEnrichmentConfiguration enrichmentConfiguration, string propertyName)
-        {
-            return enrichmentConfiguration.With(new SearchRequestKeyEnricher(propertyName));
-        }
-    }
-
-    public class SearchRequestKeyEnricher : ILogEventEnricher
-    {
-        private readonly string innerPropertyName;
-
-        public SearchRequestKeyEnricher(string innerPropertyName)
-        {
-            this.innerPropertyName = innerPropertyName;
-        }
-
-        public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
-        {
-            LogEventPropertyValue eventPropertyValue;
-            if (logEvent.Properties.TryGetValue(innerPropertyName, out eventPropertyValue))
-            {
-                var value = (eventPropertyValue as ScalarValue)?.Value as string;
-                if (!String.IsNullOrEmpty(value))
-                {
-                    logEvent.AddOrUpdateProperty(new LogEventProperty(innerPropertyName, new ScalarValue("SearchRequestKey:" + value)));
-                }
-            }
-        }
     }
 }

@@ -42,6 +42,7 @@ namespace SearchRequestAdaptor.Publisher
 
             var endpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri($"rabbitmq://{this._rabbitMqConfiguration.Host}:{this._rabbitMqConfiguration.Port}/{nameof(SearchRequestFailed)}_queue"));
 
+            _logger.LogInformation($"SearchRequestFailed has been published to {endpoint.ToString()}");
             await endpoint.Send<SearchRequestFailed>(new SearchRequestFailedEvent(baseEvent)
             {
                 Cause = message
@@ -63,6 +64,7 @@ namespace SearchRequestAdaptor.Publisher
 
             var endpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri($"rabbitmq://{this._rabbitMqConfiguration.Host}:{this._rabbitMqConfiguration.Port}/{nameof(SearchRequestRejected)}_queue"));
 
+            _logger.LogInformation($"SearchRequestRejected has been published to {endpoint.ToString()}");
             await endpoint.Send<SearchRequestRejected>(new SearchRequestRejectedEvent(baseEvent)
             {
                 Reasons = reasons
@@ -75,6 +77,7 @@ namespace SearchRequestAdaptor.Publisher
 
             var endpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri($"rabbitmq://{this._rabbitMqConfiguration.Host}:{this._rabbitMqConfiguration.Port}/{nameof(SearchRequestSaved)}_queue"));
 
+            _logger.LogInformation($"SearchRequestSaved has been published to {endpoint.ToString()}");
             await endpoint.Send<SearchRequestSaved>(savedEvent);
         }
     }

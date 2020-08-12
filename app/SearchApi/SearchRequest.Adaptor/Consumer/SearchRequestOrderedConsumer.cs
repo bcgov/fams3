@@ -1,7 +1,9 @@
 ﻿using BcGov.Fams3.SearchApi.Contracts.SearchRequest;
 using MassTransit;
+
 using Microsoft.Extensions.Logging;
 using SearchRequestAdaptor.Notifier;
+using Serilog.Context;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -21,9 +23,13 @@ namespace SearchRequestAdaptor.Consumer
 
         public async Task Consume(ConsumeContext<SearchRequestOrdered> context)
         {
-            _logger.LogInformation("get the searchRequestOrdered message.");
-            var cts = new CancellationTokenSource();
-            await _searchRequestNotifier.NotifySearchRequestEventAsync(context.Message.RequestId, context.Message, cts.Token);
+            using (LogContext.PushProperty("RequestRef", $"{context.Message?.Person?.Agency?.RequestId}"))
+            using (LogContext.PushProperty("AgencyCode", $"{context.Message?.Person?.Agency?.Code}"))
+            {
+                _logger.LogInformation("get the searchRequestOrdered message.");
+                var cts = new CancellationTokenSource();
+                await _searchRequestNotifier.NotifySearchRequestEventAsync(context.Message.RequestId, context.Message, cts.Token);
+            }
         }
 
     }

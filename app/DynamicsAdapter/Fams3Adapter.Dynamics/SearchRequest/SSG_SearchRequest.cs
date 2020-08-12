@@ -138,6 +138,9 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         [JsonProperty("ssg_createdbyopenshift")]
         public bool CreatedByApi { get; set; }
 
+        [JsonProperty("ssg_notifydynadaptoroncreation")]
+        public bool SendNotificationOnCreation { get; set; }
+
         public string AgencyCode { get; set; } //used to link ssg_agency entity
 
         [JsonProperty("ssg_Agency")]

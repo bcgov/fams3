@@ -6,6 +6,7 @@ using SearchRequest.Adaptor.Notifier.Models;
 using SearchRequest.Adaptor.Publisher.Models;
 using SearchRequestAdaptor.Publisher;
 using Serilog;
+using Serilog.Context;
 using System;
 using System.Threading.Tasks;
 
@@ -36,38 +37,41 @@ namespace SearchRequest.Adaptor.Notifier
         [ProducesResponseType( StatusCodes.Status200OK)]
         public async Task<IActionResult> Notify( [FromBody] Notification notification)
         {
-
-            if (notification == null)
+            using (LogContext.PushProperty("RequestRef", $"{notification?.AgencyFileId}"))
+            using (LogContext.PushProperty("AgencyCode", $"{notification?.Agency}"))
+            using (LogContext.PushProperty("SearchRequestKey", $"{notification?.FileId}"))
             {
-                _logger.Log(LogLevel.Error, $"Notification request cannot be null");
-                return BadRequest("Notification request cannot be null");
+                if (notification == null)
+                {
+                    _logger.Log(LogLevel.Error, $"Notification request cannot be null");
+                    return BadRequest("Notification request cannot be null");
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    _logger.Log(LogLevel.Error, $"Notification request is invalid");
+                    return BadRequest(ModelState);
+                }
+                _logger.Log(LogLevel.Debug, $"Receving notification from FAMS3 - Dynamics Platform for Search Request - File Id: {notification.FileId} (Agency SR Id {notification.AgencyFileId})");
+
+                var notifyEvent = new SearchRequestNotificationEvent
+                {
+                    ProviderProfile = new ProviderProfile { Name = notification.Agency },
+                    NotificationType = (NotificationType)Enum.Parse(typeof(NotificationType), notification.Acvitity),
+                    RequestId = notification.AgencyFileId,
+                    SearchRequestKey = notification.FileId,
+                    QueuePosition = notification.PositionInQueue,
+                    Message = $"Activity {notification.Acvitity} occured. FSO : {notification.FSOName}",
+                    TimeStamp = notification.ActivityDate,
+                    EstimatedCompletion = notification.EstimatedCompletionDate
+
+
+                };
+
+                await _publisher.PublishSearchRequestNotification(notifyEvent);
+
+                return Ok();
             }
-
-            if (!ModelState.IsValid)
-            {
-                _logger.Log(LogLevel.Error, $"Notification request is invalid");
-                return BadRequest(ModelState);
-            }
-            _logger.Log(LogLevel.Debug, $"Receving notification from FAMS3 - Dynamics Platform for Search Request - File Id: {notification.FileId} (Agency SR Id {notification.AgencyFileId})");
-
-            var notifyEvent = new SearchRequestNotificationEvent
-            {
-                ProviderProfile = new ProviderProfile { Name = notification.Agency },
-                NotificationType = (NotificationType)Enum.Parse(typeof(NotificationType), notification.Acvitity),
-                RequestId = notification.AgencyFileId,
-                SearchRequestKey = notification.FileId,
-                QueuePosition = notification.PositionInQueue,
-                Message = $"Activity {notification.Acvitity} occured. FSO : {notification.FSOName}",
-                TimeStamp = notification.ActivityDate,
-                EstimatedCompletion = notification.EstimatedCompletionDate
-                
-
-            };
-
-            await _publisher.PublishSearchRequestNotification(notifyEvent);
-
-            return Ok();
-
         }
     }
 }

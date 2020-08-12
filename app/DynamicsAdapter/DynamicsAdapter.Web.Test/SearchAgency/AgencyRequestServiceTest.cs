@@ -333,6 +333,13 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
         [Test]
         public async Task normal_searchRequestOrdered_ProcessCancelSearchRequest_should_succeed()
         {
+            Guid guid = Guid.NewGuid();
+            _searchRequestServiceMock.Setup(x => x.GetSearchRequest(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.FromResult<SSG_SearchRequest>(new SSG_SearchRequest()
+            {
+                SearchRequestId = guid
+            }));
+
             _searchRequestServiceMock.Setup(x => x.CancelSearchRequest(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<SSG_SearchRequest>(new SSG_SearchRequest()
                 {
@@ -345,6 +352,13 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
         [Test]
         public void exception_searchRequestOrdered_ProcessCancelSearchRequest_should_throw_exception()
         {
+            Guid guid = Guid.NewGuid();
+            _searchRequestServiceMock.Setup(x => x.GetSearchRequest(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.FromResult<SSG_SearchRequest>(new SSG_SearchRequest()
+            {
+                SearchRequestId = guid
+            }));
+
             _searchRequestServiceMock.Setup(x => x.CancelSearchRequest(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Throws(new Exception("fakeException"));
             Assert.ThrowsAsync<Exception>(async () => await _sut.ProcessCancelSearchRequest(_searchRequstOrdered));

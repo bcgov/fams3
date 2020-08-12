@@ -5,6 +5,7 @@ using MassTransit;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OpenTracing;
+using SearchRequest.Adaptor.Publisher.Models;
 using SearchRequestAdaptor.Publisher.Models;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,8 @@ namespace SearchRequestAdaptor.Publisher
         public Task PublishSearchRequestFailed(SearchRequestEvent baseEvent, string message);
         public Task PublishSearchRequestSaved(SearchRequestSavedEvent savedEvent);
         public Task PublishSearchRequestRejected(SearchRequestEvent baseEvent, IEnumerable<ValidationResult> reasons);
+
+        public Task PublishSearchRequestNotification(SearchRequestNotificationEvent baseEvent);
 
     }
 
@@ -37,7 +40,7 @@ namespace SearchRequestAdaptor.Publisher
         {
             if (baseEvent == null) throw new ArgumentNullException(nameof(SearchRequestEvent));
 
-            var endpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri($"rabbitmq://{this._rabbitMqConfiguration.Host}:{this._rabbitMqConfiguration.Port}/SearchRequestFailed_queue"));
+            var endpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri($"rabbitmq://{this._rabbitMqConfiguration.Host}:{this._rabbitMqConfiguration.Port}/{nameof(SearchRequestFailed)}_queue"));
 
             await endpoint.Send<SearchRequestFailed>(new SearchRequestFailedEvent(baseEvent)
             {
@@ -45,11 +48,20 @@ namespace SearchRequestAdaptor.Publisher
             });
         }
 
+        public async Task PublishSearchRequestNotification(SearchRequestNotificationEvent notifyEvent)
+        {
+            if (notifyEvent == null) throw new ArgumentNullException(nameof(SearchRequestEvent));
+
+            var endpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri($"rabbitmq://{this._rabbitMqConfiguration.Host}:{this._rabbitMqConfiguration.Port}/{nameof(SearchRequestNotification)}_queue"));
+
+            await endpoint.Send<SearchRequestNotification>(notifyEvent);
+        }
+
         public async Task PublishSearchRequestRejected(SearchRequestEvent baseEvent, IEnumerable<ValidationResult> reasons)
         {
             if (baseEvent == null) throw new ArgumentNullException(nameof(SearchRequestEvent));
 
-            var endpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri($"rabbitmq://{this._rabbitMqConfiguration.Host}:{this._rabbitMqConfiguration.Port}/SearchRequestRejected_queue"));
+            var endpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri($"rabbitmq://{this._rabbitMqConfiguration.Host}:{this._rabbitMqConfiguration.Port}/{nameof(SearchRequestRejected)}_queue"));
 
             await endpoint.Send<SearchRequestRejected>(new SearchRequestRejectedEvent(baseEvent)
             {
@@ -61,7 +73,7 @@ namespace SearchRequestAdaptor.Publisher
         {
             if (savedEvent == null) throw new ArgumentNullException(nameof(SearchRequestSaved));
 
-            var endpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri($"rabbitmq://{this._rabbitMqConfiguration.Host}:{this._rabbitMqConfiguration.Port}/SearchRequestSaved_queue"));
+            var endpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri($"rabbitmq://{this._rabbitMqConfiguration.Host}:{this._rabbitMqConfiguration.Port}/{nameof(SearchRequestSaved)}_queue"));
 
             await endpoint.Send<SearchRequestSaved>(savedEvent);
         }

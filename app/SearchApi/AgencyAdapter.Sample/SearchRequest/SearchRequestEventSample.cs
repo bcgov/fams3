@@ -23,6 +23,7 @@ namespace AgencyAdapter.Sample.SearchRequest
         public RequestAction Action { get; set; }
         public int? QueuePosition { get; set; }
         public DateTime? EstimatedCompletion { get; set; }
+        public string Message { get; set; }
     }
     public class AgencySample : ProviderProfile
     {
@@ -42,7 +43,9 @@ namespace AgencyAdapter.Sample.SearchRequest
                 RequestId = requestId,
                 TimeStamp = DateTime.Now,
                 Notification = notification,
-                Action = action
+                Action = action,
+                Message = $"{action} occured"
+                
             };
 
         }

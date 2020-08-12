@@ -2,19 +2,29 @@ using BcGov.Fams3.SearchApi.Contracts.SearchRequest;
 using BcGov.Fams3.SearchApi.Core.Configuration;
 using BcGov.Fams3.SearchApi.Core.MassTransit;
 using BcGov.Fams3.SearchApi.Core.OpenTracing;
+using FluentValidation;
+using Jaeger;
+using Jaeger.Samplers;
 using MassTransit;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using NSwag;
+using HealthChecks.UI.Client;
+using OpenTracing;
+using OpenTracing.Util;
+using SearchRequest.Adaptor.Notifier.Models;
+using SearchRequest.Adaptor.Notifier.Models.Validation;
 using SearchRequestAdaptor.Configuration;
 using SearchRequestAdaptor.Consumer;
 using SearchRequestAdaptor.Notifier;
 using SearchRequestAdaptor.Publisher;
 using System;
+using System.Collections.Generic;
 
 namespace SearchRequestAdaptor
 {
@@ -34,30 +44,94 @@ namespace SearchRequestAdaptor
             services.AddControllers();
             services.AddOptions<SearchRequestAdaptorOptions>().Bind(Configuration.GetSection(Keys.SEARCHREQUEST_SECTION_SETTING_KEY));
             services.AddWebHooks();
-
+            services.AddTransient<IValidator<Notification>, NotificationValidator>();
 
             this.ConfigureHealthChecks(services);
             this.ConfigureServiceBus(services);
+            ConfigureOpenApi(services);
+            ConfigureOpenTracing(services);
+            
 
         }
+        public void ConfigureOpenApi(IServiceCollection services)
+        {
+            services.AddSwaggerDocument(config =>
+            {
+                // configure swagger properties
+                config.PostProcess = document =>
+                {
 
+                    document.Info.Version = "V0.1";
+                    document.Info.Description = "To Recieve  Ntification from Dynamics";
+                    document.Info.Title = $"Fams notification";
+                    document.Tags = new List<OpenApiTag>()
+                    {
+                        new OpenApiTag() {
+                            Name = "Notification Api",
+                            Description = $"The FAMS api to recieve notification from dynamics"
+                        }
+                    };
+                };
+            });
+
+        }
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseSwaggerUi3();
             }
 
             app.UseRouting();
-
+            app.UseOpenApi();
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGet("/", async context =>
+
+                // registration of health endpoints see https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/health-checks
+                endpoints.MapHealthChecks("/health", new HealthCheckOptions
                 {
-                    await context.Response.WriteAsync("Hello World!");
+                    Predicate = _ => true,
+                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
                 });
+                endpoints.MapControllers();
             });
+        }
+
+        private void ConfigureOpenTracing(IServiceCollection services)
+        {
+            services.AddOpenTracing();
+
+            services.AddSingleton<ITracer>(serviceProvider =>
+            {
+
+                ITracer tracer;
+
+                try
+                {
+                    tracer = Jaeger.Configuration.FromEnv(serviceProvider.GetService<ILoggerFactory>()).GetTracer();
+
+                }
+                catch (ArgumentException ex)
+                {
+                    if (ex.Message == "Service name must not be null or empty")
+                    {
+                        tracer = new Tracer.Builder(serviceProvider.GetRequiredService<IHostEnvironment>().ApplicationName)
+                            .WithSampler(new ConstSampler(false))
+                            .Build();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+
+                GlobalTracer.Register(tracer);
+                return tracer;
+
+            });
+
         }
 
         private void ConfigureHealthChecks(IServiceCollection services)

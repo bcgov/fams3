@@ -11,14 +11,14 @@ namespace BcGov.Fams3.SearchApi.Contracts.SearchRequest
         public int? QueuePosition { get; set; }
 
         public DateTime? EstimatedCompletion { get; set; }
+
+        public string Message { get; set; }
     }
 
     public enum NotificationType
     {
-        RequestSubmitted,
-        RequestAssignedToFSO,
-        RequestCancelled,
-        RequestCompleted
+        RequestSaved,
+        RequestAssignedToFSO
 
     }
 }

@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using NUnit.Framework;
+using SearchRequest.Adaptor.Publisher.Models;
 using SearchRequestAdaptor.Publisher;
 using SearchRequestAdaptor.Publisher.Models;
 using System;
@@ -97,9 +98,24 @@ namespace SearchRequest.Adaptor.Test.Publisher
         }
 
         [Test]
+        public async Task PublishSearchRequestNotification_should_pubish_notificationEvent()
+        {
+            SearchRequestNotificationEvent notificationEvent = new SearchRequestNotificationEvent(_baseEvent);
+            await _sut.PublishSearchRequestNotification(notificationEvent);
+            _sendEndpointMock.Verify(x => x.Send<SearchRequestNotification>(It.IsAny<SearchRequestNotificationEvent>(), It.IsAny<CancellationToken>()),
+                () => { return Times.Exactly(1); });
+        }
+
+        [Test]
         public void with_null_submittedEvent_PublishSearchRequestSubmitted_should_throw_exception()
         {
             Assert.ThrowsAsync<ArgumentNullException>(() => _sut.PublishSearchRequestSaved(null));
+        }
+
+        [Test]
+        public void with_null_notifyEvent_PublishSearchRequestNotification_should_throw_exception()
+        {
+            Assert.ThrowsAsync<ArgumentNullException>(() => _sut.PublishSearchRequestNotification(null));
         }
 
         [Test]

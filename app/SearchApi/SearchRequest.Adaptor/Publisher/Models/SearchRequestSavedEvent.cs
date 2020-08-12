@@ -5,9 +5,9 @@ using System;
 
 namespace SearchRequestAdaptor.Publisher.Models
 {
-    public class SearchRequestSubmittedEvent 
+    public class SearchRequestSavedEvent 
     {
-        public SearchRequestSubmittedEvent(SearchRequestEvent baseEvent)
+        public SearchRequestSavedEvent(SearchRequestEvent baseEvent)
         {
             this.RequestId = baseEvent.RequestId;
             this.SearchRequestId = baseEvent.SearchRequestId;
@@ -16,7 +16,7 @@ namespace SearchRequestAdaptor.Publisher.Models
             this.Action = baseEvent.Action;
         }
 
-        public SearchRequestSubmittedEvent()
+        public SearchRequestSavedEvent()
         {           
         }
 

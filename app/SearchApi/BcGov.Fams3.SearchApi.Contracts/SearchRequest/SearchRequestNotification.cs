@@ -8,9 +8,9 @@ namespace BcGov.Fams3.SearchApi.Contracts.SearchRequest
     {
         NotificationType Notification { get; }
 
-        public int QueuePosition { get; set; }
+        public int? QueuePosition { get; set; }
 
-        public DateTime EstimatedCompletion { get; set; }
+        public DateTime? EstimatedCompletion { get; set; }
     }
 
     public enum NotificationType

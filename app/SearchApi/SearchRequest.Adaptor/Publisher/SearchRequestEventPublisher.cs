@@ -15,7 +15,7 @@ namespace SearchRequestAdaptor.Publisher
     public interface ISearchRequestEventPublisher
     {
         public Task PublishSearchRequestFailed(SearchRequestEvent baseEvent, string message);
-        public Task PublishSearchRequestSubmitted(SearchRequestSubmittedEvent submittedEvent);
+        public Task PublishSearchRequestSaved(SearchRequestSavedEvent savedEvent);
         public Task PublishSearchRequestRejected(SearchRequestEvent baseEvent, IEnumerable<ValidationResult> reasons);
 
         public Task PublishSearchRequestNotification(SearchRequestNotificationEvent baseEvent);
@@ -59,13 +59,13 @@ namespace SearchRequestAdaptor.Publisher
             });
         }
 
-        public async Task PublishSearchRequestSubmitted(SearchRequestSubmittedEvent submittedEvent)
+        public async Task PublishSearchRequestSaved(SearchRequestSavedEvent savedEvent)
         {
-            if (submittedEvent == null) throw new ArgumentNullException(nameof(SearchRequestSubmitted));
+            if (savedEvent == null) throw new ArgumentNullException(nameof(SearchRequestSaved));
 
-            var endpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri($"rabbitmq://{this._rabbitMqConfiguration.Host}:{this._rabbitMqConfiguration.Port}/SearchRequestSubmitted_queue"));
+            var endpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri($"rabbitmq://{this._rabbitMqConfiguration.Host}:{this._rabbitMqConfiguration.Port}/SearchRequestSaved_queue"));
 
-            await endpoint.Send<SearchRequestSubmitted>(submittedEvent);
+            await endpoint.Send<SearchRequestSaved>(savedEvent);
         }
     }
 }

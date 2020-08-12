@@ -52,6 +52,7 @@ namespace DynamicsAdapter.Web.SearchAgency
 
             SearchRequestEntity searchRequestEntity = _mapper.Map<SearchRequestEntity>(searchRequestOrdered);
             searchRequestEntity.CreatedByApi = true;
+            searchRequestEntity.SendNotificationOnCreation = true;
             _uploadedSearchRequest = await _searchRequestService.CreateSearchRequest(searchRequestEntity, cts.Token);
             _logger.LogInformation("Create Search Request successfully");
 

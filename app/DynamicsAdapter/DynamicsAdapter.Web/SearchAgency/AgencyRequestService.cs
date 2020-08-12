@@ -53,11 +53,13 @@ namespace DynamicsAdapter.Web.SearchAgency
             SearchRequestEntity searchRequestEntity = _mapper.Map<SearchRequestEntity>(searchRequestOrdered);
             searchRequestEntity.CreatedByApi = true;
             _uploadedSearchRequest = await _searchRequestService.CreateSearchRequest(searchRequestEntity, cts.Token);
+            _logger.LogInformation("Create Search Request successfully");
 
             PersonEntity personEntity = _mapper.Map<PersonEntity>(_personSought);
             personEntity.SearchRequest = _uploadedSearchRequest;
             personEntity.InformationSource = InformationSourceType.Request.Value;
             _uploadedPerson = await _searchRequestService.SavePerson(personEntity, _cancellationToken);
+            _logger.LogInformation("Create Person successfully");
 
             await UploadIdentifiers();
             await UploadAddresses();
@@ -71,6 +73,12 @@ namespace DynamicsAdapter.Web.SearchAgency
         {
             var cts = new CancellationTokenSource();
             _cancellationToken = cts.Token;
+            SSG_SearchRequest ssgSearchRequest = await _searchRequestService.GetSearchRequest(searchRequestOrdered.SearchRequestKey, _cancellationToken);
+            if (ssgSearchRequest == null)
+            {
+                _logger.LogInformation("the cancelling search request does not exist.");
+                return null;
+            }
             return await _searchRequestService.CancelSearchRequest(searchRequestOrdered.SearchRequestKey, _cancellationToken);       
         }
 
@@ -79,7 +87,11 @@ namespace DynamicsAdapter.Web.SearchAgency
             var cts = new CancellationTokenSource();
             _cancellationToken = cts.Token;
             SSG_SearchRequest ssgSearchRequest = await _searchRequestService.GetSearchRequest(searchRequestOrdered.SearchRequestKey, _cancellationToken);
-            if (ssgSearchRequest == null) return null;
+            if (ssgSearchRequest == null)
+            {
+                _logger.LogInformation("the updating search request does not exist.");
+                return null;
+            }
             SearchRequestEntity searchRequestEntity = _mapper.Map<SearchRequestEntity>(searchRequestOrdered);
             NotesEntity note = new NotesEntity
             {
@@ -89,10 +101,18 @@ namespace DynamicsAdapter.Web.SearchAgency
                 SearchRequest = ssgSearchRequest
             };
             SSG_Notese ssgNote = await _searchRequestService.CreateNotes(note, cts.Token);
+            
             if (ssgNote == null)
+            {
+                _logger.LogInformation("Create New Notes failed.");
                 return null;
+            }               
             else
+            {
+                _logger.LogInformation("Create New Notes successfully");
                 return ssgSearchRequest;
+            }
+               
         }
 
         private async Task<bool> UploadIdentifiers()
@@ -108,6 +128,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                 identifier.Person = _uploadedPerson;
                 SSG_Identifier newIdentifier = await _searchRequestService.CreateIdentifier(identifier, _cancellationToken);
             }
+            _logger.LogInformation("Create identifier records for SearchRequest successfully");
             return true;
         }
 
@@ -125,6 +146,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                 addr.Person = _uploadedPerson;
                 SSG_Address uploadedAddr = await _searchRequestService.CreateAddress(addr, _cancellationToken);
             }
+            _logger.LogInformation("Create addresses records for SearchRequest successfully");
             return true;
         }
 
@@ -142,6 +164,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                 ph.Person = _uploadedPerson;
                 SSG_PhoneNumber uploadedPhone = await _searchRequestService.CreatePhoneNumber(ph, _cancellationToken);
             }
+            _logger.LogInformation("Create phones records for SearchRequest successfully");
             return true;
         }
 
@@ -170,6 +193,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                 }
             }
 
+            _logger.LogInformation("Create identifier employment records for SearchRequest successfully");
             return true;
         }
 
@@ -188,6 +212,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                 SSG_Identity relate = await _searchRequestService.CreateRelatedPerson(n, _cancellationToken);
 
             }
+            _logger.LogInformation("Create RelatedPersons records for SearchRequest successfully");
             return true;
         }
     }

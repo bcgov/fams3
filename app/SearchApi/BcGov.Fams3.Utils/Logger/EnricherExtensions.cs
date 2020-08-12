@@ -22,6 +22,11 @@ namespace BcGov.Fams3.Utils.Logger
         {
             return enrichmentConfiguration.With(new RequestRefEnricher(propertyName));
         }
+
+        public static LoggerConfiguration WithPropertyAgencyCode(this LoggerEnrichmentConfiguration enrichmentConfiguration, string propertyName)
+        {
+            return enrichmentConfiguration.With(new AgencyCodeEnricher(propertyName));
+        }
     }
 
 }

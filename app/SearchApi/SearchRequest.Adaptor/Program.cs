@@ -43,7 +43,6 @@ namespace SearchRequestAdaptor
                 {
                     loggerConfiguration
                         .ReadFrom.Configuration(hostingContext.Configuration)
-                        .Enrich.WithPropertySearchRequestKey("SearchRequestKey")
                         .Enrich.WithPropertyRequestRef("RequestRef")
                         .Enrich.FromLogContext();
 

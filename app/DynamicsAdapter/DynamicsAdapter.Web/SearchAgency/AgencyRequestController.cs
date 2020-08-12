@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NSwag.Annotations;
+using Serilog.Context;
 using System;
 using System.Threading.Tasks;
 
@@ -36,20 +37,25 @@ namespace DynamicsAdapter.Web.SearchAgency
         [OpenApiTag("Agency Search Request API")]
         public async Task<IActionResult> CreateSearchRequest(string requestId, [FromBody]SearchRequestOrdered searchRequestOrdered)
         {
-            if (string.IsNullOrEmpty(requestId)) return BadRequest(new { Message = "requestId cannot be empty." });
-            if (searchRequestOrdered.Action != RequestAction.NEW) return BadRequest(new { Message = "CreateSearchRequest should only get NEW request." });
-            try
+            using (LogContext.PushProperty("RequestRef", $"{requestId}"))
             {
-                SSG_SearchRequest createdSearchRequest = await _agencyRequestService.ProcessSearchRequestOrdered(searchRequestOrdered);
-                if (createdSearchRequest == null)
-                    return StatusCode(StatusCodes.Status500InternalServerError);
+                _logger.LogInformation("Get CreateSearchRequest");
+                if (string.IsNullOrEmpty(requestId)) return BadRequest(new { Message = "requestId cannot be empty." });
+                if (searchRequestOrdered.Action != RequestAction.NEW) return BadRequest(new { Message = "CreateSearchRequest should only get NEW request." });
+                try
+                {
+                    SSG_SearchRequest createdSearchRequest = await _agencyRequestService.ProcessSearchRequestOrdered(searchRequestOrdered);
+                    if (createdSearchRequest == null)
+                        return StatusCode(StatusCodes.Status500InternalServerError);
 
-                return Ok(BuildSearchRequestSaved_Create(createdSearchRequest, searchRequestOrdered));
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = ex.Message });
+                    _logger.LogInformation("SearchRequest is created successfully.");
+                    return Ok(BuildSearchRequestSaved_Create(createdSearchRequest, searchRequestOrdered));
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex.Message);
+                    return StatusCode(StatusCodes.Status500InternalServerError, new { Message = ex.Message });
+                }
             }
         }
 
@@ -62,28 +68,33 @@ namespace DynamicsAdapter.Web.SearchAgency
         [OpenApiTag("Agency Search Request API")]
         public async Task<IActionResult> UpdateSearchRequest(string requestId, [FromBody]SearchRequestOrdered searchRequestOrdered)
         {
-            if (string.IsNullOrEmpty(requestId))
-                return BadRequest(new { Message = "requestId cannot be empty." });
-
-            if (searchRequestOrdered.Action != RequestAction.UPDATE)
-                return BadRequest(new { Message = "UpdateSearchRequest should only get Update request." });
-
-            if (String.IsNullOrEmpty(searchRequestOrdered.SearchRequestKey))
-                return BadRequest(new { Message = "FileId cannot be empty for updating request." });
-
-            SSG_SearchRequest updatedSearchRequest = null;
-            try
+            using (LogContext.PushProperty("RequestRef", $"{requestId}"))
             {
-                updatedSearchRequest = await _agencyRequestService.ProcessUpdateSearchRequest(searchRequestOrdered);
-                if (updatedSearchRequest == null)
-                    return BadRequest(new { Message = $"FileId ( {searchRequestOrdered.SearchRequestKey} ) is invalid." });
+                _logger.LogInformation("Get UpdateSearchRequest");
+                if (string.IsNullOrEmpty(requestId))
+                    return BadRequest(new { Message = "requestId cannot be empty." });
+
+                if (searchRequestOrdered.Action != RequestAction.UPDATE)
+                    return BadRequest(new { Message = "UpdateSearchRequest should only get Update request." });
+
+                if (String.IsNullOrEmpty(searchRequestOrdered.SearchRequestKey))
+                    return BadRequest(new { Message = "FileId cannot be empty for updating request." });
+
+                SSG_SearchRequest updatedSearchRequest = null;
+                try
+                {
+                    updatedSearchRequest = await _agencyRequestService.ProcessUpdateSearchRequest(searchRequestOrdered);
+                    if (updatedSearchRequest == null)
+                        return BadRequest(new { Message = $"FileId ( {searchRequestOrdered.SearchRequestKey} ) is invalid." });
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex.Message);
+                    return StatusCode(StatusCodes.Status500InternalServerError, new { Message = ex.Message });
+                }
+                _logger.LogInformation("UpdateSearchRequest successfully");
+                return Ok(BuildSearchRequestSaved_Update(updatedSearchRequest, searchRequestOrdered));
             }
-            catch (Exception ex)
-            {                
-                _logger.LogError(ex.Message);
-                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = ex.Message });
-            }
-            return Ok(BuildSearchRequestSaved_Update(updatedSearchRequest, searchRequestOrdered));
         }
 
         [HttpPost]
@@ -95,28 +106,33 @@ namespace DynamicsAdapter.Web.SearchAgency
         [OpenApiTag("Agency Search Request API")]
         public async Task<IActionResult> CancelSearchRequest(string requestId, [FromBody]SearchRequestOrdered searchRequestOrdered)
         {
-            if (string.IsNullOrEmpty(requestId))
-                return BadRequest(new { Message = "requestId cannot be empty." });
-
-            if (searchRequestOrdered.Action != RequestAction.CANCEL)
-                return BadRequest(new { Message = "CancelSearchRequest should only get Cancel request." });
-
-            if (String.IsNullOrEmpty(searchRequestOrdered.SearchRequestKey))
-                return BadRequest(new { Message = "FileId cannot be empty for cancelling request." });
-
-            SSG_SearchRequest cancelledSearchRequest;
-            try
+            using (LogContext.PushProperty("RequestRef", $"{requestId}"))
             {
-                cancelledSearchRequest = await _agencyRequestService.ProcessCancelSearchRequest(searchRequestOrdered);
-                if (cancelledSearchRequest == null)
-                    return BadRequest(new { Message = $"FileId ( {searchRequestOrdered.SearchRequestKey} ) is invalid." });
+                _logger.LogInformation("Get CancelSearchRequest");
+                if (string.IsNullOrEmpty(requestId))
+                    return BadRequest(new { Message = "requestId cannot be empty." });
+
+                if (searchRequestOrdered.Action != RequestAction.CANCEL)
+                    return BadRequest(new { Message = "CancelSearchRequest should only get Cancel request." });
+
+                if (String.IsNullOrEmpty(searchRequestOrdered.SearchRequestKey))
+                    return BadRequest(new { Message = "FileId cannot be empty for cancelling request." });
+
+                SSG_SearchRequest cancelledSearchRequest;
+                try
+                {
+                    cancelledSearchRequest = await _agencyRequestService.ProcessCancelSearchRequest(searchRequestOrdered);
+                    if (cancelledSearchRequest == null)
+                        return BadRequest(new { Message = $"FileId ( {searchRequestOrdered.SearchRequestKey} ) is invalid." });
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex.Message);
+                    return StatusCode(StatusCodes.Status500InternalServerError, new { Message = ex.Message });
+                }
+                _logger.LogInformation("CancelSearchRequest successfully");
+                return Ok(BuildSearchRequestSaved_Cancel(cancelledSearchRequest, searchRequestOrdered));
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = ex.Message });
-            }
-            return Ok(BuildSearchRequestSaved_Cancel(cancelledSearchRequest, searchRequestOrdered));
         }
 
         private SearchRequestSaved BuildSearchRequestSaved_Create(SSG_SearchRequest ssgSearchRequest, SearchRequestOrdered requestOrdered)
@@ -129,8 +145,8 @@ namespace DynamicsAdapter.Web.SearchAgency
                     SearchRequestKey = ssgSearchRequest.FileId,
                     SearchRequestId = ssgSearchRequest.SearchRequestId,
                     TimeStamp = DateTime.Now,
-                    EstimatedCompletion = DateTime.Now.AddDays(60),
-                    QueuePosition = 4,
+                    EstimatedCompletion = null,
+                    QueuePosition = null,
                     Message = $"The new Search Request reference: {requestOrdered.RequestId} has been submitted successfully.",
                     ProviderProfile = new ProviderProfile()
                     {
@@ -178,7 +194,7 @@ namespace DynamicsAdapter.Web.SearchAgency
 
             if (ssgSearchRequest != null)
                 saved.Message = $"The Search Request {requestOrdered.SearchRequestKey} has been updated successfully upon the request {requestOrdered.RequestId}.";
-          
+
             return saved;
         }
     }

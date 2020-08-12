@@ -52,8 +52,6 @@ namespace DynamicsAdapter.Web
 
                     if (!string.IsNullOrEmpty(splunkCollectorUrl) && !string.IsNullOrEmpty(splunkToken))
                     {
-
-
                         loggerConfiguration.WriteTo.EventCollector(
                             splunkCollectorUrl,
                             splunkToken,

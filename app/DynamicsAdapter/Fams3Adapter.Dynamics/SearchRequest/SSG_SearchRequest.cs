@@ -114,7 +114,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         [JsonProperty("ssg_scheduledate")]
         public DateTime RequestDate { get; set; }
 
-        [JsonProperty(" ssg_payorid")]
+        [JsonProperty("ssg_payorid")]
         public string PayerId { get; set; }
 
         [JsonProperty("ssg_organizationcasetrackingid")]

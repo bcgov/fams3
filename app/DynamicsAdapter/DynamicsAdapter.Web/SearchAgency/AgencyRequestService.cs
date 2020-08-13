@@ -96,28 +96,15 @@ namespace DynamicsAdapter.Web.SearchAgency
                 return null;
             }
             SearchRequestEntity searchRequestEntity = _mapper.Map<SearchRequestEntity>(searchRequestOrdered);
-            await UpdateSearchRequest(ssgSearchRequest, searchRequestEntity);
+            _uploadedSearchRequest = await UpdateSearchRequest(ssgSearchRequest, searchRequestEntity);
 
-            NotesEntity note = new NotesEntity
+            if(!String.IsNullOrEmpty(searchRequestEntity.Notes) 
+                && !String.Equals(_uploadedSearchRequest.Notes, searchRequestEntity.Notes, StringComparison.InvariantCultureIgnoreCase))
             {
-                StatusCode = 1,
-                Description = searchRequestEntity.Notes,
-                InformationSource = InformationSourceType.Request.Value,
-                SearchRequest = ssgSearchRequest
-            };
-            SSG_Notese ssgNote = await _searchRequestService.CreateNotes(note, cts.Token);
-
-            if (ssgNote == null)
-            {
-                _logger.LogInformation("Create New Notes failed.");
-                return null;
-            }
-            else
-            {
-                _logger.LogInformation("Create New Notes successfully");
-                return ssgSearchRequest;
+                await UploadNotes(searchRequestEntity);
             }
 
+            return _uploadedSearchRequest;
         }
 
         private async Task<bool> UploadIdentifiers()
@@ -221,10 +208,35 @@ namespace DynamicsAdapter.Web.SearchAgency
             return true;
         }
 
-        private async Task<bool> UpdateSearchRequest(SSG_SearchRequest originalSR, SearchRequestEntity newSR)
+        private async Task<SSG_SearchRequest> UpdateSearchRequest(SSG_SearchRequest originalSR, SearchRequestEntity newSR)
         {
+            string originNotes = originalSR.Notes;
             SSG_SearchRequest ssgMerged = (SSG_SearchRequest)MergeObj(originalSR, newSR);
-            SSG_SearchRequest ssgRequest = await _searchRequestService.UpdateSearchRequest(ssgMerged, _cancellationToken);
+            if (!String.Equals(originNotes, newSR.Notes, StringComparison.InvariantCultureIgnoreCase)) 
+            {
+                ssgMerged.Notes = originNotes;
+            }
+            return await _searchRequestService.UpdateSearchRequest(ssgMerged, _cancellationToken);
+         
+        }
+
+        private async Task<bool> UploadNotes(SearchRequestEntity newSearchRequestEntity)
+        {
+            NotesEntity note = new NotesEntity
+            {
+                StatusCode = 1,
+                Description = newSearchRequestEntity.Notes,
+                InformationSource = InformationSourceType.Request.Value,
+                SearchRequest = _uploadedSearchRequest
+            };
+            SSG_Notese ssgNote = await _searchRequestService.CreateNotes(note, _cancellationToken);
+
+            if (ssgNote == null)
+            {
+                _logger.LogError("Create new notes failed.");
+                return false;
+            }
+            _logger.LogInformation("Create new notes successfully.");
             return true;
         }
 

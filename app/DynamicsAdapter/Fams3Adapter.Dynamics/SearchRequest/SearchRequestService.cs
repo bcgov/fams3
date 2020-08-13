@@ -405,7 +405,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         public async Task<SSG_SearchRequest> UpdateSearchRequest(SSG_SearchRequest newSearchRequest, CancellationToken cancellationToken)
         {
             SSG_SearchRequest linkedSearchRequest = (SSG_SearchRequest)await LinkSearchRequestRef(newSearchRequest, cancellationToken);
-            return await this._oDataClient.For<SSG_SearchRequest>().Set(linkedSearchRequest).UpdateEntryAsync(cancellationToken);
+            return await this._oDataClient.For<SSG_SearchRequest>().Key(linkedSearchRequest.SearchRequestId).Set(linkedSearchRequest).UpdateEntryAsync(cancellationToken);
         }
 
         public async Task<SSG_Notese> CreateNotes(NotesEntity note, CancellationToken cancellationToken)

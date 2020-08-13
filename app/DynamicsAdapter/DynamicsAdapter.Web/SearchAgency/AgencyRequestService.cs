@@ -11,7 +11,9 @@ using Fams3Adapter.Dynamics.SearchRequest;
 using Fams3Adapter.Dynamics.Types;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -80,7 +82,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                 _logger.LogInformation("the cancelling search request does not exist.");
                 return null;
             }
-            return await _searchRequestService.CancelSearchRequest(searchRequestOrdered.SearchRequestKey, _cancellationToken);       
+            return await _searchRequestService.CancelSearchRequest(searchRequestOrdered.SearchRequestKey, _cancellationToken);
         }
 
         public async Task<SSG_SearchRequest> ProcessUpdateSearchRequest(SearchRequestOrdered searchRequestOrdered)
@@ -94,6 +96,8 @@ namespace DynamicsAdapter.Web.SearchAgency
                 return null;
             }
             SearchRequestEntity searchRequestEntity = _mapper.Map<SearchRequestEntity>(searchRequestOrdered);
+            await UpdateSearchRequest(ssgSearchRequest, searchRequestEntity);
+
             NotesEntity note = new NotesEntity
             {
                 StatusCode = 1,
@@ -102,18 +106,18 @@ namespace DynamicsAdapter.Web.SearchAgency
                 SearchRequest = ssgSearchRequest
             };
             SSG_Notese ssgNote = await _searchRequestService.CreateNotes(note, cts.Token);
-            
+
             if (ssgNote == null)
             {
                 _logger.LogInformation("Create New Notes failed.");
                 return null;
-            }               
+            }
             else
             {
                 _logger.LogInformation("Create New Notes successfully");
                 return ssgSearchRequest;
             }
-               
+
         }
 
         private async Task<bool> UploadIdentifiers()
@@ -215,6 +219,52 @@ namespace DynamicsAdapter.Web.SearchAgency
             }
             _logger.LogInformation("Create RelatedPersons records for SearchRequest successfully");
             return true;
+        }
+
+        private async Task<bool> UpdateSearchRequest(SSG_SearchRequest originalSR, SearchRequestEntity newSR)
+        {
+            SSG_SearchRequest ssgMerged = (SSG_SearchRequest)MergeObj(originalSR, newSR);
+            SSG_SearchRequest ssgRequest = await _searchRequestService.UpdateSearchRequest(ssgMerged, _cancellationToken);
+            return true;
+        }
+
+        private object MergeObj(object originObj, object newObj)
+        {
+            if (newObj == null) return originObj;
+            if (originObj == null) return null;
+            Type newType = newObj.GetType();
+            IList<PropertyInfo> props = new List<PropertyInfo>(newType.GetProperties());
+            foreach (PropertyInfo propertyInfo in props)
+            {
+                object newValue = propertyInfo.GetValue(newObj, null);
+                if( newValue != null )
+                {
+                    if (propertyInfo.PropertyType.Name == "Boolean")
+                    {
+                        if ((bool)newValue != false) //new value is null, no matter old value has value or not, we do not change the old value
+                        {
+                            propertyInfo.SetValue(originObj, newValue);
+                        }
+                    }
+                    else if (propertyInfo.PropertyType.Name == "String")
+                    {
+                        if (!String.IsNullOrEmpty((String)newValue))//new value is null, no matter old value has value or not, we do not change the old value
+                        {
+                            propertyInfo.SetValue(originObj, newValue);
+                        }                        
+                    }
+                    else if (propertyInfo.PropertyType.IsClass)
+                    {
+                        object originRef = propertyInfo.GetValue(originObj, null);
+                        propertyInfo.SetValue(originObj, MergeObj(originRef, newValue));
+                    }                    
+                    else
+                    {
+                        propertyInfo.SetValue(originObj, newValue);
+                    }
+                }
+            }
+            return originObj;
         }
     }
 }

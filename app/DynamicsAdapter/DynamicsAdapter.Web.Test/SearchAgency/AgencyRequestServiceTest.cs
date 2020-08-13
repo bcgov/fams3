@@ -10,6 +10,7 @@ using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.RelatedPerson;
 using Fams3Adapter.Dynamics.SearchRequest;
+using Fams3Adapter.Dynamics.Types;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
@@ -122,6 +123,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 TimeStamp = new DateTime(2010, 1, 1),
                 SearchRequestKey = "key",
                 Person = _searchRequestPerson
+        
             };
 
 
@@ -180,7 +182,14 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
 
             _fakeSearchRequest = new SearchRequestEntity()
             {
-                AgencyCode = "FMEP"
+                AgencyCode = "FMEP",
+                RequestPriority = RequestPriorityType.Rush.Value,
+                ApplicantAddressLine1 = "new Address line 1",
+                ApplicantAddressLine2 = "",
+                PersonSoughtDateOfBirth = new DateTime(1999, 1, 1),
+                LocationRequested = true,
+                PHNRequested = true,
+                DateOfDeathRequested = false
             };
 
             _ssg_fakePerson = new PersonEntity
@@ -371,8 +380,15 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             _searchRequestServiceMock.Setup(x => x.GetSearchRequest(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<SSG_SearchRequest>(new SSG_SearchRequest()
                 {
-                    SearchRequestId = guid
-                }));
+                    SearchRequestId = guid,
+                    RequestPriority = RequestPriorityType.Regular.Value,
+                    ApplicantAddressLine1 = "old Address line1",
+                    ApplicantAddressLine2 = "old Address line2",
+                    PersonSoughtDateOfBirth = new DateTime(1999, 1, 1),
+                    LocationRequested = true,
+                    PHNRequested = false,
+                    DateOfDeathRequested = true
+                })) ;
 
             _searchRequestServiceMock.Setup(x => x.CreateNotes(It.IsAny<NotesEntity>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<SSG_Notese>(new SSG_Notese()

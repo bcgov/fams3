@@ -114,7 +114,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         [JsonProperty("ssg_scheduledate")]
         public DateTime RequestDate { get; set; }
 
-        [JsonProperty(" ssg_payorid")]
+        [JsonProperty("ssg_payorid")]
         public string PayerId { get; set; }
 
         [JsonProperty("ssg_organizationcasetrackingid")]
@@ -152,7 +152,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         public virtual SSG_SearchRequestReason SearchReason { get; set; }
 
         [JsonProperty("ssg_agencylocationstring")]
-        public string AgencyOfficeLocationText { get; set; } //used to link ssg_searchrequestreason
+        public string AgencyOfficeLocationText { get; set; } //used to link ssg_AgencyLocation
 
         [JsonProperty("ssg_AgencyLocation")]
         public virtual SSG_AgencyLocation AgencyLocation { get; set; }

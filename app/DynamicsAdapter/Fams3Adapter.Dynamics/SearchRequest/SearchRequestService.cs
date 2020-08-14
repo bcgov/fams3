@@ -14,7 +14,6 @@ using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.RelatedPerson;
 using Fams3Adapter.Dynamics.ResultTransaction;
-using Fams3Adapter.Dynamics.Types;
 using Fams3Adapter.Dynamics.Vehicle;
 using Simple.OData.Client;
 using System;
@@ -48,6 +47,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         Task<SSG_SearchRequest> CancelSearchRequest(string fileId, CancellationToken cancellationToken);
         Task<SSG_SearchRequest> GetSearchRequest(string fileId, CancellationToken cancellationToken);
         Task<SSG_Notese> CreateNotes(NotesEntity searchRequest, CancellationToken cancellationToken);
+        Task<SSG_SearchRequest> UpdateSearchRequest(SSG_SearchRequest newSearchRequest, CancellationToken cancellationToken);
     }
 
     /// <summary>
@@ -283,7 +283,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                                 .FindEntryAsync(cancellationToken);
                     if (await _duplicateDetectService.Same(claim.BankInformationEntity, duplicatedClaim.BankingInformation))
                     {
-                        if( await _duplicateDetectService.Same(claim.EmploymentEntity, duplicatedClaim.Employment))
+                        if (await _duplicateDetectService.Same(claim.EmploymentEntity, duplicatedClaim.Employment))
                         {
                             duplicatedClaim.IsDuplicated = true;
                             if (duplicatedClaim.Employment != null)
@@ -317,14 +317,14 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             else
             {
                 SSG_Asset_BankingInformation ssg_bank = claim.BankInformationEntity == null ? null : await CreateBankInfo(claim.BankInformationEntity, cancellationToken);
-                ssg_employment = claim.EmploymentEntity == null? null : await CreateEmployment(claim.EmploymentEntity, cancellationToken);
+                ssg_employment = claim.EmploymentEntity == null ? null : await CreateEmployment(claim.EmploymentEntity, cancellationToken);
                 claim.BankingInformation = ssg_bank;
                 claim.Employment = ssg_employment;
                 SSG_Asset_WorkSafeBcClaim ssg_Claim = await this._oDataClient.For<SSG_Asset_WorkSafeBcClaim>().Set(claim).InsertEntryAsync(cancellationToken);
                 returnedClaim = ssg_Claim;
             }
 
-            if (claim.EmploymentEntity != null && claim.EmploymentEntity.EmploymentContactEntities !=null)
+            if (claim.EmploymentEntity != null && claim.EmploymentEntity.EmploymentContactEntities != null)
             {
                 foreach (EmploymentContactEntity contact in claim.EmploymentEntity.EmploymentContactEntities)
                 {
@@ -360,7 +360,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             {
                 Guid duplicatedPhoneId = await _duplicateDetectService.Exists(phone.SSG_Asset_ICBCClaim, phone);
                 if (duplicatedPhoneId != Guid.Empty)
-                    return new SSG_SimplePhoneNumber() {  SimplePhoneNumberId = duplicatedPhoneId };
+                    return new SSG_SimplePhoneNumber() { SimplePhoneNumberId = duplicatedPhoneId };
             }
             return await this._oDataClient.For<SSG_SimplePhoneNumber>().Set(phone).InsertEntryAsync(cancellationToken);
         }
@@ -371,45 +371,15 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             {
                 Guid duplicatedPartyId = await _duplicateDetectService.Exists(involvedParty.SSG_Asset_ICBCClaim, involvedParty);
                 if (duplicatedPartyId != Guid.Empty)
-                    return new SSG_InvolvedParty() {InvolvedPartyId  = duplicatedPartyId };
+                    return new SSG_InvolvedParty() { InvolvedPartyId = duplicatedPartyId };
             }
             return await this._oDataClient.For<SSG_InvolvedParty>().Set(involvedParty).InsertEntryAsync(cancellationToken);
         }
 
         public async Task<SSG_SearchRequest> CreateSearchRequest(SearchRequestEntity searchRequest, CancellationToken cancellationToken)
         {
-            //find agencyCode in ssg_agency entity
-            string code = searchRequest.AgencyCode;
-            var agency = await _oDataClient.For<SSG_Agency>()
-                                         .Filter(x => x.AgencyCode == code)
-                                         .FindEntryAsync(cancellationToken);
-            searchRequest.Agency = agency;
-
-            //find reasoncode 
-            string reasonCode = searchRequest.SearchReasonCode;
-            var reason = await _oDataClient.For<SSG_SearchRequestReason>()
-                             .Filter(x => x.ReasonCode == reasonCode)
-                             .FindEntryAsync(cancellationToken);
-            searchRequest.SearchReason = reason;
-
-            try
-            {
-                //find agencylocation
-                //todo: We just currently use City as temp solution. expecting FMEP will provide office code later
-                string officeLocationCity = searchRequest.AgencyOfficeLocationText.Split(",")[1].Trim();
-                var officeLocation = await _oDataClient.For<SSG_AgencyLocation>()
-                     .Filter(x => x.City==officeLocationCity)
-                     .FindEntryAsync(cancellationToken);
-                if (officeLocation != null)
-                {
-                    searchRequest.AgencyLocation = officeLocation;
-                    searchRequest.AgencyOfficeLocationText = null;
-                }
-            }catch(Exception)
-            {               
-            }
-
-            return await this._oDataClient.For<SSG_SearchRequest>().Set(searchRequest).InsertEntryAsync(cancellationToken);
+            SearchRequestEntity linkedSearchRequest = await LinkSearchRequestRef(searchRequest, cancellationToken);
+            return await this._oDataClient.For<SSG_SearchRequest>().Set(linkedSearchRequest).InsertEntryAsync(cancellationToken);
         }
 
         public async Task<SSG_SearchRequest> CancelSearchRequest(string fileId, CancellationToken cancellationToken)
@@ -432,9 +402,51 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             return ssgSearchRequest;
         }
 
+        public async Task<SSG_SearchRequest> UpdateSearchRequest(SSG_SearchRequest newSearchRequest, CancellationToken cancellationToken)
+        {
+            SSG_SearchRequest linkedSearchRequest = (SSG_SearchRequest)await LinkSearchRequestRef(newSearchRequest, cancellationToken);
+            return await this._oDataClient.For<SSG_SearchRequest>().Key(linkedSearchRequest.SearchRequestId).Set(linkedSearchRequest).UpdateEntryAsync(cancellationToken);
+        }
+
         public async Task<SSG_Notese> CreateNotes(NotesEntity note, CancellationToken cancellationToken)
         {
             return await this._oDataClient.For<SSG_Notese>().Set(note).InsertEntryAsync(cancellationToken);
+        }
+
+        private async Task<SearchRequestEntity> LinkSearchRequestRef(SearchRequestEntity searchRequest, CancellationToken cancellationToken)
+        {
+            //find agencyCode in ssg_agency entity
+            string code = searchRequest.AgencyCode;
+            var agency = await _oDataClient.For<SSG_Agency>()
+                                         .Filter(x => x.AgencyCode == code)
+                                         .FindEntryAsync(cancellationToken);
+            searchRequest.Agency = agency;
+
+            //find reasoncode 
+            string reasonCode = searchRequest.SearchReasonCode;
+            var reason = await _oDataClient.For<SSG_SearchRequestReason>()
+                             .Filter(x => x.ReasonCode == reasonCode)
+                             .FindEntryAsync(cancellationToken);
+            searchRequest.SearchReason = reason;
+
+            try
+            {
+                //find agencylocation
+                //todo: We just currently use City as temp solution. expecting FMEP will provide office code later
+                string officeLocationCity = searchRequest.AgencyOfficeLocationText.Split(",")[1].Trim();
+                var officeLocation = await _oDataClient.For<SSG_AgencyLocation>()
+                     .Filter(x => x.City == officeLocationCity)
+                     .FindEntryAsync(cancellationToken);
+                if (officeLocation != null)
+                {
+                    searchRequest.AgencyLocation = officeLocation;
+                    searchRequest.AgencyOfficeLocationText = null;
+                }
+            }
+            catch (Exception)
+            {
+            }
+            return searchRequest;
         }
     }
 }

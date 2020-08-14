@@ -11,7 +11,9 @@ using Fams3Adapter.Dynamics.SearchRequest;
 using Fams3Adapter.Dynamics.Types;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -80,7 +82,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                 _logger.LogInformation("the cancelling search request does not exist.");
                 return null;
             }
-            return await _searchRequestService.CancelSearchRequest(searchRequestOrdered.SearchRequestKey, _cancellationToken);       
+            return await _searchRequestService.CancelSearchRequest(searchRequestOrdered.SearchRequestKey, _cancellationToken);
         }
 
         public async Task<SSG_SearchRequest> ProcessUpdateSearchRequest(SearchRequestOrdered searchRequestOrdered)
@@ -94,26 +96,15 @@ namespace DynamicsAdapter.Web.SearchAgency
                 return null;
             }
             SearchRequestEntity searchRequestEntity = _mapper.Map<SearchRequestEntity>(searchRequestOrdered);
-            NotesEntity note = new NotesEntity
+            _uploadedSearchRequest = await UpdateSearchRequest(ssgSearchRequest, searchRequestEntity);
+
+            if(!String.IsNullOrEmpty(searchRequestEntity.Notes) 
+                && !String.Equals(_uploadedSearchRequest.Notes, searchRequestEntity.Notes, StringComparison.InvariantCultureIgnoreCase))
             {
-                StatusCode = 1,
-                Description = searchRequestEntity.Notes,
-                InformationSource = InformationSourceType.Request.Value,
-                SearchRequest = ssgSearchRequest
-            };
-            SSG_Notese ssgNote = await _searchRequestService.CreateNotes(note, cts.Token);
-            
-            if (ssgNote == null)
-            {
-                _logger.LogInformation("Create New Notes failed.");
-                return null;
-            }               
-            else
-            {
-                _logger.LogInformation("Create New Notes successfully");
-                return ssgSearchRequest;
+                await UploadNotes(searchRequestEntity);
             }
-               
+
+            return _uploadedSearchRequest;
         }
 
         private async Task<bool> UploadIdentifiers()
@@ -215,6 +206,77 @@ namespace DynamicsAdapter.Web.SearchAgency
             }
             _logger.LogInformation("Create RelatedPersons records for SearchRequest successfully");
             return true;
+        }
+
+        private async Task<SSG_SearchRequest> UpdateSearchRequest(SSG_SearchRequest originalSR, SearchRequestEntity newSR)
+        {
+            string originNotes = originalSR.Notes;
+            SSG_SearchRequest ssgMerged = (SSG_SearchRequest)MergeObj(originalSR, newSR);
+            if (!String.Equals(originNotes, newSR.Notes, StringComparison.InvariantCultureIgnoreCase)) 
+            {
+                ssgMerged.Notes = originNotes;
+            }
+            return await _searchRequestService.UpdateSearchRequest(ssgMerged, _cancellationToken);
+         
+        }
+
+        private async Task<bool> UploadNotes(SearchRequestEntity newSearchRequestEntity)
+        {
+            NotesEntity note = new NotesEntity
+            {
+                StatusCode = 1,
+                Description = newSearchRequestEntity.Notes,
+                InformationSource = InformationSourceType.Request.Value,
+                SearchRequest = _uploadedSearchRequest
+            };
+            SSG_Notese ssgNote = await _searchRequestService.CreateNotes(note, _cancellationToken);
+
+            if (ssgNote == null)
+            {
+                _logger.LogError("Create new notes failed.");
+                return false;
+            }
+            _logger.LogInformation("Create new notes successfully.");
+            return true;
+        }
+
+        private object MergeObj(object originObj, object newObj)
+        {
+            if (newObj == null) return originObj;
+            if (originObj == null) return null;
+            Type newType = newObj.GetType();
+            IList<PropertyInfo> props = new List<PropertyInfo>(newType.GetProperties());
+            foreach (PropertyInfo propertyInfo in props)
+            {
+                object newValue = propertyInfo.GetValue(newObj, null);
+                if( newValue != null )
+                {
+                    if (propertyInfo.PropertyType.Name == "Boolean")
+                    {
+                        if ((bool)newValue != false) //new value is null, no matter old value has value or not, we do not change the old value
+                        {
+                            propertyInfo.SetValue(originObj, newValue);
+                        }
+                    }
+                    else if (propertyInfo.PropertyType.Name == "String")
+                    {
+                        if (!String.IsNullOrEmpty((String)newValue))//new value is null, no matter old value has value or not, we do not change the old value
+                        {
+                            propertyInfo.SetValue(originObj, newValue);
+                        }                        
+                    }
+                    else if (propertyInfo.PropertyType.IsClass)
+                    {
+                        object originRef = propertyInfo.GetValue(originObj, null);
+                        propertyInfo.SetValue(originObj, MergeObj(originRef, newValue));
+                    }                    
+                    else
+                    {
+                        propertyInfo.SetValue(originObj, newValue);
+                    }
+                }
+            }
+            return originObj;
         }
     }
 }

@@ -10,6 +10,7 @@ using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.RelatedPerson;
 using Fams3Adapter.Dynamics.SearchRequest;
+using Fams3Adapter.Dynamics.Types;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
@@ -122,6 +123,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 TimeStamp = new DateTime(2010, 1, 1),
                 SearchRequestKey = "key",
                 Person = _searchRequestPerson
+        
             };
 
 
@@ -180,7 +182,14 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
 
             _fakeSearchRequest = new SearchRequestEntity()
             {
-                AgencyCode = "FMEP"
+                AgencyCode = "FMEP",
+                RequestPriority = RequestPriorityType.Rush.Value,
+                ApplicantAddressLine1 = "new Address line 1",
+                ApplicantAddressLine2 = "",
+                PersonSoughtDateOfBirth = new DateTime(1998, 1, 1),
+                LocationRequested = true,
+                PHNRequested = true,
+                DateOfDeathRequested = false
             };
 
             _ssg_fakePerson = new PersonEntity
@@ -371,8 +380,37 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             _searchRequestServiceMock.Setup(x => x.GetSearchRequest(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<SSG_SearchRequest>(new SSG_SearchRequest()
                 {
-                    SearchRequestId = guid
-                }));
+                    SearchRequestId = guid,
+                    RequestPriority = RequestPriorityType.Regular.Value,
+                    ApplicantAddressLine1 = "old Address line1",
+                    ApplicantAddressLine2 = "old Address line2",
+                    PersonSoughtDateOfBirth = new DateTime(1999, 1, 1),
+                    LocationRequested = true,
+                    PHNRequested = false,
+                    DateOfDeathRequested = true,
+                    Notes="note1"
+                })) ;
+
+            SearchRequestEntity newSearchRequest = new SearchRequestEntity()
+            {
+                AgencyCode = "FMEP",
+                RequestPriority = RequestPriorityType.Rush.Value,
+                ApplicantAddressLine1 = "new Address line 1",
+                ApplicantAddressLine2 = "",
+                PersonSoughtDateOfBirth = new DateTime(1998, 1, 1),
+                LocationRequested = true,
+                PHNRequested = true,
+                DateOfDeathRequested = false,
+                Notes="note2"
+            };
+            _mapper.Setup(m => m.Map<SearchRequestEntity>(It.IsAny<SearchRequestOrdered>()))
+                .Returns(newSearchRequest);
+
+            _searchRequestServiceMock.Setup(x => x.UpdateSearchRequest(It.IsAny<SSG_SearchRequest>(), It.IsAny<CancellationToken>()))
+                 .Returns(Task.FromResult<SSG_SearchRequest>(new SSG_SearchRequest()
+                 {
+                     SearchRequestId = guid
+                 }));
 
             _searchRequestServiceMock.Setup(x => x.CreateNotes(It.IsAny<NotesEntity>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<SSG_Notese>(new SSG_Notese()
@@ -380,7 +418,84 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                     NotesId = Guid.NewGuid()
                 }));
             SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(_searchRequstOrdered);
-            _searchRequestServiceMock.Verify(m => m.CreateNotes(It.IsAny<NotesEntity>(), It.IsAny<CancellationToken>()), Times.Once);
+            _searchRequestServiceMock.Verify(m => m.UpdateSearchRequest(It.Is<SSG_SearchRequest>(
+                m=>(m.ApplicantAddressLine1== "new Address line 1"
+                && m.ApplicantAddressLine2 == "old Address line2"
+                && m.RequestPriority == RequestPriorityType.Rush.Value
+                && m.PersonSoughtDateOfBirth == new DateTime(1998, 1, 1)
+                && m.LocationRequested
+                && m.PHNRequested
+                && m.DateOfDeathRequested
+                && m.Notes == "note1")
+                ), It.IsAny<CancellationToken>()), Times.Once);
+
+            _searchRequestServiceMock.Verify(m => m.CreateNotes(It.Is<NotesEntity>(m=>m.Description== "note2"), It.IsAny<CancellationToken>()), Times.Once);
+            Assert.AreEqual(guid, ssgSearchRequest.SearchRequestId);
+        }
+
+        [Test]
+        public async Task normal_searchRequestOrdered_with_same_notes_ProcessUpdateSearchRequest_CreateNotes_should_not_run()
+        {
+            Guid guid = Guid.NewGuid();
+            _searchRequestServiceMock.Setup(x => x.GetSearchRequest(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult<SSG_SearchRequest>(new SSG_SearchRequest()
+                {
+                    SearchRequestId = guid,                    
+                    Notes = "note1"
+                }));
+
+            SearchRequestEntity newSearchRequest = new SearchRequestEntity()
+            {
+                AgencyCode = "FMEP",                
+                Notes = "note1"
+            };
+            _mapper.Setup(m => m.Map<SearchRequestEntity>(It.IsAny<SearchRequestOrdered>()))
+                .Returns(newSearchRequest);
+
+            _searchRequestServiceMock.Setup(x => x.UpdateSearchRequest(It.IsAny<SSG_SearchRequest>(), It.IsAny<CancellationToken>()))
+                 .Returns(Task.FromResult<SSG_SearchRequest>(new SSG_SearchRequest()
+                 {
+                     SearchRequestId = guid,
+                     Notes = "note1"
+                 }));
+
+            SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(_searchRequstOrdered);
+            _searchRequestServiceMock.Verify(m => m.UpdateSearchRequest(It.IsAny<SSG_SearchRequest>(), It.IsAny<CancellationToken>()), Times.Once);
+
+            _searchRequestServiceMock.Verify(m => m.CreateNotes(It.IsAny<NotesEntity>(), It.IsAny<CancellationToken>()), Times.Never);
+            Assert.AreEqual(guid, ssgSearchRequest.SearchRequestId);
+        }
+
+        [Test]
+        public async Task new_searchrequestOrdered_with_empty_notes_ProcessUpdateSearchRequest_CreateNotes_should_not_run()
+        {
+            Guid guid = Guid.NewGuid();
+            _searchRequestServiceMock.Setup(x => x.GetSearchRequest(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult<SSG_SearchRequest>(new SSG_SearchRequest()
+                {
+                    SearchRequestId = guid,
+                    Notes = "note1"
+                }));
+
+            SearchRequestEntity newSearchRequest = new SearchRequestEntity()
+            {
+                AgencyCode = "FMEP",
+                Notes = ""
+            };
+            _mapper.Setup(m => m.Map<SearchRequestEntity>(It.IsAny<SearchRequestOrdered>()))
+                .Returns(newSearchRequest);
+
+            _searchRequestServiceMock.Setup(x => x.UpdateSearchRequest(It.IsAny<SSG_SearchRequest>(), It.IsAny<CancellationToken>()))
+                 .Returns(Task.FromResult<SSG_SearchRequest>(new SSG_SearchRequest()
+                 {
+                     SearchRequestId = guid,
+                     Notes = "note1"
+                 }));
+
+            SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(_searchRequstOrdered);
+            _searchRequestServiceMock.Verify(m => m.UpdateSearchRequest(It.IsAny<SSG_SearchRequest>(), It.IsAny<CancellationToken>()), Times.Once);
+
+            _searchRequestServiceMock.Verify(m => m.CreateNotes(It.IsAny<NotesEntity>(), It.IsAny<CancellationToken>()), Times.Never);
             Assert.AreEqual(guid, ssgSearchRequest.SearchRequestId);
         }
 
@@ -389,12 +504,6 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
         {
             Guid guid = Guid.NewGuid();
             _searchRequestServiceMock.Setup(x => x.GetSearchRequest(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(Task.FromResult<SSG_SearchRequest>(new SSG_SearchRequest()
-                {
-                    SearchRequestId = guid
-                }));
-
-            _searchRequestServiceMock.Setup(x => x.CreateNotes(It.IsAny<NotesEntity>(), It.IsAny<CancellationToken>()))
                 .Throws(new Exception("fakeException"));
             Assert.ThrowsAsync<Exception>(async () => await _sut.ProcessUpdateSearchRequest(_searchRequstOrdered));
         }

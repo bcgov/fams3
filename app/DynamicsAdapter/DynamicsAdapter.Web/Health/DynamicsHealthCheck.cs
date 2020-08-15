@@ -78,6 +78,7 @@ namespace DynamicsAdapter.Web.Health
                 "ssg_incomeassistancestatus" => Enumeration.GetAll<IncomeAssistanceStatusType>(),
                 "ssg_payororreceiveroptions" => Enumeration.GetAll<PersonSoughtType>(),
                 "ssg_requestpriorities" => Enumeration.GetAll<RequestPriorityType>(),
+                "ssg_personcategorycodes" => Enumeration.GetAll<RelatedPersonPersonType>(),
                 _ => Enumeration.GetAll<TelephoneNumberType>()
             };
         }

@@ -48,6 +48,11 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         Task<SSG_SearchRequest> GetSearchRequest(string fileId, CancellationToken cancellationToken);
         Task<SSG_Notese> CreateNotes(NotesEntity searchRequest, CancellationToken cancellationToken);
         Task<SSG_SearchRequest> UpdateSearchRequest(SSG_SearchRequest newSearchRequest, CancellationToken cancellationToken);
+        Task<SSG_Person> UpdatePerson(SSG_Person newPerson, CancellationToken cancellationToken);
+        Task<SSG_Identity> UpdateRelatedPerson(SSG_Identity newRelatedPerson, CancellationToken cancellationToken);
+        Task<SSG_Employment> UpdateEmployment(SSG_Employment newEmploy, CancellationToken cancellationToken);
+
+
     }
 
     /// <summary>
@@ -180,19 +185,9 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                 }
             }
 
-            var countryText = employment.CountryText;
-            var country = await _oDataClient.For<SSG_Country>()
-                                            .Filter(x => x.Name == countryText)
-                                            .FindEntryAsync(cancellationToken);
-            employment.Country = country;
+            EmploymentEntity linkedEmploy = await LinkEmploymentRef(employment, cancellationToken);
 
-            var subDivisionText = employment.CountrySubdivisionText;
-            var subdivision = await _oDataClient.For<SSG_CountrySubdivision>()
-                                      .Filter(x => x.Name == subDivisionText)
-                                      .FindEntryAsync(cancellationToken);
-            employment.CountrySubdivision = subdivision;
-
-            return await this._oDataClient.For<SSG_Employment>().Set(employment).InsertEntryAsync(cancellationToken);
+            return await this._oDataClient.For<SSG_Employment>().Set(linkedEmploy).InsertEntryAsync(cancellationToken);
         }
 
         public async Task<SSG_EmploymentContact> CreateEmploymentContact(EmploymentContactEntity employmentContact, CancellationToken cancellationToken)
@@ -397,15 +392,47 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
         public async Task<SSG_SearchRequest> GetSearchRequest(string fileId, CancellationToken cancellationToken)
         {
-            SSG_SearchRequest ssgSearchRequest = await _oDataClient.For<SSG_SearchRequest>().Filter(x => x.FileId == fileId).FindEntryAsync(cancellationToken);
+            SSG_SearchRequest ssgSearchRequest = await _oDataClient
+                .For<SSG_SearchRequest>()
+                .Select(x => x.SearchRequestId)
+                .Filter(x => x.FileId == fileId)
+                .FindEntryAsync(cancellationToken);
             if (ssgSearchRequest == null) return null;
-            return ssgSearchRequest;
+
+            Guid key = ssgSearchRequest.SearchRequestId;
+            SSG_SearchRequest dataSearchRequest = await _oDataClient
+                .For<SSG_SearchRequest>()
+                .Key(key)
+                .Expand(x => x.SSG_Persons)
+                .Expand(x => x.SSG_RelatedPersons)
+                .Expand(x => x.SSG_Employments)
+                .FindEntryAsync(cancellationToken);
+
+            return dataSearchRequest;
         }
 
         public async Task<SSG_SearchRequest> UpdateSearchRequest(SSG_SearchRequest newSearchRequest, CancellationToken cancellationToken)
         {
             SSG_SearchRequest linkedSearchRequest = (SSG_SearchRequest)await LinkSearchRequestRef(newSearchRequest, cancellationToken);
             return await this._oDataClient.For<SSG_SearchRequest>().Key(linkedSearchRequest.SearchRequestId).Set(linkedSearchRequest).UpdateEntryAsync(cancellationToken);
+        }
+
+        public async Task<SSG_Person> UpdatePerson(SSG_Person newPerson, CancellationToken cancellationToken)
+        {
+            newPerson.DuplicateDetectHash = await _duplicateDetectService.GetDuplicateDetectHashData(newPerson);
+            return await this._oDataClient.For<SSG_Person>().Key(newPerson.PersonId).Set(newPerson).UpdateEntryAsync(cancellationToken);
+        }
+
+        public async Task<SSG_Identity> UpdateRelatedPerson(SSG_Identity newRelatedPerson, CancellationToken cancellationToken)
+        {
+            return await this._oDataClient.For<SSG_Identity>().Key(newRelatedPerson.RelatedPersonId).Set(newRelatedPerson).UpdateEntryAsync(cancellationToken);
+        }
+
+        public async Task<SSG_Employment> UpdateEmployment(SSG_Employment newEmploy, CancellationToken cancellationToken)
+        {
+            EmploymentEntity linkedEmploy = await LinkEmploymentRef(newEmploy, cancellationToken);
+            await this._oDataClient.For<SSG_Employment>().Key(newEmploy.EmploymentId).Set(linkedEmploy).UpdateEntryAsync(cancellationToken);
+            return await this._oDataClient.For<SSG_Employment>().Key(newEmploy.EmploymentId).Expand(x => x.SSG_EmploymentContacts).FindEntryAsync(cancellationToken);
         }
 
         public async Task<SSG_Notese> CreateNotes(NotesEntity note, CancellationToken cancellationToken)
@@ -447,6 +474,22 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             {
             }
             return searchRequest;
+        }
+
+        private async Task<EmploymentEntity> LinkEmploymentRef(EmploymentEntity employment, CancellationToken cancellationToken)
+        {
+            var countryText = employment.CountryText;
+            var country = await _oDataClient.For<SSG_Country>()
+                                            .Filter(x => x.Name == countryText)
+                                            .FindEntryAsync(cancellationToken);
+            employment.Country = country;
+
+            var subDivisionText = employment.CountrySubdivisionText;
+            var subdivision = await _oDataClient.For<SSG_CountrySubdivision>()
+                                      .Filter(x => x.Name == subDivisionText)
+                                      .FindEntryAsync(cancellationToken);
+            employment.CountrySubdivision = subdivision;
+            return employment;
         }
     }
 }

@@ -1,4 +1,7 @@
 ﻿using Fams3Adapter.Dynamics.Agency;
+using Fams3Adapter.Dynamics.Employment;
+using Fams3Adapter.Dynamics.Person;
+using Fams3Adapter.Dynamics.RelatedPerson;
 using Newtonsoft.Json;
 using System;
 
@@ -169,6 +172,15 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
         [JsonProperty("statuscode")]
         public int StatusCode { get; set; }
+
+        [JsonProperty("ssg_ssg_searchrequest_ssg_person_SearchRequest")]
+        public SSG_Person[] SSG_Persons { get; set; }
+
+        [JsonProperty("ssg_ssg_searchrequest_ssg_identity_SearchRequest")]
+        public SSG_Identity[] SSG_RelatedPersons { get; set; }
+
+        [JsonProperty("ssg_ssg_searchrequest_ssg_employment_SearchRequest")]
+        public SSG_Employment[] SSG_Employments { get; set; }
 
         public override string ToString()
         {

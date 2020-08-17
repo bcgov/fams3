@@ -406,6 +406,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                 .For<SSG_SearchRequest>()
                 .Key(key)
                 .Expand(x => x.SSG_Persons)
+                .Expand(x => x.SSG_Notes)
                 .FindEntryAsync(cancellationToken);
 
             return dataSearchRequest;
@@ -456,6 +457,12 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
         public async Task<SSG_Notese> CreateNotes(NotesEntity note, CancellationToken cancellationToken)
         {
+            if (note.SearchRequest != null && note.SearchRequest.IsDuplicated)
+            {
+                Guid duplicatedNoteId = await _duplicateDetectService.Exists(note.SearchRequest, note);
+                if (duplicatedNoteId != Guid.Empty)
+                    return new SSG_Notese() { NotesId = duplicatedNoteId };
+            }
             return await this._oDataClient.For<SSG_Notese>().Set(note).InsertEntryAsync(cancellationToken);
         }
 

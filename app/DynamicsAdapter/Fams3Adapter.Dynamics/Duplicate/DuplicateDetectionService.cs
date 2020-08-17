@@ -6,10 +6,12 @@ using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.InsuranceClaim;
 using Fams3Adapter.Dynamics.Name;
+using Fams3Adapter.Dynamics.Notes;
 using Fams3Adapter.Dynamics.OtherAsset;
 using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.RelatedPerson;
+using Fams3Adapter.Dynamics.SearchRequest;
 using Fams3Adapter.Dynamics.Vehicle;
 using Newtonsoft.Json;
 using Simple.OData.Client;
@@ -52,7 +54,8 @@ namespace Fams3Adapter.Dynamics.Duplicate
             {"CompensationClaimEntity","ssg_asset_worksafebcclaim"},
             {"ICBCClaimEntity","ssg_asset_icbcclaim"},
             {"SimplePhoneNumberEntity","ssg_simplephonenumber" },
-            {"InvolvedPartyEntity","ssg_involvedparty" }
+            {"InvolvedPartyEntity","ssg_involvedparty" },
+            {"NoteEntity","ssg_notese" }
         };
 
         public DuplicateDetectionService(IODataClient oDataClient)
@@ -197,6 +200,12 @@ namespace Fams3Adapter.Dynamics.Duplicate
                     foreach (SSG_InvolvedParty party in ((SSG_Asset_ICBCClaim)fatherObj).SSG_InvolvedParties)
                     {
                         if (await Same(entity, party)) return party.InvolvedPartyId;
+                    };
+                    break;
+                case "NoteEntity":
+                    foreach (SSG_Notese note in ((SSG_SearchRequest)fatherObj).SSG_Notes)
+                    {
+                        if (await Same(entity, note)) return note.NotesId;
                     };
                     break;
             }            

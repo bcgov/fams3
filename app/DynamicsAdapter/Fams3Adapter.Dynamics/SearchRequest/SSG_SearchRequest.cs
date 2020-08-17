@@ -1,5 +1,6 @@
 ﻿using Fams3Adapter.Dynamics.Agency;
 using Fams3Adapter.Dynamics.Employment;
+using Fams3Adapter.Dynamics.Notes;
 using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.RelatedPerson;
 using Newtonsoft.Json;
@@ -176,13 +177,11 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         [JsonProperty("ssg_ssg_searchrequest_ssg_person_SearchRequest")]
         public SSG_Person[] SSG_Persons { get; set; }
 
-        [JsonProperty("ssg_ssg_searchrequest_ssg_identity_SearchRequest")]
-        public SSG_Identity[] SSG_RelatedPersons { get; set; }
-
-        [JsonProperty("ssg_ssg_searchrequest_ssg_employment_SearchRequest")]
-        public SSG_Employment[] SSG_Employments { get; set; }
+        [JsonProperty("ssg_ssg_searchrequest_ssg_notes_SearchRequest")]
+        public SSG_Notese[] SSG_Notes { get; set; }
 
         public bool Updated { get; set; }
+        public bool IsDuplicated { get; set; }
 
         public override string ToString()
         {

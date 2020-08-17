@@ -46,6 +46,8 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         Task<SSG_SearchRequest> CreateSearchRequest(SearchRequestEntity searchRequest, CancellationToken cancellationToken);
         Task<SSG_SearchRequest> CancelSearchRequest(string fileId, CancellationToken cancellationToken);
         Task<SSG_SearchRequest> GetSearchRequest(string fileId, CancellationToken cancellationToken);
+        Task<SSG_Person> GetPerson(Guid personId, CancellationToken cancellationToken);
+        Task<SSG_Employment> GetEmployment(Guid personId, CancellationToken cancellationToken);
         Task<SSG_Notese> CreateNotes(NotesEntity searchRequest, CancellationToken cancellationToken);
         Task<SSG_SearchRequest> UpdateSearchRequest(SSG_SearchRequest newSearchRequest, CancellationToken cancellationToken);
         Task<SSG_Person> UpdatePerson(SSG_Person newPerson, CancellationToken cancellationToken);
@@ -404,11 +406,29 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                 .For<SSG_SearchRequest>()
                 .Key(key)
                 .Expand(x => x.SSG_Persons)
-                .Expand(x => x.SSG_RelatedPersons)
-                .Expand(x => x.SSG_Employments)
                 .FindEntryAsync(cancellationToken);
 
             return dataSearchRequest;
+        }
+
+        public async Task<SSG_Person> GetPerson(Guid personId, CancellationToken cancellationToken)
+        {
+            SSG_Person dataSearchRequest = await _oDataClient
+                .For<SSG_Person>()
+                .Key(personId)
+                .Expand(x => x.SSG_Identities)
+                .Expand(x => x.SSG_PhoneNumbers)
+                .Expand(x => x.SSG_Identifiers)
+                .Expand(x => x.SSG_Employments)
+                .Expand(x => x.SSG_Addresses)
+                .FindEntryAsync(cancellationToken);
+
+            return dataSearchRequest;
+        }
+
+        public async Task<SSG_Employment> GetEmployment(Guid employmentId, CancellationToken cancellationToken)
+        {
+            return await this._oDataClient.For<SSG_Employment>().Key(employmentId).Expand(x => x.SSG_EmploymentContacts).FindEntryAsync(cancellationToken);
         }
 
         public async Task<SSG_SearchRequest> UpdateSearchRequest(SSG_SearchRequest newSearchRequest, CancellationToken cancellationToken)
@@ -431,8 +451,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         public async Task<SSG_Employment> UpdateEmployment(SSG_Employment newEmploy, CancellationToken cancellationToken)
         {
             EmploymentEntity linkedEmploy = await LinkEmploymentRef(newEmploy, cancellationToken);
-            await this._oDataClient.For<SSG_Employment>().Key(newEmploy.EmploymentId).Set(linkedEmploy).UpdateEntryAsync(cancellationToken);
-            return await this._oDataClient.For<SSG_Employment>().Key(newEmploy.EmploymentId).Expand(x => x.SSG_EmploymentContacts).FindEntryAsync(cancellationToken);
+            return await this._oDataClient.For<SSG_Employment>().Key(newEmploy.EmploymentId).Set(linkedEmploy).UpdateEntryAsync(cancellationToken);
         }
 
         public async Task<SSG_Notese> CreateNotes(NotesEntity note, CancellationToken cancellationToken)

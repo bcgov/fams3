@@ -5,6 +5,7 @@ using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.Notes;
 using Fams3Adapter.Dynamics.Person;
+using Fams3Adapter.Dynamics;
 using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.RelatedPerson;
 using Fams3Adapter.Dynamics.SearchRequest;
@@ -90,39 +91,62 @@ namespace DynamicsAdapter.Web.SearchAgency
         {
             var cts = new CancellationTokenSource();
             _cancellationToken = cts.Token;
+            //get existedSearchRequest
             SSG_SearchRequest existedSearchRequest = await _searchRequestService.GetSearchRequest(searchRequestOrdered.SearchRequestKey, _cancellationToken);
             if (existedSearchRequest == null)
             {
                 _logger.LogInformation("the updating search request does not exist.");
                 return null;
             }
-            SearchRequestEntity newSearchRequest = _mapper.Map<SearchRequestEntity>(searchRequestOrdered);
-            _uploadedSearchRequest = await UpdateSearchRequest(existedSearchRequest, newSearchRequest);
-            _logger.LogInformation("Update Search Request successfully");
+            _uploadedSearchRequest = existedSearchRequest;
 
+            //get existedPersonSought
+            SSG_Person existedSoughtPerson = existedSearchRequest?.SSG_Persons?.FirstOrDefault(
+                    m => m.FirstName == existedSearchRequest.PersonSoughtFirstName
+                    && m.LastName == existedSearchRequest.PersonSoughtLastName
+                    && m.InformationSource == InformationSourceType.Request.Value);
+            if (existedSoughtPerson == null)
+            {
+                _logger.LogInformation("the updating personSought does not exist. something is wrong.");
+                return null;
+            }
+            existedSoughtPerson = await _searchRequestService.GetPerson(existedSoughtPerson.PersonId, _cancellationToken);
+            existedSoughtPerson.IsDuplicated = true;
+            _uploadedPerson = existedSoughtPerson;
+
+            //update searchRequestEntity
+            SearchRequestEntity newSearchRequest = _mapper.Map<SearchRequestEntity>(searchRequestOrdered);
+            await UpdateSearchRequest(newSearchRequest);
+            //_logger.LogInformation("Update Search Request successfully");
+
+            //update notesEntity
             if (!String.IsNullOrEmpty(newSearchRequest.Notes)
                 && !String.Equals(existedSearchRequest.Notes, newSearchRequest.Notes, StringComparison.InvariantCultureIgnoreCase))
             {
-                await UploadNotes(newSearchRequest);
+               await UploadNotes(newSearchRequest);
                 _logger.LogInformation("Create Notes successfully");
             }
 
+            //update PersonEntity
             _personSought = searchRequestOrdered.Person;
             PersonEntity newPersonEntity = _mapper.Map<PersonEntity>(_personSought);
-            _uploadedPerson = await UpdatePersonSought(newPersonEntity, existedSearchRequest);
-            _logger.LogInformation("Update Person successfully");
+            await UpdatePersonSought(newPersonEntity);
 
-
-            await UpdateRelatedPerson(existedSearchRequest);
-            await UpdateRelatedApplicant( new RelatedPersonEntity()
+            //update RelatedPerson
+            await UpdateRelatedPerson();
+            await UpdateRelatedApplicant(new RelatedPersonEntity()
                                             {
                                                 FirstName = newSearchRequest.ApplicantFirstName,
                                                 LastName = newSearchRequest.ApplicantLastName,
                                                 StatusCode = 1
-                                            }, 
-                                            existedSearchRequest);
+                                            });
+            //update employment
+            await UpdateEmployment();
 
-            await UpdateEmployment(existedSearchRequest);
+            //for phones, addresses, Identifiers are same as creation, as if different, add new one, if same, ignore
+            await UploadAddresses();
+            await UploadPhones();
+            await UploadIdentifiers();
 
             return _uploadedSearchRequest;
         }
@@ -228,42 +252,45 @@ namespace DynamicsAdapter.Web.SearchAgency
             return true;
         }
 
-        private async Task<SSG_SearchRequest> UpdateSearchRequest(SSG_SearchRequest originalSR, SearchRequestEntity newSR)
+        private async Task<bool> UpdateSearchRequest(SearchRequestEntity newSR)
         {
-            string originNotes = originalSR.Notes;
-            SSG_SearchRequest clonedSR = originalSR.Clone();
-            SSG_SearchRequest ssgMerged = (SSG_SearchRequest)MergeObj(clonedSR, newSR);
+            string originNotes = _uploadedSearchRequest.Notes;
+            SSG_SearchRequest clonedSR = _uploadedSearchRequest.Clone();
+            //if only notes is different, then no need to update searchReqeust
             if (!String.Equals(originNotes, newSR.Notes, StringComparison.InvariantCultureIgnoreCase))
             {
-                ssgMerged.Notes = originNotes;
+              clonedSR.Notes = newSR.Notes;
             }
-            ssgMerged.SSG_Persons = null;
-            ssgMerged.SSG_RelatedPersons = null;
-            ssgMerged.SSG_Employments = null;
-            return await _searchRequestService.UpdateSearchRequest(ssgMerged, _cancellationToken);
+            SSG_SearchRequest ssgMerged = clonedSR.MergeUpdates(newSR);
+            if (ssgMerged.Updated) //except notes, there is something else changed.
+            {
+                ssgMerged.SSG_Persons = null;
+                ssgMerged.SSG_RelatedPersons = null;
+                ssgMerged.SSG_Employments = null;
+                await _searchRequestService.UpdateSearchRequest(ssgMerged, _cancellationToken);
+            }
+            return true;
 
         }
 
-        private async Task<SSG_Person> UpdatePersonSought(PersonEntity personEntity, SSG_SearchRequest existedSearchRequest)
+        private async Task<bool> UpdatePersonSought(PersonEntity personEntity)
         {
-            SSG_Person originalSoughtPerson = existedSearchRequest?.SSG_Persons?.FirstOrDefault(
-                m => m.FirstName == existedSearchRequest.PersonSoughtFirstName
-                && m.LastName == existedSearchRequest.PersonSoughtLastName
-                && m.InformationSource == InformationSourceType.Request.Value);
-            if (originalSoughtPerson == null) return null;
-
-            SSG_Person ssgMerged = (SSG_Person)MergeObj(originalSoughtPerson.Clone(), personEntity);
-            ssgMerged.SearchRequest = existedSearchRequest;
-            return await _searchRequestService.UpdatePerson(ssgMerged, _cancellationToken);
-
+            SSG_Person ssgMerged = _uploadedPerson.Clone().MergeUpdates(personEntity);
+            if (ssgMerged.Updated)
+            {
+                ssgMerged.SearchRequest = _uploadedPerson.SearchRequest;
+                ssgMerged = await _searchRequestService.UpdatePerson(ssgMerged, _cancellationToken);
+                _logger.LogInformation("Update Person successfully");
+            }
+            return true;
         }
 
-        private async Task<bool> UpdateRelatedPerson(SSG_SearchRequest existedSearchRequest)
+        private async Task<bool> UpdateRelatedPerson()
         {
             if (_personSought.RelatedPersons == null) return true;
 
             //update or add relation relatedPerson
-            SSG_Identity originalRelatedPerson= existedSearchRequest?.SSG_RelatedPersons?.FirstOrDefault(
+            SSG_Identity originalRelatedPerson= _uploadedPerson?.SSG_Identities?.FirstOrDefault(
             m => m.InformationSource == InformationSourceType.Request.Value && m.PersonType == RelatedPersonPersonType.Relation.Value);
 
             if (_personSought.RelatedPersons?.Count() > 0)
@@ -275,25 +302,27 @@ namespace DynamicsAdapter.Web.SearchAgency
                 }
                 else
                 {
-                    SSG_Identity ssgMerged = (SSG_Identity)MergeObj(originalRelatedPerson.Clone(), n);
-                    ssgMerged.SearchRequest = _uploadedSearchRequest;
-                    ssgMerged.InformationSource = InformationSourceType.Request.Value;
-                    ssgMerged.Person = _uploadedPerson;
-                    await _searchRequestService.UpdateRelatedPerson(ssgMerged, _cancellationToken);
-                    _logger.LogInformation("Update RelatedPersons records for SearchRequest successfully");
+                    SSG_Identity ssgMerged = originalRelatedPerson.Clone().MergeUpdates(n);
+                    if (ssgMerged.Updated)
+                    {
+                        ssgMerged.SearchRequest = _uploadedSearchRequest;
+                        ssgMerged.InformationSource = InformationSourceType.Request.Value;
+                        ssgMerged.Person = _uploadedPerson;
+                        await _searchRequestService.UpdateRelatedPerson(ssgMerged, _cancellationToken);
+                        _logger.LogInformation("Update RelatedPersons records for SearchRequest successfully");
+                    }
                 }
             }
             return true;
         }
 
-        private async Task<bool> UpdateRelatedApplicant(RelatedPersonEntity newApplicantEntity, SSG_SearchRequest existedSearchRequest)
+        private async Task<bool> UpdateRelatedApplicant(RelatedPersonEntity newApplicantEntity)
         {
             if (newApplicantEntity == null) return true;
 
             //update or add relation relatedPerson
-            SSG_Identity originalRelatedApplicant = existedSearchRequest?.SSG_RelatedPersons?.FirstOrDefault(
+            SSG_Identity originalRelatedApplicant = _uploadedPerson.SSG_Identities.FirstOrDefault(
             m => m.InformationSource == InformationSourceType.Request.Value && m.PersonType == RelatedPersonPersonType.Applicant.Value);
-
 
             if (originalRelatedApplicant == null)
             {
@@ -305,26 +334,27 @@ namespace DynamicsAdapter.Web.SearchAgency
             }
             else
             {
-                SSG_Identity ssgMerged = (SSG_Identity)MergeObj(originalRelatedApplicant.Clone(), newApplicantEntity);
-                ssgMerged.SearchRequest = _uploadedSearchRequest;
-                ssgMerged.InformationSource = InformationSourceType.Request.Value;
-                ssgMerged.Person = _uploadedPerson;
-                await _searchRequestService.UpdateRelatedPerson(ssgMerged, _cancellationToken);
-                _logger.LogInformation("Update Related Applicant records for SearchRequest successfully");
+                SSG_Identity ssgMerged = originalRelatedApplicant.Clone().MergeUpdates(newApplicantEntity);
+                if (ssgMerged.Updated)
+                {
+                    ssgMerged.SearchRequest = _uploadedSearchRequest;
+                    ssgMerged.InformationSource = InformationSourceType.Request.Value;
+                    ssgMerged.Person = _uploadedPerson;
+                    await _searchRequestService.UpdateRelatedPerson(ssgMerged, _cancellationToken);
+                    _logger.LogInformation("Update Related Applicant records for SearchRequest successfully");
+                }
             }
-
-           
 
             return true;
         }
 
-        private async Task<bool> UpdateEmployment(SSG_SearchRequest existedSearchRequest)
+        private async Task<bool> UpdateEmployment()
         {
             if (_personSought.Employments == null) return true;
 
             _logger.LogDebug($"Attempting to update employment records for PersonSought.");
 
-            SSG_Employment originalEmployment = existedSearchRequest?.SSG_Employments?.FirstOrDefault(
+            SSG_Employment originalEmployment = _uploadedPerson.SSG_Employments?.FirstOrDefault(
                     m => m.InformationSource == InformationSourceType.Request.Value );
 
             if (_personSought.Employments.Count() > 0)
@@ -336,13 +366,17 @@ namespace DynamicsAdapter.Web.SearchAgency
                 }
                 else
                 {
-                    SSG_Employment ssgMerged = (SSG_Employment)MergeObj(originalEmployment.Clone(), employ);
-                    ssgMerged.SearchRequest = _uploadedSearchRequest;
-                    ssgMerged.InformationSource = InformationSourceType.Request.Value;
-                    ssgMerged.Person = _uploadedPerson;
-                    SSG_Employment newEmployment = await _searchRequestService.UpdateEmployment(ssgMerged, _cancellationToken);
-                    newEmployment.IsDuplicated = true;
-                    _logger.LogInformation("Update Employment records for SearchRequest successfully");
+                    SSG_Employment ssgMerged = originalEmployment.Clone().MergeUpdates(employ);
+                    SSG_Employment existedEmployment = await _searchRequestService.GetEmployment(originalEmployment.EmploymentId, _cancellationToken);
+                    existedEmployment.IsDuplicated = true;
+                    if (ssgMerged.Updated)
+                    {
+                        ssgMerged.SearchRequest = _uploadedSearchRequest;
+                        ssgMerged.InformationSource = InformationSourceType.Request.Value;
+                        ssgMerged.Person = _uploadedPerson;
+                        await _searchRequestService.UpdateEmployment(ssgMerged, _cancellationToken);
+                        _logger.LogInformation("Update Employment records for SearchRequest successfully");
+                    }
 
                     Employer employer = _personSought.Employments.ElementAt(0).Employer;
                     if (employer != null)
@@ -350,7 +384,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                         foreach (var phone in employer.Phones)
                         {
                             EmploymentContactEntity p = _mapper.Map<EmploymentContactEntity>(phone);
-                            p.Employment = newEmployment;
+                            p.Employment = existedEmployment;
                             await _searchRequestService.CreateEmploymentContact(p, _cancellationToken);
                         }
                     }
@@ -358,6 +392,52 @@ namespace DynamicsAdapter.Web.SearchAgency
             }
             return true;
         }
+
+        //private async Task<bool> UpdateIdentifiers()
+        //{
+        //    if (_personSought.Identifiers == null) return true;
+
+        //    _logger.LogDebug($"Attempting to update identifiers records for PersonSought.");
+
+        //    SSG_Identifier[] existedIdentifiers = _uploadedPerson.SSG_Identifiers?.Where(
+        //            m => m.InformationSource == InformationSourceType.Request.Value).ToArray();
+
+        //    foreach (PersonalIdentifier identifier in _personSought.Identifiers)
+        //    {
+        //        IdentifierEntity newIdentifer = _mapper.Map<IdentifierEntity>(identifier);
+        //        SSG_Identifier existedIdentifer = existedIdentifiers.SingleOrDefault(m => m.IdentifierType == newIdentifer.IdentifierType);
+        //        if (existedIdentifer == null)
+        //        {
+        //            await UploadIdentifiers();
+        //        }
+        //        else
+        //        {
+        //            SSG_Employment ssgMerged = originalEmployment.Clone().MergeUpdates(employ);
+        //            SSG_Employment existedEmployment = await _searchRequestService.GetEmployment(originalEmployment.EmploymentId, _cancellationToken);
+        //            existedEmployment.IsDuplicated = true;
+        //            if (ssgMerged.Updated)
+        //            {
+        //                ssgMerged.SearchRequest = _uploadedSearchRequest;
+        //                ssgMerged.InformationSource = InformationSourceType.Request.Value;
+        //                ssgMerged.Person = _uploadedPerson;
+        //                await _searchRequestService.UpdateEmployment(ssgMerged, _cancellationToken);
+        //                _logger.LogInformation("Update Employment records for SearchRequest successfully");
+        //            }
+
+        //            Employer employer = _personSought.Employments.ElementAt(0).Employer;
+        //            if (employer != null)
+        //            {
+        //                foreach (var phone in employer.Phones)
+        //                {
+        //                    EmploymentContactEntity p = _mapper.Map<EmploymentContactEntity>(phone);
+        //                    p.Employment = existedEmployment;
+        //                    await _searchRequestService.CreateEmploymentContact(p, _cancellationToken);
+        //                }
+        //            }
+        //        }
+        //    }
+        //    return true;
+        //}
         private async Task<bool> UploadNotes(SearchRequestEntity newSearchRequestEntity)
         {
             NotesEntity note = new NotesEntity
@@ -378,46 +458,46 @@ namespace DynamicsAdapter.Web.SearchAgency
             return true;
         }
 
-        private object MergeObj(object originObj, object newObj)
-        {
-            if (newObj == null) return originObj;
-            if (originObj == null) return null;
+        //private object MergeObj(object originObj, object newObj)
+        //{
+        //    if (newObj == null) return originObj;
+        //    if (originObj == null) return null;
 
-            object returnedObj = originObj;
-            Type newType = newObj.GetType();
-            IList<PropertyInfo> props = new List<PropertyInfo>(newType.GetProperties());
-            foreach (PropertyInfo propertyInfo in props)
-            {
-                object newValue = propertyInfo.GetValue(newObj, null);
-                if (newValue != null)
-                {
-                    if (propertyInfo.PropertyType.Name == "Boolean")
-                    {
-                        if ((bool)newValue != false) //new value is null or false, no matter old value has value or not, we do not change the old value
-                        {
-                            propertyInfo.SetValue(returnedObj, newValue);
-                        }
-                    }
-                    else if (propertyInfo.PropertyType.Name == "String")
-                    {
-                        if (!String.IsNullOrEmpty((String)newValue))//new value is null, no matter old value has value or not, we do not change the old value
-                        {
-                            propertyInfo.SetValue(returnedObj, newValue);
-                        }
-                    }
-                    //else if (propertyInfo.PropertyType.IsClass)
-                    //{
-                    //    object originRef = propertyInfo.GetValue(returnedObj, null);
-                    //    propertyInfo.SetValue(returnedObj, MergeObj(originRef, newValue));
-                    //}
-                    else
-                    {
-                        propertyInfo.SetValue(returnedObj, newValue);
-                    }
-                }
-            }
-            return returnedObj;
-        }
+        //    object returnedObj = originObj;
+        //    Type newType = newObj.GetType();
+        //    IList<PropertyInfo> props = new List<PropertyInfo>(newType.GetProperties());
+        //    foreach (PropertyInfo propertyInfo in props)
+        //    {
+        //        object newValue = propertyInfo.GetValue(newObj, null);
+        //        if (newValue != null)
+        //        {
+        //            if (propertyInfo.PropertyType.Name == "Boolean")
+        //            {
+        //                if ((bool)newValue != false) //new value is null or false, no matter old value has value or not, we do not change the old value
+        //                {
+        //                    propertyInfo.SetValue(returnedObj, newValue);
+        //                }
+        //            }
+        //            else if (propertyInfo.PropertyType.Name == "String")
+        //            {
+        //                if (!String.IsNullOrEmpty((String)newValue))//new value is null, no matter old value has value or not, we do not change the old value
+        //                {
+        //                    propertyInfo.SetValue(returnedObj, newValue);
+        //                }
+        //            }
+        //            //else if (propertyInfo.PropertyType.IsClass)
+        //            //{
+        //            //    object originRef = propertyInfo.GetValue(returnedObj, null);
+        //            //    propertyInfo.SetValue(returnedObj, MergeObj(originRef, newValue));
+        //            //}
+        //            else
+        //            {
+        //                propertyInfo.SetValue(returnedObj, newValue);
+        //            }
+        //        }
+        //    }
+        //    return returnedObj;
+        //}
 
 
     }

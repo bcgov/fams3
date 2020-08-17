@@ -162,7 +162,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
     }
 
-    public class SSG_SearchRequest : SearchRequestEntity
+    public class SSG_SearchRequest : SearchRequestEntity, IUpdatableObject
     {
         [JsonProperty("ssg_searchrequestid")]
         public Guid SearchRequestId { get; set; }
@@ -181,6 +181,8 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
         [JsonProperty("ssg_ssg_searchrequest_ssg_employment_SearchRequest")]
         public SSG_Employment[] SSG_Employments { get; set; }
+
+        public bool Updated { get; set; }
 
         public override string ToString()
         {

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Fams3Adapter.Dynamics.DataProvider;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.DataCollection;
@@ -20,6 +21,9 @@ namespace Fams3Adapter.Dynamics.Test.SearchApiRequest
         private Guid _testId;
 
         private SearchApiRequestService _sut;
+        private string adaptorName = "ICBC";
+        private int retries = 10;
+
 
         [SetUp]
         public void SetUp()
@@ -31,8 +35,42 @@ namespace Fams3Adapter.Dynamics.Test.SearchApiRequest
             int inProgressValue = SearchApiRequestStatusReason.InProgress.Value;
             int completeValue = SearchApiRequestStatusReason.Complete.Value;
 
+            odataClientMock.Setup(x => x.For<SSG_DataProvider>(null)
+            .FindEntriesAsync(It.IsAny<CancellationToken>()))
+              .Returns(Task.FromResult<IEnumerable<SSG_DataProvider>>(
+
+                  new List<SSG_DataProvider>()
+                  {  
+                      new SSG_DataProvider()
+                      {
+                        AdaptorName = adaptorName,
+                        NumberOfDaysToRetry =retries
+                      }
+                  }
+               ));
+
+            odataClientMock.Setup(x => x.For<SSG_SearchapiRequestDataProvider>(null)
+            .Select(It.IsAny<Expression<Func<SSG_SearchapiRequestDataProvider, object>>>())
+              .Filter(It.IsAny<Expression<Func<SSG_SearchapiRequestDataProvider, bool>>>())
+                .Filter(It.IsAny<Expression<Func<SSG_SearchapiRequestDataProvider, bool>>>())
+                 .Filter(It.IsAny<Expression<Func<SSG_SearchapiRequestDataProvider, bool>>>())
+          .FindEntriesAsync(It.IsAny<CancellationToken>()))
+            .Returns(Task.FromResult<IEnumerable<SSG_SearchapiRequestDataProvider>>(
+
+                new List<SSG_SearchapiRequestDataProvider>()
+                {
+                      new SSG_SearchapiRequestDataProvider()
+                      {
+                        SearchAPIRequestId = _testId,
+                        AdaptorName = "ICBC",
+                        NumberOfDaysToRetry = 10
+                      }
+                }
+             ));
+
             odataClientMock.Setup(x => x.For<SSG_SearchApiRequest>(null)
-                .Select(x => x.SearchApiRequestId)
+               
+                .Select(It.IsAny<Expression<Func<SSG_SearchApiRequest, object>>>())
                 .Filter(It.IsAny<Expression<Func<SSG_SearchApiRequest, bool>>>())
                 .FindEntriesAsync(It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<IEnumerable<SSG_SearchApiRequest>>(new List<SSG_SearchApiRequest>()
@@ -67,9 +105,9 @@ namespace Fams3Adapter.Dynamics.Test.SearchApiRequest
                             IdentifierId = Guid.NewGuid()
                         }
                     }.ToArray(),
-                    DataProviders = new List<DataProvider.SSG_SearchapiRequestDataProvider>()
+                    DataProviders = new List<SSG_SearchapiRequestDataProvider>()
                     {
-                        new DataProvider.SSG_SearchapiRequestDataProvider(){AdaptorName="ICBC"}
+                        new SSG_SearchapiRequestDataProvider(){AdaptorName="ICBC"}
                     }.ToArray(),
                     SearchRequest = new SSG_SearchRequest() { FileId="fileId"}
                 }));
@@ -109,8 +147,20 @@ namespace Fams3Adapter.Dynamics.Test.SearchApiRequest
             Assert.AreEqual("personGivenName1", result.FirstOrDefault().PersonGivenName);
             Assert.AreEqual(2, result.FirstOrDefault().Identifiers.Count());
             Assert.AreEqual(1, result.FirstOrDefault().DataProviders.Count());
+            Assert.AreEqual(false, result.FirstOrDefault().IsFailed);
         }
 
+
+        [Test]
+        public void with_success_should_return_a_collection_of_failed_search_request()
+        {
+            var result = _sut.GetAllValidFailedSearchRequest(CancellationToken.None).Result;
+            Assert.AreEqual(1, result.Count());
+            Assert.AreEqual("personGivenName1", result.FirstOrDefault().PersonGivenName);
+            Assert.AreEqual(2, result.FirstOrDefault().Identifiers.Count());
+            Assert.AreEqual(true, result.FirstOrDefault().IsFailed);
+            Assert.AreEqual(1, result.FirstOrDefault().DataProviders.Count());
+        }
         [Test]
         public void With_empty_guid_should_throw_ArgumentNullException()
         {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Fams3Adapter.Dynamics.DataProvider;
 using Fams3Adapter.Dynamics.SearchApiEvent;
 using Simple.OData.Client;
 
@@ -14,6 +15,8 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
     public interface ISearchApiRequestService
     {
         Task<IEnumerable<SSG_SearchApiRequest>> GetAllReadyForSearchAsync(CancellationToken cancellationToken);
+
+        Task<IEnumerable<SSG_SearchApiRequest>> GetAllValidFailedSearchRequest(CancellationToken cancellationToken);
 
         Task<Guid> GetLinkedSearchRequestIdAsync(Guid searchApiRequestId,
             CancellationToken cancellationToken);
@@ -68,7 +71,7 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
                     .Expand(x => x.DataProviders)
                     .Expand(x => x.SearchRequest)
                     .FindEntryAsync(cancellationToken);
-
+                searchApiRequest.IsFailed = false;
                 results.Add( searchApiRequest );
             }
             return results;       
@@ -131,6 +134,63 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
                 .Key(searchApiRequestId)
                 .Set(new Entry { { Keys.DYNAMICS_STATUS_CODE_FIELD, SearchApiRequestStatusReason.Complete.Value } })
                 .UpdateEntryAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Get all failed search request that has not exceeded the number of days to retry
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public async Task<IEnumerable<SSG_SearchApiRequest>> GetAllValidFailedSearchRequest(CancellationToken cancellationToken)
+        {
+            IEnumerable<SSG_DataProvider> dataProviders = await _oDataClient.For<SSG_DataProvider>()
+                .FindEntriesAsync(cancellationToken);
+
+
+          
+            List<SSG_SearchApiRequest> results = new List<SSG_SearchApiRequest>();
+
+            //todo: we need to change to use following code, but ODataClient 4 has problems with expand, curent implemented code is a workaround
+            //ref: https://powerusers.microsoft.com/t5/Power-Apps-Ideas/Web-API-Implement-expand-on-collections/idi-p/221291
+
+            foreach (SSG_DataProvider provider in dataProviders)
+            {
+                string adaptorName = provider.AdaptorName;
+                int noOfDaysToRetry = provider.NumberOfDaysToRetry;
+
+                IEnumerable<SSG_SearchapiRequestDataProvider> searchApiRequests = await _oDataClient.For<SSG_SearchapiRequestDataProvider>()
+                    .Select(x => x.SearchAPIRequestId)
+                    .Filter(x => x.NumberOfFailures > 0)
+                    .Filter(x => x.AdaptorName == adaptorName)
+                    .Filter(x => x.NumberOfFailures < noOfDaysToRetry)
+                    .FindEntriesAsync(cancellationToken);
+
+                foreach (SSG_SearchapiRequestDataProvider request in searchApiRequests)
+                {
+
+                    SSG_SearchApiRequest searchApiRequest = await _oDataClient.For<SSG_SearchApiRequest>()
+                        .Key(request.SearchAPIRequestId)
+                        .Expand(x => x.Identifiers)
+                        .Expand(x => x.DataProviders)
+                        .Expand(x => x.SearchRequest)
+                        .FindEntryAsync(cancellationToken);
+                    GetDataProvidersAffected(adaptorName, searchApiRequest);
+                    searchApiRequest.IsFailed = true;
+                    results.Add(searchApiRequest);
+
+
+
+                }
+            }
+            return results;
+        }
+
+        private static void GetDataProvidersAffected(string adapterName, SSG_SearchApiRequest searchApiRequest)
+        {
+            var list = searchApiRequest.DataProviders;
+            List<SSG_SearchapiRequestDataProvider> ssgApiDataProviders = new List<SSG_SearchapiRequestDataProvider>();
+            ssgApiDataProviders.AddRange(searchApiRequest.DataProviders);
+            searchApiRequest.DataProviders = ssgApiDataProviders.FindAll(x => x.AdaptorName == adapterName).ToArray();
         }
     }
 }

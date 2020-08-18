@@ -41,10 +41,10 @@ namespace Fams3Adapter.Dynamics.DataProvider
     public class SSG_DataProvider
     {
         [JsonProperty("ssg_NumberOfRetries")]
-        public int NumberOfRetries;
+        public int NumberOfRetries { get; set; }
 
         [JsonProperty("ssg_TimeBetweenRetries")]
-        public int TimeBetweenRetries;
+        public int TimeBetweenRetries { get; set; }
 
         [JsonProperty("ssg_dataproviderId")]
         public Guid DataProviderId { get; set; }

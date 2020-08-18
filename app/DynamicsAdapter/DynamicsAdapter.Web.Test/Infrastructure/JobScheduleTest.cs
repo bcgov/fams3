@@ -18,5 +18,16 @@ namespace DynamicsAdapter.Web.Test.Infrastructure
 
         }
 
+        [Test]
+        public void It_should_create_a_failed_job_schedule()
+        {
+
+            var sut = new JobSchedule(typeof(FailedSearchRequestJob), "* 8 * * * ");
+
+            Assert.AreEqual(typeof(FailedSearchRequestJob), sut.JobType);
+            Assert.AreEqual("* 8 * * * ", sut.CronExpression);
+
+        }
+
     }
 }

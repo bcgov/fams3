@@ -18,6 +18,9 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
 
         Task<IEnumerable<SSG_SearchApiRequest>> GetAllValidFailedSearchRequest(CancellationToken cancellationToken);
 
+        Task<IEnumerable<SSG_DataProvider>> GetDataProvidersList(CancellationToken cancellationToken);
+
+
         Task<Guid> GetLinkedSearchRequestIdAsync(Guid searchApiRequestId,
             CancellationToken cancellationToken);
 
@@ -143,11 +146,8 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
         /// <returns></returns>
         public async Task<IEnumerable<SSG_SearchApiRequest>> GetAllValidFailedSearchRequest(CancellationToken cancellationToken)
         {
-            IEnumerable<SSG_DataProvider> dataProviders = await _oDataClient.For<SSG_DataProvider>()
-                .FindEntriesAsync(cancellationToken);
+            IEnumerable<SSG_DataProvider> dataProviders = await GetDataProvidersList(cancellationToken);
 
-
-          
             List<SSG_SearchApiRequest> results = new List<SSG_SearchApiRequest>();
 
             //todo: we need to change to use following code, but ODataClient 4 has problems with expand, curent implemented code is a workaround
@@ -174,7 +174,7 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
                         .Expand(x => x.DataProviders)
                         .Expand(x => x.SearchRequest)
                         .FindEntryAsync(cancellationToken);
-                    GetDataProvidersAffected(adaptorName, searchApiRequest);
+                    FilterAffectedDataProvider(adaptorName, searchApiRequest);
                     searchApiRequest.IsFailed = true;
                     results.Add(searchApiRequest);
 
@@ -185,7 +185,13 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
             return results;
         }
 
-        private static void GetDataProvidersAffected(string adapterName, SSG_SearchApiRequest searchApiRequest)
+        public async Task<IEnumerable<SSG_DataProvider>> GetDataProvidersList(CancellationToken cancellationToken)
+        {
+            return await _oDataClient.For<SSG_DataProvider>()
+                            .FindEntriesAsync(cancellationToken);
+        }
+
+        private static void FilterAffectedDataProvider(string adapterName, SSG_SearchApiRequest searchApiRequest)
         {
             var list = searchApiRequest.DataProviders;
             List<SSG_SearchapiRequestDataProvider> ssgApiDataProviders = new List<SSG_SearchapiRequestDataProvider>();

@@ -35,7 +35,7 @@ namespace DynamicsAdapter.Web.Infrastructure
 
         public IScheduler Scheduler { get; set; }
 
-        /// <summary>
+        /// <summary> 
         /// When the hosted services starts, it triggers all the jobs registered via di.
         /// </summary>
         /// <param name="cancellationToken"></param>

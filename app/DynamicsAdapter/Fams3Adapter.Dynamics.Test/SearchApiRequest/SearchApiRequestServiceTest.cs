@@ -44,7 +44,11 @@ namespace Fams3Adapter.Dynamics.Test.SearchApiRequest
                       new SSG_DataProvider()
                       {
                         AdaptorName = adaptorName,
-                        NumberOfDaysToRetry =retries
+                        NumberOfDaysToRetry =retries,
+                        SearchSpeed = "Fast",
+                        TimeBetweenRetries = 60,
+                        NumberOfRetries = 3
+                        
                       }
                   }
                ));
@@ -63,7 +67,8 @@ namespace Fams3Adapter.Dynamics.Test.SearchApiRequest
                       {
                         SearchAPIRequestId = _testId,
                         AdaptorName = "ICBC",
-                        NumberOfDaysToRetry = 10
+                        NumberOfDaysToRetry = 10,
+                        
                       }
                 }
              ));
@@ -160,6 +165,18 @@ namespace Fams3Adapter.Dynamics.Test.SearchApiRequest
             Assert.AreEqual(2, result.FirstOrDefault().Identifiers.Count());
             Assert.AreEqual(true, result.FirstOrDefault().IsFailed);
             Assert.AreEqual(1, result.FirstOrDefault().DataProviders.Count());
+        }
+
+        [Test]
+        public void with_success_should_return_a_collection_of_data_provider()
+        {
+            var result = _sut.GetDataProvidersList(CancellationToken.None).Result;
+            Assert.AreEqual(1, result.Count());
+            Assert.AreEqual("ICBC", result.FirstOrDefault().AdaptorName);
+            Assert.AreEqual(10, result.FirstOrDefault().NumberOfDaysToRetry);
+            Assert.AreEqual("Fast", result.FirstOrDefault().SearchSpeed);
+            Assert.AreEqual(60, result.FirstOrDefault().TimeBetweenRetries);
+            Assert.AreEqual(3, result.FirstOrDefault().NumberOfRetries);
         }
         [Test]
         public void With_empty_guid_should_throw_ArgumentNullException()

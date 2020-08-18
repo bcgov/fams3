@@ -51,10 +51,8 @@ namespace DynamicsAdapter.Web.SearchRequest
 
             try
             {
-
-                List<SSG_SearchApiRequest> requestListFailed = await GetAllFailedForSearchAsync(cts.Token);
-                List<SSG_SearchApiRequest> requestList = await GetAllReadyForSearchAsync(cts.Token);
-                requestList.AddRange(requestListFailed);
+                  List<SSG_SearchApiRequest> requestList = await GetAllReadyForSearchAsync(cts.Token);
+                
                 foreach (SSG_SearchApiRequest ssgSearchRequest in requestList)
                 {
                     if (ssgSearchRequest.SearchRequestId != Guid.Empty)
@@ -79,7 +77,7 @@ namespace DynamicsAdapter.Web.SearchRequest
 
                                     _logger.LogInformation($"Successfully posted person search id:{result.Id}");
 
-                                    if (!ssgSearchRequest.IsFailed)
+                                   
                                     await MarkInProgress(ssgSearchRequest, cts.Token);
                                 }
                                 else
@@ -108,16 +106,6 @@ namespace DynamicsAdapter.Web.SearchRequest
             var request = await _searchApiRequestService.GetAllReadyForSearchAsync(cancellationToken);
 
             _logger.LogInformation("Successfully retrieved search requests from dynamics");
-            return request.ToList();
-        }
-
-        private async Task<List<SSG_SearchApiRequest>> GetAllFailedForSearchAsync(CancellationToken cancellationToken)
-        {
-            _logger.LogDebug("Attempting to get failed search request that can be retried from dynamics");
-
-            var request = await _searchApiRequestService.GetAllValidFailedSearchRequest(cancellationToken);
-
-            _logger.LogInformation("Successfully retrieved failed search requests that can be retried from dynamics");
             return request.ToList();
         }
 

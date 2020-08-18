@@ -18,6 +18,8 @@ namespace DynamicsAdapter.Web.Register
         SSG_SearchApiRequest FilterDuplicatedIdentifier(SSG_SearchApiRequest request);
         Task<bool> RegisterSearchApiRequest(SSG_SearchApiRequest request);
         Task<SSG_SearchApiRequest> GetSearchApiRequest(Guid guid);
+
+        Task<SSG_DataProvider[]> GetDataProvidersList();
         Task<SSG_SearchApiRequest> GetSearchApiRequest(string searchRequestKey);
         Task<bool> RemoveSearchApiRequest(Guid guid);
         Task<bool> RemoveSearchApiRequest(string searchRequestKey);

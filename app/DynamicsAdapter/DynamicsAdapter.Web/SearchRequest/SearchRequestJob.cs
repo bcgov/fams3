@@ -103,7 +103,7 @@ namespace DynamicsAdapter.Web.SearchRequest
         {
             _logger.LogDebug("Attempting to get search request from dynamics");
            
-            var request = await _searchApiRequestService.GetAllReadyForSearchAsync(cancellationToken);
+            var request = await _searchApiRequestService.GetAllReadyForSearchAsync(cancellationToken, await _register.GetDataProvidersList());
 
             _logger.LogInformation("Successfully retrieved search requests from dynamics");
             return request.ToList();

@@ -267,7 +267,7 @@ namespace DynamicsAdapter.Web.Test.Register
             Keys.DATA_PROVIDER_KEY = "IsNull";
             var result = await _sut.GetDataProvidersList();
             Assert.AreEqual(1, result.Count());
-            odataClientMock.Verify(x=> x.)
+            odataClientMock.Verify(x => x.For<SSG_DataProvider>(null).FindEntriesAsync(It.IsAny<CancellationToken>()), Times.AtLeastOnce());
         }
 
 

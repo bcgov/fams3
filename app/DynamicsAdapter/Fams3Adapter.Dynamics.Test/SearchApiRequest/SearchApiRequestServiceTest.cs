@@ -24,13 +24,24 @@ namespace Fams3Adapter.Dynamics.Test.SearchApiRequest
         private string adaptorName = "ICBC";
         private int retries = 10;
 
-
+        List<SSG_DataProvider> providersList;
         [SetUp]
         public void SetUp()
         {
 
             _testId = Guid.NewGuid();
+            providersList = new List<SSG_DataProvider>()
+                  {
+                      new SSG_DataProvider()
+                      {
+                        AdaptorName = adaptorName,
+                        NumberOfDaysToRetry =retries,
+                        SearchSpeed = "Fast",
+                        TimeBetweenRetries = 60,
+                        NumberOfRetries = 3
 
+                      }
+                  };
             int readyForSearchVAlue = SearchApiRequestStatusReason.ReadyForSearch.Value;
             int inProgressValue = SearchApiRequestStatusReason.InProgress.Value;
             int completeValue = SearchApiRequestStatusReason.Complete.Value;
@@ -39,18 +50,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchApiRequest
             .FindEntriesAsync(It.IsAny<CancellationToken>()))
               .Returns(Task.FromResult<IEnumerable<SSG_DataProvider>>(
 
-                  new List<SSG_DataProvider>()
-                  {  
-                      new SSG_DataProvider()
-                      {
-                        AdaptorName = adaptorName,
-                        NumberOfDaysToRetry =retries,
-                        SearchSpeed = "Fast",
-                        TimeBetweenRetries = 60,
-                        NumberOfRetries = 3
-                        
-                      }
-                  }
+                  providersList
                ));
 
             odataClientMock.Setup(x => x.For<SSG_SearchapiRequestDataProvider>(null)
@@ -147,11 +147,13 @@ namespace Fams3Adapter.Dynamics.Test.SearchApiRequest
         [Test]
         public void with_success_should_return_a_collection_of_search_request()
         {
-            var result = _sut.GetAllReadyForSearchAsync(CancellationToken.None).Result;
+            var result = _sut.GetAllReadyForSearchAsync(CancellationToken.None, providersList.ToArray()).Result;
             Assert.AreEqual(1, result.Count());
             Assert.AreEqual("personGivenName1", result.FirstOrDefault().PersonGivenName);
             Assert.AreEqual(2, result.FirstOrDefault().Identifiers.Count());
             Assert.AreEqual(1, result.FirstOrDefault().DataProviders.Count());
+            Assert.AreEqual(60, result.FirstOrDefault().DataProviders[0].TimeBetweenRetries);
+            Assert.AreEqual(3, result.FirstOrDefault().DataProviders[0].NumberOfRetries);
             Assert.AreEqual(false, result.FirstOrDefault().IsFailed);
         }
 
@@ -159,7 +161,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchApiRequest
         [Test]
         public void with_success_should_return_a_collection_of_failed_search_request()
         {
-            var result = _sut.GetAllValidFailedSearchRequest(CancellationToken.None).Result;
+            var result = _sut.GetAllValidFailedSearchRequest(CancellationToken.None, providersList.ToArray()).Result;
             Assert.AreEqual(1, result.Count());
             Assert.AreEqual("personGivenName1", result.FirstOrDefault().PersonGivenName);
             Assert.AreEqual(2, result.FirstOrDefault().Identifiers.Count());

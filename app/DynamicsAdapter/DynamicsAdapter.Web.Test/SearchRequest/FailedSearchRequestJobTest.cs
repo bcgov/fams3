@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using DynamicsAdapter.Web.Register;
 using DynamicsAdapter.Web.SearchRequest;
+using Fams3Adapter.Dynamics.DataProvider;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Microsoft.Extensions.Logging;
@@ -29,6 +30,7 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
         private Mock<ILogger<FailedSearchRequestJob>> _loggerMock = new Mock<ILogger<FailedSearchRequestJob>>();
         private Mock<IMapper> _mapperMock = new Mock<IMapper>();
         private Mock<IJobExecutionContext> _jobContext = new Mock<IJobExecutionContext>();
+       
 
         [SetUp]
         public void Init()
@@ -38,6 +40,7 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
             _exceptionSearchRequestId = Guid.NewGuid();
             _emptySearchApiRequestId = Guid.NewGuid();
             _searchAsyncExceptionSearchRequestId = Guid.NewGuid();
+          
 
             SSG_SearchApiRequest ssgValidSearchApiRequest = new SSG_SearchApiRequest()
             {
@@ -115,7 +118,7 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
         public async Task valid_searchapiRequest_execute_run_successfully()
         {
 
-            _searchApiRequestServiceMock.Setup(x => x.GetAllValidFailedSearchRequest(It.IsAny<CancellationToken>()))
+            _searchApiRequestServiceMock.Setup(x => x.GetAllValidFailedSearchRequest(It.IsAny<CancellationToken>(), It.IsAny<SSG_DataProvider[]>()))
                 .Returns(Task.FromResult<IEnumerable<SSG_SearchApiRequest>>(_fakeSearchApiRequests));
 
 
@@ -142,7 +145,7 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
                     SearchRequest = new SSG_SearchRequest(){FileId="111111"}
                 }
             };
-            _searchApiRequestServiceMock.Setup(x => x.GetAllValidFailedSearchRequest(It.IsAny<CancellationToken>()))
+            _searchApiRequestServiceMock.Setup(x => x.GetAllValidFailedSearchRequest(It.IsAny<CancellationToken>(), It.IsAny<SSG_DataProvider[]>()))
             .Returns(Task.FromResult<IEnumerable<SSG_SearchApiRequest>>(noSearchRequestIDRequests));
 
             await _sut.Execute(_jobContext.Object);
@@ -167,7 +170,7 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
                     SearchRequest = new SSG_SearchRequest(){FileId="111111"}
                 }
             };
-            _searchApiRequestServiceMock.Setup(x => x.GetAllValidFailedSearchRequest(It.IsAny<CancellationToken>()))
+            _searchApiRequestServiceMock.Setup(x => x.GetAllValidFailedSearchRequest(It.IsAny<CancellationToken>(), It.IsAny<SSG_DataProvider[]>()))
             .Returns(Task.FromResult<IEnumerable<SSG_SearchApiRequest>>(exceptionSearchRequestIDRequests));
 
             _searchApiClientMock.Setup(
@@ -195,7 +198,7 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
         [Test]
         public async Task register_throw_exception_should_be_caught()
         {
-            _searchApiRequestServiceMock.Setup(x => x.GetAllValidFailedSearchRequest(It.IsAny<CancellationToken>()))
+            _searchApiRequestServiceMock.Setup(x => x.GetAllValidFailedSearchRequest(It.IsAny<CancellationToken>(), It.IsAny<SSG_DataProvider[]>()))
                .Returns(Task.FromResult<IEnumerable<SSG_SearchApiRequest>>(_fakeSearchApiRequests));
 
             _searchApiRequestRegisterMock.Setup(
@@ -210,7 +213,7 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
         [Test]
         public async Task register_return_false_exception_should_be_caught()
         {
-            _searchApiRequestServiceMock.Setup(x => x.GetAllValidFailedSearchRequest(It.IsAny<CancellationToken>()))
+            _searchApiRequestServiceMock.Setup(x => x.GetAllValidFailedSearchRequest(It.IsAny<CancellationToken>(), It.IsAny<SSG_DataProvider[]>()))
                .Returns(Task.FromResult<IEnumerable<SSG_SearchApiRequest>>(_fakeSearchApiRequests));
 
             _searchApiRequestRegisterMock.Setup(

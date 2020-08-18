@@ -103,7 +103,7 @@ namespace DynamicsAdapter.Web.SearchRequest
         {
             _logger.LogDebug("Attempting to get failed search request that can be retried from dynamics");
 
-            var request = await _searchApiRequestService.GetAllValidFailedSearchRequest(cancellationToken);
+            var request = await _searchApiRequestService.GetAllValidFailedSearchRequest(cancellationToken, await _register.GetDataProvidersList());
 
             _logger.LogInformation("Successfully retrieved failed search requests that can be retried from dynamics");
             return request.ToList();

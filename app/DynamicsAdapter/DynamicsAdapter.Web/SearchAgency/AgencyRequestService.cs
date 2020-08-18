@@ -109,7 +109,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                     && m.InformationSource == InformationSourceType.Request.Value);
             if (existedSoughtPerson == null)
             {
-                _logger.LogInformation("the updating personSought does not exist. something is wrong.");
+                _logger.LogError("the updating personSought does not exist. something is wrong.");
                 return null;
             }
             existedSoughtPerson = await _searchRequestService.GetPerson(existedSoughtPerson.PersonId, _cancellationToken);
@@ -128,13 +128,18 @@ namespace DynamicsAdapter.Web.SearchAgency
             }
 
             //update PersonEntity
+            if(searchRequestOrdered.Person == null)
+            {
+                _logger.LogError("the searchRequestOrdered does not contain Person. The request is wrong.");
+                return null;
+            }
             _personSought = searchRequestOrdered.Person;
             PersonEntity newPersonEntity = _mapper.Map<PersonEntity>(_personSought);
             await UpdatePersonSought(newPersonEntity);
 
             //update RelatedPerson
             await UpdateRelatedPerson();
-            await UpdateRelatedApplicant(new RelatedPersonEntity()
+            await UpdateRelatedApplicant((string.IsNullOrEmpty(newSearchRequest.ApplicantFirstName)|| string.IsNullOrEmpty(newSearchRequest.ApplicantLastName))? null : new RelatedPersonEntity()
                                             {
                                                 FirstName = newSearchRequest.ApplicantFirstName,
                                                 LastName = newSearchRequest.ApplicantLastName,
@@ -142,11 +147,13 @@ namespace DynamicsAdapter.Web.SearchAgency
                                             });
             //update employment
             await UpdateEmployment();
+            //update identifiers
+            await UpdateIdentifiers();
 
             //for phones, addresses, Identifiers are same as creation, as if different, add new one, if same, ignore
             await UploadAddresses();
             await UploadPhones();
-            await UploadIdentifiers();
+            
 
             return _uploadedSearchRequest;
         }
@@ -321,7 +328,7 @@ namespace DynamicsAdapter.Web.SearchAgency
             if (newApplicantEntity == null) return true;
 
             //update or add relation relatedPerson
-            SSG_Identity originalRelatedApplicant = _uploadedPerson.SSG_Identities.FirstOrDefault(
+            SSG_Identity originalRelatedApplicant = _uploadedPerson.SSG_Identities?.FirstOrDefault(
             m => m.InformationSource == InformationSourceType.Request.Value && m.PersonType == RelatedPersonPersonType.Applicant.Value);
 
             if (originalRelatedApplicant == null)
@@ -393,6 +400,38 @@ namespace DynamicsAdapter.Web.SearchAgency
             return true;
         }
 
+        private async Task<bool> UpdateIdentifiers()
+        {
+            if (_personSought.Identifiers == null) return true;
+
+            _logger.LogDebug($"Attempting to update identifier records for PersonSought.");
+
+            foreach (PersonalIdentifier pi in _personSought.Identifiers)
+            {
+                IdentifierEntity identifierEntity = _mapper.Map<IdentifierEntity>(pi);
+                SSG_Identifier originalIdentifier = _uploadedPerson.SSG_Identifiers?.FirstOrDefault(
+                   m => m.InformationSource == InformationSourceType.Request.Value && m.IdentifierType==identifierEntity.IdentifierType);
+                if(originalIdentifier == null)
+                {
+                    await UploadIdentifiers();
+                }
+                else
+                {
+                    SSG_Identifier ssgMerged = originalIdentifier.Clone().MergeUpdates(identifierEntity);
+                    if (ssgMerged.Updated)
+                    {
+                        ssgMerged.SearchRequest = _uploadedSearchRequest;
+                        ssgMerged.InformationSource = InformationSourceType.Request.Value;
+                        ssgMerged.Person = _uploadedPerson;
+                        await _searchRequestService.UpdateIdentifier(ssgMerged, _cancellationToken);
+                        _logger.LogInformation("Update Identifier records for SearchRequest successfully");
+                    }
+                }
+            }
+
+            return true;
+        }
+
         private async Task<bool> UploadNotes(SearchRequestEntity newSearchRequestEntity)
         {
             NotesEntity note = new NotesEntity
@@ -455,6 +494,59 @@ namespace DynamicsAdapter.Web.SearchAgency
         //}
 
 
+    }
+
+    public static class IUpdatableObjectExtensions
+    {
+
+        public static IUpdatableObject MergeUpdates<IUpdatableObject>(this IUpdatableObject originObj, object newObj)
+        {
+            if (newObj == null || originObj == null) return originObj;
+
+            Type newType = newObj.GetType();
+            bool updated = false;
+            IList<PropertyInfo> props = new List<PropertyInfo>(newType.GetProperties());
+            foreach (PropertyInfo propertyInfo in props)
+            {
+                var newValue = propertyInfo.GetValue(newObj, null);
+                var oldValue = propertyInfo.GetValue(originObj, null);
+
+                if (newValue != null && propertyInfo.Name != "Updated")
+                {
+                    bool isDifferent = !String.Equals(newValue.ToString(), oldValue == null ? "null" : oldValue.ToString(), StringComparison.InvariantCultureIgnoreCase);
+                    if (isDifferent)
+                    {
+                        if (propertyInfo.PropertyType.Name == "Boolean")
+                        {
+                            propertyInfo.SetValue(originObj, newValue);
+                            updated = true;
+                        }
+                        else if (propertyInfo.PropertyType.Name == "String")
+                        {
+                            if (!String.IsNullOrEmpty((String)newValue))//new value is null, no matter old value has value or not, we do not change the old value
+                            {
+                                propertyInfo.SetValue(originObj, newValue);
+                                updated = true;
+                            }
+                        }
+                        else
+                        {
+                            propertyInfo.SetValue(originObj, newValue);
+                            updated = true;
+                        }
+                    }
+                    //Type[] t = propertyInfo.PropertyType.GetInterfaces();
+                    //if (propertyInfo.PropertyType.GetInterfaces().SingleOrDefault(m => m.Name == "IUpdatableObject") != null)
+                    //{
+                    //    propertyInfo.SetValue(originObj, MergeUpdates(oldValue, newValue));
+                    //}
+                }
+            }
+            PropertyInfo pi = originObj.GetType().GetProperties().SingleOrDefault(m => m.Name == "Updated");
+            if (pi == null) return originObj;
+            else pi.SetValue(originObj, updated);
+            return originObj;
+        }
     }
 
 }

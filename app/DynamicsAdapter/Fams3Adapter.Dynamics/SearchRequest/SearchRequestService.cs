@@ -53,7 +53,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         Task<SSG_Person> UpdatePerson(SSG_Person newPerson, CancellationToken cancellationToken);
         Task<SSG_Identity> UpdateRelatedPerson(SSG_Identity newRelatedPerson, CancellationToken cancellationToken);
         Task<SSG_Employment> UpdateEmployment(SSG_Employment newEmploy, CancellationToken cancellationToken);
-
+        Task<SSG_Identifier> UpdateIdentifier(SSG_Identifier newId, CancellationToken cancellationToken);
 
     }
 
@@ -453,6 +453,11 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         {
             EmploymentEntity linkedEmploy = await LinkEmploymentRef(newEmploy, cancellationToken);
             return await this._oDataClient.For<SSG_Employment>().Key(newEmploy.EmploymentId).Set(linkedEmploy).UpdateEntryAsync(cancellationToken);
+        }
+
+        public async Task<SSG_Identifier> UpdateIdentifier(SSG_Identifier newId, CancellationToken cancellationToken)
+        {
+            return await this._oDataClient.For<SSG_Identifier>().Key(newId.IdentifierId).Set(newId).UpdateEntryAsync(cancellationToken);
         }
 
         public async Task<SSG_Notese> CreateNotes(NotesEntity note, CancellationToken cancellationToken)

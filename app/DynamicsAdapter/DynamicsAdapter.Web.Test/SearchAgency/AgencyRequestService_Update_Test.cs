@@ -968,7 +968,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             _mapper.Setup(m => m.Map<SearchRequestEntity>(It.IsAny<SearchRequestOrdered>()))
                 .Returns(newSearchRequest);
 
-            _mapper.Setup(m => m.Map<AddressEntity>(It.IsAny<Employment>()))
+            _mapper.Setup(m => m.Map<AddressEntity>(It.IsAny<Address>()))
                 .Returns(new AddressEntity() { AddressLine1="addressLine1"});
 
             _mapper.Setup(m => m.Map<PersonEntity>(It.IsAny<Person>()))

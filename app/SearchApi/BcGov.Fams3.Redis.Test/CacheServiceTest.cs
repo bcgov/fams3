@@ -161,6 +161,20 @@ namespace BcGov.Fams3.Redis.Test
         }
 
         [Test]
+        public void with_correct_key_data_save_successfully_with_expiratuon()
+        {
+            string key = "key";
+            string data = "data";
+            _sut.Save(key, data, new TimeSpan(0,0,2));
+            _distributedCacheMock.Verify(x => x.SetAsync(key,
+                It.IsAny<byte[]>(),
+                It.IsAny<DistributedCacheEntryOptions>(),
+                It.IsAny<CancellationToken>()), Times.AtLeastOnce());
+        }
+
+       
+
+        [Test]
         public void with_null_key_save_throw_exception()
         {
             string data = "data";

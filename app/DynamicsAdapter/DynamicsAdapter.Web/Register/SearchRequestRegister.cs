@@ -1,11 +1,14 @@
 ﻿using BcGov.Fams3.Redis;
 using DynamicsAdapter.Web.Mapping;
+using Fams3Adapter.Dynamics.DataProvider;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Simple.OData.Client;
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DynamicsAdapter.Web.Register
@@ -26,11 +29,13 @@ namespace DynamicsAdapter.Web.Register
     {
         private readonly ICacheService _cache;
         private readonly ILogger<SearchRequestRegister> _logger;
+        private readonly IODataClient _oDataClient;
 
-        public SearchRequestRegister(ICacheService cache, ILogger<SearchRequestRegister> logger)
+        public SearchRequestRegister(ICacheService cache, ILogger<SearchRequestRegister> logger, IODataClient oDataClient)
         {
             _cache = cache;
             _logger = logger;
+            this._oDataClient = oDataClient;
         }
 
         public SSG_SearchApiRequest FilterDuplicatedIdentifier(SSG_SearchApiRequest request)
@@ -48,6 +53,31 @@ namespace DynamicsAdapter.Web.Register
             if (request == null) return false;
             await _cache.Save($"{Keys.REDIS_KEY_PREFIX}{request.SearchRequest.FileId}_{request.SequenceNumber}", request);
             return true;
+        }
+
+        public async Task<bool> RegisterDataProviders(SSG_DataProvider[] providers)
+        {
+            if (providers == null) return false;
+            await _cache.Save($"{Keys.REDIS_KEY_PREFIX}{Keys.DATA_PROVIDER_KEY}", providers, new TimeSpan(24, 0, 10));
+            return true;
+        }
+
+        public async Task<SSG_DataProvider[]> GetDataProvidersList()
+        {
+          
+            string data = await _cache.Get($"{Keys.REDIS_KEY_PREFIX}{Keys.DATA_PROVIDER_KEY}");
+            if (string.IsNullOrEmpty(data))
+            {
+                var cts = new CancellationToken();
+                var providers = await _oDataClient.For<SSG_DataProvider>()
+                            .FindEntriesAsync(cts);
+
+                await RegisterDataProviders(providers.ToArray());
+
+                return providers.ToArray();
+            }
+            return JsonConvert.DeserializeObject<SSG_DataProvider[]>(data);
+           
         }
 
         public async Task<SSG_SearchApiRequest> GetSearchApiRequest(string searchRequestKey)

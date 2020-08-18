@@ -1,5 +1,6 @@
 ﻿using BcGov.Fams3.Redis;
 using DynamicsAdapter.Web.Register;
+using Fams3Adapter.Dynamics.DataProvider;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using Fams3Adapter.Dynamics.SearchRequest;
@@ -8,8 +9,11 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using Simple.OData.Client;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DynamicsAdapter.Web.Test.Register
@@ -28,6 +32,9 @@ namespace DynamicsAdapter.Web.Test.Register
         private PersonalIdentifier _fakeIdentifier;
         private PersonalIdentifier _wrongIdentifier;
         private Mock<ILogger<SearchRequestRegister>> _loggerMock;
+        private string adaptorName = "ICBC";
+        private int retries = 10;
+        private Mock<IODataClient> odataClientMock = new Mock<IODataClient>();
 
         [SetUp]
         public void Init()
@@ -38,6 +45,24 @@ namespace DynamicsAdapter.Web.Test.Register
             _wrongSourceIdentifierGuid = Guid.NewGuid();
             _validSearchRequestKey = "1234_0000";
             _invalidSearchRequestKey = "1234_7777";
+
+            odataClientMock.Setup(x => x.For<SSG_DataProvider>(null)
+            .FindEntriesAsync(It.IsAny<CancellationToken>()))
+              .Returns(Task.FromResult<IEnumerable<SSG_DataProvider>>(
+
+                  new List<SSG_DataProvider>()
+                  {
+                      new SSG_DataProvider()
+                      {
+                        AdaptorName = adaptorName,
+                        NumberOfDaysToRetry =retries,
+                        SearchSpeed = "Fast",
+                        TimeBetweenRetries = 60,
+                        NumberOfRetries = 3
+
+                      }
+                  }
+               ));
 
             _fakeRequest = new SSG_SearchApiRequest
             {
@@ -70,6 +95,23 @@ namespace DynamicsAdapter.Web.Test.Register
             _cacheServiceMock.Setup(x => x.Get(It.Is<string>(m => m.ToString() == Keys.REDIS_KEY_PREFIX+_validSearchApiRequestGuid.ToString())))
              .Returns(Task.FromResult(JsonConvert.SerializeObject(_fakeRequest)));
 
+            _cacheServiceMock.Setup(x => x.Get(It.Is<string>(m => m.ToString() == Keys.REDIS_KEY_PREFIX + Keys.DATA_PROVIDER_KEY)))
+             .Returns(Task.FromResult(JsonConvert.SerializeObject(new List<SSG_DataProvider>()
+                  {
+                      new SSG_DataProvider()
+                      {
+                        AdaptorName = adaptorName,
+                        NumberOfDaysToRetry =retries,
+                        SearchSpeed = "Fast",
+                        TimeBetweenRetries = 60,
+                        NumberOfRetries = 3
+
+                      }
+                  }.ToArray())));
+
+            _cacheServiceMock.Setup(x => x.Get(It.Is<string>(m => m.ToString().Contains("IsNull"))))
+            .Returns(Task.FromResult(""));
+
             _cacheServiceMock.Setup(x => x.Get(It.Is<string>(m => m == $"{Keys.REDIS_KEY_PREFIX}{_validSearchRequestKey}")))
             .Returns(Task.FromResult(JsonConvert.SerializeObject(_fakeRequest)));
 
@@ -86,7 +128,7 @@ namespace DynamicsAdapter.Web.Test.Register
              .Returns(Task.FromResult(""));
 
             _loggerMock = new Mock<ILogger<SearchRequestRegister>>();
-            _sut = new SearchRequestRegister(_cacheServiceMock.Object, _loggerMock.Object);
+            _sut = new SearchRequestRegister(_cacheServiceMock.Object, _loggerMock.Object, odataClientMock.Object);
         }
 
         [Test]
@@ -204,6 +246,30 @@ namespace DynamicsAdapter.Web.Test.Register
             SSG_SearchApiRequest result = await _sut.GetSearchApiRequest(_validSearchRequestKey);
             Assert.AreEqual("111111", result.SearchRequest.FileId);
         }
+
+        [Test]
+        public async Task valid_register_data_providers_list_to_cache_correctly()
+        {
+            var result = await _sut.RegisterDataProviders((new List<SSG_DataProvider>() { new SSG_DataProvider { } }).ToArray());
+            Assert.AreEqual(true, result);
+        }
+
+        [Test]
+        public async Task valid_key_should_return_data_providers_list_from_cache()
+        {
+            var result = await _sut.GetDataProvidersList();
+            Assert.AreEqual(1, result.Count());
+        }
+
+        [Test]
+        public async Task non_registerd_should_call_dynamics_to_pull_list_and_save_in_cache()
+        {
+            Keys.DATA_PROVIDER_KEY = "IsNull";
+            var result = await _sut.GetDataProvidersList();
+            Assert.AreEqual(1, result.Count());
+            odataClientMock.Verify(x=> x.)
+        }
+
 
         [Test]
         public async Task wrong_guid_wont_get_searchApiRequest()

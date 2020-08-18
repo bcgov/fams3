@@ -15,6 +15,8 @@ namespace BcGov.Fams3.Redis
         Task<SearchRequest> GetRequest(string searchRequestKey);
         Task DeleteRequest(string id);
 
+        Task Save(string key, dynamic data, TimeSpan expiry);
+
         Task Save(string key, dynamic data);
         Task<string> Get(string key);
         Task Delete(string key);
@@ -77,6 +79,14 @@ namespace BcGov.Fams3.Redis
             if (string.IsNullOrEmpty(key)) throw new ArgumentNullException("Save : Key cannot be null");
             await _distributedCache.SetStringAsync(key, (string)JsonConvert.SerializeObject(data), new CancellationToken());
         }
+
+        public async Task Save(string key, dynamic data, TimeSpan expiry)
+        {
+            if (data == null) throw new ArgumentNullException("Save : data cannot be null");
+            if (string.IsNullOrEmpty(key)) throw new ArgumentNullException("Save : Key cannot be null");
+            await _distributedCache.SetStringAsync(key, (string)JsonConvert.SerializeObject(data),new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = expiry } , new CancellationToken());
+        }
+
 
         public async Task<string> Get(string key)
         {

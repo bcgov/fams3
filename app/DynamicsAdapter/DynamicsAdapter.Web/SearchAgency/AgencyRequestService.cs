@@ -406,7 +406,7 @@ namespace DynamicsAdapter.Web.SearchAgency
 
             _logger.LogDebug($"Attempting to update identifier records for PersonSought.");
 
-            foreach (PersonalIdentifier pi in _personSought.Identifiers)
+            foreach (PersonalIdentifier pi in _personSought.Identifiers.Where(m=>m.Owner==OwnerType.PersonSought))
             {
                 IdentifierEntity identifierEntity = _mapper.Map<IdentifierEntity>(pi);
                 SSG_Identifier originalIdentifier = _uploadedPerson.SSG_Identifiers?.FirstOrDefault(

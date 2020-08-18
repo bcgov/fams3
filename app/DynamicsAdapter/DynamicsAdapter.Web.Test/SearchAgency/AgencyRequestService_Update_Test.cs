@@ -1098,80 +1098,174 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
         [Test]
         public async Task Identifiers_changed_ProcessUpdateSearchRequest_should_run_updateIdentifiers_correctly()
         {
-            Assert.AreEqual(true, true);
+            Guid guid = Guid.NewGuid();
+            Guid personGuid = Guid.NewGuid();
+            _searchRequestServiceMock.Setup(x => x.GetSearchRequest(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult<SSG_SearchRequest>(new SSG_SearchRequest()
+                {
+                    SearchRequestId = guid,
+                    PersonSoughtFirstName = "firstName",
+                    PersonSoughtLastName = "lastName",
+                    SSG_Persons = new List<SSG_Person>()
+                    {
+                        new SSG_Person()
+                        {
+                            PersonId=personGuid, FirstName = "firstName", LastName="lastName", InformationSource= InformationSourceType.Request.Value
+                        }
+                    }.ToArray()
+                }));
+
+            _searchRequestServiceMock.Setup(x => x.GetPerson(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult<SSG_Person>(new SSG_Person()
+                {
+                    PersonId = personGuid,
+                    LastName = "lastName",
+                    FirstName = "firstName",
+                    SSG_Identifiers = new List<SSG_Identifier>()
+                    {
+                        new SSG_Identifier()
+                        {
+                            Identification="222222",
+                            IdentifierType = IdentificationType.BCDriverLicense.Value,
+                            InformationSource = InformationSourceType.Request.Value
+                        }
+                    }.ToArray()
+                }));
+
+            SearchRequestEntity newSearchRequest = new SearchRequestEntity()
+            {
+            };
+            _mapper.Setup(m => m.Map<SearchRequestEntity>(It.IsAny<SearchRequestOrdered>()))
+                .Returns(newSearchRequest);
+
+            _mapper.Setup(m => m.Map<IdentifierEntity>(It.IsAny<PersonalIdentifier>()))
+                .Returns(new IdentifierEntity() { Identification = "111111", IdentifierType= IdentificationType.BCDriverLicense.Value });
+
+            _mapper.Setup(m => m.Map<PersonEntity>(It.IsAny<Person>()))
+               .Returns(new PersonEntity() { FirstName = "firstName", LastName = "lastName" });
+
+            _searchRequstOrdered = new SearchRequestOrdered()
+            {
+                Action = RequestAction.UPDATE,
+                RequestId = "1111111",
+                SearchRequestId = Guid.NewGuid(),
+                Person = new Person()
+                {
+                    FirstName = "firstName",
+                    LastName = "lastName",
+                    Identifiers = new List<PersonalIdentifier>()
+                    {
+                        new PersonalIdentifier(){
+                            Owner=OwnerType.PersonSought,
+                            Type=PersonalIdentifierType.BCDriverLicense,
+                            Value="1111"
+                        }
+                    }
+                }
+            };
+            SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(_searchRequstOrdered);
+            _searchRequestServiceMock.Verify(m => m.UpdateSearchRequest(It.IsAny<SSG_SearchRequest>(),
+                 It.IsAny<CancellationToken>()), Times.Never);
+            _searchRequestServiceMock.Verify(m => m.UpdatePerson(It.IsAny<SSG_Person>()
+                        , It.IsAny<CancellationToken>()), Times.Never);
+            _searchRequestServiceMock.Verify(m => m.CreateNotes(It.IsAny<NotesEntity>()
+                , It.IsAny<CancellationToken>()), Times.Never);
+            _searchRequestServiceMock.Verify(m => m.UpdateRelatedPerson(It.IsAny<SSG_Identity>()
+                , It.IsAny<CancellationToken>()), Times.Never);
+            _searchRequestServiceMock.Verify(m => m.UpdateEmployment(It.IsAny<SSG_Employment>()
+                , It.IsAny<CancellationToken>()), Times.Never);
+            _searchRequestServiceMock.Verify(m => m.CreateEmploymentContact(It.IsAny<EmploymentContactEntity>()
+                , It.IsAny<CancellationToken>()), Times.Never);
+            _searchRequestServiceMock.Verify(m => m.UpdateIdentifier(It.IsAny<SSG_Identifier>()
+                , It.IsAny<CancellationToken>()), Times.Once);
+
+            Assert.AreEqual(guid, ssgSearchRequest.SearchRequestId);
         }
 
         [Test]
         public async Task Identifiers_added_ProcessUpdateSearchRequest_should_run_addIdentifiers_correctly()
         {
-            Assert.AreEqual(true, true);
-        }
-
- 
-
-        [Test]
-        public async Task normal_searchRequestOrdered_with_same_notes_ProcessUpdateSearchRequest_CreateNotes_should_not_run()
-        {
             Guid guid = Guid.NewGuid();
+            Guid personGuid = Guid.NewGuid();
             _searchRequestServiceMock.Setup(x => x.GetSearchRequest(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<SSG_SearchRequest>(new SSG_SearchRequest()
                 {
                     SearchRequestId = guid,
-                    Notes = "note1"
+                    PersonSoughtFirstName = "firstName",
+                    PersonSoughtLastName = "lastName",
+                    SSG_Persons = new List<SSG_Person>()
+                    {
+                        new SSG_Person()
+                        {
+                            PersonId=personGuid, FirstName = "firstName", LastName="lastName", InformationSource= InformationSourceType.Request.Value
+                        }
+                    }.ToArray()
                 }));
 
-            SearchRequestEntity newSearchRequest = new SearchRequestEntity()
-            {
-                AgencyCode = "FMEP",
-                Notes = "note1"
-            };
-            _mapper.Setup(m => m.Map<SearchRequestEntity>(It.IsAny<SearchRequestOrdered>()))
-                .Returns(newSearchRequest);
-
-            _searchRequestServiceMock.Setup(x => x.UpdateSearchRequest(It.IsAny<SSG_SearchRequest>(), It.IsAny<CancellationToken>()))
-                 .Returns(Task.FromResult<SSG_SearchRequest>(new SSG_SearchRequest()
-                 {
-                     SearchRequestId = guid,
-                     Notes = "note1"
-                 }));
-
-            SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(_searchRequstOrdered);
-            _searchRequestServiceMock.Verify(m => m.UpdateSearchRequest(It.IsAny<SSG_SearchRequest>(), It.IsAny<CancellationToken>()), Times.Once);
-
-            _searchRequestServiceMock.Verify(m => m.CreateNotes(It.IsAny<NotesEntity>(), It.IsAny<CancellationToken>()), Times.Never);
-            Assert.AreEqual(guid, ssgSearchRequest.SearchRequestId);
-        }
-
-        [Test]
-        public async Task new_searchrequestOrdered_with_empty_notes_ProcessUpdateSearchRequest_CreateNotes_should_not_run()
-        {
-            Guid guid = Guid.NewGuid();
-            _searchRequestServiceMock.Setup(x => x.GetSearchRequest(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(Task.FromResult<SSG_SearchRequest>(new SSG_SearchRequest()
+            _searchRequestServiceMock.Setup(x => x.GetPerson(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult<SSG_Person>(new SSG_Person()
                 {
-                    SearchRequestId = guid,
-                    Notes = "note1"
+                    PersonId = personGuid,
+                    LastName = "lastName",
+                    FirstName = "firstName",
+                    SSG_Identifiers = new List<SSG_Identifier>()
+                    {
+                        new SSG_Identifier()
+                        {
+                            Identification="222222",
+                            IdentifierType = IdentificationType.BirthCertificate.Value,
+                            InformationSource = InformationSourceType.Request.Value
+                        }
+                    }.ToArray()
                 }));
 
             SearchRequestEntity newSearchRequest = new SearchRequestEntity()
             {
-                AgencyCode = "FMEP",
-                Notes = ""
             };
             _mapper.Setup(m => m.Map<SearchRequestEntity>(It.IsAny<SearchRequestOrdered>()))
                 .Returns(newSearchRequest);
 
-            _searchRequestServiceMock.Setup(x => x.UpdateSearchRequest(It.IsAny<SSG_SearchRequest>(), It.IsAny<CancellationToken>()))
-                 .Returns(Task.FromResult<SSG_SearchRequest>(new SSG_SearchRequest()
-                 {
-                     SearchRequestId = guid,
-                     Notes = "note1"
-                 }));
+            _mapper.Setup(m => m.Map<IdentifierEntity>(It.IsAny<PersonalIdentifier>()))
+                .Returns(new IdentifierEntity() { Identification = "111111", IdentifierType = IdentificationType.BCDriverLicense.Value });
 
+            _mapper.Setup(m => m.Map<PersonEntity>(It.IsAny<Person>()))
+               .Returns(new PersonEntity() { FirstName = "firstName", LastName = "lastName" });
+
+            _searchRequstOrdered = new SearchRequestOrdered()
+            {
+                Action = RequestAction.UPDATE,
+                RequestId = "1111111",
+                SearchRequestId = Guid.NewGuid(),
+                Person = new Person()
+                {
+                    FirstName = "firstName",
+                    LastName = "lastName",
+                    Identifiers = new List<PersonalIdentifier>()
+                    {
+                        new PersonalIdentifier(){
+                            Owner=OwnerType.PersonSought,
+                            Type=PersonalIdentifierType.BCDriverLicense,
+                            Value="1111"
+                        }
+                    }
+                }
+            };
             SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(_searchRequstOrdered);
-            _searchRequestServiceMock.Verify(m => m.UpdateSearchRequest(It.IsAny<SSG_SearchRequest>(), It.IsAny<CancellationToken>()), Times.Once);
+            _searchRequestServiceMock.Verify(m => m.UpdateSearchRequest(It.IsAny<SSG_SearchRequest>(),
+                 It.IsAny<CancellationToken>()), Times.Never);
+            _searchRequestServiceMock.Verify(m => m.UpdatePerson(It.IsAny<SSG_Person>()
+                        , It.IsAny<CancellationToken>()), Times.Never);
+            _searchRequestServiceMock.Verify(m => m.CreateNotes(It.IsAny<NotesEntity>()
+                , It.IsAny<CancellationToken>()), Times.Never);
+            _searchRequestServiceMock.Verify(m => m.UpdateRelatedPerson(It.IsAny<SSG_Identity>()
+                , It.IsAny<CancellationToken>()), Times.Never);
+            _searchRequestServiceMock.Verify(m => m.UpdateEmployment(It.IsAny<SSG_Employment>()
+                , It.IsAny<CancellationToken>()), Times.Never);
+            _searchRequestServiceMock.Verify(m => m.CreateEmploymentContact(It.IsAny<EmploymentContactEntity>()
+                , It.IsAny<CancellationToken>()), Times.Never);
+            _searchRequestServiceMock.Verify(m => m.CreateIdentifier(It.IsAny<IdentifierEntity>()
+                , It.IsAny<CancellationToken>()), Times.Once);
 
-            _searchRequestServiceMock.Verify(m => m.CreateNotes(It.IsAny<NotesEntity>(), It.IsAny<CancellationToken>()), Times.Never);
             Assert.AreEqual(guid, ssgSearchRequest.SearchRequestId);
         }
 

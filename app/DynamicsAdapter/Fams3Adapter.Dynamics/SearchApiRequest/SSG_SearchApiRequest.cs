@@ -43,5 +43,7 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
 
         [JsonProperty("ssg_ssg_searchapirequest_ssg_sapirdataprovide")]
         public SSG_SearchapiRequestDataProvider[] DataProviders { get; set; }
+
+        public bool IsFailed { get; set; }
     }
 }

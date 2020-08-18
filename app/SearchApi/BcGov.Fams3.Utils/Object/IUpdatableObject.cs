@@ -2,6 +2,6 @@
 {
     public interface IUpdatableObject
     {
-        public bool Updated { get; set; }
+        bool Updated { get; set; }
     }
 }

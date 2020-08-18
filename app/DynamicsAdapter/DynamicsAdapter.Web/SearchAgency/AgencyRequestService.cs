@@ -18,6 +18,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using BcGov.Fams3.Utils.Object;
 
 namespace DynamicsAdapter.Web.SearchAgency
 {
@@ -456,12 +457,4 @@ namespace DynamicsAdapter.Web.SearchAgency
 
     }
 
-    public static class ObjExtensions
-    {
-        public static T Clone<T>(this T source)
-        {
-            var serialized = JsonConvert.SerializeObject(source);
-            return JsonConvert.DeserializeObject<T>(serialized);
-        }
-    }
 }

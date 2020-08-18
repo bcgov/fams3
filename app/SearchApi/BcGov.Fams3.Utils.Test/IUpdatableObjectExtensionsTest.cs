@@ -4,7 +4,7 @@ using System;
 
 namespace BcGov.Fams3.Utils.Test
 {
-    public class Tests
+    public class IUpdatableObjectTest
     {
         [SetUp]
         public void Setup()
@@ -23,12 +23,13 @@ namespace BcGov.Fams3.Utils.Test
                 PropNullableDateTime = null,
                 PropNullableInt = null,
                 PropGuid = guid,
+                PropBool = true,
                 Child = new ChildTestUpdatableCls()
                 {
                     PropInt = 4
                 }
             };
-            TestUpdatableCls testUpdatableCls2 = testUpdatableCls1.DeepClone();
+            TestUpdatableCls testUpdatableCls2 = testUpdatableCls1.Clone();
             TestUpdatableCls result = testUpdatableCls1.MergeUpdates(testUpdatableCls2);
             Assert.AreEqual(false, result.Updated);
             Assert.AreEqual(false, result.Child.Updated);
@@ -45,7 +46,6 @@ namespace BcGov.Fams3.Utils.Test
             TestUpdatableCls testUpdatableCls2 = new TestUpdatableCls()
             {
                 PropNullableDateTime = null,
-
             };
             TestUpdatableCls result = testUpdatableCls1.MergeUpdates(testUpdatableCls2);
             Assert.AreEqual(false, result.Updated);
@@ -59,8 +59,9 @@ namespace BcGov.Fams3.Utils.Test
                 PropDateTime = new DateTime(1999, 1, 1),
                 PropInt = 2,
                 PropString = "test1",
-                PropNullableDateTime = new DateTime(2000,1,1),
+                PropNullableDateTime = new DateTime(2000, 1, 1),
                 PropNullableInt = null,
+                PropBool = true,
                 Child = new ChildTestUpdatableCls()
                 {
                     PropInt = 3
@@ -73,6 +74,7 @@ namespace BcGov.Fams3.Utils.Test
                 PropString = "test1",
                 PropNullableDateTime = null,
                 PropNullableInt = 3,
+                PropBool = false,
                 Child = new ChildTestUpdatableCls()
                 {
                     PropInt = 4
@@ -81,6 +83,7 @@ namespace BcGov.Fams3.Utils.Test
             TestUpdatableCls result = testUpdatableCls1.MergeUpdates(testUpdatableCls2);
             Assert.AreEqual(true, result.Updated);
             Assert.AreEqual(new DateTime(2000, 1, 1), result.PropNullableDateTime);
+            Assert.AreEqual(false, result.PropBool);
             Assert.AreEqual(3, result.PropNullableInt);
             Assert.AreEqual(true, result.Child.Updated);
             Assert.AreEqual(4, result.Child.PropInt);
@@ -94,6 +97,7 @@ namespace BcGov.Fams3.Utils.Test
         public string PropString { get; set; }
         public DateTime PropDateTime { get; set; }
         public DateTime? PropNullableDateTime { get; set; }
+        public bool PropBool { get; set; }
         public bool Updated { get; set; }
         public Guid PropGuid { get; set; }
         public ChildTestUpdatableCls Child { get; set; }
@@ -106,6 +110,7 @@ namespace BcGov.Fams3.Utils.Test
         public string PropString { get; set; }
         public DateTime PropDateTime { get; set; }
         public DateTime? PropNullableDateTime { get; set; }
+        public bool PropBool { get; set; }
         public bool Updated { get; set; }
     }
 }

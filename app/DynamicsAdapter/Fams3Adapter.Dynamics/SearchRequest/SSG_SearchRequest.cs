@@ -1,4 +1,5 @@
-﻿using Fams3Adapter.Dynamics.Agency;
+﻿using BcGov.Fams3.Utils.Object;
+using Fams3Adapter.Dynamics.Agency;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Notes;
 using Fams3Adapter.Dynamics.Person;

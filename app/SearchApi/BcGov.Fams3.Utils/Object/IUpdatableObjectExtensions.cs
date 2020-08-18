@@ -6,22 +6,8 @@ using System.Reflection;
 
 namespace BcGov.Fams3.Utils.Object
 {
-    public static class TypeExtensions
-    {
-        public static bool IsNullableType(this Type type)
-        {
-            return type.IsGenericType
-            && type.GetGenericTypeDefinition().Equals(typeof(Nullable<>));
-        }
-    }
-
     public static class IUpdatableObjectExtensions
     {
-        public static T Clone<T>(this T source)
-        {
-            var serialized = JsonConvert.SerializeObject(source);
-            return JsonConvert.DeserializeObject<T>(serialized);
-        }
 
         public static IUpdatableObject MergeUpdates<IUpdatableObject>(this IUpdatableObject originObj, object newObj)
         {
@@ -42,11 +28,8 @@ namespace BcGov.Fams3.Utils.Object
                     {
                         if (propertyInfo.PropertyType.Name == "Boolean")
                         {
-                            if ((bool)newValue != false && newValue != oldValue) //new value is null or false, no matter old value has value or not, we do not change the old value
-                            {
-                                propertyInfo.SetValue(originObj, newValue);
-                                updated = true;
-                            }
+                            propertyInfo.SetValue(originObj, newValue);
+                            updated = true;
                         }
                         else if (propertyInfo.PropertyType.Name == "String")
                         {

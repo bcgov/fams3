@@ -98,6 +98,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                 _logger.LogInformation("the updating search request does not exist.");
                 return null;
             }
+            existedSearchRequest.IsDuplicated = true;
             _uploadedSearchRequest = existedSearchRequest;
 
             //get existedPersonSought
@@ -117,14 +118,12 @@ namespace DynamicsAdapter.Web.SearchAgency
             //update searchRequestEntity
             SearchRequestEntity newSearchRequest = _mapper.Map<SearchRequestEntity>(searchRequestOrdered);
             await UpdateSearchRequest(newSearchRequest);
-            //_logger.LogInformation("Update Search Request successfully");
-
+ 
             //update notesEntity
             if (!String.IsNullOrEmpty(newSearchRequest.Notes)
                 && !String.Equals(existedSearchRequest.Notes, newSearchRequest.Notes, StringComparison.InvariantCultureIgnoreCase))
             {
                await UploadNotes(newSearchRequest);
-                _logger.LogInformation("Create Notes successfully");
             }
 
             //update PersonEntity
@@ -265,9 +264,9 @@ namespace DynamicsAdapter.Web.SearchAgency
             if (ssgMerged.Updated) //except notes, there is something else changed.
             {
                 ssgMerged.SSG_Persons = null;
-                ssgMerged.SSG_RelatedPersons = null;
-                ssgMerged.SSG_Employments = null;
+                ssgMerged.SSG_Notes = null;
                 await _searchRequestService.UpdateSearchRequest(ssgMerged, _cancellationToken);
+                _logger.LogInformation("Update Search Request successfully");
             }
             return true;
 
@@ -393,51 +392,6 @@ namespace DynamicsAdapter.Web.SearchAgency
             return true;
         }
 
-        //private async Task<bool> UpdateIdentifiers()
-        //{
-        //    if (_personSought.Identifiers == null) return true;
-
-        //    _logger.LogDebug($"Attempting to update identifiers records for PersonSought.");
-
-        //    SSG_Identifier[] existedIdentifiers = _uploadedPerson.SSG_Identifiers?.Where(
-        //            m => m.InformationSource == InformationSourceType.Request.Value).ToArray();
-
-        //    foreach (PersonalIdentifier identifier in _personSought.Identifiers)
-        //    {
-        //        IdentifierEntity newIdentifer = _mapper.Map<IdentifierEntity>(identifier);
-        //        SSG_Identifier existedIdentifer = existedIdentifiers.SingleOrDefault(m => m.IdentifierType == newIdentifer.IdentifierType);
-        //        if (existedIdentifer == null)
-        //        {
-        //            await UploadIdentifiers();
-        //        }
-        //        else
-        //        {
-        //            SSG_Employment ssgMerged = originalEmployment.Clone().MergeUpdates(employ);
-        //            SSG_Employment existedEmployment = await _searchRequestService.GetEmployment(originalEmployment.EmploymentId, _cancellationToken);
-        //            existedEmployment.IsDuplicated = true;
-        //            if (ssgMerged.Updated)
-        //            {
-        //                ssgMerged.SearchRequest = _uploadedSearchRequest;
-        //                ssgMerged.InformationSource = InformationSourceType.Request.Value;
-        //                ssgMerged.Person = _uploadedPerson;
-        //                await _searchRequestService.UpdateEmployment(ssgMerged, _cancellationToken);
-        //                _logger.LogInformation("Update Employment records for SearchRequest successfully");
-        //            }
-
-        //            Employer employer = _personSought.Employments.ElementAt(0).Employer;
-        //            if (employer != null)
-        //            {
-        //                foreach (var phone in employer.Phones)
-        //                {
-        //                    EmploymentContactEntity p = _mapper.Map<EmploymentContactEntity>(phone);
-        //                    p.Employment = existedEmployment;
-        //                    await _searchRequestService.CreateEmploymentContact(p, _cancellationToken);
-        //                }
-        //            }
-        //        }
-        //    }
-        //    return true;
-        //}
         private async Task<bool> UploadNotes(SearchRequestEntity newSearchRequestEntity)
         {
             NotesEntity note = new NotesEntity

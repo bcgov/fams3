@@ -55,7 +55,7 @@ namespace Fams3Adapter.Dynamics.Duplicate
             {"ICBCClaimEntity","ssg_asset_icbcclaim"},
             {"SimplePhoneNumberEntity","ssg_simplephonenumber" },
             {"InvolvedPartyEntity","ssg_involvedparty" },
-            {"NoteEntity","ssg_notese" }
+            {"NotesEntity","ssg_notese" }
         };
 
         public DuplicateDetectionService(IODataClient oDataClient)
@@ -202,7 +202,7 @@ namespace Fams3Adapter.Dynamics.Duplicate
                         if (await Same(entity, party)) return party.InvolvedPartyId;
                     };
                     break;
-                case "NoteEntity":
+                case "NotesEntity":
                     foreach (SSG_Notese note in ((SSG_SearchRequest)fatherObj).SSG_Notes)
                     {
                         if (await Same(entity, note)) return note.NotesId;

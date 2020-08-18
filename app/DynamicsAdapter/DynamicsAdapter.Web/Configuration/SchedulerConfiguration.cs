@@ -11,7 +11,7 @@
         public SchedulerConfiguration()
         {
             Cron = "0/5 * * * * ?";
-            Failed = "0 15 * * *";
+            Failed = "0 0 15 * * ?";
         }
 
         /// <summary>

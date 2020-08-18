@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using Fams3Adapter.Dynamics.DataProvider;
 using Fams3Adapter.Dynamics.SearchApiEvent;
+using Microsoft.OData.UriParser;
 using Simple.OData.Client;
 
 using Entry = System.Collections.Generic.Dictionary<string, object>;
@@ -174,7 +176,7 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
                         .Expand(x => x.DataProviders)
                         .Expand(x => x.SearchRequest)
                         .FindEntryAsync(cancellationToken);
-                    FilterAffectedDataProvider(adaptorName, searchApiRequest);
+                    FilterAffectedDataProvider( provider, searchApiRequest);
                     searchApiRequest.IsFailed = true;
                     results.Add(searchApiRequest);
 
@@ -191,12 +193,15 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
                             .FindEntriesAsync(cancellationToken);
         }
 
-        private static void FilterAffectedDataProvider(string adapterName, SSG_SearchApiRequest searchApiRequest)
+        private static void FilterAffectedDataProvider(SSG_DataProvider provider, SSG_SearchApiRequest searchApiRequest)
         {
-            var list = searchApiRequest.DataProviders;
+        
             List<SSG_SearchapiRequestDataProvider> ssgApiDataProviders = new List<SSG_SearchapiRequestDataProvider>();
             ssgApiDataProviders.AddRange(searchApiRequest.DataProviders);
-            searchApiRequest.DataProviders = ssgApiDataProviders.FindAll(x => x.AdaptorName == adapterName).ToArray();
+            var list = ssgApiDataProviders.FindAll(x => x.AdaptorName == provider.AdaptorName);
+            list.ForEach(x => x.TimeBetweenRetries = provider.TimeBetweenRetries);
+            list.ForEach(x => x.NumberOfRetries = provider.NumberOfRetries);
+            searchApiRequest.DataProviders = list.ToArray();
         }
     }
 }

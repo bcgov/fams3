@@ -253,7 +253,7 @@ services:
     ports:
       - "8081:8081"
     environment:
-      - REDIS_HOSTS="${REDIS__HOST}"
+      - REDIS_HOSTS=${REDIS__HOST}
 networks:
   search-api-net:
     driver: bridge

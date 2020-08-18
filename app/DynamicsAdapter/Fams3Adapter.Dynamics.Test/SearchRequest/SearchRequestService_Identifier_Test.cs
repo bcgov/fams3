@@ -95,6 +95,30 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
 
             Assert.AreEqual(_testIdentifierId, result.IdentifierId);
         }
+
+        [Test]
+        public async Task update_correct_Identifier_should_success()
+        {
+            Guid testId = Guid.NewGuid();
+            _odataClientMock.Setup(x => x.For<SSG_Identifier>(null).Key(It.Is<Guid>(m => m == testId)).Set(It.IsAny<SSG_Identifier>())
+                .UpdateEntryAsync(It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult(new SSG_Identifier()
+                {
+                    IdentifierId = testId,
+                    Identification = "new"
+                })
+                );
+
+            var id = new SSG_Identifier()
+            {
+                IdentifierId = testId,
+                Identification = "old"
+            };
+            var result = await _sut.UpdateIdentifier(id, CancellationToken.None);
+
+            Assert.AreEqual("new", result.Identification);
+
+        }
         #endregion
 
 

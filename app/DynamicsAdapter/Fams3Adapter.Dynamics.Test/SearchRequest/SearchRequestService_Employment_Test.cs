@@ -7,6 +7,7 @@ using Moq;
 using NUnit.Framework;
 using Simple.OData.Client;
 using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -126,6 +127,48 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
 
             Assert.AreEqual(originalGuid, result.EmploymentId);
             Assert.AreEqual("original", result.AddressLine1);
+        }
+
+        [Test]
+        public async Task GetEmployment_should_return_1_level_expanded_data()
+        {
+            Guid employId = Guid.NewGuid();
+
+            _odataClientMock.Setup(x => x.For<SSG_Employment>(null)
+                .Key(It.Is<Guid>(m => m == employId))
+                .Expand(x => x.SSG_EmploymentContacts)
+                .FindEntryAsync(It.IsAny<CancellationToken>()))
+               .Returns(Task.FromResult<SSG_Employment>(new SSG_Employment()
+               {
+                   EmploymentId = employId,
+                   SSG_EmploymentContacts = new List<SSG_EmploymentContact>() { new SSG_EmploymentContact() { } }.ToArray()
+               }));
+            var result = await _sut.GetEmployment(employId, CancellationToken.None);
+            Assert.AreEqual(1, result.SSG_EmploymentContacts.Length);
+        }
+
+        [Test]
+        public async Task update_correct_Employment_should_success()
+        {
+            Guid testId = Guid.NewGuid();
+            _odataClientMock.Setup(x => x.For<SSG_Employment>(null).Key(It.Is<Guid>(m => m == testId)).Set(It.IsAny<EmploymentEntity>())
+                .UpdateEntryAsync(It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult(new SSG_Employment()
+                {
+                    EmploymentId = testId,
+                    BusinessName = "new"
+                })
+                );
+
+            var employ = new SSG_Employment()
+            {
+                EmploymentId = testId,
+                BusinessName = "old"
+            };
+            var result = await _sut.UpdateEmployment(employ, CancellationToken.None);
+
+            Assert.AreEqual("new", result.BusinessName);
+
         }
         #endregion
 

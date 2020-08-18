@@ -62,7 +62,7 @@ namespace DynamicsAdapter.Web.SearchRequest
                             using (LogContext.PushProperty("SearchRequestKey", $"{ssgSearchRequest.SearchRequest?.FileId}_{ssgSearchRequest.SequenceNumber}"))
                             {
                                 _logger.LogDebug(
-                                   $"Attempting to post person search for request {ssgSearchRequest.SearchApiRequestId}");
+                                   $"Attempting to post failed person search for request {ssgSearchRequest.SearchApiRequestId}");
 
                                 SSG_SearchApiRequest request = _register.FilterDuplicatedIdentifier(ssgSearchRequest);
 

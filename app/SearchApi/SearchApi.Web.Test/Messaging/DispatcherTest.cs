@@ -74,7 +74,9 @@ namespace SearchApi.Web.Test.Messaging
                     new DataProvider()
                     {
                         Name = "TEST",
-                        Completed = false
+                        Completed = false,
+                        NumberOfRetries = 3,
+                        TimeBetweenRetries = 30
                     }
                 },
                 "SearchRequestKey"), Guid.NewGuid());
@@ -101,11 +103,11 @@ namespace SearchApi.Web.Test.Messaging
                 new List<Employment>(),
                 new List<DataProvider>
                 {
-                    new DataProvider() {Name = "TEST1", Completed = false},
-                    new DataProvider() {Name = "TEST2", Completed = false},
-                    new DataProvider() {Name = "TEST3", Completed= true},
-                    new DataProvider() {Name = "TEST4", Completed =false},
-                    new DataProvider() {Name = "TEST5", Completed=false}
+                    new DataProvider() {Name = "TEST1", Completed = false, NumberOfRetries = 5, TimeBetweenRetries=10},
+                    new DataProvider() {Name = "TEST2", Completed = false, NumberOfRetries = 3, TimeBetweenRetries=50},
+                    new DataProvider() {Name = "TEST3", Completed= true, NumberOfRetries = 6, TimeBetweenRetries=70},
+                    new DataProvider() {Name = "TEST4", Completed =false, NumberOfRetries = 3, TimeBetweenRetries=45},
+                    new DataProvider() {Name = "TEST5", Completed=false, NumberOfRetries = 5, TimeBetweenRetries=34}
                 },
                 "SearchRequestKey"), Guid.NewGuid());
 

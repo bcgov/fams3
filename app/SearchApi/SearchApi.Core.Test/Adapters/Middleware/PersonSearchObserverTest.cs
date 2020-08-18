@@ -29,6 +29,8 @@ namespace SearchApi.Core.Test.Adapters.Middleware
             public DateTime TimeStamp { get; set; }
             public Person Person { get; set; }
             public string SearchRequestKey { get; set; }
+            public int NumberOfRetries { get; set ; }
+            public int TimeBetweenRetries { get; set; }
         }
 
 
@@ -60,7 +62,9 @@ namespace SearchApi.Core.Test.Adapters.Middleware
                     FirstName = "",
                     LastName = "lastName",
                     DateOfBirth = new DateTime(2001, 1, 1)
-                }
+                },
+                NumberOfRetries = 3,
+                TimeBetweenRetries = 30
             });
         }
 

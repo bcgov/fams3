@@ -58,5 +58,9 @@ namespace SearchApi.Web.Controllers
         }
         public string Name { get; set; }
         public bool Completed { get; set; }
+
+        public int NumberOfRetries { get; set; }
+
+        public int TimeBetweenRetries { get; set; }
     }
 }

@@ -62,7 +62,7 @@ namespace SearchRequestAdaptor
                 {
 
                     document.Info.Version = "V0.1";
-                    document.Info.Description = "To Recieve  Ntification from Dynamics";
+                    document.Info.Description = "To Recieve  Notification from Dynamics";
                     document.Info.Title = $"Fams notification";
                     document.Tags = new List<OpenApiTag>()
                     {

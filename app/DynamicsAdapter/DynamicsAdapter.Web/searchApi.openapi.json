@@ -95,7 +95,9 @@
     "DataProvider": {
       "type": "object",
       "required": [
-        "completed"
+        "completed",
+        "numberOfRetries",
+        "timeBetweenRetries"
       ],
       "properties": {
         "name": {
@@ -103,6 +105,14 @@
         },
         "completed": {
           "type": "boolean"
+        },
+        "numberOfRetries": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "timeBetweenRetries": {
+          "type": "integer",
+          "format": "int32"
         }
       }
     },

@@ -53,7 +53,9 @@ namespace SearchApi.Web.Messaging
 
                 await endpoint.Send<PersonSearchOrdered>(new PeopleController.PersonSearchOrderEvent(searchRequestId, personSearchRequest.SearchRequestKey)
                 {
-                    Person = personSearchRequest
+                    Person = personSearchRequest,
+                    TimeBetweenRetries = requestDataProvider.TimeBetweenRetries,
+                    NumberOfRetries = requestDataProvider.NumberOfRetries
                 });
             }
         }

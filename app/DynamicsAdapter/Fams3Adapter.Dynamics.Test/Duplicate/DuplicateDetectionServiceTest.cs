@@ -7,10 +7,12 @@ using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.InsuranceClaim;
 using Fams3Adapter.Dynamics.Name;
+using Fams3Adapter.Dynamics.Notes;
 using Fams3Adapter.Dynamics.OtherAsset;
 using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.RelatedPerson;
+using Fams3Adapter.Dynamics.SearchRequest;
 using Fams3Adapter.Dynamics.Types;
 using Fams3Adapter.Dynamics.Vehicle;
 using Moq;
@@ -116,6 +118,11 @@ namespace Fams3Adapter.Dynamics.Test.Duplicate
                      {
                          EntityName = "ssg_involvedparty",
                          DuplicateFields = "ssg_firstname|ssg_lastname"
+                     },
+                     new SSG_DuplicateDetectionConfig()
+                     {
+                         EntityName = "ssg_notese",
+                         DuplicateFields = "ssg_description"
                      }
                 }));
 
@@ -709,6 +716,22 @@ namespace Fams3Adapter.Dynamics.Test.Duplicate
             InvolvedPartyEntity entity = new InvolvedPartyEntity() { FirstName = "testfirstname", LastName = "lastname" };
             Guid guid = await _sut.Exists(insurance, entity);
             Assert.AreEqual(Guid.Empty, guid);
+        }
+
+        [Test]
+        public async Task searchRequest_has_same_notes_Exists_should_return_existed_entity_guid()
+        {
+            DuplicateDetectionService._configs = null;
+            Guid existedNotesID = Guid.NewGuid();
+            SSG_SearchRequest request = new SSG_SearchRequest()
+            {
+                SSG_Notes = new List<SSG_Notese>() {
+                    new SSG_Notese(){ Description="description", NotesId=existedNotesID}
+                }.ToArray()
+            };
+            NotesEntity entity = new NotesEntity() { Description = "description" };
+            Guid guid = await _sut.Exists(request, entity);
+            Assert.AreEqual(existedNotesID, guid);
         }
 
         [Test]

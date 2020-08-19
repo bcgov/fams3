@@ -1,6 +1,7 @@
 using Fams3Adapter.Dynamics.Agency;
 using Fams3Adapter.Dynamics.Duplicate;
 using Fams3Adapter.Dynamics.Identifier;
+using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.ResultTransaction;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Moq;
@@ -400,5 +401,33 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             };
             Assert.ThrowsAsync<WebRequestException>(async () => await _sut.UpdateSearchRequest(searchRequest, CancellationToken.None));
         }
+
+        [Test]
+        public async Task GetSearchRequest_should_return_1_level_expanded_data()
+        {
+            Guid searchRequestId = Guid.NewGuid();
+            _odataClientMock.Setup(x => x.For<SSG_SearchRequest>(null)
+                .Select(x=>x.SearchRequestId)
+               .Filter(It.IsAny<Expression<Func<SSG_SearchRequest, bool>>>())
+               .FindEntryAsync(It.IsAny<CancellationToken>()))
+               .Returns(Task.FromResult<SSG_SearchRequest>(new SSG_SearchRequest()
+               {
+                   SearchRequestId = searchRequestId,
+               }));
+
+            _odataClientMock.Setup(x => x.For<SSG_SearchRequest>(null)
+                .Key(It.Is<Guid>(m=>m== searchRequestId))
+                .Expand(x => x.SSG_Persons)
+                .Expand(x => x.SSG_Notes)
+                .FindEntryAsync(It.IsAny<CancellationToken>()))
+               .Returns(Task.FromResult<SSG_SearchRequest>(new SSG_SearchRequest()
+               {
+                   SearchRequestId = searchRequestId,
+                   SSG_Persons = new List<SSG_Person>() { new SSG_Person() { } }.ToArray()
+               }));
+            var result = await _sut.GetSearchRequest("fileId", CancellationToken.None);
+            Assert.AreEqual(1, result.SSG_Persons.Length);
+        }
+
     }
 }

@@ -31,6 +31,9 @@ namespace Fams3Adapter.Dynamics.RelatedPerson
         [JsonProperty("ssg_personrelationshipcategorytext")]
         public int? Type { get; set; }
 
+        [JsonProperty("ssg_personcategorytext")]
+        public int? PersonType { get; set; }
+
         [JsonProperty("ssg_personsextext")]
         public int? Gender { get; set; }
 

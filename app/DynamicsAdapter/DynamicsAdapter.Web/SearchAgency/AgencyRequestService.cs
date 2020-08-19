@@ -64,6 +64,7 @@ namespace DynamicsAdapter.Web.SearchAgency
             PersonEntity personEntity = _mapper.Map<PersonEntity>(_personSought);
             personEntity.SearchRequest = _uploadedSearchRequest;
             personEntity.InformationSource = InformationSourceType.Request.Value;
+            personEntity.IsCreatedByAgency = true;
             _uploadedPerson = await _searchRequestService.SavePerson(personEntity, _cancellationToken);
             _logger.LogInformation("Create Person successfully");
 
@@ -106,7 +107,8 @@ namespace DynamicsAdapter.Web.SearchAgency
             SSG_Person existedSoughtPerson = existedSearchRequest?.SSG_Persons?.FirstOrDefault(
                     m => m.FirstName == existedSearchRequest.PersonSoughtFirstName
                     && m.LastName == existedSearchRequest.PersonSoughtLastName
-                    && m.InformationSource == InformationSourceType.Request.Value);
+                    && m.InformationSource == InformationSourceType.Request.Value
+                    && m.IsCreatedByAgency);
             if (existedSoughtPerson == null)
             {
                 _logger.LogError("the updating personSought does not exist. something is wrong.");
@@ -169,6 +171,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                 identifier.SearchRequest = _uploadedSearchRequest;
                 identifier.InformationSource = InformationSourceType.Request.Value;
                 identifier.Person = _uploadedPerson;
+                identifier.IsCreatedByAgency = true;
                 SSG_Identifier newIdentifier = await _searchRequestService.CreateIdentifier(identifier, _cancellationToken);
             }
             _logger.LogInformation("Create identifier records for SearchRequest successfully");
@@ -187,6 +190,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                 addr.SearchRequest = _uploadedSearchRequest;
                 addr.InformationSource = InformationSourceType.Request.Value;
                 addr.Person = _uploadedPerson;
+                addr.IsCreatedByAgency = true;
                 SSG_Address uploadedAddr = await _searchRequestService.CreateAddress(addr, _cancellationToken);
             }
             _logger.LogInformation("Create addresses records for SearchRequest successfully");
@@ -205,6 +209,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                 ph.SearchRequest = _uploadedSearchRequest;
                 ph.InformationSource = InformationSourceType.Request.Value;
                 ph.Person = _uploadedPerson;
+                ph.IsCreatedByAgency = true;
                 SSG_PhoneNumber uploadedPhone = await _searchRequestService.CreatePhoneNumber(ph, _cancellationToken);
             }
             _logger.LogInformation("Create phones records for SearchRequest successfully");
@@ -223,6 +228,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                 e.SearchRequest = _uploadedSearchRequest;
                 e.InformationSource = InformationSourceType.Request.Value;
                 e.Person = _uploadedPerson;
+                e.IsCreatedByAgency = true;
                 SSG_Employment ssg_employment = await _searchRequestService.CreateEmployment(e, _cancellationToken);
 
                 if (employment.Employer != null)
@@ -252,6 +258,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                 n.SearchRequest = _uploadedSearchRequest;
                 n.InformationSource = InformationSourceType.Request.Value;
                 n.Person = _uploadedPerson;
+                n.IsCreatedByAgency = true;
                 SSG_Identity relate = await _searchRequestService.CreateRelatedPerson(n, _cancellationToken);
 
             }
@@ -298,7 +305,9 @@ namespace DynamicsAdapter.Web.SearchAgency
 
             //update or add relation relatedPerson
             SSG_Identity originalRelatedPerson= _uploadedPerson?.SSG_Identities?.FirstOrDefault(
-            m => m.InformationSource == InformationSourceType.Request.Value && m.PersonType == RelatedPersonPersonType.Relation.Value);
+            m => m.InformationSource == InformationSourceType.Request.Value 
+            && m.PersonType == RelatedPersonPersonType.Relation.Value
+            && m.IsCreatedByAgency);
 
             if (_personSought.RelatedPersons?.Count() > 0)
             {
@@ -329,7 +338,8 @@ namespace DynamicsAdapter.Web.SearchAgency
 
             //update or add relation relatedPerson
             SSG_Identity originalRelatedApplicant = _uploadedPerson.SSG_Identities?.FirstOrDefault(
-            m => m.InformationSource == InformationSourceType.Request.Value && m.PersonType == RelatedPersonPersonType.Applicant.Value);
+            m => m.InformationSource == InformationSourceType.Request.Value 
+            && m.PersonType == RelatedPersonPersonType.Applicant.Value);
 
             if (originalRelatedApplicant == null)
             {
@@ -362,7 +372,8 @@ namespace DynamicsAdapter.Web.SearchAgency
             _logger.LogDebug($"Attempting to update employment records for PersonSought.");
 
             SSG_Employment originalEmployment = _uploadedPerson.SSG_Employments?.FirstOrDefault(
-                    m => m.InformationSource == InformationSourceType.Request.Value );
+                    m => m.InformationSource == InformationSourceType.Request.Value 
+                    && m.IsCreatedByAgency);
 
             if (_personSought.Employments.Count() > 0)
             {
@@ -410,7 +421,9 @@ namespace DynamicsAdapter.Web.SearchAgency
             {
                 IdentifierEntity identifierEntity = _mapper.Map<IdentifierEntity>(pi);
                 SSG_Identifier originalIdentifier = _uploadedPerson.SSG_Identifiers?.FirstOrDefault(
-                   m => m.InformationSource == InformationSourceType.Request.Value && m.IdentifierType==identifierEntity.IdentifierType);
+                   m => m.InformationSource == InformationSourceType.Request.Value 
+                        && m.IdentifierType==identifierEntity.IdentifierType
+                        && m.IsCreatedByAgency);
                 if(originalIdentifier == null)
                 {
                     await UploadIdentifiers();

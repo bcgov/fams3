@@ -76,6 +76,9 @@ namespace Fams3Adapter.Dynamics.Employment
         public virtual SSG_SearchRequest SearchRequest { get; set; }
 
         public virtual EmploymentContactEntity[] EmploymentContactEntities { get; set; }
+
+        [JsonProperty("ssg_createdbyagency")]
+        public bool IsCreatedByAgency { get; set; }
     }
 
     public class SSG_Employment : EmploymentEntity

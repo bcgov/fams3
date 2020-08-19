@@ -11,6 +11,7 @@
         public SchedulerConfiguration()
         {
             Cron = "0/5 * * * * ?";
+            Failed = "0 0 15 * * ?";
         }
 
         /// <summary>
@@ -18,6 +19,8 @@
         /// https://www.quartz-scheduler.net/documentation/quartz-3.x/tutorial/crontriggers.html
         /// </summary>
         public string Cron { get; set; }
+
+        public string Failed { get; set; }
 
 
     }

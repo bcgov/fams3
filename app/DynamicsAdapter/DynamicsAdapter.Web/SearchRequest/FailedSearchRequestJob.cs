@@ -16,9 +16,9 @@ namespace DynamicsAdapter.Web.SearchRequest
     /// The SearchRequestJob orchestrates dyanmics search request.
     /// </summary>
     [DisallowConcurrentExecution]
-    public class SearchRequestJob : IJob
+    public class FailedSearchRequestJob : IJob
     {
-        private readonly ILogger<SearchRequestJob> _logger;
+        private readonly ILogger<FailedSearchRequestJob> _logger;
 
         private readonly ISearchApiClient _searchApiClient;
 
@@ -29,9 +29,9 @@ namespace DynamicsAdapter.Web.SearchRequest
         private readonly ISearchRequestRegister _register;
 
 
-        public SearchRequestJob(ISearchApiClient searchApiClient,
+        public FailedSearchRequestJob(ISearchApiClient searchApiClient,
             ISearchApiRequestService searchApiRequestService,
-            ILogger<SearchRequestJob> logger,
+            ILogger<FailedSearchRequestJob> logger,
             IMapper mapper,
             ISearchRequestRegister register)
         {
@@ -45,14 +45,14 @@ namespace DynamicsAdapter.Web.SearchRequest
         public async Task Execute(IJobExecutionContext context)
         {
 
-            _logger.LogInformation("Search Request started!");
+            _logger.LogInformation("Retreiving failed Search Request started!");
 
             var cts = new CancellationTokenSource();
 
             try
             {
-                  List<SSG_SearchApiRequest> requestList = await GetAllReadyForSearchAsync(cts.Token);
-                
+                List<SSG_SearchApiRequest> requestList = await GetAllFailedForSearchAsync(cts.Token);
+
                 foreach (SSG_SearchApiRequest ssgSearchRequest in requestList)
                 {
                     if (ssgSearchRequest.SearchRequestId != Guid.Empty)
@@ -62,7 +62,7 @@ namespace DynamicsAdapter.Web.SearchRequest
                             using (LogContext.PushProperty("SearchRequestKey", $"{ssgSearchRequest.SearchRequest?.FileId}_{ssgSearchRequest.SequenceNumber}"))
                             {
                                 _logger.LogDebug(
-                                   $"Attempting to post person search for request {ssgSearchRequest.SearchApiRequestId}");
+                                   $"Attempting to post failed person search for request {ssgSearchRequest.SearchApiRequestId}");
 
                                 SSG_SearchApiRequest request = _register.FilterDuplicatedIdentifier(ssgSearchRequest);
 
@@ -77,8 +77,7 @@ namespace DynamicsAdapter.Web.SearchRequest
 
                                     _logger.LogInformation($"Successfully posted person search id:{result.Id}");
 
-                                   
-                                    await MarkInProgress(ssgSearchRequest, cts.Token);
+                                    
                                 }
                                 else
                                 {
@@ -99,36 +98,19 @@ namespace DynamicsAdapter.Web.SearchRequest
             }
         }
 
-        private async Task<List<SSG_SearchApiRequest>> GetAllReadyForSearchAsync(CancellationToken cancellationToken)
-        {
-            _logger.LogDebug("Attempting to get search request from dynamics");
-           
-            var request = await _searchApiRequestService.GetAllReadyForSearchAsync(cancellationToken, await _register.GetDataProvidersList());
 
-            _logger.LogInformation("Successfully retrieved search requests from dynamics");
+        private async Task<List<SSG_SearchApiRequest>> GetAllFailedForSearchAsync(CancellationToken cancellationToken)
+        {
+            _logger.LogDebug("Attempting to get failed search request that can be retried from dynamics");
+
+            var request = await _searchApiRequestService.GetAllValidFailedSearchRequest(cancellationToken, await _register.GetDataProvidersList());
+
+            _logger.LogInformation("Successfully retrieved failed search requests that can be retried from dynamics");
             return request.ToList();
         }
 
-        private async Task<SSG_SearchApiRequest> MarkInProgress(SSG_SearchApiRequest ssgSearchRequest,
-            CancellationToken cancellationToken)
-        {
-            try
-            {
-                _logger.LogDebug(
-                    $"Attempting to update searchRequest[{ssgSearchRequest.SearchApiRequestId}] to {SearchApiRequestStatusReason.InProgress.ToString()} status");
-                var request =
-                    await _searchApiRequestService.MarkInProgress(ssgSearchRequest.SearchApiRequestId,
-                        cancellationToken);
-                _logger.LogInformation(
-                    $"Successfully updated searchRequest[{ssgSearchRequest.SearchApiRequestId}] to {SearchApiRequestStatusReason.InProgress.ToString()} status");
-                return request;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error updated searchRequest[{ssgSearchRequest.SearchApiRequestId}] to {SearchApiRequestStatusReason.InProgress.ToString()} status", ex);
-                throw;
-            }
-        }
+
+   
 
     }
 

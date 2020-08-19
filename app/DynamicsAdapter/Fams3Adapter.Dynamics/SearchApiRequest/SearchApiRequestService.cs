@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Fams3Adapter.Dynamics.DataProvider;
@@ -14,9 +15,12 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
 
     public interface ISearchApiRequestService
     {
-        Task<IEnumerable<SSG_SearchApiRequest>> GetAllReadyForSearchAsync(CancellationToken cancellationToken);
+        Task<IEnumerable<SSG_SearchApiRequest>> GetAllReadyForSearchAsync(CancellationToken cancellationToken, SSG_DataProvider[] dataProviders);
 
-        Task<IEnumerable<SSG_SearchApiRequest>> GetAllValidFailedSearchRequest(CancellationToken cancellationToken);
+        Task<IEnumerable<SSG_SearchApiRequest>> GetAllValidFailedSearchRequest(CancellationToken cancellationToken, SSG_DataProvider[] dataProviders);
+
+        Task<IEnumerable<SSG_DataProvider>> GetDataProvidersList(CancellationToken cancellationToken);
+
 
         Task<Guid> GetLinkedSearchRequestIdAsync(Guid searchApiRequestId,
             CancellationToken cancellationToken);
@@ -39,6 +43,7 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
     {
 
         private readonly IODataClient _oDataClient;
+      
         public SearchApiRequestService(IODataClient oDataClient)
         {
             this._oDataClient = oDataClient;
@@ -50,8 +55,9 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         public async Task<IEnumerable<SSG_SearchApiRequest>> GetAllReadyForSearchAsync(
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken, SSG_DataProvider[] dataProviders)
         {
+            List<SSG_DataProvider> providers = dataProviders.ToList();
             int readyForSearchCode = SearchApiRequestStatusReason.ReadyForSearch.Value;
             List<SSG_SearchApiRequest> results = new List<SSG_SearchApiRequest>();
 
@@ -72,9 +78,29 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
                     .Expand(x => x.SearchRequest)
                     .FindEntryAsync(cancellationToken);
                 searchApiRequest.IsFailed = false;
-                results.Add( searchApiRequest );
+                UpdateProviderInfo(providers, searchApiRequest);
+                results.Add(searchApiRequest);
             }
             return results;       
+        }
+
+        private static void UpdateProviderInfo(List<SSG_DataProvider> providers, SSG_SearchApiRequest searchApiRequest)
+        {
+            if (searchApiRequest.DataProviders != null)
+            {
+                List<SSG_SearchapiRequestDataProvider> apiProviders = new List<SSG_SearchapiRequestDataProvider>();
+                foreach (SSG_SearchapiRequestDataProvider prov in searchApiRequest.DataProviders)
+                {
+                    var provider = providers.FirstOrDefault(x => x.AdaptorName == prov.AdaptorName);
+                    if (provider != null)
+                    {
+                        prov.NumberOfRetries = provider.NumberOfRetries;
+                        prov.TimeBetweenRetries = provider.TimeBetweenRetries;
+                    }
+                    apiProviders.Add(prov);
+                }
+                searchApiRequest.DataProviders = apiProviders.ToArray();
+            }
         }
 
         /// <summary>
@@ -141,13 +167,10 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<SSG_SearchApiRequest>> GetAllValidFailedSearchRequest(CancellationToken cancellationToken)
+        public async Task<IEnumerable<SSG_SearchApiRequest>> GetAllValidFailedSearchRequest(CancellationToken cancellationToken, SSG_DataProvider[] dataProviders)
         {
-            IEnumerable<SSG_DataProvider> dataProviders = await _oDataClient.For<SSG_DataProvider>()
-                .FindEntriesAsync(cancellationToken);
-
-
           
+
             List<SSG_SearchApiRequest> results = new List<SSG_SearchApiRequest>();
 
             //todo: we need to change to use following code, but ODataClient 4 has problems with expand, curent implemented code is a workaround
@@ -174,7 +197,7 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
                         .Expand(x => x.DataProviders)
                         .Expand(x => x.SearchRequest)
                         .FindEntryAsync(cancellationToken);
-                    GetDataProvidersAffected(adaptorName, searchApiRequest);
+                    FilterAffectedDataProvider( provider, searchApiRequest);
                     searchApiRequest.IsFailed = true;
                     results.Add(searchApiRequest);
 
@@ -185,12 +208,23 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
             return results;
         }
 
-        private static void GetDataProvidersAffected(string adapterName, SSG_SearchApiRequest searchApiRequest)
+        public async Task<IEnumerable<SSG_DataProvider>> GetDataProvidersList(CancellationToken cancellationToken)
         {
-            var list = searchApiRequest.DataProviders;
+            return await _oDataClient.For<SSG_DataProvider>()
+                            .FindEntriesAsync(cancellationToken);
+        }
+
+        private static void FilterAffectedDataProvider(SSG_DataProvider provider, SSG_SearchApiRequest searchApiRequest)
+        {
+        
             List<SSG_SearchapiRequestDataProvider> ssgApiDataProviders = new List<SSG_SearchapiRequestDataProvider>();
             ssgApiDataProviders.AddRange(searchApiRequest.DataProviders);
-            searchApiRequest.DataProviders = ssgApiDataProviders.FindAll(x => x.AdaptorName == adapterName).ToArray();
+            var list = ssgApiDataProviders.FindAll(x => x.AdaptorName == provider.AdaptorName);
+            list.ForEach(x => x.TimeBetweenRetries = provider.TimeBetweenRetries);
+            list.ForEach(x => x.NumberOfRetries = provider.NumberOfRetries);
+            searchApiRequest.DataProviders = list.ToArray();
         }
+
+      
     }
 }

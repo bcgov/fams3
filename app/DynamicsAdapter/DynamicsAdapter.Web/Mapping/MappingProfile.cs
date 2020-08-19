@@ -190,6 +190,8 @@ namespace DynamicsAdapter.Web.Mapping
 
             CreateMap<SSG_SearchapiRequestDataProvider, DataProvider>()
                  .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.AdaptorName.Replace(" ", String.Empty).ToUpperInvariant()));
+                 
+                 
 
             CreateMap<Person, PersonEntity>()
                .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))

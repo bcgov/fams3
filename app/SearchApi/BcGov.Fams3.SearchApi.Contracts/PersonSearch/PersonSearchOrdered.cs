@@ -4,5 +4,9 @@
     {
         Person.Person Person { get; }
 
+         int NumberOfRetries { get; set; }
+
+         int TimeBetweenRetries { get; set; }
+
     }
 }

@@ -36,6 +36,8 @@ namespace SearchAdapter.Sample.Test
             public DateTime TimeStamp { get; set; }
             public Person Person { get; set; }
             public string SearchRequestKey { get; set; }
+            public int NumberOfRetries { get; set; }
+            public int TimeBetweenRetries { get; set; }
         }
         
         [OneTimeSetUp]

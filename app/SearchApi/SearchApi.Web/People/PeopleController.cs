@@ -108,6 +108,8 @@ namespace SearchApi.Web.Controllers
             public string SearchRequestKey { get; set; }
             public DateTime TimeStamp { get; }
             public Person Person { get; set; }
+            public int NumberOfRetries { get; set; }
+            public int TimeBetweenRetries { get; set; }
         }
     }
 }

@@ -29,10 +29,23 @@ namespace Fams3Adapter.Dynamics.DataProvider
 
         [JsonProperty("ssg_DataProviderId")]
         public Guid DataProvider { get; set; }
+
+
+      
+        public int NumberOfRetries;
+
+       
+        public int TimeBetweenRetries;
     }
 
     public class SSG_DataProvider
     {
+        [JsonProperty("ssg_NumberOfRetries")]
+        public int NumberOfRetries { get; set; }
+
+        [JsonProperty("ssg_TimeBetweenRetries")]
+        public int TimeBetweenRetries { get; set; }
+
         [JsonProperty("ssg_dataproviderId")]
         public Guid DataProviderId { get; set; }
 

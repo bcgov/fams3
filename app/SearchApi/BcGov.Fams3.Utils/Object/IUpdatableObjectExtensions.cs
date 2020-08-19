@@ -52,7 +52,7 @@ namespace BcGov.Fams3.Utils.Object
                     }
                 }               
             }
-            PropertyInfo pi = props.SingleOrDefault(m => m.Name == "Updated");
+            PropertyInfo pi = originObj.GetType().GetProperties().SingleOrDefault(m => m.Name == "Updated");
             if (pi == null) return originObj;
             else pi.SetValue(originObj, updated);
             return originObj;

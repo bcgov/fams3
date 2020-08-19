@@ -293,6 +293,12 @@ namespace DynamicsAdapter.Web.SearchAgency
             if (ssgMerged.Updated)
             {
                 ssgMerged.SearchRequest = _uploadedPerson.SearchRequest;
+                ssgMerged.IsCreatedByAgency = true;
+                ssgMerged.SSG_Addresses = null;
+                ssgMerged.SSG_Employments = null;
+                ssgMerged.SSG_Identifiers = null;
+                ssgMerged.SSG_Identities = null;
+                ssgMerged.SSG_PhoneNumbers = null;
                 await _searchRequestService.UpdatePerson(ssgMerged, _cancellationToken);
                 _logger.LogInformation("Update Person successfully");
             }

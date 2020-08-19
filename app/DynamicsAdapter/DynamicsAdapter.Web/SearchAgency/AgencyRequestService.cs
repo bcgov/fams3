@@ -139,8 +139,7 @@ namespace DynamicsAdapter.Web.SearchAgency
             PersonEntity newPersonEntity = _mapper.Map<PersonEntity>(_personSought);
             await UpdatePersonSought(newPersonEntity);
 
-            //update RelatedPerson
-            await UpdateRelatedPerson();
+            //update RelatedPerson applicant
             await UpdateRelatedApplicant((string.IsNullOrEmpty(newSearchRequest.ApplicantFirstName)|| string.IsNullOrEmpty(newSearchRequest.ApplicantLastName))? null : new RelatedPersonEntity()
                                             {
                                                 FirstName = newSearchRequest.ApplicantFirstName,
@@ -152,10 +151,11 @@ namespace DynamicsAdapter.Web.SearchAgency
             //update identifiers
             await UpdateIdentifiers();
 
-            //for phones, addresses, Identifiers are same as creation, as if different, add new one, if same, ignore
+            //for phones, addresses, relatedPersons are same as creation, as if different, add new one, if same, ignore
             await UploadAddresses();
             await UploadPhones();
-            
+            await UploadRelatedPersons();
+
 
             return _uploadedSearchRequest;
         }

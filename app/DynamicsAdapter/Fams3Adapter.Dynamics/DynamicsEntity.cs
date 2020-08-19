@@ -1,8 +1,9 @@
-﻿using Newtonsoft.Json;
+﻿using BcGov.Fams3.Utils.Object;
+using Newtonsoft.Json;
 
 namespace Fams3Adapter.Dynamics
 {
-    public abstract class DynamicsEntity
+    public abstract class DynamicsEntity : IUpdatableObject
     {
         [JsonProperty("statecode")]
         public int StateCode { get; set; }
@@ -22,5 +23,6 @@ namespace Fams3Adapter.Dynamics
         [JsonProperty("ssg_datadatelabel2")]
         public string Date2Label { get; set; }
 
+        public bool Updated { get; set; }
     }
 }

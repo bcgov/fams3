@@ -1,10 +1,12 @@
 using Fams3Adapter.Dynamics.Duplicate;
+using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Moq;
 using NUnit.Framework;
 using Simple.OData.Client;
 using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -153,6 +155,52 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             };
 
             Assert.ThrowsAsync<WebRequestException>(async () => await _sut.SavePerson(person, CancellationToken.None));
+        }
+
+        [Test]
+        public async Task GetPerson_should_return_1_level_expanded_data()
+        {
+            Guid personId = Guid.NewGuid();
+
+            _odataClientMock.Setup(x => x.For<SSG_Person>(null)
+                .Key(It.Is<Guid>(m => m == personId))
+                .Expand(x => x.SSG_Identities)
+                .Expand(x => x.SSG_PhoneNumbers)
+                .Expand(x => x.SSG_Identifiers)
+                .Expand(x => x.SSG_Employments)
+                .Expand(x => x.SSG_Addresses)
+                .FindEntryAsync(It.IsAny<CancellationToken>()))
+               .Returns(Task.FromResult<SSG_Person>(new SSG_Person()
+               {
+                   PersonId = personId,
+                   SSG_Identifiers = new List<SSG_Identifier>() { new SSG_Identifier() { } }.ToArray()
+               }));
+            var result = await _sut.GetPerson(personId, CancellationToken.None);
+            Assert.AreEqual(1, result.SSG_Identifiers.Length);
+        }
+
+        [Test]
+        public async Task update_correct_Person_should_success()
+        {
+            Guid testId = Guid.NewGuid();
+            _odataClientMock.Setup(x => x.For<SSG_Person>(null).Key(It.Is<Guid>(m => m == testId)).Set(It.IsAny<SSG_Person>())
+                .UpdateEntryAsync(It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult(new SSG_Person()
+                {
+                    PersonId = testId,
+                    FirstName = "new"
+                })
+                );
+
+            var person = new SSG_Person()
+            {
+                PersonId=testId,
+                FirstName="old"
+            };
+            var result = await _sut.UpdatePerson(person, CancellationToken.None);
+
+            Assert.AreEqual("new", result.FirstName);
+
         }
         #endregion
 

@@ -54,7 +54,7 @@ namespace Fams3Adapter.Dynamics.Employment
         [JsonProperty("ssg_CountrySubDivision")]
         public virtual SSG_CountrySubdivision CountrySubdivision { get; set; }
 
-        [JsonProperty("ssg_countrysubdivisiontext")]
+        [JsonProperty("ssg_countrysubdivision_text")]
         public string CountrySubdivisionText { get; set; }
 
         [JsonProperty("ssg_contactname")]

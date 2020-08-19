@@ -1,4 +1,9 @@
-﻿using Fams3Adapter.Dynamics.Agency;
+﻿using BcGov.Fams3.Utils.Object;
+using Fams3Adapter.Dynamics.Agency;
+using Fams3Adapter.Dynamics.Employment;
+using Fams3Adapter.Dynamics.Notes;
+using Fams3Adapter.Dynamics.Person;
+using Fams3Adapter.Dynamics.RelatedPerson;
 using Newtonsoft.Json;
 using System;
 
@@ -159,7 +164,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
     }
 
-    public class SSG_SearchRequest : SearchRequestEntity
+    public class SSG_SearchRequest : SearchRequestEntity, IUpdatableObject
     {
         [JsonProperty("ssg_searchrequestid")]
         public Guid SearchRequestId { get; set; }
@@ -169,6 +174,15 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
         [JsonProperty("statuscode")]
         public int StatusCode { get; set; }
+
+        [JsonProperty("ssg_ssg_searchrequest_ssg_person_SearchRequest")]
+        public SSG_Person[] SSG_Persons { get; set; }
+
+        [JsonProperty("ssg_ssg_searchrequest_ssg_notes_SearchRequest")]
+        public SSG_Notese[] SSG_Notes { get; set; }
+
+        public bool Updated { get; set; }
+        public bool IsDuplicated { get; set; }
 
         public override string ToString()
         {

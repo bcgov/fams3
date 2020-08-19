@@ -9,7 +9,7 @@ namespace Fams3Adapter.Dynamics.Notes
 
     public class NotesEntity : DynamicsEntity
     {
-        [JsonProperty("ssg_informationsourcetext")]
+        [JsonProperty("ssg_suppliedby")]
         public int? InformationSource { get; set; }
 
 

@@ -30,19 +30,6 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
         private Guid _validRequestGuid;
         private Guid _personGuid;
 
-        private SearchRequestOrdered _searchRequstOrdered;
-  
-        private IdentifierEntity _fakePersoneIdentifier;
-        private AddressEntity _fakePersonAddress;
-        private PhoneNumberEntity _fakePersonPhoneNumber;
-        private AliasEntity _fakeName;
-        private RelatedPersonEntity _fakeRelatedPerson;
-        private EmploymentEntity _fakeEmployment;
-        private EmploymentContactEntity _fakeEmploymentContact;
-        private PersonEntity _ssg_fakePerson;
-        private SearchRequestEntity _fakeSearchRequest;
-        private Person _searchRequestPerson;
-
         [SetUp]
         public void Init()
         {
@@ -206,7 +193,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             _mapper.Setup(m => m.Map<PersonEntity>(It.IsAny<Person>()))
                .Returns(new PersonEntity() { FirstName = "changedfirstName", LastName = "lastName" });
 
-            _searchRequstOrdered = new SearchRequestOrdered()
+            SearchRequestOrdered searchRequstOrdered = new SearchRequestOrdered()
             {
                 Action = RequestAction.UPDATE,
                 RequestId = "1111111",
@@ -218,7 +205,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
 
                 }
             };
-            SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(_searchRequstOrdered);
+            SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(searchRequstOrdered);
             _searchRequestServiceMock.Verify(m => m.UpdateSearchRequest(It.Is<SSG_SearchRequest>(
                 m => m.PersonSoughtFirstName == "changedfirstName"
                 && m.PersonSoughtLastName == "lastName"),
@@ -259,7 +246,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             _mapper.Setup(m => m.Map<PersonEntity>(It.IsAny<Person>()))
                .Returns(new PersonEntity() { FirstName = "firstName", LastName = "lastName" });
 
-            _searchRequstOrdered = new SearchRequestOrdered()
+            SearchRequestOrdered searchRequstOrdered = new SearchRequestOrdered()
             {
                 Action = RequestAction.UPDATE,
                 RequestId = "1111111",
@@ -271,7 +258,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
 
                 }
             };
-            SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(_searchRequstOrdered);
+            SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(searchRequstOrdered);
             _searchRequestServiceMock.Verify(m => m.UpdateSearchRequest(It.IsAny<SSG_SearchRequest>(),
                  It.IsAny<CancellationToken>()), Times.Never);
             _searchRequestServiceMock.Verify(m => m.UpdatePerson(It.IsAny<SSG_Person>()
@@ -283,7 +270,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
         }
 
         [Test]
-        public async Task RelatedPerson_changed_ProcessUpdateSearchRequest_should_run_updateRelatedPerson_correctly()
+        public async Task RelatedPerson_changed_ProcessUpdateSearchRequest_should_run_createRelatedPerson_correctly()
         {
             _searchRequestServiceMock.Setup(x => x.GetPerson(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<SSG_Person>(new SSG_Person()
@@ -323,7 +310,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                        PersonType = RelatedPersonPersonType.Relation.Value
                    });
 
-            _searchRequstOrdered = new SearchRequestOrdered()
+            SearchRequestOrdered searchRequstOrdered = new SearchRequestOrdered()
             {
                 Action = RequestAction.UPDATE,
                 RequestId = "1111111",
@@ -336,14 +323,14 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                         new RelatedPerson(){FirstName="newFirstName", LastName="lastName"}}
                 }
             };
-            SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(_searchRequstOrdered);
+            SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(searchRequstOrdered);
             _searchRequestServiceMock.Verify(m => m.UpdateSearchRequest(It.IsAny<SSG_SearchRequest>(),
                  It.IsAny<CancellationToken>()), Times.Never);
             _searchRequestServiceMock.Verify(m => m.UpdatePerson(It.IsAny<SSG_Person>()
                         , It.IsAny<CancellationToken>()), Times.Never);
             _searchRequestServiceMock.Verify(m => m.CreateNotes(It.IsAny<NotesEntity>()
                 , It.IsAny<CancellationToken>()), Times.Never);
-            _searchRequestServiceMock.Verify(m => m.UpdateRelatedPerson(It.IsAny<SSG_Identity>()
+            _searchRequestServiceMock.Verify(m => m.CreateRelatedPerson(It.IsAny<RelatedPersonEntity>()
             , It.IsAny<CancellationToken>()), Times.Once);
 
             Assert.AreEqual(_validRequestGuid, ssgSearchRequest.SearchRequestId);
@@ -391,7 +378,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                     PersonType = RelatedPersonPersonType.Relation.Value
                 });
 
-            _searchRequstOrdered = new SearchRequestOrdered()
+            SearchRequestOrdered searchRequstOrdered = new SearchRequestOrdered()
             {
                 Action = RequestAction.UPDATE,
                 RequestId = "1111111",
@@ -404,7 +391,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                         new RelatedPerson(){FirstName="newFirstName", LastName="lastName"}}
                 }
             };
-            SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(_searchRequstOrdered);
+            SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(searchRequstOrdered);
             _searchRequestServiceMock.Verify(m => m.UpdateSearchRequest(It.IsAny<SSG_SearchRequest>(),
                  It.IsAny<CancellationToken>()), Times.Never);
             _searchRequestServiceMock.Verify(m => m.UpdatePerson(It.IsAny<SSG_Person>()
@@ -634,7 +621,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             _mapper.Setup(m => m.Map<PersonEntity>(It.IsAny<Person>()))
                .Returns(new PersonEntity() { FirstName = "firstName", LastName = "lastName" });
 
-            _searchRequstOrdered = new SearchRequestOrdered()
+            SearchRequestOrdered searchRequstOrdered = new SearchRequestOrdered()
             {
                 Action = RequestAction.UPDATE,
                 RequestId = "1111111",
@@ -656,7 +643,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                     }
                 }
             };
-            SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(_searchRequstOrdered);
+            SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(searchRequstOrdered);
             _searchRequestServiceMock.Verify(m => m.UpdateSearchRequest(It.IsAny<SSG_SearchRequest>(),
                  It.IsAny<CancellationToken>()), Times.Never);
             _searchRequestServiceMock.Verify(m => m.UpdatePerson(It.IsAny<SSG_Person>()
@@ -766,7 +753,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             _mapper.Setup(m => m.Map<PersonEntity>(It.IsAny<Person>()))
                .Returns(new PersonEntity() { FirstName = "firstName", LastName = "lastName" });
 
-            _searchRequstOrdered = new SearchRequestOrdered()
+            SearchRequestOrdered searchRequstOrdered = new SearchRequestOrdered()
             {
                 Action = RequestAction.UPDATE,
                 RequestId = "1111111",
@@ -784,7 +771,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                     }
                 }
             };
-            SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(_searchRequstOrdered);
+            SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(searchRequstOrdered);
             _searchRequestServiceMock.Verify(m => m.UpdateSearchRequest(It.IsAny<SSG_SearchRequest>(),
                  It.IsAny<CancellationToken>()), Times.Never);
             _searchRequestServiceMock.Verify(m => m.UpdatePerson(It.IsAny<SSG_Person>()
@@ -838,7 +825,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             _mapper.Setup(m => m.Map<PersonEntity>(It.IsAny<Person>()))
                .Returns(new PersonEntity() { FirstName = "firstName", LastName = "lastName" });
 
-            _searchRequstOrdered = new SearchRequestOrdered()
+            SearchRequestOrdered searchRequstOrdered = new SearchRequestOrdered()
             {
                 Action = RequestAction.UPDATE,
                 RequestId = "1111111",
@@ -857,7 +844,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                     }
                 }
             };
-            SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(_searchRequstOrdered);
+            SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(searchRequstOrdered);
             _searchRequestServiceMock.Verify(m => m.UpdateSearchRequest(It.IsAny<SSG_SearchRequest>(),
                  It.IsAny<CancellationToken>()), Times.Never);
             _searchRequestServiceMock.Verify(m => m.UpdatePerson(It.IsAny<SSG_Person>()
@@ -908,7 +895,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             _mapper.Setup(m => m.Map<PersonEntity>(It.IsAny<Person>()))
                .Returns(new PersonEntity() { FirstName = "firstName", LastName = "lastName" });
 
-            _searchRequstOrdered = new SearchRequestOrdered()
+            SearchRequestOrdered searchRequstOrdered = new SearchRequestOrdered()
             {
                 Action = RequestAction.UPDATE,
                 RequestId = "1111111",
@@ -927,7 +914,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                     }
                 }
             };
-            SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(_searchRequstOrdered);
+            SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(searchRequstOrdered);
             _searchRequestServiceMock.Verify(m => m.UpdateSearchRequest(It.IsAny<SSG_SearchRequest>(),
                  It.IsAny<CancellationToken>()), Times.Never);
             _searchRequestServiceMock.Verify(m => m.UpdatePerson(It.IsAny<SSG_Person>()
@@ -952,7 +939,8 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             Guid guid = Guid.NewGuid();
             _searchRequestServiceMock.Setup(x => x.GetSearchRequest(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Throws(new Exception("fakeException"));
-            Assert.ThrowsAsync<Exception>(async () => await _sut.ProcessUpdateSearchRequest(_searchRequstOrdered));
+            SearchRequestOrdered searchRequestOrdered = new SearchRequestOrdered();
+            Assert.ThrowsAsync<Exception>(async () => await _sut.ProcessUpdateSearchRequest(searchRequestOrdered));
         }
 
         [Test]
@@ -961,8 +949,8 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             Guid guid = Guid.NewGuid();
             _searchRequestServiceMock.Setup(x => x.GetSearchRequest(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<SSG_SearchRequest>(null));
-
-            SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(_searchRequstOrdered);
+            SearchRequestOrdered searchRequestOrdered = new SearchRequestOrdered();
+            SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(searchRequestOrdered);
             _searchRequestServiceMock.Verify(m => m.CreateNotes(It.IsAny<NotesEntity>(), It.IsAny<CancellationToken>()), Times.Never);
             Assert.AreEqual(null, ssgSearchRequest);
         }

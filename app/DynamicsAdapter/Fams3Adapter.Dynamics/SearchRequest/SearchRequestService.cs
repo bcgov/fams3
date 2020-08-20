@@ -422,6 +422,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                 .Expand(x => x.SSG_Identifiers)
                 .Expand(x => x.SSG_Employments)
                 .Expand(x => x.SSG_Addresses)
+                .Expand(x => x.SSG_Aliases)
                 .FindEntryAsync(cancellationToken);
 
             return dataSearchRequest;

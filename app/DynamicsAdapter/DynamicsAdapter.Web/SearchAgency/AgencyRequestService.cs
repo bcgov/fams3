@@ -19,6 +19,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using BcGov.Fams3.Utils.Object;
+using Fams3Adapter.Dynamics.Name;
 
 namespace DynamicsAdapter.Web.SearchAgency
 {
@@ -73,6 +74,7 @@ namespace DynamicsAdapter.Web.SearchAgency
             await UploadPhones();
             await UploadEmployment();
             await UploadRelatedPersons();
+            await UploadAliases();
             return _uploadedSearchRequest;
         }
 
@@ -151,10 +153,11 @@ namespace DynamicsAdapter.Web.SearchAgency
             //update identifiers
             await UpdateIdentifiers();
 
-            //for phones, addresses, relatedPersons are same as creation, as if different, add new one, if same, ignore
+            //for phones, addresses, relatedPersons, names are same as creation, as if different, add new one, if same, ignore
             await UploadAddresses();
             await UploadPhones();
             await UploadRelatedPersons();
+            await UploadAliases();
 
 
             return _uploadedSearchRequest;
@@ -263,6 +266,24 @@ namespace DynamicsAdapter.Web.SearchAgency
 
             }
             _logger.LogInformation("Create RelatedPersons records for SearchRequest successfully");
+            return true;
+        }
+        private async Task<bool> UploadAliases()
+        {
+            if (_personSought.Names == null) return true;
+
+            _logger.LogDebug($"Attempting to create aliases for SoughtPerson");
+
+            foreach (var name in _personSought.Names.Where(m => m.Owner == OwnerType.PersonSought))
+            {
+                AliasEntity aliasEntity = _mapper.Map<AliasEntity>(name);
+                aliasEntity.SearchRequest = _uploadedSearchRequest;
+                aliasEntity.InformationSource = InformationSourceType.Request.Value;
+                aliasEntity.Person = _uploadedPerson;
+                aliasEntity.IsCreatedByAgency = true;
+                await _searchRequestService.CreateName(aliasEntity, _cancellationToken);
+            }
+            _logger.LogInformation("Create alias records for SearchRequest successfully");
             return true;
         }
 

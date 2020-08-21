@@ -169,6 +169,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
                 .Expand(x => x.SSG_Identifiers)
                 .Expand(x => x.SSG_Employments)
                 .Expand(x => x.SSG_Addresses)
+                .Expand(x=>x.SSG_Aliases)
                 .FindEntryAsync(It.IsAny<CancellationToken>()))
                .Returns(Task.FromResult<SSG_Person>(new SSG_Person()
                {

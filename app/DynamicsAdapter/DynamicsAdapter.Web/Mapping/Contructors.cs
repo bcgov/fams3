@@ -46,7 +46,7 @@ namespace DynamicsAdapter.Web.Mapping
                         case "phonenumber": entity.PhoneNumberRequested = true; break;
                         case "carceration": entity.CarcerationStatusRequested = true; break;
                         case "dateofdeath": entity.DateOfDeathRequested = true; break;
-                        case "iastatus": entity.IAStatusRequested = true; break;
+                        case "ia": entity.IAStatusRequested = true; break;
                         case "safety": entity.SafetyConcernRequested = true; break;
                     };
                 }

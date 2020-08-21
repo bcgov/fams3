@@ -33,6 +33,9 @@ namespace Fams3Adapter.Dynamics.Identifier
 
         [JsonProperty("ssg_informationsourcetext")]
         public int? InformationSource { get; set; }
+
+        [JsonProperty("ssg_createdbyagency")]
+        public bool IsCreatedByAgency { get; set; }
     }
 
     public class SSG_Identifier : IdentifierEntity

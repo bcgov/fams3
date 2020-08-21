@@ -79,6 +79,9 @@ namespace Fams3Adapter.Dynamics.Person
 
         [JsonProperty("ssg_duplicatedetectionhash")]
         public string DuplicateDetectHash { get; set; }
+
+        [JsonProperty("ssg_createdbyagency")]
+        public bool IsCreatedByAgency { get; set; }
     }
 
     public class SSG_Person : PersonEntity

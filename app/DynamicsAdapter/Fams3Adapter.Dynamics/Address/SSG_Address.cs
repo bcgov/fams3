@@ -58,6 +58,9 @@ namespace Fams3Adapter.Dynamics.Address
 
         [JsonProperty("ssg_notes")]
         public string Notes { get; set; }
+
+        [JsonProperty("ssg_createdbyagency")]
+        public bool IsCreatedByAgency { get; set; }
     }
 
     public class SSG_Address : AddressEntity

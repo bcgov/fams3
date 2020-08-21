@@ -19,6 +19,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using BcGov.Fams3.Utils.Object;
+using Fams3Adapter.Dynamics.Name;
 
 namespace DynamicsAdapter.Web.SearchAgency
 {
@@ -64,6 +65,7 @@ namespace DynamicsAdapter.Web.SearchAgency
             PersonEntity personEntity = _mapper.Map<PersonEntity>(_personSought);
             personEntity.SearchRequest = _uploadedSearchRequest;
             personEntity.InformationSource = InformationSourceType.Request.Value;
+            personEntity.IsCreatedByAgency = true;
             _uploadedPerson = await _searchRequestService.SavePerson(personEntity, _cancellationToken);
             _logger.LogInformation("Create Person successfully");
 
@@ -72,6 +74,7 @@ namespace DynamicsAdapter.Web.SearchAgency
             await UploadPhones();
             await UploadEmployment();
             await UploadRelatedPersons();
+            await UploadAliases();
             return _uploadedSearchRequest;
         }
 
@@ -106,7 +109,8 @@ namespace DynamicsAdapter.Web.SearchAgency
             SSG_Person existedSoughtPerson = existedSearchRequest?.SSG_Persons?.FirstOrDefault(
                     m => m.FirstName == existedSearchRequest.PersonSoughtFirstName
                     && m.LastName == existedSearchRequest.PersonSoughtLastName
-                    && m.InformationSource == InformationSourceType.Request.Value);
+                    && m.InformationSource == InformationSourceType.Request.Value
+                    && m.IsCreatedByAgency);
             if (existedSoughtPerson == null)
             {
                 _logger.LogError("the updating personSought does not exist. something is wrong.");
@@ -137,8 +141,7 @@ namespace DynamicsAdapter.Web.SearchAgency
             PersonEntity newPersonEntity = _mapper.Map<PersonEntity>(_personSought);
             await UpdatePersonSought(newPersonEntity);
 
-            //update RelatedPerson
-            await UpdateRelatedPerson();
+            //update RelatedPerson applicant
             await UpdateRelatedApplicant((string.IsNullOrEmpty(newSearchRequest.ApplicantFirstName)|| string.IsNullOrEmpty(newSearchRequest.ApplicantLastName))? null : new RelatedPersonEntity()
                                             {
                                                 FirstName = newSearchRequest.ApplicantFirstName,
@@ -150,10 +153,12 @@ namespace DynamicsAdapter.Web.SearchAgency
             //update identifiers
             await UpdateIdentifiers();
 
-            //for phones, addresses, Identifiers are same as creation, as if different, add new one, if same, ignore
+            //for phones, addresses, relatedPersons, names are same as creation, as if different, add new one, if same, ignore
             await UploadAddresses();
             await UploadPhones();
-            
+            await UploadRelatedPersons();
+            await UploadAliases();
+
 
             return _uploadedSearchRequest;
         }
@@ -169,6 +174,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                 identifier.SearchRequest = _uploadedSearchRequest;
                 identifier.InformationSource = InformationSourceType.Request.Value;
                 identifier.Person = _uploadedPerson;
+                identifier.IsCreatedByAgency = true;
                 SSG_Identifier newIdentifier = await _searchRequestService.CreateIdentifier(identifier, _cancellationToken);
             }
             _logger.LogInformation("Create identifier records for SearchRequest successfully");
@@ -187,6 +193,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                 addr.SearchRequest = _uploadedSearchRequest;
                 addr.InformationSource = InformationSourceType.Request.Value;
                 addr.Person = _uploadedPerson;
+                addr.IsCreatedByAgency = true;
                 SSG_Address uploadedAddr = await _searchRequestService.CreateAddress(addr, _cancellationToken);
             }
             _logger.LogInformation("Create addresses records for SearchRequest successfully");
@@ -205,6 +212,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                 ph.SearchRequest = _uploadedSearchRequest;
                 ph.InformationSource = InformationSourceType.Request.Value;
                 ph.Person = _uploadedPerson;
+                ph.IsCreatedByAgency = true;
                 SSG_PhoneNumber uploadedPhone = await _searchRequestService.CreatePhoneNumber(ph, _cancellationToken);
             }
             _logger.LogInformation("Create phones records for SearchRequest successfully");
@@ -223,6 +231,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                 e.SearchRequest = _uploadedSearchRequest;
                 e.InformationSource = InformationSourceType.Request.Value;
                 e.Person = _uploadedPerson;
+                e.IsCreatedByAgency = true;
                 SSG_Employment ssg_employment = await _searchRequestService.CreateEmployment(e, _cancellationToken);
 
                 if (employment.Employer != null)
@@ -252,10 +261,29 @@ namespace DynamicsAdapter.Web.SearchAgency
                 n.SearchRequest = _uploadedSearchRequest;
                 n.InformationSource = InformationSourceType.Request.Value;
                 n.Person = _uploadedPerson;
+                n.IsCreatedByAgency = true;
                 SSG_Identity relate = await _searchRequestService.CreateRelatedPerson(n, _cancellationToken);
 
             }
             _logger.LogInformation("Create RelatedPersons records for SearchRequest successfully");
+            return true;
+        }
+        private async Task<bool> UploadAliases()
+        {
+            if (_personSought.Names == null) return true;
+
+            _logger.LogDebug($"Attempting to create aliases for SoughtPerson");
+
+            foreach (var name in _personSought.Names.Where(m => m.Owner == OwnerType.PersonSought))
+            {
+                AliasEntity aliasEntity = _mapper.Map<AliasEntity>(name);
+                aliasEntity.SearchRequest = _uploadedSearchRequest;
+                aliasEntity.InformationSource = InformationSourceType.Request.Value;
+                aliasEntity.Person = _uploadedPerson;
+                aliasEntity.IsCreatedByAgency = true;
+                await _searchRequestService.CreateName(aliasEntity, _cancellationToken);
+            }
+            _logger.LogInformation("Create alias records for SearchRequest successfully");
             return true;
         }
 
@@ -286,7 +314,13 @@ namespace DynamicsAdapter.Web.SearchAgency
             if (ssgMerged.Updated)
             {
                 ssgMerged.SearchRequest = _uploadedPerson.SearchRequest;
-                ssgMerged = await _searchRequestService.UpdatePerson(ssgMerged, _cancellationToken);
+                ssgMerged.IsCreatedByAgency = true;
+                ssgMerged.SSG_Addresses = null;
+                ssgMerged.SSG_Employments = null;
+                ssgMerged.SSG_Identifiers = null;
+                ssgMerged.SSG_Identities = null;
+                ssgMerged.SSG_PhoneNumbers = null;
+                await _searchRequestService.UpdatePerson(ssgMerged, _cancellationToken);
                 _logger.LogInformation("Update Person successfully");
             }
             return true;
@@ -298,7 +332,9 @@ namespace DynamicsAdapter.Web.SearchAgency
 
             //update or add relation relatedPerson
             SSG_Identity originalRelatedPerson= _uploadedPerson?.SSG_Identities?.FirstOrDefault(
-            m => m.InformationSource == InformationSourceType.Request.Value && m.PersonType == RelatedPersonPersonType.Relation.Value);
+            m => m.InformationSource == InformationSourceType.Request.Value 
+            && m.PersonType == RelatedPersonPersonType.Relation.Value
+            && m.IsCreatedByAgency);
 
             if (_personSought.RelatedPersons?.Count() > 0)
             {
@@ -329,7 +365,8 @@ namespace DynamicsAdapter.Web.SearchAgency
 
             //update or add relation relatedPerson
             SSG_Identity originalRelatedApplicant = _uploadedPerson.SSG_Identities?.FirstOrDefault(
-            m => m.InformationSource == InformationSourceType.Request.Value && m.PersonType == RelatedPersonPersonType.Applicant.Value);
+            m => m.InformationSource == InformationSourceType.Request.Value 
+            && m.PersonType == RelatedPersonPersonType.Applicant.Value);
 
             if (originalRelatedApplicant == null)
             {
@@ -362,7 +399,8 @@ namespace DynamicsAdapter.Web.SearchAgency
             _logger.LogDebug($"Attempting to update employment records for PersonSought.");
 
             SSG_Employment originalEmployment = _uploadedPerson.SSG_Employments?.FirstOrDefault(
-                    m => m.InformationSource == InformationSourceType.Request.Value );
+                    m => m.InformationSource == InformationSourceType.Request.Value 
+                    && m.IsCreatedByAgency);
 
             if (_personSought.Employments.Count() > 0)
             {
@@ -410,7 +448,9 @@ namespace DynamicsAdapter.Web.SearchAgency
             {
                 IdentifierEntity identifierEntity = _mapper.Map<IdentifierEntity>(pi);
                 SSG_Identifier originalIdentifier = _uploadedPerson.SSG_Identifiers?.FirstOrDefault(
-                   m => m.InformationSource == InformationSourceType.Request.Value && m.IdentifierType==identifierEntity.IdentifierType);
+                   m => m.InformationSource == InformationSourceType.Request.Value 
+                        && m.IdentifierType==identifierEntity.IdentifierType
+                        && m.IsCreatedByAgency);
                 if(originalIdentifier == null)
                 {
                     await UploadIdentifiers();

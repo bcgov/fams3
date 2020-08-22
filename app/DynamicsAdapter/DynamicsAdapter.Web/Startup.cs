@@ -10,6 +10,7 @@ using DynamicsAdapter.Web.PersonSearch;
 using DynamicsAdapter.Web.Register;
 using DynamicsAdapter.Web.SearchAgency;
 using DynamicsAdapter.Web.SearchRequest;
+using Fams3Adapter.Dynamics.DataProvider;
 using Fams3Adapter.Dynamics.Duplicate;
 using Fams3Adapter.Dynamics.OptionSets;
 using Fams3Adapter.Dynamics.SearchApiRequest;
@@ -142,6 +143,7 @@ namespace DynamicsAdapter.Web
             services.AddTransient<ITokenService, TokenService>();
             services.AddTransient<ISearchApiRequestService, SearchApiRequestService>();
             services.AddTransient<ISearchRequestService, SearchRequestService>();
+            services.AddTransient<IDataProviderService, DataProviderService>();
             services.AddSingleton<IDuplicateDetectionService, DuplicateDetectionService>();
             services.AddTransient<IAgencyRequestService, AgencyRequestService>();
 

@@ -31,13 +31,13 @@ namespace DynamicsAdapter.Web.Register
     {
         private readonly ICacheService _cache;
         private readonly ILogger<SearchRequestRegister> _logger;
-        private readonly IODataClient _oDataClient;
+        private readonly IDataProviderService _dataProviderService;
 
-        public SearchRequestRegister(ICacheService cache, ILogger<SearchRequestRegister> logger, IODataClient oDataClient)
+        public SearchRequestRegister(ICacheService cache, ILogger<SearchRequestRegister> logger, IDataProviderService dataProviderService)
         {
             _cache = cache;
             _logger = logger;
-            this._oDataClient = oDataClient;
+            this._dataProviderService = dataProviderService;
         }
 
         public SSG_SearchApiRequest FilterDuplicatedIdentifier(SSG_SearchApiRequest request)
@@ -70,9 +70,8 @@ namespace DynamicsAdapter.Web.Register
             string data = await _cache.Get($"{Keys.REDIS_KEY_PREFIX}{Keys.DATA_PROVIDER_KEY}");
             if (string.IsNullOrEmpty(data))
             {
-                var cts = new CancellationToken();
-                var providers = await _oDataClient.For<SSG_DataProvider>()
-                            .FindEntriesAsync(cts);
+
+                var providers = await _dataProviderService.GetAllDataProviders();
 
                 await RegisterDataProviders(providers.ToArray());
 

@@ -2,16 +2,19 @@
 using DynamicsAdapter.Web.PersonSearch.Models;
 using DynamicsAdapter.Web.Register;
 using Fams3Adapter.Dynamics;
+using Fams3Adapter.Dynamics.DataProvider;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.SearchApiEvent;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using Fams3Adapter.Dynamics.SearchRequest;
+using Fams3Adapter.Dynamics.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NSwag.Annotations;
 using Serilog.Context;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -24,17 +27,20 @@ namespace DynamicsAdapter.Web.PersonSearch
         private readonly ILogger<PersonSearchController> _logger;
         private readonly ISearchResultService _searchResultService;
         private readonly ISearchApiRequestService _searchApiRequestService;
+        private readonly IDataPartnerService _dataPartnerService;
         private readonly IMapper _mapper;
         private readonly ISearchRequestRegister _register;
 
         public PersonSearchController(ISearchResultService searchResultService,
             ISearchApiRequestService searchApiRequestService,
+            IDataPartnerService dataPartnerService,
             ILogger<PersonSearchController> logger, 
             IMapper mapper,
             ISearchRequestRegister register)
         {
             _searchResultService = searchResultService;
             _searchApiRequestService = searchApiRequestService;
+            _dataPartnerService = dataPartnerService;
             _logger = logger;
             _mapper = mapper;
             _register = register;
@@ -84,8 +90,9 @@ namespace DynamicsAdapter.Web.PersonSearch
                             SSG_Identifier sourceIdentifer = await _register.GetMatchedSourceIdentifier(p.SourcePersonalIdentifier, key);
                             await _searchResultService.ProcessPersonFound(p, personCompletedEvent.ProviderProfile, searchRequest, request.SearchApiRequestId, cts.Token, sourceIdentifer);
                         }
-                    }                   
+                    }
 
+                    await UpdateRetries(personCompletedEvent?.ProviderProfile.Name,0, cts, request);
                     return Ok();
                 }
 
@@ -97,6 +104,24 @@ namespace DynamicsAdapter.Web.PersonSearch
             }
         }
 
+        private async Task UpdateRetries(string providerProfileName, int noOfTry, CancellationTokenSource cts, SSG_SearchApiRequest request)
+        {
+            var dataSearchApiDataProvider = await _dataPartnerService.GetSearchApiRequestDataProvider(request.SearchApiRequestId, providerProfileName, cts.Token);
+           
+            if (dataSearchApiDataProvider != null)
+            {
+                _logger.LogInformation($"Updating the no of tries for search api request {request.SearchApiRequestId}");
+                dataSearchApiDataProvider.NumberOfFailures = (noOfTry == 1) ? dataSearchApiDataProvider.NumberOfFailures + noOfTry : noOfTry;
+                if (dataSearchApiDataProvider.NumberOfDaysToRetry == dataSearchApiDataProvider.NumberOfFailures)
+                    dataSearchApiDataProvider.AllRetriesDone = NullableBooleanType.Yes.Value;
+                else
+                    dataSearchApiDataProvider.AllRetriesDone = NullableBooleanType.No.Value;
+
+
+                await _dataPartnerService.UpdateSearchRequestApiProvider(dataSearchApiDataProvider, cts.Token);
+                _logger.LogInformation($"Updated the no of tries for search api request {request.SearchApiRequestId}");
+            }
+        }
 
         [HttpPost]
         [Consumes("application/json")]
@@ -141,6 +166,8 @@ namespace DynamicsAdapter.Web.PersonSearch
         [OpenApiTag("Person Search Events API")]
         public async Task<IActionResult> Failed(string key, [FromBody]PersonSearchFailed personFailedEvent)
         {
+
+          
             using (LogContext.PushProperty("SearchRequestKey", personFailedEvent?.SearchRequestKey))
             using (LogContext.PushProperty("DataPartner", personFailedEvent?.ProviderProfile.Name))
             {
@@ -154,6 +181,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                     var searchApiEvent = _mapper.Map<SSG_SearchApiEvent>(personFailedEvent);
                     _logger.LogDebug($"Attempting to create a new event for SearchApiRequest.");
                     await _searchApiRequestService.AddEventAsync(request.SearchApiRequestId, searchApiEvent, token.Token);
+                    await UpdateRetries(personFailedEvent?.ProviderProfile.Name, 1, token, request);
                     _logger.LogInformation($"Successfully created failed event for SearchApiRequest");
                 }
                 catch (Exception ex)
@@ -161,7 +189,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                     _logger.LogError(ex.Message);
                     return BadRequest();
                 }
-
+               
                 return Ok();
             }
         }

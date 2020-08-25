@@ -6,6 +6,7 @@ using Simple.OData.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,13 +15,17 @@ namespace Fams3Adapter.Dynamics.Test.DataPartners
     public class DataPartnerServiceTest
     {
         private Mock<IODataClient> _odataClientMock;
-        private Mock<ILogger<DataProviderService>> _loggerMock = new Mock<ILogger<DataProviderService>>();
-        private DataProviderService _sut;
+        private Mock<ILogger<DataPartnerService>> _loggerMock = new Mock<ILogger<DataPartnerService>>();
+        private DataPartnerService _sut;
+        private Guid searchId;
+        private string ProviderName;
         [SetUp]
         public void SetUp()
         {
+            searchId = Guid.NewGuid();
+            ProviderName = "ICBC";
             _odataClientMock = new Mock<IODataClient>();
-            _loggerMock  = new Mock<ILogger<DataProviderService>>();
+            _loggerMock  = new Mock<ILogger<DataPartnerService>>();
 
             _odataClientMock.Setup( x => x.For<SSG_DataProvider>(null).FindEntriesAsync(It.IsAny<CancellationToken>())).Returns (
                 Task.FromResult<IEnumerable<SSG_DataProvider>>(
@@ -40,6 +45,18 @@ namespace Fams3Adapter.Dynamics.Test.DataPartners
                ));
 
             _odataClientMock.Setup(x => x.For<SSG_SearchapiRequestDataProvider>(null)
+           .Filter(It.IsAny<Expression<Func<SSG_SearchapiRequestDataProvider, bool>>>())
+          .Filter(It.IsAny<Expression<Func<SSG_SearchapiRequestDataProvider, bool>>>())
+            .FindEntryAsync(It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult(new SSG_SearchapiRequestDataProvider
+                {
+                    AdaptorName = "ICBC",
+                    NumberOfDaysToRetry = 5,
+                    TimeBetweenRetries = 60,
+                    NumberOfRetries = 3
+                }));
+
+            _odataClientMock.Setup(x => x.For<SSG_SearchapiRequestDataProvider>(null)
             .Key(It.IsAny<Guid>())
             .Set(It.IsAny<SSG_SearchapiRequestDataProvider>())
             .UpdateEntryAsync(It.IsAny<CancellationToken>()))
@@ -50,7 +67,7 @@ namespace Fams3Adapter.Dynamics.Test.DataPartners
                     NumberOfRetries = 3
                 }));
 
-            _sut = new DataProviderService(_loggerMock.Object, _odataClientMock.Object);
+            _sut = new DataPartnerService(_loggerMock.Object, _odataClientMock.Object);
         }
 
         [Test]
@@ -60,6 +77,18 @@ namespace Fams3Adapter.Dynamics.Test.DataPartners
             _odataClientMock.Verify(x => x.For<SSG_DataProvider>(null).FindEntriesAsync(It.IsAny<CancellationToken>()), Times.Once());
             Assert.AreEqual(1, result.Count());
             Assert.AreEqual("ICBC", result.FirstOrDefault().AdaptorName);
+        }
+
+        [Test]
+        public async Task should_get_search_api_data_provider_with_id_and_provider_name()
+        {
+            var result = await _sut.GetSearchApiRequestDataProvider(searchId, ProviderName, CancellationToken.None);
+            _odataClientMock.Verify(x => x.For<SSG_SearchapiRequestDataProvider>(null)
+             .Filter(It.IsAny<Expression<Func<SSG_SearchapiRequestDataProvider, bool>>>())
+              .Filter(It.IsAny<Expression<Func<SSG_SearchapiRequestDataProvider, bool>>>())
+            .FindEntryAsync(It.IsAny<CancellationToken>()), Times.Once());
+        
+            Assert.AreEqual("ICBC", result.AdaptorName);
         }
 
         [Test]

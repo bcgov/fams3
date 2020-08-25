@@ -31,9 +31,9 @@ namespace DynamicsAdapter.Web.Register
     {
         private readonly ICacheService _cache;
         private readonly ILogger<SearchRequestRegister> _logger;
-        private readonly IDataProviderService _dataProviderService;
+        private readonly IDataPartnerService _dataProviderService;
 
-        public SearchRequestRegister(ICacheService cache, ILogger<SearchRequestRegister> logger, IDataProviderService dataProviderService)
+        public SearchRequestRegister(ICacheService cache, ILogger<SearchRequestRegister> logger, IDataPartnerService dataProviderService)
         {
             _cache = cache;
             _logger = logger;
@@ -71,7 +71,7 @@ namespace DynamicsAdapter.Web.Register
             if (string.IsNullOrEmpty(data))
             {
 
-                var providers = await _dataProviderService.GetAllDataProviders();
+                var providers = await _dataProviderService.GetAllDataProviders(new CancellationTokenSource().Token);
 
                 await RegisterDataProviders(providers.ToArray());
 

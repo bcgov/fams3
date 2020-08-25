@@ -34,7 +34,7 @@ namespace DynamicsAdapter.Web.Test.Register
         private Mock<ILogger<SearchRequestRegister>> _loggerMock;
         private string adaptorName = "ICBC";
         private int retries = 10;
-        private Mock<IDataProviderService> dataProviderMock = new Mock<IDataProviderService>();
+        private Mock<IDataPartnerService> dataProviderMock = new Mock<IDataPartnerService>();
 
         [SetUp]
         public void Init()
@@ -46,7 +46,7 @@ namespace DynamicsAdapter.Web.Test.Register
             _validSearchRequestKey = "1234_0000";
             _invalidSearchRequestKey = "1234_7777";
 
-            dataProviderMock.Setup(x => x.GetAllDataProviders())
+            dataProviderMock.Setup(x => x.GetAllDataProviders(It.IsAny<CancellationToken>()))
               .Returns(Task.FromResult<IEnumerable<SSG_DataProvider>>(
 
                   new List<SSG_DataProvider>()
@@ -266,7 +266,7 @@ namespace DynamicsAdapter.Web.Test.Register
             Keys.DATA_PROVIDER_KEY = "IsNull";
             var result = await _sut.GetDataProvidersList();
             Assert.AreEqual(1, result.Count());
-            dataProviderMock.Verify(x => x.GetAllDataProviders(), Times.AtLeastOnce());
+            dataProviderMock.Verify(x => x.GetAllDataProviders(It.IsAny<CancellationToken>()), Times.AtLeastOnce());
         }
 
 

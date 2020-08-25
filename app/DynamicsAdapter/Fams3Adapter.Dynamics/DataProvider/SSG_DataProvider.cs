@@ -6,6 +6,7 @@ using System;
 namespace Fams3Adapter.Dynamics.DataProvider
 {
 
+    
     public class SSG_SearchapiRequestDataProvider
     {
         [JsonProperty("ssg_adaptorname")]
@@ -21,21 +22,19 @@ namespace Fams3Adapter.Dynamics.DataProvider
         [JsonProperty("_ssg_searchapirequestid_value")]
         public Guid SearchAPIRequestId { get; set; }
 
-        [JsonProperty("ssg_NumberOfDaysToRetry")]
+        [JsonProperty("ssg_allretriesflag")]
+        public int? AllRetriesDone { get; set; }
+
+        [JsonProperty("ssg_numberofdaystoretry")]
         public int? NumberOfDaysToRetry { get; set; }
 
-        [JsonProperty("ssg_NumberOfFailures")]
+        [JsonProperty("ssg_numberoffailures")]
         public int? NumberOfFailures { get; set; }
-
-        [JsonProperty("ssg_DataProviderId")]
-        public Guid DataProvider { get; set; }
-
-
       
-        public int NumberOfRetries;
+        public int NumberOfRetries { get; set; }
 
        
-        public int TimeBetweenRetries;
+        public int TimeBetweenRetries { get; set; }
     }
 
     public class SSG_DataProvider

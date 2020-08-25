@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Fams3Adapter.Dynamics.DataProvider;
 using Fams3Adapter.Dynamics.SearchApiEvent;
+using Fams3Adapter.Dynamics.Types;
 using Simple.OData.Client;
 
 using Entry = System.Collections.Generic.Dictionary<string, object>;
@@ -180,12 +181,13 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
             {
                 string adaptorName = provider.AdaptorName;
                 int noOfDaysToRetry = provider.NumberOfDaysToRetry;
-
+                int allRetryDone = NullableBooleanType.No.Value;
                 IEnumerable<SSG_SearchapiRequestDataProvider> searchApiRequests = await _oDataClient.For<SSG_SearchapiRequestDataProvider>()
                     .Select(x => x.SearchAPIRequestId)
                     .Filter(x => x.NumberOfFailures > 0)
                     .Filter(x => x.AdaptorName == adaptorName)
                     .Filter(x => x.NumberOfFailures < noOfDaysToRetry)
+                    .Filter(x => x.AllRetriesDone == allRetryDone)
                     .FindEntriesAsync(cancellationToken);
 
                 foreach (SSG_SearchapiRequestDataProvider request in searchApiRequests)

@@ -57,7 +57,8 @@ namespace Fams3Adapter.Dynamics.Test.SearchApiRequest
             .Select(It.IsAny<Expression<Func<SSG_SearchapiRequestDataProvider, object>>>())
               .Filter(It.IsAny<Expression<Func<SSG_SearchapiRequestDataProvider, bool>>>())
                 .Filter(It.IsAny<Expression<Func<SSG_SearchapiRequestDataProvider, bool>>>())
-                 .Filter(It.IsAny<Expression<Func<SSG_SearchapiRequestDataProvider, bool>>>())
+             .Filter(It.IsAny<Expression<Func<SSG_SearchapiRequestDataProvider, bool>>>())
+             .Filter(It.IsAny<Expression<Func<SSG_SearchapiRequestDataProvider, bool>>>())
           .FindEntriesAsync(It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult<IEnumerable<SSG_SearchapiRequestDataProvider>>(
 

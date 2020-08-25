@@ -7,6 +7,7 @@ using DynamicsAdapter.Web.PersonSearch;
 using DynamicsAdapter.Web.PersonSearch.Models;
 using DynamicsAdapter.Web.Register;
 using Fams3Adapter.Dynamics.Address;
+using Fams3Adapter.Dynamics.DataProvider;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.Name;
 using Fams3Adapter.Dynamics.Person;
@@ -33,6 +34,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         private Mock<ILogger<PersonSearchController>> _loggerMock ;
         private Mock<ISearchResultService> _searchResultServiceMock;
         private Mock<ISearchApiRequestService> _searchApiRequestServiceMock;
+        private Mock<IDataPartnerService> _dataPartnerServiceMock; 
         private Mock<ISearchRequestRegister> _registerMock;
         private PersonSearchCompleted _fakePersonCompletedEvent;
         private PersonSearchAccepted _fakePersonAcceptedEvent;
@@ -61,6 +63,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _loggerMock = new Mock<ILogger<PersonSearchController>>();
             _searchApiRequestServiceMock = new Mock<ISearchApiRequestService>();
             _searchResultServiceMock = new Mock<ISearchResultService>();
+            _dataPartnerServiceMock = new Mock<IDataPartnerService>();
             _mapper = new Mock<IMapper>();
             _registerMock = new Mock<ISearchRequestRegister>();
 
@@ -248,6 +251,15 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                   SequenceNumber="1234567"
                }));
 
+            _dataPartnerServiceMock
+                .Setup(x => x.GetSearchApiRequestDataProvider(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult(new SSG_SearchapiRequestDataProvider { AdaptorName = "ICBC", SearchAPIRequestId = _testGuid, NumberOfFailures = 0, TimeBetweenRetries = 10 }));
+
+
+            _dataPartnerServiceMock
+                .Setup(x => x.UpdateSearchRequestApiProvider(It.IsAny<SSG_SearchapiRequestDataProvider>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult(new SSG_SearchapiRequestDataProvider { AdaptorName = "ICBC", SearchAPIRequestId = _testGuid, NumberOfFailures = 0, TimeBetweenRetries = 10 }));
+
             _searchResultServiceMock.Setup(x => x.ProcessPersonFound(It.Is<Person>(x => x.FirstName == "TEST1"),It.IsAny<ProviderProfile>(), It.IsAny<SSG_SearchRequest>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>(), It.IsAny<SSG_Identifier>()))
                 .Returns(Task.FromResult<bool>(true));
 
@@ -271,20 +283,24 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
 
             _registerMock.Setup(x => x.RemoveSearchApiRequest(It.IsAny<Guid>()))
                 .Returns(Task.FromResult(true));
-
-            _sut = new PersonSearchController(_searchResultServiceMock.Object, _searchApiRequestServiceMock.Object, _loggerMock.Object,_mapper.Object,_registerMock.Object);
+            
+            _sut = new PersonSearchController(_searchResultServiceMock.Object, _searchApiRequestServiceMock.Object, _dataPartnerServiceMock.Object, _loggerMock.Object, _mapper.Object, _registerMock.Object);
 
         }
 
         [Test]
         public async Task With_valid_completed_event_it_should_return_ok()
         {
-
+            
             var result = await _sut.Completed(_searchRequestKey, _fakePersonCompletedEvent);
 
             _searchResultServiceMock.Verify(x => x.ProcessPersonFound(It.Is<Person>(x => x.FirstName == "TEST1"), It.IsAny<ProviderProfile>(), It.IsAny<SSG_SearchRequest>(),It.IsAny<Guid>(), It.IsAny<CancellationToken>(),It.IsAny<SSG_Identifier>()), Times.Once);
             _searchApiRequestServiceMock
                 .Verify(x => x.AddEventAsync(It.Is<Guid>(x => x == _testGuid), It.IsAny<SSG_SearchApiEvent>(), It.IsAny<CancellationToken>()), Times.Once);
+            _dataPartnerServiceMock
+               .Verify(x => x.GetSearchApiRequestDataProvider(It.Is<Guid>(x => x == _testGuid), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
+            _dataPartnerServiceMock
+              .Verify(x => x.UpdateSearchRequestApiProvider(It.IsAny<SSG_SearchapiRequestDataProvider>(), It.IsAny<CancellationToken>()), Times.Once);
             Assert.IsInstanceOf(typeof(OkResult), result);
         }
 
@@ -338,7 +354,10 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
 
             _searchApiRequestServiceMock
                 .Verify(x => x.AddEventAsync(It.Is<Guid>(x => x == _testGuid), It.IsAny<SSG_SearchApiEvent>(), It.IsAny<CancellationToken>()), Times.Once);
-
+            _dataPartnerServiceMock
+            .Verify(x => x.GetSearchApiRequestDataProvider(It.Is<Guid>(x => x == _testGuid), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
+            _dataPartnerServiceMock
+              .Verify(x => x.UpdateSearchRequestApiProvider(It.IsAny<SSG_SearchapiRequestDataProvider>(), It.IsAny<CancellationToken>()), Times.Once);
             Assert.IsInstanceOf(typeof(OkResult), result);
         }
 

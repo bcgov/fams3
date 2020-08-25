@@ -9,7 +9,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-
+using Entry = System.Collections.Generic.Dictionary<string, object>;
 namespace Fams3Adapter.Dynamics.Test.DataPartners
 {
     public class DataPartnerServiceTest
@@ -58,7 +58,7 @@ namespace Fams3Adapter.Dynamics.Test.DataPartners
 
             _odataClientMock.Setup(x => x.For<SSG_SearchapiRequestDataProvider>(null)
             .Key(It.IsAny<Guid>())
-            .Set(It.IsAny<SSG_SearchapiRequestDataProvider>())
+            .Set(It.IsAny<Entry>())
             .UpdateEntryAsync(It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult( new SSG_SearchapiRequestDataProvider {
                     AdaptorName = "ICBC",
@@ -97,7 +97,7 @@ namespace Fams3Adapter.Dynamics.Test.DataPartners
             var result = await _sut.UpdateSearchRequestApiProvider(new SSG_SearchapiRequestDataProvider { } ,CancellationToken.None);
             _odataClientMock.Verify(x => x.For<SSG_SearchapiRequestDataProvider>(null)
             .Key (It.IsAny<Guid>())
-            .Set(It.IsAny<SSG_SearchapiRequestDataProvider>())
+            .Set(It.IsAny<Entry>())
             .UpdateEntryAsync(It.IsAny<CancellationToken>()), Times.Once());
             Assert.IsInstanceOf<SSG_SearchapiRequestDataProvider>(result);
             Assert.AreEqual(5, result.NumberOfDaysToRetry);

@@ -23,7 +23,7 @@ namespace BcGov.Fams3.Utils.Object
                 
                 if (newValue != null && propertyInfo.Name != "Updated")
                 {
-                    bool isDifferent = ! String.Equals(newValue.ToString(), oldValue==null?"null":oldValue.ToString(), StringComparison.InvariantCultureIgnoreCase);
+                    bool isDifferent = !string.Equals(newValue.ToString(), oldValue==null?"null":oldValue.ToString(), StringComparison.InvariantCultureIgnoreCase);
                     if (isDifferent)
                     {
                         if (propertyInfo.PropertyType.Name == "Boolean")
@@ -33,7 +33,7 @@ namespace BcGov.Fams3.Utils.Object
                         }
                         else if (propertyInfo.PropertyType.Name == "String")
                         {
-                            if (!String.IsNullOrEmpty((String)newValue))//new value is null, no matter old value has value or not, we do not change the old value
+                            if (!string.IsNullOrEmpty((string)newValue))//new value is null, no matter old value has value or not, we do not change the old value
                             {
                                 propertyInfo.SetValue(originObj, newValue);
                                 updated = true;

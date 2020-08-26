@@ -19,7 +19,7 @@ namespace BcGov.Fams3.Utils.Logger
             if (logEvent.Properties.TryGetValue(innerPropertyName, out eventPropertyValue))
             {
                 var value = (eventPropertyValue as ScalarValue)?.Value as string;
-                if (!String.IsNullOrEmpty(value))
+                if (!string.IsNullOrEmpty(value))
                 {
                     logEvent.AddOrUpdateProperty(new LogEventProperty(innerPropertyName, new ScalarValue("- " + value)));
                 }

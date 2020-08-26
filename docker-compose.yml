@@ -114,6 +114,7 @@ services:
       JAEGER_SAMPLER_TYPE: const
       JAEGER_ENDPOINT: http://jaeger-collector:14268/api/traces
       SCHEDULER__CRON: 0/5 * * * * ?
+      SCHEDULER_FAILED: 0 30 11 * * ? *
       SEARCHAPI__BASEURL: http://search-api
       OAUTH__OAUTHURL: ${OAUTH__OAUTHURL}
       OAUTH__RESOURCEURL: ${OAUTH__RESOURCEURL}
@@ -124,6 +125,9 @@ services:
       APIGATEWAY__BASEPATH: ${APIGATEWAY__BASEPATH}
       SPLUNK_COLLECTOR_URL: https://splunk:8088
       SPLUNK_TOKEN: ${SPLUNK_TOKEN}
+      REDIS__HOST: ${REDIS__HOST}
+      REDIS__PORT: 6379
+      REDIS__PASSWORD: ${REDIS__PASSWORD}
     restart: always
     networks:
       - search-api-net
@@ -253,7 +257,8 @@ services:
     ports:
       - "8081:8081"
     environment:
-      - REDIS_HOSTS=${REDIS__HOST}
+      - REDIS_HOST=${REDIS__HOST}
+      - REDIS_PASSWORD="${REDIS__PASSWORD}"
 networks:
   search-api-net:
     driver: bridge

@@ -61,7 +61,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
                  .Returns(Task.FromResult<SSG_AgencyLocation>(new SSG_AgencyLocation()
                  {
                      AgencyLocationId = Guid.NewGuid(),
-                     City = "city"
+                     City = "city"                     
                  }));
 
             _odataClientMock.Setup(x => x.For<SSG_SearchRequest>(null).Set(It.IsAny<SearchRequestEntity>())
@@ -76,7 +76,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             {
                 AgencyCode = "fmep",
                 SearchReasonCode = "reason",
-                AgencyOfficeLocationText = "NORTHERN AND INTERIOR CLIENT OFFICE, KAMLOOPS, BC",
+                AgencyOfficeLocationText = "k",
                 AgentFirstName = "agentName"
             };
             var result = await _sut.CreateSearchRequest(searchRequest, CancellationToken.None);

@@ -490,12 +490,25 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
             try
             {
-                //find agencylocation
-                //todo: We just currently use City as temp solution. expecting FMEP will provide office code later
-                string officeLocationCity = searchRequest.AgencyOfficeLocationText.Split(",")[1].Trim();
-                var officeLocation = await _oDataClient.For<SSG_AgencyLocation>()
-                     .Filter(x => x.City == officeLocationCity)
-                     .FindEntryAsync(cancellationToken);
+                SSG_AgencyLocation officeLocation = null;
+                if (searchRequest.AgencyOfficeLocationText.Length > 5)
+                {
+                    //temp, as the sample files is not changed to code yet. so, if it is not code, run following code.
+                    //We just currently use City as temp solution. expecting FMEP will provide office code later
+                    string officeLocationCity = searchRequest.AgencyOfficeLocationText.Split(",")[1].Trim();
+                    officeLocation = await _oDataClient.For<SSG_AgencyLocation>()
+                         .Filter(x => x.City == officeLocationCity)
+                         .FindEntryAsync(cancellationToken);
+                }
+                else
+                {
+                    //it is code, like B,R,C,K
+                    string locationCode = searchRequest.AgencyOfficeLocationText;
+                    officeLocation = await _oDataClient.For<SSG_AgencyLocation>()
+                         .Filter(x => x.AgencyCode == code && x.LocationCode == locationCode)
+                         .FindEntryAsync(cancellationToken);
+                }
+
                 if (officeLocation != null)
                 {
                     searchRequest.AgencyLocation = officeLocation;

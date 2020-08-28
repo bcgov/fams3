@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using DynamicsAdapter.Web.SearchAgency.Models;
 using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.Employment;
@@ -138,8 +138,8 @@ namespace DynamicsAdapter.Web.SearchAgency
                 return null;
             }
             _personSought = searchRequestOrdered.Person;
-            PersonEntity newPersonEntity = _mapper.Map<PersonEntity>(_personSought);
-            await UpdatePersonSought(newPersonEntity);
+
+            await UpdatePersonSought();
 
             //update RelatedPerson applicant
             await UpdateRelatedApplicant((string.IsNullOrEmpty(newSearchRequest.ApplicantFirstName)|| string.IsNullOrEmpty(newSearchRequest.ApplicantLastName))? null : new RelatedPersonEntity()
@@ -296,6 +296,8 @@ namespace DynamicsAdapter.Web.SearchAgency
             {
               clonedSR.Notes = newSR.Notes;
             }
+            newSR.CreatedByApi = true;
+            newSR.SendNotificationOnCreation = true;
             SSG_SearchRequest ssgMerged = clonedSR.MergeUpdates(newSR);
             if (ssgMerged.Updated) //except notes, there is something else changed.
             {
@@ -308,9 +310,11 @@ namespace DynamicsAdapter.Web.SearchAgency
 
         }
 
-        private async Task<bool> UpdatePersonSought(PersonEntity personEntity)
+        private async Task<bool> UpdatePersonSought()
         {
-            SSG_Person ssgMerged = _uploadedPerson.Clone().MergeUpdates(personEntity);
+            PersonEntity newPersonEntity = _mapper.Map<PersonEntity>(_personSought);
+            newPersonEntity.IsCreatedByAgency = true;
+            SSG_Person ssgMerged = _uploadedPerson.Clone().MergeUpdates(newPersonEntity);
             if (ssgMerged.Updated)
             {
                 ssgMerged.SearchRequest = _uploadedPerson.SearchRequest;
@@ -411,6 +415,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                 }
                 else
                 {
+                    employ.IsCreatedByAgency = true;
                     SSG_Employment ssgMerged = originalEmployment.Clone().MergeUpdates(employ);
                     SSG_Employment existedEmployment = await _searchRequestService.GetEmployment(originalEmployment.EmploymentId, _cancellationToken);
                     existedEmployment.IsDuplicated = true;
@@ -419,6 +424,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                         ssgMerged.SearchRequest = _uploadedSearchRequest;
                         ssgMerged.InformationSource = InformationSourceType.Request.Value;
                         ssgMerged.Person = _uploadedPerson;
+                        ssgMerged.IsCreatedByAgency = true;
                         await _searchRequestService.UpdateEmployment(ssgMerged, _cancellationToken);
                         _logger.LogInformation("Update Employment records for SearchRequest successfully");
                     }
@@ -457,12 +463,14 @@ namespace DynamicsAdapter.Web.SearchAgency
                 }
                 else
                 {
+                    identifierEntity.IsCreatedByAgency = true;
                     SSG_Identifier ssgMerged = originalIdentifier.Clone().MergeUpdates(identifierEntity);
                     if (ssgMerged.Updated)
                     {
                         ssgMerged.SearchRequest = _uploadedSearchRequest;
                         ssgMerged.InformationSource = InformationSourceType.Request.Value;
                         ssgMerged.Person = _uploadedPerson;
+                        ssgMerged.IsCreatedByAgency = true;
                         await _searchRequestService.UpdateIdentifier(ssgMerged, _cancellationToken);
                         _logger.LogInformation("Update Identifier records for SearchRequest successfully");
                     }

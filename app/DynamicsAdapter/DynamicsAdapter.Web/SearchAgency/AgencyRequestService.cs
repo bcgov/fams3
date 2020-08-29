@@ -317,7 +317,7 @@ namespace DynamicsAdapter.Web.SearchAgency
             SSG_Person ssgMerged = _uploadedPerson.Clone().MergeUpdates(newPersonEntity);
             if (ssgMerged.Updated)
             {
-                ssgMerged.SearchRequest = _uploadedPerson.SearchRequest;
+                ssgMerged.SearchRequest = _uploadedSearchRequest;
                 ssgMerged.IsCreatedByAgency = true;
                 ssgMerged.SSG_Addresses = null;
                 ssgMerged.SSG_Employments = null;

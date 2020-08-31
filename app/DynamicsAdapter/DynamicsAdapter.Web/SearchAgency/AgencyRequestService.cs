@@ -1,25 +1,21 @@
 using AutoMapper;
+using BcGov.Fams3.Utils.Object;
 using DynamicsAdapter.Web.SearchAgency.Models;
 using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
+using Fams3Adapter.Dynamics.Name;
 using Fams3Adapter.Dynamics.Notes;
 using Fams3Adapter.Dynamics.Person;
-using Fams3Adapter.Dynamics;
 using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.RelatedPerson;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Fams3Adapter.Dynamics.Types;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using BcGov.Fams3.Utils.Object;
-using Fams3Adapter.Dynamics.Name;
 
 namespace DynamicsAdapter.Web.SearchAgency
 {
@@ -123,16 +119,16 @@ namespace DynamicsAdapter.Web.SearchAgency
             //update searchRequestEntity
             SearchRequestEntity newSearchRequest = _mapper.Map<SearchRequestEntity>(searchRequestOrdered);
             await UpdateSearchRequest(newSearchRequest);
- 
+
             //update notesEntity
             if (!String.IsNullOrEmpty(newSearchRequest.Notes)
                 && !String.Equals(existedSearchRequest.Notes, newSearchRequest.Notes, StringComparison.InvariantCultureIgnoreCase))
             {
-               await UploadNotes(newSearchRequest);
+                await UploadNotes(newSearchRequest);
             }
 
             //update PersonEntity
-            if(searchRequestOrdered.Person == null)
+            if (searchRequestOrdered.Person == null)
             {
                 _logger.LogError("the searchRequestOrdered does not contain Person. The request is wrong.");
                 return null;
@@ -142,12 +138,12 @@ namespace DynamicsAdapter.Web.SearchAgency
             await UpdatePersonSought();
 
             //update RelatedPerson applicant
-            await UpdateRelatedApplicant((string.IsNullOrEmpty(newSearchRequest.ApplicantFirstName)|| string.IsNullOrEmpty(newSearchRequest.ApplicantLastName))? null : new RelatedPersonEntity()
-                                            {
-                                                FirstName = newSearchRequest.ApplicantFirstName,
-                                                LastName = newSearchRequest.ApplicantLastName,
-                                                StatusCode = 1
-                                            });
+            await UpdateRelatedApplicant((string.IsNullOrEmpty(newSearchRequest.ApplicantFirstName) || string.IsNullOrEmpty(newSearchRequest.ApplicantLastName)) ? null : new RelatedPersonEntity()
+            {
+                FirstName = newSearchRequest.ApplicantFirstName,
+                LastName = newSearchRequest.ApplicantLastName,
+                StatusCode = 1
+            });
             //update employment
             await UpdateEmployment();
             //update identifiers
@@ -294,7 +290,7 @@ namespace DynamicsAdapter.Web.SearchAgency
             //if only notes is different, then no need to update searchReqeust
             if (!String.Equals(originNotes, newSR.Notes, StringComparison.InvariantCultureIgnoreCase))
             {
-              clonedSR.Notes = newSR.Notes;
+                clonedSR.Notes = newSR.Notes;
             }
             newSR.CreatedByApi = true;
             newSR.SendNotificationOnCreation = true;
@@ -335,8 +331,8 @@ namespace DynamicsAdapter.Web.SearchAgency
             if (_personSought.RelatedPersons == null) return true;
 
             //update or add relation relatedPerson
-            SSG_Identity originalRelatedPerson= _uploadedPerson?.SSG_Identities?.FirstOrDefault(
-            m => m.InformationSource == InformationSourceType.Request.Value 
+            SSG_Identity originalRelatedPerson = _uploadedPerson?.SSG_Identities?.FirstOrDefault(
+            m => m.InformationSource == InformationSourceType.Request.Value
             && m.PersonType == RelatedPersonPersonType.Relation.Value
             && m.IsCreatedByAgency);
 
@@ -369,7 +365,7 @@ namespace DynamicsAdapter.Web.SearchAgency
 
             //update or add relation relatedPerson
             SSG_Identity originalRelatedApplicant = _uploadedPerson.SSG_Identities?.FirstOrDefault(
-            m => m.InformationSource == InformationSourceType.Request.Value 
+            m => m.InformationSource == InformationSourceType.Request.Value
             && m.PersonType == RelatedPersonPersonType.Applicant.Value);
 
             if (originalRelatedApplicant == null)
@@ -403,7 +399,7 @@ namespace DynamicsAdapter.Web.SearchAgency
             _logger.LogDebug($"Attempting to update employment records for PersonSought.");
 
             SSG_Employment originalEmployment = _uploadedPerson.SSG_Employments?.FirstOrDefault(
-                    m => m.InformationSource == InformationSourceType.Request.Value 
+                    m => m.InformationSource == InformationSourceType.Request.Value
                     && m.IsCreatedByAgency);
 
             if (_personSought.Employments.Count() > 0)
@@ -450,14 +446,14 @@ namespace DynamicsAdapter.Web.SearchAgency
 
             _logger.LogDebug($"Attempting to update identifier records for PersonSought.");
 
-            foreach (PersonalIdentifier pi in _personSought.Identifiers.Where(m=>m.Owner==OwnerType.PersonSought))
+            foreach (PersonalIdentifier pi in _personSought.Identifiers.Where(m => m.Owner == OwnerType.PersonSought))
             {
                 IdentifierEntity identifierEntity = _mapper.Map<IdentifierEntity>(pi);
                 SSG_Identifier originalIdentifier = _uploadedPerson.SSG_Identifiers?.FirstOrDefault(
-                   m => m.InformationSource == InformationSourceType.Request.Value 
-                        && m.IdentifierType==identifierEntity.IdentifierType
+                   m => m.InformationSource == InformationSourceType.Request.Value
+                        && m.IdentifierType == identifierEntity.IdentifierType
                         && m.IsCreatedByAgency);
-                if(originalIdentifier == null)
+                if (originalIdentifier == null)
                 {
                     await UploadIdentifiers();
                 }

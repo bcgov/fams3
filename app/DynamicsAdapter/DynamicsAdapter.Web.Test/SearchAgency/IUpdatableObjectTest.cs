@@ -1,8 +1,9 @@
-using BcGov.Fams3.Utils.Object;
+﻿using BcGov.Fams3.Utils.Object;
+using DynamicsAdapter.Web.SearchAgency;
 using NUnit.Framework;
 using System;
 
-namespace BcGov.Fams3.Utils.Test
+namespace DynamicsAdapter.Web.Test.SearchAgency
 {
     public class IUpdatableObjectTest
     {
@@ -41,7 +42,7 @@ namespace BcGov.Fams3.Utils.Test
             Guid guid = Guid.NewGuid();
             TestUpdatableCls testUpdatableCls1 = new TestUpdatableCls()
             {
-                PropNullableDateTime = new DateTime(2000,1,1),
+                PropNullableDateTime = new DateTime(2000, 1, 1),
             };
             TestUpdatableCls testUpdatableCls2 = new TestUpdatableCls()
             {
@@ -91,7 +92,7 @@ namespace BcGov.Fams3.Utils.Test
     }
 
     public class TestUpdatableCls : IUpdatableObject
-    { 
+    {
         public int PropInt { get; set; }
         public int? PropNullableInt { get; set; }
         public string PropString { get; set; }

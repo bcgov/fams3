@@ -45,6 +45,8 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                   SearchRequestId = _validRequestGuid,
                   PersonSoughtFirstName = "firstName",
                   PersonSoughtLastName = "lastName",
+                  CreatedByApi = true,
+                  SendNotificationOnCreation = true,
                   SSG_Persons = new List<SSG_Person>()
                   {
                                 new SSG_Person()
@@ -79,6 +81,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                     PersonSoughtLastName = "lastName",
                     LocationRequested = true,
                     PHNRequested = false,
+                    CreatedByApi = true,
                     DateOfDeathRequested = true,
                     Notes = "note1",
                     SSG_Notes = new List<SSG_Notese>().ToArray(),
@@ -86,9 +89,9 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                     {
                         new SSG_Person()
                         {
-                            PersonId=personGuid, 
-                            FirstName = "firstName", 
-                            LastName="lastName", 
+                            PersonId=personGuid,
+                            FirstName = "firstName",
+                            LastName="lastName",
                             InformationSource= InformationSourceType.Request.Value,
                             IsCreatedByAgency=true
                         }
@@ -100,7 +103,8 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 {
                     PersonId = personGuid,
                     LastName = "lastName",
-                    FirstName = "firstName"
+                    FirstName = "firstName",
+                    IsCreatedByAgency= true
                 }));
 
             SearchRequestEntity newSearchRequest = new SearchRequestEntity()
@@ -227,7 +231,8 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 {
                     PersonId = _personGuid,
                     LastName = "lastName",
-                    FirstName = "firstName"
+                    FirstName = "firstName",
+                    IsCreatedByAgency = true
                 }));
 
             _searchRequestServiceMock.Setup(x => x.CreateNotes(It.IsAny<NotesEntity>(), It.IsAny<CancellationToken>()))
@@ -278,6 +283,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                     PersonId = _personGuid,
                     LastName = "lastName",
                     FirstName = "firstName",
+                    IsCreatedByAgency = true,
                     SSG_Identities = new List<SSG_Identity>() {
                         new SSG_Identity() {
                             FirstName = "child",
@@ -292,7 +298,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             _searchRequestServiceMock.Setup(x => x.UpdateRelatedPerson(It.IsAny<SSG_Identity>(), It.IsAny<CancellationToken>()))
                     .Returns(Task.FromResult<SSG_Identity>(new SSG_Identity()
                     {
-                    RelatedPersonId = Guid.NewGuid()
+                        RelatedPersonId = Guid.NewGuid()
                     }));
 
             SearchRequestEntity newSearchRequest = new SearchRequestEntity() { };
@@ -319,7 +325,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 {
                     FirstName = "firstName",
                     LastName = "lastName",
-                    RelatedPersons = new List<RelatedPerson>() { 
+                    RelatedPersons = new List<RelatedPerson>() {
                         new RelatedPerson(){FirstName="newFirstName", LastName="lastName"}}
                 }
             };
@@ -345,6 +351,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                     PersonId = _personGuid,
                     LastName = "lastName",
                     FirstName = "firstName",
+                    IsCreatedByAgency = true,
                     SSG_Identities = new List<SSG_Identity>() {
                         new SSG_Identity() {
                             FirstName = "child",
@@ -387,7 +394,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 {
                     FirstName = "firstName",
                     LastName = "lastName",
-                    RelatedPersons = new List<RelatedPerson>() { 
+                    RelatedPersons = new List<RelatedPerson>() {
                         new RelatedPerson(){FirstName="newFirstName", LastName="lastName"}}
                 }
             };
@@ -398,7 +405,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                         , It.IsAny<CancellationToken>()), Times.Never);
             _searchRequestServiceMock.Verify(m => m.CreateNotes(It.IsAny<NotesEntity>()
                 , It.IsAny<CancellationToken>()), Times.Never);
-            _searchRequestServiceMock.Verify(m => m.CreateRelatedPerson(It.Is<RelatedPersonEntity>(m=>m.FirstName=="newFirstName")
+            _searchRequestServiceMock.Verify(m => m.CreateRelatedPerson(It.Is<RelatedPersonEntity>(m => m.FirstName == "newFirstName")
             , It.IsAny<CancellationToken>()), Times.Once);
 
             Assert.AreEqual(_validRequestGuid, ssgSearchRequest.SearchRequestId);
@@ -417,13 +424,15 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                     PersonSoughtLastName = "lastName",
                     ApplicantFirstName = "applicantFirstName",
                     ApplicantLastName = "applicantLastName",
+                    CreatedByApi = true,
+                    SendNotificationOnCreation = true,
                     SSG_Persons = new List<SSG_Person>()
                     {
                         new SSG_Person()
                         {
-                            PersonId=personGuid, 
-                            FirstName = "firstName", 
-                            LastName="lastName", 
+                            PersonId=personGuid,
+                            FirstName = "firstName",
+                            LastName="lastName",
                             InformationSource= InformationSourceType.Request.Value,
                             IsCreatedByAgency=true
                         }
@@ -436,6 +445,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                     PersonId = personGuid,
                     LastName = "lastName",
                     FirstName = "firstName",
+                    IsCreatedByAgency = true,
                     SSG_Identities = new List<SSG_Identity>() {
                         new SSG_Identity() {
                             FirstName = "applicantFirstName",
@@ -449,8 +459,8 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
 
             SearchRequestEntity newSearchRequest = new SearchRequestEntity()
             {
-                ApplicantFirstName="changedFirstName",
-                ApplicantLastName="changedApplicant"
+                ApplicantFirstName = "changedFirstName",
+                ApplicantLastName = "changedApplicant"
             };
             _mapper.Setup(m => m.Map<SearchRequestEntity>(It.IsAny<SearchRequestOrdered>()))
                 .Returns(newSearchRequest);
@@ -497,6 +507,8 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                     SearchRequestId = guid,
                     PersonSoughtFirstName = "firstName",
                     PersonSoughtLastName = "lastName",
+                    CreatedByApi = true,
+                    SendNotificationOnCreation = true,
                     SSG_Persons = new List<SSG_Person>()
                     {
                         new SSG_Person()
@@ -516,8 +528,9 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                     PersonId = personGuid,
                     LastName = "lastName",
                     FirstName = "firstName",
+                    IsCreatedByAgency= true,
                     SSG_Employments = new List<SSG_Employment>()
-                    { 
+                    {
                         new SSG_Employment()
                         {
                             BusinessName="existingBusinessName",
@@ -541,7 +554,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 .Returns(newSearchRequest);
 
             _mapper.Setup(m => m.Map<EmploymentEntity>(It.IsAny<Employment>()))
-                .Returns(new EmploymentEntity() { BusinessName="Changed"});
+                .Returns(new EmploymentEntity() { BusinessName = "Changed" });
 
             _mapper.Setup(m => m.Map<PersonEntity>(It.IsAny<Person>()))
                .Returns(new PersonEntity() { FirstName = "firstName", LastName = "lastName" });
@@ -561,7 +574,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                     Employments = new List<Employment>()
                     {
                         new Employment(){
-                            Employer=new Employer(){ 
+                            Employer=new Employer(){
                                 Name="newBizName",
                                 Phones= new List<Phone>(){
                                     new Phone(){PhoneNumber="12345"}
@@ -596,7 +609,8 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 {
                     PersonId = _personGuid,
                     LastName = "lastName",
-                    FirstName = "firstName",                   
+                    FirstName = "firstName",
+                    IsCreatedByAgency = true
                 }));
 
             _searchRequestServiceMock.Setup(x => x.GetEmployment(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
@@ -616,7 +630,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 .Returns(new EmploymentEntity() { BusinessName = "Changed" });
 
             _mapper.Setup(m => m.Map<EmploymentContactEntity>(It.IsAny<Phone>()))
-                .Returns(new EmploymentContactEntity{PhoneNumber = "11111111"});
+                .Returns(new EmploymentContactEntity { PhoneNumber = "11111111" });
 
             _mapper.Setup(m => m.Map<PersonEntity>(It.IsAny<Person>()))
                .Returns(new PersonEntity() { FirstName = "firstName", LastName = "lastName" });
@@ -674,16 +688,17 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                         {
                             AddressLine1 = "addressLine1", AddressLine2="line2", IsCreatedByAgency=true
                         }
-                    }.ToArray()
-                })); 
+                    }.ToArray(),
+                    IsCreatedByAgency = true
+                }));
 
             SearchRequestEntity newSearchRequest = new SearchRequestEntity()
-            {};
+            { };
             _mapper.Setup(m => m.Map<SearchRequestEntity>(It.IsAny<SearchRequestOrdered>()))
                 .Returns(newSearchRequest);
 
             _mapper.Setup(m => m.Map<AddressEntity>(It.IsAny<Address>()))
-                .Returns(new AddressEntity() { AddressLine1="addressLine1"});
+                .Returns(new AddressEntity() { AddressLine1 = "addressLine1" });
 
             _mapper.Setup(m => m.Map<PersonEntity>(It.IsAny<Person>()))
                .Returns(new PersonEntity() { FirstName = "firstName", LastName = "lastName" });
@@ -734,6 +749,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                     PersonId = _personGuid,
                     LastName = "lastName",
                     FirstName = "firstName",
+                    IsCreatedByAgency = true,
                     SSG_PhoneNumbers = new List<SSG_PhoneNumber>() {
                         new SSG_PhoneNumber()
                         {
@@ -810,7 +826,8 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                             InformationSource = InformationSourceType.Request.Value,
                             IsCreatedByAgency=true
                         }
-                    }.ToArray()
+                    }.ToArray(),
+                    IsCreatedByAgency= true
                 }));
 
             SearchRequestEntity newSearchRequest = new SearchRequestEntity()
@@ -820,7 +837,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 .Returns(newSearchRequest);
 
             _mapper.Setup(m => m.Map<IdentifierEntity>(It.IsAny<PersonalIdentifier>()))
-                .Returns(new IdentifierEntity() { Identification = "111111", IdentifierType= IdentificationType.BCDriverLicense.Value });
+                .Returns(new IdentifierEntity() { Identification = "111111", IdentifierType = IdentificationType.BCDriverLicense.Value });
 
             _mapper.Setup(m => m.Map<PersonEntity>(It.IsAny<Person>()))
                .Returns(new PersonEntity() { FirstName = "firstName", LastName = "lastName" });
@@ -880,7 +897,8 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                             IdentifierType = IdentificationType.BirthCertificate.Value,
                             InformationSource = InformationSourceType.Request.Value
                         }
-                    }.ToArray()
+                    }.ToArray(),
+                    IsCreatedByAgency = true
                 }));
 
             SearchRequestEntity newSearchRequest = new SearchRequestEntity()
@@ -942,6 +960,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                     PersonId = _personGuid,
                     LastName = "lastName",
                     FirstName = "firstName",
+                    IsCreatedByAgency = true,
                     SSG_Aliases = new List<SSG_Aliase>() {
                         new SSG_Aliase()
                         {

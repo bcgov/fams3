@@ -150,6 +150,10 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         [UpdateIgnore]
         public bool UpdatedByApi { get; set; }
 
+        [JsonProperty("ssg_applicantcreatedstatus")]
+        [UpdateIgnore]
+        public int? ApplicantCreatedStatus { get; set; }
+
         [JsonProperty("ssg_notifydynadaptoroncreation")]
         [UpdateIgnore]
         public bool SendNotificationOnCreation { get; set; }

@@ -149,14 +149,13 @@ namespace DynamicsAdapter.Web.SearchAgency
             await UpdatePersonSought();
 
             //update RelatedPerson applicant
-            await UpdateRelatedApplicant((string.IsNullOrEmpty(newSearchRequest.ApplicantFirstName) || string.IsNullOrEmpty(newSearchRequest.ApplicantLastName)) ? null : new RelatedPersonEntity()
+            await UpdateRelatedApplicant((string.IsNullOrEmpty(newSearchRequest.ApplicantFirstName) && string.IsNullOrEmpty(newSearchRequest.ApplicantLastName)) ? null : new RelatedPersonEntity()
             {
                 FirstName = newSearchRequest.ApplicantFirstName,
                 LastName = newSearchRequest.ApplicantLastName,
                 StatusCode = 1
             });
-            //update employment
-            await UpdateEmployment();
+
             //update identifiers
             await UpdateIdentifiers();
 
@@ -165,6 +164,7 @@ namespace DynamicsAdapter.Web.SearchAgency
             await UploadPhones();
             await UploadRelatedPersons();
             await UploadAliases();
+            await UploadEmployment();
 
 
             return _uploadedSearchRequest;
@@ -270,7 +270,6 @@ namespace DynamicsAdapter.Web.SearchAgency
                 n.Person = _uploadedPerson;
                 n.IsCreatedByAgency = true;
                 SSG_Identity relate = await _searchRequestService.CreateRelatedPerson(n, _cancellationToken);
-
             }
             _logger.LogInformation("Create RelatedPersons records for SearchRequest successfully");
             return true;
@@ -298,7 +297,7 @@ namespace DynamicsAdapter.Web.SearchAgency
         {
             string originNotes = _uploadedSearchRequest.Notes;
             SSG_SearchRequest clonedSR = _uploadedSearchRequest.Clone();
-            
+
             Dictionary<string, object> updatedFields = (Dictionary<string, object>)clonedSR.GetUpdateEntries(newSR);
 
             if (!newSR.SearchReasonCode.Equals(_uploadedSearchRequest.SearchReason.ReasonCode, StringComparison.InvariantCultureIgnoreCase))
@@ -310,7 +309,7 @@ namespace DynamicsAdapter.Web.SearchAgency
             if (!newSR.AgencyOfficeLocationText.Equals(_uploadedSearchRequest.AgencyLocation.LocationCode, StringComparison.InvariantCultureIgnoreCase))
             {
                 SSG_AgencyLocation location = await _searchRequestService.GetSearchAgencyLocation(
-                                                        newSR.AgencyOfficeLocationText, 
+                                                        newSR.AgencyOfficeLocationText,
                                                         newSR.AgencyCode,
                                                         _cancellationToken);
                 updatedFields.Add("ssg_AgencyLocation", location);
@@ -329,52 +328,12 @@ namespace DynamicsAdapter.Web.SearchAgency
         private async Task<bool> UpdatePersonSought()
         {
             PersonEntity newPersonEntity = _mapper.Map<PersonEntity>(_personSought);
-            newPersonEntity.IsCreatedByAgency = true;
-            SSG_Person ssgMerged = _uploadedPerson.Clone().MergeUpdates(newPersonEntity);
-            if (ssgMerged.Updated)
+
+            Dictionary<string, object> updatedFields = (Dictionary<string, object>)_uploadedPerson.Clone().GetUpdateEntries(newPersonEntity);
+            if (updatedFields.Count > 0)
             {
-                ssgMerged.SearchRequest = _uploadedSearchRequest;
-                ssgMerged.IsCreatedByAgency = true;
-                ssgMerged.SSG_Addresses = null;
-                ssgMerged.SSG_Employments = null;
-                ssgMerged.SSG_Identifiers = null;
-                ssgMerged.SSG_Identities = null;
-                ssgMerged.SSG_PhoneNumbers = null;
-                await _searchRequestService.UpdatePerson(ssgMerged, _cancellationToken);
+                await _searchRequestService.UpdatePerson(_uploadedPerson.PersonId, updatedFields, newPersonEntity, _cancellationToken);
                 _logger.LogInformation("Update Person successfully");
-            }
-            return true;
-        }
-
-        private async Task<bool> UpdateRelatedPerson()
-        {
-            if (_personSought.RelatedPersons == null) return true;
-
-            //update or add relation relatedPerson
-            SSG_Identity originalRelatedPerson = _uploadedPerson?.SSG_Identities?.FirstOrDefault(
-            m => m.InformationSource == InformationSourceType.Request.Value
-            && m.PersonType == RelatedPersonPersonType.Relation.Value
-            && m.IsCreatedByAgency);
-
-            if (_personSought.RelatedPersons?.Count() > 0)
-            {
-                RelatedPersonEntity n = _mapper.Map<RelatedPersonEntity>(_personSought.RelatedPersons.ElementAt(0));
-                if (originalRelatedPerson == null)
-                {
-                    await UploadRelatedPersons();
-                }
-                else
-                {
-                    SSG_Identity ssgMerged = originalRelatedPerson.Clone().MergeUpdates(n);
-                    if (ssgMerged.Updated)
-                    {
-                        ssgMerged.SearchRequest = _uploadedSearchRequest;
-                        ssgMerged.InformationSource = InformationSourceType.Request.Value;
-                        ssgMerged.Person = _uploadedPerson;
-                        await _searchRequestService.UpdateRelatedPerson(ssgMerged, _cancellationToken);
-                        _logger.LogInformation("Update RelatedPersons records for SearchRequest successfully");
-                    }
-                }
             }
             return true;
         }
@@ -398,13 +357,10 @@ namespace DynamicsAdapter.Web.SearchAgency
             }
             else
             {
-                SSG_Identity ssgMerged = originalRelatedApplicant.Clone().MergeUpdates(newApplicantEntity);
-                if (ssgMerged.Updated)
+                Dictionary<string, object> updatedFields = (Dictionary<string, object>)originalRelatedApplicant.Clone().GetUpdateEntries(newApplicantEntity);
+                if (updatedFields.Count > 0)
                 {
-                    ssgMerged.SearchRequest = _uploadedSearchRequest;
-                    ssgMerged.InformationSource = InformationSourceType.Request.Value;
-                    ssgMerged.Person = _uploadedPerson;
-                    await _searchRequestService.UpdateRelatedPerson(ssgMerged, _cancellationToken);
+                    await _searchRequestService.UpdateRelatedPerson(originalRelatedApplicant.RelatedPersonId, updatedFields, _cancellationToken);
                     _logger.LogInformation("Update Related Applicant records for SearchRequest successfully");
                 }
             }
@@ -480,14 +436,10 @@ namespace DynamicsAdapter.Web.SearchAgency
                 else
                 {
                     identifierEntity.IsCreatedByAgency = true;
-                    SSG_Identifier ssgMerged = originalIdentifier.Clone().MergeUpdates(identifierEntity);
-                    if (ssgMerged.Updated)
+                    IDictionary<string, object> updatedFields = originalIdentifier.Clone().GetUpdateEntries(identifierEntity);
+                    if (updatedFields.Count > 0)
                     {
-                        ssgMerged.SearchRequest = _uploadedSearchRequest;
-                        ssgMerged.InformationSource = InformationSourceType.Request.Value;
-                        ssgMerged.Person = _uploadedPerson;
-                        ssgMerged.IsCreatedByAgency = true;
-                        await _searchRequestService.UpdateIdentifier(ssgMerged, _cancellationToken);
+                        await _searchRequestService.UpdateIdentifier(originalIdentifier.IdentifierId, updatedFields, _cancellationToken);
                         _logger.LogInformation("Update Identifier records for SearchRequest successfully");
                     }
                 }

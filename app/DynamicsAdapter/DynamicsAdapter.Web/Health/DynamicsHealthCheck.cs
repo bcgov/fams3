@@ -61,7 +61,7 @@ namespace DynamicsAdapter.Web.Health
             return true;
         }
 
-        private IEnumerable<Enumeration> GetListOfOptions (string entityName)
+        private IEnumerable<Enumeration> GetListOfOptions(string entityName)
         {
             return entityName.ToLower() switch
             {
@@ -79,6 +79,7 @@ namespace DynamicsAdapter.Web.Health
                 "ssg_payororreceiveroptions" => Enumeration.GetAll<PersonSoughtType>(),
                 "ssg_requestpriorities" => Enumeration.GetAll<RequestPriorityType>(),
                 "ssg_personcategorycodes" => Enumeration.GetAll<RelatedPersonPersonType>(),
+                "ssg_applicantcreatedstatus" => Enumeration.GetAll<RelatedPersonPersonType>(),
                 _ => Enumeration.GetAll<TelephoneNumberType>()
             };
         }
@@ -96,7 +97,7 @@ namespace DynamicsAdapter.Web.Health
                      $"Retrieved options set list from dyanmics for {optionType}. {types.Count()} records returned.");
                 foreach (var entityType in GetListOfOptions(optionType))
                 {
-               
+
                     if (!types.Any(x => x.Value == entityType.Value && string.Equals(x.Name, entityType.Name, StringComparison.OrdinalIgnoreCase)))
                     {
                         _logger.LogError(

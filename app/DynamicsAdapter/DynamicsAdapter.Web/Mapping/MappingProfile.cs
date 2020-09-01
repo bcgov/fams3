@@ -1,5 +1,6 @@
 using AutoMapper;
 using DynamicsAdapter.Web.PersonSearch.Models;
+using DynamicsAdapter.Web.SearchAgency.Models;
 using Fams3Adapter.Dynamics;
 using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.AssetOwner;
@@ -17,10 +18,10 @@ using Fams3Adapter.Dynamics.RelatedPerson;
 using Fams3Adapter.Dynamics.SearchApiEvent;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using Fams3Adapter.Dynamics.SearchRequest;
+using Fams3Adapter.Dynamics.Types;
 using Fams3Adapter.Dynamics.Vehicle;
 using System;
 using System.Linq;
-using DynamicsAdapter.Web.SearchAgency.Models;
 
 namespace DynamicsAdapter.Web.Mapping
 {
@@ -60,7 +61,7 @@ namespace DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.PersonSurname))
                  .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => src.PersonBirthDate))
                  .ForMember(dest => dest.Identifiers, opt => opt.MapFrom(src => src.Identifiers))
-                 .ForMember(dest => dest.SearchRequestKey, opt => opt.MapFrom(src => src.SearchRequest == null ? "0": $"{src.SearchRequest.FileId}_{src.SequenceNumber}"))
+                 .ForMember(dest => dest.SearchRequestKey, opt => opt.MapFrom(src => src.SearchRequest == null ? "0" : $"{src.SearchRequest.FileId}_{src.SequenceNumber}"))
                  .ForMember(dest => dest.DataProviders, opt => opt.MapFrom(src => src.DataProviders));
 
             CreateMap<PersonSearchAccepted, SSG_SearchApiEvent>()
@@ -98,10 +99,10 @@ namespace DynamicsAdapter.Web.Mapping
                .ForMember(dest => dest.OriginalRequestorReference, opt => opt.MapFrom(src => src.Person.Agency.RequestId))
                .ForMember(dest => dest.RequestDate, opt => opt.MapFrom(src => src.Person.Agency.RequestDate.DateTime))
                .ForMember(dest => dest.SearchReasonCode, opt => opt.MapFrom(src => src.Person.Agency.ReasonCode))
-               .ForMember(dest => dest.AgencyOfficeLocationText, opt=>opt.MapFrom(src => src.Person.Agency.LocationAddress))
+               .ForMember(dest => dest.AgencyOfficeLocationText, opt => opt.MapFrom(src => src.Person.Agency.LocationAddress))
                .ForMember(dest => dest.AgencyCode, opt => opt.MapFrom(src => src.Person.Agency.Code))
                .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Person.Agency.Notes))
-               .ForMember(dest => dest.PersonSoughtDateOfBirth, opt => opt.MapFrom(src => src.Person.DateOfBirth==null? (DateTime?)null: ((DateTimeOffset)(src.Person.DateOfBirth)).DateTime))
+               .ForMember(dest => dest.PersonSoughtDateOfBirth, opt => opt.MapFrom(src => src.Person.DateOfBirth == null ? (DateTime?)null : ((DateTimeOffset)(src.Person.DateOfBirth)).DateTime))
                .ForMember(dest => dest.PersonSoughtEyeColor, opt => opt.MapFrom(src => src.Person.EyeColour))
                .ForMember(dest => dest.PersonSoughtHairColor, opt => opt.MapFrom(src => src.Person.HairColour))
                .ForMember(dest => dest.PersonSoughtFirstName, opt => opt.MapFrom(src => src.Person.FirstName))
@@ -186,12 +187,13 @@ namespace DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
                  .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
                  .ForMember(dest => dest.Gender, opt => opt.ConvertUsing(new PersonGenderConverter(), src => src.Gender))
+                 .ForMember(dest => dest.PersonType, opt => opt.MapFrom(src => RelatedPersonPersonType.Relation.Value))
                  .IncludeBase<PersonalInfo, DynamicsEntity>();
 
             CreateMap<SSG_SearchapiRequestDataProvider, DataProvider>()
                  .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.AdaptorName.Replace(" ", String.Empty).ToUpperInvariant()));
-                 
-                 
+
+
 
             CreateMap<Person, PersonEntity>()
                .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
@@ -277,17 +279,17 @@ namespace DynamicsAdapter.Web.Mapping
                   .ForMember(dest => dest.AdjusterLastName, opt => opt.MapFrom(src => src.Adjustor == null ? null : src.Adjustor.LastName))
                   .ForMember(dest => dest.AdjusterMiddleName, opt => opt.MapFrom(src => src.Adjustor == null ? null : src.Adjustor.MiddleName))
                   .ForMember(dest => dest.AdjusterOtherName, opt => opt.MapFrom(src => src.Adjustor == null ? null : src.Adjustor.OtherName))
-                  .ForMember(dest => dest.AdjusterPhoneNumber, opt => opt.MapFrom(src => src.AdjustorPhone==null?null:src.AdjustorPhone.PhoneNumber))
+                  .ForMember(dest => dest.AdjusterPhoneNumber, opt => opt.MapFrom(src => src.AdjustorPhone == null ? null : src.AdjustorPhone.PhoneNumber))
                   .ForMember(dest => dest.OriginalAdjusterPhoneNumber, opt => opt.MapFrom(src => src.AdjustorPhone == null ? null : src.AdjustorPhone.PhoneNumber))
                   .ForMember(dest => dest.AdjusterPhoneNumberExt, opt => opt.MapFrom(src => src.AdjustorPhone == null ? null : src.AdjustorPhone.Extension))
-                  .ForMember(dest => dest.PHNNumber, opt=>opt.MapFrom(src=>src.Identifiers==null?null:src.Identifiers.FirstOrDefault<PersonalIdentifier>(m=>m.Type==PersonalIdentifierType.PersonalHealthNumber).Value))
+                  .ForMember(dest => dest.PHNNumber, opt => opt.MapFrom(src => src.Identifiers == null ? null : src.Identifiers.FirstOrDefault<PersonalIdentifier>(m => m.Type == PersonalIdentifierType.PersonalHealthNumber).Value))
                   .ForMember(dest => dest.BCDLNumber, opt => opt.MapFrom(src => src.Identifiers == null ? null : src.Identifiers.FirstOrDefault<PersonalIdentifier>(m => m.Type == PersonalIdentifierType.BCDriverLicense).Value))
                   .ForMember(dest => dest.BCDLStatus, opt => opt.MapFrom(src => src.Identifiers == null ? null : src.Identifiers.FirstOrDefault<PersonalIdentifier>(m => m.Type == PersonalIdentifierType.BCDriverLicense).Description))
-                  .ForMember(dest => dest.BCDLExpiryDate, opt => opt.MapFrom(src => src.Identifiers == null ? null : src.Identifiers.FirstOrDefault<PersonalIdentifier>(m=>m.Type== PersonalIdentifierType.BCDriverLicense).ReferenceDates.ElementAt(0).Value.ToString()))
-                  .ForMember(dest => dest.ClaimCenterLocationCode, opt => opt.MapFrom(src => src.ClaimCentre==null? null:src.ClaimCentre.Location))
-                  .ForMember(dest => dest.Description, opt=>opt.MapFrom(src=>src.Description))
+                  .ForMember(dest => dest.BCDLExpiryDate, opt => opt.MapFrom(src => src.Identifiers == null ? null : src.Identifiers.FirstOrDefault<PersonalIdentifier>(m => m.Type == PersonalIdentifierType.BCDriverLicense).ReferenceDates.ElementAt(0).Value.ToString()))
+                  .ForMember(dest => dest.ClaimCenterLocationCode, opt => opt.MapFrom(src => src.ClaimCentre == null ? null : src.ClaimCentre.Location))
+                  .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
                   .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
-                  .ForMember(dest => dest.PostalCode, opt => opt.MapFrom(src => src.ClaimCentre == null ? null : src.ClaimCentre.ContactAddress==null?null: src.ClaimCentre.ContactAddress.ZipPostalCode))
+                  .ForMember(dest => dest.PostalCode, opt => opt.MapFrom(src => src.ClaimCentre == null ? null : src.ClaimCentre.ContactAddress == null ? null : src.ClaimCentre.ContactAddress.ZipPostalCode))
                   .ForMember(dest => dest.AddressLine1, opt => opt.MapFrom(src => src.ClaimCentre == null ? null : src.ClaimCentre.ContactAddress == null ? null : src.ClaimCentre.ContactAddress.AddressLine1))
                   .ForMember(dest => dest.AddressLine2, opt => opt.MapFrom(src => src.ClaimCentre == null ? null : src.ClaimCentre.ContactAddress == null ? null : src.ClaimCentre.ContactAddress.AddressLine2))
                   .ForMember(dest => dest.AddressLine3, opt => opt.MapFrom(src => src.ClaimCentre == null ? null : src.ClaimCentre.ContactAddress == null ? null : src.ClaimCentre.ContactAddress.AddressLine3))
@@ -303,7 +305,7 @@ namespace DynamicsAdapter.Web.Mapping
                   .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type));
 
             CreateMap<InvolvedParty, InvolvedPartyEntity>()
-                  .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.Name==null? null: src.Name.FirstName))
+                  .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.Name == null ? null : src.Name.FirstName))
                   .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.Name == null ? null : src.Name.LastName))
                   .ForMember(dest => dest.MiddleName, opt => opt.MapFrom(src => src.Name == null ? null : src.Name.MiddleName))
                   .ForMember(dest => dest.OtherName, opt => opt.MapFrom(src => src.Name == null ? null : src.Name.OtherName))

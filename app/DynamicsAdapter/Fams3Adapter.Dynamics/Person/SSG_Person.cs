@@ -9,6 +9,7 @@ using Fams3Adapter.Dynamics.OtherAsset;
 using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.RelatedPerson;
 using Fams3Adapter.Dynamics.SearchRequest;
+using Fams3Adapter.Dynamics.Update;
 using Fams3Adapter.Dynamics.Vehicle;
 using Newtonsoft.Json;
 using System;
@@ -81,6 +82,7 @@ namespace Fams3Adapter.Dynamics.Person
         public string DuplicateDetectHash { get; set; }
 
         [JsonProperty("ssg_createdbyagency")]
+        [UpdateIgnore]
         public bool IsCreatedByAgency { get; set; }
     }
 

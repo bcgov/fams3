@@ -97,8 +97,9 @@ namespace DynamicsAdapter.Web.Mapping
                 Name applicantName = src.Person.Names.FirstOrDefault<Name>(m => m.Owner == OwnerType.Applicant);
                 entity.ApplicantFirstName = applicantName.FirstName;
                 entity.ApplicantLastName = applicantName.LastName;
-
+                entity.ApplicantCreatedStatus = ApplicantCreatedStatusType.ReadyToCreate.Value;
             }
+
             if (src.Person.Phones != null)
             {
                 entity.ApplicantPhoneNumber = src.Person.Phones.FirstOrDefault<Phone>(m => m.Owner == OwnerType.Applicant)?.PhoneNumber;

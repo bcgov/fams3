@@ -2,7 +2,7 @@
 
 namespace Fams3Adapter.Dynamics.Types
 {
-    public static  class TypeService
+    public static class TypeService
     {
 
         public static List<string> TypeList = new List<string>()
@@ -17,9 +17,10 @@ namespace Fams3Adapter.Dynamics.Types
             "ssg_relationshipcategorycodes",
             "ssg_gendertypes",
             "ssg_employmentrecordtypes",
-            "ssg_incomeassistancestatus"
+            "ssg_incomeassistancestatus",
+            "ssg_applicantcreatedstatus"
         };
 
-       
+
     }
 }

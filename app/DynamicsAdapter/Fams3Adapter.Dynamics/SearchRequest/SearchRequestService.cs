@@ -53,11 +53,10 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         Task<SSG_Employment> GetEmployment(Guid personId, CancellationToken cancellationToken);
         Task<SSG_Notese> CreateNotes(NotesEntity searchRequest, CancellationToken cancellationToken);
         Task<SSG_SearchRequest> UpdateSearchRequest(Guid requestId, IDictionary<string, object> updatedFields, CancellationToken cancellationToken);
-        // Task<SSG_SearchRequest> UpdateSearchReasonLink(Guid requestId, string reasonCode, CancellationToken cancellationToken);
-        Task<SSG_Person> UpdatePerson(SSG_Person newPerson, CancellationToken cancellationToken);
-        Task<SSG_Identity> UpdateRelatedPerson(SSG_Identity newRelatedPerson, CancellationToken cancellationToken);
+        Task<SSG_Person> UpdatePerson(Guid personId, IDictionary<string, object> updatedFields, PersonEntity newPerson, CancellationToken cancellationToken);
+        Task<SSG_Identity> UpdateRelatedPerson(Guid personId, IDictionary<string, object> updatedFields, CancellationToken cancellationToken);
         Task<SSG_Employment> UpdateEmployment(SSG_Employment newEmploy, CancellationToken cancellationToken);
-        Task<SSG_Identifier> UpdateIdentifier(SSG_Identifier newId, CancellationToken cancellationToken);
+        Task<SSG_Identifier> UpdateIdentifier(Guid identifierId, IDictionary<string, object> updatedFields, CancellationToken cancellationToken);
 
     }
 
@@ -424,7 +423,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
         public async Task<SSG_Person> GetPerson(Guid personId, CancellationToken cancellationToken)
         {
-            SSG_Person dataSearchRequest = await _oDataClient
+            SSG_Person person = await _oDataClient
                 .For<SSG_Person>()
                 .Key(personId)
                 .Expand(x => x.SSG_Identities)
@@ -435,7 +434,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                 .Expand(x => x.SSG_Aliases)
                 .FindEntryAsync(cancellationToken);
 
-            return dataSearchRequest;
+            return person;
         }
 
         public async Task<SSG_Employment> GetEmployment(Guid employmentId, CancellationToken cancellationToken)
@@ -443,27 +442,22 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             return await this._oDataClient.For<SSG_Employment>().Key(employmentId).Expand(x => x.SSG_EmploymentContacts).FindEntryAsync(cancellationToken);
         }
 
-        //public async Task<SSG_SearchRequest> UpdateSearchRequest(SSG_SearchRequest newSearchRequest, CancellationToken cancellationToken)
-        //{
-        // SSG_SearchRequest linkedSearchRequest = (SSG_SearchRequest)await LinkSearchRequestRef(newSearchRequest, cancellationToken);
-        // return await this._oDataClient.For<SSG_SearchRequest>().Key(linkedSearchRequest.SearchRequestId).Set(linkedSearchRequest).UpdateEntryAsync(cancellationToken);
-        //}
-
         public async Task<SSG_SearchRequest> UpdateSearchRequest(Guid requestId, IDictionary<string, object> updatedFields, CancellationToken cancellationToken)
         {
             updatedFields.Add(new KeyValuePair<string, object>("ssg_updatedbyagency", true));
             return await this._oDataClient.For<SSG_SearchRequest>().Key(requestId).Set(updatedFields).UpdateEntryAsync(cancellationToken);
         }
 
-        public async Task<SSG_Person> UpdatePerson(SSG_Person newPerson, CancellationToken cancellationToken)
+        public async Task<SSG_Person> UpdatePerson(Guid personId, IDictionary<string, object> updatedFields, PersonEntity newPerson, CancellationToken cancellationToken)
         {
-            newPerson.DuplicateDetectHash = await _duplicateDetectService.GetDuplicateDetectHashData(newPerson);
-            return await this._oDataClient.For<SSG_Person>().Key(newPerson.PersonId).Set(newPerson).UpdateEntryAsync(cancellationToken);
+            string duplicateDetectHash = await _duplicateDetectService.GetDuplicateDetectHashData(newPerson);
+            updatedFields.Add("ssg_duplicatedetectionhash", duplicateDetectHash);
+            return await this._oDataClient.For<SSG_Person>().Key(personId).Set(updatedFields).UpdateEntryAsync(cancellationToken);
         }
 
-        public async Task<SSG_Identity> UpdateRelatedPerson(SSG_Identity newRelatedPerson, CancellationToken cancellationToken)
+        public async Task<SSG_Identity> UpdateRelatedPerson(Guid relatedPersonId, IDictionary<string, object> updatedFields, CancellationToken cancellationToken)
         {
-            return await this._oDataClient.For<SSG_Identity>().Key(newRelatedPerson.RelatedPersonId).Set(newRelatedPerson).UpdateEntryAsync(cancellationToken);
+            return await this._oDataClient.For<SSG_Identity>().Key(relatedPersonId).Set(updatedFields).UpdateEntryAsync(cancellationToken);
         }
 
         public async Task<SSG_Employment> UpdateEmployment(SSG_Employment newEmploy, CancellationToken cancellationToken)
@@ -472,9 +466,9 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             return await this._oDataClient.For<SSG_Employment>().Key(newEmploy.EmploymentId).Set(linkedEmploy).UpdateEntryAsync(cancellationToken);
         }
 
-        public async Task<SSG_Identifier> UpdateIdentifier(SSG_Identifier newId, CancellationToken cancellationToken)
+        public async Task<SSG_Identifier> UpdateIdentifier(Guid identifierId, IDictionary<string, object> updatedFields, CancellationToken cancellationToken)
         {
-            return await this._oDataClient.For<SSG_Identifier>().Key(newId.IdentifierId).Set(newId).UpdateEntryAsync(cancellationToken);
+            return await this._oDataClient.For<SSG_Identifier>().Key(identifierId).Set(updatedFields).UpdateEntryAsync(cancellationToken);
         }
 
         public async Task<SSG_Notese> CreateNotes(NotesEntity note, CancellationToken cancellationToken)

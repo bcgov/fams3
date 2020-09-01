@@ -44,8 +44,9 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             };
 
             _agencyRequestServiceMock.Setup(x => x.ProcessSearchRequestOrdered(It.IsAny<SearchRequestOrdered>()))
-                .Returns(Task.FromResult<SSG_SearchRequest>( new SSG_SearchRequest() { 
-                    FileId="fileId",
+                .Returns(Task.FromResult<SSG_SearchRequest>(new SSG_SearchRequest()
+                {
+                    FileId = "fileId",
                     SearchRequestId = Guid.NewGuid()
                 }));
 
@@ -203,7 +204,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 Action = RequestAction.CANCEL,
                 RequestId = Guid.NewGuid().ToString(),
                 TimeStamp = DateTime.Now,
-                SearchRequestKey="notexist"
+                SearchRequestKey = "notexist"
             };
             _agencyRequestServiceMock.Setup(x => x.ProcessCancelSearchRequest(It.IsAny<SearchRequestOrdered>()))
                 .Returns(Task.FromResult<SSG_SearchRequest>(null));

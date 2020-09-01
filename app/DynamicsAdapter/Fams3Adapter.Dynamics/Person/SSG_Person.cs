@@ -84,6 +84,10 @@ namespace Fams3Adapter.Dynamics.Person
         [JsonProperty("ssg_createdbyagency")]
         [UpdateIgnore]
         public bool IsCreatedByAgency { get; set; }
+
+        [JsonProperty("ssg_isprimary")]
+        [UpdateIgnore]
+        public bool IsPrimary { get; set; }
     }
 
     public class SSG_Person : PersonEntity

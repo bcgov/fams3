@@ -2,12 +2,13 @@
 using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Fams3Adapter.Dynamics.Types;
+using Fams3Adapter.Dynamics.Update;
 using Newtonsoft.Json;
 using System;
 
 namespace Fams3Adapter.Dynamics.Employment
 {
-    public class EmploymentEntity :  DynamicsEntity
+    public class EmploymentEntity : DynamicsEntity
     {
         [JsonProperty("ssg_websiteurl")]
         public string Website { get; set; }
@@ -78,6 +79,7 @@ namespace Fams3Adapter.Dynamics.Employment
         public virtual EmploymentContactEntity[] EmploymentContactEntities { get; set; }
 
         [JsonProperty("ssg_createdbyagency")]
+        [UpdateIgnore]
         public bool IsCreatedByAgency { get; set; }
     }
 

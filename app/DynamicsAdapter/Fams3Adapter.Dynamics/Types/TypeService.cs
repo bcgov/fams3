@@ -17,8 +17,7 @@ namespace Fams3Adapter.Dynamics.Types
             "ssg_relationshipcategorycodes",
             "ssg_gendertypes",
             "ssg_employmentrecordtypes",
-            "ssg_incomeassistancestatus",
-            "ssg_applicantcreatedstatus"
+            "ssg_incomeassistancestatus"
         };
 
 

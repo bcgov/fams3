@@ -1,5 +1,6 @@
 ﻿using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.SearchRequest;
+using Fams3Adapter.Dynamics.Update;
 using Newtonsoft.Json;
 using System;
 
@@ -35,6 +36,7 @@ namespace Fams3Adapter.Dynamics.PhoneNumber
         public string Notes { get; set; }
 
         [JsonProperty("ssg_createdbyagency")]
+        [UpdateIgnore]
         public bool IsCreatedByAgency { get; set; }
 
     }

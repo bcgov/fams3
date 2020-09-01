@@ -55,9 +55,10 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         Task<SSG_SearchRequest> UpdateSearchRequest(Guid requestId, IDictionary<string, object> updatedFields, CancellationToken cancellationToken);
         Task<SSG_Person> UpdatePerson(Guid personId, IDictionary<string, object> updatedFields, PersonEntity newPerson, CancellationToken cancellationToken);
         Task<SSG_Identity> UpdateRelatedPerson(Guid personId, IDictionary<string, object> updatedFields, CancellationToken cancellationToken);
-        Task<SSG_Employment> UpdateEmployment(SSG_Employment newEmploy, CancellationToken cancellationToken);
+        Task<SSG_Employment> UpdateEmployment(Guid employmentId, IDictionary<string, object> updatedFields, CancellationToken cancellationToken);
         Task<SSG_Identifier> UpdateIdentifier(Guid identifierId, IDictionary<string, object> updatedFields, CancellationToken cancellationToken);
-
+        Task<SSG_Country> GetEmploymentCountry(string countryText, CancellationToken cancellationToken);
+        Task<SSG_CountrySubdivision> GetEmploymentSubdivision(string subDivisionText, CancellationToken cancellationToken);
     }
 
     /// <summary>
@@ -460,10 +461,10 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             return await this._oDataClient.For<SSG_Identity>().Key(relatedPersonId).Set(updatedFields).UpdateEntryAsync(cancellationToken);
         }
 
-        public async Task<SSG_Employment> UpdateEmployment(SSG_Employment newEmploy, CancellationToken cancellationToken)
+        public async Task<SSG_Employment> UpdateEmployment(Guid employmentId, IDictionary<string, object> updatedFields, CancellationToken cancellationToken)
         {
-            EmploymentEntity linkedEmploy = await LinkEmploymentRef(newEmploy, cancellationToken);
-            return await this._oDataClient.For<SSG_Employment>().Key(newEmploy.EmploymentId).Set(linkedEmploy).UpdateEntryAsync(cancellationToken);
+            //EmploymentEntity linkedEmploy = await LinkEmploymentRef(newEmploy, cancellationToken);
+            return await this._oDataClient.For<SSG_Employment>().Key(employmentId).Set(updatedFields).UpdateEntryAsync(cancellationToken);
         }
 
         public async Task<SSG_Identifier> UpdateIdentifier(Guid identifierId, IDictionary<string, object> updatedFields, CancellationToken cancellationToken)
@@ -539,19 +540,26 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             }
         }
 
-        private async Task<EmploymentEntity> LinkEmploymentRef(EmploymentEntity employment, CancellationToken cancellationToken)
+        public async Task<SSG_Country> GetEmploymentCountry(string countryText, CancellationToken cancellationToken)
         {
-            var countryText = employment.CountryText;
             var country = await _oDataClient.For<SSG_Country>()
-                                            .Filter(x => x.Name == countryText)
-                                            .FindEntryAsync(cancellationToken);
-            employment.Country = country;
+                                .Filter(x => x.Name == countryText)
+                                .FindEntryAsync(cancellationToken);
+            return country;
+        }
 
-            var subDivisionText = employment.CountrySubdivisionText;
+        public async Task<SSG_CountrySubdivision> GetEmploymentSubdivision(string subDivisionText, CancellationToken cancellationToken)
+        {
             var subdivision = await _oDataClient.For<SSG_CountrySubdivision>()
                                       .Filter(x => x.Name == subDivisionText)
                                       .FindEntryAsync(cancellationToken);
-            employment.CountrySubdivision = subdivision;
+            return subdivision;
+        }
+
+        private async Task<EmploymentEntity> LinkEmploymentRef(EmploymentEntity employment, CancellationToken cancellationToken)
+        {
+            employment.Country = await GetEmploymentCountry(employment.CountryText, cancellationToken);
+            employment.CountrySubdivision = await GetEmploymentSubdivision(employment.CountrySubdivisionText, cancellationToken);
             return employment;
         }
     }

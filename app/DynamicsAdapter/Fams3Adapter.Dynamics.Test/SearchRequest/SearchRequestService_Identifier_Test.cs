@@ -6,6 +6,7 @@ using Moq;
 using NUnit.Framework;
 using Simple.OData.Client;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -109,12 +110,9 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
                 })
                 );
 
-            var id = new SSG_Identifier()
-            {
-                IdentifierId = testId,
-                Identification = "old"
-            };
-            var result = await _sut.UpdateIdentifier(id, CancellationToken.None);
+            IDictionary<string, object> updatedFields = new Dictionary<string, object> { { "ssg_identification", "new" } };
+
+            var result = await _sut.UpdateIdentifier(testId, updatedFields, CancellationToken.None);
 
             Assert.AreEqual("new", result.Identification);
 

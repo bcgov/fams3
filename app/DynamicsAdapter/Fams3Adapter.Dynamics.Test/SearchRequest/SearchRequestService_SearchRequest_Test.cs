@@ -61,7 +61,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
                  .Returns(Task.FromResult<SSG_AgencyLocation>(new SSG_AgencyLocation()
                  {
                      AgencyLocationId = Guid.NewGuid(),
-                     City = "city"                     
+                     City = "city"
                  }));
 
             _odataClientMock.Setup(x => x.For<SSG_SearchRequest>(null).Set(It.IsAny<SearchRequestEntity>())
@@ -337,7 +337,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
                      City = "city"
                  }));
 
-            _odataClientMock.Setup(x => x.For<SSG_SearchRequest>(null).Key(It.Is<Guid>(m=>m==testId)).Set(It.IsAny<SSG_SearchRequest>())
+            _odataClientMock.Setup(x => x.For<SSG_SearchRequest>(null).Key(It.Is<Guid>(m => m == testId)).Set(It.IsAny<SSG_SearchRequest>())
                 .UpdateEntryAsync(It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(new SSG_SearchRequest()
                 {
@@ -348,9 +348,10 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             var searchRequest = new SSG_SearchRequest()
             {
                 AgencyCode = "fmep",
-                SearchRequestId=testId
+                SearchRequestId = testId
             };
-            var result = await _sut.UpdateSearchRequest(searchRequest, CancellationToken.None);
+            IDictionary<string, object> updatedFields = new Dictionary<string, object> { { "agencyCode", "new" } };
+            var result = await _sut.UpdateSearchRequest(testId, updatedFields, CancellationToken.None);
 
             Assert.AreEqual(testId, result.SearchRequestId);
 
@@ -399,7 +400,8 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
                 AgencyCode = "fmep",
                 SearchRequestId = testId
             };
-            Assert.ThrowsAsync<WebRequestException>(async () => await _sut.UpdateSearchRequest(searchRequest, CancellationToken.None));
+            IDictionary<string, object> updatedFields = new Dictionary<string, object> { { "businessname", "new" } };
+            Assert.ThrowsAsync<WebRequestException>(async () => await _sut.UpdateSearchRequest(testId, updatedFields, CancellationToken.None));
         }
 
         [Test]
@@ -407,7 +409,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         {
             Guid searchRequestId = Guid.NewGuid();
             _odataClientMock.Setup(x => x.For<SSG_SearchRequest>(null)
-                .Select(x=>x.SearchRequestId)
+                .Select(x => x.SearchRequestId)
                .Filter(It.IsAny<Expression<Func<SSG_SearchRequest, bool>>>())
                .FindEntryAsync(It.IsAny<CancellationToken>()))
                .Returns(Task.FromResult<SSG_SearchRequest>(new SSG_SearchRequest()
@@ -416,7 +418,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
                }));
 
             _odataClientMock.Setup(x => x.For<SSG_SearchRequest>(null)
-                .Key(It.Is<Guid>(m=>m== searchRequestId))
+                .Key(It.Is<Guid>(m => m == searchRequestId))
                 .Expand(x => x.SSG_Persons)
                 .Expand(x => x.SSG_Notes)
                 .FindEntryAsync(It.IsAny<CancellationToken>()))

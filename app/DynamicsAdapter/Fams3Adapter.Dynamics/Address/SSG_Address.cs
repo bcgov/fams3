@@ -1,5 +1,6 @@
 ﻿using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.SearchRequest;
+using Fams3Adapter.Dynamics.Update;
 using Newtonsoft.Json;
 using System;
 
@@ -59,6 +60,7 @@ namespace Fams3Adapter.Dynamics.Address
         [JsonProperty("ssg_notes")]
         public string Notes { get; set; }
 
+        [UpdateIgnore]
         [JsonProperty("ssg_createdbyagency")]
         public bool IsCreatedByAgency { get; set; }
     }

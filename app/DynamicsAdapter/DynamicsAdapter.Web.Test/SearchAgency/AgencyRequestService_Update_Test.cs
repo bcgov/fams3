@@ -104,7 +104,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                     PersonId = personGuid,
                     LastName = "lastName",
                     FirstName = "firstName",
-                    IsCreatedByAgency= true
+                    IsCreatedByAgency = true
                 }));
 
             SearchRequestEntity newSearchRequest = new SearchRequestEntity()
@@ -122,7 +122,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             _mapper.Setup(m => m.Map<SearchRequestEntity>(It.IsAny<SearchRequestOrdered>()))
                 .Returns(newSearchRequest);
 
-            _searchRequestServiceMock.Setup(x => x.UpdateSearchRequest(It.IsAny<SSG_SearchRequest>(), It.IsAny<CancellationToken>()))
+            _searchRequestServiceMock.Setup(x => x.UpdateSearchRequest(It.IsAny<Guid>(), It.IsAny<IDictionary<string, object>>(), It.IsAny<CancellationToken>()))
                  .Returns(Task.FromResult<SSG_SearchRequest>(new SSG_SearchRequest()
                  {
                      SearchRequestId = guid
@@ -143,18 +143,9 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 }
             };
             SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(searchRequstOrdered);
-            _searchRequestServiceMock.Verify(m => m.UpdateSearchRequest(It.Is<SSG_SearchRequest>(
-                m => (m.ApplicantAddressLine1 == "new Address line 1"
-                && m.ApplicantAddressLine2 == "old Address line2"
-                && m.RequestPriority == RequestPriorityType.Rush.Value
-                && m.PersonSoughtDateOfBirth == new DateTime(1998, 1, 1)
-                && m.LocationRequested
-                && m.PHNRequested
-                && m.DateOfDeathRequested == false
-                && m.Notes == "note1")
-                ), It.IsAny<CancellationToken>()), Times.Once);
-            _searchRequestServiceMock.Verify(m => m.UpdatePerson(It.IsAny<SSG_Person>()
-                        , It.IsAny<CancellationToken>()), Times.Never);
+            _searchRequestServiceMock.Verify(m => m.UpdateSearchRequest(It.IsAny<Guid>(), It.IsAny<IDictionary<string, object>>(), It.IsAny<CancellationToken>()), Times.Once);
+            _searchRequestServiceMock.Verify(m => m.UpdatePerson(It.IsAny<Guid>()
+                        , It.IsAny<IDictionary<string, object>>(), It.IsAny<PersonEntity>(), It.IsAny<CancellationToken>()), Times.Never);
             _searchRequestServiceMock.Verify(m => m.CreateNotes(It.IsAny<SSG_Notese>()
                 , It.IsAny<CancellationToken>()), Times.Never);
 
@@ -182,13 +173,13 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             _mapper.Setup(m => m.Map<SearchRequestEntity>(It.IsAny<SearchRequestOrdered>()))
                 .Returns(newSearchRequest);
 
-            _searchRequestServiceMock.Setup(x => x.UpdateSearchRequest(It.IsAny<SSG_SearchRequest>(), It.IsAny<CancellationToken>()))
+            _searchRequestServiceMock.Setup(x => x.UpdateSearchRequest(It.IsAny<Guid>(), It.IsAny<IDictionary<string, object>>(), It.IsAny<CancellationToken>()))
                  .Returns(Task.FromResult<SSG_SearchRequest>(new SSG_SearchRequest()
                  {
                      SearchRequestId = _validRequestGuid
                  }));
 
-            _searchRequestServiceMock.Setup(x => x.UpdatePerson(It.IsAny<SSG_Person>(), It.IsAny<CancellationToken>()))
+            _searchRequestServiceMock.Setup(x => x.UpdatePerson(It.IsAny<Guid>(), It.IsAny<IDictionary<string, object>>(), It.IsAny<PersonEntity>(), It.IsAny<CancellationToken>()))
                  .Returns(Task.FromResult<SSG_Person>(new SSG_Person()
                  {
                      PersonId = _personGuid
@@ -210,12 +201,14 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 }
             };
             SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(searchRequstOrdered);
-            _searchRequestServiceMock.Verify(m => m.UpdateSearchRequest(It.Is<SSG_SearchRequest>(
-                m => m.PersonSoughtFirstName == "changedfirstName"
-                && m.PersonSoughtLastName == "lastName"),
+            _searchRequestServiceMock.Verify(m => m.UpdateSearchRequest(
+                It.IsAny<Guid>(),
+                It.IsAny<IDictionary<string, object>>(),
                 It.IsAny<CancellationToken>()), Times.Once);
-            _searchRequestServiceMock.Verify(m => m.UpdatePerson(It.Is<SSG_Person>(m => m.FirstName == "changedfirstName")
-                        , It.IsAny<CancellationToken>()), Times.Once);
+            _searchRequestServiceMock.Verify(m => m.UpdatePerson(It.IsAny<Guid>(),
+                It.IsAny<IDictionary<string, object>>(),
+                It.IsAny<PersonEntity>(),
+                It.IsAny<CancellationToken>()), Times.Once);
             _searchRequestServiceMock.Verify(m => m.CreateNotes(It.IsAny<SSG_Notese>()
                 , It.IsAny<CancellationToken>()), Times.Never);
 
@@ -264,10 +257,13 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 }
             };
             SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(searchRequstOrdered);
-            _searchRequestServiceMock.Verify(m => m.UpdateSearchRequest(It.IsAny<SSG_SearchRequest>(),
+            _searchRequestServiceMock.Verify(m => m.UpdateSearchRequest(It.IsAny<Guid>(),
+                 It.IsAny<IDictionary<string, object>>(),
                  It.IsAny<CancellationToken>()), Times.Never);
-            _searchRequestServiceMock.Verify(m => m.UpdatePerson(It.IsAny<SSG_Person>()
-                        , It.IsAny<CancellationToken>()), Times.Never);
+            _searchRequestServiceMock.Verify(m => m.UpdatePerson(It.IsAny<Guid>(),
+                        It.IsAny<IDictionary<string, object>>(),
+                        It.IsAny<PersonEntity>(),
+                        It.IsAny<CancellationToken>()), Times.Never);
             _searchRequestServiceMock.Verify(m => m.CreateNotes(It.IsAny<NotesEntity>()
                 , It.IsAny<CancellationToken>()), Times.Once);
 
@@ -295,7 +291,9 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                     }.ToArray()
                 }));
 
-            _searchRequestServiceMock.Setup(x => x.UpdateRelatedPerson(It.IsAny<SSG_Identity>(), It.IsAny<CancellationToken>()))
+            _searchRequestServiceMock.Setup(x => x.UpdateRelatedPerson(It.IsAny<Guid>(),
+                 It.IsAny<IDictionary<string, object>>(),
+                 It.IsAny<CancellationToken>()))
                     .Returns(Task.FromResult<SSG_Identity>(new SSG_Identity()
                     {
                         RelatedPersonId = Guid.NewGuid()
@@ -330,10 +328,13 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 }
             };
             SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(searchRequstOrdered);
-            _searchRequestServiceMock.Verify(m => m.UpdateSearchRequest(It.IsAny<SSG_SearchRequest>(),
+            _searchRequestServiceMock.Verify(m => m.UpdateSearchRequest(It.IsAny<Guid>(),
+                 It.IsAny<IDictionary<string, object>>(),
                  It.IsAny<CancellationToken>()), Times.Never);
-            _searchRequestServiceMock.Verify(m => m.UpdatePerson(It.IsAny<SSG_Person>()
-                        , It.IsAny<CancellationToken>()), Times.Never);
+            _searchRequestServiceMock.Verify(m => m.UpdatePerson(It.IsAny<Guid>(),
+                        It.IsAny<IDictionary<string, object>>(),
+                        It.IsAny<PersonEntity>(),
+                        It.IsAny<CancellationToken>()), Times.Never);
             _searchRequestServiceMock.Verify(m => m.CreateNotes(It.IsAny<NotesEntity>()
                 , It.IsAny<CancellationToken>()), Times.Never);
             _searchRequestServiceMock.Verify(m => m.CreateRelatedPerson(It.IsAny<RelatedPersonEntity>()
@@ -399,10 +400,13 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 }
             };
             SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(searchRequstOrdered);
-            _searchRequestServiceMock.Verify(m => m.UpdateSearchRequest(It.IsAny<SSG_SearchRequest>(),
+            _searchRequestServiceMock.Verify(m => m.UpdateSearchRequest(It.IsAny<Guid>(),
+                 It.IsAny<IDictionary<string, object>>(),
                  It.IsAny<CancellationToken>()), Times.Never);
-            _searchRequestServiceMock.Verify(m => m.UpdatePerson(It.IsAny<SSG_Person>()
-                        , It.IsAny<CancellationToken>()), Times.Never);
+            _searchRequestServiceMock.Verify(m => m.UpdatePerson(It.IsAny<Guid>(),
+                        It.IsAny<IDictionary<string, object>>(),
+                        It.IsAny<PersonEntity>(),
+                        It.IsAny<CancellationToken>()), Times.Never);
             _searchRequestServiceMock.Verify(m => m.CreateNotes(It.IsAny<NotesEntity>()
                 , It.IsAny<CancellationToken>()), Times.Never);
             _searchRequestServiceMock.Verify(m => m.CreateRelatedPerson(It.Is<RelatedPersonEntity>(m => m.FirstName == "newFirstName")
@@ -484,14 +488,19 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 }
             };
             SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(searchRequstOrdered);
-            _searchRequestServiceMock.Verify(m => m.UpdateSearchRequest(It.IsAny<SSG_SearchRequest>(),
+            _searchRequestServiceMock.Verify(m => m.UpdateSearchRequest(It.IsAny<Guid>(),
+                 It.IsAny<IDictionary<string, object>>(),
                  It.IsAny<CancellationToken>()), Times.Once);
-            _searchRequestServiceMock.Verify(m => m.UpdatePerson(It.IsAny<SSG_Person>()
-                        , It.IsAny<CancellationToken>()), Times.Never);
+            _searchRequestServiceMock.Verify(m => m.UpdatePerson(
+                        It.IsAny<Guid>(),
+                        It.IsAny<IDictionary<string, object>>(),
+                        It.IsAny<PersonEntity>(),
+                        It.IsAny<CancellationToken>()), Times.Never);
             _searchRequestServiceMock.Verify(m => m.CreateNotes(It.IsAny<NotesEntity>()
                 , It.IsAny<CancellationToken>()), Times.Never);
-            _searchRequestServiceMock.Verify(m => m.UpdateRelatedPerson(It.IsAny<SSG_Identity>()
-            , It.IsAny<CancellationToken>()), Times.Once);
+            _searchRequestServiceMock.Verify(m => m.UpdateRelatedPerson(It.IsAny<Guid>(),
+                 It.IsAny<IDictionary<string, object>>(),
+                 It.IsAny<CancellationToken>()), Times.Once);
 
             Assert.AreEqual(guid, ssgSearchRequest.SearchRequestId);
         }
@@ -528,7 +537,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                     PersonId = personGuid,
                     LastName = "lastName",
                     FirstName = "firstName",
-                    IsCreatedByAgency= true,
+                    IsCreatedByAgency = true,
                     SSG_Employments = new List<SSG_Employment>()
                     {
                         new SSG_Employment()
@@ -585,16 +594,21 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 }
             };
             SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(searchRequstOrdered);
-            _searchRequestServiceMock.Verify(m => m.UpdateSearchRequest(It.IsAny<SSG_SearchRequest>(),
+            _searchRequestServiceMock.Verify(m => m.UpdateSearchRequest(It.IsAny<Guid>(),
+                 It.IsAny<IDictionary<string, object>>(),
                  It.IsAny<CancellationToken>()), Times.Never);
-            _searchRequestServiceMock.Verify(m => m.UpdatePerson(It.IsAny<SSG_Person>()
-                        , It.IsAny<CancellationToken>()), Times.Never);
+            _searchRequestServiceMock.Verify(m => m.UpdatePerson(It.IsAny<Guid>(),
+                        It.IsAny<IDictionary<string, object>>(),
+                        It.IsAny<PersonEntity>(),
+                        It.IsAny<CancellationToken>()), Times.Never);
             _searchRequestServiceMock.Verify(m => m.CreateNotes(It.IsAny<NotesEntity>()
                 , It.IsAny<CancellationToken>()), Times.Never);
-            _searchRequestServiceMock.Verify(m => m.UpdateRelatedPerson(It.IsAny<SSG_Identity>()
-                , It.IsAny<CancellationToken>()), Times.Never);
-            _searchRequestServiceMock.Verify(m => m.UpdateEmployment(It.IsAny<SSG_Employment>()
-                , It.IsAny<CancellationToken>()), Times.Once);
+            _searchRequestServiceMock.Verify(m => m.UpdateRelatedPerson(It.IsAny<Guid>(),
+                 It.IsAny<IDictionary<string, object>>(),
+                 It.IsAny<CancellationToken>()), Times.Never);
+            _searchRequestServiceMock.Verify(m => m.UpdateEmployment(It.IsAny<Guid>(),
+                 It.IsAny<IDictionary<string, object>>(),
+                 It.IsAny<CancellationToken>()), Times.Once);
             _searchRequestServiceMock.Verify(m => m.CreateEmploymentContact(It.IsAny<EmploymentContactEntity>()
                 , It.IsAny<CancellationToken>()), Times.Once);
 
@@ -658,14 +672,18 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 }
             };
             SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(searchRequstOrdered);
-            _searchRequestServiceMock.Verify(m => m.UpdateSearchRequest(It.IsAny<SSG_SearchRequest>(),
+            _searchRequestServiceMock.Verify(m => m.UpdateSearchRequest(It.IsAny<Guid>(),
+                 It.IsAny<IDictionary<string, object>>(),
                  It.IsAny<CancellationToken>()), Times.Never);
-            _searchRequestServiceMock.Verify(m => m.UpdatePerson(It.IsAny<SSG_Person>()
-                        , It.IsAny<CancellationToken>()), Times.Never);
+            _searchRequestServiceMock.Verify(m => m.UpdatePerson(It.IsAny<Guid>(),
+                        It.IsAny<IDictionary<string, object>>(),
+                        It.IsAny<PersonEntity>(),
+                        It.IsAny<CancellationToken>()), Times.Never);
             _searchRequestServiceMock.Verify(m => m.CreateNotes(It.IsAny<NotesEntity>()
                 , It.IsAny<CancellationToken>()), Times.Never);
-            _searchRequestServiceMock.Verify(m => m.UpdateRelatedPerson(It.IsAny<SSG_Identity>()
-                , It.IsAny<CancellationToken>()), Times.Never);
+            _searchRequestServiceMock.Verify(m => m.UpdateRelatedPerson(It.IsAny<Guid>(),
+                 It.IsAny<IDictionary<string, object>>(),
+                 It.IsAny<CancellationToken>()), Times.Never);
             _searchRequestServiceMock.Verify(m => m.CreateEmployment(It.IsAny<EmploymentEntity>()
                 , It.IsAny<CancellationToken>()), Times.Once);
             _searchRequestServiceMock.Verify(m => m.CreateEmploymentContact(It.IsAny<EmploymentContactEntity>()
@@ -722,16 +740,21 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 }
             };
             SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(searchRequstOrdered);
-            _searchRequestServiceMock.Verify(m => m.UpdateSearchRequest(It.IsAny<SSG_SearchRequest>(),
+            _searchRequestServiceMock.Verify(m => m.UpdateSearchRequest(It.IsAny<Guid>(),
+                 It.IsAny<IDictionary<string, object>>(),
                  It.IsAny<CancellationToken>()), Times.Never);
-            _searchRequestServiceMock.Verify(m => m.UpdatePerson(It.IsAny<SSG_Person>()
-                        , It.IsAny<CancellationToken>()), Times.Never);
+            _searchRequestServiceMock.Verify(m => m.UpdatePerson(It.IsAny<Guid>(),
+                        It.IsAny<IDictionary<string, object>>(),
+                        It.IsAny<PersonEntity>(),
+                        It.IsAny<CancellationToken>()), Times.Never);
             _searchRequestServiceMock.Verify(m => m.CreateNotes(It.IsAny<NotesEntity>()
                 , It.IsAny<CancellationToken>()), Times.Never);
-            _searchRequestServiceMock.Verify(m => m.UpdateRelatedPerson(It.IsAny<SSG_Identity>()
-                , It.IsAny<CancellationToken>()), Times.Never);
-            _searchRequestServiceMock.Verify(m => m.UpdateEmployment(It.IsAny<SSG_Employment>()
-                , It.IsAny<CancellationToken>()), Times.Never);
+            _searchRequestServiceMock.Verify(m => m.UpdateRelatedPerson(It.IsAny<Guid>(),
+                 It.IsAny<IDictionary<string, object>>(),
+                 It.IsAny<CancellationToken>()), Times.Never);
+            _searchRequestServiceMock.Verify(m => m.UpdateEmployment(It.IsAny<Guid>(),
+                        It.IsAny<IDictionary<string, object>>(),
+                        It.IsAny<CancellationToken>()), Times.Never);
             _searchRequestServiceMock.Verify(m => m.CreateEmploymentContact(It.IsAny<EmploymentContactEntity>()
                 , It.IsAny<CancellationToken>()), Times.Never);
             _searchRequestServiceMock.Verify(m => m.CreateAddress(It.IsAny<AddressEntity>()
@@ -788,16 +811,21 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 }
             };
             SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(searchRequstOrdered);
-            _searchRequestServiceMock.Verify(m => m.UpdateSearchRequest(It.IsAny<SSG_SearchRequest>(),
+            _searchRequestServiceMock.Verify(m => m.UpdateSearchRequest(It.IsAny<Guid>(),
+                 It.IsAny<IDictionary<string, object>>(),
                  It.IsAny<CancellationToken>()), Times.Never);
-            _searchRequestServiceMock.Verify(m => m.UpdatePerson(It.IsAny<SSG_Person>()
-                        , It.IsAny<CancellationToken>()), Times.Never);
+            _searchRequestServiceMock.Verify(m => m.UpdatePerson(It.IsAny<Guid>(),
+                        It.IsAny<IDictionary<string, object>>(),
+                        It.IsAny<PersonEntity>(),
+                        It.IsAny<CancellationToken>()), Times.Never);
             _searchRequestServiceMock.Verify(m => m.CreateNotes(It.IsAny<NotesEntity>()
                 , It.IsAny<CancellationToken>()), Times.Never);
-            _searchRequestServiceMock.Verify(m => m.UpdateRelatedPerson(It.IsAny<SSG_Identity>()
-                , It.IsAny<CancellationToken>()), Times.Never);
-            _searchRequestServiceMock.Verify(m => m.UpdateEmployment(It.IsAny<SSG_Employment>()
-                , It.IsAny<CancellationToken>()), Times.Never);
+            _searchRequestServiceMock.Verify(m => m.UpdateRelatedPerson(It.IsAny<Guid>(),
+                 It.IsAny<IDictionary<string, object>>(),
+                 It.IsAny<CancellationToken>()), Times.Never);
+            _searchRequestServiceMock.Verify(m => m.UpdateEmployment(It.IsAny<Guid>(),
+                 It.IsAny<IDictionary<string, object>>(),
+                 It.IsAny<CancellationToken>()), Times.Never);
             _searchRequestServiceMock.Verify(m => m.CreateEmploymentContact(It.IsAny<EmploymentContactEntity>()
                 , It.IsAny<CancellationToken>()), Times.Never);
             _searchRequestServiceMock.Verify(m => m.CreateAddress(It.IsAny<AddressEntity>()
@@ -827,7 +855,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                             IsCreatedByAgency=true
                         }
                     }.ToArray(),
-                    IsCreatedByAgency= true
+                    IsCreatedByAgency = true
                 }));
 
             SearchRequestEntity newSearchRequest = new SearchRequestEntity()
@@ -862,20 +890,26 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 }
             };
             SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(searchRequstOrdered);
-            _searchRequestServiceMock.Verify(m => m.UpdateSearchRequest(It.IsAny<SSG_SearchRequest>(),
+            _searchRequestServiceMock.Verify(m => m.UpdateSearchRequest(It.IsAny<Guid>(),
+                 It.IsAny<IDictionary<string, object>>(),
                  It.IsAny<CancellationToken>()), Times.Never);
-            _searchRequestServiceMock.Verify(m => m.UpdatePerson(It.IsAny<SSG_Person>()
-                        , It.IsAny<CancellationToken>()), Times.Never);
+            _searchRequestServiceMock.Verify(m => m.UpdatePerson(It.IsAny<Guid>(),
+                        It.IsAny<IDictionary<string, object>>(),
+                        It.IsAny<PersonEntity>(),
+                        It.IsAny<CancellationToken>()), Times.Never);
             _searchRequestServiceMock.Verify(m => m.CreateNotes(It.IsAny<NotesEntity>()
                 , It.IsAny<CancellationToken>()), Times.Never);
-            _searchRequestServiceMock.Verify(m => m.UpdateRelatedPerson(It.IsAny<SSG_Identity>()
-                , It.IsAny<CancellationToken>()), Times.Never);
-            _searchRequestServiceMock.Verify(m => m.UpdateEmployment(It.IsAny<SSG_Employment>()
-                , It.IsAny<CancellationToken>()), Times.Never);
+            _searchRequestServiceMock.Verify(m => m.UpdateRelatedPerson(It.IsAny<Guid>(),
+                 It.IsAny<IDictionary<string, object>>(),
+                 It.IsAny<CancellationToken>()), Times.Never);
+            _searchRequestServiceMock.Verify(m => m.UpdateEmployment(It.IsAny<Guid>(),
+                 It.IsAny<IDictionary<string, object>>(),
+                 It.IsAny<CancellationToken>()), Times.Never);
             _searchRequestServiceMock.Verify(m => m.CreateEmploymentContact(It.IsAny<EmploymentContactEntity>()
                 , It.IsAny<CancellationToken>()), Times.Never);
-            _searchRequestServiceMock.Verify(m => m.UpdateIdentifier(It.IsAny<SSG_Identifier>()
-                , It.IsAny<CancellationToken>()), Times.Once);
+            _searchRequestServiceMock.Verify(m => m.UpdateIdentifier(It.IsAny<Guid>(),
+                 It.IsAny<IDictionary<string, object>>(),
+                 It.IsAny<CancellationToken>()), Times.Once);
 
             Assert.AreEqual(_validRequestGuid, ssgSearchRequest.SearchRequestId);
         }
@@ -933,16 +967,21 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 }
             };
             SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(searchRequstOrdered);
-            _searchRequestServiceMock.Verify(m => m.UpdateSearchRequest(It.IsAny<SSG_SearchRequest>(),
+            _searchRequestServiceMock.Verify(m => m.UpdateSearchRequest(It.IsAny<Guid>(),
+                 It.IsAny<IDictionary<string, object>>(),
                  It.IsAny<CancellationToken>()), Times.Never);
-            _searchRequestServiceMock.Verify(m => m.UpdatePerson(It.IsAny<SSG_Person>()
-                        , It.IsAny<CancellationToken>()), Times.Never);
+            _searchRequestServiceMock.Verify(m => m.UpdatePerson(It.IsAny<Guid>(),
+                        It.IsAny<IDictionary<string, object>>(),
+                        It.IsAny<PersonEntity>(),
+                        It.IsAny<CancellationToken>()), Times.Never);
             _searchRequestServiceMock.Verify(m => m.CreateNotes(It.IsAny<NotesEntity>()
                 , It.IsAny<CancellationToken>()), Times.Never);
-            _searchRequestServiceMock.Verify(m => m.UpdateRelatedPerson(It.IsAny<SSG_Identity>()
-                , It.IsAny<CancellationToken>()), Times.Never);
-            _searchRequestServiceMock.Verify(m => m.UpdateEmployment(It.IsAny<SSG_Employment>()
-                , It.IsAny<CancellationToken>()), Times.Never);
+            _searchRequestServiceMock.Verify(m => m.UpdateRelatedPerson(It.IsAny<Guid>(),
+                 It.IsAny<IDictionary<string, object>>(),
+                 It.IsAny<CancellationToken>()), Times.Never);
+            _searchRequestServiceMock.Verify(m => m.UpdateEmployment(It.IsAny<Guid>(),
+                 It.IsAny<IDictionary<string, object>>(),
+                 It.IsAny<CancellationToken>()), Times.Never);
             _searchRequestServiceMock.Verify(m => m.CreateEmploymentContact(It.IsAny<EmploymentContactEntity>()
                 , It.IsAny<CancellationToken>()), Times.Never);
             _searchRequestServiceMock.Verify(m => m.CreateIdentifier(It.IsAny<IdentifierEntity>()
@@ -999,12 +1038,20 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 }
             };
             SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(searchRequstOrdered);
-            _searchRequestServiceMock.Verify(m => m.UpdateSearchRequest(It.IsAny<SSG_SearchRequest>(),
+            _searchRequestServiceMock.Verify(m => m.UpdateSearchRequest(It.IsAny<Guid>(),
+                 It.IsAny<IDictionary<string, object>>(),
                  It.IsAny<CancellationToken>()), Times.Never);
-            _searchRequestServiceMock.Verify(m => m.UpdatePerson(It.IsAny<SSG_Person>(), It.IsAny<CancellationToken>()), Times.Never);
+            _searchRequestServiceMock.Verify(m => m.UpdatePerson(It.IsAny<Guid>(),
+                        It.IsAny<IDictionary<string, object>>(),
+                        It.IsAny<PersonEntity>(),
+                        It.IsAny<CancellationToken>()), Times.Never);
             _searchRequestServiceMock.Verify(m => m.CreateNotes(It.IsAny<NotesEntity>(), It.IsAny<CancellationToken>()), Times.Never);
-            _searchRequestServiceMock.Verify(m => m.UpdateRelatedPerson(It.IsAny<SSG_Identity>(), It.IsAny<CancellationToken>()), Times.Never);
-            _searchRequestServiceMock.Verify(m => m.UpdateEmployment(It.IsAny<SSG_Employment>(), It.IsAny<CancellationToken>()), Times.Never);
+            _searchRequestServiceMock.Verify(m => m.UpdateRelatedPerson(It.IsAny<Guid>(),
+                 It.IsAny<IDictionary<string, object>>(),
+                 It.IsAny<CancellationToken>()), Times.Never);
+            _searchRequestServiceMock.Verify(m => m.UpdateEmployment(It.IsAny<Guid>(),
+                 It.IsAny<IDictionary<string, object>>(),
+                 It.IsAny<CancellationToken>()), Times.Never);
             _searchRequestServiceMock.Verify(m => m.CreateEmploymentContact(It.IsAny<EmploymentContactEntity>(), It.IsAny<CancellationToken>()), Times.Never);
             _searchRequestServiceMock.Verify(m => m.CreateName(It.IsAny<AliasEntity>(), It.IsAny<CancellationToken>()), Times.Once);
 

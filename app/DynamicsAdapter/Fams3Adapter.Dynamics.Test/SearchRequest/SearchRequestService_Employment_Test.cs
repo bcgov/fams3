@@ -160,12 +160,9 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
                 })
                 );
 
-            var employ = new SSG_Employment()
-            {
-                EmploymentId = testId,
-                BusinessName = "old"
-            };
-            var result = await _sut.UpdateEmployment(employ, CancellationToken.None);
+
+            IDictionary<string, object> updatedFields = new Dictionary<string, object> { { "businessname", "new" } };
+            var result = await _sut.UpdateEmployment(testId, updatedFields, CancellationToken.None);
 
             Assert.AreEqual("new", result.BusinessName);
 

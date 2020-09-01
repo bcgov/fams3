@@ -65,6 +65,7 @@ namespace DynamicsAdapter.Web.SearchAgency
             personEntity.SearchRequest = _uploadedSearchRequest;
             personEntity.InformationSource = InformationSourceType.Request.Value;
             personEntity.IsCreatedByAgency = true;
+            personEntity.IsPrimary = true;
             _uploadedPerson = await _searchRequestService.SavePerson(personEntity, _cancellationToken);
             _logger.LogInformation("Create Person successfully");
 
@@ -73,6 +74,7 @@ namespace DynamicsAdapter.Web.SearchAgency
             await UploadPhones();
             await UploadEmployment();
             await UploadRelatedPersons();
+            await UploadRelatedApplicant(_uploadedSearchRequest.ApplicantFirstName, _uploadedSearchRequest.ApplicantLastName);
             await UploadAliases();
             return _uploadedSearchRequest;
         }
@@ -159,12 +161,15 @@ namespace DynamicsAdapter.Web.SearchAgency
             //update identifiers
             await UpdateIdentifiers();
 
+            //update employment
+            await UpdateEmployment();
+
             //for phones, addresses, relatedPersons, names are same as creation, as if different, add new one, if same, ignore
             await UploadAddresses();
             await UploadPhones();
             await UploadRelatedPersons();
             await UploadAliases();
-            await UploadEmployment();
+
 
 
             return _uploadedSearchRequest;
@@ -274,6 +279,30 @@ namespace DynamicsAdapter.Web.SearchAgency
             _logger.LogInformation("Create RelatedPersons records for SearchRequest successfully");
             return true;
         }
+
+        private async Task<bool> UploadRelatedApplicant(string firstName, string lastName)
+        {
+            if (string.IsNullOrEmpty(firstName) && string.IsNullOrEmpty(lastName)) return true;
+
+            _logger.LogDebug($"Attempting to create related applicant.");
+
+            RelatedPersonEntity n = new RelatedPersonEntity
+            {
+                FirstName = firstName,
+                LastName = lastName,
+                SearchRequest = _uploadedSearchRequest,
+                InformationSource = InformationSourceType.Request.Value,
+                Person = _uploadedPerson,
+                IsCreatedByAgency = true,
+                PersonType = RelatedPersonPersonType.Applicant.Value,
+                StatusCode = 1
+            };
+
+            SSG_Identity relate = await _searchRequestService.CreateRelatedPerson(n, _cancellationToken);
+            _logger.LogInformation("Create Related Applicant for SearchRequest successfully");
+            return true;
+        }
+
         private async Task<bool> UploadAliases()
         {
             if (_personSought.Names == null) return true;
@@ -349,10 +378,7 @@ namespace DynamicsAdapter.Web.SearchAgency
 
             if (originalRelatedApplicant == null)
             {
-                newApplicantEntity.SearchRequest = _uploadedSearchRequest;
-                newApplicantEntity.InformationSource = InformationSourceType.Request.Value;
-                newApplicantEntity.Person = _uploadedPerson;
-                await _searchRequestService.CreateRelatedPerson(newApplicantEntity, _cancellationToken);
+                await UploadRelatedApplicant(newApplicantEntity.FirstName, newApplicantEntity.LastName);
                 _logger.LogInformation("Create Related Applicant for SearchRequest successfully");
             }
             else
@@ -387,23 +413,30 @@ namespace DynamicsAdapter.Web.SearchAgency
                 }
                 else
                 {
-                    employ.IsCreatedByAgency = true;
-                    SSG_Employment ssgMerged = originalEmployment.Clone().MergeUpdates(employ);
-                    SSG_Employment existedEmployment = await _searchRequestService.GetEmployment(originalEmployment.EmploymentId, _cancellationToken);
-                    existedEmployment.IsDuplicated = true;
-                    if (ssgMerged.Updated)
+                    IDictionary<string, object> updatedFields = originalEmployment.Clone().GetUpdateEntries(employ);
+                    if (updatedFields.ContainsKey("ssg_countrytext")) //country changed
                     {
-                        ssgMerged.SearchRequest = _uploadedSearchRequest;
-                        ssgMerged.InformationSource = InformationSourceType.Request.Value;
-                        ssgMerged.Person = _uploadedPerson;
-                        ssgMerged.IsCreatedByAgency = true;
-                        await _searchRequestService.UpdateEmployment(ssgMerged, _cancellationToken);
+                        SSG_Country country = await _searchRequestService.GetEmploymentCountry(employ.CountryText, _cancellationToken);
+                        updatedFields.Add("ssg_LocationCountry", country);
+                    }
+
+                    if (updatedFields.ContainsKey("ssg_countrysubdivision_text")) //subdivision changed
+                    {
+                        SSG_CountrySubdivision subdivision = await _searchRequestService.GetEmploymentSubdivision(employ.CountrySubdivisionText, _cancellationToken);
+                        updatedFields.Add("ssg_CountrySubDivision", subdivision);
+                    }
+
+                    if (updatedFields.Count > 0)
+                    {
+                        await _searchRequestService.UpdateEmployment(originalEmployment.EmploymentId, updatedFields, _cancellationToken);
                         _logger.LogInformation("Update Employment records for SearchRequest successfully");
                     }
 
                     Employer employer = _personSought.Employments.ElementAt(0).Employer;
-                    if (employer != null)
+                    if (employer != null && employer.Phones != null && employer.Phones.Count() > 0)
                     {
+                        SSG_Employment existedEmployment = await _searchRequestService.GetEmployment(originalEmployment.EmploymentId, _cancellationToken);
+                        existedEmployment.IsDuplicated = true;
                         foreach (var phone in employer.Phones)
                         {
                             EmploymentContactEntity p = _mapper.Map<EmploymentContactEntity>(phone);

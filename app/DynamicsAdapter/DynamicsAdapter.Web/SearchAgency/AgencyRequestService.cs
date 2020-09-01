@@ -1,5 +1,6 @@
 using AutoMapper;
 using BcGov.Fams3.Utils.Object;
+using Fams3Adapter.Dynamics.Update;
 using DynamicsAdapter.Web.SearchAgency.Models;
 using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.Employment;
@@ -16,6 +17,8 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using Fams3Adapter.Dynamics.Agency;
 
 namespace DynamicsAdapter.Web.SearchAgency
 {
@@ -116,8 +119,16 @@ namespace DynamicsAdapter.Web.SearchAgency
             existedSoughtPerson.IsDuplicated = true;
             _uploadedPerson = existedSoughtPerson;
 
-            //update searchRequestEntity
+
             SearchRequestEntity newSearchRequest = _mapper.Map<SearchRequestEntity>(searchRequestOrdered);
+            //cannot update search request with different AgencyCode
+            if (newSearchRequest.AgencyCode != _uploadedSearchRequest.Agency.AgencyCode)
+            {
+                _logger.LogError("cannot updating to a different Agency code. Not a vaild update request.");
+                return null;
+            }
+
+            //update searchRequestEntity
             await UpdateSearchRequest(newSearchRequest);
 
             //update notesEntity
@@ -287,23 +298,32 @@ namespace DynamicsAdapter.Web.SearchAgency
         {
             string originNotes = _uploadedSearchRequest.Notes;
             SSG_SearchRequest clonedSR = _uploadedSearchRequest.Clone();
-            //if only notes is different, then no need to update searchReqeust
-            if (!String.Equals(originNotes, newSR.Notes, StringComparison.InvariantCultureIgnoreCase))
+            
+            Dictionary<string, object> updatedFields = (Dictionary<string, object>)clonedSR.GetUpdateEntries(newSR);
+
+            if (!newSR.SearchReasonCode.Equals(_uploadedSearchRequest.SearchReason.ReasonCode, StringComparison.InvariantCultureIgnoreCase))
             {
-                clonedSR.Notes = newSR.Notes;
+                SSG_SearchRequestReason reason = await _searchRequestService.GetSearchReason(newSR.SearchReasonCode, _cancellationToken);
+                updatedFields.Add("ssg_RequestCategoryText", reason);
             }
-            newSR.CreatedByApi = true;
-            newSR.SendNotificationOnCreation = true;
-            SSG_SearchRequest ssgMerged = clonedSR.MergeUpdates(newSR);
-            if (ssgMerged.Updated) //except notes, there is something else changed.
+
+            if (!newSR.AgencyOfficeLocationText.Equals(_uploadedSearchRequest.AgencyLocation.LocationCode, StringComparison.InvariantCultureIgnoreCase))
             {
-                ssgMerged.SSG_Persons = null;
-                ssgMerged.SSG_Notes = null;
-                await _searchRequestService.UpdateSearchRequest(ssgMerged, _cancellationToken);
+                SSG_AgencyLocation location = await _searchRequestService.GetSearchAgencyLocation(
+                                                        newSR.AgencyOfficeLocationText, 
+                                                        newSR.AgencyCode,
+                                                        _cancellationToken);
+                updatedFields.Add("ssg_AgencyLocation", location);
+            }
+
+            if (updatedFields.Count > 0) //except notes, there is something else changed.
+            {
+                await _searchRequestService.UpdateSearchRequest(_uploadedSearchRequest.SearchRequestId, updatedFields, _cancellationToken);
                 _logger.LogInformation("Update Search Request successfully");
             }
-            return true;
 
+
+            return true;
         }
 
         private async Task<bool> UpdatePersonSought()

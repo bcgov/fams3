@@ -17,6 +17,7 @@ using Fams3Adapter.Dynamics.ResultTransaction;
 using Fams3Adapter.Dynamics.Vehicle;
 using Simple.OData.Client;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -46,10 +47,13 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         Task<SSG_SearchRequest> CreateSearchRequest(SearchRequestEntity searchRequest, CancellationToken cancellationToken);
         Task<SSG_SearchRequest> CancelSearchRequest(string fileId, CancellationToken cancellationToken);
         Task<SSG_SearchRequest> GetSearchRequest(string fileId, CancellationToken cancellationToken);
+        Task<SSG_SearchRequestReason> GetSearchReason(string reasonCode, CancellationToken cancellationToken);
+        Task<SSG_AgencyLocation> GetSearchAgencyLocation(string locationCode, string agencyCode, CancellationToken cancellationToken);
         Task<SSG_Person> GetPerson(Guid personId, CancellationToken cancellationToken);
         Task<SSG_Employment> GetEmployment(Guid personId, CancellationToken cancellationToken);
         Task<SSG_Notese> CreateNotes(NotesEntity searchRequest, CancellationToken cancellationToken);
-        Task<SSG_SearchRequest> UpdateSearchRequest(SSG_SearchRequest newSearchRequest, CancellationToken cancellationToken);
+        Task<SSG_SearchRequest> UpdateSearchRequest(Guid requestId, IDictionary<string, object> updatedFields, CancellationToken cancellationToken);
+        // Task<SSG_SearchRequest> UpdateSearchReasonLink(Guid requestId, string reasonCode, CancellationToken cancellationToken);
         Task<SSG_Person> UpdatePerson(SSG_Person newPerson, CancellationToken cancellationToken);
         Task<SSG_Identity> UpdateRelatedPerson(SSG_Identity newRelatedPerson, CancellationToken cancellationToken);
         Task<SSG_Employment> UpdateEmployment(SSG_Employment newEmploy, CancellationToken cancellationToken);
@@ -405,10 +409,16 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             SSG_SearchRequest dataSearchRequest = await _oDataClient
                 .For<SSG_SearchRequest>()
                 .Key(key)
+                .Expand(x => x.Agency)
+                .Expand(x => x.SearchReason)
+                .Expand(x => x.AgencyLocation)
                 .Expand(x => x.SSG_Persons)
                 .Expand(x => x.SSG_Notes)
                 .FindEntryAsync(cancellationToken);
 
+            dataSearchRequest.AgencyCode = dataSearchRequest.Agency?.AgencyCode;
+            dataSearchRequest.AgencyOfficeLocationText = dataSearchRequest.AgencyLocation?.LocationCode;
+            dataSearchRequest.SearchReasonCode = dataSearchRequest.SearchReason?.ReasonCode;
             return dataSearchRequest;
         }
 
@@ -433,10 +443,16 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             return await this._oDataClient.For<SSG_Employment>().Key(employmentId).Expand(x => x.SSG_EmploymentContacts).FindEntryAsync(cancellationToken);
         }
 
-        public async Task<SSG_SearchRequest> UpdateSearchRequest(SSG_SearchRequest newSearchRequest, CancellationToken cancellationToken)
+        //public async Task<SSG_SearchRequest> UpdateSearchRequest(SSG_SearchRequest newSearchRequest, CancellationToken cancellationToken)
+        //{
+        // SSG_SearchRequest linkedSearchRequest = (SSG_SearchRequest)await LinkSearchRequestRef(newSearchRequest, cancellationToken);
+        // return await this._oDataClient.For<SSG_SearchRequest>().Key(linkedSearchRequest.SearchRequestId).Set(linkedSearchRequest).UpdateEntryAsync(cancellationToken);
+        //}
+
+        public async Task<SSG_SearchRequest> UpdateSearchRequest(Guid requestId, IDictionary<string, object> updatedFields, CancellationToken cancellationToken)
         {
-            SSG_SearchRequest linkedSearchRequest = (SSG_SearchRequest)await LinkSearchRequestRef(newSearchRequest, cancellationToken);
-            return await this._oDataClient.For<SSG_SearchRequest>().Key(linkedSearchRequest.SearchRequestId).Set(linkedSearchRequest).UpdateEntryAsync(cancellationToken);
+            updatedFields.Add(new KeyValuePair<string, object>("ssg_updatedbyagency", true));
+            return await this._oDataClient.For<SSG_SearchRequest>().Key(requestId).Set(updatedFields).UpdateEntryAsync(cancellationToken);
         }
 
         public async Task<SSG_Person> UpdatePerson(SSG_Person newPerson, CancellationToken cancellationToken)
@@ -482,20 +498,33 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             searchRequest.Agency = agency;
 
             //find reasoncode 
-            string reasonCode = searchRequest.SearchReasonCode;
+            var reason = await GetSearchReason(searchRequest.SearchReasonCode, cancellationToken);
+            searchRequest.SearchReason = reason;
+
+            var officeLocation = await GetSearchAgencyLocation(searchRequest.AgencyOfficeLocationText, code, cancellationToken);
+            searchRequest.AgencyLocation = officeLocation;
+            return searchRequest;
+        }
+
+        public async Task<SSG_SearchRequestReason> GetSearchReason(string reasonCode, CancellationToken cancellationToken)
+        {
+            //find reasoncode 
             var reason = await _oDataClient.For<SSG_SearchRequestReason>()
                              .Filter(x => x.ReasonCode == reasonCode)
                              .FindEntryAsync(cancellationToken);
-            searchRequest.SearchReason = reason;
+            return reason;
+        }
 
+        public async Task<SSG_AgencyLocation> GetSearchAgencyLocation(string locationCode, string agencyCode, CancellationToken cancellationToken)
+        {
             try
             {
                 SSG_AgencyLocation officeLocation = null;
-                if (searchRequest.AgencyOfficeLocationText.Length > 5)
+                if (locationCode.Length > 5)
                 {
                     //temp, as the sample files is not changed to code yet. so, if it is not code, run following code.
                     //We just currently use City as temp solution. expecting FMEP will provide office code later
-                    string officeLocationCity = searchRequest.AgencyOfficeLocationText.Split(",")[1].Trim();
+                    string officeLocationCity = locationCode.Split(",")[1].Trim();
                     officeLocation = await _oDataClient.For<SSG_AgencyLocation>()
                          .Filter(x => x.City == officeLocationCity)
                          .FindEntryAsync(cancellationToken);
@@ -503,22 +532,17 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                 else
                 {
                     //it is code, like B,R,C,K
-                    string locationCode = searchRequest.AgencyOfficeLocationText;
                     officeLocation = await _oDataClient.For<SSG_AgencyLocation>()
-                         .Filter(x => x.AgencyCode == code && x.LocationCode == locationCode)
+                         .Filter(x => x.AgencyCode == agencyCode && x.LocationCode == locationCode)
                          .FindEntryAsync(cancellationToken);
                 }
 
-                if (officeLocation != null)
-                {
-                    searchRequest.AgencyLocation = officeLocation;
-                    searchRequest.AgencyOfficeLocationText = null;
-                }
+                return officeLocation;
             }
             catch (Exception)
             {
+                return null;
             }
-            return searchRequest;
         }
 
         private async Task<EmploymentEntity> LinkEmploymentRef(EmploymentEntity employment, CancellationToken cancellationToken)

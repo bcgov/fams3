@@ -1,9 +1,7 @@
-﻿using BcGov.Fams3.Utils.Object;
-using Fams3Adapter.Dynamics.Agency;
-using Fams3Adapter.Dynamics.Employment;
+﻿using Fams3Adapter.Dynamics.Agency;
 using Fams3Adapter.Dynamics.Notes;
 using Fams3Adapter.Dynamics.Person;
-using Fams3Adapter.Dynamics.RelatedPerson;
+using Fams3Adapter.Dynamics.Update;
 using Newtonsoft.Json;
 using System;
 
@@ -15,6 +13,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         public int? RequestPriority { get; set; }
 
         [JsonProperty("ssg_searchrequestnotestext")]
+        [UpdateIgnore]
         public string Notes { get; set; }
 
         [JsonProperty("ssg_applicantaddress")]
@@ -30,6 +29,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         public string ApplicantPostalCode { get; set; }
 
         [JsonProperty("ssg_applicantpersontelephonenumber")]
+        [UpdateIgnore]
         public string ApplicantPhoneNumber { get; set; }
 
         [JsonProperty("ssg_applicantsocialinsurancenumber")]
@@ -102,12 +102,14 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         public string AgentEmail { get; set; }
 
         [JsonProperty("ssg_contactpersontelephonenumber")]
+        [UpdateIgnore]
         public string AgentPhoneNumber { get; set; }
 
         [JsonProperty("ssg_contactpersontelephonesuffixid")]
         public string AgentPhoneExtension { get; set; }
 
         [JsonProperty("ssg_agentfax")]
+        [UpdateIgnore]
         public string AgentFax { get; set; }
 
         [JsonProperty("ssg_agentpersonsurname")]
@@ -141,9 +143,15 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         public string PersonSoughtEyeColor { get; set; }
 
         [JsonProperty("ssg_createdbyopenshift")]
+        [UpdateIgnore]
         public bool CreatedByApi { get; set; }
 
+        [JsonProperty("ssg_updatedbyagency")]
+        [UpdateIgnore]
+        public bool UpdatedByApi { get; set; }
+
         [JsonProperty("ssg_notifydynadaptoroncreation")]
+        [UpdateIgnore]
         public bool SendNotificationOnCreation { get; set; }
 
         public string AgencyCode { get; set; } //used to link ssg_agency entity
@@ -156,7 +164,6 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         [JsonProperty("ssg_RequestCategoryText")]
         public virtual SSG_SearchRequestReason SearchReason { get; set; }
 
-        [JsonProperty("ssg_agencylocationstring")]
         public string AgencyOfficeLocationText { get; set; } //used to link ssg_AgencyLocation
 
         [JsonProperty("ssg_AgencyLocation")]
@@ -181,7 +188,9 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         [JsonProperty("ssg_ssg_searchrequest_ssg_notes_SearchRequest")]
         public SSG_Notese[] SSG_Notes { get; set; }
 
+        [UpdateIgnore]
         public bool Updated { get; set; }
+
         public bool IsDuplicated { get; set; }
 
         public override string ToString()

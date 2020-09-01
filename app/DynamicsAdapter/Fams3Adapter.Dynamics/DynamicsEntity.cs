@@ -1,4 +1,4 @@
-﻿using BcGov.Fams3.Utils.Object;
+﻿using Fams3Adapter.Dynamics.Update;
 using Newtonsoft.Json;
 
 namespace Fams3Adapter.Dynamics

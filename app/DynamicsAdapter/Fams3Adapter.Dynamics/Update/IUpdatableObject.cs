@@ -1,9 +1,11 @@
-﻿using System;
+﻿using Fams3Adapter.Dynamics;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace DynamicsAdapter.Web.SearchAgency
+namespace Fams3Adapter.Dynamics.Update
 {
     public interface IUpdatableObject
     {
@@ -22,10 +24,12 @@ namespace DynamicsAdapter.Web.SearchAgency
             IList<PropertyInfo> props = new List<PropertyInfo>(newType.GetProperties());
             foreach (PropertyInfo propertyInfo in props)
             {
+                if (Attribute.IsDefined(propertyInfo, typeof(UpdateIgnoreAttribute))) continue;
+
                 var newValue = propertyInfo.GetValue(newObj, null);
                 var oldValue = propertyInfo.GetValue(originObj, null);
 
-                if (newValue != null && propertyInfo.Name != "Updated")
+                if (newValue != null)
                 {
                     bool isDifferent = !string.Equals(newValue.ToString(), oldValue == null ? "null" : oldValue.ToString(), StringComparison.InvariantCultureIgnoreCase);
                     if (isDifferent)
@@ -60,6 +64,40 @@ namespace DynamicsAdapter.Web.SearchAgency
             if (pi == null) return originObj;
             else pi.SetValue(originObj, updated);
             return originObj;
+        }
+
+        public static IDictionary<string, object> GetUpdateEntries<IUpdatableObject>(this IUpdatableObject originObj, object newObj)
+        {
+            IDictionary<string, object> entries = new Dictionary<string, object>();
+            if (newObj == null || originObj == null) return null;
+
+            Type newType = newObj.GetType();
+            IList<PropertyInfo> props = new List<PropertyInfo>(newType.GetProperties());
+            foreach (PropertyInfo propertyInfo in props)
+            {
+                if (Attribute.IsDefined(propertyInfo, typeof(UpdateIgnoreAttribute))) continue;
+
+                var newValue = propertyInfo.GetValue(newObj, null);
+                var oldValue = propertyInfo.GetValue(originObj, null);
+
+                if (newValue != null)
+                {
+                    bool isDifferent = !string.Equals(newValue.ToString(), oldValue == null ? "null" : oldValue.ToString(), StringComparison.InvariantCultureIgnoreCase);
+                    if (isDifferent)
+                    {
+                        string jsonPropertyName = propertyInfo.GetCustomAttributes<JsonPropertyAttribute>()?.FirstOrDefault()?.PropertyName;
+                        if (jsonPropertyName != null)
+                        {
+                            entries.Add(new KeyValuePair<string, object>(
+                                propertyInfo.GetCustomAttributes<JsonPropertyAttribute>().FirstOrDefault().PropertyName,
+                                newValue));
+                        }
+                    }
+
+                }
+            }
+
+            return entries;
         }
     }
 }

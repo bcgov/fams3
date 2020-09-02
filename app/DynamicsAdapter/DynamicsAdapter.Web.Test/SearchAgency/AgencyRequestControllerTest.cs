@@ -139,7 +139,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                     StatusCode = SearchRequestStatusCode.AgencyCancelled.Value
                 }));
 
-            var result = await _sut.CancelSearchRequest("121212121212", validSearchRequestOrdered);
+            var result = await _sut.CancelSearchRequest(validSearchRequestOrdered);
 
             _agencyRequestServiceMock.Verify(x => x.ProcessCancelSearchRequest(It.IsAny<SearchRequestOrdered>()), Times.Once);
             var resultValue = result as OkObjectResult;
@@ -160,7 +160,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 RequestId = Guid.NewGuid().ToString(),
                 TimeStamp = DateTime.Now,
             };
-            var result = await _sut.CancelSearchRequest(null, validSearchRequestOrdered);
+            var result = await _sut.CancelSearchRequest(validSearchRequestOrdered);
 
             _agencyRequestServiceMock.Verify(x => x.ProcessSearchRequestOrdered(It.IsAny<SearchRequestOrdered>()), Times.Never);
             Assert.IsInstanceOf(typeof(BadRequestObjectResult), result);
@@ -175,7 +175,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 RequestId = Guid.NewGuid().ToString(),
                 TimeStamp = DateTime.Now,
             };
-            var result = await _sut.CancelSearchRequest("requestId", updateSearchRequestOrdered);
+            var result = await _sut.CancelSearchRequest(updateSearchRequestOrdered);
 
             _agencyRequestServiceMock.Verify(x => x.ProcessSearchRequestOrdered(It.IsAny<SearchRequestOrdered>()), Times.Never);
             Assert.IsInstanceOf(typeof(BadRequestObjectResult), result);
@@ -190,7 +190,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 RequestId = Guid.NewGuid().ToString(),
                 TimeStamp = DateTime.Now,
             };
-            var result = await _sut.CancelSearchRequest("requestId", updateSearchRequestOrdered);
+            var result = await _sut.CancelSearchRequest(updateSearchRequestOrdered);
 
             _agencyRequestServiceMock.Verify(x => x.ProcessSearchRequestOrdered(It.IsAny<SearchRequestOrdered>()), Times.Never);
             Assert.IsInstanceOf(typeof(BadRequestObjectResult), result);
@@ -208,7 +208,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             };
             _agencyRequestServiceMock.Setup(x => x.ProcessCancelSearchRequest(It.IsAny<SearchRequestOrdered>()))
                 .Returns(Task.FromResult<SSG_SearchRequest>(null));
-            var result = await _sut.CancelSearchRequest("requestId", updateSearchRequestOrdered);
+            var result = await _sut.CancelSearchRequest(updateSearchRequestOrdered);
 
             _agencyRequestServiceMock.Verify(x => x.ProcessSearchRequestOrdered(It.IsAny<SearchRequestOrdered>()), Times.Never);
             Assert.IsInstanceOf(typeof(BadRequestObjectResult), result);
@@ -229,7 +229,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 x => x.ProcessCancelSearchRequest(It.Is<SearchRequestOrdered>(x => x.SearchRequestKey == "exceptionFileId")))
                 .Throws(new Exception("exception throws"));
 
-            var result = await _sut.CancelSearchRequest("requestId", updateSearchRequestOrdered);
+            var result = await _sut.CancelSearchRequest(updateSearchRequestOrdered);
 
             _agencyRequestServiceMock.Verify(x => x.ProcessCancelSearchRequest(It.IsAny<SearchRequestOrdered>()), Times.Once);
             Assert.AreEqual(500, ((ObjectResult)result).StatusCode);

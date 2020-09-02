@@ -117,7 +117,8 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                             }
                         }
                     }
-                }
+                },
+                Agency = new Agency { Code="FMEP"}
 
             };
 
@@ -354,7 +355,8 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             _searchRequestServiceMock.Setup(x => x.GetSearchRequest(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult<SSG_SearchRequest>(new SSG_SearchRequest()
             {
-                SearchRequestId = guid
+                SearchRequestId = guid,
+                Agency = new Fams3Adapter.Dynamics.Agency.SSG_Agency { AgencyCode = "FMEP" }
             }));
 
             _searchRequestServiceMock.Setup(x => x.CancelSearchRequest(It.IsAny<string>(), It.IsAny<CancellationToken>()))
@@ -373,11 +375,26 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             _searchRequestServiceMock.Setup(x => x.GetSearchRequest(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult<SSG_SearchRequest>(new SSG_SearchRequest()
             {
-                SearchRequestId = guid
+                SearchRequestId = guid,
+                Agency = new Fams3Adapter.Dynamics.Agency.SSG_Agency { AgencyCode="FMEP"}
             }));
 
             _searchRequestServiceMock.Setup(x => x.CancelSearchRequest(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Throws(new Exception("fakeException"));
+            Assert.ThrowsAsync<Exception>(async () => await _sut.ProcessCancelSearchRequest(_searchRequstOrdered));
+        }
+
+        [Test]
+        public void different_agencyCode_searchRequestOrdered_ProcessCancelSearchRequest_should_throw_exception()
+        {
+            Guid guid = Guid.NewGuid();
+            _searchRequestServiceMock.Setup(x => x.GetSearchRequest(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.FromResult<SSG_SearchRequest>(new SSG_SearchRequest()
+            {
+                SearchRequestId = guid,
+                Agency = new Fams3Adapter.Dynamics.Agency.SSG_Agency { AgencyCode = "FMEP2" }
+            }));
+
             Assert.ThrowsAsync<Exception>(async () => await _sut.ProcessCancelSearchRequest(_searchRequstOrdered));
         }
     }

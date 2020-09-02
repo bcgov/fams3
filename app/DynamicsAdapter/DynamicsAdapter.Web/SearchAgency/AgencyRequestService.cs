@@ -84,10 +84,15 @@ namespace DynamicsAdapter.Web.SearchAgency
             var cts = new CancellationTokenSource();
             _cancellationToken = cts.Token;
             SSG_SearchRequest ssgSearchRequest = await _searchRequestService.GetSearchRequest(searchRequestOrdered.SearchRequestKey, _cancellationToken);
+
             if (ssgSearchRequest == null)
             {
                 _logger.LogInformation("the cancelling search request does not exist.");
                 return null;
+            }
+            if (ssgSearchRequest.Agency.AgencyCode != searchRequestOrdered?.Person?.Agency?.Code)
+            {
+                throw new Exception("the cancelling search request cannot be processed as wrong agency code.");
             }
             return await _searchRequestService.CancelSearchRequest(searchRequestOrdered.SearchRequestKey, _cancellationToken);
         }
@@ -329,13 +334,13 @@ namespace DynamicsAdapter.Web.SearchAgency
 
             Dictionary<string, object> updatedFields = (Dictionary<string, object>)clonedSR.GetUpdateEntries(newSR);
 
-            if (newSR.SearchReasonCode!=null && !newSR.SearchReasonCode.Equals(_uploadedSearchRequest.SearchReason?.ReasonCode, StringComparison.InvariantCultureIgnoreCase))
+            if (newSR.SearchReasonCode != null && !newSR.SearchReasonCode.Equals(_uploadedSearchRequest.SearchReason?.ReasonCode, StringComparison.InvariantCultureIgnoreCase))
             {
                 SSG_SearchRequestReason reason = await _searchRequestService.GetSearchReason(newSR.SearchReasonCode, _cancellationToken);
                 updatedFields.Add("ssg_RequestCategoryText", reason);
             }
 
-            if (newSR.AgencyOfficeLocationText!=null && !newSR.AgencyOfficeLocationText.Equals(_uploadedSearchRequest.AgencyLocation.LocationCode, StringComparison.InvariantCultureIgnoreCase))
+            if (newSR.AgencyOfficeLocationText != null && !newSR.AgencyOfficeLocationText.Equals(_uploadedSearchRequest.AgencyLocation.LocationCode, StringComparison.InvariantCultureIgnoreCase))
             {
                 SSG_AgencyLocation location = await _searchRequestService.GetSearchAgencyLocation(
                                                         newSR.AgencyOfficeLocationText,

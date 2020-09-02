@@ -105,17 +105,14 @@ namespace DynamicsAdapter.Web.SearchAgency
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Route("CancelSearchRequest/{requestId}")]
+        [Route("CancelSearchRequest")]
         [OpenApiTag("Agency Search Request API")]
-        public async Task<IActionResult> CancelSearchRequest(string requestId, [FromBody]SearchRequestOrdered searchRequestOrdered)
+        public async Task<IActionResult> CancelSearchRequest([FromBody]SearchRequestOrdered searchRequestOrdered)
         {
-            using (LogContext.PushProperty("RequestRef", $"{requestId}"))
             using (LogContext.PushProperty("AgencyCode", $"{searchRequestOrdered?.Person?.Agency?.Code}"))
             using (LogContext.PushProperty("SearchRequestKey", $"{searchRequestOrdered?.SearchRequestKey}"))
             {
                 _logger.LogInformation("Get CancelSearchRequest");
-                if (string.IsNullOrEmpty(requestId))
-                    return BadRequest(new { Message = "requestId cannot be empty." });
 
                 if (searchRequestOrdered.Action != RequestAction.CANCEL)
                     return BadRequest(new { Message = "CancelSearchRequest should only get Cancel request." });

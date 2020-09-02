@@ -1,5 +1,4 @@
-﻿using Fams3Adapter.Dynamics;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -80,6 +79,12 @@ namespace Fams3Adapter.Dynamics.Update
                 var newValue = propertyInfo.GetValue(newObj, null);
                 var oldValue = propertyInfo.GetValue(originObj, null);
 
+                if (Attribute.IsDefined(propertyInfo, typeof(CompareOnlyNumberAttribute)))
+                {
+                    newValue = ((string)newValue)?.GetNumbers();
+                    oldValue = ((string)oldValue)?.GetNumbers();
+                }
+
                 if (newValue != null)
                 {
                     bool isDifferent = !string.Equals(newValue.ToString(), oldValue == null ? "null" : oldValue.ToString(), StringComparison.InvariantCultureIgnoreCase);
@@ -98,6 +103,12 @@ namespace Fams3Adapter.Dynamics.Update
             }
 
             return entries;
+        }
+
+        public static string GetNumbers(this string text)
+        {
+            text = text ?? string.Empty;
+            return new string(text.Where(p => char.IsDigit(p)).ToArray());
         }
     }
 }

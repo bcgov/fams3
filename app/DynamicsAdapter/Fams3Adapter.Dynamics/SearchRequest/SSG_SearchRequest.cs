@@ -29,7 +29,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         public string ApplicantPostalCode { get; set; }
 
         [JsonProperty("ssg_applicantpersontelephonenumber")]
-        [UpdateIgnore]
+        [CompareOnlyNumber]
         public string ApplicantPhoneNumber { get; set; }
 
         [JsonProperty("ssg_applicantsocialinsurancenumber")]
@@ -102,14 +102,14 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         public string AgentEmail { get; set; }
 
         [JsonProperty("ssg_contactpersontelephonenumber")]
-        [UpdateIgnore]
+        [CompareOnlyNumber]
         public string AgentPhoneNumber { get; set; }
 
         [JsonProperty("ssg_contactpersontelephonesuffixid")]
         public string AgentPhoneExtension { get; set; }
 
         [JsonProperty("ssg_agentfax")]
-        [UpdateIgnore]
+        [CompareOnlyNumber]
         public string AgentFax { get; set; }
 
         [JsonProperty("ssg_agentpersonsurname")]

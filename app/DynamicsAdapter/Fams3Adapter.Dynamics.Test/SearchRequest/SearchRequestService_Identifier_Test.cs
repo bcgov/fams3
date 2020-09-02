@@ -101,7 +101,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         public async Task update_correct_Identifier_should_success()
         {
             Guid testId = Guid.NewGuid();
-            _odataClientMock.Setup(x => x.For<SSG_Identifier>(null).Key(It.Is<Guid>(m => m == testId)).Set(It.IsAny<SSG_Identifier>())
+            _odataClientMock.Setup(x => x.For<SSG_Identifier>(null).Key(It.Is<Guid>(m => m == testId)).Set(It.IsAny<Dictionary<string,object>>())
                 .UpdateEntryAsync(It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(new SSG_Identifier()
                 {

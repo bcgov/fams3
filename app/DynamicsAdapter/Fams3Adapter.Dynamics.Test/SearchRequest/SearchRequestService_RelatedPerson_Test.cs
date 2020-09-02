@@ -110,7 +110,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         public async Task update_correct_relatedPerson_should_success()
         {
             Guid testId = Guid.NewGuid();
-            _odataClientMock.Setup(x => x.For<SSG_Identity>(null).Key(It.Is<Guid>(m => m == testId)).Set(It.IsAny<ODataExpression>())
+            _odataClientMock.Setup(x => x.For<SSG_Identity>(null).Key(It.Is<Guid>(m => m == testId)).Set(It.IsAny<Dictionary<string, object>>())
                 .UpdateEntryAsync(It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(new SSG_Identity()
                 {

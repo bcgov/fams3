@@ -124,7 +124,7 @@ namespace DynamicsAdapter.Web.SearchAgency
 
             SearchRequestEntity newSearchRequest = _mapper.Map<SearchRequestEntity>(searchRequestOrdered);
             //cannot update search request with different AgencyCode
-            if (newSearchRequest.AgencyCode != _uploadedSearchRequest.Agency.AgencyCode)
+            if (newSearchRequest?.AgencyCode != _uploadedSearchRequest?.Agency?.AgencyCode)
             {
                 _logger.LogError("cannot updating to a different Agency code. Not a vaild update request.");
                 return null;
@@ -329,13 +329,13 @@ namespace DynamicsAdapter.Web.SearchAgency
 
             Dictionary<string, object> updatedFields = (Dictionary<string, object>)clonedSR.GetUpdateEntries(newSR);
 
-            if (!newSR.SearchReasonCode.Equals(_uploadedSearchRequest.SearchReason.ReasonCode, StringComparison.InvariantCultureIgnoreCase))
+            if (newSR.SearchReasonCode!=null && !newSR.SearchReasonCode.Equals(_uploadedSearchRequest.SearchReason?.ReasonCode, StringComparison.InvariantCultureIgnoreCase))
             {
                 SSG_SearchRequestReason reason = await _searchRequestService.GetSearchReason(newSR.SearchReasonCode, _cancellationToken);
                 updatedFields.Add("ssg_RequestCategoryText", reason);
             }
 
-            if (!newSR.AgencyOfficeLocationText.Equals(_uploadedSearchRequest.AgencyLocation.LocationCode, StringComparison.InvariantCultureIgnoreCase))
+            if (newSR.AgencyOfficeLocationText!=null && !newSR.AgencyOfficeLocationText.Equals(_uploadedSearchRequest.AgencyLocation.LocationCode, StringComparison.InvariantCultureIgnoreCase))
             {
                 SSG_AgencyLocation location = await _searchRequestService.GetSearchAgencyLocation(
                                                         newSR.AgencyOfficeLocationText,

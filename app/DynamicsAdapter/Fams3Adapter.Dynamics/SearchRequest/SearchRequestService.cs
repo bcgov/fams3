@@ -498,6 +498,8 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
             var officeLocation = await GetSearchAgencyLocation(searchRequest.AgencyOfficeLocationText, code, cancellationToken);
             searchRequest.AgencyLocation = officeLocation;
+            if (officeLocation != null)
+                searchRequest.AgencyOfficeLocationText = null;
             return searchRequest;
         }
 

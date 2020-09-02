@@ -2,6 +2,7 @@
 using DynamicsAdapter.Web.SearchAgency;
 using DynamicsAdapter.Web.SearchAgency.Models;
 using Fams3Adapter.Dynamics.Address;
+using Fams3Adapter.Dynamics.Agency;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.Name;
@@ -46,6 +47,8 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                   PersonSoughtFirstName = "firstName",
                   PersonSoughtLastName = "lastName",
                   CreatedByApi = true,
+                  AgencyCode = "FMEP",
+                  Agency = new SSG_Agency { AgencyCode = "FMEP" },
                   SendNotificationOnCreation = true,
                   SSG_Persons = new List<SSG_Person>()
                   {
@@ -80,6 +83,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                     PersonSoughtFirstName = "firstName",
                     PersonSoughtLastName = "lastName",
                     LocationRequested = true,
+                    Agency = new SSG_Agency { AgencyCode = "FMEP" },
                     PHNRequested = false,
                     CreatedByApi = true,
                     DateOfDeathRequested = true,
@@ -139,6 +143,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 {
                     FirstName = "firstName",
                     LastName = "lastName",
+                    Agency = new Agency { Code = "FMEP" }
 
                 }
             };
@@ -197,7 +202,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 {
                     FirstName = "changedfirstName",
                     LastName = "lastName",
-
+                    Agency = new Agency { Code = "FMEP" }
                 }
             };
             SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(searchRequstOrdered);
@@ -236,6 +241,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
 
             SearchRequestEntity newSearchRequest = new SearchRequestEntity()
             {
+                AgencyCode = "FMEP",
                 Notes = "note2"
             };
             _mapper.Setup(m => m.Map<SearchRequestEntity>(It.IsAny<SearchRequestOrdered>()))
@@ -253,7 +259,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 {
                     FirstName = "firstName",
                     LastName = "lastName",
-
+                    Agency = new Agency { Code = "FMEP" }
                 }
             };
             SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(searchRequstOrdered);
@@ -299,7 +305,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                         RelatedPersonId = Guid.NewGuid()
                     }));
 
-            SearchRequestEntity newSearchRequest = new SearchRequestEntity() { };
+            SearchRequestEntity newSearchRequest = new SearchRequestEntity() { AgencyCode = "FMEP" };
 
             _mapper.Setup(m => m.Map<SearchRequestEntity>(It.IsAny<SearchRequestOrdered>()))
                 .Returns(newSearchRequest);
@@ -323,6 +329,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 {
                     FirstName = "firstName",
                     LastName = "lastName",
+                    Agency = new Agency { Code = "FMEP" },
                     RelatedPersons = new List<RelatedPerson>() {
                         new RelatedPerson(){FirstName="newFirstName", LastName="lastName"}}
                 }
@@ -366,6 +373,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
 
             SearchRequestEntity newSearchRequest = new SearchRequestEntity()
             {
+                AgencyCode = "FMEP"
             };
 
             _searchRequestServiceMock.Setup(x => x.CreateRelatedPerson(It.IsAny<RelatedPersonEntity>(), It.IsAny<CancellationToken>()))
@@ -396,7 +404,8 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                     FirstName = "firstName",
                     LastName = "lastName",
                     RelatedPersons = new List<RelatedPerson>() {
-                        new RelatedPerson(){FirstName="newFirstName", LastName="lastName"}}
+                        new RelatedPerson(){FirstName="newFirstName", LastName="lastName"}},
+                    Agency = new Agency { Code = "FMEP" }
                 }
             };
             SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(searchRequstOrdered);
@@ -484,7 +493,8 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                     Names = new List<Name>()
                     {
                         new Name(){FirstName="changedFirstName", LastName="changedApplicant", Owner=OwnerType.Applicant}
-                    }
+                    },
+                    Agency = new Agency { Code = "FMEP" }
                 }
             };
             SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(searchRequstOrdered);
@@ -517,6 +527,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                     PersonSoughtFirstName = "firstName",
                     PersonSoughtLastName = "lastName",
                     CreatedByApi = true,
+                    AgencyCode = "FMEP",
                     SendNotificationOnCreation = true,
                     SSG_Persons = new List<SSG_Person>()
                     {
@@ -590,8 +601,10 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                                 }
                              },
                         }
-                    }
+                    },
+                    Agency = new Agency { Code = "FMEP" }
                 }
+
             };
             SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(searchRequstOrdered);
             _searchRequestServiceMock.Verify(m => m.UpdateSearchRequest(It.IsAny<Guid>(),
@@ -636,6 +649,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
 
             SearchRequestEntity newSearchRequest = new SearchRequestEntity()
             {
+                AgencyCode = "FMEP"
             };
             _mapper.Setup(m => m.Map<SearchRequestEntity>(It.IsAny<SearchRequestOrdered>()))
                 .Returns(newSearchRequest);
@@ -668,7 +682,8 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                                 }
                              },
                         }
-                    }
+                    },
+                    Agency = new Agency { Code = "FMEP" }
                 }
             };
             SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(searchRequstOrdered);
@@ -710,8 +725,8 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                     IsCreatedByAgency = true
                 }));
 
-            SearchRequestEntity newSearchRequest = new SearchRequestEntity()
-            { };
+            SearchRequestEntity newSearchRequest = new SearchRequestEntity { AgencyCode = "FMEP" };
+
             _mapper.Setup(m => m.Map<SearchRequestEntity>(It.IsAny<SearchRequestOrdered>()))
                 .Returns(newSearchRequest);
 
@@ -736,7 +751,8 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                             AddressLine1="addressLine1",
                             Owner=OwnerType.PersonSought
                         }
-                    }
+                    },
+                    Agency = new Agency { Code = "FMEP" }
                 }
             };
             SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(searchRequstOrdered);
@@ -782,7 +798,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 }));
 
             SearchRequestEntity newSearchRequest = new SearchRequestEntity()
-            { };
+            { AgencyCode = "FMEP" };
             _mapper.Setup(m => m.Map<SearchRequestEntity>(It.IsAny<SearchRequestOrdered>()))
                 .Returns(newSearchRequest);
 
@@ -807,7 +823,8 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                             PhoneNumber="2222222",
                             Owner=OwnerType.PersonSought
                         }
-                    }
+                    },
+                    Agency = new Agency { Code = "FMEP" }
                 }
             };
             SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(searchRequstOrdered);
@@ -860,6 +877,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
 
             SearchRequestEntity newSearchRequest = new SearchRequestEntity()
             {
+                AgencyCode = "FMEP"
             };
             _mapper.Setup(m => m.Map<SearchRequestEntity>(It.IsAny<SearchRequestOrdered>()))
                 .Returns(newSearchRequest);
@@ -879,6 +897,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 {
                     FirstName = "firstName",
                     LastName = "lastName",
+                    Agency = new Agency { Code = "FMEP" },
                     Identifiers = new List<PersonalIdentifier>()
                     {
                         new PersonalIdentifier(){
@@ -937,6 +956,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
 
             SearchRequestEntity newSearchRequest = new SearchRequestEntity()
             {
+                AgencyCode = "FMEP"
             };
             _mapper.Setup(m => m.Map<SearchRequestEntity>(It.IsAny<SearchRequestOrdered>()))
                 .Returns(newSearchRequest);
@@ -963,7 +983,8 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                             Type=PersonalIdentifierType.BCDriverLicense,
                             Value="1111"
                         }
-                    }
+                    },
+                    Agency = new Agency { Code = "FMEP" }
                 }
             };
             SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(searchRequstOrdered);
@@ -1009,7 +1030,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 }));
 
             SearchRequestEntity newSearchRequest = new SearchRequestEntity()
-            { };
+            { AgencyCode = "FMEP" };
             _mapper.Setup(m => m.Map<SearchRequestEntity>(It.IsAny<SearchRequestOrdered>()))
                 .Returns(newSearchRequest);
 
@@ -1034,7 +1055,8 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                             FirstName="newfirstName",
                             Owner=OwnerType.PersonSought
                         }
-                    }
+                    },
+                    Agency = new Agency { Code = "FMEP" }
                 }
             };
             SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(searchRequstOrdered);
@@ -1075,6 +1097,22 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             _searchRequestServiceMock.Setup(x => x.GetSearchRequest(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<SSG_SearchRequest>(null));
             SearchRequestOrdered searchRequestOrdered = new SearchRequestOrdered();
+            SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(searchRequestOrdered);
+            _searchRequestServiceMock.Verify(m => m.CreateNotes(It.IsAny<NotesEntity>(), It.IsAny<CancellationToken>()), Times.Never);
+            Assert.AreEqual(null, ssgSearchRequest);
+        }
+
+        [Test]
+        public async Task wrong_agencyCode_searchRequestOrdered_ProcessUpdateSearchRequest_should_return_null()
+        {
+            _searchRequestServiceMock.Setup(x => x.GetPerson(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+                    .Returns(Task.FromResult<SSG_Person>(new SSG_Person()
+                    {
+                        PersonId = _personGuid,
+                        IsCreatedByAgency = true
+                    }));
+            Guid guid = Guid.NewGuid();
+            SearchRequestOrdered searchRequestOrdered = new SearchRequestOrdered { Person = new Person { Agency = new Agency { Code = "TEST" } } };
             SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(searchRequestOrdered);
             _searchRequestServiceMock.Verify(m => m.CreateNotes(It.IsAny<NotesEntity>(), It.IsAny<CancellationToken>()), Times.Never);
             Assert.AreEqual(null, ssgSearchRequest);

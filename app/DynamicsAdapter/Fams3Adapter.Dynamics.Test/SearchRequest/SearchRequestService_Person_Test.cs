@@ -169,7 +169,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
                 .Expand(x => x.SSG_Identifiers)
                 .Expand(x => x.SSG_Employments)
                 .Expand(x => x.SSG_Addresses)
-                .Expand(x=>x.SSG_Aliases)
+                .Expand(x => x.SSG_Aliases)
                 .FindEntryAsync(It.IsAny<CancellationToken>()))
                .Returns(Task.FromResult<SSG_Person>(new SSG_Person()
                {
@@ -184,7 +184,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         public async Task update_correct_Person_should_success()
         {
             Guid testId = Guid.NewGuid();
-            _odataClientMock.Setup(x => x.For<SSG_Person>(null).Key(It.Is<Guid>(m => m == testId)).Set(It.IsAny<SSG_Person>())
+            _odataClientMock.Setup(x => x.For<SSG_Person>(null).Key(It.Is<Guid>(m => m == testId)).Set(It.IsAny<Dictionary<string, object>>())
                 .UpdateEntryAsync(It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(new SSG_Person()
                 {
@@ -192,13 +192,13 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
                     FirstName = "new"
                 })
                 );
-
+            IDictionary<string, object> updatedFields = new Dictionary<string, object> { { "ssg_firstname", "new" } };
             var person = new SSG_Person()
             {
-                PersonId=testId,
-                FirstName="old"
+                PersonId = testId,
+                FirstName = "old"
             };
-            var result = await _sut.UpdatePerson(person, CancellationToken.None);
+            var result = await _sut.UpdatePerson(testId, updatedFields, person, CancellationToken.None);
 
             Assert.AreEqual("new", result.FirstName);
 

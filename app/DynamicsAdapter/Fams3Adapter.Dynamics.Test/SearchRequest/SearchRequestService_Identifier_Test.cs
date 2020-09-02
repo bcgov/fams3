@@ -6,6 +6,7 @@ using Moq;
 using NUnit.Framework;
 using Simple.OData.Client;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -100,7 +101,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         public async Task update_correct_Identifier_should_success()
         {
             Guid testId = Guid.NewGuid();
-            _odataClientMock.Setup(x => x.For<SSG_Identifier>(null).Key(It.Is<Guid>(m => m == testId)).Set(It.IsAny<SSG_Identifier>())
+            _odataClientMock.Setup(x => x.For<SSG_Identifier>(null).Key(It.Is<Guid>(m => m == testId)).Set(It.IsAny<Dictionary<string,object>>())
                 .UpdateEntryAsync(It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(new SSG_Identifier()
                 {
@@ -109,12 +110,9 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
                 })
                 );
 
-            var id = new SSG_Identifier()
-            {
-                IdentifierId = testId,
-                Identification = "old"
-            };
-            var result = await _sut.UpdateIdentifier(id, CancellationToken.None);
+            IDictionary<string, object> updatedFields = new Dictionary<string, object> { { "ssg_identification", "new" } };
+
+            var result = await _sut.UpdateIdentifier(testId, updatedFields, CancellationToken.None);
 
             Assert.AreEqual("new", result.Identification);
 

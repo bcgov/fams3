@@ -113,6 +113,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(new DateTime(2018, 9, 28), entity.RequestDate);
             Assert.AreEqual("agencyemail@test.com", entity.AgentEmail);
             Assert.AreEqual(true, entity.LocationRequested);
+            Assert.AreEqual(true, entity.PhoneNumberRequested);
             Assert.AreEqual(true, entity.PHNRequested);
             Assert.AreEqual(true, entity.DriverLicenseRequested);
             Assert.AreEqual("FMEP", entity.AgencyCode);

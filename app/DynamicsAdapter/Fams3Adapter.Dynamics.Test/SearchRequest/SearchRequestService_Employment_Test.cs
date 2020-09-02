@@ -151,7 +151,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         public async Task update_correct_Employment_should_success()
         {
             Guid testId = Guid.NewGuid();
-            _odataClientMock.Setup(x => x.For<SSG_Employment>(null).Key(It.Is<Guid>(m => m == testId)).Set(It.IsAny<EmploymentEntity>())
+            _odataClientMock.Setup(x => x.For<SSG_Employment>(null).Key(It.Is<Guid>(m => m == testId)).Set(It.IsAny<Dictionary<string, object>>())
                 .UpdateEntryAsync(It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(new SSG_Employment()
                 {
@@ -160,12 +160,9 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
                 })
                 );
 
-            var employ = new SSG_Employment()
-            {
-                EmploymentId = testId,
-                BusinessName = "old"
-            };
-            var result = await _sut.UpdateEmployment(employ, CancellationToken.None);
+
+            IDictionary<string, object> updatedFields = new Dictionary<string, object> { { "businessname", "new" } };
+            var result = await _sut.UpdateEmployment(testId, updatedFields, CancellationToken.None);
 
             Assert.AreEqual("new", result.BusinessName);
 

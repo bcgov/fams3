@@ -41,4 +41,28 @@ namespace BcGov.Fams3.Utils.Test
         }
 
     }
+
+    public class TestUpdatableCls
+    {
+        public int PropInt { get; set; }
+        public int? PropNullableInt { get; set; }
+        public string PropString { get; set; }
+        public DateTime PropDateTime { get; set; }
+        public DateTime? PropNullableDateTime { get; set; }
+        public bool PropBool { get; set; }
+        public bool Updated { get; set; }
+        public Guid PropGuid { get; set; }
+        public ChildTestUpdatableCls Child { get; set; }
+    }
+
+    public class ChildTestUpdatableCls
+    {
+        public int PropInt { get; set; }
+        public int? PropNullableInt { get; set; }
+        public string PropString { get; set; }
+        public DateTime PropDateTime { get; set; }
+        public DateTime? PropNullableDateTime { get; set; }
+        public bool PropBool { get; set; }
+        public bool Updated { get; set; }
+    }
 }

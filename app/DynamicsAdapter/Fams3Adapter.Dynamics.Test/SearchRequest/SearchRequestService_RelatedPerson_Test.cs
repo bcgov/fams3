@@ -110,7 +110,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         public async Task update_correct_relatedPerson_should_success()
         {
             Guid testId = Guid.NewGuid();
-            _odataClientMock.Setup(x => x.For<SSG_Identity>(null).Key(It.Is<Guid>(m => m == testId)).Set(It.IsAny<SSG_Identity>())
+            _odataClientMock.Setup(x => x.For<SSG_Identity>(null).Key(It.Is<Guid>(m => m == testId)).Set(It.IsAny<Dictionary<string, object>>())
                 .UpdateEntryAsync(It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(new SSG_Identity()
                 {
@@ -124,7 +124,8 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
                 RelatedPersonId = testId,
                 FirstName = "old"
             };
-            var result = await _sut.UpdateRelatedPerson(relatedPerson, CancellationToken.None);
+            IDictionary<string, object> updatedFields = new Dictionary<string, object> { { "businessname", "new" } };
+            var result = await _sut.UpdateRelatedPerson(testId, updatedFields, CancellationToken.None);
 
             Assert.AreEqual("new", result.FirstName);
 

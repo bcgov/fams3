@@ -61,7 +61,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
                  .Returns(Task.FromResult<SSG_AgencyLocation>(new SSG_AgencyLocation()
                  {
                      AgencyLocationId = Guid.NewGuid(),
-                     City = "city"                     
+                     City = "city"
                  }));
 
             _odataClientMock.Setup(x => x.For<SSG_SearchRequest>(null).Set(It.IsAny<SearchRequestEntity>())
@@ -232,7 +232,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             {
                 AgencyCode = "fmep",
                 SearchReasonCode = "reason",
-                AgencyOfficeLocationText = "NORTHERN AND INTERIOR CLIENT OFFICE, KAMLOOPS, BC",
+                AgencyOfficeLocationText = "K",
                 AgentFirstName = "agentName"
             };
 
@@ -310,34 +310,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         [Test]
         public async Task update_correct_SearchRequest_should_success()
         {
-            _odataClientMock.Setup(x => x.For<SSG_Agency>(null)
-               .Filter(It.IsAny<Expression<Func<SSG_Agency, bool>>>())
-               .FindEntryAsync(It.IsAny<CancellationToken>()))
-               .Returns(Task.FromResult<SSG_Agency>(new SSG_Agency()
-               {
-                   AgencyId = Guid.NewGuid(),
-                   AgencyCode = "fmep"
-               }));
-
-            _odataClientMock.Setup(x => x.For<SSG_SearchRequestReason>(null)
-                 .Filter(It.IsAny<Expression<Func<SSG_SearchRequestReason, bool>>>())
-                 .FindEntryAsync(It.IsAny<CancellationToken>()))
-                 .Returns(Task.FromResult<SSG_SearchRequestReason>(new SSG_SearchRequestReason()
-                 {
-                     ReasonId = Guid.NewGuid(),
-                     ReasonCode = "reasonCode"
-                 }));
-
-            _odataClientMock.Setup(x => x.For<SSG_AgencyLocation>(null)
-                 .Filter(It.IsAny<Expression<Func<SSG_AgencyLocation, bool>>>())
-                 .FindEntryAsync(It.IsAny<CancellationToken>()))
-                 .Returns(Task.FromResult<SSG_AgencyLocation>(new SSG_AgencyLocation()
-                 {
-                     AgencyLocationId = Guid.NewGuid(),
-                     City = "city"
-                 }));
-
-            _odataClientMock.Setup(x => x.For<SSG_SearchRequest>(null).Key(It.Is<Guid>(m=>m==testId)).Set(It.IsAny<SSG_SearchRequest>())
+             _odataClientMock.Setup(x => x.For<SSG_SearchRequest>(null).Key(It.Is<Guid>(m => m == testId)).Set(It.IsAny<Dictionary<string, object>>())
                 .UpdateEntryAsync(It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(new SSG_SearchRequest()
                 {
@@ -348,9 +321,10 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             var searchRequest = new SSG_SearchRequest()
             {
                 AgencyCode = "fmep",
-                SearchRequestId=testId
+                SearchRequestId = testId
             };
-            var result = await _sut.UpdateSearchRequest(searchRequest, CancellationToken.None);
+            IDictionary<string, object> updatedFields = new Dictionary<string, object> { { "agencyCode", "new" } };
+            var result = await _sut.UpdateSearchRequest(testId, updatedFields, CancellationToken.None);
 
             Assert.AreEqual(testId, result.SearchRequestId);
 
@@ -359,34 +333,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         [Test]
         public void exception_UpdateSearchRequest_should_throw_exception()
         {
-            _odataClientMock.Setup(x => x.For<SSG_Agency>(null)
-               .Filter(It.IsAny<Expression<Func<SSG_Agency, bool>>>())
-               .FindEntryAsync(It.IsAny<CancellationToken>()))
-               .Returns(Task.FromResult<SSG_Agency>(new SSG_Agency()
-               {
-                   AgencyId = Guid.NewGuid(),
-                   AgencyCode = "fmep"
-               }));
-
-            _odataClientMock.Setup(x => x.For<SSG_SearchRequestReason>(null)
-                 .Filter(It.IsAny<Expression<Func<SSG_SearchRequestReason, bool>>>())
-                 .FindEntryAsync(It.IsAny<CancellationToken>()))
-                 .Returns(Task.FromResult<SSG_SearchRequestReason>(new SSG_SearchRequestReason()
-                 {
-                     ReasonId = Guid.NewGuid(),
-                     ReasonCode = "reasonCode"
-                 }));
-
-            _odataClientMock.Setup(x => x.For<SSG_AgencyLocation>(null)
-                 .Filter(It.IsAny<Expression<Func<SSG_AgencyLocation, bool>>>())
-                 .FindEntryAsync(It.IsAny<CancellationToken>()))
-                 .Returns(Task.FromResult<SSG_AgencyLocation>(new SSG_AgencyLocation()
-                 {
-                     AgencyLocationId = Guid.NewGuid(),
-                     City = "city"
-                 }));
-
-            _odataClientMock.Setup(x => x.For<SSG_SearchRequest>(null).Key(It.Is<Guid>(m => m == testId)).Set(It.IsAny<SSG_SearchRequest>())
+            _odataClientMock.Setup(x => x.For<SSG_SearchRequest>(null).Key(It.Is<Guid>(m => m == testId)).Set(It.IsAny<Dictionary<string, object>>())
                 .UpdateEntryAsync(It.IsAny<CancellationToken>()))
                 .Throws(WebRequestException.CreateFromStatusCode(
                         System.Net.HttpStatusCode.NotFound,
@@ -399,7 +346,8 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
                 AgencyCode = "fmep",
                 SearchRequestId = testId
             };
-            Assert.ThrowsAsync<WebRequestException>(async () => await _sut.UpdateSearchRequest(searchRequest, CancellationToken.None));
+            IDictionary<string, object> updatedFields = new Dictionary<string, object> { { "businessname", "new" } };
+            Assert.ThrowsAsync<WebRequestException>(async () => await _sut.UpdateSearchRequest(testId, updatedFields, CancellationToken.None));
         }
 
         [Test]
@@ -407,7 +355,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         {
             Guid searchRequestId = Guid.NewGuid();
             _odataClientMock.Setup(x => x.For<SSG_SearchRequest>(null)
-                .Select(x=>x.SearchRequestId)
+                .Select(x => x.SearchRequestId)
                .Filter(It.IsAny<Expression<Func<SSG_SearchRequest, bool>>>())
                .FindEntryAsync(It.IsAny<CancellationToken>()))
                .Returns(Task.FromResult<SSG_SearchRequest>(new SSG_SearchRequest()
@@ -416,7 +364,10 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
                }));
 
             _odataClientMock.Setup(x => x.For<SSG_SearchRequest>(null)
-                .Key(It.Is<Guid>(m=>m== searchRequestId))
+                .Key(It.Is<Guid>(m => m == searchRequestId))
+                .Expand(x => x.Agency)
+                .Expand(x => x.SearchReason)
+                .Expand(x => x.AgencyLocation)
                 .Expand(x => x.SSG_Persons)
                 .Expand(x => x.SSG_Notes)
                 .FindEntryAsync(It.IsAny<CancellationToken>()))

@@ -42,16 +42,15 @@ namespace SearchRequestAdaptor.Notifier
         {
             var webHookName = "SearchRequest";
 
-            if (string.IsNullOrEmpty(requestId)) throw new ArgumentNullException("invalid requestId");
             if (searchRequestOrdered == null) throw new ArgumentNullException(nameof(SearchRequestOrdered));
 
             string eventName = searchRequestOrdered.Action switch
-                {
-                    RequestAction.NEW => "CreateSearchRequest",
-                    RequestAction.UPDATE => "UpdateSearchRequest",
-                    RequestAction.CANCEL => "CancelSearchRequest",
-                    _ => null
-                };
+            {
+                RequestAction.NEW => "CreateSearchRequest",
+                RequestAction.UPDATE => "UpdateSearchRequest",
+                RequestAction.CANCEL => "CancelSearchRequest",
+                _ => null
+            };
 
             foreach (var webHook in _searchRequestOptions.WebHooks)
             {
@@ -99,7 +98,7 @@ namespace SearchRequestAdaptor.Notifier
                     _logger.LogInformation("get response successfully from webhook.");
                     string responseContent = await response.Content.ReadAsStringAsync();
                     var saved = JsonConvert.DeserializeObject<SearchRequestSavedEvent>(responseContent);
-                    
+
                     //the new action will get Notification, only failed or rejected are got published.
                     if (saved.Action != RequestAction.NEW)
                     {

@@ -238,6 +238,23 @@ namespace SearchApi.Web
                 app.UseSwaggerUi3();
             }
 
+         app.Use(async (context, next) =>
+            {
+                context.Response.GetTypedHeaders().CacheControl =
+                 new Microsoft.Net.Http.Headers.CacheControlHeaderValue()
+                 {
+                     NoStore = true,
+                     NoCache = true,
+                     MustRevalidate = true,
+                     MaxAge = TimeSpan.FromSeconds(0),
+                     Private = true,
+                     
+
+                 };
+                context.Response.Headers.Add("Pragma", "no-cache");
+                context.Response.Headers.Add("Cache-Control", "no-cache");
+                await next();
+            });
             app.UseRouting();
 
             app.UseAuthorization();

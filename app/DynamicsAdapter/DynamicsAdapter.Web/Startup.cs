@@ -269,6 +269,7 @@ namespace DynamicsAdapter.Web
                      MaxAge = TimeSpan.FromSeconds(0),
 
                  };
+                context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
                 await next();
             });
 

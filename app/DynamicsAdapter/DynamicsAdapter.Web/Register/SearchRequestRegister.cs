@@ -5,7 +5,6 @@ using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Simple.OData.Client;
 using System;
 using System.Linq;
 using System.Threading;

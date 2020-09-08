@@ -26,6 +26,8 @@ using SearchApi.Web.Search;
 using SearchApi.Web.Messaging;
 using BcGov.Fams3.Redis.DependencyInjection;
 using BcGov.Fams3.Redis.Configuration;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Net.Http.Headers;
 
 namespace SearchApi.Web
 {
@@ -238,6 +240,23 @@ namespace SearchApi.Web
                 app.UseSwaggerUi3();
             }
 
+         app.Use(async (context, next) =>
+            {
+                context.Response.GetTypedHeaders().CacheControl =
+                 new CacheControlHeaderValue()
+                 {
+                     NoStore = true,
+                     NoCache = true,
+                     MustRevalidate = true,
+                     MaxAge = TimeSpan.FromSeconds(0),
+                     Private = true,
+                     
+
+                 };
+                context.Response.Headers.Add("Pragma", "no-cache");
+                context.Response.Headers.Add("Cache-Control", "no-cache");
+                await next();
+            });
             app.UseRouting();
 
             app.UseAuthorization();

@@ -25,6 +25,8 @@ using SearchRequestAdaptor.Notifier;
 using SearchRequestAdaptor.Publisher;
 using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Net.Http.Headers;
 
 namespace SearchRequestAdaptor
 {
@@ -86,10 +88,22 @@ namespace SearchRequestAdaptor
 
             app.Use(async (context, next) =>
             {
+                context.Response.GetTypedHeaders().CacheControl =
+                 new CacheControlHeaderValue()
+                 {
+                     NoStore = true,
+                     NoCache = true,
+                     MustRevalidate = true,
+                     MaxAge = TimeSpan.FromSeconds(0),
+                     Private = true,
+                     
+
+                 };
                 context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
+                context.Response.Headers.Add("Pragma", "no-cache");
+                context.Response.Headers.Add("Cache-Control", "no-cache");
                 await next();
             });
-
             app.UseRouting();
             app.UseOpenApi();
             app.UseEndpoints(endpoints =>

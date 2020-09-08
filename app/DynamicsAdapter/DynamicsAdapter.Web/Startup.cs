@@ -178,6 +178,8 @@ namespace DynamicsAdapter.Web
 
 
         }
+
+      
         /// <summary>
         /// Configure Open Api using NSwag
         /// https://github.com/RicoSuter/NSwag
@@ -267,15 +269,20 @@ namespace DynamicsAdapter.Web
                      NoCache = true,
                      MustRevalidate = true,
                      MaxAge = TimeSpan.FromSeconds(0),
+                     Private = true,
+                     
 
                  };
                 context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
+                context.Response.Headers.Add("Pragma", "no-cache");
+                context.Response.Headers.Add("Cache-Control", "no-cache");
                 await next();
             });
 
             app.UseRouting();
 
             app.UseAuthorization();
+
 
             app.UseOpenApi();
 

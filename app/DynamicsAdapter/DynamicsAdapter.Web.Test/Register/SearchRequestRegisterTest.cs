@@ -108,8 +108,7 @@ namespace DynamicsAdapter.Web.Test.Register
                       }
                   }.ToArray())));
 
-            _cacheServiceMock.Setup(x => x.Get(It.Is<string>(m => m.ToString().Contains("IsNull"))))
-            .Returns(Task.FromResult(""));
+         
 
             _cacheServiceMock.Setup(x => x.Get(It.Is<string>(m => m == $"{Keys.REDIS_KEY_PREFIX}{_validSearchRequestKey}")))
             .Returns(Task.FromResult(JsonConvert.SerializeObject(_fakeRequest)));
@@ -263,7 +262,8 @@ namespace DynamicsAdapter.Web.Test.Register
         [Test]
         public async Task non_registerd_should_call_dynamics_to_pull_list_and_save_in_cache()
         {
-            Keys.DATA_PROVIDER_KEY = "IsNull";
+            _cacheServiceMock.Setup(x => x.Get(It.IsAny<string>()))
+          .Returns(Task.FromResult(""));
             var result = await _sut.GetDataProvidersList();
             Assert.AreEqual(1, result.Count());
             dataProviderMock.Verify(x => x.GetAllDataProviders(It.IsAny<CancellationToken>()), Times.AtLeastOnce());

@@ -244,6 +244,12 @@ namespace SearchApi.Web
 
             app.UseOpenApi();
 
+            app.Use(async (context, next) =>
+            {
+                context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
+                await next();
+            });
+
             app.UseEndpoints(endpoints =>
             {
                 // registration of health endpoints see https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/health-checks

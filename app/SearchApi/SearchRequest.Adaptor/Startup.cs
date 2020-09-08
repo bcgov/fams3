@@ -84,6 +84,12 @@ namespace SearchRequestAdaptor
                 app.UseSwaggerUi3();
             }
 
+            app.Use(async (context, next) =>
+            {
+                context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
+                await next();
+            });
+
             app.UseRouting();
             app.UseOpenApi();
             app.UseEndpoints(endpoints =>

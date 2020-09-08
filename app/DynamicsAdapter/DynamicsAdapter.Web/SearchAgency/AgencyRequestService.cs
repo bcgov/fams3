@@ -128,6 +128,11 @@ namespace DynamicsAdapter.Web.SearchAgency
 
 
             SearchRequestEntity newSearchRequest = _mapper.Map<SearchRequestEntity>(searchRequestOrdered);
+            if (newSearchRequest == null)
+            {
+                _logger.LogError("cannot do updating as newSearchRequest is null");
+                return null;
+            }
             //cannot update search request with different AgencyCode
             if (newSearchRequest?.AgencyCode != _uploadedSearchRequest?.Agency?.AgencyCode)
             {

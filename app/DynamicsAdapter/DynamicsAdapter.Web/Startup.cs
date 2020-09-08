@@ -270,12 +270,9 @@ namespace DynamicsAdapter.Web
                      MustRevalidate = true,
                      MaxAge = TimeSpan.FromSeconds(0),
                      Private = true,
-                     
-
                  };
                 context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
                 context.Response.Headers.Add("Pragma", "no-cache");
-                context.Response.Headers.Add("Cache-Control", "no-cache");
                 await next();
             });
 

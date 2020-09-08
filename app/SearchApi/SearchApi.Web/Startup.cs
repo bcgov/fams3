@@ -254,7 +254,7 @@ namespace SearchApi.Web
 
                  };
                 context.Response.Headers.Add("Pragma", "no-cache");
-                context.Response.Headers.Add("Cache-Control", "no-cache");
+                   context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
                 await next();
             });
             app.UseRouting();

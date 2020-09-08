@@ -26,6 +26,8 @@ using SearchApi.Web.Search;
 using SearchApi.Web.Messaging;
 using BcGov.Fams3.Redis.DependencyInjection;
 using BcGov.Fams3.Redis.Configuration;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Net.Http.Headers;
 
 namespace SearchApi.Web
 {
@@ -241,7 +243,7 @@ namespace SearchApi.Web
          app.Use(async (context, next) =>
             {
                 context.Response.GetTypedHeaders().CacheControl =
-                 new Microsoft.Net.Http.Headers.CacheControlHeaderValue()
+                 new CacheControlHeaderValue()
                  {
                      NoStore = true,
                      NoCache = true,

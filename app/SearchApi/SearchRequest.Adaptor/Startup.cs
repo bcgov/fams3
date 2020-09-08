@@ -25,6 +25,8 @@ using SearchRequestAdaptor.Notifier;
 using SearchRequestAdaptor.Publisher;
 using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Net.Http.Headers;
 
 namespace SearchRequestAdaptor
 {
@@ -87,7 +89,7 @@ namespace SearchRequestAdaptor
             app.Use(async (context, next) =>
             {
                 context.Response.GetTypedHeaders().CacheControl =
-                 new Microsoft.Net.Http.Headers.CacheControlHeaderValue()
+                 new CacheControlHeaderValue()
                  {
                      NoStore = true,
                      NoCache = true,

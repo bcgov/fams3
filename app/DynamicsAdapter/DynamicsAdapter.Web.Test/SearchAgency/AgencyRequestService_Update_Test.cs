@@ -1117,5 +1117,23 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             _searchRequestServiceMock.Verify(m => m.CreateNotes(It.IsAny<NotesEntity>(), It.IsAny<CancellationToken>()), Times.Never);
             Assert.AreEqual(null, ssgSearchRequest);
         }
+
+        [Test]
+        public async Task null_searchRequestOrdered_ProcessUpdateSearchRequest_should_return_null()
+        {
+            _searchRequestServiceMock.Setup(x => x.GetPerson(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+                    .Returns(Task.FromResult<SSG_Person>(new SSG_Person()
+                    {
+                        PersonId = _personGuid,
+                        IsCreatedByAgency = true
+                    }));
+            _mapper.Setup(m => m.Map<SearchRequestEntity>(It.IsAny<SearchRequestOrdered>()))
+               .Returns((SearchRequestEntity)(null));
+
+            Guid guid = Guid.NewGuid();
+            SearchRequestOrdered searchRequestOrdered = new SearchRequestOrdered { Person = new Person { Agency = new Agency { Code = "FMEP" } } };
+            SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(searchRequestOrdered);
+            Assert.AreEqual(null, ssgSearchRequest);
+        }
     }
 }

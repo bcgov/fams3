@@ -42,7 +42,9 @@ namespace DynamicsAdapter.Web.SearchAgency
             {
                 _logger.LogInformation("Get CreateSearchRequest");
                 if (string.IsNullOrEmpty(requestId)) return BadRequest(new { Message = "requestId cannot be empty." });
+                if (searchRequestOrdered == null) return BadRequest(new { Message = "SearchRequestOrdered cannot be empty." });
                 if (searchRequestOrdered.Action != RequestAction.NEW) return BadRequest(new { Message = "CreateSearchRequest should only get NEW request." });
+
                 try
                 {
                     SSG_SearchRequest createdSearchRequest = await _agencyRequestService.ProcessSearchRequestOrdered(searchRequestOrdered);
@@ -76,6 +78,9 @@ namespace DynamicsAdapter.Web.SearchAgency
                 _logger.LogInformation("Get UpdateSearchRequest");
                 if (string.IsNullOrEmpty(requestId))
                     return BadRequest(new { Message = "requestId cannot be empty." });
+
+                if (searchRequestOrdered == null)
+                    return BadRequest(new { Message = "SearchRequestOrdered cannot be empty." });
 
                 if (searchRequestOrdered.Action != RequestAction.UPDATE)
                     return BadRequest(new { Message = "UpdateSearchRequest should only get Update request." });
@@ -113,6 +118,9 @@ namespace DynamicsAdapter.Web.SearchAgency
             using (LogContext.PushProperty("SearchRequestKey", $"{searchRequestOrdered?.SearchRequestKey}"))
             {
                 _logger.LogInformation("Get CancelSearchRequest");
+
+                if (searchRequestOrdered == null)
+                    return BadRequest(new { Message = "SearchRequestOrdered cannot be empty." });
 
                 if (searchRequestOrdered.Action != RequestAction.CANCEL)
                     return BadRequest(new { Message = "CancelSearchRequest should only get Cancel request." });

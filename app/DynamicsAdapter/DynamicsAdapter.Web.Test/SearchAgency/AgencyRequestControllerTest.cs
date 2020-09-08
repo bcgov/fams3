@@ -78,6 +78,13 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
         }
 
         [Test]
+        public async Task With_null_searchRequestOrdered_CreateSearchRequest_should_return_BadRequest()
+        {
+            var result = await _sut.CreateSearchRequest("requestID", null);
+            Assert.IsInstanceOf(typeof(BadRequestObjectResult), result);
+        }
+
+        [Test]
         public async Task With_update_action_searchRequestOrdered_CreateSearchRequest_should_return_BadRequest()
         {
             SearchRequestOrdered updateSearchRequestOrdered = new SearchRequestOrdered()
@@ -163,6 +170,13 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             var result = await _sut.CancelSearchRequest(validSearchRequestOrdered);
 
             _agencyRequestServiceMock.Verify(x => x.ProcessSearchRequestOrdered(It.IsAny<SearchRequestOrdered>()), Times.Never);
+            Assert.IsInstanceOf(typeof(BadRequestObjectResult), result);
+        }
+
+        [Test]
+        public async Task With_null_searchRequestOrdered_CancelSearchRequest_should_return_BadRequest()
+        {
+            var result = await _sut.CancelSearchRequest(null);
             Assert.IsInstanceOf(typeof(BadRequestObjectResult), result);
         }
 
@@ -285,6 +299,13 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             var result = await _sut.UpdateSearchRequest(null, validSearchRequestOrdered);
 
             _agencyRequestServiceMock.Verify(x => x.ProcessUpdateSearchRequest(It.IsAny<SearchRequestOrdered>()), Times.Never);
+            Assert.IsInstanceOf(typeof(BadRequestObjectResult), result);
+        }
+
+        [Test]
+        public async Task With_null_searchRequestOrdered_UpdateSearchRequest_should_return_BadRequest()
+        {
+            var result = await _sut.UpdateSearchRequest("requestID", null);
             Assert.IsInstanceOf(typeof(BadRequestObjectResult), result);
         }
 

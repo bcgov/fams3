@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
@@ -139,6 +139,7 @@ namespace DynamicsAdapter.Web.Mapping
                         "sibling" => PersonRelationType.Sibling.Value,
                         "cousin" => PersonRelationType.Cousin.Value,
                         "friend" => PersonRelationType.Friend.Value,
+                        "lalw" => PersonRelationType.MayLiveWith.Value,
                         _ => (int?)null
                     };
         }

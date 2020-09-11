@@ -288,4 +288,54 @@ namespace DynamicsAdapter.Web.Test.ApiGateway
             var result = await invoker.SendAsync(httpRequestMessage, new CancellationToken());
         }
     }
+
+    public class WithApiGatewayBasePathWithPathEndWith_ssg_SearchRequestSubmittoQueueActions
+    {
+
+        private ApiGatewayHandler _sut;
+        private Mock<IOptions<ApiGatewayOptions>> _apiGatewayOptionsMock;
+
+        [SetUp]
+        public void SetUp()
+        {
+
+            _apiGatewayOptionsMock = new Mock<IOptions<ApiGatewayOptions>>();
+
+            _apiGatewayOptionsMock.Setup(x => x.Value).Returns(new ApiGatewayOptions()
+            {
+                BasePath = "http://test/path/"
+            });
+
+            _sut = new ApiGatewayHandler(_apiGatewayOptionsMock.Object)
+            {
+                InnerHandler = new TestHandler()
+            };
+        }
+
+        public class TestHandler : DelegatingHandler
+        {
+            protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
+                CancellationToken cancellationToken)
+            {
+                Assert.AreEqual("http://test/path/somepath/ssg_SearchRequestSubmittoQueueActions", request.RequestUri.AbsoluteUri);
+                return await Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK));
+            }
+        }
+
+        [Test]
+        public async Task Execute()
+        {
+
+            if (Uri.TryCreate(new Uri("http://test/path/"), "/somepath/ssg_SearchRequestSubmittoQueueActions", out var a))
+            {
+                Console.WriteLine(a);
+            }
+            // in your test class method
+            var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, "http://foo.com/somepath/ssg_SearchRequestSubmittoQueueActions");
+            var invoker = new HttpMessageInvoker(_sut);
+            var result = await invoker.SendAsync(httpRequestMessage, new CancellationToken());
+            Assert.IsTrue(httpRequestMessage.Content.Headers.ContentType.MediaType == "application/json");
+            Assert.AreEqual(0, httpRequestMessage.Content.Headers.ContentLength);
+        }
+    }
 }

@@ -44,5 +44,33 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
 
             Assert.AreEqual("11111", result.SourceIdentifier.Identification);
         }
+
+        [Test]
+        public async Task SubmitToQueue_should_success()
+        {
+            odataClientMock.Setup(
+                x => x.For<SSG_SearchRequest>(null).Key(It.IsAny<Guid>())
+                      .Action(It.IsAny<string>())
+                      .ExecuteAsSingleAsync())
+            .Returns(Task.FromResult(new SSG_SearchRequest()
+            {
+                SearchRequestId = Guid.NewGuid()
+            })
+            );
+            var result = await _sut.SubmitToQueue(Guid.NewGuid());
+            Assert.AreEqual(true, result);
+        }
+
+        [Test]
+        public async Task invalid_searchRequestId_SubmitToQueue_should_throw_exception()
+        {
+            Guid invalidGuid = Guid.NewGuid();
+            odataClientMock.Setup(
+                x => x.For<SSG_SearchRequest>(null).Key(It.Is<Guid>(m=>m==invalidGuid))
+                      .Action(It.IsAny<string>())
+                      .ExecuteAsSingleAsync())
+            .Throws(new Exception("invalid search request id"));
+            Assert.ThrowsAsync<Exception>(async()=>await _sut.SubmitToQueue(invalidGuid));
+        }
     }
 }

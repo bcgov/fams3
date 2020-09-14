@@ -46,6 +46,20 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         }
 
         [Test]
+        public void Invalid_searchRequestId_SubmitToQueue_should_throw_exception()
+        {
+            Guid invalidGuid = Guid.NewGuid();
+            odataClientMock.Setup(
+                x => x.For<SSG_SearchRequest>(null).Key(It.Is<Guid>(m => m == invalidGuid))
+                      .Action(It.IsAny<string>())
+                      .ExecuteAsSingleAsync())
+            .Throws(new Exception("invalid search request id"));
+            Assert.ThrowsAsync<Exception>(
+                async () => await _sut.SubmitToQueue(invalidGuid)
+                );
+        }
+
+        [Test]
         public async Task SubmitToQueue_should_success()
         {
             odataClientMock.Setup(
@@ -61,16 +75,6 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             Assert.AreEqual(true, result);
         }
 
-        [Test]
-        public async Task invalid_searchRequestId_SubmitToQueue_should_throw_exception()
-        {
-            Guid invalidGuid = Guid.NewGuid();
-            odataClientMock.Setup(
-                x => x.For<SSG_SearchRequest>(null).Key(It.Is<Guid>(m=>m==invalidGuid))
-                      .Action(It.IsAny<string>())
-                      .ExecuteAsSingleAsync())
-            .Throws(new Exception("invalid search request id"));
-            Assert.ThrowsAsync<Exception>(async()=>await _sut.SubmitToQueue(invalidGuid));
-        }
+
     }
 }

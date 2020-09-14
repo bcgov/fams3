@@ -59,6 +59,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         Task<SSG_Identifier> UpdateIdentifier(Guid identifierId, IDictionary<string, object> updatedFields, CancellationToken cancellationToken);
         Task<SSG_Country> GetEmploymentCountry(string countryText, CancellationToken cancellationToken);
         Task<SSG_CountrySubdivision> GetEmploymentSubdivision(string subDivisionText, CancellationToken cancellationToken);
+        Task<bool> SubmitToQueue(Guid searchRequestId);
     }
 
     /// <summary>
@@ -556,6 +557,12 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                                       .Filter(x => x.Name == subDivisionText)
                                       .FindEntryAsync(cancellationToken);
             return subdivision;
+        }
+
+        public async Task<bool> SubmitToQueue(Guid searchRequestId)
+        {
+            await _oDataClient.For<SSG_SearchRequest>().Key(searchRequestId).Action("ssg_SearchRequestSubmittoQueueActions").ExecuteAsSingleAsync();
+            return true;
         }
 
         private async Task<EmploymentEntity> LinkEmploymentRef(EmploymentEntity employment, CancellationToken cancellationToken)

@@ -285,6 +285,8 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                   FirstName = "firstName"
               }));
 
+            _searchRequestServiceMock.Setup(x => x.SubmitToQueue(It.IsAny<Guid>()))
+              .Returns(Task.FromResult<bool>(true));
             _sut = new AgencyRequestService(_searchRequestServiceMock.Object, _loggerMock.Object, _mapper.Object);
 
         }
@@ -302,6 +304,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             _searchRequestServiceMock.Verify(m => m.CreateEmploymentContact(It.IsAny<EmploymentContactEntity>(), It.IsAny<CancellationToken>()), Times.Once);
             _searchRequestServiceMock.Verify(m => m.CreateRelatedPerson(It.IsAny<RelatedPersonEntity>(), It.IsAny<CancellationToken>()), Times.Once);
             _searchRequestServiceMock.Verify(m => m.CreateName(It.IsAny<AliasEntity>(), It.IsAny<CancellationToken>()), Times.Once);
+            _searchRequestServiceMock.Verify(m => m.SubmitToQueue(It.IsAny<Guid>()), Times.Once);
         }
 
         [Test]

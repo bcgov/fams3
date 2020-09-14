@@ -76,6 +76,7 @@ namespace DynamicsAdapter.Web.SearchAgency
             await UploadRelatedPersons();
             await UploadRelatedApplicant(_uploadedSearchRequest.ApplicantFirstName, _uploadedSearchRequest.ApplicantLastName);
             await UploadAliases();
+            await SubmitToQueue();
             return _uploadedSearchRequest;
         }
 
@@ -508,6 +509,12 @@ namespace DynamicsAdapter.Web.SearchAgency
                 return false;
             }
             _logger.LogInformation("Create new notes successfully.");
+            return true;
+        }
+
+        private async Task<bool> SubmitToQueue()
+        {
+            await _searchRequestService.SubmitToQueue(_uploadedSearchRequest.SearchRequestId);
             return true;
         }
 

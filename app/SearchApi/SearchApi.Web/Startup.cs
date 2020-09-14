@@ -55,6 +55,9 @@ namespace SearchApi.Web
             services.AddOptions<SearchApiOptions>()
                 .Bind(Configuration.GetSection(Keys.SEARCHAPI_SECTION_SETTING_KEY));
 
+            services.AddOptions<DeepSearchOptions>()
+                .Bind(Configuration.GetSection(Keys.DEEPSEARCH_SECTION_SETTING_KEY));
+
             services.AddCacheService(Configuration.GetSection(Keys.REDIS_SECTION_SETTING_KEY).Get<RedisConfiguration>());
 
             services.AddWebHooks();

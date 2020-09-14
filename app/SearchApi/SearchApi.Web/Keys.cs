@@ -3,6 +3,7 @@
     public class Keys
     {
         internal const string SEARCHAPI_SECTION_SETTING_KEY = "SearchApi";
+        internal const string DEEPSEARCH_SECTION_SETTING_KEY = "DeepSearch";
         internal const string REDIS_SECTION_SETTING_KEY = "Redis";
         internal const string DATA_PARTNER_JSON_PATH = "$.DataPartners";
 

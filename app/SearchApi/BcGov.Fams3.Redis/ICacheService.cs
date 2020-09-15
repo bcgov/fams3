@@ -38,7 +38,7 @@ namespace BcGov.Fams3.Redis
         public async Task SaveRequest(SearchRequest searchRequest)
         {
 
-
+            
             if (searchRequest is null) throw new ArgumentNullException("SaveRequest : Search request cannot be null");
             if (string.IsNullOrEmpty(searchRequest.SearchRequestKey)) throw new ArgumentNullException("SaveRequest : Search request key cannot be null");
             await _distributedCache.SetStringAsync(searchRequest.SearchRequestKey, JsonConvert.SerializeObject(searchRequest), new CancellationToken());

@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 using Moq;
 using NUnit.Framework;
 using SearchApi.Web.Controllers;
+using SearchApi.Web.DeepSearch;
 using SearchApi.Web.Messaging;
 
 namespace SearchApi.Web.Test.Messaging
@@ -21,7 +22,7 @@ namespace SearchApi.Web.Test.Messaging
         private Dispatcher sut;
 
         private Mock<ISendEndpointProvider> sendEndpointProviderMock;
-
+        private Mock<IDeepSearchService> deepSearchProviderMock;
         private Mock<IOptions<RabbitMqConfiguration>> rabbitMqConfigurationMock;
 
         private Mock<ISendEndpoint> sendEndpointMock;
@@ -31,7 +32,7 @@ namespace SearchApi.Web.Test.Messaging
         {
 
             sendEndpointProviderMock = new Mock<ISendEndpointProvider>();
-
+            deepSearchProviderMock = new Mock<IDeepSearchService>();
             rabbitMqConfigurationMock = new Mock<IOptions<RabbitMqConfiguration>>();
 
             sendEndpointMock = new Mock<ISendEndpoint>();
@@ -45,13 +46,15 @@ namespace SearchApi.Web.Test.Messaging
             sendEndpointProviderMock
                 .Setup(x => x.GetSendEndpoint(It.IsAny<Uri>()))
                 .Returns(Task.FromResult(sendEndpointMock.Object));
+            deepSearchProviderMock.Setup(x => x.SaveRequest(It.IsAny<PersonSearchRequest>(), It.IsAny<string>()))
+                .Returns(Task.CompletedTask);
 
             rabbitMqConfigurationMock.Setup(x => x.Value).Returns(rabbitMqConfiguration);
 
             sendEndpointMock.Setup(x => x.Send<PersonSearchOrdered>(It.IsAny<PersonSearchOrdered>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(sendEndpointMock));
 
-            sut = new Dispatcher(sendEndpointProviderMock.Object, rabbitMqConfigurationMock.Object);
+            sut = new Dispatcher(sendEndpointProviderMock.Object, rabbitMqConfigurationMock.Object, deepSearchProviderMock.Object);
 
         }
 

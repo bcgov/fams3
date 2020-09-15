@@ -27,9 +27,9 @@ namespace SearchApi.Web.Messaging
         private readonly IDeepSearchService _deepSearchService;
         private readonly RabbitMqConfiguration _rabbitMqConfiguration;
         //, IDeepSearchService deepSearchService 
-        public Dispatcher(ISendEndpointProvider sendEndpointProvider, IOptions<RabbitMqConfiguration> rabbitMqOptions)
+        public Dispatcher(ISendEndpointProvider sendEndpointProvider, IOptions<RabbitMqConfiguration> rabbitMqOptions, IDeepSearchService deepSearchService)
         {
-          //  _deepSearchService = deepSearchService;
+            _deepSearchService = deepSearchService;
             _sendEndpointProvider = sendEndpointProvider;
             _rabbitMqConfiguration = rabbitMqOptions.Value;
         }

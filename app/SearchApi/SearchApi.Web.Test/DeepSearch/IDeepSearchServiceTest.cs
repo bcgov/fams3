@@ -88,7 +88,8 @@ namespace SearchApi.Web.Test.DeepSearch
             _loggerMock.VerifyLog(LogLevel.Debug, $"{person.SearchRequestKey} has an active wave");
 
             _loggerMock.VerifyLog(LogLevel.Debug, $"{person.SearchRequestKey} Current Metadata Wave : {wave.CurrentWave}");
-            _loggerMock.VerifyLog(LogLevel.Debug, $"{person.SearchRequestKey} New wave {wave.CurrentWave++} saved");
+            wave.CurrentWave++;
+            _loggerMock.VerifyLog(LogLevel.Debug, $"{person.SearchRequestKey} New wave {wave.CurrentWave} saved");
 
 
         }

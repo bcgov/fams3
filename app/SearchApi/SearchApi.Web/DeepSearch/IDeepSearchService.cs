@@ -14,7 +14,7 @@ namespace SearchApi.Web.DeepSearch
     public interface IDeepSearchService
     {
    
-        Task<Person> SaveRequest(PersonSearchRequest person, string dataPartner);
+        Task SaveRequest(PersonSearchRequest person, string dataPartner);
 
     }
 
@@ -33,7 +33,7 @@ namespace SearchApi.Web.DeepSearch
 
        
 
-        public async Task<Person> SaveRequest(PersonSearchRequest person, string dataPartner)
+        public async Task SaveRequest(PersonSearchRequest person, string dataPartner)
         {
             _logger.Log(LogLevel.Debug, $"Check if request {person.SearchRequestKey} has an active wave on-going");
             string cacheKey = string.Format(Keys.DEEP_SEARCH_REDIS_KEY_FORMAT, person.SearchRequestKey, dataPartner);
@@ -75,7 +75,7 @@ namespace SearchApi.Web.DeepSearch
 
             }
 
-            return new Person();
+           
         }
     }
 }

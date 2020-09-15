@@ -673,6 +673,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual("200", ssg_person.Weight);
             Assert.AreEqual("features", ssg_person.DistinguishingFeatures);
             Assert.AreEqual("light", ssg_person.Complexion);
+            Assert.AreEqual(GenderType.Male.Value, ssg_person.GenderOptionSet);
         }
 
         [Test]

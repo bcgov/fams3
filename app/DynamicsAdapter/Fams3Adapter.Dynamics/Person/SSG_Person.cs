@@ -42,6 +42,9 @@ namespace Fams3Adapter.Dynamics.Person
         [JsonProperty("ssg_gender")]
         public string Gender { get; set; }
 
+        [JsonProperty("ssg_genderoptionset")]
+        public int? GenderOptionSet { get; set; }
+
         [JsonProperty("ssg_incarcerated")]
         public int? Incacerated { get; set; }
 

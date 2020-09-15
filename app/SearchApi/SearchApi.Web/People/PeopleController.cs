@@ -14,6 +14,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using NSwag.Annotations;
 using OpenTracing;
+using SearchApi.Web.DeepSearch;
 using SearchApi.Web.Messaging;
 using Serilog.Context;
 
@@ -31,20 +32,23 @@ namespace SearchApi.Web.Controllers
 
         private readonly IDispatcher _dispatcher;
 
+        private readonly IDeepSearchService _deepSearchService;
         private readonly ILogger _logger;
 
         private readonly ICacheService _cacheService;
-
+        // IDeepSearchService deepSearchService,
         public PeopleController(
             ILogger<PeopleController> logger, 
             ITracer tracer,
-            IDispatcher dispatcher, ICacheService distributedCache)
+            IDispatcher dispatcher, 
+           
+            ICacheService distributedCache)
         {
-            this._logger = logger;
-            this._tracer = tracer;
-            this._dispatcher = dispatcher;
-
-            this._cacheService = distributedCache;
+            _logger = logger;
+            _tracer = tracer;
+            _dispatcher = dispatcher;
+          //  _deepSearchService = deepSearchService;
+            _cacheService = distributedCache;
            
       
         }

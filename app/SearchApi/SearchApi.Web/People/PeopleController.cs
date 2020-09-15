@@ -27,27 +27,20 @@ namespace SearchApi.Web.Controllers
     [ApiController]
     public class PeopleController : ControllerBase
     {
-
         private readonly ITracer _tracer;
-
         private readonly IDispatcher _dispatcher;
-
-        private readonly IDeepSearchService _deepSearchService;
         private readonly ILogger _logger;
-
         private readonly ICacheService _cacheService;
-        // IDeepSearchService deepSearchService,
+
         public PeopleController(
             ILogger<PeopleController> logger, 
             ITracer tracer,
-            IDispatcher dispatcher, 
-           
+            IDispatcher dispatcher,
             ICacheService distributedCache)
         {
             _logger = logger;
             _tracer = tracer;
             _dispatcher = dispatcher;
-          //  _deepSearchService = deepSearchService;
             _cacheService = distributedCache;
            
       

@@ -12,9 +12,9 @@ namespace SearchApi.Web.DeepSearch.Schema
         public int CurrentWave { get; set; }
         public string DataPartner { get; set; }
        
-        public List<Person> AllParameters { get; set; }
+        public List<Person> AllParameter { get; set; }
 
-        public List<Person> NewParameterss { get; set; }
+        public List<Person> NewParameter { get; set; }
 
 
     }

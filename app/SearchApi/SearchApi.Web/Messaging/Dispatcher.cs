@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using BcGov.Fams3.SearchApi.Contracts.Person;
 using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 using BcGov.Fams3.SearchApi.Core.Configuration;
 using MassTransit;
 using Microsoft.Extensions.Options;
 using SearchApi.Web.Controllers;
+using SearchApi.Web.DeepSearch;
+using SearchApi.Web.DeepSearch.Schema;
 
 namespace SearchApi.Web.Messaging
 {
@@ -21,12 +24,14 @@ namespace SearchApi.Web.Messaging
     {
 
         private readonly ISendEndpointProvider _sendEndpointProvider;
+        private readonly IDeepSearchService _deepSearchService;
         private readonly RabbitMqConfiguration _rabbitMqConfiguration;
-
+        //, IDeepSearchService deepSearchService 
         public Dispatcher(ISendEndpointProvider sendEndpointProvider, IOptions<RabbitMqConfiguration> rabbitMqOptions)
         {
-            this._sendEndpointProvider = sendEndpointProvider;
-            this._rabbitMqConfiguration = rabbitMqOptions.Value;
+          //  _deepSearchService = deepSearchService;
+            _sendEndpointProvider = sendEndpointProvider;
+            _rabbitMqConfiguration = rabbitMqOptions.Value;
         }
 
         /// <summary>
@@ -47,8 +52,13 @@ namespace SearchApi.Web.Messaging
                 return;
             }
 
+         
+
             foreach (var requestDataProvider in personSearchRequest.DataProviders)
             {
+   
+                await _deepSearchService.SaveRequest(personSearchRequest, requestDataProvider.Name);
+
                 var endpoint = await getEndpointAddress(requestDataProvider.Name);
 
                 await endpoint.Send<PersonSearchOrdered>(new PeopleController.PersonSearchOrderEvent(searchRequestId, personSearchRequest.SearchRequestKey)
@@ -57,6 +67,8 @@ namespace SearchApi.Web.Messaging
                     TimeBetweenRetries = requestDataProvider.TimeBetweenRetries,
                     NumberOfRetries = requestDataProvider.NumberOfRetries
                 });
+
+                
             }
         }
 

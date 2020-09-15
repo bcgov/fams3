@@ -6,6 +6,7 @@
         internal const string DEEPSEARCH_SECTION_SETTING_KEY = "DeepSearch";
         internal const string REDIS_SECTION_SETTING_KEY = "Redis";
         internal const string DATA_PARTNER_JSON_PATH = "$.DataPartners";
+        public static readonly string DEEP_SEARCH_REDIS_KEY_FORMAT = "deepsearch-{0}-{1}";
 
     }
     public class EventName

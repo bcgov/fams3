@@ -64,7 +64,7 @@ namespace BcGov.Fams3.Redis
 
         public async Task<SearchRequest> GetRequest(string searchRequestKey)
         {
-
+       
             if (string.IsNullOrEmpty(searchRequestKey)) throw new ArgumentNullException("GetRequest : Search request key cannot be null");
 
             string searchRequestStr = await _distributedCache.GetStringAsync(searchRequestKey.ToString(), new CancellationToken());

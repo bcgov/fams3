@@ -204,6 +204,7 @@ namespace DynamicsAdapter.Web.Mapping
                .ForMember(dest => dest.DateOfDeath, opt => opt.MapFrom(src => (src.DateOfDeath != null) ? src.DateOfDeath.Value.DateTime : (DateTime?)null))
                .ForMember(dest => dest.DateOfDeathConfirmed, opt => opt.MapFrom(src => src.DateDeathConfirmed))
                .ForMember(dest => dest.Gender, opt => opt.MapFrom(src => src.Gender))
+               .ForMember(dest => dest.GenderOptionSet, opt => opt.ConvertUsing(new PersonGenderConverter(), src => src.Gender))
                .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
                .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => 0))
                .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1))

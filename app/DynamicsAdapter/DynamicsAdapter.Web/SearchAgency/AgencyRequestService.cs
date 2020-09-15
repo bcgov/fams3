@@ -176,7 +176,8 @@ namespace DynamicsAdapter.Web.SearchAgency
             });
 
             //update identifiers
-            await UpdateIdentifiers();
+            //await UpdateIdentifiers();
+            await UploadIdentifiers();
 
             //update employment
             await UpdateEmployment();
@@ -466,6 +467,7 @@ namespace DynamicsAdapter.Web.SearchAgency
             return true;
         }
 
+        //for identifier, we should not do update, as it links to the search result. 
         private async Task<bool> UpdateIdentifiers()
         {
             if (_personSought.Identifiers == null) return true;

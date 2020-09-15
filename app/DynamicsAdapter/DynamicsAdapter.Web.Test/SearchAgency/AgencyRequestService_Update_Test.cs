@@ -926,8 +926,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                  It.IsAny<CancellationToken>()), Times.Never);
             _searchRequestServiceMock.Verify(m => m.CreateEmploymentContact(It.IsAny<EmploymentContactEntity>()
                 , It.IsAny<CancellationToken>()), Times.Never);
-            _searchRequestServiceMock.Verify(m => m.UpdateIdentifier(It.IsAny<Guid>(),
-                 It.IsAny<IDictionary<string, object>>(),
+            _searchRequestServiceMock.Verify(m => m.CreateIdentifier(It.IsAny<IdentifierEntity>(),
                  It.IsAny<CancellationToken>()), Times.Once);
 
             Assert.AreEqual(_validRequestGuid, ssgSearchRequest.SearchRequestId);

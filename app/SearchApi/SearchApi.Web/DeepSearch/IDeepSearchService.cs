@@ -57,18 +57,22 @@ namespace SearchApi.Web.DeepSearch
                     SearchRequestKey = person.SearchRequestKey
 
                 });
+                _logger.Log(LogLevel.Debug, $"{person.SearchRequestKey} saved");
             }
             else
             {
                 _logger.Log(LogLevel.Debug, $"{person.SearchRequestKey} has an active wave");
                 WaveMetaData metaData = JsonConvert.DeserializeObject<WaveMetaData>(waveMetaData);
-                _logger.Log(LogLevel.Debug, $"Current Metadat : {waveMetaData}");
+                _logger.Log(LogLevel.Debug, $"{person.SearchRequestKey} Current Metadata Wave : {metaData.CurrentWave}");
                 metaData.NewParameter = new List<Person>
                 {
                     person
                 };
                 metaData.CurrentWave++;
                 await _cacheService.Save(cacheKey, metaData);
+                _logger.Log(LogLevel.Debug, $"{person.SearchRequestKey} New wave {metaData.CurrentWave} saved");
+                
+
             }
 
             return new Person();

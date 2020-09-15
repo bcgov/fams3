@@ -38,6 +38,8 @@ namespace DynamicsAdapter.Web.SearchAgency
         private SSG_Person _uploadedPerson;
         private SSG_SearchRequest _uploadedSearchRequest;
         private CancellationToken _cancellationToken;
+        private static int SEARCH_REQUEST_CANCELLED = 867670009;
+        private static int SEARCH_REQUEST_CLOSED = 2;
 
         public AgencyRequestService(ISearchRequestService searchRequestService, ILogger<AgencyRequestService> logger, IMapper mapper)
         {
@@ -108,6 +110,10 @@ namespace DynamicsAdapter.Web.SearchAgency
             {
                 _logger.LogInformation("the updating search request does not exist.");
                 return null;
+            }
+            if (existedSearchRequest.StatusCode == SEARCH_REQUEST_CANCELLED || existedSearchRequest.StatusCode == SEARCH_REQUEST_CLOSED)
+            {
+                throw new Exception($"Search Request {searchRequestOrdered.SearchRequestKey} is already closed or cancelled.");
             }
             existedSearchRequest.IsDuplicated = true;
             _uploadedSearchRequest = existedSearchRequest;

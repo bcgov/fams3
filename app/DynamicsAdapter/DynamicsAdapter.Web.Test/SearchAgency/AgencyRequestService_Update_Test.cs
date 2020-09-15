@@ -1091,6 +1091,34 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
         }
 
         [Test]
+        public void closed_searchRequest_ProcessUpdateSearchRequest_should_throw_exception()
+        {
+            _searchRequestServiceMock.Setup(x => x.GetSearchRequest(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                    .Returns(Task.FromResult<SSG_SearchRequest>(new SSG_SearchRequest()
+                    {
+                        SearchRequestId = _validRequestGuid,
+                        StatusCode = 2
+                    }));
+
+            SearchRequestOrdered searchRequestOrdered = new SearchRequestOrdered();
+            Assert.ThrowsAsync<Exception>(async () => await _sut.ProcessUpdateSearchRequest(searchRequestOrdered));
+        }
+
+        [Test]
+        public void cancelled_searchRequest_ProcessUpdateSearchRequest_should_throw_exception()
+        {
+            _searchRequestServiceMock.Setup(x => x.GetSearchRequest(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                    .Returns(Task.FromResult<SSG_SearchRequest>(new SSG_SearchRequest()
+                    {
+                        SearchRequestId = _validRequestGuid,
+                        StatusCode = 867670009
+                    }));
+
+            SearchRequestOrdered searchRequestOrdered = new SearchRequestOrdered();
+            Assert.ThrowsAsync<Exception>(async () => await _sut.ProcessUpdateSearchRequest(searchRequestOrdered));
+        }
+
+        [Test]
         public async Task wrong_fileId_searchRequestOrdered_ProcessUpdateSearchRequest_should_return_null()
         {
             Guid guid = Guid.NewGuid();

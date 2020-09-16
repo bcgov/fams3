@@ -18,15 +18,17 @@ namespace SearchApi.Web.Notifications
 
         private readonly HttpClient _httpClient;
         private readonly SearchApiOptions _searchApiOptions;
+        private readonly DeepSearchOptions _deepSearchOptions;
         private readonly ILogger<WebHookNotifierSearchEventStatus> _logger;
         private readonly ICacheService _cacheService;
 
-        public WebHookNotifierSearchEventStatus(HttpClient httpClient, IOptions<SearchApiOptions> searchApiOptions,
+        public WebHookNotifierSearchEventStatus(HttpClient httpClient, IOptions<SearchApiOptions> searchApiOptions, IOptions<DeepSearchOptions> deepSearchOptions,
             ILogger<WebHookNotifierSearchEventStatus> logger, ICacheService cacheService)
         {
             _httpClient = httpClient;
             _logger = logger;
             _searchApiOptions = searchApiOptions.Value;
+            _deepSearchOptions = deepSearchOptions.Value;
             _cacheService = cacheService;
             
         }
@@ -37,7 +39,7 @@ namespace SearchApi.Web.Notifications
             var webHookName = "PersonSearch";
 
             await UpdateDataPartner(searchRequestKey, eventStatus, eventName);
-            if (await IsAllDataPartnerCompletedOrSearchInProgress(searchRequestKey, eventName))
+            if (await IsCurrentWaveCompleted(searchRequestKey, eventName))
             {
 
                 foreach (var webHook in _searchApiOptions.WebHooks)
@@ -56,41 +58,44 @@ namespace SearchApi.Web.Notifications
 
                     try
                     {
-                        StringContent content;
-                        if (eventName == EventName.Finalized) {
-                            PersonSearchEvent finalizedSearch = new PersonSearchFinalizedEvent()
+                        if (eventName == EventName.WaveCompleted)
+                        {
+                            StringContent content;
+                            if (eventName == EventName.Finalized)
                             {
-                                SearchRequestKey=eventStatus.SearchRequestKey,
-                                Message = "Search Request Finalized",
-                                SearchRequestId= eventStatus.SearchRequestId,
-                                TimeStamp=DateTime.Now
-                            };
-                            content = new StringContent(JsonConvert.SerializeObject(finalizedSearch));
-                        }
-                        else
-                        {
-                            content = new StringContent(JsonConvert.SerializeObject(eventStatus));
-                        }
- 
-                        content.Headers.ContentType =
-                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
-                        request.Content = content;
-                        request.Method = HttpMethod.Post;
-                        request.Headers.Accept.Add(
-                            System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
-                        request.RequestUri = endpoint;
-                        var response = await _httpClient.SendAsync(request, cancellationToken);
+                                PersonSearchEvent finalizedSearch = new PersonSearchFinalizedEvent()
+                                {
+                                    SearchRequestKey = eventStatus.SearchRequestKey,
+                                    Message = "Search Request Finalized",
+                                    SearchRequestId = eventStatus.SearchRequestId,
+                                    TimeStamp = DateTime.Now
+                                };
+                                content = new StringContent(JsonConvert.SerializeObject(finalizedSearch));
+                            }
+                            else
+                            {
+                                content = new StringContent(JsonConvert.SerializeObject(eventStatus));
+                            }
 
-                        if (!response.IsSuccessStatusCode)
-                        {
-                            _logger.LogError(
-                                $"The webHook {webHookName} notification has not executed status {eventName} successfully for {webHook.Name} webHook. The error code is {response.StatusCode.GetHashCode()}.");
-                            return;
+                            content.Headers.ContentType =
+                                System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
+                            request.Content = content;
+                            request.Method = HttpMethod.Post;
+                            request.Headers.Accept.Add(
+                                System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+                            request.RequestUri = endpoint;
+                            var response = await _httpClient.SendAsync(request, cancellationToken);
+
+                            if (!response.IsSuccessStatusCode)
+                            {
+                                _logger.LogError(
+                                    $"The webHook {webHookName} notification has not executed status {eventName} successfully for {webHook.Name} webHook. The error code is {response.StatusCode.GetHashCode()}.");
+                                return;
+                            }
+
+                            _logger.LogInformation(
+                                $"The webHook {webHookName} notification has executed status {eventName} successfully for {webHook.Name} webHook.");
                         }
-
-                        _logger.LogInformation(
-                            $"The webHook {webHookName} notification has executed status {eventName} successfully for {webHook.Name} webHook.");
-
                     }
                     catch (Exception exception)
                     {
@@ -102,11 +107,11 @@ namespace SearchApi.Web.Notifications
 
         }
 
-        private async Task<bool> IsAllDataPartnerCompletedOrSearchInProgress(string searchRequestKey, string eventName)
+        private async Task<bool> IsCurrentWaveCompleted(string searchRequestKey, string eventName)
         {
             try
             {
-                if (eventName.Equals(EventName.Finalized))
+                if (eventName.Equals(EventName.WaveCompleted))
                 {
                     return JsonConvert.SerializeObject(await _cacheService.GetRequest(searchRequestKey)).AllPartnerCompleted();
                 }

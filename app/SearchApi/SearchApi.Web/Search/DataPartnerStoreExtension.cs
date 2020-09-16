@@ -36,8 +36,12 @@ namespace SearchApi.Web.Search
 
         public static bool AllPartnerCompleted(this string json)
         {
-            var request = JsonConvert.DeserializeObject<SearchRequest>(json);
-            return !request.DataPartners.Any(x => x.Completed == false);
+            if (!string.IsNullOrEmpty(json))
+            {
+                var request = JsonConvert.DeserializeObject<SearchRequest>(json);
+                return !request.DataPartners.Any(x => x.Completed == false);
+            }
+            else return true; // we can't find request, possibly completed and already deleted from redis. requires refactor
             
         }
     }

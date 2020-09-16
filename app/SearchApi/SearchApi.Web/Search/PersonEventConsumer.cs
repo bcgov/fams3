@@ -72,7 +72,7 @@ namespace SearchApi.Web.Search
         public async Task Consume(ConsumeContext<PersonSearchCompleted> context)
         {
             await base.Consume(context, EventName.Completed);
-            await base.Consume(context, EventName.Finalized);
+            await base.Consume(context, EventName.WaveCompleted);
         }
 
     }
@@ -93,7 +93,7 @@ namespace SearchApi.Web.Search
         {
       
             await base.Consume(context, EventName.Rejected);
-            await base.Consume(context, EventName.Finalized);
+            await base.Consume(context, EventName.WaveCompleted);
            
         }
 
@@ -114,6 +114,7 @@ namespace SearchApi.Web.Search
         public async Task Consume(ConsumeContext<PersonSearchFailed> context)
         {
             await base.Consume(context, EventName.Failed);
+            await base.Consume(context, EventName.WaveCompleted);
         }
 
     }

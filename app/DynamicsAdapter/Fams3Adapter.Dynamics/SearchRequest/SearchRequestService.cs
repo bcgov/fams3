@@ -45,7 +45,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         Task<SSG_InvolvedParty> CreateInvolvedParty(InvolvedPartyEntity involvedParty, CancellationToken cancellationToken);
         Task<SSG_SearchRequestResultTransaction> CreateTransaction(SSG_SearchRequestResultTransaction transaction, CancellationToken cancellationToken);
         Task<SSG_SearchRequest> CreateSearchRequest(SearchRequestEntity searchRequest, CancellationToken cancellationToken);
-        Task<SSG_SearchRequest> CancelSearchRequest(string fileId, CancellationToken cancellationToken);
+        Task<SSG_SearchRequest> CancelSearchRequest(string fileId, string cancelComments, CancellationToken cancellationToken);
         Task<SSG_SearchRequest> GetSearchRequest(string fileId, CancellationToken cancellationToken);
         Task<SSG_SearchRequestReason> GetSearchReason(string reasonCode, CancellationToken cancellationToken);
         Task<SSG_AgencyLocation> GetSearchAgencyLocation(string locationCode, string agencyCode, CancellationToken cancellationToken);
@@ -384,7 +384,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             return await this._oDataClient.For<SSG_SearchRequest>().Set(linkedSearchRequest).InsertEntryAsync(cancellationToken);
         }
 
-        public async Task<SSG_SearchRequest> CancelSearchRequest(string fileId, CancellationToken cancellationToken)
+        public async Task<SSG_SearchRequest> CancelSearchRequest(string fileId, string cancelComments, CancellationToken cancellationToken)
         {
             SSG_SearchRequest searchRequest = await _oDataClient.For<SSG_SearchRequest>().Filter(x => x.FileId == fileId).FindEntryAsync(cancellationToken);
 
@@ -393,7 +393,10 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             return await _oDataClient
                         .For<SSG_SearchRequest>()
                         .Key(searchRequest.SearchRequestId)
-                        .Set(new Entry { { Keys.DYNAMICS_STATUS_CODE_FIELD, SearchRequestStatusCode.AgencyCancelled.Value } })
+                        .Set(new Entry {
+                            { Keys.DYNAMICS_STATUS_CODE_FIELD, SearchRequestStatusCode.AgencyCancelled.Value },
+                            { Keys.DYNAMICS_SEARCH_REQUEST_CANCEL_COMMENTS_FIELD, cancelComments }
+                        })
                         .UpdateEntryAsync(cancellationToken);
         }
 

@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using DynamicsAdapter.Web.SearchAgency;
 using DynamicsAdapter.Web.SearchAgency.Models;
 using Fams3Adapter.Dynamics.Address;
@@ -295,7 +295,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
         public async Task normal_searchRequestOrdered_ProcessSearchRequestOrdered_should_succeed()
         {
             SSG_SearchRequest ssgSearchRequest = await _sut.ProcessSearchRequestOrdered(_searchRequstOrdered);
-            _searchRequestServiceMock.Verify( m=>m.CreateSearchRequest(It.IsAny<SearchRequestEntity>(), It.IsAny<CancellationToken>()),Times.Once );
+            _searchRequestServiceMock.Verify(m => m.CreateSearchRequest(It.IsAny<SearchRequestEntity>(), It.IsAny<CancellationToken>()), Times.Once);
             _searchRequestServiceMock.Verify(m => m.SavePerson(It.IsAny<PersonEntity>(), It.IsAny<CancellationToken>()), Times.Once);
             _searchRequestServiceMock.Verify(m => m.CreateIdentifier(It.IsAny<IdentifierEntity>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
             _searchRequestServiceMock.Verify(m => m.CreateAddress(It.IsAny<AddressEntity>(), It.IsAny<CancellationToken>()), Times.Once);
@@ -362,13 +362,13 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 Agency = new Fams3Adapter.Dynamics.Agency.SSG_Agency { AgencyCode = "FMEP" }
             }));
 
-            _searchRequestServiceMock.Setup(x => x.CancelSearchRequest(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            _searchRequestServiceMock.Setup(x => x.CancelSearchRequest(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<SSG_SearchRequest>(new SSG_SearchRequest()
                 {
                     FileId = "fileId"
                 }));
             SSG_SearchRequest ssgSearchRequest = await _sut.ProcessCancelSearchRequest(_searchRequstOrdered);
-            _searchRequestServiceMock.Verify(m => m.CancelSearchRequest(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
+            _searchRequestServiceMock.Verify(m => m.CancelSearchRequest(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Test]
@@ -379,10 +379,10 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             .Returns(Task.FromResult<SSG_SearchRequest>(new SSG_SearchRequest()
             {
                 SearchRequestId = guid,
-                Agency = new Fams3Adapter.Dynamics.Agency.SSG_Agency { AgencyCode="FMEP"}
+                Agency = new Fams3Adapter.Dynamics.Agency.SSG_Agency { AgencyCode = "FMEP" }
             }));
 
-            _searchRequestServiceMock.Setup(x => x.CancelSearchRequest(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            _searchRequestServiceMock.Setup(x => x.CancelSearchRequest(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Throws(new Exception("fakeException"));
             Assert.ThrowsAsync<Exception>(async () => await _sut.ProcessCancelSearchRequest(_searchRequstOrdered));
         }

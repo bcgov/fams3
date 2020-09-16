@@ -110,9 +110,9 @@ namespace DynamicsAdapter.Web.SearchAgency
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Route("CancelSearchRequest")]
+        [Route("CancelSearchRequest/{requestId}")]
         [OpenApiTag("Agency Search Request API")]
-        public async Task<IActionResult> CancelSearchRequest([FromBody]SearchRequestOrdered searchRequestOrdered)
+        public async Task<IActionResult> CancelSearchRequest(string requestId, [FromBody]SearchRequestOrdered searchRequestOrdered)
         {
             using (LogContext.PushProperty("AgencyCode", $"{searchRequestOrdered?.Person?.Agency?.Code}"))
             using (LogContext.PushProperty("SearchRequestKey", $"{searchRequestOrdered?.SearchRequestKey}"))

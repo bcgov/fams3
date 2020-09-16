@@ -854,7 +854,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
         }
 
         [Test]
-        public async Task Identifiers_changed_ProcessUpdateSearchRequest_should_run_updateIdentifiers_correctly()
+        public async Task Identifiers_changed_ProcessUpdateSearchRequest_should_run_createIdentifiers_correctly()
         {
             _searchRequestServiceMock.Setup(x => x.GetPerson(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<SSG_Person>(new SSG_Person()

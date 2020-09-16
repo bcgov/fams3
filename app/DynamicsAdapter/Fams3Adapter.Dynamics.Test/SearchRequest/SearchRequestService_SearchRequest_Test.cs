@@ -256,7 +256,10 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
 
             _odataClientMock.Setup(x => x.For<SSG_SearchRequest>(null)
                 .Key(searchRequestId)
-                .Set(new Dictionary<string, object>() { { Keys.DYNAMICS_STATUS_CODE_FIELD, SearchRequestStatusCode.AgencyCancelled.Value } })
+                .Set(new Dictionary<string, object>() { 
+                    { Keys.DYNAMICS_STATUS_CODE_FIELD, SearchRequestStatusCode.AgencyCancelled.Value },
+                    { Keys.DYNAMICS_SEARCH_REQUEST_CANCEL_COMMENTS_FIELD, "comments" }
+                })
                 .UpdateEntryAsync(It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<SSG_SearchRequest>(new SSG_SearchRequest()
                 {
@@ -264,7 +267,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
                 }));
 
 
-            var result = await _sut.CancelSearchRequest("fileId", CancellationToken.None);
+            var result = await _sut.CancelSearchRequest("fileId", "comments", CancellationToken.None);
 
             Assert.AreEqual(SearchRequestStatusCode.AgencyCancelled.Value, result.StatusCode);
         }
@@ -277,7 +280,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
                   .FindEntryAsync(It.IsAny<CancellationToken>()))
                   .Returns(Task.FromResult<SSG_SearchRequest>(null));
 
-            var result = await _sut.CancelSearchRequest("fileId", CancellationToken.None);
+            var result = await _sut.CancelSearchRequest("fileId", "comments", CancellationToken.None);
 
             Assert.AreEqual(null, result);
         }
@@ -296,7 +299,8 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
 
             _odataClientMock.Setup(x => x.For<SSG_SearchRequest>(null)
                 .Key(searchRequestId)
-                .Set(new Dictionary<string, object>() { { Keys.DYNAMICS_STATUS_CODE_FIELD, SearchRequestStatusCode.AgencyCancelled.Value } })
+                .Set(new Dictionary<string, object>() { { Keys.DYNAMICS_STATUS_CODE_FIELD, SearchRequestStatusCode.AgencyCancelled.Value },
+                    { Keys.DYNAMICS_SEARCH_REQUEST_CANCEL_COMMENTS_FIELD, "comments" } })
                 .UpdateEntryAsync(It.IsAny<CancellationToken>()))
                 .Throws(WebRequestException.CreateFromStatusCode(
                         System.Net.HttpStatusCode.NotFound,
@@ -304,19 +308,19 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
                         ""
                         ));
 
-            Assert.ThrowsAsync<WebRequestException>(async () => await _sut.CancelSearchRequest("fileId", CancellationToken.None));
+            Assert.ThrowsAsync<WebRequestException>(async () => await _sut.CancelSearchRequest("fileId", "comments", CancellationToken.None));
         }
 
         [Test]
         public async Task update_correct_SearchRequest_should_success()
         {
-             _odataClientMock.Setup(x => x.For<SSG_SearchRequest>(null).Key(It.Is<Guid>(m => m == testId)).Set(It.IsAny<Dictionary<string, object>>())
-                .UpdateEntryAsync(It.IsAny<CancellationToken>()))
-                .Returns(Task.FromResult(new SSG_SearchRequest()
-                {
-                    SearchRequestId = testId
-                })
-                );
+            _odataClientMock.Setup(x => x.For<SSG_SearchRequest>(null).Key(It.Is<Guid>(m => m == testId)).Set(It.IsAny<Dictionary<string, object>>())
+               .UpdateEntryAsync(It.IsAny<CancellationToken>()))
+               .Returns(Task.FromResult(new SSG_SearchRequest()
+               {
+                   SearchRequestId = testId
+               })
+               );
 
             var searchRequest = new SSG_SearchRequest()
             {

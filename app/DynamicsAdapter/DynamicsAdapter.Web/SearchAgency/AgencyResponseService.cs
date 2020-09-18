@@ -1,39 +1,41 @@
 using AutoMapper;
+using DynamicsAdapter.Web.SearchAgency.Models;
 using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.SearchRequest;
+using Fams3Adapter.Dynamics.SearchResponse;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace DynamicsAdapter.Web.SearchAgency
 {
     public interface IAgencyResponseService
     {
+        Task<SSG_SearchRequestResponse> GetSearchRequestResponse(SearchResponseReady responseReady);
     }
 
     public class AgencyResponseService : IAgencyResponseService
     {
         private readonly ILogger<AgencyResponseService> _logger;
-        private readonly ISearchRequestService _searchRequestService;
+        private readonly ISearchResponseService _searchResponseService;
         private readonly IMapper _mapper;
-        private Person _personSought;
-        private SSG_Person _uploadedPerson;
-        private SSG_SearchRequest _uploadedSearchRequest;
-        private CancellationToken _cancellationToken;
-        private static int SEARCH_REQUEST_CANCELLED = 867670009;
-        private static int SEARCH_REQUEST_CLOSED = 2;
 
-        public AgencyResponseService(ISearchRequestService searchRequestService, ILogger<AgencyResponseService> logger, IMapper mapper)
+
+        public AgencyResponseService(ISearchResponseService searchResponseService, ILogger<AgencyResponseService> logger, IMapper mapper)
         {
-            _searchRequestService = searchRequestService;
+            _searchResponseService = searchResponseService;
             _logger = logger;
             _mapper = mapper;
-            _personSought = null;
-            _uploadedPerson = null;
-            _uploadedSearchRequest = null;
         }
 
+        public async Task<SSG_SearchRequestResponse> GetSearchRequestResponse(SearchResponseReady searchResponseReady)
+        {
+            var cts = new CancellationTokenSource();
+
+            SSG_SearchRequestResponse sr = await _searchResponseService.GetSearchResponse(Guid.Parse(searchResponseReady.ResponseGuid), cts.Token);
+            return sr;
+
+        }
     }
-
-
-
 }

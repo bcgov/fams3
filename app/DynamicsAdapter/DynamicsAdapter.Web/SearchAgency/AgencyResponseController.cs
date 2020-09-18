@@ -1,5 +1,5 @@
 ﻿using DynamicsAdapter.Web.SearchAgency.Models;
-
+using Fams3Adapter.Dynamics.SearchResponse;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -41,6 +41,8 @@ namespace DynamicsAdapter.Web.SearchAgency
             {
                 _logger.LogInformation("Get searchResponseReady");
                 _logger.LogDebug(JsonConvert.SerializeObject(searchResponseReady));
+
+                SSG_SearchRequestResponse response = await _agencyResponseService.GetSearchRequestResponse(searchResponseReady);
                 return Ok();
             }
         }

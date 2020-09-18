@@ -17,9 +17,9 @@ namespace DynamicsAdapter.Web.Mapping
         }
 
     }
-       
 
-        public class Date1LabelResolver : IValueResolver<PersonalInfo, DynamicsEntity, string>
+
+    public class Date1LabelResolver : IValueResolver<PersonalInfo, DynamicsEntity, string>
     {
         public string Resolve(PersonalInfo source, DynamicsEntity destination, string destMember, ResolutionContext context)
         {
@@ -43,7 +43,7 @@ namespace DynamicsAdapter.Web.Mapping
         }
     }
 
-  
+
 
     public class PersonalIdentifier_ReferenceDateResolver : IValueResolver<IdentifierEntity, PersonalIdentifier, ICollection<ReferenceDate>>
     {
@@ -66,7 +66,7 @@ namespace DynamicsAdapter.Web.Mapping
     {
         public ICollection<Name> Resolve(SSG_SearchApiRequest source, PersonSearchRequest destination, ICollection<Name> destMember, ResolutionContext context)
         {
-            if (source?.SearchRequest?.ApplicantFirstName != null)
+            if (source?.SearchRequest?.ApplicantFirstName != null || source?.SearchRequest?.ApplicantLastName != null)
                 return new List<Name>() { new Name { FirstName = source?.SearchRequest?.ApplicantFirstName, LastName = source?.SearchRequest?.ApplicantLastName, Owner = OwnerType.Applicant } };
             else
                 return null;

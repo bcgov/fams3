@@ -84,7 +84,11 @@ namespace DynamicsAdapter.Web.Test.Mapping
                     new SSG_SearchapiRequestDataProvider(){AdaptorName="ICBC"},
                     new SSG_SearchapiRequestDataProvider(){AdaptorName="BC Hydro"}
                 },
-                SearchRequest = new SSG_SearchRequest() { FileId = "testFileId" },
+                SearchRequest = new SSG_SearchRequest() { 
+                    FileId = "testFileId", 
+                    ApplicantFirstName="applicantFirstName",
+                    ApplicantLastName="applicantLastName"
+                },
                 SequenceNumber = "123456"
             };
             PersonSearchRequest personSearchRequest = _mapper.Map<PersonSearchRequest>(sSG_SearchApiRequest);
@@ -93,6 +97,28 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(new DateTimeOffset(new DateTime(2002, 2, 2)), personSearchRequest.DateOfBirth);
             Assert.AreEqual(2, personSearchRequest.Identifiers.Count);
             Assert.AreEqual(2, personSearchRequest.DataProviders.Count);
+            Assert.AreEqual(1, personSearchRequest.Names.Count);
+            Assert.AreEqual(OwnerType.Applicant, personSearchRequest.Names.ElementAt(0).Owner);
+            Assert.AreEqual("testFileId_123456", personSearchRequest.SearchRequestKey);
+        }
+
+        [Test]
+        public void SSG_SearchApiRequest_null_applicant_should_map_to_PersonSearchRequest_correctly()
+        {
+            SSG_SearchApiRequest sSG_SearchApiRequest = new SSG_SearchApiRequest()
+            {
+                SearchRequest = new SSG_SearchRequest()
+                {
+                    FileId = "testFileId",
+                    ApplicantFirstName = null,
+                    ApplicantLastName = null
+                },
+                SequenceNumber = "123456"
+            };
+            PersonSearchRequest personSearchRequest = _mapper.Map<PersonSearchRequest>(sSG_SearchApiRequest);
+            Assert.AreEqual(0, personSearchRequest.Identifiers.Count);
+            Assert.AreEqual(0, personSearchRequest.DataProviders.Count);
+            Assert.AreEqual(0, personSearchRequest.Names.Count);
             Assert.AreEqual("testFileId_123456", personSearchRequest.SearchRequestKey);
         }
 

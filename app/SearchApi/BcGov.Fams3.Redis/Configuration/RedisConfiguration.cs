@@ -4,10 +4,10 @@
     /// Represent the Redis configuration
     /// Settings can be overwriten by environment variables
     /// </summary>
-    public class RedisConfiguration
+    public class FRedisConfiguration
     {
 
-        public RedisConfiguration()
+        public FRedisConfiguration()
         {
             this.Host = "localhost";
             this.Port = 6379;

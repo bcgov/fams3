@@ -123,6 +123,20 @@ namespace SearchApi.Web.Notifications
                 return false;
             }
         }
+
+        private async Task<bool> IsWaveCompleted(string searchRequestKey)
+        {
+            try
+            {
+                    return JsonConvert.SerializeObject(await _cacheService.GetRequest(searchRequestKey)).AllPartnerCompleted();
+                
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"Check Data Partner Status Failed. [] for {searchRequestKey}. [{exception.Message}]");
+                return false;
+            }
+        }
         private async void DeleteFromCache(string searchRequestKey, string eventName)
         {
             try

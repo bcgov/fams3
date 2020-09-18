@@ -8,12 +8,17 @@ using Microsoft.Extensions.Caching.Distributed;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Text;
+using StackExchange.Redis.Extensions.Core.Abstractions;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BcGov.Fams3.Redis.Test
 {
     public class CacheServiceTest
     {
         private Mock<IDistributedCache> _distributedCacheMock;
+        private Mock<IRedisCacheClient> _stackRedisCacheClientMock;
+        private Mock<IRedisDatabase> _mockRedisDB;
         private Mock<ILogger<CacheService>> _loggerMock;
         private ICacheService _sut;
         private string _existedRequestKey;
@@ -34,6 +39,8 @@ namespace BcGov.Fams3.Redis.Test
 
             _distributedCacheMock = new Mock<IDistributedCache>();
 
+            _stackRedisCacheClientMock = new Mock<IRedisCacheClient>();
+            _mockRedisDB = new Mock<IRedisDatabase>();
             bytesSearch = Encoding.UTF8.GetBytes(_validRequestString);
             _distributedCacheMock.Setup(x => x.SetAsync(_existedRequestKey,
                 It.IsAny<byte[]>(), It.IsAny<DistributedCacheEntryOptions>(), It.IsAny<CancellationToken>()))
@@ -64,10 +71,15 @@ namespace BcGov.Fams3.Redis.Test
             It.IsAny<CancellationToken>()))
            .Verifiable();
 
+            _stackRedisCacheClientMock.Setup(x => x.Db0).Returns(_mockRedisDB.Object);
 
+            _mockRedisDB.Setup(x => x.AddAsync(It.IsAny<string>(), It.IsAny<object>(), default, default)).Returns(Task.FromResult(true));
+            _mockRedisDB.Setup(x => x.AddAsync(It.IsAny<string>(), It.IsAny<object>(),It.IsAny<TimeSpan>(), default, default)).Returns(Task.FromResult(true));
+            _mockRedisDB.Setup(x => x.ReplaceAsync(It.IsAny<string>(), It.IsAny<object>(), default, default)).Returns(Task.FromResult(true));
+            _mockRedisDB.Setup(x => x.SearchKeysAsync(It.IsAny<string>())).Returns(Task.FromResult(new List<string> { "first","second"}.AsEnumerable()));
             _loggerMock = new Mock<ILogger<CacheService>>();
          
-            _sut = new CacheService(_distributedCacheMock.Object);
+            _sut = new CacheService(_distributedCacheMock.Object, _stackRedisCacheClientMock.Object);
 
         }
 
@@ -154,10 +166,17 @@ namespace BcGov.Fams3.Redis.Test
             string key = "key";
             string data = "data";
             _sut.Save(key, data);
-            _distributedCacheMock.Verify(x => x.SetAsync(key,
-                It.IsAny<byte[]>(),
-                It.IsAny<DistributedCacheEntryOptions>(),
-                It.IsAny<CancellationToken>()), Times.AtLeastOnce());
+            _mockRedisDB.Verify(x => x.AddAsync(It.IsAny<string>(), It.IsAny<object>(), default, default), Times.AtLeastOnce());
+        
+        }
+        [Test]
+        public void with_correct_key_data_update_successfully()
+        {
+            string key = "key";
+            string data = "data";
+            _sut.Update(key, data);
+            _mockRedisDB.Verify(x => x.ReplaceAsync(It.IsAny<string>(), It.IsAny<object>(), default, default), Times.AtLeastOnce());
+
         }
 
         [Test]
@@ -166,10 +185,13 @@ namespace BcGov.Fams3.Redis.Test
             string key = "key";
             string data = "data";
             _sut.Save(key, data, new TimeSpan(0,0,2));
-            _distributedCacheMock.Verify(x => x.SetAsync(key,
-                It.IsAny<byte[]>(),
-                It.IsAny<DistributedCacheEntryOptions>(),
-                It.IsAny<CancellationToken>()), Times.AtLeastOnce());
+            _mockRedisDB.Verify(x => x.AddAsync(It.IsAny<string>(),
+            It.IsAny<object>(),
+            It.IsAny<TimeSpan>(),
+                default, default),
+                Times.AtLeastOnce());
+
+
         }
 
        

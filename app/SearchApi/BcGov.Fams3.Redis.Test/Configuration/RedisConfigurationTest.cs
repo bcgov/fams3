@@ -9,7 +9,7 @@ namespace BcGov.Fams3.Redis.Test.Configuration
         [Test]
         public void With_no_param_should_set_default_redis_config()
         {
-            var sut = new RedisConfiguration();
+            var sut = new FRedisConfiguration();
             Assert.AreEqual("localhost", sut.Host);
             Assert.AreEqual(6379, sut.Port);
         }
@@ -17,7 +17,7 @@ namespace BcGov.Fams3.Redis.Test.Configuration
         [Test]
         public void With_param_should_configure_redis()
         {
-            var sut = new RedisConfiguration()
+            var sut = new FRedisConfiguration()
             {
                 Host = "host",
                 Port = 6666,

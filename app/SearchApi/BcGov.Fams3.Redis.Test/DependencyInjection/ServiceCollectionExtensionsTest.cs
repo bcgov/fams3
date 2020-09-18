@@ -2,6 +2,8 @@
 using BcGov.Fams3.Redis.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
+using StackExchange.Redis.Extensions.Core.Configuration;
+using System.Collections.Generic;
 
 namespace BcGov.Fams3.Redis.Test.DependencyInjection
 {
@@ -19,9 +21,13 @@ namespace BcGov.Fams3.Redis.Test.DependencyInjection
         [Test]
         public void should_register_services()
         {
-            _services.AddCacheService(new RedisConfiguration() { Host = "localhost", Port = 5677, Password = "password" });
+            var redisHost = new List<RedisHost>();
 
-            Assert.IsTrue(_services.Count == 8);
+            redisHost.Add(new RedisHost { Host="localhost", Port=6709 });
+
+            _services.AddCacheService(new RedisConfiguration() { Hosts = redisHost.ToArray(), Password = "password" });
+
+            Assert.IsTrue(_services.Count == 14);
         }
 
     }

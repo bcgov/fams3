@@ -28,6 +28,7 @@ using BcGov.Fams3.Redis.DependencyInjection;
 using BcGov.Fams3.Redis.Configuration;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
+using StackExchange.Redis.Extensions.Core.Configuration;
 
 namespace SearchApi.Web
 {

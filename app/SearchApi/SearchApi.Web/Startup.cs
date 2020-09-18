@@ -28,6 +28,7 @@ using BcGov.Fams3.Redis.DependencyInjection;
 using BcGov.Fams3.Redis.Configuration;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
+using SearchApi.Web.DeepSearch;
 
 namespace SearchApi.Web
 {
@@ -228,9 +229,8 @@ namespace SearchApi.Web
             });
 
             services.AddHostedService<BusHostedService>();
-
+            services.AddTransient<IDeepSearchService, DeepSearchService>();
             services.AddTransient<IDispatcher, Dispatcher>();
-
         }
 
 
@@ -268,7 +268,6 @@ namespace SearchApi.Web
 
             app.Use(async (context, next) =>
             {
-                context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
                 await next();
             });
 

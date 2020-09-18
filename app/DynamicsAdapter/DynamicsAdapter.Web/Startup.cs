@@ -146,7 +146,7 @@ namespace DynamicsAdapter.Web
             services.AddTransient<IDataPartnerService, DataPartnerService>();
             services.AddSingleton<IDuplicateDetectionService, DuplicateDetectionService>();
             services.AddTransient<IAgencyRequestService, AgencyRequestService>();
-
+            services.AddTransient<IAgencyResponseService, AgencyResponseService>();
         }
         /// <summary>
         /// Configures the Quartz Hosted Service.

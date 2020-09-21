@@ -111,7 +111,7 @@ namespace SearchApi.Web.DeepSearch
         {
             try
             {
-                if (eventName.Equals(EventName.Completed) || eventName.Equals(EventName.Rejected))
+                if (eventName.Equals(EventName.Completed) || eventName.Equals(EventName.Rejected) || eventName.Equals(EventName.Failed))
                 {
                     var searchRequest = JsonConvert.SerializeObject(await _cacheService.GetRequest(searchRequestKey)).UpdateDataPartner(dataPartner);
                     await _cacheService.SaveRequest(searchRequest);
@@ -124,31 +124,27 @@ namespace SearchApi.Web.DeepSearch
             }
         }
 
-        private async void DeleteFromCache(string searchRequestKey)
+        private async Task DeleteFromCache(string searchRequestKey)
         {
             try
             {
-                    await _cacheService.DeleteRequest(searchRequestKey);
+                await _cacheService.DeleteRequest(searchRequestKey);
+                var keys = await _cacheService.SearchKeys($"{searchRequestKey}*");
+                foreach (var key in keys)
+                    await _cacheService.Delete(key);
             }
             catch (Exception exception)
             {
                 _logger.LogError($"Delete search request failed. for {searchRequestKey}. [{exception.Message}]");
-
             }
-
         }
 
-
-        private bool ThisIsFinalWave(int currentWave)
-        {
-            return _deepSearchOptions.MaxWaveCount <= currentWave;
-        }
 
         private async Task<IEnumerable<WaveMetaData>> GetWaveDataForSearch(string searchRequestKey)
         {
             List<WaveMetaData> waveMetaDatas = new List<WaveMetaData>();
 
-            var keys = await _cacheService.SearchKeys($"*{searchRequestKey}*");
+            var keys = await _cacheService.SearchKeys($"{searchRequestKey}*");
 
             foreach (var key in keys)
             {
@@ -160,11 +156,11 @@ namespace SearchApi.Web.DeepSearch
 
         public async Task ProcessWaveSearch(string searchRequestKey)
         {
-            if (await CurrentWaveIsCompleted(searchRequestKey))
+            if (!await CurrentWaveIsCompleted(searchRequestKey))
             { 
                 
                 var waveData = await GetWaveDataForSearch(searchRequestKey);
-                if (waveData.Count() <= 0 && waveData.Select(x => x.CurrentWave == _deepSearchOptions.MaxWaveCount).Count() > 1)
+                if (waveData.Any(x => x.CurrentWave == _deepSearchOptions.MaxWaveCount))
                 {
                     PersonSearchAdapterEvent finalizedSearch = new PersonSearchFinalizedEvent()
                     {
@@ -174,13 +170,14 @@ namespace SearchApi.Web.DeepSearch
                         TimeStamp = DateTime.Now
                     };
                     await _searchApiNotifier.NotifyEventAsync(searchRequestKey, finalizedSearch, EventName.Finalized, new CancellationToken());
+                    await DeleteFromCache(searchRequestKey);
                 }
                 else
                 {
                     foreach (var wave in waveData)
                     {
                         foreach (var person in wave.NewParameter)
-                            await _dispatcher.Dispatch(new PersonSearchRequest(person.FirstName, person.LastName, person.DateOfBirth, person.Identifiers, person.Addresses, person.Phones, person.Names, person.RelatedPersons, person.Employments, new List<DataProvider>
+                        await _dispatcher.Dispatch(new PersonSearchRequest(person.FirstName, person.LastName, person.DateOfBirth, person.Identifiers, person.Addresses, person.Phones, person.Names, person.RelatedPersons, person.Employments, new List<DataProvider>
                         {
                             new DataProvider { Completed = false, Name = wave.DataPartner, NumberOfRetries = 1, TimeBetweenRetries = 3 }
                         }, searchRequestKey), Guid.NewGuid());
@@ -188,7 +185,7 @@ namespace SearchApi.Web.DeepSearch
                 }
             
             }
-            throw new NotImplementedException();
+            
         }
     }
 }

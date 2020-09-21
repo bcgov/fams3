@@ -47,7 +47,7 @@ namespace SearchApi.Web.Search
 
         public static string DeepSearchKey(this string searchRequestKey, string datapartner)
         {
-        return string.Format(Keys.DEEP_SEARCH_REDIS_KEY_FORMAT, searchRequestKey, datapartner);
+             return string.Format(Keys.DEEP_SEARCH_REDIS_KEY_FORMAT, searchRequestKey, datapartner);
 
         }
     }

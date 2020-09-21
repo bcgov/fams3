@@ -13,6 +13,12 @@ namespace SearchApi.Web.DeepSearch.Schema
 
         public List<Person> NewParameter { get; set; }
 
+        public int NumberOfRetries { get; set; }
+
+        public int TimeBetweenRetries { get; set; }
+
+
+
 
     }
 

@@ -2,10 +2,8 @@
 using Newtonsoft.Json;
 using NUnit.Framework;
 using SearchApi.Web.Search;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace SearchApi.Web.Test.Search
 {
@@ -57,6 +55,11 @@ namespace SearchApi.Web.Test.Search
         {
             var sr = jsonData.UpdateDataPartner("BCHydro");
             Assert.AreEqual(false, JsonConvert.SerializeObject(sr).AllPartnerCompleted());
+        }
+        [Test]
+        public void should_return_wave_search_key_format()
+        {
+            Assert.AreEqual("0000001".DeepSearchKey("ICBC"), "deepsearch-0000001-ICBC");
         }
     }
 }

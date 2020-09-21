@@ -11,5 +11,7 @@ namespace SearchApi.Core.Test.Fake
         public DateTime TimeStamp { get; set; }
 
         public string Message { get; set; }
+
+        public ProviderProfile ProviderProfile { get; set; }
     }
 }

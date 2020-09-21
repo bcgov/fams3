@@ -131,6 +131,14 @@ namespace BcGov.Fams3.Redis.Test
 
         }
 
+        [Test]
+        public async Task search_request_keys_from_patter()
+        {
+          var items =  await _sut.SearchKeys("data");
+            _mockRedisDB.Verify(x => x.SearchKeysAsync(It.IsAny<string>()), Times.AtLeastOnce());
+            Assert.AreEqual(2, items.Count());
+        }
+
 
 
         [Test]

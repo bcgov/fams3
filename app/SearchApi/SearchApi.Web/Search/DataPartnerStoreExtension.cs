@@ -44,5 +44,11 @@ namespace SearchApi.Web.Search
             else return true; // we can't find request, possibly completed and already deleted from redis. requires refactor
             
         }
+
+        public static string DeepSearchKey(this string searchRequestKey, string datapartner)
+        {
+        return string.Format(Keys.DEEP_SEARCH_REDIS_KEY_FORMAT, searchRequestKey, datapartner);
+
+        }
     }
 }

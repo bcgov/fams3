@@ -9,6 +9,10 @@ using System.Threading.Tasks;
 using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 using BcGov.Fams3.Redis;
 using SearchApi.Web.Search;
+using System.Collections.Generic;
+using SearchApi.Web.DeepSearch.Schema;
+using System.Linq;
+using SearchApi.Web.DeepSearch;
 
 namespace SearchApi.Web.Notifications
 {
@@ -19,11 +23,12 @@ namespace SearchApi.Web.Notifications
         private readonly HttpClient _httpClient;
         private readonly SearchApiOptions _searchApiOptions;
         private readonly DeepSearchOptions _deepSearchOptions;
+        private readonly IDeepSearchService _deepSearchService;
         private readonly ILogger<WebHookNotifierSearchEventStatus> _logger;
         private readonly ICacheService _cacheService;
 
         public WebHookNotifierSearchEventStatus(HttpClient httpClient, IOptions<SearchApiOptions> searchApiOptions, IOptions<DeepSearchOptions> deepSearchOptions,
-            ILogger<WebHookNotifierSearchEventStatus> logger, ICacheService cacheService)
+            ILogger<WebHookNotifierSearchEventStatus> logger, ICacheService cacheService, IDeepSearchService ANywaydeepSearchService)
         {
             _httpClient = httpClient;
             _logger = logger;
@@ -37,11 +42,6 @@ namespace SearchApi.Web.Notifications
            CancellationToken cancellationToken)
         {
             var webHookName = "PersonSearch";
-
-            await UpdateDataPartner(searchRequestKey, eventStatus, eventName);
-            if (await IsCurrentWaveCompleted(searchRequestKey, eventName))
-            {
-
                 foreach (var webHook in _searchApiOptions.WebHooks)
                 {
                     _logger.LogDebug(
@@ -58,9 +58,7 @@ namespace SearchApi.Web.Notifications
 
                     try
                     {
-                        if (eventName == EventName.WaveCompleted)
-                        {
-                            StringContent content;
+                       StringContent content;
                             if (eventName == EventName.Finalized)
                             {
                                 PersonSearchEvent finalizedSearch = new PersonSearchFinalizedEvent()
@@ -96,14 +94,15 @@ namespace SearchApi.Web.Notifications
                             _logger.LogInformation(
                                 $"The webHook {webHookName} notification has executed status {eventName} successfully for {webHook.Name} webHook.");
                         }
-                    }
+                    
                     catch (Exception exception)
                     {
                         _logger.LogError($"The webHook {webHookName} notification failed for status {eventName} for {webHook.Name} webHook. [{exception.Message}]");
                     }
                 }
-                DeleteFromCache(searchRequestKey, eventName);
-            }
+
+                  await   _deepSearchService. UpdateDataPartner(searchRequestKey, eventStatus.ProviderProfile.Name, eventName);
+
 
         }
 
@@ -124,12 +123,12 @@ namespace SearchApi.Web.Notifications
             }
         }
 
-        private async Task<bool> IsWaveCompleted(string searchRequestKey)
+        private async Task<bool> IsCurrentWaveCompleted(string searchRequestKey)
         {
             try
             {
-                    return JsonConvert.SerializeObject(await _cacheService.GetRequest(searchRequestKey)).AllPartnerCompleted();
-                
+                   return JsonConvert.SerializeObject(await _cacheService.GetRequest(searchRequestKey)).AllPartnerCompleted();
+
             }
             catch (Exception exception)
             {
@@ -137,6 +136,20 @@ namespace SearchApi.Web.Notifications
                 return false;
             }
         }
+        private async Task<IEnumerable<WaveMetaData>> GetWaveDataForSearch(string searchRequestKey)
+        {
+            List<WaveMetaData> waveMetaDatas = new List<WaveMetaData>();
+
+             var  keys = await  _cacheService.SearchKeys($"*{searchRequestKey}*");
+
+            foreach( var key in keys)
+            {
+                waveMetaDatas.Add(JsonConvert.DeserializeObject<WaveMetaData>(await _cacheService.Get(key)));
+            }
+
+            return waveMetaDatas.AsEnumerable();
+        }
+
         private async void DeleteFromCache(string searchRequestKey, string eventName)
         {
             try

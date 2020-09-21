@@ -1,12 +1,19 @@
 ﻿using BcGov.Fams3.Redis;
 using BcGov.Fams3.SearchApi.Contracts.Person;
+using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using SearchApi.Web.Configuration;
 using SearchApi.Web.Controllers;
 using SearchApi.Web.DeepSearch.Schema;
+using SearchApi.Web.Messaging;
+using SearchApi.Web.Notifications;
+using SearchApi.Web.Search;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SearchApi.Web.DeepSearch
@@ -16,18 +23,27 @@ namespace SearchApi.Web.DeepSearch
    
         Task SaveRequest(PersonSearchRequest person, string dataPartner);
 
+        Task UpdateDataPartner(string searchRequestKey, string dataPartner, string eventName);
+
+
+        Task ProcessWaveSearch(string searchRequestKey);
+
     }
 
     public class DeepSearchService : IDeepSearchService
     {
         private readonly ICacheService _cacheService;
         private readonly ILogger<DeepSearchService> _logger;
+        private readonly IDispatcher _dispatcher;
         private readonly DeepSearchOptions _deepSearchOptions;
-        public DeepSearchService(ICacheService cacheService, ILogger<DeepSearchService> logger, IOptions<DeepSearchOptions> deepSearchOptions)
+        private readonly ISearchApiNotifier<PersonSearchAdapterEvent> _searchApiNotifier;
+        public DeepSearchService(ICacheService cacheService, ILogger<DeepSearchService> logger, IOptions<DeepSearchOptions> deepSearchOptions, ISearchApiNotifier<PersonSearchAdapterEvent> searchApiNotifier, IDispatcher dispatcher)
         {
             _cacheService = cacheService;
             _logger = logger;
             _deepSearchOptions = deepSearchOptions.Value;
+            _searchApiNotifier = searchApiNotifier;
+            _dispatcher = dispatcher;
         }
 
 
@@ -36,7 +52,7 @@ namespace SearchApi.Web.DeepSearch
         public async Task SaveRequest(PersonSearchRequest person, string dataPartner)
         {
             _logger.Log(LogLevel.Debug, $"Check if request {person.SearchRequestKey} has an active wave on-going");
-            string cacheKey = string.Format(Keys.DEEP_SEARCH_REDIS_KEY_FORMAT, person.SearchRequestKey, dataPartner);
+            string cacheKey = person.SearchRequestKey.DeepSearchKey(dataPartner);
             var waveMetaData = await _cacheService.Get(cacheKey);
 
             if (string.IsNullOrEmpty(waveMetaData))
@@ -76,6 +92,103 @@ namespace SearchApi.Web.DeepSearch
             }
 
            
+        }
+
+        private async Task<bool> CurrentWaveIsCompleted(string searchRequestKey)
+        {
+            try
+            {
+                return JsonConvert.SerializeObject(await _cacheService.GetRequest(searchRequestKey)).AllPartnerCompleted();
+
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"Check Data Partner Status Failed. [] for {searchRequestKey}. [{exception.Message}]");
+                return false;
+            }
+        }
+        public async Task UpdateDataPartner(string searchRequestKey, string dataPartner, string eventName)
+        {
+            try
+            {
+                if (eventName.Equals(EventName.Completed) || eventName.Equals(EventName.Rejected))
+                {
+                    var searchRequest = JsonConvert.SerializeObject(await _cacheService.GetRequest(searchRequestKey)).UpdateDataPartner(dataPartner);
+                    await _cacheService.SaveRequest(searchRequest);
+                }
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"Update Data Partner Status Failed. [{eventName}] for {searchRequestKey}. [{exception.Message}]");
+
+            }
+        }
+
+        private async void DeleteFromCache(string searchRequestKey)
+        {
+            try
+            {
+                    await _cacheService.DeleteRequest(searchRequestKey);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"Delete search request failed. for {searchRequestKey}. [{exception.Message}]");
+
+            }
+
+        }
+
+
+        private bool ThisIsFinalWave(int currentWave)
+        {
+            return _deepSearchOptions.MaxWaveCount <= currentWave;
+        }
+
+        private async Task<IEnumerable<WaveMetaData>> GetWaveDataForSearch(string searchRequestKey)
+        {
+            List<WaveMetaData> waveMetaDatas = new List<WaveMetaData>();
+
+            var keys = await _cacheService.SearchKeys($"*{searchRequestKey}*");
+
+            foreach (var key in keys)
+            {
+                waveMetaDatas.Add(JsonConvert.DeserializeObject<WaveMetaData>(await _cacheService.Get(key)));
+            }
+
+            return waveMetaDatas.AsEnumerable();
+        }
+
+        public async Task ProcessWaveSearch(string searchRequestKey)
+        {
+            if (await CurrentWaveIsCompleted(searchRequestKey))
+            { 
+                
+                var waveData = await GetWaveDataForSearch(searchRequestKey);
+                if (waveData.Count() <= 0 && waveData.Select(x => x.CurrentWave == _deepSearchOptions.MaxWaveCount).Count() > 1)
+                {
+                    PersonSearchAdapterEvent finalizedSearch = new PersonSearchFinalizedEvent()
+                    {
+                        SearchRequestKey = searchRequestKey,
+                        Message = "Search Request Finalized",
+                        SearchRequestId = Guid.NewGuid(),
+                        TimeStamp = DateTime.Now
+                    };
+                    await _searchApiNotifier.NotifyEventAsync(searchRequestKey, finalizedSearch, EventName.Finalized, new CancellationToken());
+                }
+                else
+                {
+                    foreach (var wave in waveData)
+                    {
+                        foreach (var person in wave.NewParameter)
+                            await _dispatcher.Dispatch(new PersonSearchRequest(person.FirstName, person.LastName, person.DateOfBirth, person.Identifiers, person.Addresses, person.Phones, person.Names, person.RelatedPersons, person.Employments, new List<DataProvider>
+                        {
+                            new DataProvider { Completed = false, Name = wave.DataPartner, NumberOfRetries = 1, TimeBetweenRetries = 3 }
+                        }, searchRequestKey), Guid.NewGuid());
+                    }
+                }
+            
+            }
+            throw new NotImplementedException();
         }
     }
 }

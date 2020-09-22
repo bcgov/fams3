@@ -52,6 +52,15 @@ namespace DynamicsAdapter.Web.Mapping
         }
     }
 
+    public class AddressTypeResponseConverter : IValueConverter<int?, string>
+    {
+        public string Convert(int? sourceMember, ResolutionContext context)
+        {
+            return sourceMember == null ? null :
+                (string)(AddressType.AddressTypeDictionary.FirstOrDefault(m => ((LocationType)m.Value).Value == (int)sourceMember).Key);
+        }
+    }
+
     public static class AddressType
     {
         internal static readonly IDictionary<string, LocationType> AddressTypeDictionary = new Dictionary<string, LocationType>

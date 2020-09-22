@@ -3,7 +3,7 @@
 namespace BcGov.Fams3.SearchApi.Contracts.Person
 {
     public class Address : PersonalInfo
-    { 
+    {
         [Description("The type of address")]
         public string Type { get; set; }
 
@@ -30,5 +30,8 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
 
         [Description("The owner of the address e.g. Applicant, Person Sought, e.t.c")]
         public OwnerType Owner { get; set; }
+
+        [Description("The incareration status of this address")]
+        public string IncarcerationStatus { get; set; }
     }
 }

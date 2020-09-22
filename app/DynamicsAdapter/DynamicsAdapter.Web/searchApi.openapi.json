@@ -635,6 +635,10 @@
                   "$ref": "#/definitions/OwnerType"
                 }
               ]
+            },
+            "incarcerationStatus": {
+              "type": "string",
+              "description": "The incareration status of this address"
             }
           }
         }

@@ -253,6 +253,51 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(1, ids[0].ReferenceDates.Count);
         }
 
+        [Test]
+        public void SSG_Address_should_map_to_Person_Address_correctly()
+        {
+            SSG_SearchRequestResponse response = new SSG_SearchRequestResponse()
+            {
+                SSG_SearchRequests = new List<SSG_SearchRequest>
+                {
+                    new SSG_SearchRequest {
+                        Agency = new SSG_Agency { AgencyCode = "FMEP" },
+                    }
+                }.ToArray(),
+                SSG_Persons = new List<SSG_Person>
+                {
+                    new SSG_Person {
+                        FirstName = "personFirstName",
+                    }
+                }.ToArray(),
+                SSG_Addresses = new List<SSG_Address>
+                {
+                    new SSG_Address {
+                        AddressLine1="addressline1",
+                        AddressLine2="addressline2",
+                        PostalCode="postalCode",
+                        City="city",
+                        Date1Label="label",
+                        Date1=new DateTime(2000,1,1),
+                        ResponseComments = "addressComments",
+                        CountryText="canada",
+                        CountrySubdivisionText="bc",
+                        Category=LocationType.Business.Value,
+                        IncarcerationStatus="incarceration"
+                    }
+                }.ToArray()
+            };
+            Person person = _mapper.Map<Person>(response);
+            List<Address> addrs = person.Addresses.ToList();
+            Assert.AreEqual("addressline1", addrs[0].AddressLine1);
+            Assert.AreEqual("addressComments", addrs[0].ResponseComments);
+            Assert.AreEqual("city", addrs[0].City);
+            Assert.AreEqual("canada", addrs[0].CountryRegion);
+            Assert.AreEqual("bc", addrs[0].StateProvince);
+            Assert.AreEqual("business", addrs[0].Type);
+            Assert.AreEqual("incarceration", addrs[0].IncarcerationStatus);
+            Assert.AreEqual(1, addrs[0].ReferenceDates.Count);
+        }
 
         //[Test]
         //public void Agent_invliad_request_ID_SearchRequestOrdered_should_map_normally()

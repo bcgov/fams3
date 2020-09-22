@@ -125,7 +125,11 @@ namespace DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.City, opt => opt.MapFrom(src => src.City))
                  .ForMember(dest => dest.Category, opt => opt.ConvertUsing(new AddressTypeConverter(), src => src.Type))
                  .ForMember(dest => dest.PostalCode, opt => opt.MapFrom(src => src.ZipPostalCode))
-                 .IncludeBase<PersonalInfo, DynamicsEntity>();
+                 .ForMember(dest => dest.IncarcerationStatus, opt => opt.MapFrom(src => src.IncarcerationStatus))
+                 .IncludeBase<PersonalInfo, DynamicsEntity>()
+                 .ReverseMap()
+                    .ForMember(dest => dest.Owner, opt => opt.Ignore())
+                    .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new AddressTypeResponseConverter(), src => src.Category));
 
             CreateMap<Employment, EmploymentEntity>()
               .ForMember(dest => dest.AddressLine1, opt => opt.MapFrom(src => (src.Employer == null) ? string.Empty : (src.Employer.Address == null) ? string.Empty : src.Employer.Address.AddressLine1))
@@ -346,6 +350,7 @@ namespace DynamicsAdapter.Web.Mapping
             CreateMap<SSG_SearchRequestResponse, Person>()
                .ForMember(dest => dest.Names, opt => opt.MapFrom(src => src.SSG_Aliases))
                .ForMember(dest => dest.Identifiers, opt => opt.MapFrom(src => src.SSG_Identifiers))
+               .ForMember(dest => dest.Addresses, opt => opt.MapFrom(src => src.SSG_Addresses))
                .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new PersonSoughtRoleConverter(), src => src.SSG_SearchRequests[0].PersonSoughtRole))
                .ForMember(dest => dest.Agency, opt => opt.MapFrom(src => src.SSG_SearchRequests[0]))
                .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.SSG_Persons[0].FirstName))

@@ -44,6 +44,20 @@ namespace DynamicsAdapter.Web.Mapping
         }
     }
 
+    public static class AddressType
+    {
+        internal static readonly IDictionary<string, LocationType> AddressTypeDictionary = new Dictionary<string, LocationType>
+        {
+            { "mailing", LocationType.Mailing },
+            { "residence", LocationType.Residence },
+            { "business", LocationType.Business },
+            { "other", LocationType.Other },
+            { "blank", LocationType.Other },
+            { "home", LocationType.Residence },
+            { "unknown", LocationType.Other }
+        };
+    }
+
     public class AddressTypeConverter : IValueConverter<string, int?>
     {
         public int? Convert(string sourceMember, ResolutionContext context)
@@ -61,19 +75,7 @@ namespace DynamicsAdapter.Web.Mapping
         }
     }
 
-    public static class AddressType
-    {
-        internal static readonly IDictionary<string, LocationType> AddressTypeDictionary = new Dictionary<string, LocationType>
-        {
-            { "mailing", LocationType.Mailing },
-            { "residence", LocationType.Residence },
-            { "business", LocationType.Business },
-            { "other", LocationType.Other },
-            { "blank", LocationType.Other },
-            { "home", LocationType.Residence },
-            { "unknown", LocationType.Other }
-        };
-    }
+
 
     public class NameCategoryConverter : IValueConverter<string, int?>
     {
@@ -90,27 +92,44 @@ namespace DynamicsAdapter.Web.Mapping
         }
     }
 
+    public static class PhoneType
+    {
+        internal static readonly IDictionary<string, int?> PhoneTypeDictionary = new Dictionary<string, int?>
+        {
+            { "cell", TelephoneNumberType.Cell.Value },
+            { "home", TelephoneNumberType.Home.Value },
+            { "work", TelephoneNumberType.Work.Value },
+            { "homecell", TelephoneNumberType.Home.Value },
+            { "workcell", TelephoneNumberType.Work.Value },
+            { "business", TelephoneNumberType.Work.Value },
+            { "unknown", TelephoneNumberType.Other.Value },
+            { "other", TelephoneNumberType.Other.Value},
+            { "fax", TelephoneNumberType.Fax.Value},
+            { "blank", null}
+        };
+    }
+
     public class PhoneTypeConverter : IValueConverter<string, int?>
     {
         public int? Convert(string sourceMember, ResolutionContext context)
         {
-            return
-                sourceMember?.ToLower() switch
-                {
-                    "cell" => TelephoneNumberType.Cell.Value,
-                    "home" => TelephoneNumberType.Home.Value,
-                    "work" => TelephoneNumberType.Work.Value,
-                    "homecell" => TelephoneNumberType.Home.Value,
-                    "workcell" => TelephoneNumberType.Work.Value,
-                    "business" => TelephoneNumberType.Work.Value,
-                    "unknown" => TelephoneNumberType.Other.Value,
-                    "other" => TelephoneNumberType.Other.Value,
-                    "fax" => TelephoneNumberType.Fax.Value,
-                    "blank" => (int?)null,
-                    _ => TelephoneNumberType.Other.Value
-                };
+            if (sourceMember == null) return null;
+            if (PhoneType.PhoneTypeDictionary.ContainsKey(sourceMember.ToLower()))
+                return (int?)(PhoneType.PhoneTypeDictionary[sourceMember.ToLower()].Value);
+            else
+                return TelephoneNumberType.Other.Value;
         }
     }
+
+    public class PhoneTypeResponseConverter : IValueConverter<int?, string>
+    {
+        public string Convert(int? sourceMember, ResolutionContext context)
+        {
+            return sourceMember == null ? null :
+                (string)(PhoneType.PhoneTypeDictionary.FirstOrDefault(m => m.Value == (int)sourceMember).Key);
+        }
+    }
+
     public class IncaceratedConverter : IValueConverter<string, int?>
     {
         public int? Convert(string sourceMember, ResolutionContext context)
@@ -198,12 +217,12 @@ namespace DynamicsAdapter.Web.Mapping
         public string Convert(IEnumerable<Person> sourceMember, ResolutionContext context)
         {
             var strbuilder = new StringBuilder();
-            if (sourceMember==null)
+            if (sourceMember == null)
                 return $"Auto search processing completed successfully. 0 Matched Persons found.";
 
             strbuilder.Append($"Auto search processing completed successfully. {sourceMember.Count()} Matched Persons found.\n");
             int i = 1;
-            foreach(Person p in sourceMember)
+            foreach (Person p in sourceMember)
             {
                 strbuilder.Append($"For Matched Person {i} : ");
                 strbuilder.Append($"{(p.Identifiers == null ? 0 : p.Identifiers.Count)} identifier(s) found.  ");
@@ -240,9 +259,9 @@ namespace DynamicsAdapter.Web.Mapping
         {
             if (!string.IsNullOrEmpty(sourceMember))
             {
-                 int? source = Enumeration.GetAll<IncomeAssistanceStatusType>().FirstOrDefault(m => m.Name.Equals(sourceMember, StringComparison.OrdinalIgnoreCase))?.Value;
+                int? source = Enumeration.GetAll<IncomeAssistanceStatusType>().FirstOrDefault(m => m.Name.Equals(sourceMember, StringComparison.OrdinalIgnoreCase))?.Value;
 
-              return  (source == null) ? IncomeAssistanceStatusType.Unknown.Value : source;
+                return (source == null) ? IncomeAssistanceStatusType.Unknown.Value : source;
 
             }
             else

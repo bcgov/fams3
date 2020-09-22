@@ -169,7 +169,10 @@ namespace DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
                  .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
                  .ForMember(dest => dest.TelephoneNumberType, opt => opt.ConvertUsing(new PhoneTypeConverter(), src => src.Type))
-               .IncludeBase<PersonalInfo, DynamicsEntity>();
+               .IncludeBase<PersonalInfo, DynamicsEntity>()
+               .ReverseMap()
+                    .ForMember(dest => dest.Owner, opt => opt.Ignore())
+                    .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new PhoneTypeResponseConverter(), src => src.TelephoneNumberType));
 
             CreateMap<Name, AliasEntity>()
                  .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))

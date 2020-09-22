@@ -182,121 +182,87 @@ namespace DynamicsAdapter.Web.Test.Mapping
         [Test]
         public void SSG_Aliase_should_map_to_Person_Name_correctly()
         {
-            SSG_SearchRequestResponse response = new SSG_SearchRequestResponse()
+            var alias = new SSG_Aliase
             {
-                SSG_SearchRequests = new List<SSG_SearchRequest>
-                {
-                    new SSG_SearchRequest {
-                        Agency = new SSG_Agency { AgencyCode = "FMEP" },
-                    }
-                }.ToArray(),
-                SSG_Persons = new List<SSG_Person>
-                {
-                    new SSG_Person {
-                        FirstName = "personFirstName",
-                    }
-                }.ToArray(),
-                SSG_Aliases = new List<SSG_Aliase>
-                {
-                    new SSG_Aliase {
-                        FirstName = "aliasFirstName",
-                        Date1=new DateTime(2000,1,1),
-                        Date1Label="label",
-                        ResponseComments = "aliasComments",
-                        DateOfBirth=new DateTime(2004,1,1)
-                    }
-                }.ToArray()
+                FirstName = "aliasFirstName",
+                Date1 = new DateTime(2000, 1, 1),
+                Date1Label = "label",
+                ResponseComments = "aliasComments",
+                DateOfBirth = new DateTime(2004, 1, 1)
             };
-            Person person = _mapper.Map<Person>(response);
-            List<Name> names = person.Names.ToList();
-            Assert.AreEqual(1, names.Count);
-            Assert.AreEqual("aliasFirstName", names[0].FirstName);
-            Assert.AreEqual(new DateTimeOffset(new DateTime(2004, 1, 1)), names[0].DateOfBirth);
+
+            Name name = _mapper.Map<Name>(alias);
+            Assert.AreEqual("aliasFirstName", name.FirstName);
+            Assert.AreEqual(new DateTimeOffset(new DateTime(2004, 1, 1)), name.DateOfBirth);
         }
 
         [Test]
         public void SSG_Identifier_should_map_to_Person_Identifier_correctly()
         {
-            SSG_SearchRequestResponse response = new SSG_SearchRequestResponse()
+            var id = new SSG_Identifier
             {
-                SSG_SearchRequests = new List<SSG_SearchRequest>
-                {
-                    new SSG_SearchRequest {
-                        Agency = new SSG_Agency { AgencyCode = "FMEP" },
-                    }
-                }.ToArray(),
-                SSG_Persons = new List<SSG_Person>
-                {
-                    new SSG_Person {
-                        FirstName = "personFirstName",
-                    }
-                }.ToArray(),
-                SSG_Identifiers = new List<SSG_Identifier>
-                {
-                    new SSG_Identifier {
-                        Identification = "1234455",
-                        IssuedBy="ICBC",
-                        Date1Label="label",
-                        Date1=new DateTime(2000,1,1),
-                        ResponseComments = "identifierComments",
-                        IdentifierType = IdentificationType.BCDriverLicense.Value,
-                    }
-                }.ToArray()
+                Identification = "1234455",
+                IssuedBy = "ICBC",
+                Date1Label = "label",
+                Date1 = new DateTime(2000, 1, 1),
+                ResponseComments = "identifierComments",
+                IdentifierType = IdentificationType.BCDriverLicense.Value,
             };
-            Person person = _mapper.Map<Person>(response);
-            List<PersonalIdentifier> ids = person.Identifiers.ToList();
-            Assert.AreEqual(1, ids.Count);
-            Assert.AreEqual("ICBC", ids[0].IssuedBy);
-            Assert.AreEqual("1234455", ids[0].Value);
-            Assert.AreEqual("identifierComments", ids[0].ResponseComments);
-            Assert.AreEqual(PersonalIdentifierType.BCDriverLicense, ids[0].Type);
-            Assert.AreEqual(1, ids[0].ReferenceDates.Count);
+
+            PersonalIdentifier personalIdentifier = _mapper.Map<PersonalIdentifier>(id);
+            Assert.AreEqual("ICBC", personalIdentifier.IssuedBy);
+            Assert.AreEqual("1234455", personalIdentifier.Value);
+            Assert.AreEqual("identifierComments", personalIdentifier.ResponseComments);
+            Assert.AreEqual(PersonalIdentifierType.BCDriverLicense, personalIdentifier.Type);
+            Assert.AreEqual(1, personalIdentifier.ReferenceDates.Count);
         }
 
         [Test]
         public void SSG_Address_should_map_to_Person_Address_correctly()
         {
-            SSG_SearchRequestResponse response = new SSG_SearchRequestResponse()
+            var address = new SSG_Address
             {
-                SSG_SearchRequests = new List<SSG_SearchRequest>
-                {
-                    new SSG_SearchRequest {
-                        Agency = new SSG_Agency { AgencyCode = "FMEP" },
-                    }
-                }.ToArray(),
-                SSG_Persons = new List<SSG_Person>
-                {
-                    new SSG_Person {
-                        FirstName = "personFirstName",
-                    }
-                }.ToArray(),
-                SSG_Addresses = new List<SSG_Address>
-                {
-                    new SSG_Address {
-                        AddressLine1="addressline1",
-                        AddressLine2="addressline2",
-                        PostalCode="postalCode",
-                        City="city",
-                        Date1Label="label",
-                        Date1=new DateTime(2000,1,1),
-                        ResponseComments = "addressComments",
-                        CountryText="canada",
-                        CountrySubdivisionText="bc",
-                        Category=LocationType.Business.Value,
-                        IncarcerationStatus="incarceration"
-                    }
-                }.ToArray()
+                AddressLine1 = "addressline1",
+                AddressLine2 = "addressline2",
+                PostalCode = "postalCode",
+                City = "city",
+                Date1Label = "label",
+                Date1 = new DateTime(2000, 1, 1),
+                ResponseComments = "addressComments",
+                CountryText = "canada",
+                CountrySubdivisionText = "bc",
+                Category = LocationType.Business.Value,
+                IncarcerationStatus = "incarceration"
             };
-            Person person = _mapper.Map<Person>(response);
-            List<Address> addrs = person.Addresses.ToList();
-            Assert.AreEqual("addressline1", addrs[0].AddressLine1);
-            Assert.AreEqual("addressComments", addrs[0].ResponseComments);
-            Assert.AreEqual("city", addrs[0].City);
-            Assert.AreEqual("canada", addrs[0].CountryRegion);
-            Assert.AreEqual("bc", addrs[0].StateProvince);
-            Assert.AreEqual("business", addrs[0].Type);
-            Assert.AreEqual("incarceration", addrs[0].IncarcerationStatus);
-            Assert.AreEqual(1, addrs[0].ReferenceDates.Count);
+
+            Address addr = _mapper.Map<Address>(address);
+            Assert.AreEqual("addressline1", addr.AddressLine1);
+            Assert.AreEqual("addressComments", addr.ResponseComments);
+            Assert.AreEqual("city", addr.City);
+            Assert.AreEqual("canada", addr.CountryRegion);
+            Assert.AreEqual("bc", addr.StateProvince);
+            Assert.AreEqual("business", addr.Type);
+            Assert.AreEqual("incarceration", addr.IncarcerationStatus);
+            Assert.AreEqual(1, addr.ReferenceDates.Count);
+        }
+
+        [Test]
+        public void SSG_PhoneNumber_should_map_to_Person_Phone_correctly()
+        {
+            SSG_PhoneNumber phoneNumber = new SSG_PhoneNumber
+            {
+                TelePhoneNumber = "123456",
+                PhoneExtension = "123",
+                TelephoneNumberType = TelephoneNumberType.Home.Value,
+                ResponseComments = "responseComments"
+            };
+
+            Phone phone = _mapper.Map<Phone>(phoneNumber);
+
+            Assert.AreEqual("123456", phone.PhoneNumber);
+            Assert.AreEqual("123", phone.Extension);
+            Assert.AreEqual("home", phone.Type);
+            Assert.AreEqual("responseComments", phone.ResponseComments);
         }
 
         //[Test]

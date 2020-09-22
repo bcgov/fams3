@@ -98,6 +98,8 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Person person = _mapper.Map<Person>(response);
             Assert.AreEqual(1, person.Names.Count);
             Assert.AreEqual(1, person.Identifiers.Count);
+            Assert.AreEqual(1, person.Addresses.Count);
+            Assert.AreEqual(1, person.Phones.Count);
         }
 
         [Test]
@@ -263,6 +265,57 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual("123", phone.Extension);
             Assert.AreEqual("home", phone.Type);
             Assert.AreEqual("responseComments", phone.ResponseComments);
+        }
+
+        [Test]
+        public void SSG_Employment_should_map_to_Employment_correctly()
+        {
+            SSG_Employment employment = new SSG_Employment
+            {
+                EmploymentType = EmploymentRecordType.IncomeAssistance.Value,
+                BusinessName = "legalBizName",
+                DBAName = "dbaName",
+                PrimaryPhoneNumber = "primaryPhone",
+                PrimaryPhoneExtension = "primaryExt",
+                PrimaryFax = "primaryFax",
+                Website = "www.website.com",
+                AddressLine1 = "employmentAddress1",
+                AddressLine2 = "employmentAddress2",
+                City = "employmentCity",
+                ResponseComments = "postalCode",
+                CountryText = "country",
+                CountrySubdivisionText = "province",
+                EmploymentStatus = EmploymentStatusType.NotEmployed.Value,
+                SelfEmployComRegistrationNo = "selfComNo",
+                SelfEmployComType = SelfEmploymentCompanyType.ExtraprovincialNonShareCorp.Value,
+                Occupation = "occupation",
+                SelfEmployComRole = SelfEmploymentCompanyRoleType.Officer.Value,
+                SelfEmployPercentOfShare = 50,
+                IncomeAssistanceStatusOption = IncomeAssistanceStatusType.Closed.Value,
+                IncomeAssistanceDesc = "income assistance description",
+                ContactPerson = "contact person",
+                PrimaryContactPhone = "primaryContactPhoneNumber",
+                PrimaryContactPhoneExt = "primaryContactExt",
+                SSG_EmploymentContacts = new List<SSG_EmploymentContact>
+                {
+                    new SSG_EmploymentContact
+                    {
+                        ContactName="contactName",
+                        Description="description",
+                        PhoneNumber="phone",
+                        PhoneExtension="ext",
+                        FaxNumber="faxNumber",
+                        PhoneType=TelephoneNumberType.Cell.Value
+                    }
+                }.ToArray()
+            };
+
+            Employment e = _mapper.Map<Employment>(employment);
+
+            //Assert.AreEqual("123456", phone.PhoneNumber);
+            //Assert.AreEqual("123", phone.Extension);
+            //Assert.AreEqual("home", phone.Type);
+            //Assert.AreEqual("responseComments", phone.ResponseComments);
         }
 
         //[Test]

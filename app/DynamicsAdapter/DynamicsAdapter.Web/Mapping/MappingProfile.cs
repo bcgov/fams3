@@ -354,6 +354,7 @@ namespace DynamicsAdapter.Web.Mapping
                .ForMember(dest => dest.Names, opt => opt.MapFrom(src => src.SSG_Aliases))
                .ForMember(dest => dest.Identifiers, opt => opt.MapFrom(src => src.SSG_Identifiers))
                .ForMember(dest => dest.Addresses, opt => opt.MapFrom(src => src.SSG_Addresses))
+               .ForMember(dest => dest.Phones, opt => opt.MapFrom(src => src.SSG_PhoneNumbers))
                .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new PersonSoughtRoleConverter(), src => src.SSG_SearchRequests[0].PersonSoughtRole))
                .ForMember(dest => dest.Agency, opt => opt.MapFrom(src => src.SSG_SearchRequests[0]))
                .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.SSG_Persons[0].FirstName))

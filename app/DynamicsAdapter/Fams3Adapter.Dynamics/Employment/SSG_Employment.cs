@@ -41,6 +41,7 @@ namespace Fams3Adapter.Dynamics.Employment
         public string IncomeAssistanceStatus { get; set; }
 
         [JsonProperty("ssg_recordtype")]
+        [UpdateIgnore]
         public int EmploymentType { get; set; } = EmploymentRecordType.Employment.Value;
 
         [JsonProperty("ssg_employmentowner")]
@@ -64,6 +65,18 @@ namespace Fams3Adapter.Dynamics.Employment
         [JsonProperty("ssg_employerlegalname")]
         public string BusinessName { get; set; }
 
+        [JsonProperty("ssg_employerdbaname")]
+        public string DBAName { get; set; }
+
+        [JsonProperty("ssg_primaryphonenumber")]
+        public string PrimaryPhoneNumber { get; set; }
+
+        [JsonProperty("ssg_primaryphoneextension")]
+        public string PrimaryPhoneExtension { get; set; }
+
+        [JsonProperty("ssg_primaryfax")]
+        public string PrimaryFax { get; set; }
+
         [JsonProperty("ssg_address")]
         public string AddressLine1 { get; set; }
 
@@ -81,6 +94,38 @@ namespace Fams3Adapter.Dynamics.Employment
         [JsonProperty("ssg_createdbyagency")]
         [UpdateIgnore]
         public bool IsCreatedByAgency { get; set; }
+
+        [JsonProperty("ssg_employmentstatus")]
+        [UpdateIgnore]
+        public int? EmploymentStatus { get; set; }
+
+        [JsonProperty("ssg_selfemploymentcompanyregistrationnumber")]
+        public string SelfEmployComRegistrationNo { get; set; }
+
+        [JsonProperty("ssg_selfemploymentcompanytype")]
+        [UpdateIgnore]
+        public int? SelfEmployComType { get; set; }
+
+        [JsonProperty("selfemploymentcompanyrole")]
+        [UpdateIgnore]
+        public int? SelfEmployComRole { get; set; }
+
+        [JsonProperty("ssg_selfemploymentpercentageofshares")]
+        [UpdateIgnore]
+        public int? SelfEmployPercentOfShare { get; set; }
+
+        [JsonProperty("incomeassistanceclass")]
+        [UpdateIgnore]
+        public int? IncomeAssistanceCls { get; set; }
+
+        [JsonProperty("ssg_incomeassistancedescription")]
+        public string IncomeAssistanceDesc { get; set; }
+
+        [JsonProperty("ssg_primarycontactphonenumber")]
+        public string PrimaryContactPhone { get; set; }
+
+        [JsonProperty("ssg_primarycontactphoneextension")]
+        public string PrimaryContactPhoneExt { get; set; }
     }
 
     public class SSG_Employment : EmploymentEntity

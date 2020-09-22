@@ -17,7 +17,14 @@ namespace Fams3Adapter.Dynamics.Types
             "ssg_relationshipcategorycodes",
             "ssg_gendertypes",
             "ssg_employmentrecordtypes",
-            "ssg_incomeassistancestatus"
+            "ssg_incomeassistancestatus",
+            "ssg_payororreceiveroptions",
+            "ssg_requestpriorities",
+            "ssg_personcategorycodes",
+            "ssg_employmentstatus",
+            "ssg_selfemploymentcompanytype",
+            "ssg_selfemploymentcompanyrole",
+            "ssg_famsincomeassistanceclasses"
         };
 
 

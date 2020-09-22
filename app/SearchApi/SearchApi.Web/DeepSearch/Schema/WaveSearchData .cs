@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SearchApi.Web.DeepSearch.Schema
 {
-    public class WaveMetaData
+    public class WaveSearchData 
     {
         public string SearchRequestKey { get; set; }
         public int CurrentWave { get; set; }

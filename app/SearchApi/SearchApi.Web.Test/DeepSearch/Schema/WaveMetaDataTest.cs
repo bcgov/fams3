@@ -13,7 +13,7 @@ namespace SearchApi.Web.Test.DeepSearch.Schema
         public void should_have_current_wave_maximum_2()
         {
 
-            var wave = new WaveMetaData
+            var wave = new WaveSearchData
             {
                  CurrentWave = 2
             };
@@ -26,7 +26,7 @@ namespace SearchApi.Web.Test.DeepSearch.Schema
         public void should_have_all_parameter()
         {
 
-            var wave = new WaveMetaData
+            var wave = new WaveSearchData
             {
                 CurrentWave = 2,
                 AllParameter = new List<Person>() { new Person() }

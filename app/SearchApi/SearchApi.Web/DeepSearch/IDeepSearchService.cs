@@ -58,7 +58,7 @@ namespace SearchApi.Web.DeepSearch
             if (string.IsNullOrEmpty(waveMetaData))
             {
                 _logger.Log(LogLevel.Debug, $"{person.SearchRequestKey} does not have active wave");
-                await _cacheService.Save(cacheKey, new WaveMetaData
+                await _cacheService.Save(cacheKey, new WaveSearchData
                 {
                     AllParameter = new List<Person>
                     {
@@ -78,7 +78,7 @@ namespace SearchApi.Web.DeepSearch
             else
             {
                 _logger.Log(LogLevel.Debug, $"{person.SearchRequestKey} has an active wave");
-                WaveMetaData metaData = JsonConvert.DeserializeObject<WaveMetaData>(waveMetaData);
+                WaveSearchData metaData = JsonConvert.DeserializeObject<WaveSearchData>(waveMetaData);
                 _logger.Log(LogLevel.Debug, $"{person.SearchRequestKey} Current Metadata Wave : {metaData.CurrentWave}");
                 metaData.NewParameter = new List<Person>
                 {
@@ -140,15 +140,15 @@ namespace SearchApi.Web.DeepSearch
         }
 
 
-        private async Task<IEnumerable<WaveMetaData>> GetWaveDataForSearch(string searchRequestKey)
+        private async Task<IEnumerable<WaveSearchData>> GetWaveDataForSearch(string searchRequestKey)
         {
-            List<WaveMetaData> waveMetaDatas = new List<WaveMetaData>();
+            List<WaveSearchData> waveMetaDatas = new List<WaveSearchData>();
 
             var keys = await _cacheService.SearchKeys($"{searchRequestKey}*");
 
             foreach (var key in keys)
             {
-                waveMetaDatas.Add(JsonConvert.DeserializeObject<WaveMetaData>(await _cacheService.Get(key)));
+                waveMetaDatas.Add(JsonConvert.DeserializeObject<WaveSearchData>(await _cacheService.Get(key)));
             }
 
             return waveMetaDatas.AsEnumerable();

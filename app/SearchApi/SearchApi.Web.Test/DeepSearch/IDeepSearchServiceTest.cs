@@ -31,7 +31,7 @@ namespace SearchApi.Web.Test.DeepSearch
         private Mock<IDispatcher> _dispatcherMock;
         private Mock<ICacheService> _cacheServiceMock;
         private Mock<IOptions<DeepSearchOptions>> _deepSearchOptionsMock;
-        WaveMetaData wave;
+        WaveSearchData wave;
         string dataPartner = "ICBC";
         string SearchRequestKey = "FirstTimeWave";
         string NotSearchRequestKey = "AnotherWave";
@@ -53,7 +53,7 @@ namespace SearchApi.Web.Test.DeepSearch
             {
                 MaxWaveCount = 5
             });
-            wave = new WaveMetaData
+            wave = new WaveSearchData
             {
                 AllParameter = new List<Person>(),
                 CurrentWave = 2,

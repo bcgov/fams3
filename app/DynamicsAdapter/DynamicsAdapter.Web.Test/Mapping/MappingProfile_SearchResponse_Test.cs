@@ -96,7 +96,8 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 }.ToArray(),
             };
             Person person = _mapper.Map<Person>(response);
-            Assert.AreEqual(1, person.Addresses.Count);
+            Assert.AreEqual(1, person.Names.Count);
+            Assert.AreEqual(1, person.Identifiers.Count);
         }
 
         [Test]
@@ -213,37 +214,45 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(new DateTimeOffset(new DateTime(2004, 1, 1)), names[0].DateOfBirth);
         }
 
-        //[Test]
-        //public void Agent_phone_null_SearchRequestOrdered_should_map_normally()
-        //{
-        //    SearchRequestOrdered searchRequestOrdered = new SearchRequestOrdered()
-        //    {
-        //        Action = RequestAction.NEW,
-        //        RequestId = "requestId",
-        //        SearchRequestKey = "requestKey",
-        //        SearchRequestId = Guid.NewGuid(),
-        //        Person = new Person()
-        //        {
-        //            Agency = new Agency()
-        //            {
-        //                Agent = new Name() { },
-        //                AgentContact = new List<Phone>
-        //                {
-        //                },
-        //                Code = "FMEP",
-        //                RequestId = "QFP-12422509096920180928083433",
+        [Test]
+        public void SSG_Identifier_should_map_to_Person_Identifier_correctly()
+        {
+            SSG_SearchRequestResponse response = new SSG_SearchRequestResponse()
+            {
+                SSG_SearchRequests = new List<SSG_SearchRequest>
+                {
+                    new SSG_SearchRequest {
+                        Agency = new SSG_Agency { AgencyCode = "FMEP" },
+                    }
+                }.ToArray(),
+                SSG_Persons = new List<SSG_Person>
+                {
+                    new SSG_Person {
+                        FirstName = "personFirstName",
+                    }
+                }.ToArray(),
+                SSG_Identifiers = new List<SSG_Identifier>
+                {
+                    new SSG_Identifier {
+                        Identification = "1234455",
+                        IssuedBy="ICBC",
+                        Date1Label="label",
+                        Date1=new DateTime(2000,1,1),
+                        ResponseComments = "identifierComments",
+                        IdentifierType = IdentificationType.BCDriverLicense.Value,
+                    }
+                }.ToArray()
+            };
+            Person person = _mapper.Map<Person>(response);
+            List<PersonalIdentifier> ids = person.Identifiers.ToList();
+            Assert.AreEqual(1, ids.Count);
+            Assert.AreEqual("ICBC", ids[0].IssuedBy);
+            Assert.AreEqual("1234455", ids[0].Value);
+            Assert.AreEqual("identifierComments", ids[0].ResponseComments);
+            Assert.AreEqual(PersonalIdentifierType.BCDriverLicense, ids[0].Type);
+            Assert.AreEqual(1, ids[0].ReferenceDates.Count);
+        }
 
-        //            },
-        //        },
-        //    };
-        //    SearchRequestEntity entity = _mapper.Map<SearchRequestEntity>(searchRequestOrdered);
-        //    Assert.AreEqual(null, entity.AgentFirstName);
-        //    Assert.AreEqual(null, entity.AgentLastName);
-        //    Assert.AreEqual(null, entity.AgentPhoneNumber);
-        //    Assert.AreEqual(null, entity.AgentPhoneExtension);
-        //    Assert.AreEqual(null, entity.AgentFax);
-        //    Assert.AreEqual(null, entity.Notes);
-        //}
 
         //[Test]
         //public void Agent_invliad_request_ID_SearchRequestOrdered_should_map_normally()

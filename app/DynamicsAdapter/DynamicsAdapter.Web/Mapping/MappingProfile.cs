@@ -18,6 +18,7 @@ using Fams3Adapter.Dynamics.RelatedPerson;
 using Fams3Adapter.Dynamics.SearchApiEvent;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using Fams3Adapter.Dynamics.SearchRequest;
+using Fams3Adapter.Dynamics.SearchResponse;
 using Fams3Adapter.Dynamics.Types;
 using Fams3Adapter.Dynamics.Vehicle;
 using System;
@@ -175,7 +176,10 @@ namespace DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.SupplierTypeCode, opt => opt.MapFrom(src => src.Type))
                  .ForMember(dest => dest.Comments, opt => opt.MapFrom(src => src.Description))
                  .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
-                 .IncludeBase<PersonalInfo, DynamicsEntity>();
+                 .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => src.DateOfBirth))
+                 .IncludeBase<PersonalInfo, DynamicsEntity>()
+                 .ReverseMap()
+                    .ForMember(dest => dest.Owner, opt => opt.Ignore());
 
             CreateMap<RelatedPerson, RelatedPersonEntity>()
                  .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
@@ -316,6 +320,54 @@ namespace DynamicsAdapter.Web.Mapping
                   .ForMember(dest => dest.PartyDescription, opt => opt.MapFrom(src => src.TypeDescription))
                   .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes));
 
+            CreateMap<DynamicsEntity, PersonalInfo>()
+               .ForMember(dest => dest.ReferenceDates, opt => opt.MapFrom<ReferenceDatesResolver>());
+
+
+            CreateMap<SSG_SearchRequest, Agency>()
+                   .ForMember(dest => dest.PersonSoughtInRequest_FirstName, opt => opt.MapFrom(src => src.ResponsePersonFirstName))
+                   .ForMember(dest => dest.PersonSoughtInRequest_LastName, opt => opt.MapFrom(src => src.ResponsePersonSurName))
+                   .ForMember(dest => dest.PersonSoughtInRequest_MiddleName, opt => opt.MapFrom(src => src.ResponsePersonMiddleName))
+                   .ForMember(dest => dest.PersonSoughtInRequest_SecondMiddleName, opt => opt.MapFrom(src => src.ResponsePersonThirdGiveName))
+                   .ForMember(dest => dest.PersonSoughtInRequest_DateOfBirth, opt => opt.MapFrom(src => src.PersonSoughtDateOfBirth))
+                   .ForMember(dest => dest.PersonSoughtInRequest_Gender, opt => opt.ConvertUsing(new PersonGenderTypeConverter(), src => src.PersonSoughtGender))
+                   .ForMember(dest => dest.Agent, opt => opt.MapFrom(src => src))
+                   .ForMember(dest => dest.RequestDate, opt => opt.MapFrom(src => src.RequestDate))
+                   .ForMember(dest => dest.ReasonCode, opt => opt.MapFrom(src => src.SearchReason.ReasonCode))
+                   .ForMember(dest => dest.Code, opt => opt.MapFrom(src => src.Agency.AgencyCode))
+                   .ForMember(dest => dest.DaysOpen, opt => opt.MapFrom(src => src.DaysOpen))
+                   .ForMember(dest => dest.RequestId, opt => opt.MapFrom(src => src.OriginalRequestorReference))
+                   .ForMember(dest => dest.RequestPriority, opt => opt.ConvertUsing(new RequestPriorityTypeConverter(), src => src.RequestPriority));
+
+            CreateMap<SSG_SearchRequest, Name>()
+                   .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.AgentFirstName))
+                   .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.AgentLastName));
+
+            CreateMap<SSG_SearchRequestResponse, Person>()
+               .ForMember(dest => dest.Names, opt => opt.MapFrom(src => src.SSG_Aliases))
+               .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new PersonSoughtRoleConverter(), src => src.SSG_SearchRequests[0].PersonSoughtRole))
+               .ForMember(dest => dest.Agency, opt => opt.MapFrom(src => src.SSG_SearchRequests[0]))
+               .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.SSG_Persons[0].FirstName))
+               .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.SSG_Persons[0].LastName))
+               .ForMember(dest => dest.MiddleName, opt => opt.MapFrom(src => src.SSG_Persons[0].MiddleName))
+               .ForMember(dest => dest.OtherName, opt => opt.MapFrom(src => src.SSG_Persons[0].ThirdGivenName))
+               .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => src.SSG_Persons[0].DateOfBirth))
+               .ForMember(dest => dest.DateOfDeath, opt => opt.MapFrom(src => src.SSG_Persons[0].DateOfDeath))
+               .ForMember(dest => dest.DateDeathConfirmed, opt => opt.MapFrom(src => src.SSG_Persons[0].DateOfDeathConfirmed))
+               .ForMember(dest => dest.Gender, opt => opt.ConvertUsing(new PersonGenderTypeConverter(), src => src.SSG_Persons[0].GenderOptionSet))
+               .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.SSG_Persons[0].Notes))
+               .ForMember(dest => dest.Incacerated, opt => opt.ConvertUsing(new IncaceratedReponseConverter(), src => src.SSG_Persons[0].Incacerated))
+               .ForMember(dest => dest.Complexion, opt => opt.MapFrom(src => src.SSG_Persons[0].Complexion))
+               .ForMember(dest => dest.EyeColour, opt => opt.MapFrom(src => src.SSG_Persons[0].EyeColor))
+               .ForMember(dest => dest.HairColour, opt => opt.MapFrom(src => src.SSG_Persons[0].HairColor))
+               .ForMember(dest => dest.Height, opt => opt.MapFrom(src => src.SSG_Persons[0].Height))
+               .ForMember(dest => dest.Weight, opt => opt.MapFrom(src => src.SSG_Persons[0].Weight))
+               .ForMember(dest => dest.WearGlasses, opt => opt.MapFrom(src => src.SSG_Persons[0].WearGlasses))
+               .ForMember(dest => dest.DistinguishingFeatures, opt => opt.MapFrom(src => src.SSG_Persons[0].DistinguishingFeatures))
+               .ForMember(dest => dest.ReferenceDates, opt => opt.MapFrom<PersonReferenceDatesResolver>())
+               .ForMember(dest => dest.ResponseComments, opt => opt.MapFrom(src => src.SSG_Persons[0].ResponseComments));
+            //.ForMember(dest => dest.BankInfos, opt => opt.MapFrom(src => src.SSG_BankInfos))
+            //.ForMember(dest => dest.CompensationClaims, opt => opt.MapFrom(src => src.SSG_Asset_WorkSafeBcClaims));
         }
     }
 

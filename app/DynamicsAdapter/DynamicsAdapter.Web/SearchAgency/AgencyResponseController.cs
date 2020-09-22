@@ -42,7 +42,8 @@ namespace DynamicsAdapter.Web.SearchAgency
                 _logger.LogInformation("Get searchResponseReady");
                 _logger.LogDebug(JsonConvert.SerializeObject(searchResponseReady));
 
-                SSG_SearchRequestResponse response = await _agencyResponseService.GetSearchRequestResponse(searchResponseReady);
+                Person p = await _agencyResponseService.GetSearchRequestResponse(searchResponseReady);
+                searchResponseReady.Person = p;
                 return Ok();
             }
         }

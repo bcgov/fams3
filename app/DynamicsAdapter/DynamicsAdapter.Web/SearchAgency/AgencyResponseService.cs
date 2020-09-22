@@ -12,7 +12,7 @@ namespace DynamicsAdapter.Web.SearchAgency
 {
     public interface IAgencyResponseService
     {
-        Task<SSG_SearchRequestResponse> GetSearchRequestResponse(SearchResponseReady responseReady);
+        Task<Person> GetSearchRequestResponse(SearchResponseReady responseReady);
     }
 
     public class AgencyResponseService : IAgencyResponseService
@@ -29,12 +29,14 @@ namespace DynamicsAdapter.Web.SearchAgency
             _mapper = mapper;
         }
 
-        public async Task<SSG_SearchRequestResponse> GetSearchRequestResponse(SearchResponseReady searchResponseReady)
+        public async Task<Person> GetSearchRequestResponse(SearchResponseReady searchResponseReady)
         {
             var cts = new CancellationTokenSource();
 
             SSG_SearchRequestResponse sr = await _searchResponseService.GetSearchResponse(Guid.Parse(searchResponseReady.ResponseGuid), cts.Token);
-            return sr;
+            Person person = _mapper.Map<Person>(sr);
+
+            return person;
 
         }
     }

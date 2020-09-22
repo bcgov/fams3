@@ -117,142 +117,147 @@
       }
     },
     "Person": {
-      "type": "object",
-      "properties": {
-        "agency": {
-          "$ref": "#/definitions/Agency"
+      "allOf": [
+        {
+          "$ref": "#/definitions/PersonalInfo"
         },
-        "firstName": {
-          "type": "string"
-        },
-        "lastName": {
-          "type": "string"
-        },
-        "middleName": {
-          "type": "string"
-        },
-        "otherName": {
-          "type": "string"
-        },
-        "dateOfBirth": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "dateOfDeath": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "gender": {
-          "type": "string"
-        },
-        "dateDeathConfirmed": {
-          "type": "boolean"
-        },
-        "incacerated": {
-          "type": "string"
-        },
-        "height": {
-          "type": "string",
-          "description": "Height is in centimers"
-        },
-        "weight": {
-          "type": "string",
-          "description": "Weight is in pounds"
-        },
-        "hairColour": {
-          "type": "string"
-        },
-        "eyeColour": {
-          "type": "string"
-        },
-        "complexion": {
-          "type": "string"
-        },
-        "distinguishingFeatures": {
-          "type": "string"
-        },
-        "wearGlasses": {
-          "type": "string"
-        },
-        "type": {
-          "type": "string"
-        },
-        "identifiers": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/PersonalIdentifier"
+        {
+          "type": "object",
+          "properties": {
+            "agency": {
+              "$ref": "#/definitions/Agency"
+            },
+            "firstName": {
+              "type": "string"
+            },
+            "lastName": {
+              "type": "string"
+            },
+            "middleName": {
+              "type": "string"
+            },
+            "otherName": {
+              "type": "string"
+            },
+            "dateOfBirth": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "dateOfDeath": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "gender": {
+              "type": "string"
+            },
+            "dateDeathConfirmed": {
+              "type": "boolean"
+            },
+            "incacerated": {
+              "type": "string"
+            },
+            "height": {
+              "type": "string",
+              "description": "Height is in centimers"
+            },
+            "weight": {
+              "type": "string",
+              "description": "Weight is in pounds"
+            },
+            "hairColour": {
+              "type": "string"
+            },
+            "eyeColour": {
+              "type": "string"
+            },
+            "complexion": {
+              "type": "string"
+            },
+            "distinguishingFeatures": {
+              "type": "string"
+            },
+            "wearGlasses": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string"
+            },
+            "identifiers": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/PersonalIdentifier"
+              }
+            },
+            "addresses": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Address"
+              }
+            },
+            "phones": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Phone"
+              }
+            },
+            "names": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Name"
+              }
+            },
+            "relatedPersons": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/RelatedPerson"
+              }
+            },
+            "employments": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Employment"
+              }
+            },
+            "bankInfos": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/BankInfo"
+              }
+            },
+            "vehicles": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Vehicle"
+              }
+            },
+            "otherAssets": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/OtherAsset"
+              }
+            },
+            "compensationClaims": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/CompensationClaim"
+              }
+            },
+            "insuranceClaims": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/InsuranceClaim"
+              }
+            }
           }
-        },
-        "addresses": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Address"
-          }
-        },
-        "phones": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Phone"
-          }
-        },
-        "names": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Name"
-          }
-        },
-        "relatedPersons": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/RelatedPerson"
-          }
-        },
-        "employments": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Employment"
-          }
-        },
-        "bankInfos": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/BankInfo"
-          }
-        },
-        "vehicles": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Vehicle"
-          }
-        },
-        "otherAssets": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/OtherAsset"
-          }
-        },
-        "compensationClaims": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/CompensationClaim"
-          }
-        },
-        "insuranceClaims": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/InsuranceClaim"
-          }
-        },
-        "notes": {
-          "type": "string"
         }
-      }
+      ]
     },
     "Agency": {
       "type": "object",
       "required": [
         "requestPriority",
-        "requestDate"
+        "requestDate",
+        "daysOpen"
       ],
       "properties": {
         "notes": {
@@ -317,6 +322,29 @@
         "locationAddress": {
           "type": "string",
           "description": "agency location address"
+        },
+        "daysOpen": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "personSoughtInRequest_FirstName": {
+          "type": "string"
+        },
+        "personSoughtInRequest_MiddleName": {
+          "type": "string"
+        },
+        "personSoughtInRequest_SecondMiddleName": {
+          "type": "string"
+        },
+        "personSoughtInRequest_LastName": {
+          "type": "string"
+        },
+        "personSoughtInRequest_DateOfBirth": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "personSoughtInRequest_Gender": {
+          "type": "string"
         }
       }
     },
@@ -365,6 +393,11 @@
               "type": "string",
               "description": "the type of the names"
             },
+            "dateOfBirth": {
+              "type": "string",
+              "description": "the date of birth of this name person",
+              "format": "date-time"
+            },
             "owner": {
               "description": "The owner of the name e.g. Applicant, Person Sought, e.t.c",
               "allOf": [
@@ -411,6 +444,10 @@
         "notes": {
           "type": "string",
           "description": "The notes of the information"
+        },
+        "responseComments": {
+          "type": "string",
+          "description": "The comments for response"
         }
       }
     },

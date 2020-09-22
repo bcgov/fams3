@@ -13,5 +13,8 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
 
         [Description("The notes of the information")]
         public string Notes { get; set; }
+
+        [Description("The comments for response")]
+        public string ResponseComments { get; set; }
     }
 }

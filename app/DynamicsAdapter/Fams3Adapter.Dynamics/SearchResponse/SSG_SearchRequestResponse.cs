@@ -82,6 +82,6 @@ namespace Fams3Adapter.Dynamics.SearchResponse
         //public SSG_SafetyConcernDetail[] SSG_SafetyConcernDetails { get; set; }
 
         [JsonProperty("ssg_ssg_searchrequestresponse_ssg_searchrequest_SearchRequestResponse")]
-        public SSG_SearchRequest[] SSG_SearchRequest { get; set; }
+        public SSG_SearchRequest[] SSG_SearchRequests { get; set; }
     }
 }

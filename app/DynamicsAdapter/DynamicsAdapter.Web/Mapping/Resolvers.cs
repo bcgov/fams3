@@ -2,6 +2,7 @@ using AutoMapper;
 using Fams3Adapter.Dynamics;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.SearchApiRequest;
+using Fams3Adapter.Dynamics.SearchResponse;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,7 +44,63 @@ namespace DynamicsAdapter.Web.Mapping
         }
     }
 
+    public class ReferenceDatesResolver : IValueResolver<DynamicsEntity, PersonalInfo, ICollection<ReferenceDate>>
+    {
+        public ICollection<ReferenceDate> Resolve(DynamicsEntity source, PersonalInfo destination, ICollection<ReferenceDate> referenceDates, ResolutionContext context)
+        {
+            List<ReferenceDate> dates = new List<ReferenceDate>();
+            if (source.Date1 != null)
+            {
+                ReferenceDate referenceDate = new ReferenceDate
+                {
+                    Index = 0,
+                    Key = source.Date1Label,
+                    Value = new DateTimeOffset((DateTime)source.Date1)
+                };
+                dates.Add(referenceDate);
+            }
+            if (source.Date2 != null)
+            {
+                ReferenceDate referenceDate = new ReferenceDate
+                {
+                    Index = 1,
+                    Key = source.Date2Label,
+                    Value = new DateTimeOffset((DateTime)source.Date2)
+                };
+                dates.Add(referenceDate);
+            }
+            return dates;
+        }
+    }
 
+    public class PersonReferenceDatesResolver : IValueResolver<SSG_SearchRequestResponse, Person, ICollection<ReferenceDate>>
+    {
+        public ICollection<ReferenceDate> Resolve(SSG_SearchRequestResponse source, Person destination, ICollection<ReferenceDate> referenceDates, ResolutionContext context)
+        {
+            List<ReferenceDate> dates = new List<ReferenceDate>();
+            if (source.SSG_Persons[0].Date1 != null)
+            {
+                ReferenceDate referenceDate = new ReferenceDate
+                {
+                    Index = 0,
+                    Key = source.SSG_Persons[0].Date1Label,
+                    Value = new DateTimeOffset((DateTime)source.SSG_Persons[0].Date1)
+                };
+                dates.Add(referenceDate);
+            }
+            if (source.SSG_Persons[0].Date2 != null)
+            {
+                ReferenceDate referenceDate = new ReferenceDate
+                {
+                    Index = 1,
+                    Key = source.SSG_Persons[0].Date2Label,
+                    Value = new DateTimeOffset((DateTime)source.SSG_Persons[0].Date2)
+                };
+                dates.Add(referenceDate);
+            }
+            return dates;
+        }
+    }
 
     public class PersonalIdentifier_ReferenceDateResolver : IValueResolver<IdentifierEntity, PersonalIdentifier, ICollection<ReferenceDate>>
     {

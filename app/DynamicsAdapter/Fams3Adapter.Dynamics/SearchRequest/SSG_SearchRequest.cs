@@ -169,6 +169,20 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         [JsonProperty("ssg_AgencyLocation")]
         public virtual SSG_AgencyLocation AgencyLocation { get; set; }
 
+        [JsonProperty("ssg_persongivenname")]
+        public string ResponsePersonFirstName { get; set; }
+
+        [JsonProperty("ssg_personmiddlename")]
+        public string ResponsePersonMiddleName { get; set; }
+
+        [JsonProperty("ssg_personthirdgivenname")]
+        public string ResponsePersonThirdGiveName { get; set; }
+
+        [JsonProperty("ssg_personsurname")]
+        public string ResponsePersonSurName { get; set; }
+
+        [JsonProperty("ssg_durationrequestwasopen")]
+        public int DaysOpen { get; set; }
     }
 
     public class SSG_SearchRequest : SearchRequestEntity, IUpdatableObject

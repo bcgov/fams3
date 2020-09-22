@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace BcGov.Fams3.SearchApi.Contracts.Person
 {
-    public class Person
+    public class Person : PersonalInfo
     {
         public Agency Agency { get; set; }
         public string FirstName { get; set; }
@@ -41,11 +41,7 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         public IEnumerable<Vehicle> Vehicles { get; set; }
         public IEnumerable<OtherAsset> OtherAssets { get; set; }
         public IEnumerable<CompensationClaim> CompensationClaims { get; set; }
-
-
-
         public IEnumerable<InsuranceClaim> InsuranceClaims { get; set; }
 
-        public string Notes { get; set; }
     }
 }

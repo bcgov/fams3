@@ -121,13 +121,23 @@ namespace DynamicsAdapter.Web.Mapping
         }
     }
 
+    public class IncaceratedReponseConverter : IValueConverter<int?, string>
+    {
+        public string Convert(int? sourceMember, ResolutionContext context)
+        {
+            if (sourceMember == NullableBooleanType.Yes.Value) return "yes";
+            if (sourceMember == NullableBooleanType.No.Value) return "no";
+            return null;
+        }
+    }
+
     public class RelatedPersonCategoryConverter : IValueConverter<string, int?>
     {
         public int? Convert(string sourceMember, ResolutionContext context)
         {
             if (sourceMember == null) return null;
 
-            if ("aunt/uncle".Contains(sourceMember.ToLower())) 
+            if ("aunt/uncle".Contains(sourceMember.ToLower()))
                 return PersonRelationType.AuntUncle.Value;
             else
                 return
@@ -145,19 +155,32 @@ namespace DynamicsAdapter.Web.Mapping
         }
     }
 
+    public static class GenderDictionary
+    {
+        internal static readonly IDictionary<string, int> GenderTypeDictionary = new Dictionary<string, int>
+        {
+            { "m", GenderType.Male.Value },
+            { "f", GenderType.Female.Value },
+            { "u", GenderType.Other.Value }
+        };
+    }
+
     public class PersonGenderConverter : IValueConverter<string, int?>
     {
         public int? Convert(string sourceMember, ResolutionContext context)
         {
             if (sourceMember == null) return null;
             return
-                sourceMember.ToLower() switch
-                {
-                    "m" => GenderType.Male.Value,
-                    "f" => GenderType.Female.Value,
-                    "u" => GenderType.Other.Value,
-                    _ => (int?)null
-                };
+                GenderDictionary.GenderTypeDictionary.ContainsKey(sourceMember.ToLower()) ?
+                    GenderDictionary.GenderTypeDictionary[sourceMember.ToLower()] : (int?)null;
+        }
+    }
+
+    public class PersonGenderTypeConverter : IValueConverter<int?, string>
+    {
+        public string Convert(int? sourceMember, ResolutionContext context)
+        {
+            return GenderDictionary.GenderTypeDictionary.FirstOrDefault(m => m.Value == sourceMember).Key;
         }
     }
 
@@ -230,6 +253,27 @@ namespace DynamicsAdapter.Web.Mapping
                     "normal" => RequestPriorityType.Regular.Value,
                     _ => RequestPriorityType.Regular.Value
                 };
+        }
+    }
+
+    public class RequestPriorityTypeConverter : IValueConverter<int?, RequestPriority>
+    {
+        public RequestPriority Convert(int? sourceMember, ResolutionContext context)
+        {
+            if (sourceMember == RequestPriorityType.Urgent.Value) return RequestPriority.Urgent;
+            if (sourceMember == RequestPriorityType.Rush.Value) return RequestPriority.Rush;
+            if (sourceMember == RequestPriorityType.Regular.Value) return RequestPriority.Normal;
+            return RequestPriority.Normal;
+        }
+    }
+
+    public class PersonSoughtRoleConverter : IValueConverter<int?, string>
+    {
+        public string Convert(int? sourceMember, ResolutionContext context)
+        {
+            if (sourceMember == PersonSoughtType.P.Value) return "P";
+            if (sourceMember == PersonSoughtType.R.Value) return "R";
+            return null;
         }
     }
 }

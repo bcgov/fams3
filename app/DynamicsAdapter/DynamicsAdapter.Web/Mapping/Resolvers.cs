@@ -1,6 +1,7 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Fams3Adapter.Dynamics;
 using Fams3Adapter.Dynamics.Identifier;
+using Fams3Adapter.Dynamics.SearchApiRequest;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,9 +17,9 @@ namespace DynamicsAdapter.Web.Mapping
         }
 
     }
-       
 
-        public class Date1LabelResolver : IValueResolver<PersonalInfo, DynamicsEntity, string>
+
+    public class Date1LabelResolver : IValueResolver<PersonalInfo, DynamicsEntity, string>
     {
         public string Resolve(PersonalInfo source, DynamicsEntity destination, string destMember, ResolutionContext context)
         {
@@ -42,7 +43,7 @@ namespace DynamicsAdapter.Web.Mapping
         }
     }
 
-  
+
 
     public class PersonalIdentifier_ReferenceDateResolver : IValueResolver<IdentifierEntity, PersonalIdentifier, ICollection<ReferenceDate>>
     {
@@ -58,6 +59,17 @@ namespace DynamicsAdapter.Web.Mapping
                 referDates.Add(new ReferenceDate() { Index = 1, Key = source.Date2Label, Value = new DateTimeOffset((DateTime)source.Date2) });
             }
             return referDates;
+        }
+    }
+
+    public class NamesResolver : IValueResolver<SSG_SearchApiRequest, PersonSearchRequest, ICollection<Name>>
+    {
+        public ICollection<Name> Resolve(SSG_SearchApiRequest source, PersonSearchRequest destination, ICollection<Name> destMember, ResolutionContext context)
+        {
+            if (source?.SearchRequest?.ApplicantFirstName != null || source?.SearchRequest?.ApplicantLastName != null)
+                return new List<Name>() { new Name { FirstName = source?.SearchRequest?.ApplicantFirstName, LastName = source?.SearchRequest?.ApplicantLastName, Owner = OwnerType.Applicant } };
+            else
+                return null;
         }
     }
 }

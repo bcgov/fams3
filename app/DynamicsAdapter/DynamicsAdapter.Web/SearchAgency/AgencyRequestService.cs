@@ -93,11 +93,12 @@ namespace DynamicsAdapter.Web.SearchAgency
                 _logger.LogInformation("the cancelling search request does not exist.");
                 return null;
             }
-            if (ssgSearchRequest.Agency.AgencyCode != searchRequestOrdered?.Person?.Agency?.Code)
+            if (ssgSearchRequest.Agency == null || ssgSearchRequest.Agency.AgencyCode != searchRequestOrdered?.Person?.Agency?.Code)
             {
                 throw new Exception("the cancelling search request cannot be processed as wrong agency code.");
             }
-            return await _searchRequestService.CancelSearchRequest(searchRequestOrdered.SearchRequestKey, _cancellationToken);
+
+            return await _searchRequestService.CancelSearchRequest(searchRequestOrdered.SearchRequestKey, searchRequestOrdered?.Person?.Agency?.Notes, _cancellationToken);
         }
 
         public async Task<SSG_SearchRequest> ProcessUpdateSearchRequest(SearchRequestOrdered searchRequestOrdered)

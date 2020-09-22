@@ -24,7 +24,7 @@ namespace SearchApi.Web.Notifications
         private readonly SearchApiOptions _searchApiOptions;
         private readonly IDeepSearchService _deepSearchService;
         private readonly ILogger<WebHookNotifierSearchEventStatus> _logger;
-        private readonly ICacheService _cacheService;
+     
 
         public WebHookNotifierSearchEventStatus(HttpClient httpClient, IOptions<SearchApiOptions> searchApiOptions,
             ILogger<WebHookNotifierSearchEventStatus> logger, ICacheService cacheService, IDeepSearchService deepSearchService)
@@ -32,7 +32,7 @@ namespace SearchApi.Web.Notifications
             _httpClient = httpClient;
             _logger = logger;
             _searchApiOptions = searchApiOptions.Value;
-            _cacheService = cacheService;
+     
             _deepSearchService = deepSearchService;
         }
 
@@ -103,83 +103,6 @@ namespace SearchApi.Web.Notifications
                  await _deepSearchService.ProcessWaveSearch(searchRequestKey);
         }
 
-        //private async Task<bool> IsCurrentWaveCompleted(string searchRequestKey, string eventName)
-        //{
-        //    try
-        //    {
-        //        if (eventName.Equals(EventName.WaveCompleted))
-        //        {
-        //            return JsonConvert.SerializeObject(await _cacheService.GetRequest(searchRequestKey)).AllPartnerCompleted();
-        //        }
-        //        return true;
-        //    }
-        //    catch (Exception exception)
-        //    {
-        //        _logger.LogError($"Check Data Partner Status Failed. [{eventName}] for {searchRequestKey}. [{exception.Message}]");
-        //        return false;
-        //    }
-        //}
-
-        //private async Task<bool> IsCurrentWaveCompleted(string searchRequestKey)
-        //{
-        //    try
-        //    {
-        //           return JsonConvert.SerializeObject(await _cacheService.GetRequest(searchRequestKey)).AllPartnerCompleted();
-
-        //    }
-        //    catch (Exception exception)
-        //    {
-        //        _logger.LogError($"Check Data Partner Status Failed. [] for {searchRequestKey}. [{exception.Message}]");
-        //        return false;
-        //    }
-        //}
-        //private async Task<IEnumerable<WaveMetaData>> GetWaveDataForSearch(string searchRequestKey)
-        //{
-        //    List<WaveMetaData> waveMetaDatas = new List<WaveMetaData>();
-
-        //     var  keys = await  _cacheService.SearchKeys($"*{searchRequestKey}*");
-
-        //    foreach( var key in keys)
-        //    {
-        //        waveMetaDatas.Add(JsonConvert.DeserializeObject<WaveMetaData>(await _cacheService.Get(key)));
-        //    }
-
-        //    return waveMetaDatas.AsEnumerable();
-        //}
-
-        //private async void DeleteFromCache(string searchRequestKey, string eventName)
-        //{
-        //    try
-        //    {
-        //        if (eventName.Equals(EventName.Finalized))
-        //        {
-        //            await _cacheService.DeleteRequest(searchRequestKey);
-        //        }
-        //    }
-        //    catch (Exception exception)
-        //    {
-        //        _logger.LogError($"Delete search request failed. [{eventName}] for {searchRequestKey}. [{exception.Message}]");
-                
-        //    }
-
-        //}
-
-
-        //private async Task UpdateDataPartner(string searchRequestKey, PersonSearchAdapterEvent eventStatus, string eventName)
-        //{
-        //    try
-        //    {
-        //        if (eventName.Equals(EventName.Completed) || eventName.Equals(EventName.Rejected))
-        //        {
-        //            var searchRequest = JsonConvert.SerializeObject(await _cacheService.GetRequest(searchRequestKey)).UpdateDataPartner(eventStatus.ProviderProfile.Name);
-        //            await _cacheService.SaveRequest(searchRequest);
-        //        }
-        //    }
-        //    catch (Exception exception)
-        //    {
-        //        _logger.LogError($"Update Data Partner Status Failed. [{eventName}] for {searchRequestKey}. [{exception.Message}]");
-                
-        //    }
-        //}
+ 
     }
 }

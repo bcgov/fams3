@@ -49,6 +49,14 @@ namespace SearchApi.Web.Test.Notifications
             _cacheServiceMock = new Mock<ICacheService>();
             _deepSearchServiceMock = new Mock<IDeepSearchService>();
 
+            _deepSearchServiceMock
+                .Setup(x => x.UpdateDataPartner(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(Task.CompletedTask);
+
+            _deepSearchServiceMock
+              .Setup(x => x.ProcessWaveSearch(It.IsAny<string>()))
+              .Returns(Task.CompletedTask);
+
             _allcompleted = new SearchRequest
             {
                 SearchRequestId = Guid.NewGuid(),
@@ -72,7 +80,10 @@ namespace SearchApi.Web.Test.Notifications
                 {
                     SearchRequestKey = "SearchRequestKey",
                     SearchRequestId = Guid.NewGuid(),
-                    TimeStamp = DateTime.Now
+                    TimeStamp = DateTime.Now,
+                    ProviderProfile = new FakeProviderProfile()
+
+
                 };
 
             _deepSearchOptionsMock.Setup(x => x.Value).Returns(new DeepSearchOptions { MaxWaveCount = 3 });
@@ -467,7 +478,7 @@ namespace SearchApi.Web.Test.Notifications
                 var httpClient = new HttpClient(handlerMock.Object);
                 _sut = new WebHookNotifierSearchEventStatus(httpClient, _searchApiOptionsMock.Object, _loggerMock.Object, _cacheServiceMock.Object, _deepSearchServiceMock.Object);
 
-                await _sut.NotifyEventAsync(fakePersonSearchStatus.SearchRequestKey, new FakePersonSearchAdapterEvent(), "Accepted",CancellationToken.None);
+                await _sut.NotifyEventAsync(fakePersonSearchStatus.SearchRequestKey, new FakePersonSearchAdapterEvent() { ProviderProfile = new FakeProviderProfile { } }, "Accepted",CancellationToken.None);
 
                 _loggerMock.VerifyLog(LogLevel.Error, "The webHook PersonSearch notification failed for status Accepted for test webHook. [unknown error]", "failed log error");
 

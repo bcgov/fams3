@@ -2,16 +2,22 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using BcGov.Fams3.Redis;
+using BcGov.Fams3.Redis.Model;
 using BcGov.Fams3.SearchApi.Contracts.Person;
 using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 using BcGov.Fams3.SearchApi.Core.Configuration;
 using MassTransit;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using SearchApi.Web.Controllers;
 using SearchApi.Web.DeepSearch;
+using SearchApi.Web.DeepSearch.Schema;
 using SearchApi.Web.Messaging;
+using SearchApi.Web.Test.Utils;
 
 namespace SearchApi.Web.Test.Messaging
 {
@@ -22,19 +28,26 @@ namespace SearchApi.Web.Test.Messaging
         private Dispatcher sut;
 
         private Mock<ISendEndpointProvider> sendEndpointProviderMock;
-        private Mock<IDeepSearchService> deepSearchProviderMock;
+        private Mock<ICacheService> _cacheServiceMock;
+        private Mock<ILogger<IDispatcher>> _loggerMock;
+
         private Mock<IOptions<RabbitMqConfiguration>> rabbitMqConfigurationMock;
 
         private Mock<ISendEndpoint> sendEndpointMock;
+        WaveSearchData wave;
+        string dataPartner = "ICBC";
+        string SearchRequestKey = "FirstTimeWave";
+        string NotSearchRequestKey = "AnotherWave";
+     
 
         [SetUp]
         public void SetUp()
         {
 
             sendEndpointProviderMock = new Mock<ISendEndpointProvider>();
-            deepSearchProviderMock = new Mock<IDeepSearchService>();
+            _cacheServiceMock = new Mock<ICacheService>();
             rabbitMqConfigurationMock = new Mock<IOptions<RabbitMqConfiguration>>();
-
+            _loggerMock = new Mock<ILogger<IDispatcher>>();
             sendEndpointMock = new Mock<ISendEndpoint>();
 
             RabbitMqConfiguration rabbitMqConfiguration = new RabbitMqConfiguration();
@@ -43,18 +56,37 @@ namespace SearchApi.Web.Test.Messaging
             rabbitMqConfiguration.Username = "username";
             rabbitMqConfiguration.Password = "password";
 
+            _cacheServiceMock.Setup(x => x.Get($"deepsearch-{NotSearchRequestKey}-{dataPartner}"))
+      .Returns(Task.FromResult(JsonConvert.SerializeObject(wave)));
+            _cacheServiceMock.Setup(x => x.SaveRequest(It.IsAny<SearchRequest>()))
+              .Returns(Task.CompletedTask);
+          
+            _cacheServiceMock.Setup(x => x.Get($"deepsearch-{SearchRequestKey}-{dataPartner}"))
+            .Returns(Task.FromResult(""));
+            wave = new WaveSearchData
+            {
+                AllParameter = new List<Person>(),
+                CurrentWave = 2,
+                DataPartner = dataPartner,
+                NewParameter = new List<Person>(),
+                SearchRequestKey = SearchRequestKey,
+                NumberOfRetries = 1,
+                TimeBetweenRetries = 3
+            };
+            _cacheServiceMock.Setup(x => x.Get($"deepsearch-{NotSearchRequestKey}-{dataPartner}"))
+            .Returns(Task.FromResult(JsonConvert.SerializeObject(wave)));
+
             sendEndpointProviderMock
                 .Setup(x => x.GetSendEndpoint(It.IsAny<Uri>()))
                 .Returns(Task.FromResult(sendEndpointMock.Object));
-            deepSearchProviderMock.Setup(x => x.SaveRequest(It.IsAny<PersonSearchRequest>(), It.IsAny<string>()))
-                .Returns(Task.CompletedTask);
+        
 
             rabbitMqConfigurationMock.Setup(x => x.Value).Returns(rabbitMqConfiguration);
 
             sendEndpointMock.Setup(x => x.Send<PersonSearchOrdered>(It.IsAny<PersonSearchOrdered>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(sendEndpointMock));
 
-            sut = new Dispatcher(sendEndpointProviderMock.Object, rabbitMqConfigurationMock.Object, deepSearchProviderMock.Object);
+            sut = new Dispatcher(_loggerMock.Object,sendEndpointProviderMock.Object, rabbitMqConfigurationMock.Object, _cacheServiceMock.Object);
 
         }
 
@@ -106,20 +138,59 @@ namespace SearchApi.Web.Test.Messaging
                 new List<Employment>(),
                 new List<DataProvider>
                 {
+                    new DataProvider() {Name = "ICBC", Completed = false, NumberOfRetries = 5, TimeBetweenRetries=10},
+                    new DataProvider() {Name = "ICBC", Completed = false, NumberOfRetries = 3, TimeBetweenRetries=50},
+                    new DataProvider() {Name = "ICBC", Completed= true, NumberOfRetries = 6, TimeBetweenRetries=70},
+                    new DataProvider() {Name = "ICBC", Completed =false, NumberOfRetries = 3, TimeBetweenRetries=45},
+                    new DataProvider() {Name = "ICBC", Completed=false, NumberOfRetries = 5, TimeBetweenRetries=34}
+                },
+                NotSearchRequestKey), Guid.NewGuid());
+
+         
+
+            sendEndpointMock.Verify(x => x.Send<PersonSearchOrdered>(It.IsAny<PersonSearchOrdered>(), It.IsAny<CancellationToken>()),
+                () => { return Times.Exactly(5); });
+            _loggerMock.VerifyLog(LogLevel.Debug, $"{NotSearchRequestKey} has an active wave", Times.Exactly(5));
+
+            _loggerMock.VerifyLog(LogLevel.Debug, $"{NotSearchRequestKey} Current Metadata Wave : {wave.CurrentWave}", Times.Exactly(5));
+            wave.CurrentWave++;
+            _loggerMock.VerifyLog(LogLevel.Debug, $"{NotSearchRequestKey} New wave {wave.CurrentWave} saved", Times.Exactly(5));
+
+        }
+        [Test]
+        public async Task with5ProviderShouldSendTo5QueueAndStartWave()
+        {
+
+            await sut.Dispatch(new PersonSearchRequest(
+                "firstName",
+                "lastName",
+                DateTime.Now,
+                new List<PersonalIdentifier>(),
+                new List<Address>(),
+                new List<Phone>(),
+                new List<Name>(),
+                new List<RelatedPerson>(),
+                new List<Employment>(),
+                new List<DataProvider>
+                {
                     new DataProvider() {Name = "TEST1", Completed = false, NumberOfRetries = 5, TimeBetweenRetries=10},
                     new DataProvider() {Name = "TEST2", Completed = false, NumberOfRetries = 3, TimeBetweenRetries=50},
                     new DataProvider() {Name = "TEST3", Completed= true, NumberOfRetries = 6, TimeBetweenRetries=70},
                     new DataProvider() {Name = "TEST4", Completed =false, NumberOfRetries = 3, TimeBetweenRetries=45},
                     new DataProvider() {Name = "TEST5", Completed=false, NumberOfRetries = 5, TimeBetweenRetries=34}
                 },
-                "SearchRequestKey"), Guid.NewGuid());
+                SearchRequestKey), Guid.NewGuid());
+
 
 
             sendEndpointMock.Verify(x => x.Send<PersonSearchOrdered>(It.IsAny<PersonSearchOrdered>(), It.IsAny<CancellationToken>()),
                 () => { return Times.Exactly(5); });
+            _loggerMock.VerifyLog(LogLevel.Debug, $"{ SearchRequestKey} does not have active wave",Times.Exactly(5));
+            _loggerMock.VerifyLog(LogLevel.Debug, $"{ SearchRequestKey} saved", Times.Exactly(5));
 
         }
 
+     
         [Test]
         public async Task with0ProviderShouldSendTo0Queue()
         {

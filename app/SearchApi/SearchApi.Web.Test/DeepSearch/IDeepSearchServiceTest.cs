@@ -28,7 +28,7 @@ namespace SearchApi.Web.Test.DeepSearch
         private DeepSearchService _sut;
         private Mock<ILogger<DeepSearchService>> _loggerMock;
         private Mock<ISearchApiNotifier<PersonSearchAdapterEvent>> _searchApiNotifierMock;
-        private Mock<IDispatcher> _dispatcherMock;
+        private Mock<IDeepSearchDispatcher> _dispatcherMock;
         private Mock<ICacheService> _cacheServiceMock;
         private Mock<IOptions<DeepSearchOptions>> _deepSearchOptionsMock;
         WaveSearchData wave;
@@ -46,7 +46,7 @@ namespace SearchApi.Web.Test.DeepSearch
             _deepSearchOptionsMock = new Mock<IOptions<DeepSearchOptions>>();
             _cacheServiceMock = new Mock<ICacheService>();
             _searchApiNotifierMock = new Mock<ISearchApiNotifier<PersonSearchAdapterEvent>>();
-            _dispatcherMock = new Mock<IDispatcher>();
+            _dispatcherMock = new Mock<IDeepSearchDispatcher>();
             _cacheServiceMock.Setup(x => x.Get($"deepsearch-{SearchRequestKey}-{dataPartner}"))
                 .Returns(Task.FromResult(""));
             _deepSearchOptionsMock.Setup(x => x.Value).Returns(new DeepSearchOptions
@@ -112,38 +112,14 @@ namespace SearchApi.Web.Test.DeepSearch
                 .Setup(x => x.NotifyEventAsync(It.IsAny<string>(), It.IsAny<PersonSearchAdapterEvent>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
 
-            _dispatcherMock.Setup(x => x.Dispatch(It.IsAny<PersonSearchRequest>(), It.IsAny<Guid>()))
+            _dispatcherMock.Setup(x => x.Dispatch(It.IsAny<string>(), It.IsAny<WaveSearchData>(), It.IsAny<Person>()))
                 .Returns(Task.CompletedTask);
 
             _sut = new DeepSearchService(_cacheServiceMock.Object, _loggerMock.Object, _deepSearchOptionsMock.Object, _searchApiNotifierMock.Object, _dispatcherMock.Object);
 
         }
 
-        [Test]
-        public async Task should_save_in_cache_if_first_wave()
-        {
-
-            await _sut.SaveRequest(person, dataPartner);
-            _loggerMock.VerifyLog(LogLevel.Debug, $"{ person.SearchRequestKey} does not have active wave");
-            _loggerMock.VerifyLog(LogLevel.Debug, $"{ person.SearchRequestKey} saved");
-
-
-        }
-        [Test]
-        public async Task if_existing_should_update_wave_count()
-        {
-           person.SearchRequestKey = NotSearchRequestKey;
-
-
-            await _sut.SaveRequest(person, dataPartner);
-            _loggerMock.VerifyLog(LogLevel.Debug, $"{person.SearchRequestKey} has an active wave");
-
-            _loggerMock.VerifyLog(LogLevel.Debug, $"{person.SearchRequestKey} Current Metadata Wave : {wave.CurrentWave}");
-            wave.CurrentWave++;
-            _loggerMock.VerifyLog(LogLevel.Debug, $"{person.SearchRequestKey} New wave {wave.CurrentWave} saved");
-
-
-        }
+       
 
         [Test]
         public async Task should_not_update_partner_with_is_accepted()
@@ -181,7 +157,7 @@ namespace SearchApi.Web.Test.DeepSearch
             _cacheServiceMock.Verify(x => x.Get("first"), Times.Exactly(1));
             _cacheServiceMock.Verify(x => x.Get("second"), Times.Exactly(1));
             _cacheServiceMock.Verify(x => x.Get("third"), Times.Exactly(1));
-            _dispatcherMock.Verify(x => x.Dispatch(It.IsAny<PersonSearchRequest>(), It.IsAny<Guid>()), Times.Exactly(3));
+            _dispatcherMock.Verify(x => x.Dispatch(It.IsAny<string>(), It.IsAny<WaveSearchData>(), It.IsAny<Person>()), Times.Exactly(3));
         }
 
         [Test]

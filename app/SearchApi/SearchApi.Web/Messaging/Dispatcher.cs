@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using BcGov.Fams3.Redis;
 using BcGov.Fams3.SearchApi.Contracts.Person;
 using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 using BcGov.Fams3.SearchApi.Core.Configuration;
 using MassTransit;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using SearchApi.Web.Controllers;
 using SearchApi.Web.DeepSearch;
 using SearchApi.Web.DeepSearch.Schema;
+using SearchApi.Web.Search;
 
 namespace SearchApi.Web.Messaging
 {
@@ -24,14 +28,16 @@ namespace SearchApi.Web.Messaging
     {
 
         private readonly ISendEndpointProvider _sendEndpointProvider;
-        private readonly IDeepSearchService _deepSearchService;
+        private readonly ICacheService _cacheService;
+        private readonly ILogger<IDispatcher> _logger;
         private readonly RabbitMqConfiguration _rabbitMqConfiguration;
         //, IDeepSearchService deepSearchService 
-        public Dispatcher(ISendEndpointProvider sendEndpointProvider, IOptions<RabbitMqConfiguration> rabbitMqOptions, IDeepSearchService deepSearchService)
+        public Dispatcher(ILogger<IDispatcher> logger ,ISendEndpointProvider sendEndpointProvider, IOptions<RabbitMqConfiguration> rabbitMqOptions, ICacheService cacheService)
         {
-            _deepSearchService = deepSearchService;
+            _cacheService = cacheService;
             _sendEndpointProvider = sendEndpointProvider;
             _rabbitMqConfiguration = rabbitMqOptions.Value;
+            _logger = logger;
         }
 
         /// <summary>
@@ -57,7 +63,7 @@ namespace SearchApi.Web.Messaging
             foreach (var requestDataProvider in personSearchRequest.DataProviders)
             {
    
-                await _deepSearchService.SaveRequest(personSearchRequest, requestDataProvider.Name);
+                await SaveRequest(personSearchRequest, requestDataProvider.Name);
 
                 var endpoint = await getEndpointAddress(requestDataProvider.Name);
 
@@ -75,6 +81,51 @@ namespace SearchApi.Web.Messaging
         private Task<ISendEndpoint> getEndpointAddress(string providerName)
         {
             return _sendEndpointProvider.GetSendEndpoint(new Uri($"rabbitmq://{this._rabbitMqConfiguration.Host}:{this._rabbitMqConfiguration.Port}/PersonSearchOrdered_{providerName.ToUpperInvariant()}"));
+        }
+
+        private async Task SaveRequest(PersonSearchRequest person, string dataPartner)
+        {
+            _logger.Log(LogLevel.Debug, $"Check if request {person.SearchRequestKey} has an active wave on-going");
+            string cacheKey = person.SearchRequestKey.DeepSearchKey(dataPartner);
+            var waveMetaData = await _cacheService.Get(cacheKey);
+
+            if (string.IsNullOrEmpty(waveMetaData))
+            {
+                _logger.Log(LogLevel.Debug, $"{person.SearchRequestKey} does not have active wave");
+                await _cacheService.Save(cacheKey, new WaveSearchData
+                {
+                    AllParameter = new List<Person>
+                    {
+                        person
+                    },
+                    NewParameter = new List<Person>
+                    {
+                        person
+                    },
+                    CurrentWave = 1,
+                    DataPartner = dataPartner,
+                    SearchRequestKey = person.SearchRequestKey
+
+                });
+                _logger.Log(LogLevel.Debug, $"{person.SearchRequestKey} saved");
+            }
+            else
+            {
+                _logger.Log(LogLevel.Debug, $"{person.SearchRequestKey} has an active wave");
+                WaveSearchData metaData = JsonConvert.DeserializeObject<WaveSearchData>(waveMetaData);
+                _logger.Log(LogLevel.Debug, $"{person.SearchRequestKey} Current Metadata Wave : {metaData.CurrentWave}");
+                metaData.NewParameter = new List<Person>
+                {
+                    person
+                };
+                metaData.CurrentWave++;
+                await _cacheService.Save(cacheKey, metaData);
+                _logger.Log(LogLevel.Debug, $"{person.SearchRequestKey} New wave {metaData.CurrentWave} saved");
+
+
+            }
+
+
         }
 
     }

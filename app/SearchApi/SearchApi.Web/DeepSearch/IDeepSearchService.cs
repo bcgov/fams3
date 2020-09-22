@@ -21,7 +21,6 @@ namespace SearchApi.Web.DeepSearch
     public interface IDeepSearchService
     {
    
-        Task SaveRequest(PersonSearchRequest person, string dataPartner);
 
         Task UpdateDataPartner(string searchRequestKey, string dataPartner, string eventName);
 
@@ -34,10 +33,10 @@ namespace SearchApi.Web.DeepSearch
     {
         private readonly ICacheService _cacheService;
         private readonly ILogger<DeepSearchService> _logger;
-        private readonly IDispatcher _dispatcher;
+        private readonly IDeepSearchDispatcher _dispatcher;
         private readonly DeepSearchOptions _deepSearchOptions;
         private readonly ISearchApiNotifier<PersonSearchAdapterEvent> _searchApiNotifier;
-        public DeepSearchService(ICacheService cacheService, ILogger<DeepSearchService> logger, IOptions<DeepSearchOptions> deepSearchOptions, ISearchApiNotifier<PersonSearchAdapterEvent> searchApiNotifier, IDispatcher dispatcher)
+        public DeepSearchService(ICacheService cacheService, ILogger<DeepSearchService> logger, IOptions<DeepSearchOptions> deepSearchOptions, ISearchApiNotifier<PersonSearchAdapterEvent> searchApiNotifier, IDeepSearchDispatcher dispatcher)
         {
             _cacheService = cacheService;
             _logger = logger;
@@ -49,50 +48,7 @@ namespace SearchApi.Web.DeepSearch
 
        
 
-        public async Task SaveRequest(PersonSearchRequest person, string dataPartner)
-        {
-            _logger.Log(LogLevel.Debug, $"Check if request {person.SearchRequestKey} has an active wave on-going");
-            string cacheKey = person.SearchRequestKey.DeepSearchKey(dataPartner);
-            var waveMetaData = await _cacheService.Get(cacheKey);
 
-            if (string.IsNullOrEmpty(waveMetaData))
-            {
-                _logger.Log(LogLevel.Debug, $"{person.SearchRequestKey} does not have active wave");
-                await _cacheService.Save(cacheKey, new WaveSearchData
-                {
-                    AllParameter = new List<Person>
-                    {
-                        person
-                    },
-                    NewParameter = new List<Person>
-                    {
-                        person
-                    },
-                    CurrentWave = 1,
-                    DataPartner = dataPartner,
-                    SearchRequestKey = person.SearchRequestKey
-
-                });
-                _logger.Log(LogLevel.Debug, $"{person.SearchRequestKey} saved");
-            }
-            else
-            {
-                _logger.Log(LogLevel.Debug, $"{person.SearchRequestKey} has an active wave");
-                WaveSearchData metaData = JsonConvert.DeserializeObject<WaveSearchData>(waveMetaData);
-                _logger.Log(LogLevel.Debug, $"{person.SearchRequestKey} Current Metadata Wave : {metaData.CurrentWave}");
-                metaData.NewParameter = new List<Person>
-                {
-                    person
-                };
-                metaData.CurrentWave++;
-                await _cacheService.Save(cacheKey, metaData);
-                _logger.Log(LogLevel.Debug, $"{person.SearchRequestKey} New wave {metaData.CurrentWave} saved");
-                
-
-            }
-
-           
-        }
 
         private async Task<bool> CurrentWaveIsCompleted(string searchRequestKey)
         {
@@ -178,15 +134,14 @@ namespace SearchApi.Web.DeepSearch
                     foreach (var wave in waveData)
                     {
                         foreach (var person in wave.NewParameter)
-                        await _dispatcher.Dispatch(new PersonSearchRequest(person.FirstName, person.LastName, person.DateOfBirth, person.Identifiers, person.Addresses, person.Phones, person.Names, person.RelatedPersons, person.Employments, new List<DataProvider>
-                        {
-                            new DataProvider { Completed = false, Name = wave.DataPartner, NumberOfRetries = 1, TimeBetweenRetries = 3 }
-                        }, searchRequestKey), Guid.NewGuid());
+                            await  _dispatcher.Dispatch(searchRequestKey, wave, person);
                     }
                 }
             
             }
             
         }
+
+     
     }
 }

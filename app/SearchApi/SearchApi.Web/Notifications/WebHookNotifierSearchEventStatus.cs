@@ -27,7 +27,7 @@ namespace SearchApi.Web.Notifications
      
 
         public WebHookNotifierSearchEventStatus(HttpClient httpClient, IOptions<SearchApiOptions> searchApiOptions,
-            ILogger<WebHookNotifierSearchEventStatus> logger, ICacheService cacheService, IDeepSearchService deepSearchService)
+            ILogger<WebHookNotifierSearchEventStatus> logger, IDeepSearchService deepSearchService)
         {
             _httpClient = httpClient;
             _logger = logger;

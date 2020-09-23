@@ -208,7 +208,14 @@ namespace DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
                  .ForMember(dest => dest.Gender, opt => opt.ConvertUsing(new PersonGenderConverter(), src => src.Gender))
                  .ForMember(dest => dest.PersonType, opt => opt.MapFrom(src => RelatedPersonPersonType.Relation.Value))
-                 .IncludeBase<PersonalInfo, DynamicsEntity>();
+                 .IncludeBase<PersonalInfo, DynamicsEntity>()
+                 .ReverseMap()
+                    .ForMember(dest => dest.Gender, opt => opt.ConvertUsing(new PersonGenderTypeConverter(), src => src.Gender))
+                    .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new RelatedPersonCategoryResponseConverter(), src => src.Type))
+                    .ForMember(dest => dest.PersonType, opt => opt.ConvertUsing(new RelatedPersonTypeResponseConverter(), src => src.PersonType.Value))
+                    .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => src.DateOfBirth == null ? (DateTimeOffset?)null : new DateTimeOffset((DateTime)src.DateOfBirth)))
+                    .ForMember(dest => dest.DateOfDeath, opt => opt.MapFrom(src => src.DateOfDeath == null ? (DateTimeOffset?)null : new DateTimeOffset((DateTime)src.DateOfDeath)))
+                    ;
 
             CreateMap<SSG_SearchapiRequestDataProvider, DataProvider>()
                  .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.AdaptorName.Replace(" ", String.Empty).ToUpperInvariant()));
@@ -282,7 +289,6 @@ namespace DynamicsAdapter.Web.Mapping
                     .ForMember(dest => dest.SelfEmployPercentOfShare, opt => opt.MapFrom(src => src.SelfEmployPercentOfShare))
                     .ForMember(dest => dest.IncomeAssistanceStatus, opt => opt.ConvertUsing(new IncomeAssistanceStatusResponseConverter(), src => src.IncomeAssistanceStatusOption.Value))
                     .ForMember(dest => dest.IncomeAssistanceDesc, opt => opt.MapFrom(src => src.IncomeAssistanceDesc))
-
             ;
 
             CreateMap<Vehicle, VehicleEntity>()

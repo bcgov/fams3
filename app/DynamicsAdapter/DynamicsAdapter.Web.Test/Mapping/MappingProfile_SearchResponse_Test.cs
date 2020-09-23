@@ -402,5 +402,31 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual("Joint", bankInfo.AccountType);
             Assert.AreEqual("branchNumer", bankInfo.BranchNumber);
         }
+
+        [Test]
+        public void SSG_Identity_should_map_to_RelatedPerson_correctly()
+        {
+            SSG_Identity relatedPerson = new SSG_Identity
+            {
+                PersonType = RelatedPersonPersonType.Relation.Value,
+                Type = PersonRelationType.Friend.Value,
+                FirstName = "firstName",
+                MiddleName = "middleNm",
+                LastName = "lastNm",
+                ThirdGivenName = "middleNm2",
+                Gender = GenderType.Female.Value,
+                DateOfBirth = new DateTime(2015, 1, 1),
+                DateOfDeath = new DateTime(2020, 10, 1)
+            };
+
+            RelatedPerson person = _mapper.Map<RelatedPerson>(relatedPerson);
+
+            Assert.AreEqual("firstName", person.FirstName);
+            Assert.AreEqual("Female", person.Gender);
+            Assert.AreEqual("Relation", person.PersonType);
+            Assert.AreEqual("Friend", person.Type);
+            Assert.AreEqual(new DateTimeOffset(new DateTime(2015, 1, 1)), person.DateOfBirth);
+            Assert.AreEqual(new DateTimeOffset(new DateTime(2020, 10, 1)), person.DateOfDeath);
+        }
     }
 }

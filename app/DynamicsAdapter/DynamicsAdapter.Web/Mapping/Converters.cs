@@ -208,7 +208,10 @@ namespace DynamicsAdapter.Web.Mapping
     {
         public string Convert(int? sourceMember, ResolutionContext context)
         {
-            return GenderDictionary.GenderTypeDictionary.FirstOrDefault(m => m.Value == sourceMember).Key;
+            if (sourceMember == null) return null;
+            return
+                Enumeration.GetAll<GenderType>().SingleOrDefault(m => m.Value == sourceMember)?.Name;
+
         }
     }
 
@@ -264,6 +267,28 @@ namespace DynamicsAdapter.Web.Mapping
             if (sourceMember == null) return null;
             return
                 Enumeration.GetAll<BankAccountType>().SingleOrDefault(m => m.Value == sourceMember)?.Name;
+
+        }
+    }
+
+    public class RelatedPersonCategoryResponseConverter : IValueConverter<int?, string>
+    {
+        public string Convert(int? sourceMember, ResolutionContext context)
+        {
+            if (sourceMember == null) return null;
+            return
+                Enumeration.GetAll<PersonRelationType>().SingleOrDefault(m => m.Value == sourceMember)?.Name;
+
+        }
+    }
+
+    public class RelatedPersonTypeResponseConverter : IValueConverter<int?, string>
+    {
+        public string Convert(int? sourceMember, ResolutionContext context)
+        {
+            if (sourceMember == null) return null;
+            return
+                Enumeration.GetAll<RelatedPersonPersonType>().SingleOrDefault(m => m.Value == sourceMember)?.Name;
 
         }
     }

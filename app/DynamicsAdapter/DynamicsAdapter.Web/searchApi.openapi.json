@@ -684,6 +684,15 @@
             "type": {
               "type": "string",
               "description": "The relationship type"
+            },
+            "personType": {
+              "type": "string",
+              "description": "The related person type"
+            },
+            "dateOfDeath": {
+              "type": "string",
+              "description": "The death date of the related person",
+              "format": "date-time"
             }
           }
         }

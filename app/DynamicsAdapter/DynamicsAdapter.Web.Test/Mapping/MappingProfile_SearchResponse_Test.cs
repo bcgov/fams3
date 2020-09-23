@@ -383,5 +383,24 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual("ClaimAmount", comClaim.ClaimAmount);
             Assert.AreEqual("response", comClaim.ResponseComments);
         }
+
+        [Test]
+        public void SSG_BankInfo_should_map_to_BankInfo_correctly()
+        {
+            SSG_Asset_BankingInformation bank = new SSG_Asset_BankingInformation
+            {
+                AccountNumber = "AccountNumber",
+                AccountType = BankAccountType.Joint.Value,
+                Branch = "branch",
+                BankName = "institutionName",
+                BranchNumber = "branchNumer",
+                TransitNumber = "TransitNumber"
+            };
+
+            BankInfo bankInfo = _mapper.Map<BankInfo>(bank);
+
+            Assert.AreEqual("Joint", bankInfo.AccountType);
+            Assert.AreEqual("branchNumer", bankInfo.BranchNumber);
+        }
     }
 }

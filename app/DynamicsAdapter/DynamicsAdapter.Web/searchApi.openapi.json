@@ -810,6 +810,14 @@
             "accountNumber": {
               "type": "string",
               "description": "The other name"
+            },
+            "accountType": {
+              "type": "string",
+              "description": "The type of bank account"
+            },
+            "branchNumber": {
+              "type": "string",
+              "description": "The branch number of bank account"
             }
           }
         }

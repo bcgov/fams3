@@ -24,7 +24,8 @@ namespace Fams3Adapter.Dynamics.Types
             "ssg_employmentstatus",
             "ssg_selfemploymentcompanytype",
             "ssg_selfemploymentcompanyrole",
-            "ssg_famsincomeassistanceclasses"
+            "ssg_famsincomeassistanceclasses",
+            "ssg_bankaccounttype"
         };
 
 

@@ -257,6 +257,17 @@ namespace DynamicsAdapter.Web.Mapping
         }
     }
 
+    public class AccountTypeResponseConverter : IValueConverter<int?, string>
+    {
+        public string Convert(int? sourceMember, ResolutionContext context)
+        {
+            if (sourceMember == null) return null;
+            return
+                Enumeration.GetAll<BankAccountType>().SingleOrDefault(m => m.Value == sourceMember)?.Name;
+
+        }
+    }
+
     public class PersonSearchCompletedMessageConvertor : IValueConverter<IEnumerable<Person>, string>
     {
         public string Convert(IEnumerable<Person> sourceMember, ResolutionContext context)

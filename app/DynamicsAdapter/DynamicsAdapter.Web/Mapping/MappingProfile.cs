@@ -243,7 +243,11 @@ namespace DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.BankName, opt => opt.MapFrom(src => src.BankName))
                  .ForMember(dest => dest.TransitNumber, opt => opt.MapFrom(src => src.TransitNumber))
                  .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => $"{src.Notes} {src.Description}"))
-                 .IncludeBase<PersonalInfo, DynamicsEntity>();
+                 .IncludeBase<PersonalInfo, DynamicsEntity>()
+                 .ReverseMap()
+                    .ForMember(dest => dest.BranchNumber, opt => opt.MapFrom(src => src.BranchNumber))
+                    .ForMember(dest => dest.AccountType, opt => opt.ConvertUsing(new AccountTypeResponseConverter(), src => src.AccountType.Value))
+                    ;
 
             CreateMap<Employer, EmploymentEntity>()
                   .ForMember(dest => dest.AddressLine1, opt => opt.MapFrom(src => (src.Address == null) ? string.Empty : src.Address.AddressLine1))
@@ -414,6 +418,8 @@ namespace DynamicsAdapter.Web.Mapping
                .ForMember(dest => dest.Employments, opt => opt.MapFrom(src => src.SSG_Employments))
                .ForMember(dest => dest.Vehicles, opt => opt.MapFrom(src => src.SSG_Asset_Vehicles))
                .ForMember(dest => dest.InsuranceClaims, opt => opt.MapFrom(src => src.SSG_Asset_ICBCClaims))
+               .ForMember(dest => dest.CompensationClaims, opt => opt.MapFrom(src => src.SSG_Asset_WorkSafeBcClaims))
+               .ForMember(dest => dest.BankInfos, opt => opt.MapFrom(src => src.SSG_BankInfos))
                .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new PersonSoughtRoleConverter(), src => src.SSG_SearchRequests[0].PersonSoughtRole))
                .ForMember(dest => dest.Agency, opt => opt.MapFrom(src => src.SSG_SearchRequests[0]))
                .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.SSG_Persons[0].FirstName))
@@ -435,7 +441,7 @@ namespace DynamicsAdapter.Web.Mapping
                .ForMember(dest => dest.DistinguishingFeatures, opt => opt.MapFrom(src => src.SSG_Persons[0].DistinguishingFeatures))
                .ForMember(dest => dest.ReferenceDates, opt => opt.MapFrom<PersonReferenceDatesResolver>())
                .ForMember(dest => dest.ResponseComments, opt => opt.MapFrom(src => src.SSG_Persons[0].ResponseComments));
-            //.ForMember(dest => dest.BankInfos, opt => opt.MapFrom(src => src.SSG_BankInfos))
+            //
             //.ForMember(dest => dest.CompensationClaims, opt => opt.MapFrom(src => src.SSG_Asset_WorkSafeBcClaims));
         }
     }

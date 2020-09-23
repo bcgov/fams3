@@ -30,6 +30,12 @@ namespace Fams3Adapter.Dynamics.BankInfo
 
         [JsonProperty("ssg_Person")]
         public virtual SSG_Person Person { get; set; }
+
+        [JsonProperty("ssg_bankaccounttype")]
+        public int? AccountType { get; set; }
+
+        [JsonProperty("ssg_branchnumber")]
+        public string BranchNumber { get; set; }
     }
 
     public class SSG_Asset_BankingInformation : BankingInformationEntity

@@ -428,5 +428,19 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(new DateTimeOffset(new DateTime(2015, 1, 1)), person.DateOfBirth);
             Assert.AreEqual(new DateTimeOffset(new DateTime(2020, 10, 1)), person.DateOfDeath);
         }
+
+        [Test]
+        public void SSG_Notese_should_map_to_RepsonseNote_correctly()
+        {
+            SSG_Notese notese = new SSG_Notese
+            {
+                Description = "note"
+            };
+
+            ResponseNote n = _mapper.Map<ResponseNote>(notese);
+
+            Assert.AreEqual("note", n.Description);
+
+        }
     }
 }

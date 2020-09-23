@@ -11,6 +11,7 @@ using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.InsuranceClaim;
 using Fams3Adapter.Dynamics.Name;
+using Fams3Adapter.Dynamics.Notes;
 using Fams3Adapter.Dynamics.OtherAsset;
 using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.PhoneNumber;
@@ -220,7 +221,8 @@ namespace DynamicsAdapter.Web.Mapping
             CreateMap<SSG_SearchapiRequestDataProvider, DataProvider>()
                  .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.AdaptorName.Replace(" ", String.Empty).ToUpperInvariant()));
 
-
+            CreateMap<SSG_Notese, ResponseNote>()
+                    .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description));
 
             CreateMap<Person, PersonEntity>()
                .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
@@ -426,6 +428,8 @@ namespace DynamicsAdapter.Web.Mapping
                .ForMember(dest => dest.InsuranceClaims, opt => opt.MapFrom(src => src.SSG_Asset_ICBCClaims))
                .ForMember(dest => dest.CompensationClaims, opt => opt.MapFrom(src => src.SSG_Asset_WorkSafeBcClaims))
                .ForMember(dest => dest.BankInfos, opt => opt.MapFrom(src => src.SSG_BankInfos))
+               .ForMember(dest => dest.RelatedPersons, opt => opt.MapFrom(src => src.SSG_Identities))
+               .ForMember(dest => dest.ResponseNotes, opt => opt.MapFrom(src => src.SSG_Noteses))
                .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new PersonSoughtRoleConverter(), src => src.SSG_SearchRequests[0].PersonSoughtRole))
                .ForMember(dest => dest.Agency, opt => opt.MapFrom(src => src.SSG_SearchRequests[0]))
                .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.SSG_Persons[0].FirstName))

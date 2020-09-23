@@ -247,6 +247,12 @@
               "items": {
                 "$ref": "#/definitions/InsuranceClaim"
               }
+            },
+            "responseNotes": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ResponseNote"
+              }
             }
           }
         }
@@ -1086,6 +1092,16 @@
           }
         }
       }
+    },
+    "ResponseNote": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/PersonalInfo"
+        },
+        {
+          "type": "object"
+        }
+      ]
     }
   },
   "tags": [

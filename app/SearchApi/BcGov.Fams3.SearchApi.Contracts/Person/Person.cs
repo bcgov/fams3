@@ -29,7 +29,7 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         public string DistinguishingFeatures { get; set; }
         public string WearGlasses { get; set; }
 
-       public string Type { get; set; }
+        public string Type { get; set; }
 
         public IEnumerable<PersonalIdentifier> Identifiers { get; set; }
         public IEnumerable<Address> Addresses { get; set; }
@@ -42,6 +42,7 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         public IEnumerable<OtherAsset> OtherAssets { get; set; }
         public IEnumerable<CompensationClaim> CompensationClaims { get; set; }
         public IEnumerable<InsuranceClaim> InsuranceClaims { get; set; }
+        public IEnumerable<ResponseNote> ResponseNotes { get; set; }
 
     }
 }

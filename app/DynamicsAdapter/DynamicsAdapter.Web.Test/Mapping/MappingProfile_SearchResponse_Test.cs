@@ -4,6 +4,7 @@ using DynamicsAdapter.Web.SearchAgency.Models;
 using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.Agency;
 using Fams3Adapter.Dynamics.BankInfo;
+using Fams3Adapter.Dynamics.CompensationClaim;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.InsuranceClaim;
@@ -364,6 +365,23 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual("ClaimAmount", claim.ClaimAmount);
             Assert.AreEqual("claimCentre", claim.ClaimCentre.Location);
             Assert.AreEqual("phonenumber", claim.AdjustorPhone.PhoneNumber);
+        }
+
+        [Test]
+        public void SSG_WorkSafeBCClaim_should_map_to_CompensationClaim_correctly()
+        {
+            SSG_Asset_WorkSafeBcClaim claim = new SSG_Asset_WorkSafeBcClaim
+            {
+                ClaimNumber = "claimNumber",
+                ClaimAmount = "ClaimAmount",
+                ResponseComments = "response"
+            };
+
+            CompensationClaim comClaim = _mapper.Map<CompensationClaim>(claim);
+
+            Assert.AreEqual("claimNumber", comClaim.ClaimNumber);
+            Assert.AreEqual("ClaimAmount", comClaim.ClaimAmount);
+            Assert.AreEqual("response", comClaim.ResponseComments);
         }
     }
 }

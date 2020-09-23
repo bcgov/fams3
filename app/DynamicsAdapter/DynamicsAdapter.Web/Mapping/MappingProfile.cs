@@ -327,7 +327,9 @@ namespace DynamicsAdapter.Web.Mapping
                   .ForMember(dest => dest.ClaimNumber, opt => opt.MapFrom(src => src.ClaimNumber))
                   .ForMember(dest => dest.ClaimStatus, opt => opt.MapFrom(src => src.ClaimStatus))
                   .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
-                  .IncludeBase<PersonalInfo, DynamicsEntity>();
+                  .IncludeBase<PersonalInfo, DynamicsEntity>()
+                  .ReverseMap()
+                    .ForMember(dest => dest.ClaimAmount, opt => opt.MapFrom(src => src.ClaimAmount));
 
             CreateMap<InsuranceClaim, ICBCClaimEntity>()
                   .ForMember(dest => dest.ClaimType, opt => opt.MapFrom(src => src.ClaimType))

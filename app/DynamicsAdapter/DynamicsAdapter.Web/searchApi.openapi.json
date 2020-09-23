@@ -971,6 +971,10 @@
                   "$ref": "#/definitions/Employer"
                 }
               ]
+            },
+            "claimAmount": {
+              "type": "string",
+              "description": "Claim amount"
             }
           }
         }

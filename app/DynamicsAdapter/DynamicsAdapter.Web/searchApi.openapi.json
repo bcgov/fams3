@@ -259,6 +259,12 @@
               "items": {
                 "$ref": "#/definitions/Investment"
               }
+            },
+            "safetyConcerns": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/SafetyConcern"
+              }
             }
           }
         }
@@ -1141,6 +1147,26 @@
               "type": "string",
               "description": "Maturity Date",
               "format": "date-time"
+            }
+          }
+        }
+      ]
+    },
+    "SafetyConcern": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/PersonalInfo"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "description": "type"
+            },
+            "detail": {
+              "type": "string",
+              "description": "detail"
             }
           }
         }

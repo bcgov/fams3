@@ -44,6 +44,6 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         public IEnumerable<InsuranceClaim> InsuranceClaims { get; set; }
         public IEnumerable<ResponseNote> ResponseNotes { get; set; }
         public IEnumerable<Investment> Investments { get; set; }
-
+        public IEnumerable<SafetyConcern> SafetyConcerns { get; set; }
     }
 }

@@ -15,6 +15,7 @@ using Fams3Adapter.Dynamics.OtherAsset;
 using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.RelatedPerson;
+using Fams3Adapter.Dynamics.SafetyConcern;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Fams3Adapter.Dynamics.SearchResponse;
 using Fams3Adapter.Dynamics.Types;
@@ -103,7 +104,11 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 SSG_Asset_WorkSafeBcClaims = new List<SSG_Asset_WorkSafeBcClaim>
                 {
                      new SSG_Asset_WorkSafeBcClaim{ ClaimNumber="claim" }
-                }.ToArray()
+                }.ToArray(),
+                SSG_SafetyConcernDetails = new List<SSG_SafetyConcernDetail>
+                {
+                     new SSG_SafetyConcernDetail{ Detail="detail" }
+                }.ToArray(),
             };
             Person person = _mapper.Map<Person>(response);
             Assert.AreEqual(1, person.Names.Count);
@@ -118,6 +123,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(1, person.CompensationClaims.Count);
             Assert.AreEqual(1, person.Vehicles.Count);
             Assert.AreEqual(1, person.OtherAssets.Count);
+            Assert.AreEqual(1, person.SafetyConcerns.Count);
         }
 
         [Test]
@@ -490,6 +496,21 @@ namespace DynamicsAdapter.Web.Test.Mapping
 
             Assert.AreEqual("assetDesc", asset.Description);
             Assert.AreEqual("typeDesc", asset.TypeDescription);
+        }
+
+        [Test]
+        public void SSG_SafetyConcernDetail_should_map_to_SafetyConcern_correctly()
+        {
+            SSG_SafetyConcernDetail safe = new SSG_SafetyConcernDetail
+            {
+                Detail = "detail",
+                Type = "type"
+            };
+
+            SafetyConcern concern = _mapper.Map<SafetyConcern>(safe);
+
+            Assert.AreEqual("detail", concern.Description);
+            Assert.AreEqual("type", concern.Type);
         }
     }
 }

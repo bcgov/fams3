@@ -11,6 +11,7 @@ using Fams3Adapter.Dynamics.OtherAsset;
 using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.RelatedPerson;
+using Fams3Adapter.Dynamics.SafetyConcern;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Fams3Adapter.Dynamics.Vehicle;
 using Newtonsoft.Json;
@@ -79,8 +80,8 @@ namespace Fams3Adapter.Dynamics.SearchResponse
         [JsonProperty("ssg_ssg_searchrequestresponse_ssg_phonenumber")]
         public SSG_PhoneNumber[] SSG_PhoneNumbers { get; set; }
 
-        //[JsonProperty("ssg_ssg_searchrequestresponse_ssg_safetyconcerndetail_ResponseId")]
-        //public SSG_SafetyConcernDetail[] SSG_SafetyConcernDetails { get; set; }
+        [JsonProperty("ssg_ssg_searchrequestresponse_ssg_safetyconcerndetail_ResponseId")]
+        public SSG_SafetyConcernDetail[] SSG_SafetyConcernDetails { get; set; }
 
         [JsonProperty("ssg_ssg_searchrequestresponse_ssg_searchrequest_SearchRequestResponse")]
         public SSG_SearchRequest[] SSG_SearchRequests { get; set; }

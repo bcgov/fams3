@@ -148,32 +148,33 @@ namespace DynamicsAdapter.Web.Mapping
 
             if (!string.IsNullOrEmpty(source?.PrimaryContactPhone))
                 phones.Add(new Phone { PhoneNumber = source.PrimaryContactPhone, Extension = source.PrimaryContactPhoneExt, Type = "primaryContactPhone" });
-
-            foreach (SSG_EmploymentContact contact in source.SSG_EmploymentContacts)
+            if (source.SSG_EmploymentContacts != null)
             {
-                if (!string.IsNullOrEmpty(contact.PhoneNumber))
+                foreach (SSG_EmploymentContact contact in source.SSG_EmploymentContacts)
                 {
-                    phones.Add(new Phone
+                    if (!string.IsNullOrEmpty(contact.PhoneNumber))
                     {
-                        ContactName = contact.ContactName,
-                        PhoneNumber = contact.PhoneNumber,
-                        Extension = contact.PhoneExtension,
-                        Description = contact.Description,
-                        Type = contact.PhoneType == null ? null : Enumeration.GetAll<TelephoneNumberType>().SingleOrDefault(m => m.Value == contact.PhoneType.Value)?.Name
-                    });
-                }
-                if (!string.IsNullOrEmpty(contact.FaxNumber))
-                {
-                    phones.Add(new Phone
+                        phones.Add(new Phone
+                        {
+                            ContactName = contact.ContactName,
+                            PhoneNumber = contact.PhoneNumber,
+                            Extension = contact.PhoneExtension,
+                            Description = contact.Description,
+                            Type = contact.PhoneType == null ? null : Enumeration.GetAll<TelephoneNumberType>().SingleOrDefault(m => m.Value == contact.PhoneType.Value)?.Name
+                        });
+                    }
+                    if (!string.IsNullOrEmpty(contact.FaxNumber))
                     {
-                        ContactName = contact.ContactName,
-                        PhoneNumber = contact.FaxNumber,
-                        Description = contact.Description,
-                        Type = contact.PhoneType == null ? "Fax" : Enumeration.GetAll<TelephoneNumberType>().SingleOrDefault(m => m.Value == contact.PhoneType.Value)?.Name
-                    });
+                        phones.Add(new Phone
+                        {
+                            ContactName = contact.ContactName,
+                            PhoneNumber = contact.FaxNumber,
+                            Description = contact.Description,
+                            Type = contact.PhoneType == null ? "Fax" : Enumeration.GetAll<TelephoneNumberType>().SingleOrDefault(m => m.Value == contact.PhoneType.Value)?.Name
+                        });
+                    }
                 }
             }
-
             return phones;
         }
     }

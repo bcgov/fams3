@@ -8,6 +8,7 @@ using Fams3Adapter.Dynamics.CompensationClaim;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.InsuranceClaim;
+using Fams3Adapter.Dynamics.Investment;
 using Fams3Adapter.Dynamics.Name;
 using Fams3Adapter.Dynamics.Notes;
 using Fams3Adapter.Dynamics.OtherAsset;
@@ -95,12 +96,27 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 {
                     new SSG_SearchRequest{Agency = new SSG_Agency{AgencyCode="FMEP" } }
                 }.ToArray(),
+                SSG_Asset_Investments = new List<SSG_Asset_Investment>
+                {
+                    new SSG_Asset_Investment{ AccountNumber="accountNumber" }
+                }.ToArray(),
+                SSG_Asset_WorkSafeBcClaims = new List<SSG_Asset_WorkSafeBcClaim>
+                {
+                     new SSG_Asset_WorkSafeBcClaim{ ClaimNumber="claim" }
+                }.ToArray(),
             };
             Person person = _mapper.Map<Person>(response);
             Assert.AreEqual(1, person.Names.Count);
             Assert.AreEqual(1, person.Identifiers.Count);
             Assert.AreEqual(1, person.Addresses.Count);
             Assert.AreEqual(1, person.Phones.Count);
+            Assert.AreEqual(1, person.Investments.Count);
+            Assert.AreEqual(1, person.RelatedPersons.Count);
+            Assert.AreEqual(1, person.BankInfos.Count);
+            Assert.AreEqual(1, person.Employments.Count);
+            Assert.AreEqual(1, person.InsuranceClaims.Count);
+            Assert.AreEqual(1, person.CompensationClaims.Count);
+            Assert.AreEqual(1, person.Vehicles.Count);
         }
 
         [Test]
@@ -440,7 +456,24 @@ namespace DynamicsAdapter.Web.Test.Mapping
             ResponseNote n = _mapper.Map<ResponseNote>(notese);
 
             Assert.AreEqual("note", n.Description);
+        }
 
+        [Test]
+        public void SSG_Asset_Investment_should_map_to_Investment_correctly()
+        {
+            SSG_Asset_Investment invest = new SSG_Asset_Investment
+            {
+                AccountNumber = "accountNumber",
+                Company = "company",
+                BalanceAmount = "1234",
+                Location = "location",
+                MaturityDate = new DateTime(2019, 1, 1),
+                Type = "type"
+            };
+
+            Investment i = _mapper.Map<Investment>(invest);
+
+            Assert.AreEqual(new DateTimeOffset(new DateTime(2019, 1, 1)), i.MaturityDate);
         }
     }
 }

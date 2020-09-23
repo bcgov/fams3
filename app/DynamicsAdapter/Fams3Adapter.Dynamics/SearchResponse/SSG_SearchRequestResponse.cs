@@ -4,6 +4,7 @@ using Fams3Adapter.Dynamics.CompensationClaim;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.InsuranceClaim;
+using Fams3Adapter.Dynamics.Investment;
 using Fams3Adapter.Dynamics.Name;
 using Fams3Adapter.Dynamics.Notes;
 using Fams3Adapter.Dynamics.OtherAsset;
@@ -39,8 +40,8 @@ namespace Fams3Adapter.Dynamics.SearchResponse
         [JsonProperty("ssg_ssg_searchrequestresponse_ssg_asset_icbcclaim_responseid")]
         public SSG_Asset_ICBCClaim[] SSG_Asset_ICBCClaims { get; set; }
 
-        //[JsonProperty("ssg_ssg_searchrequestresponse_ssg_asset_investment_ResponseId")]
-        //public SSG_Asset_Investment[] SSG_Asset_Investments { get; set; }
+        [JsonProperty("ssg_ssg_searchrequestresponse_ssg_asset_investment_ResponseId")]
+        public SSG_Asset_Investment[] SSG_Asset_Investments { get; set; }
 
         //[JsonProperty("ssg_ssg_searchrequestresponse_ssg_asset_pensiondisability_ResponseId")]
         //public SSG_Asset_Pension[] SSG_Asset_Pensions{ get; set; }

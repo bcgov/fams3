@@ -61,6 +61,7 @@ namespace Fams3Adapter.Dynamics.SearchResponse
                 .Expand(x => x.SSG_Persons)
                 .Expand(x => x.SSG_PhoneNumbers)
                 .Expand(x => x.SSG_SearchRequests)
+                .Expand(x => x.SSG_Asset_Investments)
                 .FindEntryAsync(cancellationToken);
 
             if (ssgSearchResponse == null) return null;

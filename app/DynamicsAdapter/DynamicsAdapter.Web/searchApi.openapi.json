@@ -253,6 +253,12 @@
               "items": {
                 "$ref": "#/definitions/ResponseNote"
               }
+            },
+            "investments": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Investment"
+              }
             }
           }
         }
@@ -1100,6 +1106,43 @@
         },
         {
           "type": "object"
+        }
+      ]
+    },
+    "Investment": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/PersonalInfo"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "accountNumber": {
+              "type": "string",
+              "description": "Account Number"
+            },
+            "company": {
+              "type": "string",
+              "description": "Company"
+            },
+            "location": {
+              "type": "string",
+              "description": "Location"
+            },
+            "balanceAmount": {
+              "type": "string",
+              "description": "Balance Amount"
+            },
+            "type": {
+              "type": "string",
+              "description": "Type of Investment"
+            },
+            "maturityDate": {
+              "type": "string",
+              "description": "Maturity Date",
+              "format": "date-time"
+            }
+          }
         }
       ]
     }

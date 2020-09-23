@@ -332,7 +332,8 @@ namespace DynamicsAdapter.Web.Mapping
                   .ForMember(dest => dest.Description, opt => opt.MapFrom(src => $"{src.ReferenceDescription} {src.ReferenceValue}"))
                   .ForMember(dest => dest.AssetDescription, opt => opt.MapFrom(src => src.Description))
                   .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
-                  .IncludeBase<PersonalInfo, DynamicsEntity>();
+                  .IncludeBase<PersonalInfo, DynamicsEntity>()
+                  .ReverseMap();
 
             CreateMap<CompensationClaim, CompensationClaimEntity>()
                   .ForMember(dest => dest.ClaimType, opt => opt.MapFrom(src => src.ClaimType))
@@ -437,6 +438,7 @@ namespace DynamicsAdapter.Web.Mapping
                .ForMember(dest => dest.RelatedPersons, opt => opt.MapFrom(src => src.SSG_Identities))
                .ForMember(dest => dest.ResponseNotes, opt => opt.MapFrom(src => src.SSG_Noteses))
                .ForMember(dest => dest.Investments, opt => opt.MapFrom(src => src.SSG_Asset_Investments))
+               .ForMember(dest => dest.OtherAssets, opt => opt.MapFrom(src => src.SSG_Asset_Others))
                .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new PersonSoughtRoleConverter(), src => src.SSG_SearchRequests[0].PersonSoughtRole))
                .ForMember(dest => dest.Agency, opt => opt.MapFrom(src => src.SSG_SearchRequests[0]))
                .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.SSG_Persons[0].FirstName))

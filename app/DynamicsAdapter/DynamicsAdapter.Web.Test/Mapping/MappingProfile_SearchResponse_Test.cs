@@ -103,7 +103,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 SSG_Asset_WorkSafeBcClaims = new List<SSG_Asset_WorkSafeBcClaim>
                 {
                      new SSG_Asset_WorkSafeBcClaim{ ClaimNumber="claim" }
-                }.ToArray(),
+                }.ToArray()
             };
             Person person = _mapper.Map<Person>(response);
             Assert.AreEqual(1, person.Names.Count);
@@ -117,6 +117,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(1, person.InsuranceClaims.Count);
             Assert.AreEqual(1, person.CompensationClaims.Count);
             Assert.AreEqual(1, person.Vehicles.Count);
+            Assert.AreEqual(1, person.OtherAssets.Count);
         }
 
         [Test]
@@ -474,6 +475,21 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Investment i = _mapper.Map<Investment>(invest);
 
             Assert.AreEqual(new DateTimeOffset(new DateTime(2019, 1, 1)), i.MaturityDate);
+        }
+
+        [Test]
+        public void SSG_Other_asset_should_map_to_OtherAsset_correctly()
+        {
+            SSG_Asset_Other other = new SSG_Asset_Other
+            {
+                AssetDescription = "assetDesc",
+                TypeDescription = "typeDesc"
+            };
+
+            OtherAsset asset = _mapper.Map<OtherAsset>(other);
+
+            Assert.AreEqual("assetDesc", asset.Description);
+            Assert.AreEqual("typeDesc", asset.TypeDescription);
         }
     }
 }

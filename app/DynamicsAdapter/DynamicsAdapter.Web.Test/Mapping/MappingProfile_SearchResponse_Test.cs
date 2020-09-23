@@ -343,5 +343,27 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual("make", vehicle.Make);
             Assert.AreEqual(1, vehicle.Owners.Count);
         }
+
+        [Test]
+        public void SSG_ICBCClaim_should_map_to_InsuranceClaim_correctly()
+        {
+            SSG_Asset_ICBCClaim icbcClaim = new SSG_Asset_ICBCClaim
+            {
+                ClaimNumber = "claimNumber",
+                ClaimType = "ClaimType",
+                ClaimAmount = "ClaimAmount",
+                ClaimCenterLocationCode = "claimCentre",
+                AdjusterFirstName = "adjustfirstName",
+                AdjusterLastName = "adjustlastName",
+                AdjusterPhoneNumber = "phonenumber"
+            };
+
+            InsuranceClaim claim = _mapper.Map<InsuranceClaim>(icbcClaim);
+
+            Assert.AreEqual("adjustfirstName", claim.Adjustor.FirstName);
+            Assert.AreEqual("ClaimAmount", claim.ClaimAmount);
+            Assert.AreEqual("claimCentre", claim.ClaimCentre.Location);
+            Assert.AreEqual("phonenumber", claim.AdjustorPhone.PhoneNumber);
+        }
     }
 }

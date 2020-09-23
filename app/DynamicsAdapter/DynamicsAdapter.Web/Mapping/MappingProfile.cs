@@ -354,7 +354,16 @@ namespace DynamicsAdapter.Web.Mapping
                   .ForMember(dest => dest.City, opt => opt.MapFrom(src => src.ClaimCentre == null ? null : src.ClaimCentre.ContactAddress == null ? null : src.ClaimCentre.ContactAddress.City))
                   .ForMember(dest => dest.SupplierCountryCode, opt => opt.MapFrom(src => src.ClaimCentre == null ? null : src.ClaimCentre.ContactAddress == null ? null : src.ClaimCentre.ContactAddress.CountryRegion))
                   .ForMember(dest => dest.SupplierCountrySubdivisionCode, opt => opt.MapFrom(src => src.ClaimCentre == null ? null : src.ClaimCentre.ContactAddress == null ? null : src.ClaimCentre.ContactAddress.StateProvince))
-                  .IncludeBase<PersonalInfo, DynamicsEntity>();
+                  .IncludeBase<PersonalInfo, DynamicsEntity>()
+                  .ReverseMap()
+                    .ForMember(dest => dest.ClaimAmount, opt => opt.MapFrom(src => src.ClaimAmount))
+                    .ForMember(dest => dest.Adjustor, opt => opt.MapFrom(src =>
+                        (string.IsNullOrEmpty(src.AdjusterFirstName) && string.IsNullOrEmpty(src.AdjusterLastName)) ? null : new Name { FirstName = src.AdjusterFirstName, LastName = src.AdjusterLastName }))
+                    .ForMember(dest => dest.AdjustorPhone, opt => opt.MapFrom(src =>
+                        string.IsNullOrEmpty(src.AdjusterPhoneNumber) ? null : new Phone { PhoneNumber = src.AdjusterPhoneNumber, Extension = src.AdjusterPhoneNumberExt }))
+                    .ForMember(dest => dest.ClaimCentre, opt => opt.MapFrom(src =>
+                        string.IsNullOrEmpty(src.ClaimCenterLocationCode) ? null : new ClaimCentre { Location = src.ClaimCenterLocationCode }))
+                  ;
 
             CreateMap<Phone, SimplePhoneNumberEntity>()
                   .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
@@ -402,6 +411,7 @@ namespace DynamicsAdapter.Web.Mapping
                .ForMember(dest => dest.Phones, opt => opt.MapFrom(src => src.SSG_PhoneNumbers))
                .ForMember(dest => dest.Employments, opt => opt.MapFrom(src => src.SSG_Employments))
                .ForMember(dest => dest.Vehicles, opt => opt.MapFrom(src => src.SSG_Asset_Vehicles))
+               .ForMember(dest => dest.InsuranceClaims, opt => opt.MapFrom(src => src.SSG_Asset_ICBCClaims))
                .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new PersonSoughtRoleConverter(), src => src.SSG_SearchRequests[0].PersonSoughtRole))
                .ForMember(dest => dest.Agency, opt => opt.MapFrom(src => src.SSG_SearchRequests[0]))
                .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.SSG_Persons[0].FirstName))

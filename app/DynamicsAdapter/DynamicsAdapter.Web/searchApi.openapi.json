@@ -1033,6 +1033,10 @@
                   "$ref": "#/definitions/ClaimCentre"
                 }
               ]
+            },
+            "claimAmount": {
+              "type": "string",
+              "description": "Claim Amount"
             }
           }
         }

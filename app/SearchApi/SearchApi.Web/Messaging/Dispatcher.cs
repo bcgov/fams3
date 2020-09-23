@@ -98,10 +98,7 @@ namespace SearchApi.Web.Messaging
                     {
                         person
                     },
-                    NewParameter = new List<Person>
-                    {
-                        person
-                    },
+                    NewParameter =null,
                     CurrentWave = 1,
                     DataPartner = dataPartner,
                     SearchRequestKey = person.SearchRequestKey

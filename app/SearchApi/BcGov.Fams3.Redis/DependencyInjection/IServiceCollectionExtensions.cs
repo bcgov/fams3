@@ -15,9 +15,10 @@ namespace BcGov.Fams3.Redis.DependencyInjection
         /// <param name="services">The service collection.</param>
         /// <param name="redisConfiguration">The redis configration.</param>
         /// <typeparam name="T">The typof of serializer. <see cref="ISerializer" />.</typeparam>
-        private static IServiceCollection AddStackExchangeRedisExtensions<T>(this IServiceCollection services, RedisConfiguration redisConfiguration)
+        private static void AddStackExchangeRedisExtensions<T>(this IServiceCollection services, RedisConfiguration redisConfiguration)
             where T : class, ISerializer, new()
         {
+         
             services.AddSingleton<IRedisCacheClient, RedisCacheClient>();
             services.AddSingleton<IRedisCacheConnectionPoolManager, RedisCacheConnectionPoolManager>();
             services.AddSingleton<ISerializer, T>();
@@ -27,9 +28,9 @@ namespace BcGov.Fams3.Redis.DependencyInjection
                 return provider.GetRequiredService<IRedisCacheClient>().GetDbFromConfiguration();
             });
 
-            services.AddSingleton(redisConfiguration);
+          
 
-            return services;
+           // return services;
         }
 
         public static void AddCacheService(this IServiceCollection services, RedisConfiguration redisConfig)

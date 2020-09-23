@@ -44,7 +44,7 @@ services:
       Redis__ConnectRetry: 2
       Redis_Hosts__0__Host: ${REDIS__HOST}
       Redis_Hosts__0__Port: 6379
-      DeepSearch_MaxWaveCount: 4
+      DeepSearch__MaxWaveCount: 4
       JAEGER_ENDPOINT: http://jaeger-collector:14268/api/traces
       SearchApi__WebHooks__0__Name: dynadapter
       SearchApi__WebHooks__0__Uri: http://dynadapter/PersonSearch

@@ -282,7 +282,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 AddressLine1 = "employmentAddress1",
                 AddressLine2 = "employmentAddress2",
                 City = "employmentCity",
-                ResponseComments = "postalCode",
+                PostalCode = "postalCode",
                 CountryText = "country",
                 CountrySubdivisionText = "province",
                 EmploymentStatus = EmploymentStatusType.NotEmployed.Value,
@@ -312,10 +312,14 @@ namespace DynamicsAdapter.Web.Test.Mapping
 
             Employment e = _mapper.Map<Employment>(employment);
 
-            //Assert.AreEqual("123456", phone.PhoneNumber);
-            //Assert.AreEqual("123", phone.Extension);
-            //Assert.AreEqual("home", phone.Type);
-            //Assert.AreEqual("responseComments", phone.ResponseComments);
+            Assert.AreEqual(true, e.IncomeAssistance);
+            Assert.AreEqual("legalBizName", e.Employer.Name);
+            Assert.AreEqual("dbaName", e.Employer.DbaName);
+            Assert.AreEqual("employmentAddress1", e.Employer.Address.AddressLine1);
+            Assert.AreEqual("Not Employed", e.EmploymentStatus);
+            Assert.AreEqual("Extraprovincial Non-Share Corporation", e.SelfEmployComType);
+            Assert.AreEqual(5, e.Employer.Phones.Count);
+
         }
 
         //[Test]

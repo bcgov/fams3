@@ -212,6 +212,51 @@ namespace DynamicsAdapter.Web.Mapping
         }
     }
 
+
+    public class EmploymentStatusResponseConverter : IValueConverter<int?, string>
+    {
+        public string Convert(int? sourceMember, ResolutionContext context)
+        {
+            if (sourceMember == null) return null;
+            return
+                Enumeration.GetAll<EmploymentStatusType>().SingleOrDefault(m => m.Value == sourceMember)?.Name;
+
+        }
+    }
+
+    public class SelfEmployComTypeResponseConverter : IValueConverter<int?, string>
+    {
+        public string Convert(int? sourceMember, ResolutionContext context)
+        {
+            if (sourceMember == null) return null;
+            return
+                Enumeration.GetAll<SelfEmploymentCompanyType>().SingleOrDefault(m => m.Value == sourceMember)?.Name;
+
+        }
+    }
+
+    public class SelfEmployComRoleResponseConverter : IValueConverter<int?, string>
+    {
+        public string Convert(int? sourceMember, ResolutionContext context)
+        {
+            if (sourceMember == null) return null;
+            return
+                Enumeration.GetAll<SelfEmploymentCompanyRoleType>().SingleOrDefault(m => m.Value == sourceMember)?.Name;
+
+        }
+    }
+
+    public class IncomeAssistanceStatusResponseConverter : IValueConverter<int?, string>
+    {
+        public string Convert(int? sourceMember, ResolutionContext context)
+        {
+            if (sourceMember == null) return null;
+            return
+                Enumeration.GetAll<IncomeAssistanceStatusType>().SingleOrDefault(m => m.Value == sourceMember)?.Name;
+
+        }
+    }
+
     public class PersonSearchCompletedMessageConvertor : IValueConverter<IEnumerable<Person>, string>
     {
         public string Convert(IEnumerable<Person> sourceMember, ResolutionContext context)
@@ -250,6 +295,18 @@ namespace DynamicsAdapter.Web.Mapping
                 return EmploymentRecordType.Employment.Value;
             else
                 return EmploymentRecordType.IncomeAssistance.Value;
+        }
+    }
+    public class IncomeAssistanceResponseConvertor : IValueConverter<int?, bool?>
+    {
+        public bool? Convert(int? sourceMember, ResolutionContext context)
+        {
+            if (sourceMember == null)
+                return false;
+            else if (sourceMember == EmploymentRecordType.IncomeAssistance.Value)
+                return true;
+
+            return false;
         }
     }
 

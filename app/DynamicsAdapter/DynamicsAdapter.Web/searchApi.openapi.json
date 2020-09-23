@@ -504,6 +504,10 @@
                   "$ref": "#/definitions/OwnerType"
                 }
               ]
+            },
+            "contactName": {
+              "type": "string",
+              "description": "The contact person name for this phone number "
             }
           }
         }
@@ -720,6 +724,28 @@
             "website": {
               "type": "string",
               "description": "company website"
+            },
+            "employmentType": {
+              "type": "string",
+              "description": "the employment type"
+            },
+            "employmentStatus": {
+              "type": "string"
+            },
+            "selfEmployComRegistrationNo": {
+              "type": "string"
+            },
+            "selfEmployComType": {
+              "type": "string"
+            },
+            "selfEmployComRole": {
+              "type": "string"
+            },
+            "selfEmployPercentOfShare": {
+              "type": "string"
+            },
+            "incomeAssistanceDesc": {
+              "type": "string"
             }
           }
         }
@@ -754,6 +780,10 @@
         "contactPerson": {
           "type": "string",
           "description": "The full name  of the contact"
+        },
+        "dbaName": {
+          "type": "string",
+          "description": "The Employer DBA name"
         }
       }
     },

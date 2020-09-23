@@ -319,34 +319,29 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual("Not Employed", e.EmploymentStatus);
             Assert.AreEqual("Extraprovincial Non-Share Corporation", e.SelfEmployComType);
             Assert.AreEqual(5, e.Employer.Phones.Count);
-
         }
 
-        //[Test]
-        //public void Agent_invliad_request_ID_SearchRequestOrdered_should_map_normally()
-        //{
-        //    SearchRequestOrdered searchRequestOrdered = new SearchRequestOrdered()
-        //    {
-        //        Action = RequestAction.NEW,
-        //        Person = new Person()
-        //        {
-        //            Agency = new Agency()
-        //            {
-        //                Agent = new Name() { },
-        //                AgentContact = new List<Phone>
-        //                {
-        //                },
-        //                Code = "FMEP",
-        //                RequestId = "12222393288",
+        [Test]
+        public void SSG_Vehicle_should_map_to_Vehicle_correctly()
+        {
+            SSG_Asset_Vehicle v = new SSG_Asset_Vehicle
+            {
+                Year = "2016",
+                Make = "make",
+                Model = "model",
+                Color = "color",
+                PlateNumber = "plateNumber",
+                Vin = "vin",
+                Type = "v type",
+                LeasingCom = "leasingCom",
+                Lessee = "lessee",
+                LeasingComAddr = "leasingComAddr"
+            };
 
-        //            },
-        //        },
-        //    };
-        //    SearchRequestEntity entity = _mapper.Map<SearchRequestEntity>(searchRequestOrdered);
-        //    Assert.AreEqual("12222393288", entity.OriginalRequestorReference);
-        //    Assert.AreEqual(null, entity.PayerId);
-        //    Assert.AreEqual(null, entity.CaseTrackingId);
-        //    Assert.AreEqual(null, entity.PersonSoughtRole);
-        //}
+            Vehicle vehicle = _mapper.Map<Vehicle>(v);
+
+            Assert.AreEqual("make", vehicle.Make);
+            Assert.AreEqual(1, vehicle.Owners.Count);
+        }
     }
 }

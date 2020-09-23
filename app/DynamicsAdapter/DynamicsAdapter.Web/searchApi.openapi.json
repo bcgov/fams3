@@ -841,6 +841,26 @@
               "items": {
                 "$ref": "#/definitions/InvolvedParty"
               }
+            },
+            "year": {
+              "type": "string",
+              "description": "vehicle year"
+            },
+            "make": {
+              "type": "string",
+              "description": "vehicle Make"
+            },
+            "model": {
+              "type": "string",
+              "description": "vehicle Model"
+            },
+            "color": {
+              "type": "string",
+              "description": "vehicle Color"
+            },
+            "type": {
+              "type": "string",
+              "description": "vehicle Type"
             }
           }
         }
@@ -873,6 +893,9 @@
             "organization": {
               "type": "string",
               "description": "Organization involved. If this is returned, name is not returned"
+            },
+            "address": {
+              "type": "string"
             }
           }
         }

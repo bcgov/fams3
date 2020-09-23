@@ -6,6 +6,7 @@ using Fams3Adapter.Dynamics.OptionSets.Models;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using Fams3Adapter.Dynamics.SearchResponse;
 using Fams3Adapter.Dynamics.Types;
+using Fams3Adapter.Dynamics.Vehicle;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -193,6 +194,26 @@ namespace DynamicsAdapter.Web.Mapping
                 ZipPostalCode = source.PostalCode
             };
             return addr;
+        }
+    }
+
+    public class VehicleOwnersRespnseResolver : IValueResolver<VehicleEntity, Vehicle, ICollection<InvolvedParty>>
+    {
+        public ICollection<InvolvedParty> Resolve(VehicleEntity source, Vehicle destination, ICollection<InvolvedParty> destMember, ResolutionContext context)
+        {
+            List<InvolvedParty> owners = new List<InvolvedParty>();
+            if (!string.IsNullOrEmpty(source.Lessee) || !string.IsNullOrEmpty(source.LeasingCom))
+            {
+                owners.Add(new InvolvedParty
+                {
+                    Address = source.LeasingComAddr,
+                    Name = new Name { FirstName = source.Lessee, Type = "Lessee full name" },
+                    Organization = source.LeasingCom,
+                    Type = "Leased"
+                });
+                return owners;
+            }
+            return null;
         }
     }
 }

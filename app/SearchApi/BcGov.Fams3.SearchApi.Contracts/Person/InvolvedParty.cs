@@ -11,8 +11,8 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         [Description("Type description for the party involved")]
         public string TypeDescription { get; set; }
         [Description("Organization involved. If this is returned, name is not returned")]
-        public  string Organization { get; set; }
+        public string Organization { get; set; }
+        public string Address { get; set; }
 
-       
     }
 }

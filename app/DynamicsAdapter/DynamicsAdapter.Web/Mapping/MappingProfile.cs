@@ -287,7 +287,22 @@ namespace DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.Discription, opt => opt.MapFrom(src => src.Description))
                  .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
                  .ForMember(dest => dest.Vin, opt => opt.MapFrom(src => src.Vin))
-                 .IncludeBase<PersonalInfo, DynamicsEntity>();
+                 .IncludeBase<PersonalInfo, DynamicsEntity>()
+                 .ReverseMap()
+                    .ForMember(dest => dest.Year, opt => opt.MapFrom(src => src.Year))
+                    .ForMember(dest => dest.Make, opt => opt.MapFrom(src => src.Make))
+                    .ForMember(dest => dest.Color, opt => opt.MapFrom(src => src.Color))
+                    .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type))
+                    .ForMember(dest => dest.Model, opt => opt.MapFrom(src => src.Model))
+                    .ForMember(dest => dest.Owners, opt => opt.MapFrom<VehicleOwnersRespnseResolver>())
+                 ;
+
+            CreateMap<VehicleEntity, InvolvedParty>()
+             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Lessee))
+             .ForMember(dest => dest.Organization, opt => opt.MapFrom(src => src.LeasingCom))
+             .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.LeasingComAddr))
+             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => string.IsNullOrEmpty(src.Lessee) ? null : "Leased"))
+             ;
 
             CreateMap<InvolvedParty, AssetOwnerEntity>()
                  .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
@@ -386,6 +401,7 @@ namespace DynamicsAdapter.Web.Mapping
                .ForMember(dest => dest.Addresses, opt => opt.MapFrom(src => src.SSG_Addresses))
                .ForMember(dest => dest.Phones, opt => opt.MapFrom(src => src.SSG_PhoneNumbers))
                .ForMember(dest => dest.Employments, opt => opt.MapFrom(src => src.SSG_Employments))
+               .ForMember(dest => dest.Vehicles, opt => opt.MapFrom(src => src.SSG_Asset_Vehicles))
                .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new PersonSoughtRoleConverter(), src => src.SSG_SearchRequests[0].PersonSoughtRole))
                .ForMember(dest => dest.Agency, opt => opt.MapFrom(src => src.SSG_SearchRequests[0]))
                .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.SSG_Persons[0].FirstName))

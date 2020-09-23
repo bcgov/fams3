@@ -34,6 +34,7 @@ using Quartz;
 using Quartz.Impl;
 using Quartz.Spi;
 using Simple.OData.Client;
+using StackExchange.Redis.Extensions.Core.Configuration;
 using System;
 using System.Collections.Generic;
 

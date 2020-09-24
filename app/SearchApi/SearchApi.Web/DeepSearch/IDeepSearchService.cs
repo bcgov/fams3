@@ -5,9 +5,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using SearchApi.Web.Configuration;
-using SearchApi.Web.Controllers;
 using SearchApi.Web.DeepSearch.Schema;
-using SearchApi.Web.Messaging;
 using SearchApi.Web.Notifications;
 using SearchApi.Web.Search;
 using System;
@@ -23,6 +21,7 @@ namespace SearchApi.Web.DeepSearch
    
 
         Task UpdateDataPartner(string searchRequestKey, string dataPartner, string eventName);
+        Task UpdateParameters(string eventName, PersonSearchCompleted eventStatus, string searchRequestKey);
 
 
         Task ProcessWaveSearch(string searchRequestKey);
@@ -71,6 +70,8 @@ namespace SearchApi.Web.DeepSearch
                 {
                     var searchRequest = JsonConvert.SerializeObject(await _cacheService.GetRequest(searchRequestKey)).UpdateDataPartner(dataPartner);
                     await _cacheService.SaveRequest(searchRequest);
+                  
+                   
                 }
             }
             catch (Exception exception)
@@ -95,6 +96,57 @@ namespace SearchApi.Web.DeepSearch
             }
         }
 
+        public async Task UpdateParameters(string eventName, PersonSearchCompleted eventStatus, string searchRequestKey)
+        {
+            if (eventName.Equals(EventName.Completed))
+            {
+                
+
+                var paramsRegistry = Registry.DataPartnerParameters[eventStatus.ProviderProfile.Name];
+                IEnumerable<WaveSearchData> waveSearches = await GetWaveDataForSearch(searchRequestKey);
+
+                List<PersonalIdentifier> existingIds = new List<PersonalIdentifier>();
+
+                foreach (var waveitem in waveSearches)
+                {
+                    _logger.LogInformation($"Store all parameters {waveitem.DataPartner}");
+                    waveitem.AllParameter.ForEach(p => existingIds.AddRange(p.Identifiers));
+                }
+
+                _logger.LogInformation($"{existingIds.Count()} Identifier exists");
+                var filteredNewIdentifierForDataPartner = existingIds.Where(identifer => paramsRegistry.Contains(identifer.Type));
+                _logger.LogInformation($"{existingIds.Count()} Identifier matched the require types for {eventStatus.ProviderProfile.Name}");
+
+                var matchedPersons = eventStatus.MatchedPersons;
+                List<PersonalIdentifier> foundId = new List<PersonalIdentifier>();
+                matchedPersons.ToList().ForEach(p => p.Identifiers.ToList().ForEach(id => foundId.Add(id)));
+
+                _logger.LogInformation($"{foundId.Count()} Identifier was returned by {eventStatus.ProviderProfile.Name}");
+                var filteredFoundIdentifierForDataPartner = foundId.Where(identifer => paramsRegistry.Contains(identifer.Type));
+                _logger.LogInformation($"{filteredFoundIdentifierForDataPartner.Count()} returned Identifier matched the require types for {eventStatus.ProviderProfile.Name}");
+
+                
+                foreach (var waveitem in waveSearches)
+                {
+                    var newToBeUsedId = filteredNewIdentifierForDataPartner.DetailedCompare(filteredFoundIdentifierForDataPartner);
+
+                    if (newToBeUsedId.Count() != 0)
+                    {
+                        waveitem.AllParameter.Add(new Person { Identifiers = newToBeUsedId });
+                        if (waveitem.NewParameter.Count == 0)
+                            waveitem.NewParameter.Add(new Person { Identifiers = newToBeUsedId });
+                        else
+                            waveitem.NewParameter[0] = new Person { Identifiers = newToBeUsedId };
+                    }
+                    await _cacheService.Save(searchRequestKey.DeepSearchKey(eventStatus.ProviderProfile.Name), waveitem);
+                }
+                
+            }
+        }
+
+       
+
+      
 
         private async Task<IEnumerable<WaveSearchData>> GetWaveDataForSearch(string searchRequestKey)
         {

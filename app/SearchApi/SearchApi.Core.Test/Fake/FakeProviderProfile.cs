@@ -4,6 +4,6 @@ namespace SearchApi.Core.Test.Fake
 {
     public class FakeProviderProfile : ProviderProfile
     {
-        public string Name { get; } = "SampleProvider";
+        public string Name { get; set; } = "SampleProvider";
     }
 }

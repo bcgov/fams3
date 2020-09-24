@@ -434,10 +434,10 @@ namespace DynamicsAdapter.Web.Mapping
             CreateMap<SSG_Asset_PensionDisablility, Pension>()
                 .ForMember(dest => dest.Provider, opt => opt.MapFrom(src => src.Provider))
                 .ForMember(dest => dest.ProviderPhone, opt => opt.MapFrom(src => src.ProviderPhone))
-                .ForMember(dest => dest.BalanceAmount_base, opt => opt.MapFrom(src => src.BalanceAmount_base))
-                .ForMember(dest => dest.BalanceAmount, opt => opt.MapFrom(src => src.BalanceAmount))
+                .ForMember(dest => dest.BalanceAmount_base, opt => opt.MapFrom(src => src.BalanceAmount_base.ToString()))
+                .ForMember(dest => dest.BalanceAmount, opt => opt.MapFrom(src => src.BalanceAmount.ToString()))
                 .ForMember(dest => dest.Currency, opt => opt.MapFrom(src => src.Currency))
-                .ForMember(dest => dest.ExchangeRate, opt => opt.MapFrom(src => src.ExchangeRate))
+                .ForMember(dest => dest.ExchangeRate, opt => opt.MapFrom(src => src.ExchangeRate.ToString()))
                 .ForMember(dest => dest.ProviderAddress, opt => opt.MapFrom<ProviderAddressResponseResolver>())
                 .IncludeBase<DynamicsEntity, PersonalInfo>();
 

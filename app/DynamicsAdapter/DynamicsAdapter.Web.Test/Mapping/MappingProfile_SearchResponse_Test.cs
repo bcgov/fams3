@@ -524,12 +524,24 @@ namespace DynamicsAdapter.Web.Test.Mapping
         {
             SSG_Asset_PensionDisablility pension = new SSG_Asset_PensionDisablility
             {
-
+                Provider = "provider",
+                BalanceAmount_base = 2234,
+                BalanceAmount = -123.09,
+                //Currency =
+                ExchangeRate = 1.3,
+                ProviderPhone = "12233",
+                AddressLine1 = "line1",
+                City = "city"
             };
 
-            Pension concern = _mapper.Map<Pension>(pension);
-
-
+            Pension p = _mapper.Map<Pension>(pension);
+            Assert.AreEqual("provider", p.Provider);
+            Assert.AreEqual("2234", p.BalanceAmount_base);
+            Assert.AreEqual("-123.09", p.BalanceAmount);
+            Assert.AreEqual("1.3", p.ExchangeRate);
+            Assert.AreEqual("12233", p.ProviderPhone);
+            Assert.AreEqual("line1", p.ProviderAddress.AddressLine1);
+            Assert.AreEqual("city", p.ProviderAddress.City);
         }
     }
 }

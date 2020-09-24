@@ -265,6 +265,12 @@
               "items": {
                 "$ref": "#/definitions/SafetyConcern"
               }
+            },
+            "pensions": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Pension"
+              }
             }
           }
         }
@@ -1167,6 +1173,45 @@
             "detail": {
               "type": "string",
               "description": "detail"
+            }
+          }
+        }
+      ]
+    },
+    "Pension": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/PersonalInfo"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "provider": {
+              "type": "string",
+              "description": "Pension Provider"
+            },
+            "providerPhone": {
+              "type": "string",
+              "description": "Phone Number"
+            },
+            "balanceAmount_base": {
+              "type": "string",
+              "description": "Balance Amount (Base)"
+            },
+            "balanceAmount": {
+              "type": "string",
+              "description": "Balance Amount"
+            },
+            "currency": {
+              "type": "string",
+              "description": "Currency"
+            },
+            "exchangeRate": {
+              "type": "string",
+              "description": "Exchange Rate"
+            },
+            "providerAddress": {
+              "$ref": "#/definitions/Address"
             }
           }
         }

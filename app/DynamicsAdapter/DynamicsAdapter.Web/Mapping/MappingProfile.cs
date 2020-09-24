@@ -14,6 +14,7 @@ using Fams3Adapter.Dynamics.Investment;
 using Fams3Adapter.Dynamics.Name;
 using Fams3Adapter.Dynamics.Notes;
 using Fams3Adapter.Dynamics.OtherAsset;
+using Fams3Adapter.Dynamics.Pension;
 using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.RelatedPerson;
@@ -430,6 +431,16 @@ namespace DynamicsAdapter.Web.Mapping
                 .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type))
                 .IncludeBase<DynamicsEntity, PersonalInfo>();
 
+            CreateMap<SSG_Asset_PensionDisablility, Pension>()
+                .ForMember(dest => dest.Provider, opt => opt.MapFrom(src => src.Provider))
+                .ForMember(dest => dest.ProviderPhone, opt => opt.MapFrom(src => src.ProviderPhone))
+                .ForMember(dest => dest.BalanceAmount_base, opt => opt.MapFrom(src => src.BalanceAmount_base))
+                .ForMember(dest => dest.BalanceAmount, opt => opt.MapFrom(src => src.BalanceAmount))
+                .ForMember(dest => dest.Currency, opt => opt.MapFrom(src => src.Currency))
+                .ForMember(dest => dest.ExchangeRate, opt => opt.MapFrom(src => src.ExchangeRate))
+                .ForMember(dest => dest.ProviderAddress, opt => opt.MapFrom<ProviderAddressResponseResolver>())
+                .IncludeBase<DynamicsEntity, PersonalInfo>();
+
             CreateMap<SSG_SearchRequestResponse, Person>()
                .ForMember(dest => dest.Names, opt => opt.MapFrom(src => src.SSG_Aliases))
                .ForMember(dest => dest.Identifiers, opt => opt.MapFrom(src => src.SSG_Identifiers))
@@ -445,6 +456,7 @@ namespace DynamicsAdapter.Web.Mapping
                .ForMember(dest => dest.Investments, opt => opt.MapFrom(src => src.SSG_Asset_Investments))
                .ForMember(dest => dest.OtherAssets, opt => opt.MapFrom(src => src.SSG_Asset_Others))
                .ForMember(dest => dest.SafetyConcerns, opt => opt.MapFrom(src => src.SSG_SafetyConcernDetails))
+               .ForMember(dest => dest.Pensions, opt => opt.MapFrom(src => src.SSG_Asset_PensionDisablilitys))
                .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new PersonSoughtRoleConverter(), src => src.SSG_SearchRequests[0].PersonSoughtRole))
                .ForMember(dest => dest.Agency, opt => opt.MapFrom(src => src.SSG_SearchRequests[0]))
                .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.SSG_Persons[0].FirstName))

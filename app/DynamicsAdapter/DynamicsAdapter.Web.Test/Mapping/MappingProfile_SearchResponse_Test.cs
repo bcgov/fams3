@@ -12,6 +12,7 @@ using Fams3Adapter.Dynamics.Investment;
 using Fams3Adapter.Dynamics.Name;
 using Fams3Adapter.Dynamics.Notes;
 using Fams3Adapter.Dynamics.OtherAsset;
+using Fams3Adapter.Dynamics.Pension;
 using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.RelatedPerson;
@@ -109,6 +110,10 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 {
                      new SSG_SafetyConcernDetail{ Detail="detail" }
                 }.ToArray(),
+                SSG_Asset_PensionDisablilitys = new List<SSG_Asset_PensionDisablility>
+                {
+                     new SSG_Asset_PensionDisablility{ AddressLine1="lin1" }
+                }.ToArray(),
             };
             Person person = _mapper.Map<Person>(response);
             Assert.AreEqual(1, person.Names.Count);
@@ -124,6 +129,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(1, person.Vehicles.Count);
             Assert.AreEqual(1, person.OtherAssets.Count);
             Assert.AreEqual(1, person.SafetyConcerns.Count);
+            Assert.AreEqual(1, person.Pensions.Count);
         }
 
         [Test]
@@ -511,6 +517,19 @@ namespace DynamicsAdapter.Web.Test.Mapping
 
             Assert.AreEqual("detail", concern.Description);
             Assert.AreEqual("type", concern.Type);
+        }
+
+        [Test]
+        public void SSG_PensionDisability_should_map_to_Persion_correctly()
+        {
+            SSG_Asset_PensionDisablility pension = new SSG_Asset_PensionDisablility
+            {
+
+            };
+
+            Pension concern = _mapper.Map<Pension>(pension);
+
+
         }
     }
 }

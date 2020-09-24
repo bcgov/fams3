@@ -3,6 +3,7 @@ using Fams3Adapter.Dynamics;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.OptionSets.Models;
+using Fams3Adapter.Dynamics.Pension;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using Fams3Adapter.Dynamics.SearchResponse;
 using Fams3Adapter.Dynamics.Types;
@@ -192,6 +193,29 @@ namespace DynamicsAdapter.Web.Mapping
                 City = source.City,
                 StateProvince = source.CountrySubdivisionText,
                 CountryRegion = source.CountryText,
+                ZipPostalCode = source.PostalCode
+            };
+            return addr;
+        }
+    }
+
+    public class ProviderAddressResponseResolver : IValueResolver<SSG_Asset_PensionDisablility, Pension, Address>
+    {
+        public Address Resolve(SSG_Asset_PensionDisablility source, Pension destination, Address destMember, ResolutionContext context)
+        {
+            if (string.IsNullOrEmpty(source.AddressLine1) && string.IsNullOrEmpty(source.AddressLine2) &&
+               string.IsNullOrEmpty(source.AddressLine3) && string.IsNullOrEmpty(source.City) &&
+               string.IsNullOrEmpty(source.Country) && string.IsNullOrEmpty(source.ProvinceState))
+                return null;
+
+            Address addr = new Address
+            {
+                AddressLine1 = source.AddressLine1,
+                AddressLine2 = source.AddressLine2,
+                AddressLine3 = source.AddressLine3,
+                City = source.City,
+                StateProvince = source.ProvinceState,
+                CountryRegion = source.Country,
                 ZipPostalCode = source.PostalCode
             };
             return addr;

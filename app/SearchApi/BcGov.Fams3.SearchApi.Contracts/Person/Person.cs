@@ -45,5 +45,6 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         public IEnumerable<ResponseNote> ResponseNotes { get; set; }
         public IEnumerable<Investment> Investments { get; set; }
         public IEnumerable<SafetyConcern> SafetyConcerns { get; set; }
+        public IEnumerable<Pension> Pensions { get; set; }
     }
 }

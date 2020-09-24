@@ -4,6 +4,7 @@ using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.OptionSets.Models;
 using Fams3Adapter.Dynamics.Pension;
+using Fams3Adapter.Dynamics.RealEstate;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using Fams3Adapter.Dynamics.SearchResponse;
 using Fams3Adapter.Dynamics.Types;
@@ -202,6 +203,29 @@ namespace DynamicsAdapter.Web.Mapping
     public class ProviderAddressResponseResolver : IValueResolver<SSG_Asset_PensionDisablility, Pension, Address>
     {
         public Address Resolve(SSG_Asset_PensionDisablility source, Pension destination, Address destMember, ResolutionContext context)
+        {
+            if (string.IsNullOrEmpty(source.AddressLine1) && string.IsNullOrEmpty(source.AddressLine2) &&
+               string.IsNullOrEmpty(source.AddressLine3) && string.IsNullOrEmpty(source.City) &&
+               string.IsNullOrEmpty(source.Country) && string.IsNullOrEmpty(source.ProvinceState))
+                return null;
+
+            Address addr = new Address
+            {
+                AddressLine1 = source.AddressLine1,
+                AddressLine2 = source.AddressLine2,
+                AddressLine3 = source.AddressLine3,
+                City = source.City,
+                StateProvince = source.ProvinceState,
+                CountryRegion = source.Country,
+                ZipPostalCode = source.PostalCode
+            };
+            return addr;
+        }
+    }
+
+    public class PropertyAddressResponseResolver : IValueResolver<SSG_Asset_RealEstateProperty, RealEstateProperty, Address>
+    {
+        public Address Resolve(SSG_Asset_RealEstateProperty source, RealEstateProperty destination, Address destMember, ResolutionContext context)
         {
             if (string.IsNullOrEmpty(source.AddressLine1) && string.IsNullOrEmpty(source.AddressLine2) &&
                string.IsNullOrEmpty(source.AddressLine3) && string.IsNullOrEmpty(source.City) &&

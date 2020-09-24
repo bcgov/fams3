@@ -11,6 +11,7 @@ using Fams3Adapter.Dynamics.OtherAsset;
 using Fams3Adapter.Dynamics.Pension;
 using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.PhoneNumber;
+using Fams3Adapter.Dynamics.RealEstate;
 using Fams3Adapter.Dynamics.RelatedPerson;
 using Fams3Adapter.Dynamics.SafetyConcern;
 using Fams3Adapter.Dynamics.SearchRequest;
@@ -48,8 +49,8 @@ namespace Fams3Adapter.Dynamics.SearchResponse
         [JsonProperty("ssg_ssg_searchrequestresponse_ssg_asset_pensiondisability_ResponseId")]
         public SSG_Asset_PensionDisablility[] SSG_Asset_PensionDisablilitys { get; set; }
 
-        //[JsonProperty("ssg_ssg_searchrequestresponse_ssg_asset_realestateproperty_ResponseId")]
-        //public SSG_Asset_RealEstate[] SSG_Asset_RealEstates{ get; set; }
+        [JsonProperty("ssg_ssg_searchrequestresponse_ssg_asset_realestateproperty_ResponseId")]
+        public SSG_Asset_RealEstateProperty[] SSG_Asset_RealEstatePropertys { get; set; }
 
         [JsonProperty("ssg_ssg_searchrequestresponse_ssg_asset_vehicle_ResponseId")]
         public SSG_Asset_Vehicle[] SSG_Asset_Vehicles { get; set; }

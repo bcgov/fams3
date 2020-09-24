@@ -15,6 +15,7 @@ using Fams3Adapter.Dynamics.OtherAsset;
 using Fams3Adapter.Dynamics.Pension;
 using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.PhoneNumber;
+using Fams3Adapter.Dynamics.RealEstate;
 using Fams3Adapter.Dynamics.RelatedPerson;
 using Fams3Adapter.Dynamics.SafetyConcern;
 using Fams3Adapter.Dynamics.SearchRequest;
@@ -114,6 +115,10 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 {
                      new SSG_Asset_PensionDisablility{ AddressLine1="lin1" }
                 }.ToArray(),
+                SSG_Asset_RealEstatePropertys = new List<SSG_Asset_RealEstateProperty>
+                {
+                     new SSG_Asset_RealEstateProperty{ AddressLine1="lin1" }
+                }.ToArray(),
             };
             Person person = _mapper.Map<Person>(response);
             Assert.AreEqual(1, person.Names.Count);
@@ -130,6 +135,9 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(1, person.OtherAssets.Count);
             Assert.AreEqual(1, person.SafetyConcerns.Count);
             Assert.AreEqual(1, person.Pensions.Count);
+            Assert.AreEqual(1, person.RealEstateProperties.Count);
+            Assert.AreEqual(1, person.ResponseNotes.Count);
+
         }
 
         [Test]
@@ -542,6 +550,24 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual("12233", p.ProviderPhone);
             Assert.AreEqual("line1", p.ProviderAddress.AddressLine1);
             Assert.AreEqual("city", p.ProviderAddress.City);
+        }
+
+        [Test]
+        public void SSG_RealEstateProperty_should_map_to_RealEstateProperty_correctly()
+        {
+            SSG_Asset_RealEstateProperty property = new SSG_Asset_RealEstateProperty
+            {
+                PID = "pdi",
+                TitleNumber = "title123",
+                AddressLine1 = "line1",
+                City = "city"
+            };
+
+            RealEstateProperty p = _mapper.Map<RealEstateProperty>(property);
+            Assert.AreEqual("pdi", p.Pid);
+            Assert.AreEqual("title123", p.TitleNumber);
+            Assert.AreEqual("line1", p.PropertyAddress.AddressLine1);
+            Assert.AreEqual("city", p.PropertyAddress.City);
         }
     }
 }

@@ -17,6 +17,7 @@ using Fams3Adapter.Dynamics.OtherAsset;
 using Fams3Adapter.Dynamics.Pension;
 using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.PhoneNumber;
+using Fams3Adapter.Dynamics.RealEstate;
 using Fams3Adapter.Dynamics.RelatedPerson;
 using Fams3Adapter.Dynamics.SafetyConcern;
 using Fams3Adapter.Dynamics.SearchApiEvent;
@@ -441,6 +442,15 @@ namespace DynamicsAdapter.Web.Mapping
                 .ForMember(dest => dest.ProviderAddress, opt => opt.MapFrom<ProviderAddressResponseResolver>())
                 .IncludeBase<DynamicsEntity, PersonalInfo>();
 
+            CreateMap<SSG_Asset_RealEstateProperty, RealEstateProperty>()
+                .ForMember(dest => dest.Pid, opt => opt.MapFrom(src => src.PID))
+                .ForMember(dest => dest.TitleNumber, opt => opt.MapFrom(src => src.TitleNumber))
+                .ForMember(dest => dest.LandTitleDistrict, opt => opt.MapFrom(src => src.LandTitleDistrict))
+                .ForMember(dest => dest.NumberOfOwners, opt => opt.MapFrom(src => src.NumberOfOwners))
+                .ForMember(dest => dest.LegalDescription, opt => opt.MapFrom(src => src.LegalDescription))
+                .ForMember(dest => dest.PropertyAddress, opt => opt.MapFrom<PropertyAddressResponseResolver>())
+                .IncludeBase<DynamicsEntity, PersonalInfo>();
+
             CreateMap<SSG_SearchRequestResponse, Person>()
                .ForMember(dest => dest.Names, opt => opt.MapFrom(src => src.SSG_Aliases))
                .ForMember(dest => dest.Identifiers, opt => opt.MapFrom(src => src.SSG_Identifiers))
@@ -457,6 +467,7 @@ namespace DynamicsAdapter.Web.Mapping
                .ForMember(dest => dest.OtherAssets, opt => opt.MapFrom(src => src.SSG_Asset_Others))
                .ForMember(dest => dest.SafetyConcerns, opt => opt.MapFrom(src => src.SSG_SafetyConcernDetails))
                .ForMember(dest => dest.Pensions, opt => opt.MapFrom(src => src.SSG_Asset_PensionDisablilitys))
+               .ForMember(dest => dest.RealEstateProperties, opt => opt.MapFrom(src => src.SSG_Asset_RealEstatePropertys))
                .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new PersonSoughtRoleConverter(), src => src.SSG_SearchRequests[0].PersonSoughtRole))
                .ForMember(dest => dest.Agency, opt => opt.MapFrom(src => src.SSG_SearchRequests[0]))
                .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.SSG_Persons[0].FirstName))

@@ -271,6 +271,12 @@
               "items": {
                 "$ref": "#/definitions/Pension"
               }
+            },
+            "realEstateProperties": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/RealEstateProperty"
+              }
             }
           }
         }
@@ -1211,6 +1217,41 @@
               "description": "Exchange Rate"
             },
             "providerAddress": {
+              "$ref": "#/definitions/Address"
+            }
+          }
+        }
+      ]
+    },
+    "RealEstateProperty": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/PersonalInfo"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "pid": {
+              "type": "string",
+              "description": "Property ID"
+            },
+            "titleNumber": {
+              "type": "string",
+              "description": "Title Number"
+            },
+            "legalDescription": {
+              "type": "string",
+              "description": "Legal Description"
+            },
+            "numberOfOwners": {
+              "type": "string",
+              "description": "Number Of Owners"
+            },
+            "landTitleDistrict": {
+              "type": "string",
+              "description": "ssg_landtitledistrict"
+            },
+            "propertyAddress": {
               "$ref": "#/definitions/Address"
             }
           }

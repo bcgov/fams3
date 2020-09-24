@@ -17,6 +17,7 @@ using SearchApi.Web.Notifications;
 using SearchApi.Web.Test.Utils;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using SearchApi.Web.DeepSearch;
 
 namespace SearchApi.Web.Test.Notifications
 { 
@@ -26,12 +27,13 @@ namespace SearchApi.Web.Test.Notifications
             private WebHookNotifierSearchEventStatus _sut;
 
             private Mock<IOptions<SearchApiOptions>> _searchApiOptionsMock;
+        private Mock<IOptions<DeepSearchOptions>> _deepSearchOptionsMock;
+        private Mock<ILogger<WebHookNotifierSearchEventStatus>> _loggerMock;
 
-            private Mock<ILogger<WebHookNotifierSearchEventStatus>> _loggerMock;
+          
+        private Mock<IDeepSearchService> _deepSearchServiceMock;
 
-            private Mock<ICacheService> _cacheServiceMock;
-
-            private Mock<IMapper> _mapper;
+    
 
         private SearchRequest _allcompleted;
         private SearchRequest _notAllComplete;
@@ -43,7 +45,17 @@ namespace SearchApi.Web.Test.Notifications
             {
                 _loggerMock = LoggerUtils.LoggerMock<WebHookNotifierSearchEventStatus>();
                 _searchApiOptionsMock = new Mock<IOptions<SearchApiOptions>>();
-            _cacheServiceMock = new Mock<ICacheService>();
+            _deepSearchOptionsMock = new Mock<IOptions<DeepSearchOptions>>();
+          
+            _deepSearchServiceMock = new Mock<IDeepSearchService>();
+
+            _deepSearchServiceMock
+                .Setup(x => x.UpdateDataPartner(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(Task.CompletedTask);
+
+            _deepSearchServiceMock
+              .Setup(x => x.ProcessWaveSearch(It.IsAny<string>()))
+              .Returns(Task.CompletedTask);
 
             _allcompleted = new SearchRequest
             {
@@ -63,13 +75,18 @@ namespace SearchApi.Web.Test.Notifications
                 new DataPartner { Name = "BCHydro", Completed = false }
                 }
                 };
-                _mapper = new Mock<IMapper>();
+                
                 fakePersonSearchStatus = new FakePersonSearchAccepted()
                 {
                     SearchRequestKey = "SearchRequestKey",
                     SearchRequestId = Guid.NewGuid(),
-                    TimeStamp = DateTime.Now
+                    TimeStamp = DateTime.Now,
+                    ProviderProfile = new FakeProviderProfile()
+
+
                 };
+
+            _deepSearchOptionsMock.Setup(x => x.Value).Returns(new DeepSearchOptions { MaxWaveCount = 3 });
 
             }
 
@@ -97,7 +114,7 @@ namespace SearchApi.Web.Test.Notifications
                     .Verifiable();
 
                 var httpClient = new HttpClient(handlerMock.Object);
-                _sut = new WebHookNotifierSearchEventStatus(httpClient, _searchApiOptionsMock.Object, _loggerMock.Object, _cacheServiceMock.Object);
+                _sut = new WebHookNotifierSearchEventStatus(httpClient, _searchApiOptionsMock.Object,  _loggerMock.Object, _deepSearchServiceMock.Object);
 
                 await _sut.NotifyEventAsync(fakePersonSearchStatus.SearchRequestKey, fakePersonSearchStatus, "Accepted",CancellationToken.None);
 
@@ -127,7 +144,7 @@ namespace SearchApi.Web.Test.Notifications
 
             _searchApiOptionsMock.Setup(x => x.Value).Returns(new SearchApiOptions().AddWebHook("test", "http://test:1234"));
 
-            _cacheServiceMock.Setup(x => x.GetRequest(It.IsAny<string>())).Returns(Task.FromResult(_notAllComplete));
+            //_cacheServiceMock.Setup(x => x.GetRequest(It.IsAny<string>())).Returns(Task.FromResult(_notAllComplete));
 
             var handlerMock = new Mock<HttpMessageHandler>(MockBehavior.Strict);
             handlerMock
@@ -147,7 +164,7 @@ namespace SearchApi.Web.Test.Notifications
                 .Verifiable();
 
             var httpClient = new HttpClient(handlerMock.Object);
-            _sut = new WebHookNotifierSearchEventStatus(httpClient, _searchApiOptionsMock.Object, _loggerMock.Object, _cacheServiceMock.Object);
+            _sut = new WebHookNotifierSearchEventStatus(httpClient, _searchApiOptionsMock.Object,  _loggerMock.Object, _deepSearchServiceMock.Object);
 
             await _sut.NotifyEventAsync(fakePersonSearchStatus.SearchRequestKey, fakePersonSearchStatus, "Finalized", CancellationToken.None);
 
@@ -171,7 +188,7 @@ namespace SearchApi.Web.Test.Notifications
         {
             _searchApiOptionsMock.Setup(x => x.Value).Returns(new SearchApiOptions().AddWebHook("test", "http://test:1234"));
 
-            _cacheServiceMock.Setup(x => x.GetRequest(It.IsAny<string>())).Returns( Task.FromResult(_allcompleted));
+           // _cacheServiceMock.Setup(x => x.GetRequest(It.IsAny<string>())).Returns( Task.FromResult(_allcompleted));
 
             var handlerMock = new Mock<HttpMessageHandler>(MockBehavior.Strict);
             handlerMock
@@ -191,7 +208,7 @@ namespace SearchApi.Web.Test.Notifications
                 .Verifiable();
 
             var httpClient = new HttpClient(handlerMock.Object);
-            _sut = new WebHookNotifierSearchEventStatus(httpClient, _searchApiOptionsMock.Object, _loggerMock.Object, _cacheServiceMock.Object);
+            _sut = new WebHookNotifierSearchEventStatus(httpClient, _searchApiOptionsMock.Object,  _loggerMock.Object, _deepSearchServiceMock.Object);
 
             await _sut.NotifyEventAsync(fakePersonSearchStatus.SearchRequestKey, fakePersonSearchStatus, "Finalized", CancellationToken.None);
 
@@ -236,7 +253,7 @@ namespace SearchApi.Web.Test.Notifications
                     .Verifiable();
 
                 var httpClient = new HttpClient(handlerMock.Object);
-                _sut = new WebHookNotifierSearchEventStatus(httpClient, _searchApiOptionsMock.Object, _loggerMock.Object, _cacheServiceMock.Object);
+                _sut = new WebHookNotifierSearchEventStatus(httpClient, _searchApiOptionsMock.Object, _loggerMock.Object, _deepSearchServiceMock.Object);
 
                 await _sut.NotifyEventAsync(fakePersonSearchStatus.SearchRequestKey, fakePersonSearchStatus, "Accepted",CancellationToken.None);
 
@@ -260,8 +277,6 @@ namespace SearchApi.Web.Test.Notifications
             [Test]
             public async Task it_should_send_notification_to_all_subscribers()
             {
-
-
                 _searchApiOptionsMock.Setup(x => x.Value).Returns(new SearchApiOptions()
                     .AddWebHook("test", "http://test:1234")
                     .AddWebHook("test2", "http://test:5678"));
@@ -284,7 +299,7 @@ namespace SearchApi.Web.Test.Notifications
                     .Verifiable();
 
                 var httpClient = new HttpClient(handlerMock.Object);
-                _sut = new WebHookNotifierSearchEventStatus(httpClient, _searchApiOptionsMock.Object, _loggerMock.Object, _cacheServiceMock.Object);
+                _sut = new WebHookNotifierSearchEventStatus(httpClient, _searchApiOptionsMock.Object, _loggerMock.Object, _deepSearchServiceMock.Object);
 
                 await _sut.NotifyEventAsync(fakePersonSearchStatus.SearchRequestKey, fakePersonSearchStatus, "Accepted", CancellationToken.None);
             //
@@ -343,7 +358,7 @@ namespace SearchApi.Web.Test.Notifications
                     .Verifiable();
 
                 var httpClient = new HttpClient(handlerMock.Object);
-                _sut = new WebHookNotifierSearchEventStatus(httpClient, _searchApiOptionsMock.Object, _loggerMock.Object, _cacheServiceMock.Object);
+                _sut = new WebHookNotifierSearchEventStatus(httpClient, _searchApiOptionsMock.Object,_loggerMock.Object,  _deepSearchServiceMock.Object);
 
                 await _sut.NotifyEventAsync(fakePersonSearchStatus.SearchRequestKey, fakePersonSearchStatus, "Accepted",CancellationToken.None);
 
@@ -376,7 +391,7 @@ namespace SearchApi.Web.Test.Notifications
                     .Verifiable();
 
                 var httpClient = new HttpClient(handlerMock.Object);
-                _sut = new WebHookNotifierSearchEventStatus(httpClient, _searchApiOptionsMock.Object, _loggerMock.Object, _cacheServiceMock.Object);
+                _sut = new WebHookNotifierSearchEventStatus(httpClient, _searchApiOptionsMock.Object, _loggerMock.Object,  _deepSearchServiceMock.Object);
 
                 await _sut.NotifyEventAsync(fakePersonSearchStatus.SearchRequestKey, fakePersonSearchStatus, "Accepted", CancellationToken.None);
                 var expectedUri = new Uri($"http://test:1234/Accepted/{fakePersonSearchStatus.SearchRequestKey}");
@@ -421,7 +436,7 @@ namespace SearchApi.Web.Test.Notifications
                     .Verifiable();
 
                 var httpClient = new HttpClient(handlerMock.Object);
-                _sut = new WebHookNotifierSearchEventStatus(httpClient, _searchApiOptionsMock.Object, _loggerMock.Object, _cacheServiceMock.Object);
+                _sut = new WebHookNotifierSearchEventStatus(httpClient, _searchApiOptionsMock.Object,  _loggerMock.Object, _deepSearchServiceMock.Object);
 
                 await _sut.NotifyEventAsync(fakePersonSearchStatus.SearchRequestKey, fakePersonSearchStatus, "Accepted",CancellationToken.None);
                 var expectedUri = new Uri($"http://test:1234/Accepted/{fakePersonSearchStatus.SearchRequestKey}");
@@ -461,9 +476,9 @@ namespace SearchApi.Web.Test.Notifications
                     .Verifiable();
 
                 var httpClient = new HttpClient(handlerMock.Object);
-                _sut = new WebHookNotifierSearchEventStatus(httpClient, _searchApiOptionsMock.Object, _loggerMock.Object, _cacheServiceMock.Object);
+                _sut = new WebHookNotifierSearchEventStatus(httpClient, _searchApiOptionsMock.Object, _loggerMock.Object, _deepSearchServiceMock.Object);
 
-                await _sut.NotifyEventAsync(fakePersonSearchStatus.SearchRequestKey, new FakePersonSearchAdapterEvent(), "Accepted",CancellationToken.None);
+                await _sut.NotifyEventAsync(fakePersonSearchStatus.SearchRequestKey, new FakePersonSearchAdapterEvent() { ProviderProfile = new FakeProviderProfile { } }, "Accepted",CancellationToken.None);
 
                 _loggerMock.VerifyLog(LogLevel.Error, "The webHook PersonSearch notification failed for status Accepted for test webHook. [unknown error]", "failed log error");
 

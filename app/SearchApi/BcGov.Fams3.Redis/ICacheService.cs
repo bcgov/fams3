@@ -2,7 +2,9 @@
 using BcGov.Fams3.Redis.Model;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
+using StackExchange.Redis.Extensions.Core.Abstractions;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,10 +16,11 @@ namespace BcGov.Fams3.Redis
         Task SaveRequest(string data, string key);
         Task<SearchRequest> GetRequest(string searchRequestKey);
         Task DeleteRequest(string id);
-
+        Task<IEnumerable<string>> SearchKeys(string pattern);
         Task Save(string key, dynamic data, TimeSpan expiry);
 
         Task Save(string key, dynamic data);
+        Task Update(string key, dynamic data);
         Task<string> Get(string key);
         Task Delete(string key);
     }
@@ -25,11 +28,12 @@ namespace BcGov.Fams3.Redis
     public class CacheService : ICacheService
     {
         private readonly IDistributedCache _distributedCache;
+        private readonly IRedisCacheClient _stackRedisCacheClient;
 
-
-        public CacheService(IDistributedCache distributedCache)
+        public CacheService(IDistributedCache distributedCache, IRedisCacheClient stackRedisCacheClient)
         {
             _distributedCache = distributedCache;
+            _stackRedisCacheClient = stackRedisCacheClient;
 
         }
 
@@ -77,14 +81,29 @@ namespace BcGov.Fams3.Redis
         {
             if (data == null) throw new ArgumentNullException("Save : data cannot be null");
             if (string.IsNullOrEmpty(key)) throw new ArgumentNullException("Save : Key cannot be null");
-            await _distributedCache.SetStringAsync(key, (string)JsonConvert.SerializeObject(data), new CancellationToken());
+            await _stackRedisCacheClient.Db0.AddAsync(key, (string)JsonConvert.SerializeObject(data));
         }
+
+        public async Task<IEnumerable<string>> SearchKeys(string pattern)
+        {
+           
+            if (string.IsNullOrEmpty(pattern)) throw new ArgumentNullException("SearchKey : pattern cannot be null");
+            return await _stackRedisCacheClient.Db0.SearchKeysAsync(pattern);
+        }
+
+        public async Task Update(string key, dynamic data)
+        {
+            if (data == null) throw new ArgumentNullException("Save : data cannot be null");
+            if (string.IsNullOrEmpty(key)) throw new ArgumentNullException("Save : Key cannot be null");
+            await _stackRedisCacheClient.Db0.ReplaceAsync(key, (string)JsonConvert.SerializeObject(data));
+        }
+
 
         public async Task Save(string key, dynamic data, TimeSpan expiry)
         {
             if (data == null) throw new ArgumentNullException("Save : data cannot be null");
             if (string.IsNullOrEmpty(key)) throw new ArgumentNullException("Save : Key cannot be null");
-            await _distributedCache.SetStringAsync(key, (string)JsonConvert.SerializeObject(data),new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = expiry } , new CancellationToken());
+            await _stackRedisCacheClient.Db0.AddAsync(key, (string)JsonConvert.SerializeObject(data),expiry);
         }
 
 

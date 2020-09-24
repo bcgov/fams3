@@ -1,12 +1,9 @@
 ﻿using BcGov.Fams3.SearchApi.Contracts.Person;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace SearchApi.Web.DeepSearch.Schema
 {
-    public class WaveMetaData
+    public class WaveSearchData 
     {
         public string SearchRequestKey { get; set; }
         public int CurrentWave { get; set; }
@@ -15,6 +12,12 @@ namespace SearchApi.Web.DeepSearch.Schema
         public List<Person> AllParameter { get; set; }
 
         public List<Person> NewParameter { get; set; }
+
+        public int NumberOfRetries { get; set; }
+
+        public int TimeBetweenRetries { get; set; }
+
+
 
 
     }

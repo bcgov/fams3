@@ -11,7 +11,7 @@ namespace SearchApi.Web.Test.Configuration
 
             var options = new DeepSearchOptions();
 
-            Assert.AreEqual(15, options.MaxWaveCount);
+            Assert.AreEqual(5, options.MaxWaveCount);
 
         }
 
@@ -19,9 +19,9 @@ namespace SearchApi.Web.Test.Configuration
         public void should_set_maximum_in_to_passed_value()
         {
 
-            var options = new DeepSearchOptions { MaxWaveCount = 5};
+            var options = new DeepSearchOptions { MaxWaveCount = 53};
 
-            Assert.AreEqual(5, options.MaxWaveCount);
+            Assert.AreEqual(53, options.MaxWaveCount);
 
         }
     }

@@ -25,10 +25,10 @@ using SearchApi.Web.Search;
 
 using SearchApi.Web.Messaging;
 using BcGov.Fams3.Redis.DependencyInjection;
-using BcGov.Fams3.Redis.Configuration;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
 using SearchApi.Web.DeepSearch;
+using StackExchange.Redis.Extensions.Core.Configuration;
 
 namespace SearchApi.Web
 {
@@ -229,8 +229,11 @@ namespace SearchApi.Web
             });
 
             services.AddHostedService<BusHostedService>();
-            services.AddTransient<IDeepSearchService, DeepSearchService>();
             services.AddTransient<IDispatcher, Dispatcher>();
+            services.AddTransient<IDeepSearchDispatcher, DeepSearchDispatcher>();
+         
+            services.AddTransient<IDeepSearchService, DeepSearchService>();
+            
         }
 
 

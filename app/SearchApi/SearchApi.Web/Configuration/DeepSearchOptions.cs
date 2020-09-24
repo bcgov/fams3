@@ -10,7 +10,7 @@ namespace SearchApi.Web.Configuration
 
         public DeepSearchOptions()
         {
-            MaxWaveCount = 15;
+            MaxWaveCount = 5;
         }
         public int MaxWaveCount { get; set; }
     }

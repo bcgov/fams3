@@ -1,5 +1,4 @@
-﻿using BcGov.Fams3.Redis.Configuration;
-using BcGov.Fams3.Redis.DependencyInjection;
+﻿using BcGov.Fams3.Redis.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using StackExchange.Redis.Extensions.Core.Configuration;
@@ -27,7 +26,7 @@ namespace BcGov.Fams3.Redis.Test.DependencyInjection
 
             _services.AddCacheService(new RedisConfiguration() { Hosts = redisHost.ToArray(), Password = "password" });
 
-            Assert.IsTrue(_services.Count == 14);
+            Assert.IsTrue(_services.Count == 13);
         }
 
     }

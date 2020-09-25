@@ -87,7 +87,8 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 SearchRequest = new SSG_SearchRequest() { 
                     FileId = "testFileId", 
                     ApplicantFirstName="applicantFirstName",
-                    ApplicantLastName="applicantLastName"
+                    ApplicantLastName="applicantLastName",
+                    SearchReason = new SSG_SearchRequestReason { ReasonCode= "EnfPayAgr" }
                 },
                 SequenceNumber = "123456"
             };
@@ -100,6 +101,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(1, personSearchRequest.Names.Count);
             Assert.AreEqual(OwnerType.Applicant, personSearchRequest.Names.ElementAt(0).Owner);
             Assert.AreEqual("testFileId_123456", personSearchRequest.SearchRequestKey);
+            Assert.AreEqual(SearchReasonCode.EnfPayAgr, personSearchRequest.Agency.ReasonCode);
         }
 
         [Test]
@@ -120,6 +122,20 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(0, personSearchRequest.DataProviders.Count);
             Assert.AreEqual(0, personSearchRequest.Names.Count);
             Assert.AreEqual("testFileId_123456", personSearchRequest.SearchRequestKey);
+        }
+
+        [Test]
+        public void SSG_SearchApiRequest_null_SearchReason_should_map_to_PersonSearchRequest_correctly()
+        {
+            SSG_SearchApiRequest sSG_SearchApiRequest = new SSG_SearchApiRequest()
+            {
+                SearchRequest = new SSG_SearchRequest()
+                {
+                    SearchReason = null
+                },
+            };
+            PersonSearchRequest personSearchRequest = _mapper.Map<PersonSearchRequest>(sSG_SearchApiRequest);
+            Assert.AreEqual(SearchReasonCode.Other, personSearchRequest.Agency.ReasonCode);
         }
 
         [Test]

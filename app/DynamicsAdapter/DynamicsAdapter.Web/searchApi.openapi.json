@@ -292,6 +292,7 @@
       "type": "object",
       "required": [
         "requestPriority",
+        "reasonCode",
         "requestDate",
         "daysOpen"
       ],
@@ -317,8 +318,12 @@
           "description": "agency request Id"
         },
         "reasonCode": {
-          "type": "string",
-          "description": "agency search requeston reason code"
+          "description": "agency search requeston reason code",
+          "allOf": [
+            {
+              "$ref": "#/definitions/SearchReasonCode"
+            }
+          ]
         },
         "requestDate": {
           "type": "string",
@@ -396,6 +401,24 @@
         "Urgent",
         "Rush",
         "Normal"
+      ]
+    },
+    "SearchReasonCode": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "AstRecpAgy",
+        "ChngAccAgr",
+        "ChngCustAg",
+        "EnfPayAgr",
+        "Other"
+      ],
+      "enum": [
+        "AstRecpAgy",
+        "ChngAccAgr",
+        "ChngCustAg",
+        "EnfPayAgr",
+        "Other"
       ]
     },
     "Name": {

@@ -106,7 +106,7 @@ namespace DynamicsAdapter.Web.Mapping
                .ConstructUsing(m => Contructors.ConstructSearchRequestEntity(m))
                .ForMember(dest => dest.OriginalRequestorReference, opt => opt.MapFrom(src => src.Person.Agency.RequestId))
                .ForMember(dest => dest.RequestDate, opt => opt.MapFrom(src => src.Person.Agency.RequestDate.DateTime))
-               .ForMember(dest => dest.SearchReasonCode, opt => opt.MapFrom(src => src.Person.Agency.ReasonCode))
+               .ForMember(dest => dest.SearchReasonCode, opt => opt.MapFrom(src => src.Person.Agency.ReasonCode.ToString()))
                .ForMember(dest => dest.AgencyOfficeLocationText, opt => opt.MapFrom(src => src.Person.Agency.LocationAddress))
                .ForMember(dest => dest.AgencyCode, opt => opt.MapFrom(src => src.Person.Agency.Code))
                .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Person.Agency.Notes))

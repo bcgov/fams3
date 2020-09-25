@@ -72,8 +72,9 @@ namespace DynamicsAdapter.Web
 
             this.ConfigureScheduler(services);
             this.ConfigureAutoMapper(services);
-
+           
             services.AddCacheService(Configuration.GetSection(Keys.REDIS_SECTION_SETTING_KEY).Get<RedisConfiguration>());
+          
 
             services.AddTransient<ISearchResultService, SearchResultService>();
             services.AddTransient<ISearchRequestRegister, SearchRequestRegister>();

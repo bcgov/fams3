@@ -277,6 +277,12 @@
               "items": {
                 "$ref": "#/definitions/RealEstateProperty"
               }
+            },
+            "responsePersons": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ResponsePerson"
+              }
             }
           }
         }
@@ -1253,6 +1259,70 @@
             },
             "propertyAddress": {
               "$ref": "#/definitions/Address"
+            }
+          }
+        }
+      ]
+    },
+    "ResponsePerson": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/PersonalInfo"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "firstName": {
+              "type": "string"
+            },
+            "lastName": {
+              "type": "string"
+            },
+            "middleName": {
+              "type": "string"
+            },
+            "otherName": {
+              "type": "string"
+            },
+            "dateOfBirth": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "dateOfDeath": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "gender": {
+              "type": "string"
+            },
+            "dateDeathConfirmed": {
+              "type": "boolean"
+            },
+            "incacerated": {
+              "type": "string"
+            },
+            "height": {
+              "type": "string",
+              "description": "Height is in centimers"
+            },
+            "weight": {
+              "type": "string",
+              "description": "Weight is in pounds"
+            },
+            "hairColour": {
+              "type": "string"
+            },
+            "eyeColour": {
+              "type": "string"
+            },
+            "complexion": {
+              "type": "string"
+            },
+            "distinguishingFeatures": {
+              "type": "string"
+            },
+            "wearGlasses": {
+              "type": "string"
             }
           }
         }

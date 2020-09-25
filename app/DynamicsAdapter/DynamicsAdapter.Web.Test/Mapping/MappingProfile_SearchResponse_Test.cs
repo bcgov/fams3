@@ -137,7 +137,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(1, person.Pensions.Count);
             Assert.AreEqual(1, person.RealEstateProperties.Count);
             Assert.AreEqual(1, person.ResponseNotes.Count);
-
+            Assert.AreEqual(1, person.ResponsePersons.Count);
         }
 
         [Test]
@@ -171,20 +171,18 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 }.ToArray(),
             };
             Person person = _mapper.Map<Person>(response);
-            Assert.AreEqual("firstName", person.Agency.PersonSoughtInRequest_FirstName);
-            Assert.AreEqual("middleName", person.Agency.PersonSoughtInRequest_MiddleName);
-            Assert.AreEqual("thirdGivenName", person.Agency.PersonSoughtInRequest_SecondMiddleName);
-            Assert.AreEqual("surname", person.Agency.PersonSoughtInRequest_LastName);
-            Assert.AreEqual(new DateTimeOffset(new DateTime(2001, 1, 1)), person.Agency.PersonSoughtInRequest_DateOfBirth);
-            Assert.AreEqual("m", person.Agency.PersonSoughtInRequest_Gender);
             Assert.AreEqual("agentFirstName", person.Agency.Agent.FirstName);
             Assert.AreEqual("agentLastName", person.Agency.Agent.LastName);
             Assert.AreEqual("reasonCode", person.Agency.ReasonCode);
             Assert.AreEqual("originalRef", person.Agency.RequestId);
             Assert.AreEqual(RequestPriority.Rush, person.Agency.RequestPriority);
+            Assert.AreEqual("firstName", person.FirstName);
+            Assert.AreEqual("middleName", person.MiddleName);
+            Assert.AreEqual(new DateTimeOffset(new DateTime(2001, 1, 1)), person.DateOfBirth);
             Assert.AreEqual("P", person.Type);
             Assert.AreEqual("FMEP", person.Agency.Code);
             Assert.AreEqual(100, person.Agency.DaysOpen);
+            Assert.AreEqual(1, person.ResponsePersons.Count);
         }
 
         [Test]
@@ -568,6 +566,23 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual("title123", p.TitleNumber);
             Assert.AreEqual("line1", p.PropertyAddress.AddressLine1);
             Assert.AreEqual("city", p.PropertyAddress.City);
+        }
+
+
+        [Test]
+        public void SSG_Person_should_map_to_ResponsePerson_correctly()
+        {
+            SSG_Person person = new SSG_Person
+            {
+                DateOfDeath = new DateTime(2015, 1, 1),
+                GenderOptionSet = GenderType.Other.Value,
+                FirstName = "firstName"
+            };
+
+            ResponsePerson rp = _mapper.Map<ResponsePerson>(person);
+            Assert.AreEqual(new DateTimeOffset(new DateTime(2015, 1, 1)), rp.DateOfDeath);
+            Assert.AreEqual("Other", rp.Gender);
+            Assert.AreEqual("firstName", rp.FirstName);
         }
     }
 }

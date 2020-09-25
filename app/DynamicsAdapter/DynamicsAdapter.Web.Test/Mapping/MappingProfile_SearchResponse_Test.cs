@@ -150,10 +150,10 @@ namespace DynamicsAdapter.Web.Test.Mapping
                     new SSG_SearchRequest{
                         Agency = new SSG_Agency{AgencyCode="FMEP" },
                         RequestDate=new DateTime(2001,1,1),
-                        ResponsePersonFirstName="firstName",
-                        ResponsePersonMiddleName="middleName",
-                        ResponsePersonSurName="surname",
-                        ResponsePersonThirdGiveName="thirdGivenName",
+                        PersonSoughtFirstName="firstName",
+                        PersonSoughtMiddleName="middleName",
+                        PersonSoughtLastName="surname",
+                        PersonSoughtThirdGiveName="thirdGivenName",
                         PersonSoughtDateOfBirth=new DateTime(2001,1,1),
                         PersonSoughtGender = GenderType.Male.Value,
                         AgentFirstName="agentFirstName",
@@ -183,37 +183,6 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual("FMEP", person.Agency.Code);
             Assert.AreEqual(100, person.Agency.DaysOpen);
             Assert.AreEqual(1, person.ResponsePersons.Count);
-        }
-
-        [Test]
-        public void SSG_Person_should_map_to_Person_correctly()
-        {
-            SSG_SearchRequestResponse response = new SSG_SearchRequestResponse()
-            {
-                SSG_SearchRequests = new List<SSG_SearchRequest>
-                {
-                    new SSG_SearchRequest {
-                        Agency = new SSG_Agency { AgencyCode = "FMEP" },
-                    }
-                }.ToArray(),
-                SSG_Persons = new List<SSG_Person>
-                {
-                    new SSG_Person{
-                        FirstName="personFirstName",
-                        GenderOptionSet = GenderType.Female.Value,
-                        Incacerated = NullableBooleanType.Yes.Value,
-                        Date1=new DateTime(2000,1,1),
-                        Date1Label="test",
-                        ResponseComments="responseComments"
-                    }
-                }.ToArray(),
-            };
-            Person person = _mapper.Map<Person>(response);
-            Assert.AreEqual("personFirstName", person.FirstName);
-            Assert.AreEqual("f", person.Gender);
-            Assert.AreEqual("yes", person.Incacerated);
-            Assert.AreEqual(1, person.ReferenceDates.Count);
-            Assert.AreEqual("responseComments", person.ResponseComments);
         }
 
 

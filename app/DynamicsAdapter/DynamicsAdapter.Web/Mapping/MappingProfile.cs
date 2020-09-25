@@ -68,6 +68,7 @@ namespace DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => src.PersonBirthDate))
                  .ForMember(dest => dest.Identifiers, opt => opt.MapFrom(src => src.Identifiers))
                  .ForMember(dest => dest.Names, opt => opt.MapFrom<NamesResolver>())
+                 .ForMember(dest => dest.Agency, opt => opt.MapFrom<AgencyResolver>())
                  .ForMember(dest => dest.SearchRequestKey, opt => opt.MapFrom(src => src.SearchRequest == null ? "0" : $"{src.SearchRequest.FileId}_{src.SequenceNumber}"))
                  .ForMember(dest => dest.DataProviders, opt => opt.MapFrom(src => src.DataProviders));
 

@@ -136,6 +136,17 @@ namespace DynamicsAdapter.Web.Mapping
         }
     }
 
+    public class AgencyResolver : IValueResolver<SSG_SearchApiRequest, PersonSearchRequest, Agency>
+    {
+        public Agency Resolve(SSG_SearchApiRequest source, PersonSearchRequest destination, ICollection<Name> destMember, ResolutionContext context)
+        {
+            return null;
+            //if (source?.SearchRequest?.ApplicantFirstName != null || source?.SearchRequest?.ApplicantLastName != null)
+            //    return new List<Name>() { new Name { FirstName = source?.SearchRequest?.ApplicantFirstName, LastName = source?.SearchRequest?.ApplicantLastName, Owner = OwnerType.Applicant } };
+            //else
+            //    return null;
+        }
+    }
 
     public class EmployerPhoneResponseResolver : IValueResolver<SSG_Employment, Employer, ICollection<Phone>>
     {

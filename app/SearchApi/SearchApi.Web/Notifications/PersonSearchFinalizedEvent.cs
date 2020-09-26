@@ -18,4 +18,9 @@ namespace SearchApi.Web.Notifications
 
         public ProviderProfile ProviderProfile { get; set; }
     }
+
+    public class ProviderProfileDetails : ProviderProfile
+    {
+        public string Name {get;set;}
+    }
 }

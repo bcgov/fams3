@@ -5,22 +5,7 @@ using System.Linq;
 
 namespace SearchApi.Web.DeepSearch
 {
-    public class IdentifierComparer : IEqualityComparer<PersonalIdentifier>
-    {
-        public bool Equals([DisallowNull] PersonalIdentifier x, [DisallowNull] PersonalIdentifier y)
-        {
-            return x.Type == y.Type && x.Value == y.Value;
-        }
-
-        public int GetHashCode([DisallowNull] PersonalIdentifier obj)
-        {
-            int hashType = obj.Type.GetHashCode();
-
-            int hashValue = obj.Value.GetHashCode();
-
-            return hashType ^ hashValue;
-        }
-    }
+   
 
     public static class IdentifierExtensions
     {

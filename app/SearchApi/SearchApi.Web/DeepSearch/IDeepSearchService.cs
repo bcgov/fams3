@@ -5,7 +5,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using SearchApi.Web.Configuration;
+using SearchApi.Web.Controllers;
 using SearchApi.Web.DeepSearch.Schema;
+using SearchApi.Web.Messaging;
 using SearchApi.Web.Notifications;
 using SearchApi.Web.Search;
 using System;
@@ -22,9 +24,9 @@ namespace SearchApi.Web.DeepSearch
 
         Task UpdateDataPartner(string searchRequestKey, string dataPartner, string eventName);
         Task UpdateParameters(string eventName, PersonSearchCompleted eventStatus, string searchRequestKey);
+        Task  DeleteFromCache(string searchRequestKey);
 
-
-        Task ProcessWaveSearch(string searchRequestKey);
+        Task<bool> IsWaveSearchReadyToFinalize(string searchRequestKey);
 
     }
 
@@ -32,20 +34,20 @@ namespace SearchApi.Web.DeepSearch
     {
         private readonly ICacheService _cacheService;
         private readonly ILogger<DeepSearchService> _logger;
-        private readonly IDeepSearchDispatcher _dispatcher;
+        private readonly IDeepSearchDispatcher _deepSearchDispatcher;
         private readonly DeepSearchOptions _deepSearchOptions;
-        private readonly ISearchApiNotifier<PersonSearchAdapterEvent> _searchApiNotifier;
-        public DeepSearchService(ICacheService cacheService, ILogger<DeepSearchService> logger, IOptions<DeepSearchOptions> deepSearchOptions, ISearchApiNotifier<PersonSearchAdapterEvent> searchApiNotifier, IDeepSearchDispatcher dispatcher)
+      
+        public DeepSearchService(ICacheService cacheService, ILogger<DeepSearchService> logger, IOptions<DeepSearchOptions> deepSearchOptions, IDeepSearchDispatcher deepSearchDispatcher)
         {
             _cacheService = cacheService;
             _logger = logger;
             _deepSearchOptions = deepSearchOptions.Value;
-            _searchApiNotifier = searchApiNotifier;
-            _dispatcher = dispatcher;
+     
+             _deepSearchDispatcher = deepSearchDispatcher;
         }
 
 
-       
+
 
 
 
@@ -81,7 +83,7 @@ namespace SearchApi.Web.DeepSearch
             }
         }
 
-        private async Task DeleteFromCache(string searchRequestKey)
+        public  async Task DeleteFromCache(string searchRequestKey)
         {
             try
             {
@@ -162,7 +164,7 @@ namespace SearchApi.Web.DeepSearch
             return waveMetaDatas.AsEnumerable();
         }
 
-        public async Task ProcessWaveSearch(string searchRequestKey)
+        public async Task<bool> IsWaveSearchReadyToFinalize(string searchRequestKey)
         {
             if (!await CurrentWaveIsCompleted(searchRequestKey))
             { 
@@ -171,26 +173,26 @@ namespace SearchApi.Web.DeepSearch
                 if (!waveData.Any()) throw new InvalidOperationException("Unable to process wave");
                 if (waveData.Any(x => x.CurrentWave == _deepSearchOptions.MaxWaveCount))
                 {
-                    PersonSearchAdapterEvent finalizedSearch = new PersonSearchFinalizedEvent()
-                    {
-                        SearchRequestKey = searchRequestKey,
-                        Message = "Search Request Finalized",
-                        SearchRequestId = Guid.NewGuid(),
-                        TimeStamp = DateTime.Now
-                    };
-                    await _searchApiNotifier.NotifyEventAsync(searchRequestKey, finalizedSearch, EventName.Finalized, new CancellationToken());
-                    await DeleteFromCache(searchRequestKey);
+                    return true;
                 }
                 else
                 {
                     foreach (var wave in waveData)
                     {
                         foreach (var person in wave.NewParameter)
-                            await  _dispatcher.Dispatch(searchRequestKey, wave, person);
+                        {
+                        //    var pSR = new PersonSearchRequest(person.FirstName, person.LastName, person.DateOfBirth, person.Identifiers, person.Addresses, person.Phones, person.Names, person.RelatedPersons, person.Employments, new List<DataProvider>
+                        //{
+                        //    new DataProvider { Completed = false, Name = wave.DataPartner, NumberOfRetries = 1, TimeBetweenRetries = 3 }
+                        //}, searchRequestKey);
+                           await _deepSearchDispatcher.StartAnotherWave(searchRequestKey,wave, person);
+                        }
                     }
+                    return false;
                 }
             
             }
+            return false;
             
         }
 

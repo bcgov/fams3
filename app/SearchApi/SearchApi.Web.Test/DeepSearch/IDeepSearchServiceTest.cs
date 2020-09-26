@@ -108,10 +108,10 @@ namespace SearchApi.Web.Test.DeepSearch
                 .Setup(x => x.NotifyEventAsync(It.IsAny<string>(), It.IsAny<PersonSearchAdapterEvent>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
 
-            _dispatcherMock.Setup(x => x.Dispatch(It.IsAny<string>(), It.IsAny<WaveSearchData>(), It.IsAny<Person>()))
+            _dispatcherMock.Setup(x => x.StartAnotherWave(It.IsAny<string>(), It.IsAny<WaveSearchData>(), It.IsAny<Person>()))
                 .Returns(Task.CompletedTask);
 
-            _sut = new DeepSearchService(_cacheServiceMock.Object, _loggerMock.Object, _deepSearchOptionsMock.Object, _searchApiNotifierMock.Object, _dispatcherMock.Object);
+            _sut = new DeepSearchService(_cacheServiceMock.Object, _loggerMock.Object, _deepSearchOptionsMock.Object, _dispatcherMock.Object);
 
         }
 
@@ -144,16 +144,16 @@ namespace SearchApi.Web.Test.DeepSearch
                 MaxWaveCount = 5
             });
 
-            _sut = new DeepSearchService(_cacheServiceMock.Object, _loggerMock.Object, _deepSearchOptionsMock.Object, _searchApiNotifierMock.Object, _dispatcherMock.Object);
+            _sut = new DeepSearchService(_cacheServiceMock.Object, _loggerMock.Object, _deepSearchOptionsMock.Object,  _dispatcherMock.Object);
 
-            await _sut.ProcessWaveSearch("mykey");
+            await _sut.IsWaveSearchReadyToFinalize("mykey");
 
             _cacheServiceMock.Verify(x => x.GetRequest(It.IsAny<string>()), Times.Exactly(1));
             _cacheServiceMock.Verify(x => x.SearchKeys("mykey*"), Times.Exactly(1));
             _cacheServiceMock.Verify(x => x.Get("first"), Times.Exactly(1));
             _cacheServiceMock.Verify(x => x.Get("second"), Times.Exactly(1));
             _cacheServiceMock.Verify(x => x.Get("third"), Times.Exactly(1));
-            _dispatcherMock.Verify(x => x.Dispatch(It.IsAny<string>(), It.IsAny<WaveSearchData>(), It.IsAny<Person>()), Times.Exactly(3));
+            _dispatcherMock.Verify(x => x.StartAnotherWave(It.IsAny<string>(), It.IsAny<WaveSearchData>(), It.IsAny<Person>()), Times.Exactly(3));
         }
 
         [Test]
@@ -164,26 +164,23 @@ namespace SearchApi.Web.Test.DeepSearch
                 MaxWaveCount = 2
             });
 
-            _sut = new DeepSearchService(_cacheServiceMock.Object, _loggerMock.Object, _deepSearchOptionsMock.Object, _searchApiNotifierMock.Object, _dispatcherMock.Object);
+            _sut = new DeepSearchService(_cacheServiceMock.Object, _loggerMock.Object, _deepSearchOptionsMock.Object,  _dispatcherMock.Object);
 
-            await _sut.ProcessWaveSearch("mykey");
+            await _sut.IsWaveSearchReadyToFinalize("mykey");
 
             _cacheServiceMock.Verify(x => x.GetRequest(It.IsAny<string>()), Times.Exactly(1));
-            _cacheServiceMock.Verify(x => x.SearchKeys("mykey*"), Times.Exactly(2));
+            _cacheServiceMock.Verify(x => x.SearchKeys("mykey*"), Times.Exactly(1));
             _cacheServiceMock.Verify(x => x.Get("first"), Times.Exactly(1));
             _cacheServiceMock.Verify(x => x.Get("second"), Times.Exactly(1));
             _cacheServiceMock.Verify(x => x.Get("third"), Times.Exactly(1));
-            _searchApiNotifierMock
-               .Verify(x => x.NotifyEventAsync(It.IsAny<string>(), It.IsAny<PersonSearchAdapterEvent>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Exactly(1));
-            _cacheServiceMock.Verify(x => x.Delete(It.IsAny<string>()), Times.Exactly(3));
-            _cacheServiceMock.Verify(x => x.DeleteRequest(It.IsAny<string>()), Times.Exactly(1));
+           
         }
 
         [Test]
         public void should_throw_exception_if_wave_data_not_found()
         {
 
-            Assert.ThrowsAsync<InvalidOperationException>(async () => await _sut.ProcessWaveSearch("null"));
+            Assert.ThrowsAsync<InvalidOperationException>(async () => await _sut.IsWaveSearchReadyToFinalize("null"));
         }
 
         [Test]
@@ -194,7 +191,7 @@ namespace SearchApi.Web.Test.DeepSearch
                 MaxWaveCount = 4
             });
 
-            _sut = new DeepSearchService(_cacheServiceMock.Object, _loggerMock.Object, _deepSearchOptionsMock.Object, _searchApiNotifierMock.Object, _dispatcherMock.Object);
+            _sut = new DeepSearchService(_cacheServiceMock.Object, _loggerMock.Object, _deepSearchOptionsMock.Object,  _dispatcherMock.Object);
 
             await _sut.UpdateParameters("Completed",new FakePersonSearchCompleted
             {
@@ -224,7 +221,7 @@ namespace SearchApi.Web.Test.DeepSearch
                 MaxWaveCount = 4
             });
 
-            _sut = new DeepSearchService(_cacheServiceMock.Object, _loggerMock.Object, _deepSearchOptionsMock.Object, _searchApiNotifierMock.Object, _dispatcherMock.Object);
+            _sut = new DeepSearchService(_cacheServiceMock.Object, _loggerMock.Object, _deepSearchOptionsMock.Object, _dispatcherMock.Object);
 
             await _sut.UpdateParameters("Accepted", new FakePersonSearchCompleted
             {

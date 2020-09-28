@@ -55,6 +55,9 @@ namespace DynamicsAdapter.Web.SearchAgency
                 try
                 {
                     Person p = await _agencyResponseService.GetSearchRequestResponse(searchResponseReady);
+
+                    if (p == null) return BadRequest("wrong response guid");
+
                     await _agencyNotifier.SendNotificationAsync(
                         BuildSearchRequestNotification(searchResponseReady, p),
                         (new CancellationTokenSource()).Token
@@ -64,7 +67,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                 catch (Exception e)
                 {
                     _logger.LogError(e.Message);
-                    return BadRequest();
+                    return StatusCode(StatusCodes.Status500InternalServerError, new { Message = e.Message });
                 }
             }
         }

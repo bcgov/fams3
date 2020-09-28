@@ -21,6 +21,6 @@ namespace BcGov.Fams3.SearchApi.Contracts.SearchRequest
     {
         RequestSaved,
         RequestAssignedToFSO,
-        ResponseReady
+        RequestClosed
     }
 }

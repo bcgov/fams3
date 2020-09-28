@@ -77,20 +77,14 @@ namespace DynamicsAdapter.Web.SearchAgency
             return
                 new SearchRequestNotification()
                 {
-                    Action = RequestAction.NOTIFY,
-                    RequestId = searchResponseReady.AgencyFileId,
-                    SearchRequestKey = searchResponseReady.FileId,
-                    SearchRequestId = Guid.Empty,
-                    TimeStamp = DateTime.Now,
-                    NotificationType = NotificationType.ResponseReady,
-                    EstimatedCompletion = null,
-                    QueuePosition = null,
-                    Message = null,
+                    AgencyFileId = searchResponseReady.AgencyFileId,
+                    FileId = searchResponseReady.FileId,
+                    ActivityDate = searchResponseReady.ActivityDate,
+                    Acvitity = searchResponseReady.Activity,
+                    EstimatedCompletionDate = null,
+                    PositionInQueue = null,
                     Person = person,
-                    ProviderProfile = new ProviderProfile
-                    {
-                        Name = searchResponseReady.Agency
-                    },
+                    Agency = searchResponseReady.Agency,
                     FSOName = searchResponseReady.FSOName
                 };
         }

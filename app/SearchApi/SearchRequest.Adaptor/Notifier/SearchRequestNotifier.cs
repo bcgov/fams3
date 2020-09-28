@@ -1,6 +1,7 @@
 ﻿using BcGov.Fams3.SearchApi.Contracts.Person;
 using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 using BcGov.Fams3.SearchApi.Contracts.SearchRequest;
+using BcGov.Fams3.Utils.Url;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;

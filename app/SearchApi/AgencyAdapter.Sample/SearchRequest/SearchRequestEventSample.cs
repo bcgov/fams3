@@ -17,13 +17,14 @@ namespace AgencyAdapter.Sample.SearchRequest
         public ProviderProfile ProviderProfile { get; set; }
         public IEnumerable<PersonFound> MatchedPersons { get; set; }
 
-        public NotificationType Notification { get; set; }
+        public NotificationType NotificationType { get; set; }
 
         public string RequestId { get; set; }
         public RequestAction Action { get; set; }
         public int? QueuePosition { get; set; }
         public DateTime? EstimatedCompletion { get; set; }
         public string Message { get; set; }
+        public Person Person { get; set; }
     }
     public class AgencySample : ProviderProfile
     {
@@ -42,10 +43,10 @@ namespace AgencyAdapter.Sample.SearchRequest
                 SearchRequestKey = searchRequestKey,
                 RequestId = requestId,
                 TimeStamp = DateTime.Now,
-                Notification = notification,
+                NotificationType = notification,
                 Action = action,
                 Message = $"{action} occured"
-                
+
             };
 
         }

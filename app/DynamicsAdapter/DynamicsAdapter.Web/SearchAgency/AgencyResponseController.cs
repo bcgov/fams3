@@ -1,5 +1,6 @@
-﻿using DynamicsAdapter.Web.SearchAgency.Models;
-using Fams3Adapter.Dynamics.SearchResponse;
+﻿using DynamicsAdapter.Web.PersonSearch.Models;
+using DynamicsAdapter.Web.SearchAgency.Models;
+using DynamicsAdapter.Web.SearchAgency.Webhook;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -7,6 +8,7 @@ using Newtonsoft.Json;
 using NSwag.Annotations;
 using Serilog.Context;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DynamicsAdapter.Web.SearchAgency
@@ -17,13 +19,17 @@ namespace DynamicsAdapter.Web.SearchAgency
     {
         private readonly ILogger<AgencyRequestController> _logger;
         private readonly IAgencyResponseService _agencyResponseService;
+        private readonly IAgencyNotificationWebhook<SearchRequestNotification> _agencyNotifier;
+
         public AgencyResponseController(
                  ILogger<AgencyRequestController> logger,
-                 IAgencyResponseService agencyResponseService
+                 IAgencyResponseService agencyResponseService,
+                 IAgencyNotificationWebhook<SearchRequestNotification> agencyNotifier
                  )
         {
             _logger = logger;
             _agencyResponseService = agencyResponseService;
+            _agencyNotifier = agencyNotifier;
         }
 
         [HttpPost]
@@ -42,10 +48,45 @@ namespace DynamicsAdapter.Web.SearchAgency
                 _logger.LogInformation("Get searchResponseReady");
                 _logger.LogDebug(JsonConvert.SerializeObject(searchResponseReady));
 
-                Person p = await _agencyResponseService.GetSearchRequestResponse(searchResponseReady);
-                searchResponseReady.Person = p;
-                return Ok();
+                try
+                {
+                    Person p = await _agencyResponseService.GetSearchRequestResponse(searchResponseReady);
+                    await _agencyNotifier.SendNotificationAsync(
+                        BuildSearchRequestNotification(searchResponseReady, p),
+                        (new CancellationTokenSource()).Token
+                        );
+                    return Ok();
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e.Message);
+                    return BadRequest();
+                }
             }
         }
+
+        private SearchRequestNotification BuildSearchRequestNotification(SearchResponseReady searchResponseReady, Person person)
+        {
+            return
+                new SearchRequestNotification()
+                {
+                    Action = RequestAction.NOTIFY,
+                    RequestId = searchResponseReady.AgencyFileId,
+                    SearchRequestKey = searchResponseReady.FileId,
+                    SearchRequestId = Guid.Empty,
+                    TimeStamp = DateTime.Now,
+                    NotificationType = NotificationType.ResponseReady,
+                    EstimatedCompletion = null,
+                    QueuePosition = null,
+                    Message = null,
+                    Person = person,
+                    ProviderProfile = new ProviderProfile
+                    {
+                        Name = searchResponseReady.Agency
+                    },
+                    FSOName = searchResponseReady.FSOName
+                };
+        }
+
     }
 }

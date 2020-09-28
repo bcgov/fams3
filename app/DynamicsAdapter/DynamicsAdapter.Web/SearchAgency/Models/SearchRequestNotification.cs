@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace BcGov.Fams3.SearchApi.Contracts.SearchRequest
+namespace DynamicsAdapter.Web.SearchAgency.Models
 {
-    public interface SearchRequestNotification : SearchRequestEvent
+    public class SearchRequestNotification : SearchRequestEvent
     {
-        NotificationType NotificationType { get; }
+        public NotificationType NotificationType { get; set; }
 
         public int? QueuePosition { get; set; }
 
@@ -14,9 +15,10 @@ namespace BcGov.Fams3.SearchApi.Contracts.SearchRequest
 
         public string Message { get; set; }
 
-        public Person.Person Person { get; set; }
-    }
+        public Person Person { get; set; }
 
+        public string FSOName { get; set; }
+    }
     public enum NotificationType
     {
         RequestSaved,

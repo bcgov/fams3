@@ -9,6 +9,8 @@ using DynamicsAdapter.Web.Infrastructure;
 using DynamicsAdapter.Web.PersonSearch;
 using DynamicsAdapter.Web.Register;
 using DynamicsAdapter.Web.SearchAgency;
+using DynamicsAdapter.Web.SearchAgency.Models;
+using DynamicsAdapter.Web.SearchAgency.Webhook;
 using DynamicsAdapter.Web.SearchRequest;
 using Fams3Adapter.Dynamics.DataProvider;
 using Fams3Adapter.Dynamics.Duplicate;
@@ -62,6 +64,9 @@ namespace DynamicsAdapter.Web
 
 
             services.AddControllers();
+
+            services.AddOptions<AgencyNotificationOptions>().Bind(Configuration.GetSection(Keys.AGENCY_NOTIFICATION_WEB_HOOK_SETTING_KEY));
+            services.AddHttpClient<IAgencyNotificationWebhook<SearchRequestNotification>, AgencyNotificationWebhook>();
 
             services.AddHealthChecks().AddCheck<DynamicsHealthCheck>("status_reason_health_check", failureStatus: HealthStatus.Degraded);
 

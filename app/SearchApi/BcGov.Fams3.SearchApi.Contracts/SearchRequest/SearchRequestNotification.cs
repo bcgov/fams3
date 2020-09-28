@@ -15,6 +15,8 @@ namespace BcGov.Fams3.SearchApi.Contracts.SearchRequest
         public string Message { get; set; }
 
         public Person.Person Person { get; set; }
+
+        public string FSOName { get; set; }
     }
 
     public enum NotificationType

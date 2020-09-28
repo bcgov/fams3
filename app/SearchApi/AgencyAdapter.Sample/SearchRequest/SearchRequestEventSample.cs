@@ -25,6 +25,7 @@ namespace AgencyAdapter.Sample.SearchRequest
         public DateTime? EstimatedCompletion { get; set; }
         public string Message { get; set; }
         public Person Person { get; set; }
+        public string FSOName { get; set; }
     }
     public class AgencySample : ProviderProfile
     {

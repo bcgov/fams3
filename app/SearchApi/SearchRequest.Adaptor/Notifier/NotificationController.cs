@@ -57,7 +57,7 @@ namespace SearchRequest.Adaptor.Notifier
                 var notifyEvent = new SearchRequestNotificationEvent
                 {
                     ProviderProfile = new ProviderProfile { Name = notification.Agency },
-                    NotificationType = (NotificationType)Enum.Parse(typeof(NotificationType), notification.Acvitity),
+                    NotificationType = (NotificationType)Enum.Parse(typeof(NotificationType), notification.Acvitity, true),
                     RequestId = notification.AgencyFileId,
                     SearchRequestKey = notification.FileId,
                     QueuePosition = notification.PositionInQueue,

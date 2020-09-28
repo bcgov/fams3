@@ -17,12 +17,12 @@ namespace DynamicsAdapter.Web.SearchAgency
     [ApiController]
     public class AgencyResponseController : ControllerBase
     {
-        private readonly ILogger<AgencyRequestController> _logger;
+        private readonly ILogger<AgencyResponseController> _logger;
         private readonly IAgencyResponseService _agencyResponseService;
         private readonly IAgencyNotificationWebhook<SearchRequestNotification> _agencyNotifier;
 
         public AgencyResponseController(
-                 ILogger<AgencyRequestController> logger,
+                 ILogger<AgencyResponseController> logger,
                  IAgencyResponseService agencyResponseService,
                  IAgencyNotificationWebhook<SearchRequestNotification> agencyNotifier
                  )
@@ -47,6 +47,10 @@ namespace DynamicsAdapter.Web.SearchAgency
             {
                 _logger.LogInformation("Get searchResponseReady");
                 _logger.LogDebug(JsonConvert.SerializeObject(searchResponseReady));
+
+
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
 
                 try
                 {

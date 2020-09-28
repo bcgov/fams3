@@ -10,6 +10,7 @@ using DynamicsAdapter.Web.PersonSearch;
 using DynamicsAdapter.Web.Register;
 using DynamicsAdapter.Web.SearchAgency;
 using DynamicsAdapter.Web.SearchAgency.Models;
+using DynamicsAdapter.Web.SearchAgency.Validation;
 using DynamicsAdapter.Web.SearchAgency.Webhook;
 using DynamicsAdapter.Web.SearchRequest;
 using Fams3Adapter.Dynamics.DataProvider;
@@ -18,6 +19,8 @@ using Fams3Adapter.Dynamics.OptionSets;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Fams3Adapter.Dynamics.SearchResponse;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using HealthChecks.UI.Client;
 using Jaeger;
 using Jaeger.Samplers;
@@ -60,7 +63,7 @@ namespace DynamicsAdapter.Web
             {
 
                 options.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
-            });
+            }).AddFluentValidation();
 
 
             services.AddControllers();
@@ -78,11 +81,16 @@ namespace DynamicsAdapter.Web
 
             this.ConfigureScheduler(services);
             this.ConfigureAutoMapper(services);
-
+            this.ConfigureFluentValidation(services);
             services.AddCacheService(Configuration.GetSection(Keys.REDIS_SECTION_SETTING_KEY).Get<RedisConfiguration>());
 
             services.AddTransient<ISearchResultService, SearchResultService>();
             services.AddTransient<ISearchRequestRegister, SearchRequestRegister>();
+        }
+
+        private void ConfigureFluentValidation(IServiceCollection services)
+        {
+            services.AddTransient<IValidator<SearchResponseReady>, SearchResponseReadyValidator>();
         }
 
         public void ConfigureAutoMapper(IServiceCollection services)
@@ -126,7 +134,7 @@ namespace DynamicsAdapter.Web
             // Register IOAuthApiClient
             services.AddHttpClient<IOAuthApiClient, OAuthApiClient>();
 
-          
+
 
             // Register httpClient for OdataClient with OAuthHandler
             services.AddHttpClient<ODataClientSettings>(cfg => { cfg.BaseAddress = new Uri(oAuthOptions.ResourceUrl); })
@@ -143,7 +151,7 @@ namespace DynamicsAdapter.Web
              {
                  var settings = provider.GetRequiredService<ODataClientSettings>();
                  settings.IgnoreUnmappedProperties = true;
-                 return new ODataClient(settings); 
+                 return new ODataClient(settings);
              });
 
             // Add other Services
@@ -187,7 +195,7 @@ namespace DynamicsAdapter.Web
 
         }
 
-      
+
         /// <summary>
         /// Configure Open Api using NSwag
         /// https://github.com/RicoSuter/NSwag

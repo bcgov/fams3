@@ -41,6 +41,9 @@ namespace Fams3Adapter.Dynamics.Employment
 
         [JsonProperty("statuscode")]
         public int StatusCode { get; set; }
+
+        [JsonProperty("ssg_name")]
+        public string ContactName { get; set; }
     }
 
     public class SSG_EmploymentContact : EmploymentContactEntity

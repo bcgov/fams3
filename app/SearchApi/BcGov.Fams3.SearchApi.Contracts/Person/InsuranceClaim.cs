@@ -3,7 +3,7 @@ using System.ComponentModel;
 
 namespace BcGov.Fams3.SearchApi.Contracts.Person
 {
-    public  class InsuranceClaim : PersonalInfo
+    public class InsuranceClaim : PersonalInfo
     {
 
         [Description("Claim Type")]
@@ -28,7 +28,10 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         public IEnumerable<InvolvedParty> InsuredParties { get; set; }
         [Description("Claim center information")]
         public ClaimCentre ClaimCentre { get; set; }
+
+        [Description("Claim Amount")]
+        public string ClaimAmount { get; set; }
     }
 
-    
+
 }

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 
 namespace BcGov.Fams3.SearchApi.Contracts.Person
 {
@@ -19,9 +20,11 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         [Description("the type of the names")]
         public string Type { get; set; }
 
+        [Description("the date of birth of this name person")]
+        public DateTime? DateOfBirth { get; set; }
+
         [Description("The owner of the name e.g. Applicant, Person Sought, e.t.c")]
         public OwnerType Owner { get; set; }
-
 
     }
 }

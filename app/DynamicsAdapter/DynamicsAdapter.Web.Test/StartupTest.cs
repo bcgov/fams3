@@ -3,6 +3,7 @@ using AutoMapper;
 using BcGov.Fams3.Redis;
 using DynamicsAdapter.Web.ApiGateway;
 using DynamicsAdapter.Web.Register;
+using DynamicsAdapter.Web.SearchAgency;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,6 +34,8 @@ namespace DynamicsAdapter.Web.Test
             Assert.IsNotNull(webHost.Services.GetService<IMapper>());
             Assert.IsNotNull(webHost.Services.GetService<ICacheService>());
             Assert.IsNotNull(webHost.Services.GetService<ISearchRequestRegister>());
+            Assert.IsNotNull(webHost.Services.GetService<IAgencyResponseService>());
+            Assert.IsNotNull(webHost.Services.GetService<IAgencyRequestService>());
         }
     }
 }

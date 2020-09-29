@@ -79,6 +79,11 @@ namespace DynamicsAdapter.Web.Health
                 "ssg_payororreceiveroptions" => Enumeration.GetAll<PersonSoughtType>(),
                 "ssg_requestpriorities" => Enumeration.GetAll<RequestPriorityType>(),
                 "ssg_personcategorycodes" => Enumeration.GetAll<RelatedPersonPersonType>(),
+                "ssg_employmentstatus" => Enumeration.GetAll<EmploymentStatusType>(),
+                "ssg_selfemploymentcompanytype" => Enumeration.GetAll<SelfEmploymentCompanyType>(),
+                "ssg_selfemploymentcompanyrole" => Enumeration.GetAll<SelfEmploymentCompanyRoleType>(),
+                "ssg_famsincomeassistanceclasses" => Enumeration.GetAll<IncomeAssistanceClassType>(),
+                "ssg_bankaccounttype" => Enumeration.GetAll<BankAccountType>(),
                 _ => Enumeration.GetAll<TelephoneNumberType>()
             };
         }

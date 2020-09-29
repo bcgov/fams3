@@ -21,5 +21,8 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
 
         [Description("Employer")]
         public Employer Employer { get; set; }
+
+        [Description("Claim amount")]
+        public string ClaimAmount { get; set; }
     }
 }

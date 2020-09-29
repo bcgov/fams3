@@ -23,6 +23,9 @@ namespace Fams3Adapter.Dynamics
         [JsonProperty("ssg_datadatelabel2")]
         public string Date2Label { get; set; }
 
+        [JsonProperty("ssg_responsecomment")]
+        public string ResponseComments { get; set; }
+
         public bool Updated { get; set; }
     }
 }

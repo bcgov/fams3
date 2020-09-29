@@ -31,6 +31,30 @@ namespace Fams3Adapter.Dynamics.Vehicle
 
         [JsonProperty("ssg_PersonId")]
         public virtual SSG_Person Person { get; set; }
+
+        [JsonProperty("ssg_year")]
+        public string Year { get; set; }
+
+        [JsonProperty("ssg_make")]
+        public string Make { get; set; }
+
+        [JsonProperty("ssg_model")]
+        public string Model { get; set; }
+
+        [JsonProperty("ssg_vehiclecolour")]
+        public string Color { get; set; }
+
+        [JsonProperty("ssg_vehicletype")]
+        public string Type { get; set; }
+
+        [JsonProperty("ssg_leasingcompany")]
+        public string LeasingCom { get; set; }
+
+        [JsonProperty("ssg_lessee")]
+        public string Lessee { get; set; }
+
+        [JsonProperty("ssg_leasingcompanyaddress")]
+        public string LeasingComAddr { get; set; }
     }
 
     public class SSG_Asset_Vehicle : VehicleEntity

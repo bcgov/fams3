@@ -14,6 +14,12 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         public string TransitNumber { get; set; }
 
         [Description("The other name")]
-        public string AccountNumber { get; set; }      
+        public string AccountNumber { get; set; }
+
+        [Description("The type of bank account")]
+        public string AccountType { get; set; }
+
+        [Description("The branch number of bank account")]
+        public string BranchNumber { get; set; }
     }
 }

@@ -27,5 +27,11 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
 
         [Description("The relationship type")]
         public string Type { get; set; }
+
+        [Description("The related person type")]
+        public string PersonType { get; set; }
+
+        [Description("The death date of the related person")]
+        public DateTime? DateOfDeath { get; set; }
     }
 }

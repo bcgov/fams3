@@ -44,14 +44,17 @@ namespace Fams3Adapter.Dynamics.CompensationClaim
 
         public EmploymentEntity EmploymentEntity { get; set; }
         public BankingInformationEntity BankInformationEntity { get; set; }
+
+        [JsonProperty("ssg_claimamount")]
+        public string ClaimAmount { get; set; }
     }
 
 
 
-public class SSG_Asset_WorkSafeBcClaim : CompensationClaimEntity
+    public class SSG_Asset_WorkSafeBcClaim : CompensationClaimEntity
     {
         [JsonProperty("ssg_asset_worksafebcclaimid")]
-        public Guid CompensationClaimId{ get; set; }
+        public Guid CompensationClaimId { get; set; }
         public bool IsDuplicated { get; set; }
     }
 }

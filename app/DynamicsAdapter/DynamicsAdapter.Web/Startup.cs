@@ -15,6 +15,7 @@ using Fams3Adapter.Dynamics.Duplicate;
 using Fams3Adapter.Dynamics.OptionSets;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using Fams3Adapter.Dynamics.SearchRequest;
+using Fams3Adapter.Dynamics.SearchResponse;
 using HealthChecks.UI.Client;
 using Jaeger;
 using Jaeger.Samplers;
@@ -145,10 +146,11 @@ namespace DynamicsAdapter.Web
             services.AddTransient<ITokenService, TokenService>();
             services.AddTransient<ISearchApiRequestService, SearchApiRequestService>();
             services.AddTransient<ISearchRequestService, SearchRequestService>();
+            services.AddTransient<ISearchResponseService, SearchResponseService>();
             services.AddTransient<IDataPartnerService, DataPartnerService>();
             services.AddSingleton<IDuplicateDetectionService, DuplicateDetectionService>();
             services.AddTransient<IAgencyRequestService, AgencyRequestService>();
-
+            services.AddTransient<IAgencyResponseService, AgencyResponseService>();
         }
         /// <summary>
         /// Configures the Quartz Hosted Service.

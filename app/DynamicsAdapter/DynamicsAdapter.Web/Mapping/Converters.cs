@@ -44,14 +44,6 @@ namespace DynamicsAdapter.Web.Mapping
         }
     }
 
-    public class AddressTypeConverter : IValueConverter<string, int?>
-    {
-        public int? Convert(string sourceMember, ResolutionContext context)
-        {
-            return sourceMember == null ? null : (int?)(AddressType.AddressTypeDictionary[sourceMember.ToLower()].Value);
-        }
-    }
-
     public static class AddressType
     {
         internal static readonly IDictionary<string, LocationType> AddressTypeDictionary = new Dictionary<string, LocationType>
@@ -65,6 +57,25 @@ namespace DynamicsAdapter.Web.Mapping
             { "unknown", LocationType.Other }
         };
     }
+
+    public class AddressTypeConverter : IValueConverter<string, int?>
+    {
+        public int? Convert(string sourceMember, ResolutionContext context)
+        {
+            return sourceMember == null ? null : (int?)(AddressType.AddressTypeDictionary[sourceMember.ToLower()].Value);
+        }
+    }
+
+    public class AddressTypeResponseConverter : IValueConverter<int?, string>
+    {
+        public string Convert(int? sourceMember, ResolutionContext context)
+        {
+            return sourceMember == null ? null :
+                (string)(AddressType.AddressTypeDictionary.FirstOrDefault(m => ((LocationType)m.Value).Value == (int)sourceMember).Key);
+        }
+    }
+
+
 
     public class NameCategoryConverter : IValueConverter<string, int?>
     {
@@ -81,27 +92,44 @@ namespace DynamicsAdapter.Web.Mapping
         }
     }
 
+    public static class PhoneType
+    {
+        internal static readonly IDictionary<string, int?> PhoneTypeDictionary = new Dictionary<string, int?>
+        {
+            { "cell", TelephoneNumberType.Cell.Value },
+            { "home", TelephoneNumberType.Home.Value },
+            { "work", TelephoneNumberType.Work.Value },
+            { "homecell", TelephoneNumberType.Home.Value },
+            { "workcell", TelephoneNumberType.Work.Value },
+            { "business", TelephoneNumberType.Work.Value },
+            { "unknown", TelephoneNumberType.Other.Value },
+            { "other", TelephoneNumberType.Other.Value},
+            { "fax", TelephoneNumberType.Fax.Value},
+            { "blank", null}
+        };
+    }
+
     public class PhoneTypeConverter : IValueConverter<string, int?>
     {
         public int? Convert(string sourceMember, ResolutionContext context)
         {
-            return
-                sourceMember?.ToLower() switch
-                {
-                    "cell" => TelephoneNumberType.Cell.Value,
-                    "home" => TelephoneNumberType.Home.Value,
-                    "work" => TelephoneNumberType.Work.Value,
-                    "homecell" => TelephoneNumberType.Home.Value,
-                    "workcell" => TelephoneNumberType.Work.Value,
-                    "business" => TelephoneNumberType.Work.Value,
-                    "unknown" => TelephoneNumberType.Other.Value,
-                    "other" => TelephoneNumberType.Other.Value,
-                    "fax" => TelephoneNumberType.Fax.Value,
-                    "blank" => (int?)null,
-                    _ => TelephoneNumberType.Other.Value
-                };
+            if (sourceMember == null) return null;
+            if (PhoneType.PhoneTypeDictionary.ContainsKey(sourceMember.ToLower()))
+                return (int?)(PhoneType.PhoneTypeDictionary[sourceMember.ToLower()].Value);
+            else
+                return TelephoneNumberType.Other.Value;
         }
     }
+
+    public class PhoneTypeResponseConverter : IValueConverter<int?, string>
+    {
+        public string Convert(int? sourceMember, ResolutionContext context)
+        {
+            return sourceMember == null ? null :
+                (string)(PhoneType.PhoneTypeDictionary.FirstOrDefault(m => m.Value == (int)sourceMember).Key);
+        }
+    }
+
     public class IncaceratedConverter : IValueConverter<string, int?>
     {
         public int? Convert(string sourceMember, ResolutionContext context)
@@ -121,13 +149,23 @@ namespace DynamicsAdapter.Web.Mapping
         }
     }
 
+    public class IncaceratedReponseConverter : IValueConverter<int?, string>
+    {
+        public string Convert(int? sourceMember, ResolutionContext context)
+        {
+            if (sourceMember == NullableBooleanType.Yes.Value) return "yes";
+            if (sourceMember == NullableBooleanType.No.Value) return "no";
+            return null;
+        }
+    }
+
     public class RelatedPersonCategoryConverter : IValueConverter<string, int?>
     {
         public int? Convert(string sourceMember, ResolutionContext context)
         {
             if (sourceMember == null) return null;
 
-            if ("aunt/uncle".Contains(sourceMember.ToLower())) 
+            if ("aunt/uncle".Contains(sourceMember.ToLower()))
                 return PersonRelationType.AuntUncle.Value;
             else
                 return
@@ -145,19 +183,113 @@ namespace DynamicsAdapter.Web.Mapping
         }
     }
 
+    public static class GenderDictionary
+    {
+        internal static readonly IDictionary<string, int> GenderTypeDictionary = new Dictionary<string, int>
+        {
+            { "m", GenderType.Male.Value },
+            { "f", GenderType.Female.Value },
+            { "u", GenderType.Other.Value }
+        };
+    }
+
     public class PersonGenderConverter : IValueConverter<string, int?>
     {
         public int? Convert(string sourceMember, ResolutionContext context)
         {
             if (sourceMember == null) return null;
             return
-                sourceMember.ToLower() switch
-                {
-                    "m" => GenderType.Male.Value,
-                    "f" => GenderType.Female.Value,
-                    "u" => GenderType.Other.Value,
-                    _ => (int?)null
-                };
+                GenderDictionary.GenderTypeDictionary.ContainsKey(sourceMember.ToLower()) ?
+                    GenderDictionary.GenderTypeDictionary[sourceMember.ToLower()] : (int?)null;
+        }
+    }
+
+    public class PersonGenderTypeConverter : IValueConverter<int?, string>
+    {
+        public string Convert(int? sourceMember, ResolutionContext context)
+        {
+            if (sourceMember == null) return null;
+            return
+                Enumeration.GetAll<GenderType>().SingleOrDefault(m => m.Value == sourceMember)?.Name;
+
+        }
+    }
+
+
+    public class EmploymentStatusResponseConverter : IValueConverter<int?, string>
+    {
+        public string Convert(int? sourceMember, ResolutionContext context)
+        {
+            if (sourceMember == null) return null;
+            return
+                Enumeration.GetAll<EmploymentStatusType>().SingleOrDefault(m => m.Value == sourceMember)?.Name;
+
+        }
+    }
+
+    public class SelfEmployComTypeResponseConverter : IValueConverter<int?, string>
+    {
+        public string Convert(int? sourceMember, ResolutionContext context)
+        {
+            if (sourceMember == null) return null;
+            return
+                Enumeration.GetAll<SelfEmploymentCompanyType>().SingleOrDefault(m => m.Value == sourceMember)?.Name;
+
+        }
+    }
+
+    public class SelfEmployComRoleResponseConverter : IValueConverter<int?, string>
+    {
+        public string Convert(int? sourceMember, ResolutionContext context)
+        {
+            if (sourceMember == null) return null;
+            return
+                Enumeration.GetAll<SelfEmploymentCompanyRoleType>().SingleOrDefault(m => m.Value == sourceMember)?.Name;
+
+        }
+    }
+
+    public class IncomeAssistanceStatusResponseConverter : IValueConverter<int?, string>
+    {
+        public string Convert(int? sourceMember, ResolutionContext context)
+        {
+            if (sourceMember == null) return null;
+            return
+                Enumeration.GetAll<IncomeAssistanceStatusType>().SingleOrDefault(m => m.Value == sourceMember)?.Name;
+
+        }
+    }
+
+    public class AccountTypeResponseConverter : IValueConverter<int?, string>
+    {
+        public string Convert(int? sourceMember, ResolutionContext context)
+        {
+            if (sourceMember == null) return null;
+            return
+                Enumeration.GetAll<BankAccountType>().SingleOrDefault(m => m.Value == sourceMember)?.Name;
+
+        }
+    }
+
+    public class RelatedPersonCategoryResponseConverter : IValueConverter<int?, string>
+    {
+        public string Convert(int? sourceMember, ResolutionContext context)
+        {
+            if (sourceMember == null) return null;
+            return
+                Enumeration.GetAll<PersonRelationType>().SingleOrDefault(m => m.Value == sourceMember)?.Name;
+
+        }
+    }
+
+    public class RelatedPersonTypeResponseConverter : IValueConverter<int?, string>
+    {
+        public string Convert(int? sourceMember, ResolutionContext context)
+        {
+            if (sourceMember == null) return null;
+            return
+                Enumeration.GetAll<RelatedPersonPersonType>().SingleOrDefault(m => m.Value == sourceMember)?.Name;
+
         }
     }
 
@@ -166,12 +298,12 @@ namespace DynamicsAdapter.Web.Mapping
         public string Convert(IEnumerable<Person> sourceMember, ResolutionContext context)
         {
             var strbuilder = new StringBuilder();
-            if (sourceMember==null)
+            if (sourceMember == null)
                 return $"Auto search processing completed successfully. 0 Matched Persons found.";
 
             strbuilder.Append($"Auto search processing completed successfully. {sourceMember.Count()} Matched Persons found.\n");
             int i = 1;
-            foreach(Person p in sourceMember)
+            foreach (Person p in sourceMember)
             {
                 strbuilder.Append($"For Matched Person {i} : ");
                 strbuilder.Append($"{(p.Identifiers == null ? 0 : p.Identifiers.Count)} identifier(s) found.  ");
@@ -201,6 +333,18 @@ namespace DynamicsAdapter.Web.Mapping
                 return EmploymentRecordType.IncomeAssistance.Value;
         }
     }
+    public class IncomeAssistanceResponseConvertor : IValueConverter<int?, bool?>
+    {
+        public bool? Convert(int? sourceMember, ResolutionContext context)
+        {
+            if (sourceMember == null)
+                return false;
+            else if (sourceMember == EmploymentRecordType.IncomeAssistance.Value)
+                return true;
+
+            return false;
+        }
+    }
 
     public class IncomeAssistanceStatusConvertor : IValueConverter<string, int?>
     {
@@ -208,9 +352,9 @@ namespace DynamicsAdapter.Web.Mapping
         {
             if (!string.IsNullOrEmpty(sourceMember))
             {
-                 int? source = Enumeration.GetAll<IncomeAssistanceStatusType>().FirstOrDefault(m => m.Name.Equals(sourceMember, StringComparison.OrdinalIgnoreCase))?.Value;
+                int? source = Enumeration.GetAll<IncomeAssistanceStatusType>().FirstOrDefault(m => m.Name.Equals(sourceMember, StringComparison.OrdinalIgnoreCase))?.Value;
 
-              return  (source == null) ? IncomeAssistanceStatusType.Unknown.Value : source;
+                return (source == null) ? IncomeAssistanceStatusType.Unknown.Value : source;
 
             }
             else
@@ -230,6 +374,27 @@ namespace DynamicsAdapter.Web.Mapping
                     "normal" => RequestPriorityType.Regular.Value,
                     _ => RequestPriorityType.Regular.Value
                 };
+        }
+    }
+
+    public class RequestPriorityTypeConverter : IValueConverter<int?, RequestPriority>
+    {
+        public RequestPriority Convert(int? sourceMember, ResolutionContext context)
+        {
+            if (sourceMember == RequestPriorityType.Urgent.Value) return RequestPriority.Urgent;
+            if (sourceMember == RequestPriorityType.Rush.Value) return RequestPriority.Rush;
+            if (sourceMember == RequestPriorityType.Regular.Value) return RequestPriority.Normal;
+            return RequestPriority.Normal;
+        }
+    }
+
+    public class PersonSoughtRoleConverter : IValueConverter<int?, string>
+    {
+        public string Convert(int? sourceMember, ResolutionContext context)
+        {
+            if (sourceMember == PersonSoughtType.P.Value) return "P";
+            if (sourceMember == PersonSoughtType.R.Value) return "R";
+            return null;
         }
     }
 }

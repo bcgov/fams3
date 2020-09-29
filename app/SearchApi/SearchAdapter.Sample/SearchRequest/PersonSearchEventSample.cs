@@ -15,6 +15,8 @@ namespace SearchAdapter.Sample.SearchRequest
         public DateTime TimeStamp { get; set; }
         public ProviderProfile ProviderProfile { get; set; }
         public IEnumerable<PersonFound> MatchedPersons { get; set; }
+        public SearchStatus Status { get; set; }
+        public string Message { get; set; }
     }
     public static class FakePersonBuilder
     {
@@ -23,6 +25,8 @@ namespace SearchAdapter.Sample.SearchRequest
 
             return new PersonSearchCompletedSample()
             {
+                Message = "We performed search and did not like it",
+                Status = SearchStatus.Succeeded,
                 ProviderProfile = _profile,
                 SearchRequestId = searchrequestId,
                 SearchRequestKey = SearchRequestKey,
@@ -482,7 +486,7 @@ namespace SearchAdapter.Sample.SearchRequest
 
         public Guid SearchRequestId { get; }
         public string SearchRequestKey { get; }
-
+        public SearchStatus Status { get; set; }
         public DateTime TimeStamp { get; }
         public ProviderProfile ProviderProfile { get; }
         public IEnumerable<ValidationResult> Reasons => _validationResults;

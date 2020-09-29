@@ -108,7 +108,7 @@ namespace SearchApi.Web.Test.DeepSearch
                 .Setup(x => x.NotifyEventAsync(It.IsAny<string>(), It.IsAny<PersonSearchAdapterEvent>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
 
-            _dispatcherMock.Setup(x => x.StartAnotherWave(It.IsAny<string>(), It.IsAny<WaveSearchData>(), It.IsAny<Person>()))
+            _dispatcherMock.Setup(x => x.StartAnotherWave(It.IsAny<string>(), It.IsAny<WaveSearchData>(), It.IsAny<Person>(),It.IsAny<int>(), It.IsAny<int>()))
                 .Returns(Task.CompletedTask);
 
             _sut = new DeepSearchService(_cacheServiceMock.Object, _loggerMock.Object, _deepSearchOptionsMock.Object, _dispatcherMock.Object);
@@ -153,7 +153,7 @@ namespace SearchApi.Web.Test.DeepSearch
             _cacheServiceMock.Verify(x => x.Get("first"), Times.Exactly(1));
             _cacheServiceMock.Verify(x => x.Get("second"), Times.Exactly(1));
             _cacheServiceMock.Verify(x => x.Get("third"), Times.Exactly(1));
-            _dispatcherMock.Verify(x => x.StartAnotherWave(It.IsAny<string>(), It.IsAny<WaveSearchData>(), It.IsAny<Person>()), Times.Exactly(3));
+            _dispatcherMock.Verify(x => x.StartAnotherWave(It.IsAny<string>(), It.IsAny<WaveSearchData>(), It.IsAny<Person>(), It.IsAny<int>(), It.IsAny<int>()), Times.Exactly(3));
         }
 
         [Test]

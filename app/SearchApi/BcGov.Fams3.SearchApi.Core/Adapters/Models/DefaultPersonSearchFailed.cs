@@ -20,5 +20,6 @@ namespace BcGov.Fams3.SearchApi.Core.Adapters.Models
         public DateTime TimeStamp { get; }
         public ProviderProfile ProviderProfile { get; }
         public string Cause { get; }
+        public SearchStatus Status { get;  }
     }
 }

@@ -117,7 +117,7 @@ namespace SearchApi.Web.DeepSearch
                         waveitem.AllParameter.Add(new Person { Identifiers = newToBeUsedId });
                         if (waveitem.NewParameter == null || waveitem.NewParameter?.Count == 0)
                             waveitem.NewParameter = new List<Person> { new Person { Identifiers = newToBeUsedId } };
-                            waveitem.NewParameter.Add(new Person { Identifiers = newToBeUsedId });
+                           
                         else
                             waveitem.NewParameter[0] = new Person { Identifiers = newToBeUsedId };
                     }
@@ -175,7 +175,8 @@ namespace SearchApi.Web.DeepSearch
         public async Task<bool> IsWaveSearchReadyToFinalize(string searchRequestKey)
         {
             if (!await CurrentWaveIsCompleted(searchRequestKey))
-            { 
+                return false;
+           
                 
                 var waveData = await GetWaveDataForSearch(searchRequestKey);
                 if (!waveData.Any()) throw new InvalidOperationException("Unable to process wave");
@@ -196,8 +197,7 @@ namespace SearchApi.Web.DeepSearch
                     
                 }
 
-            }
-            return true;
+          
             
         }
 

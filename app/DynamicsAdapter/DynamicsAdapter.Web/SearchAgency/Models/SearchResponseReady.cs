@@ -2,6 +2,7 @@
 
 namespace DynamicsAdapter.Web.SearchAgency.Models
 {
+    //This is the payload from Dynamics
     public class SearchResponseReady
     {
         public string FileId { get; set; }
@@ -11,6 +12,5 @@ namespace DynamicsAdapter.Web.SearchAgency.Models
         public string Activity { get; set; }
         public string ResponseGuid { get; set; }
         public string FSOName { get; set; }
-        public Person Person { get; set; }
     }
 }

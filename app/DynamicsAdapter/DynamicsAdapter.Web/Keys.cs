@@ -3,6 +3,7 @@
     public static class Keys
     {
         internal static readonly string API_GATEWAY_CONFIGURATION_KEY = "ApiGateway";
+        internal static readonly string AGENCY_NOTIFICATION_WEB_HOOK_SETTING_KEY = "AgencyNotification";
         public static readonly string SEARCH_API_EVENT_NAME = "Person Search";
         public static readonly string EVENT_ACCEPTED = "Accepted";
         public static readonly string EVENT_REJECTED = "Rejected";

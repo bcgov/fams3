@@ -5,6 +5,7 @@ using AutoMapper;
 using Fams3Adapter.Dynamics.Types;
 using Fams3Adapter.Dynamics.OptionSets.Models;
 using System.Text;
+using Fams3Adapter.Dynamics.SearchRequest;
 
 namespace DynamicsAdapter.Web.Mapping
 {
@@ -385,6 +386,22 @@ namespace DynamicsAdapter.Web.Mapping
             if (sourceMember == RequestPriorityType.Rush.Value) return RequestPriority.Rush;
             if (sourceMember == RequestPriorityType.Regular.Value) return RequestPriority.Normal;
             return RequestPriority.Normal;
+        }
+    }
+
+    public class SearchReasonCodeConverter : IValueConverter<SSG_SearchRequestReason, SearchReasonCode>
+    {
+        public SearchReasonCode Convert(SSG_SearchRequestReason reason, ResolutionContext context)
+        {
+            if (reason == null) return SearchReasonCode.Other;
+            try
+            {
+                return (SearchReasonCode)Enum.Parse(typeof(SearchReasonCode), reason.ReasonCode, true);
+            }
+            catch (Exception)
+            {
+                return SearchReasonCode.Other;
+            }
         }
     }
 

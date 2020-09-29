@@ -45,7 +45,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                         RequestPriority = RequestPriority.Rush,
                         Code = "FMEP",
                         RequestId = "QFP-12422509096920180928083433",
-                        ReasonCode = "EnfPayAgr",
+                        ReasonCode = SearchReasonCode.EnfPayAgr,
                         RequestDate = new DateTimeOffset(2018, 9, 28, 0, 0, 0, new TimeSpan(1, 0, 0)),
                         Email = "agencyemail@test.com",
                         InformationRequested = new List<string> { "location", "phn", "DL" },

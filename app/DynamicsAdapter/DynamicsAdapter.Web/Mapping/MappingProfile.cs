@@ -68,6 +68,7 @@ namespace DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => src.PersonBirthDate))
                  .ForMember(dest => dest.Identifiers, opt => opt.MapFrom(src => src.Identifiers))
                  .ForMember(dest => dest.Names, opt => opt.MapFrom<NamesResolver>())
+                 .ForMember(dest => dest.Agency, opt => opt.MapFrom<AgencyResolver>())
                  .ForMember(dest => dest.SearchRequestKey, opt => opt.MapFrom(src => src.SearchRequest == null ? "0" : $"{src.SearchRequest.FileId}_{src.SequenceNumber}"))
                  .ForMember(dest => dest.DataProviders, opt => opt.MapFrom(src => src.DataProviders));
 
@@ -105,7 +106,7 @@ namespace DynamicsAdapter.Web.Mapping
                .ConstructUsing(m => Contructors.ConstructSearchRequestEntity(m))
                .ForMember(dest => dest.OriginalRequestorReference, opt => opt.MapFrom(src => src.Person.Agency.RequestId))
                .ForMember(dest => dest.RequestDate, opt => opt.MapFrom(src => src.Person.Agency.RequestDate.DateTime))
-               .ForMember(dest => dest.SearchReasonCode, opt => opt.MapFrom(src => src.Person.Agency.ReasonCode))
+               .ForMember(dest => dest.SearchReasonCode, opt => opt.MapFrom(src => src.Person.Agency.ReasonCode.ToString()))
                .ForMember(dest => dest.AgencyOfficeLocationText, opt => opt.MapFrom(src => src.Person.Agency.LocationAddress))
                .ForMember(dest => dest.AgencyCode, opt => opt.MapFrom(src => src.Person.Agency.Code))
                .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Person.Agency.Notes))
@@ -407,7 +408,8 @@ namespace DynamicsAdapter.Web.Mapping
             CreateMap<SSG_SearchRequest, Agency>()
                    .ForMember(dest => dest.Agent, opt => opt.MapFrom(src => src))
                    .ForMember(dest => dest.RequestDate, opt => opt.MapFrom(src => src.RequestDate))
-                   .ForMember(dest => dest.ReasonCode, opt => opt.MapFrom(src => src.SearchReason.ReasonCode))
+                   .ForMember(dest => dest.ReasonCode, opt => opt.ConvertUsing(new SearchReasonCodeConverter(), src => src.SearchReason))
+                   .ForMember(dest => dest.ReasonCode, opt => opt.MapFrom(src => Enum.Parse(typeof(SearchReasonCode), src.SearchReason.ReasonCode, true)))
                    .ForMember(dest => dest.Code, opt => opt.MapFrom(src => src.Agency.AgencyCode))
                    .ForMember(dest => dest.DaysOpen, opt => opt.MapFrom(src => src.DaysOpen))
                    .ForMember(dest => dest.RequestId, opt => opt.MapFrom(src => src.OriginalRequestorReference))

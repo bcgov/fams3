@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Fams3Adapter.Dynamics.DataProvider;
 using Fams3Adapter.Dynamics.SearchApiEvent;
+using Fams3Adapter.Dynamics.SearchRequest;
 using Fams3Adapter.Dynamics.Types;
 using Simple.OData.Client;
 
@@ -78,6 +79,12 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
                     .Expand(x => x.DataProviders)
                     .Expand(x => x.SearchRequest)
                     .FindEntryAsync(cancellationToken);
+                if (searchApiRequest.SearchRequest != null)
+                {
+                    searchApiRequest.SearchRequest = await _oDataClient.For<SSG_SearchRequest>()
+                    .Key(searchApiRequest.SearchRequest.SearchRequestId)
+                    .Expand(x => x.SearchReason).FindEntryAsync(cancellationToken);
+                }
                 searchApiRequest.IsFailed = false;
                 UpdateProviderInfo(providers, searchApiRequest);
                 results.Add(searchApiRequest);

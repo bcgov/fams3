@@ -17,7 +17,7 @@ namespace SearchRequest.Adaptor.Publisher.Models
             this.SearchRequestId = baseEvent.SearchRequestId;
             this.TimeStamp = DateTime.Now;
             this.SearchRequestKey = baseEvent.SearchRequestKey;
-            
+
         }
 
         public SearchRequestNotificationEvent()
@@ -40,5 +40,9 @@ namespace SearchRequest.Adaptor.Publisher.Models
         public NotificationType NotificationType { get; set; }
 
         public string Message { get; set; }
+
+        public string FSOName { get; set; }
+
+        public Person Person { get; set; }
     }
 }

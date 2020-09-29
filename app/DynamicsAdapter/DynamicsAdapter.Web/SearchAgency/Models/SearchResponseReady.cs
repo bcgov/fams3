@@ -11,5 +11,6 @@ namespace DynamicsAdapter.Web.SearchAgency.Models
         public string Activity { get; set; }
         public string ResponseGuid { get; set; }
         public string FSOName { get; set; }
+        public Person Person { get; set; }
     }
 }

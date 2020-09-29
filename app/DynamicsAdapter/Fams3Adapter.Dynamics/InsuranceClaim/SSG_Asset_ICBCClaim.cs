@@ -95,6 +95,8 @@ namespace Fams3Adapter.Dynamics.InsuranceClaim
         [JsonProperty("ssg_personid")]
         public virtual SSG_Person Person { get; set; }
 
+        [JsonProperty("ssg_claimamount")]
+        public string ClaimAmount { get; set; }
     }
 
     public class SSG_Asset_ICBCClaim : ICBCClaimEntity

@@ -46,10 +46,14 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
 
         [Description("agency location address")]
         public string LocationAddress { get; set; }
+        public int DaysOpen { get; set; }
 
-
-
-
+        public string PersonSoughtInRequest_FirstName { get; set; }
+        public string PersonSoughtInRequest_MiddleName { get; set; }
+        public string PersonSoughtInRequest_SecondMiddleName { get; set; }
+        public string PersonSoughtInRequest_LastName { get; set; }
+        public DateTime? PersonSoughtInRequest_DateOfBirth { get; set; }
+        public string PersonSoughtInRequest_Gender { get; set; }
 
     }
 

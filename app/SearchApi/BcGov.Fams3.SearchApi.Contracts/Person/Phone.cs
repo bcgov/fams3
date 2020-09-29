@@ -13,5 +13,8 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
 
         [Description("The owner of the phone e.g. Applicant, Person Sought, e.t.c")]
         public OwnerType Owner { get; set; }
+
+        [Description("The contact person name for this phone number ")]
+        public string ContactName { get; set; }
     }
 }

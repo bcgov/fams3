@@ -44,6 +44,9 @@ namespace Fams3Adapter.Dynamics.Name
         [JsonProperty("ssg_notes")]
         public string Notes { get; set; }
 
+        [JsonProperty("ssg_personbirthdate")]
+        public DateTime? DateOfBirth { get; set; }
+
         [JsonProperty("ssg_createdbyagency")]
         [UpdateIgnore]
         public bool IsCreatedByAgency { get; set; }

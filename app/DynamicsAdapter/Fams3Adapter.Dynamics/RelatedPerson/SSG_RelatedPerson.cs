@@ -53,6 +53,9 @@ namespace Fams3Adapter.Dynamics.RelatedPerson
         [JsonProperty("ssg_createdbyagency")]
         [UpdateIgnore]
         public bool IsCreatedByAgency { get; set; }
+
+        [JsonProperty("ssg_persondeathdate")]
+        public DateTime? DateOfDeath { get; set; }
     }
 
     public class SSG_Identity : RelatedPersonEntity

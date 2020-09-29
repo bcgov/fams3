@@ -16,6 +16,21 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
 
         [Description("Owners")]
         public IEnumerable<InvolvedParty> Owners { get; set; }
+
+        [Description("vehicle year")]
+        public string Year { get; set; }
+
+        [Description("vehicle Make")]
+        public string Make { get; set; }
+
+        [Description("vehicle Model")]
+        public string Model { get; set; }
+
+        [Description("vehicle Color")]
+        public string Color { get; set; }
+
+        [Description("vehicle Type")]
+        public string Type { get; set; }
     }
 
 }

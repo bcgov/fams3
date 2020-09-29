@@ -117,142 +117,183 @@
       }
     },
     "Person": {
-      "type": "object",
-      "properties": {
-        "agency": {
-          "$ref": "#/definitions/Agency"
+      "allOf": [
+        {
+          "$ref": "#/definitions/PersonalInfo"
         },
-        "firstName": {
-          "type": "string"
-        },
-        "lastName": {
-          "type": "string"
-        },
-        "middleName": {
-          "type": "string"
-        },
-        "otherName": {
-          "type": "string"
-        },
-        "dateOfBirth": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "dateOfDeath": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "gender": {
-          "type": "string"
-        },
-        "dateDeathConfirmed": {
-          "type": "boolean"
-        },
-        "incacerated": {
-          "type": "string"
-        },
-        "height": {
-          "type": "string",
-          "description": "Height is in centimers"
-        },
-        "weight": {
-          "type": "string",
-          "description": "Weight is in pounds"
-        },
-        "hairColour": {
-          "type": "string"
-        },
-        "eyeColour": {
-          "type": "string"
-        },
-        "complexion": {
-          "type": "string"
-        },
-        "distinguishingFeatures": {
-          "type": "string"
-        },
-        "wearGlasses": {
-          "type": "string"
-        },
-        "type": {
-          "type": "string"
-        },
-        "identifiers": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/PersonalIdentifier"
+        {
+          "type": "object",
+          "properties": {
+            "agency": {
+              "$ref": "#/definitions/Agency"
+            },
+            "firstName": {
+              "type": "string"
+            },
+            "lastName": {
+              "type": "string"
+            },
+            "middleName": {
+              "type": "string"
+            },
+            "otherName": {
+              "type": "string"
+            },
+            "dateOfBirth": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "dateOfDeath": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "gender": {
+              "type": "string"
+            },
+            "dateDeathConfirmed": {
+              "type": "boolean"
+            },
+            "incacerated": {
+              "type": "string"
+            },
+            "height": {
+              "type": "string",
+              "description": "Height is in centimers"
+            },
+            "weight": {
+              "type": "string",
+              "description": "Weight is in pounds"
+            },
+            "hairColour": {
+              "type": "string"
+            },
+            "eyeColour": {
+              "type": "string"
+            },
+            "complexion": {
+              "type": "string"
+            },
+            "distinguishingFeatures": {
+              "type": "string"
+            },
+            "wearGlasses": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string"
+            },
+            "identifiers": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/PersonalIdentifier"
+              }
+            },
+            "addresses": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Address"
+              }
+            },
+            "phones": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Phone"
+              }
+            },
+            "names": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Name"
+              }
+            },
+            "relatedPersons": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/RelatedPerson"
+              }
+            },
+            "employments": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Employment"
+              }
+            },
+            "bankInfos": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/BankInfo"
+              }
+            },
+            "vehicles": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Vehicle"
+              }
+            },
+            "otherAssets": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/OtherAsset"
+              }
+            },
+            "compensationClaims": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/CompensationClaim"
+              }
+            },
+            "insuranceClaims": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/InsuranceClaim"
+              }
+            },
+            "responseNotes": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ResponseNote"
+              }
+            },
+            "investments": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Investment"
+              }
+            },
+            "safetyConcerns": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/SafetyConcern"
+              }
+            },
+            "pensions": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Pension"
+              }
+            },
+            "realEstateProperties": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/RealEstateProperty"
+              }
+            },
+            "responsePersons": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ResponsePerson"
+              }
+            }
           }
-        },
-        "addresses": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Address"
-          }
-        },
-        "phones": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Phone"
-          }
-        },
-        "names": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Name"
-          }
-        },
-        "relatedPersons": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/RelatedPerson"
-          }
-        },
-        "employments": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Employment"
-          }
-        },
-        "bankInfos": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/BankInfo"
-          }
-        },
-        "vehicles": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Vehicle"
-          }
-        },
-        "otherAssets": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/OtherAsset"
-          }
-        },
-        "compensationClaims": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/CompensationClaim"
-          }
-        },
-        "insuranceClaims": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/InsuranceClaim"
-          }
-        },
-        "notes": {
-          "type": "string"
         }
-      }
+      ]
     },
     "Agency": {
       "type": "object",
       "required": [
         "requestPriority",
-        "requestDate"
+        "requestDate",
+        "daysOpen"
       ],
       "properties": {
         "notes": {
@@ -317,6 +358,29 @@
         "locationAddress": {
           "type": "string",
           "description": "agency location address"
+        },
+        "daysOpen": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "personSoughtInRequest_FirstName": {
+          "type": "string"
+        },
+        "personSoughtInRequest_MiddleName": {
+          "type": "string"
+        },
+        "personSoughtInRequest_SecondMiddleName": {
+          "type": "string"
+        },
+        "personSoughtInRequest_LastName": {
+          "type": "string"
+        },
+        "personSoughtInRequest_DateOfBirth": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "personSoughtInRequest_Gender": {
+          "type": "string"
         }
       }
     },
@@ -365,6 +429,11 @@
               "type": "string",
               "description": "the type of the names"
             },
+            "dateOfBirth": {
+              "type": "string",
+              "description": "the date of birth of this name person",
+              "format": "date-time"
+            },
             "owner": {
               "description": "The owner of the name e.g. Applicant, Person Sought, e.t.c",
               "allOf": [
@@ -411,6 +480,10 @@
         "notes": {
           "type": "string",
           "description": "The notes of the information"
+        },
+        "responseComments": {
+          "type": "string",
+          "description": "The comments for response"
         }
       }
     },
@@ -467,6 +540,10 @@
                   "$ref": "#/definitions/OwnerType"
                 }
               ]
+            },
+            "contactName": {
+              "type": "string",
+              "description": "The contact person name for this phone number "
             }
           }
         }
@@ -598,6 +675,10 @@
                   "$ref": "#/definitions/OwnerType"
                 }
               ]
+            },
+            "incarcerationStatus": {
+              "type": "string",
+              "description": "The incareration status of this address"
             }
           }
         }
@@ -639,6 +720,15 @@
             "type": {
               "type": "string",
               "description": "The relationship type"
+            },
+            "personType": {
+              "type": "string",
+              "description": "The related person type"
+            },
+            "dateOfDeath": {
+              "type": "string",
+              "description": "The death date of the related person",
+              "format": "date-time"
             }
           }
         }
@@ -679,6 +769,28 @@
             "website": {
               "type": "string",
               "description": "company website"
+            },
+            "employmentType": {
+              "type": "string",
+              "description": "the employment type"
+            },
+            "employmentStatus": {
+              "type": "string"
+            },
+            "selfEmployComRegistrationNo": {
+              "type": "string"
+            },
+            "selfEmployComType": {
+              "type": "string"
+            },
+            "selfEmployComRole": {
+              "type": "string"
+            },
+            "selfEmployPercentOfShare": {
+              "type": "string"
+            },
+            "incomeAssistanceDesc": {
+              "type": "string"
             }
           }
         }
@@ -713,6 +825,10 @@
         "contactPerson": {
           "type": "string",
           "description": "The full name  of the contact"
+        },
+        "dbaName": {
+          "type": "string",
+          "description": "The Employer DBA name"
         }
       }
     },
@@ -739,6 +855,14 @@
             "accountNumber": {
               "type": "string",
               "description": "The other name"
+            },
+            "accountType": {
+              "type": "string",
+              "description": "The type of bank account"
+            },
+            "branchNumber": {
+              "type": "string",
+              "description": "The branch number of bank account"
             }
           }
         }
@@ -770,6 +894,26 @@
               "items": {
                 "$ref": "#/definitions/InvolvedParty"
               }
+            },
+            "year": {
+              "type": "string",
+              "description": "vehicle year"
+            },
+            "make": {
+              "type": "string",
+              "description": "vehicle Make"
+            },
+            "model": {
+              "type": "string",
+              "description": "vehicle Model"
+            },
+            "color": {
+              "type": "string",
+              "description": "vehicle Color"
+            },
+            "type": {
+              "type": "string",
+              "description": "vehicle Type"
             }
           }
         }
@@ -802,6 +946,9 @@
             "organization": {
               "type": "string",
               "description": "Organization involved. If this is returned, name is not returned"
+            },
+            "address": {
+              "type": "string"
             }
           }
         }
@@ -877,6 +1024,10 @@
                   "$ref": "#/definitions/Employer"
                 }
               ]
+            },
+            "claimAmount": {
+              "type": "string",
+              "description": "Claim amount"
             }
           }
         }
@@ -939,6 +1090,10 @@
                   "$ref": "#/definitions/ClaimCentre"
                 }
               ]
+            },
+            "claimAmount": {
+              "type": "string",
+              "description": "Claim Amount"
             }
           }
         }
@@ -967,6 +1122,211 @@
           }
         }
       }
+    },
+    "ResponseNote": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/PersonalInfo"
+        },
+        {
+          "type": "object"
+        }
+      ]
+    },
+    "Investment": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/PersonalInfo"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "accountNumber": {
+              "type": "string",
+              "description": "Account Number"
+            },
+            "company": {
+              "type": "string",
+              "description": "Company"
+            },
+            "location": {
+              "type": "string",
+              "description": "Location"
+            },
+            "balanceAmount": {
+              "type": "string",
+              "description": "Balance Amount"
+            },
+            "type": {
+              "type": "string",
+              "description": "Type of Investment"
+            },
+            "maturityDate": {
+              "type": "string",
+              "description": "Maturity Date",
+              "format": "date-time"
+            }
+          }
+        }
+      ]
+    },
+    "SafetyConcern": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/PersonalInfo"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "description": "type"
+            },
+            "detail": {
+              "type": "string",
+              "description": "detail"
+            }
+          }
+        }
+      ]
+    },
+    "Pension": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/PersonalInfo"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "provider": {
+              "type": "string",
+              "description": "Pension Provider"
+            },
+            "providerPhone": {
+              "type": "string",
+              "description": "Phone Number"
+            },
+            "balanceAmount_base": {
+              "type": "string",
+              "description": "Balance Amount (Base)"
+            },
+            "balanceAmount": {
+              "type": "string",
+              "description": "Balance Amount"
+            },
+            "currency": {
+              "type": "string",
+              "description": "Currency"
+            },
+            "exchangeRate": {
+              "type": "string",
+              "description": "Exchange Rate"
+            },
+            "providerAddress": {
+              "$ref": "#/definitions/Address"
+            }
+          }
+        }
+      ]
+    },
+    "RealEstateProperty": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/PersonalInfo"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "pid": {
+              "type": "string",
+              "description": "Property ID"
+            },
+            "titleNumber": {
+              "type": "string",
+              "description": "Title Number"
+            },
+            "legalDescription": {
+              "type": "string",
+              "description": "Legal Description"
+            },
+            "numberOfOwners": {
+              "type": "string",
+              "description": "Number Of Owners"
+            },
+            "landTitleDistrict": {
+              "type": "string",
+              "description": "ssg_landtitledistrict"
+            },
+            "propertyAddress": {
+              "$ref": "#/definitions/Address"
+            }
+          }
+        }
+      ]
+    },
+    "ResponsePerson": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/PersonalInfo"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "firstName": {
+              "type": "string"
+            },
+            "lastName": {
+              "type": "string"
+            },
+            "middleName": {
+              "type": "string"
+            },
+            "otherName": {
+              "type": "string"
+            },
+            "dateOfBirth": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "dateOfDeath": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "gender": {
+              "type": "string"
+            },
+            "dateDeathConfirmed": {
+              "type": "boolean"
+            },
+            "incacerated": {
+              "type": "string"
+            },
+            "height": {
+              "type": "string",
+              "description": "Height is in centimers"
+            },
+            "weight": {
+              "type": "string",
+              "description": "Weight is in pounds"
+            },
+            "hairColour": {
+              "type": "string"
+            },
+            "eyeColour": {
+              "type": "string"
+            },
+            "complexion": {
+              "type": "string"
+            },
+            "distinguishingFeatures": {
+              "type": "string"
+            },
+            "wearGlasses": {
+              "type": "string"
+            }
+          }
+        }
+      ]
     }
   },
   "tags": [

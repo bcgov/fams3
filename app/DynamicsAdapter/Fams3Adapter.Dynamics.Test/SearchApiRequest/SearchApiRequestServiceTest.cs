@@ -19,6 +19,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchApiRequest
         private Mock<IODataClient> odataClientMock = new Mock<IODataClient>();
 
         private Guid _testId;
+        private Guid _testSRId;
 
         private SearchApiRequestService _sut;
         private string adaptorName = "ICBC";
@@ -28,7 +29,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchApiRequest
         [SetUp]
         public void SetUp()
         {
-
+            _testSRId = Guid.NewGuid();
             _testId = Guid.NewGuid();
             providersList = new List<SSG_DataProvider>()
                   {
@@ -115,7 +116,17 @@ namespace Fams3Adapter.Dynamics.Test.SearchApiRequest
                     {
                         new SSG_SearchapiRequestDataProvider(){AdaptorName="ICBC"}
                     }.ToArray(),
-                    SearchRequest = new SSG_SearchRequest() { FileId="fileId"}
+                    SearchRequest = new SSG_SearchRequest() { SearchRequestId= _testSRId, FileId ="fileId"}
+                }));
+
+            odataClientMock.Setup(x => x.For<SSG_SearchRequest>(null)
+                .Key(_testSRId)
+                .Expand(x => x.SearchReason)
+                .FindEntryAsync(It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult<SSG_SearchRequest>(new SSG_SearchRequest
+                {
+                    FileId = "fileId",
+                    SearchReason = new SSG_SearchRequestReason { ReasonCode="reasonCode"}
                 }));
 
             odataClientMock.Setup(x => x.For<SSG_SearchApiRequest>(null)

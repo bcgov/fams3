@@ -22,7 +22,7 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
 
 
         [Description("agency search requeston reason code")]
-        public string ReasonCode { get; set; }
+        public SearchReasonCode ReasonCode { get; set; }
 
         [Description("request date sent by agency")]
         public DateTime RequestDate { get; set; }
@@ -69,5 +69,14 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         Urgent,
         Rush,
         Normal,
+    }
+
+    public enum SearchReasonCode
+    {
+        AstRecpAgy,
+        ChngAccAgr,
+        ChngCustAg,
+        EnfPayAgr,
+        Other
     }
 }

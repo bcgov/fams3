@@ -31,9 +31,11 @@ namespace DynamicsAdapter.Web.SearchAgency
 
         public async Task<Person> GetSearchRequestResponse(SearchResponseReady searchResponseReady)
         {
+            if (Guid.Parse(searchResponseReady.ResponseGuid) == Guid.Empty) return null;
             var cts = new CancellationTokenSource();
 
             SSG_SearchRequestResponse sr = await _searchResponseService.GetSearchResponse(Guid.Parse(searchResponseReady.ResponseGuid), cts.Token);
+            if (sr == null) return null;
             Person person = _mapper.Map<Person>(sr);
 
             return person;

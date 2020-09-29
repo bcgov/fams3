@@ -34,8 +34,8 @@ namespace SearchRequest.Adaptor.Notifier
         [HttpPost]
         [Route("")]
         [Produces("application/json")]
-        [ProducesResponseType( StatusCodes.Status200OK)]
-        public async Task<IActionResult> Notify( [FromBody] Notification notification)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> Notify([FromBody] Notification notification)
         {
             using (LogContext.PushProperty("RequestRef", $"{notification?.AgencyFileId}"))
             using (LogContext.PushProperty("AgencyCode", $"{notification?.Agency}"))
@@ -57,15 +57,15 @@ namespace SearchRequest.Adaptor.Notifier
                 var notifyEvent = new SearchRequestNotificationEvent
                 {
                     ProviderProfile = new ProviderProfile { Name = notification.Agency },
-                    NotificationType = (NotificationType)Enum.Parse(typeof(NotificationType), notification.Acvitity),
+                    NotificationType = (NotificationType)Enum.Parse(typeof(NotificationType), notification.Acvitity, true),
                     RequestId = notification.AgencyFileId,
                     SearchRequestKey = notification.FileId,
                     QueuePosition = notification.PositionInQueue,
                     Message = $"Activity {notification.Acvitity} occured. FSO : {notification.FSOName}",
                     TimeStamp = notification.ActivityDate,
-                    EstimatedCompletion = notification.EstimatedCompletionDate
-
-
+                    EstimatedCompletion = notification.EstimatedCompletionDate,
+                    FSOName = notification.FSOName,
+                    Person = notification.Person
                 };
 
                 await _publisher.PublishSearchRequestNotification(notifyEvent);

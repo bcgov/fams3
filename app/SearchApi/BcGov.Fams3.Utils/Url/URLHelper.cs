@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace SearchRequestAdaptor.Notifier
+namespace BcGov.Fams3.Utils.Url
 {
     public static class URLHelper
     {

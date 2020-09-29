@@ -24,7 +24,7 @@ namespace AgencyAdapter.Sample.SearchRequest
 
         public async Task Consume(ConsumeContext<SearchRequestNotification> context)
         {
-            _logger.LogInformation($"Successfully handling new notification for search request [{context.Message.Notification}]");
+            _logger.LogInformation($"Successfully handling new notification for search request [{context.Message.NotificationType}]");
 
             _logger.LogWarning("Sample Agency Adapter, do not use in PRODUCTION.");
 

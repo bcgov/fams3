@@ -158,7 +158,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                         PersonSoughtGender = GenderType.Male.Value,
                         AgentFirstName="agentFirstName",
                         AgentLastName="agentLastName",
-                        SearchReason = new SSG_SearchRequestReason{ ReasonCode="reasonCode"},
+                        SearchReason = new SSG_SearchRequestReason{ ReasonCode="Other"},
                         OriginalRequestorReference="originalRef",
                         RequestPriority = RequestPriorityType.Rush.Value,
                         PersonSoughtRole = PersonSoughtType.P.Value,
@@ -173,7 +173,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Person person = _mapper.Map<Person>(response);
             Assert.AreEqual("agentFirstName", person.Agency.Agent.FirstName);
             Assert.AreEqual("agentLastName", person.Agency.Agent.LastName);
-            Assert.AreEqual("reasonCode", person.Agency.ReasonCode);
+            Assert.AreEqual(SearchReasonCode.Other, person.Agency.ReasonCode);
             Assert.AreEqual("originalRef", person.Agency.RequestId);
             Assert.AreEqual(RequestPriority.Rush, person.Agency.RequestPriority);
             Assert.AreEqual("firstName", person.FirstName);

@@ -20,7 +20,7 @@ namespace SearchApi.Web.DeepSearch
 {
     public interface IDeepSearchService
     {
-
+   
 
         Task UpdateDataPartner(string searchRequestKey, string dataPartner, string eventName);
 
@@ -46,7 +46,7 @@ namespace SearchApi.Web.DeepSearch
         }
 
 
-
+       
 
 
 
@@ -113,8 +113,8 @@ namespace SearchApi.Web.DeepSearch
         public async Task ProcessWaveSearch(string searchRequestKey)
         {
             if (!await CurrentWaveIsCompleted(searchRequestKey))
-            {
-
+            { 
+                
                 var waveData = await GetWaveDataForSearch(searchRequestKey);
                 if (!waveData.Any()) throw new InvalidOperationException("Unable to process wave");
                 if (waveData.Any(x => x.CurrentWave == _deepSearchOptions.MaxWaveCount))
@@ -134,14 +134,14 @@ namespace SearchApi.Web.DeepSearch
                     foreach (var wave in waveData)
                     {
                         foreach (var person in wave.NewParameter)
-                            await _dispatcher.Dispatch(searchRequestKey, wave, person);
+                            await  _dispatcher.Dispatch(searchRequestKey, wave, person);
                     }
                 }
-
+            
             }
-
+            
         }
 
-
+     
     }
 }

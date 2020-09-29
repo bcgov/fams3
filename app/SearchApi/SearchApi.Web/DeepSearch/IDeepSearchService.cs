@@ -88,7 +88,7 @@ namespace SearchApi.Web.DeepSearch
             try
             {
                 await _cacheService.DeleteRequest(searchRequestKey);
-                var keys = await _cacheService.SearchKeys($"{searchRequestKey}*");
+                IEnumerable<string> keys = await SearchDeepSearchKeys(searchRequestKey);
                 foreach (var key in keys)
                     await _cacheService.Delete(key);
             }
@@ -100,61 +100,64 @@ namespace SearchApi.Web.DeepSearch
 
         public async Task UpdateParameters(string eventName, PersonSearchCompleted eventStatus, string searchRequestKey)
         {
+            IEnumerable<WaveSearchData> waveSearches = await GetWaveDataForSearch(searchRequestKey);
             if (eventName.Equals(EventName.Completed))
             {
-                
-
                 var paramsRegistry = Registry.DataPartnerParameters[eventStatus.ProviderProfile.Name];
-                IEnumerable<WaveSearchData> waveSearches = await GetWaveDataForSearch(searchRequestKey);
 
-                List<PersonalIdentifier> existingIds = new List<PersonalIdentifier>();
+
+                ExtractIds(eventStatus, paramsRegistry, waveSearches, out IEnumerable<PersonalIdentifier> filteredExistingIdentifierForDataPartner, out IEnumerable<PersonalIdentifier> filteredNewFoundIdentifierForDataPartner);
 
                 foreach (var waveitem in waveSearches)
                 {
-                    _logger.LogInformation($"Store all parameters {waveitem.DataPartner}");
-                    waveitem.AllParameter.ForEach(p => existingIds.AddRange(p.Identifiers));
-                }
-
-                _logger.LogInformation($"{existingIds.Count()} Identifier exists");
-                var filteredNewIdentifierForDataPartner = existingIds.Where(identifer => paramsRegistry.Contains(identifer.Type));
-                _logger.LogInformation($"{existingIds.Count()} Identifier matched the require types for {eventStatus.ProviderProfile.Name}");
-
-                var matchedPersons = eventStatus.MatchedPersons;
-                List<PersonalIdentifier> foundId = new List<PersonalIdentifier>();
-                matchedPersons.ToList().ForEach(p => p.Identifiers.ToList().ForEach(id => foundId.Add(id)));
-
-                _logger.LogInformation($"{foundId.Count()} Identifier was returned by {eventStatus.ProviderProfile.Name}");
-                var filteredFoundIdentifierForDataPartner = foundId.Where(identifer => paramsRegistry.Contains(identifer.Type));
-                _logger.LogInformation($"{filteredFoundIdentifierForDataPartner.Count()} returned Identifier matched the require types for {eventStatus.ProviderProfile.Name}");
-
-                
-                foreach (var waveitem in waveSearches)
-                {
-                    var newToBeUsedId = filteredNewIdentifierForDataPartner.DetailedCompare(filteredFoundIdentifierForDataPartner);
+                    var newToBeUsedId = filteredExistingIdentifierForDataPartner.DetailedCompare(filteredNewFoundIdentifierForDataPartner);
 
                     if (newToBeUsedId.Count() != 0)
                     {
                         waveitem.AllParameter.Add(new Person { Identifiers = newToBeUsedId });
-                        if (waveitem.NewParameter.Count == 0)
+                        if (waveitem.NewParameter == null || waveitem.NewParameter?.Count == 0)
+                            waveitem.NewParameter = new List<Person> { new Person { Identifiers = newToBeUsedId } };
                             waveitem.NewParameter.Add(new Person { Identifiers = newToBeUsedId });
                         else
                             waveitem.NewParameter[0] = new Person { Identifiers = newToBeUsedId };
                     }
                     await _cacheService.Save(searchRequestKey.DeepSearchKey(eventStatus.ProviderProfile.Name), waveitem);
                 }
-                
+
             }
+          
         }
 
-       
+        private void ExtractIds(PersonSearchCompleted eventStatus, PersonalIdentifierType[] paramsRegistry, IEnumerable<WaveSearchData> waveSearches, out IEnumerable<PersonalIdentifier> filteredExistingIdentifierForDataPartner, out IEnumerable<PersonalIdentifier> filteredNewFoundIdentifierForDataPartner)
+        {
+            List<PersonalIdentifier> existingIds = new List<PersonalIdentifier>();
 
-      
+            foreach (var waveitem in waveSearches)
+            {
+                _logger.LogInformation($"Store all parameters {waveitem.DataPartner}");
+                waveitem.AllParameter.ForEach(p => existingIds.AddRange(p.Identifiers));
+            }
+
+            _logger.LogInformation($"{existingIds.Count()} Identifier exists");
+            filteredExistingIdentifierForDataPartner = existingIds.Where(identifer => paramsRegistry.Contains(identifer.Type));
+            _logger.LogInformation($"{existingIds.Count()} Identifier matched the require types for {eventStatus.ProviderProfile.Name}");
+
+            var matchedPersons = eventStatus.MatchedPersons;
+            List<PersonalIdentifier> foundId = new List<PersonalIdentifier>();
+            matchedPersons.ToList().ForEach(p => p.Identifiers.ToList().ForEach(id => foundId.Add(id)));
+
+            _logger.LogInformation($"{foundId.Count()} Identifier was returned by {eventStatus.ProviderProfile.Name}");
+            filteredNewFoundIdentifierForDataPartner = foundId.Where(identifer => paramsRegistry.Contains(identifer.Type));
+            _logger.LogInformation($"{filteredNewFoundIdentifierForDataPartner.Count()} returned Identifier matched the require types for {eventStatus.ProviderProfile.Name}");
+        }
+
+
+
 
         private async Task<IEnumerable<WaveSearchData>> GetWaveDataForSearch(string searchRequestKey)
         {
             List<WaveSearchData> waveMetaDatas = new List<WaveSearchData>();
-
-            var keys = await _cacheService.SearchKeys($"{searchRequestKey}*");
+            IEnumerable<string> keys = await SearchDeepSearchKeys(searchRequestKey);
 
             foreach (var key in keys)
             {
@@ -164,6 +167,11 @@ namespace SearchApi.Web.DeepSearch
             return waveMetaDatas.AsEnumerable();
         }
 
+        private async Task<IEnumerable<string>> SearchDeepSearchKeys(string searchRequestKey)
+        {
+            return await _cacheService.SearchKeys($"deepsearch-{searchRequestKey}*");
+        }
+
         public async Task<bool> IsWaveSearchReadyToFinalize(string searchRequestKey)
         {
             if (!await CurrentWaveIsCompleted(searchRequestKey))
@@ -171,31 +179,32 @@ namespace SearchApi.Web.DeepSearch
                 
                 var waveData = await GetWaveDataForSearch(searchRequestKey);
                 if (!waveData.Any()) throw new InvalidOperationException("Unable to process wave");
-                if (waveData.Any(x => x.CurrentWave == _deepSearchOptions.MaxWaveCount))
+                if (waveData.Any(x => x.CurrentWave == _deepSearchOptions.MaxWaveCount) || NoNewParameter(waveData))
                 {
                     return true;
                 }
                 else
                 {
-                    foreach (var wave in waveData)
-                    {
-                        foreach (var person in wave.NewParameter)
+                  foreach (var wave in waveData)
                         {
-                        //    var pSR = new PersonSearchRequest(person.FirstName, person.LastName, person.DateOfBirth, person.Identifiers, person.Addresses, person.Phones, person.Names, person.RelatedPersons, person.Employments, new List<DataProvider>
-                        //{
-                        //    new DataProvider { Completed = false, Name = wave.DataPartner, NumberOfRetries = 1, TimeBetweenRetries = 3 }
-                        //}, searchRequestKey);
-                           await _deepSearchDispatcher.StartAnotherWave(searchRequestKey,wave, person);
+                            foreach (var person in wave.NewParameter)
+                            {
+                              await _deepSearchDispatcher.StartAnotherWave(searchRequestKey, wave, person, wave.NumberOfRetries, wave.TimeBetweenRetries);
+                            }
                         }
-                    }
-                    return false;
+                        return false;
+                    
                 }
-            
+
             }
-            return false;
+            return true;
             
         }
 
-     
+        private static bool NoNewParameter(IEnumerable<WaveSearchData> waveData)
+        {
+            return  waveData.Count(w => w.NewParameter == null) == waveData.Count();
+        }
+
     }
 }

@@ -63,7 +63,7 @@ namespace SearchApi.Web.Messaging
             foreach (var requestDataProvider in personSearchRequest.DataProviders)
             {
    
-                await SaveRequest(personSearchRequest, requestDataProvider.Name);
+                await SaveRequest(personSearchRequest, requestDataProvider);
 
                 var endpoint = await getEndpointAddress(requestDataProvider.Name);
 
@@ -83,10 +83,10 @@ namespace SearchApi.Web.Messaging
             return _sendEndpointProvider.GetSendEndpoint(new Uri($"rabbitmq://{this._rabbitMqConfiguration.Host}:{this._rabbitMqConfiguration.Port}/PersonSearchOrdered_{providerName.ToUpperInvariant()}"));
         }
 
-        private async Task SaveRequest(PersonSearchRequest person, string dataPartner)
+        private async Task SaveRequest(PersonSearchRequest person, DataProvider dataPartner)
         {
             _logger.Log(LogLevel.Debug, $"Check if request {person.SearchRequestKey} has an active wave on-going");
-            string cacheKey = person.SearchRequestKey.DeepSearchKey(dataPartner);
+            string cacheKey = person.SearchRequestKey.DeepSearchKey(dataPartner.Name);
             var waveMetaData = await _cacheService.Get(cacheKey);
 
             if (string.IsNullOrEmpty(waveMetaData))
@@ -100,8 +100,11 @@ namespace SearchApi.Web.Messaging
                     },
                     NewParameter =null,
                     CurrentWave = 1,
-                    DataPartner = dataPartner,
+                    DataPartner = dataPartner.Name,
+                    NumberOfRetries = dataPartner.NumberOfRetries,
+                    TimeBetweenRetries = dataPartner.TimeBetweenRetries,
                     SearchRequestKey = person.SearchRequestKey
+                   
 
                 });
                 _logger.Log(LogLevel.Debug, $"{person.SearchRequestKey} saved");
@@ -111,10 +114,6 @@ namespace SearchApi.Web.Messaging
                 _logger.Log(LogLevel.Debug, $"{person.SearchRequestKey} has an active wave");
                 WaveSearchData metaData = JsonConvert.DeserializeObject<WaveSearchData>(waveMetaData);
                 _logger.Log(LogLevel.Debug, $"{person.SearchRequestKey} Current Metadata Wave : {metaData.CurrentWave}");
-                metaData.NewParameter = new List<Person>
-                {
-                    person
-                };
                 metaData.CurrentWave++;
                 await _cacheService.Save(cacheKey, metaData);
                 _logger.Log(LogLevel.Debug, $"{person.SearchRequestKey} New wave {metaData.CurrentWave} saved");

@@ -112,7 +112,7 @@ namespace BcGov.Fams3.Redis
 
             if (string.IsNullOrEmpty(key)) throw new ArgumentNullException("Get : Key cannot be null");
 
-            string strData = await _distributedCache.GetStringAsync(key, new CancellationToken());
+            string strData = await _stackRedisCacheClient.Db0.GetAsync<string>(key);
 
             return strData;
 

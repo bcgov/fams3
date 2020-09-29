@@ -7,11 +7,6 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
-using BcGov.Fams3.Redis;
-using SearchApi.Web.Search;
-using System.Collections.Generic;
-using SearchApi.Web.DeepSearch.Schema;
-using System.Linq;
 using SearchApi.Web.DeepSearch;
 
 namespace SearchApi.Web.Notifications
@@ -101,14 +96,14 @@ namespace SearchApi.Web.Notifications
 
             await _deepSearchService.UpdateDataPartner(searchRequestKey, eventStatus.ProviderProfile.Name, eventName);
             if (EventName.Completed.Equals(eventName))
-                await _deepSearchService.UpdateParameters(searchRequestKey, (PersonSearchCompleted)eventStatus, eventName);
+                await _deepSearchService.UpdateParameters(eventName,(PersonSearchCompleted)eventStatus, searchRequestKey );
             
             await ProcessWaveSearch(searchRequestKey, eventName, eventStatus.ProviderProfile.Name);
         }
 
         private async Task ProcessWaveSearch(string searchRequestKey, string eventName,string dataPartner )
         {
-            if (!EventName.Finalized.Equals(eventName))
+            if (!EventName.Finalized.Equals(eventName) && !EventName.Accepted.Equals(eventName))
             {
                 if (await _deepSearchService.IsWaveSearchReadyToFinalize(searchRequestKey))
                 {

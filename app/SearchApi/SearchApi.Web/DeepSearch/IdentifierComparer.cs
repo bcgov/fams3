@@ -13,8 +13,9 @@ namespace SearchApi.Web.DeepSearch
         {
             List<PersonalIdentifier> newIds = new List<PersonalIdentifier>();
             foreach (var item in list2)
-                if (list1.Any(id => id.Value != item.Value))
+                if (!list1.Any(id => id.Value == item.Value && id.Type == item.Type))
                     newIds.Add(item);
+                
 
           return  newIds.AsEnumerable();
         }

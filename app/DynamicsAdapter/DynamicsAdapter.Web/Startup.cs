@@ -83,6 +83,7 @@ namespace DynamicsAdapter.Web
             this.ConfigureAutoMapper(services);
             this.ConfigureFluentValidation(services);
             services.AddCacheService(Configuration.GetSection(Keys.REDIS_SECTION_SETTING_KEY).Get<RedisConfiguration>());
+          
 
             services.AddTransient<ISearchResultService, SearchResultService>();
             services.AddTransient<ISearchRequestRegister, SearchRequestRegister>();

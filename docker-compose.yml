@@ -42,8 +42,8 @@ services:
       Redis__PASSWORD: ${REDIS__PASSWORD}
       Redis__ConnectTimeout: 6000
       Redis__ConnectRetry: 2
-      Redis_Hosts__0__Host: ${REDIS__HOST}
-      Redis_Hosts__0__Port: 6379
+      Redis__Hosts__0__Host: ${REDIS__HOST}
+      Redis__Hosts__0__Port: 6379
       DeepSearch__MaxWaveCount: 4
       JAEGER_ENDPOINT: http://jaeger-collector:14268/api/traces
       SearchApi__WebHooks__0__Name: dynadapter
@@ -128,9 +128,11 @@ services:
       APIGATEWAY__BASEPATH: ${APIGATEWAY__BASEPATH}
       SPLUNK_COLLECTOR_URL: https://splunk:8088
       SPLUNK_TOKEN: ${SPLUNK_TOKEN}
-      REDIS__HOST: ${REDIS__HOST}
-      REDIS__PORT: 6379
-      REDIS__PASSWORD: ${REDIS__PASSWORD}
+      Redis__PASSWORD: ${REDIS__PASSWORD}
+      Redis__ConnectTimeout: 6000
+      Redis__ConnectRetry: 2
+      Redis__Hosts__0__Host: ${REDIS__HOST}
+      Redis__Hosts__0__Port: 6379
     restart: always
     networks:
       - search-api-net

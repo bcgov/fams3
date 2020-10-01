@@ -58,8 +58,8 @@ namespace SearchApi.Web
 
             services.AddOptions<DeepSearchOptions>()
                 .Bind(Configuration.GetSection(Keys.DEEPSEARCH_SECTION_SETTING_KEY));
-
-            services.AddCacheService(Configuration.GetSection(Keys.REDIS_SECTION_SETTING_KEY).Get<RedisConfiguration>());
+      
+          services.AddCacheService(Configuration.GetSection(Keys.REDIS_SECTION_SETTING_KEY).Get<RedisConfiguration>());
 
             services.AddWebHooks();
 
@@ -93,7 +93,7 @@ namespace SearchApi.Web
         /// Configures OpenTracing with Jaeger Instrumentation from Environment Variables
         /// https://github.com/jaegertracing/jaeger-client-csharp
         /// </summary>
-        /// <remarks>
+        // <remarks>
         /// The `JAEGER_SERVICE_NAME` variable is required to be set
         /// </remarks>
         /// <param name="services"></param>
@@ -231,8 +231,10 @@ namespace SearchApi.Web
             services.AddHostedService<BusHostedService>();
             services.AddTransient<IDispatcher, Dispatcher>();
             services.AddTransient<IDeepSearchDispatcher, DeepSearchDispatcher>();
-         
             services.AddTransient<IDeepSearchService, DeepSearchService>();
+         
+         
+        
             
         }
 

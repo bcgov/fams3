@@ -75,7 +75,7 @@ namespace SearchApi.Web.Controllers
                     Person = personSearchRequest,
                     SearchRequestId = searchRequestId,
                     SearchRequestKey = personSearchRequest.SearchRequestKey,
-                    DataPartners = personSearchRequest.DataProviders.Select(x => new DataPartner { Name = x.Name, Completed = false })
+                    DataPartners = personSearchRequest.DataProviders.Select(x => new DataPartner { Name = x.Name, Completed = false, NumberOfRetries = x.NumberOfRetries, TimeBetweenRetries = x.TimeBetweenRetries})
                 };
 
                 _logger.LogInformation($"Save Complete Request [{searchRequestId}] to cache. ");

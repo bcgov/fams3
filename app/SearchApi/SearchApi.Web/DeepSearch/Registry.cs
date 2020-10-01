@@ -6,12 +6,12 @@ namespace SearchApi.Web.DeepSearch
 {
     public static class Registry
     {
-        public static readonly ReadOnlyDictionary<string, List<PersonalIdentifierType>> DataPartnerParameters = new ReadOnlyDictionary<string,List<PersonalIdentifierType>>(new Dictionary<string, List<PersonalIdentifierType>>()
+        public static readonly ReadOnlyDictionary<string, PersonalIdentifierType[]> DataPartnerParameters = new ReadOnlyDictionary<string,PersonalIdentifierType[]>(new Dictionary<string, PersonalIdentifierType[]>()
         {
-            {"ICBC", new List<PersonalIdentifierType>(){PersonalIdentifierType.PersonalHealthNumber, PersonalIdentifierType.BCDriverLicense } },
-            {"BCHYDRO", new List<PersonalIdentifierType>(){PersonalIdentifierType.BCDriverLicense, PersonalIdentifierType.BCHydroBP } },
-            {"MSDPR", new List<PersonalIdentifierType>(){PersonalIdentifierType.SocialInsuranceNumber } },
-            {"WORKSAFEBC", new List<PersonalIdentifierType>(){PersonalIdentifierType.PersonalHealthNumber, PersonalIdentifierType.SocialInsuranceNumber } }
+            {"ICBC", new PersonalIdentifierType[]{ PersonalIdentifierType.PersonalHealthNumber, PersonalIdentifierType.BCDriverLicense } },
+            {"BCHYDRO", new PersonalIdentifierType[]{PersonalIdentifierType.BCDriverLicense, PersonalIdentifierType.BCHydroBP } },
+            {"MSDPR", new PersonalIdentifierType[]{PersonalIdentifierType.SocialInsuranceNumber } },
+            {"WORKSAFEBC",new PersonalIdentifierType[]{PersonalIdentifierType.PersonalHealthNumber, PersonalIdentifierType.SocialInsuranceNumber } }
         });
     }
 }

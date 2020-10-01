@@ -18,6 +18,7 @@ using SearchApi.Web.Test.Utils;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using SearchApi.Web.DeepSearch;
+using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 
 namespace SearchApi.Web.Test.Notifications
 { 
@@ -54,8 +55,12 @@ namespace SearchApi.Web.Test.Notifications
                 .Returns(Task.CompletedTask);
 
             _deepSearchServiceMock
-              .Setup(x => x.ProcessWaveSearch(It.IsAny<string>()))
-              .Returns(Task.CompletedTask);
+              .Setup(x => x.IsWaveSearchReadyToFinalize(It.IsAny<string>()))
+              .Returns(Task.FromResult(true));
+
+            _deepSearchServiceMock
+                .Setup(x => x.UpdateParameters(It.IsAny<string>(), It.IsAny<PersonSearchCompleted>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(Task.CompletedTask);
 
             _allcompleted = new SearchRequest
             {

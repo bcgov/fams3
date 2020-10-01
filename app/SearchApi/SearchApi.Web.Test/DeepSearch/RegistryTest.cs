@@ -10,7 +10,7 @@ namespace SearchApi.Web.Test.DeepSearch
         [Test]
         public void should_return_type_list_identifier()
         {
-            Assert.IsInstanceOf<List<PersonalIdentifierType>>(Registry.DataPartnerParameters["ICBC"]);
+            Assert.IsInstanceOf<PersonalIdentifierType[]>(Registry.DataPartnerParameters["ICBC"]);
         }
 
     }

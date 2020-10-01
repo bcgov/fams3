@@ -21,19 +21,24 @@ namespace SearchApi.Web.Search
         public static SearchRequest UpdateDataPartner(this string json, string dataPartner)
         {
             var request = JsonConvert.DeserializeObject<SearchRequest>(json);
-
-            foreach( var partner in request.DataPartners)
-            {
-                request.DataPartners.ToList().Remove(partner);
-                if (partner.Name.ToUpper().Equals(dataPartner.ToUpper()))
-                    partner.Completed = true;
-
-                request.DataPartners.ToList().Add(partner);
-            }
-            
+            var partner = request.DataPartners.ToList().FirstOrDefault(x => x.Name == dataPartner);
+            if (partner == null) return request;
+            request.DataPartners.ToList().Remove(partner);
+            partner.Completed = true;
+            request.DataPartners.ToList().Add(partner);
             return request;
         }
+        public static SearchRequest ResetDataPartner(this string json, string dataPartner)
+        {
+            var request = JsonConvert.DeserializeObject<SearchRequest>(json);
+            var partner = request.DataPartners.ToList().FirstOrDefault(x => x.Name == dataPartner);
 
+            if (partner == null) return request;
+            request.DataPartners.ToList().Remove(partner);
+            partner.Completed = false;
+            request.DataPartners.ToList().Add(partner);
+            return request;
+        }
         public static bool AllPartnerCompleted(this string json)
         {
             if (!string.IsNullOrEmpty(json))

@@ -7,11 +7,6 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
-using BcGov.Fams3.Redis;
-using SearchApi.Web.Search;
-using System.Collections.Generic;
-using SearchApi.Web.DeepSearch.Schema;
-using System.Linq;
 using SearchApi.Web.DeepSearch;
 
 namespace SearchApi.Web.Notifications
@@ -40,69 +35,102 @@ namespace SearchApi.Web.Notifications
            CancellationToken cancellationToken)
         {
             var webHookName = "PersonSearch";
-                foreach (var webHook in _searchApiOptions.WebHooks)
+            foreach (var webHook in _searchApiOptions.WebHooks)
+            {
+                _logger.LogDebug(
+                   $"The webHook {webHookName} notification is attempting to send status {eventName} event for {webHook.Name} webhook.");
+
+                if (!URLHelper.TryCreateUri(webHook.Uri, eventName, $"{searchRequestKey}", out var endpoint))
                 {
-                    _logger.LogDebug(
-                       $"The webHook {webHookName} notification is attempting to send status {eventName} event for {webHook.Name} webhook.");
-
-                    if (!URLHelper.TryCreateUri(webHook.Uri, eventName, $"{searchRequestKey}", out var endpoint))
-                    {
-                        _logger.LogWarning(
-                            $"The webHook {webHookName} notification uri is not established or is not an absolute Uri for {webHook.Name}. Set the WebHook.Uri value on SearchApi.WebHooks settings.");
-                        return;
-                    }
-
-                    using var request = new HttpRequestMessage();
-
-                    try
-                    {
-                       StringContent content;
-                            if (eventName == EventName.Finalized)
-                            {
-                                PersonSearchEvent finalizedSearch = new PersonSearchFinalizedEvent()
-                                {
-                                    SearchRequestKey = eventStatus.SearchRequestKey,
-                                    Message = "Search Request Finalized",
-                                    SearchRequestId = eventStatus.SearchRequestId,
-                                    TimeStamp = DateTime.Now
-                                };
-                                content = new StringContent(JsonConvert.SerializeObject(finalizedSearch));
-                            }
-                            else
-                            {
-                                content = new StringContent(JsonConvert.SerializeObject(eventStatus));
-                            }
-
-                            content.Headers.ContentType =
-                                System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
-                            request.Content = content;
-                            request.Method = HttpMethod.Post;
-                            request.Headers.Accept.Add(
-                                System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
-                            request.RequestUri = endpoint;
-                            var response = await _httpClient.SendAsync(request, cancellationToken);
-
-                            if (!response.IsSuccessStatusCode)
-                            {
-                                _logger.LogError(
-                                    $"The webHook {webHookName} notification has not executed status {eventName} successfully for {webHook.Name} webHook. The error code is {response.StatusCode.GetHashCode()}.");
-                                return;
-                            }
-
-                            _logger.LogInformation(
-                                $"The webHook {webHookName} notification has executed status {eventName} successfully for {webHook.Name} webHook.");
-                        }
-                    
-                    catch (Exception exception)
-                    {
-                        _logger.LogError($"The webHook {webHookName} notification failed for status {eventName} for {webHook.Name} webHook. [{exception.Message}]");
-                    }
+                    _logger.LogWarning(
+                        $"The webHook {webHookName} notification uri is not established or is not an absolute Uri for {webHook.Name}. Set the WebHook.Uri value on SearchApi.WebHooks settings.");
+                    return;
                 }
 
-                  await   _deepSearchService.UpdateDataPartner(searchRequestKey, eventStatus.ProviderProfile.Name, eventName);
-                 await _deepSearchService.ProcessWaveSearch(searchRequestKey);
+                using var request = new HttpRequestMessage();
+
+                try
+                {
+                    StringContent content;
+                    if (eventName == EventName.Finalized)
+                    {
+                        PersonSearchEvent finalizedSearch = new PersonSearchFinalizedEvent()
+                        {
+                            SearchRequestKey = eventStatus.SearchRequestKey,
+                            Message = "Search Request Finalized",
+                            SearchRequestId = eventStatus.SearchRequestId,
+                            TimeStamp = DateTime.Now
+                        };
+                        content = new StringContent(JsonConvert.SerializeObject(finalizedSearch));
+                    }
+                    else
+                    {
+                        content = new StringContent(JsonConvert.SerializeObject(eventStatus));
+                    }
+
+                    content.Headers.ContentType =
+                        System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
+                    request.Content = content;
+                    request.Method = HttpMethod.Post;
+                    request.Headers.Accept.Add(
+                        System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+                    request.RequestUri = endpoint;
+                    var response = await _httpClient.SendAsync(request, cancellationToken);
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        _logger.LogError(
+                            $"The webHook {webHookName} notification has not executed status {eventName} successfully for {webHook.Name} webHook. The error code is {response.StatusCode.GetHashCode()}.");
+                        return;
+                    }
+                    _logger.LogInformation(
+                        $"The webHook {webHookName} notification has executed status {eventName} successfully for {webHook.Name} webHook.");
+                }
+
+                catch (Exception exception)
+                {
+                    _logger.LogError($"The webHook {webHookName} notification failed for status {eventName} for {webHook.Name} webHook. [{exception.Message}]");
+                }
+            }
+            if (EventName.Finalized.Equals(eventName))
+                await _deepSearchService.DeleteFromCache(searchRequestKey);
+            else
+                await ProcessEvents(searchRequestKey, eventStatus, eventName);
+
         }
 
- 
+        private async Task ProcessEvents(string searchRequestKey, PersonSearchAdapterEvent eventStatus, string eventName)
+        {
+            await _deepSearchService.UpdateDataPartner(searchRequestKey, eventStatus.ProviderProfile.Name, eventName);
+
+            if (EventName.Completed.Equals(eventName))
+                await _deepSearchService.UpdateParameters(eventName, (PersonSearchCompleted)eventStatus, searchRequestKey, eventStatus.ProviderProfile.Name);
+
+            await ProcessWaveSearch(searchRequestKey, eventName, eventStatus.ProviderProfile.Name);
+
+           
+               
+        }
+
+        private async Task ProcessWaveSearch(string searchRequestKey, string eventName,string dataPartner )
+        {
+            if (!EventName.Finalized.Equals(eventName))
+            {
+                if (await _deepSearchService.IsWaveSearchReadyToFinalize(searchRequestKey))
+                {
+                    PersonSearchAdapterEvent finalizedSearch = new PersonSearchFinalizedEvent()
+                    {
+                        SearchRequestKey = searchRequestKey,
+                        Message = "Search Request Finalized",
+                        SearchRequestId = Guid.NewGuid(),
+                        TimeStamp = DateTime.Now,
+                        ProviderProfile = new ProviderProfileDetails {  Name = dataPartner}
+                    };
+                    await NotifyEventAsync(searchRequestKey, (PersonSearchFinalized)finalizedSearch, EventName.Finalized, new CancellationToken());
+                    
+                }
+            }
+        }
+
     }
 }

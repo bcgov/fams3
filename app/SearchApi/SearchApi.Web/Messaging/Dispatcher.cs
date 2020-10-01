@@ -115,13 +115,29 @@ namespace SearchApi.Web.Messaging
                 WaveSearchData metaData = JsonConvert.DeserializeObject<WaveSearchData>(waveMetaData);
                 _logger.Log(LogLevel.Debug, $"{person.SearchRequestKey} Current Metadata Wave : {metaData.CurrentWave}");
                 metaData.CurrentWave++;
+                metaData.NewParameter = null;
                 await _cacheService.Save(cacheKey, metaData);
                 _logger.Log(LogLevel.Debug, $"{person.SearchRequestKey} New wave {metaData.CurrentWave} saved");
 
 
             }
 
+            await ResetDataPartner(person.SearchRequestKey, dataPartner.Name);
 
+
+        }
+        private async Task ResetDataPartner(string searchRequestKey, string dataPartner)
+        {
+            try
+            {
+                var searchRequest = JsonConvert.SerializeObject(await _cacheService.GetRequest(searchRequestKey)).ResetDataPartner(dataPartner);
+                await _cacheService.SaveRequest(searchRequest);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"Reset Data Partner Status Failed. For {searchRequestKey}. [{exception.Message}]");
+
+            }
         }
 
     }

@@ -6,5 +6,6 @@ namespace BcGov.Fams3.SearchApi.Contracts.PersonSearch
     {
         IEnumerable<Person.PersonFound> MatchedPersons { get; }
         string Message { get; }
+         SearchStatus Status { get; }
     }
 }

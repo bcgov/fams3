@@ -13,8 +13,7 @@ namespace SearchApi.Core.Test.Fake
             public DateTime TimeStamp { get; set; }
 
             public ProviderProfile ProviderProfile { get; set; }
-        public SearchStatus Status { get; set; }
-
+     
 
     }
 }

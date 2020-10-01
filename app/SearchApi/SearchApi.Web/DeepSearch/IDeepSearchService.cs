@@ -23,7 +23,8 @@ namespace SearchApi.Web.DeepSearch
    
 
         Task UpdateDataPartner(string searchRequestKey, string dataPartner, string eventName);
-        Task UpdateParameters(string eventName, PersonSearchCompleted eventStatus, string searchRequestKey);
+        
+        Task UpdateParameters(string eventName, PersonSearchCompleted eventStatus, string searchRequestKey, string dataPartner);
         Task  DeleteFromCache(string searchRequestKey);
 
         Task<bool> IsWaveSearchReadyToFinalize(string searchRequestKey);
@@ -68,7 +69,7 @@ namespace SearchApi.Web.DeepSearch
         {
             try
             {
-                if (eventName.Equals(EventName.Completed) || eventName.Equals(EventName.Rejected) || eventName.Equals(EventName.Failed))
+                if (eventName.Equals(EventName.Completed) || eventName.Equals(EventName.Rejected))
                 {
                     var searchRequest = JsonConvert.SerializeObject(await _cacheService.GetRequest(searchRequestKey)).UpdateDataPartner(dataPartner);
                     await _cacheService.SaveRequest(searchRequest);
@@ -82,6 +83,8 @@ namespace SearchApi.Web.DeepSearch
 
             }
         }
+
+       
 
         public  async Task DeleteFromCache(string searchRequestKey)
         {
@@ -98,7 +101,7 @@ namespace SearchApi.Web.DeepSearch
             }
         }
 
-        public async Task UpdateParameters(string eventName, PersonSearchCompleted eventStatus, string searchRequestKey)
+        public async Task UpdateParameters(string eventName, PersonSearchCompleted eventStatus, string searchRequestKey, string dataPartner)
         {
             IEnumerable<WaveSearchData> waveSearches = await GetWaveDataForSearch(searchRequestKey);
             if (eventName.Equals(EventName.Completed))
@@ -122,7 +125,10 @@ namespace SearchApi.Web.DeepSearch
                             waveitem.NewParameter[0] = new Person { Identifiers = newToBeUsedId };
                     }
                     await _cacheService.Save(searchRequestKey.DeepSearchKey(eventStatus.ProviderProfile.Name), waveitem);
+                    
                 }
+
+             
 
             }
           
@@ -186,13 +192,16 @@ namespace SearchApi.Web.DeepSearch
                 }
                 else
                 {
-                  foreach (var wave in waveData)
+                foreach (var wave in waveData)
+                {
+                    if (wave.NewParameter != null)
+                    {
+                        foreach (var person in wave.NewParameter)
                         {
-                            foreach (var person in wave.NewParameter)
-                            {
-                              await _deepSearchDispatcher.StartAnotherWave(searchRequestKey, wave, person, wave.NumberOfRetries, wave.TimeBetweenRetries);
-                            }
+                            await _deepSearchDispatcher.StartAnotherWave(searchRequestKey, wave, person, wave.NumberOfRetries, wave.TimeBetweenRetries);
                         }
+                    }
+                }
                         return false;
                     
                 }

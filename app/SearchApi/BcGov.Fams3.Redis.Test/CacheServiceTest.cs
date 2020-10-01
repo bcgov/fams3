@@ -77,6 +77,8 @@ namespace BcGov.Fams3.Redis.Test
             _mockRedisDB.Setup(x => x.AddAsync(It.IsAny<string>(), It.IsAny<object>(),It.IsAny<TimeSpan>(), default, default)).Returns(Task.FromResult(true));
             _mockRedisDB.Setup(x => x.ReplaceAsync(It.IsAny<string>(), It.IsAny<object>(), default, default)).Returns(Task.FromResult(true));
             _mockRedisDB.Setup(x => x.SearchKeysAsync(It.IsAny<string>())).Returns(Task.FromResult(new List<string> { "first","second"}.AsEnumerable()));
+            _mockRedisDB.Setup(x => x.GetAsync<string>("key", default)).Returns(Task.FromResult("data"));
+            //_stackRedisCacheClient.Db0.GetAsync<string>(key)
             _loggerMock = new Mock<ILogger<CacheService>>();
          
             _sut = new CacheService(_distributedCacheMock.Object, _stackRedisCacheClientMock.Object);
@@ -231,7 +233,7 @@ namespace BcGov.Fams3.Redis.Test
         {
             string key = "lala";
             string data = _sut.Get(key).Result;
-            Assert.AreEqual("", data);
+            Assert.AreEqual(null, data);
         }
 
         [Test]

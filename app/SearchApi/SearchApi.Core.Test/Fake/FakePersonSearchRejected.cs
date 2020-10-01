@@ -16,6 +16,6 @@ namespace SearchApi.Core.Test.Fake
 
         public ProviderProfile ProviderProfile { get; set; }
 
-        public SearchStatus Status { get; set; }
+       
     }
 }

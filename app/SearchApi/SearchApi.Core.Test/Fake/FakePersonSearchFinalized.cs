@@ -13,6 +13,6 @@ namespace SearchApi.Core.Test.Fake
         public string Message { get; set; }
 
         public ProviderProfile ProviderProfile { get; set; }
-        public SearchStatus Status { get; set; }
+
     }
 }

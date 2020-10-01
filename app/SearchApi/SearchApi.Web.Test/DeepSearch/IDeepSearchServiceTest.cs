@@ -78,13 +78,20 @@ namespace SearchApi.Web.Test.DeepSearch
             _cacheServiceMock.Setup(x => x.GetRequest(It.IsAny<string>()))
             .Returns(Task.FromResult(new SearchRequest { DataPartners = new List<DataPartner>() { new DataPartner { Completed = false, Name = "ICBC" }, } }));
 
-            _cacheServiceMock.Setup(x => x.SearchKeys("null*"))
+            _cacheServiceMock.Setup(x => x.GetRequest("mykey"))
+            .Returns(Task.FromResult(new SearchRequest { DataPartners = new List<DataPartner>() { new DataPartner { Completed = true, Name = "ICBC" }, } }));
+
+            _cacheServiceMock.Setup(x => x.GetRequest("null"))
+          .Returns(Task.FromResult(new SearchRequest { DataPartners = new List<DataPartner>() { new DataPartner { Completed = true, Name = "ICBC" }, } }));
+
+
+            _cacheServiceMock.Setup(x => x.SearchKeys("deepsearch-null*"))
            .Returns(Task.FromResult(new List<string>() { }.AsEnumerable()));
 
             _cacheServiceMock.Setup(x => x.GetRequest("continuewave"))
             .Returns(Task.FromResult(new SearchRequest { DataPartners = new List<DataPartner>() { new DataPartner { Completed = true, Name = "ICBC" }, new DataPartner { Completed = true, Name = "BCHYDRO" } } }));
 
-            _cacheServiceMock.Setup(x => x.SearchKeys("mykey*"))
+            _cacheServiceMock.Setup(x => x.SearchKeys("deepsearch-mykey*"))
            .Returns(Task.FromResult(new List<string>() { "first", "second", "third" }.AsEnumerable()));
             _cacheServiceMock
                 .Setup(x => x.DeleteRequest(It.IsAny<string>()))
@@ -129,11 +136,11 @@ namespace SearchApi.Web.Test.DeepSearch
         [Test]
         public async Task should_update_partner_with_failed_completed_rejected()
         {
-            await _sut.UpdateDataPartner("mykey", "ICBC", "Failed");
+            
             await _sut.UpdateDataPartner("mykey", "ICBC", "Completed");
             await _sut.UpdateDataPartner("mykey", "ICBC", "Rejected");
-            _cacheServiceMock.Verify(x => x.GetRequest(It.IsAny<string>()), Times.Exactly(3));
-            _cacheServiceMock.Verify(x => x.SaveRequest(It.IsAny<SearchRequest>()), Times.Exactly(3));
+            _cacheServiceMock.Verify(x => x.GetRequest(It.IsAny<string>()), Times.Exactly(2));
+            _cacheServiceMock.Verify(x => x.SaveRequest(It.IsAny<SearchRequest>()), Times.Exactly(2));
         }
 
         [Test]
@@ -149,7 +156,7 @@ namespace SearchApi.Web.Test.DeepSearch
             await _sut.IsWaveSearchReadyToFinalize("mykey");
 
             _cacheServiceMock.Verify(x => x.GetRequest(It.IsAny<string>()), Times.Exactly(1));
-            _cacheServiceMock.Verify(x => x.SearchKeys("mykey*"), Times.Exactly(1));
+            _cacheServiceMock.Verify(x => x.SearchKeys("deepsearch-mykey*"), Times.Exactly(1));
             _cacheServiceMock.Verify(x => x.Get("first"), Times.Exactly(1));
             _cacheServiceMock.Verify(x => x.Get("second"), Times.Exactly(1));
             _cacheServiceMock.Verify(x => x.Get("third"), Times.Exactly(1));
@@ -166,24 +173,22 @@ namespace SearchApi.Web.Test.DeepSearch
 
             _sut = new DeepSearchService(_cacheServiceMock.Object, _loggerMock.Object, _deepSearchOptionsMock.Object,  _dispatcherMock.Object);
 
-            await _sut.IsWaveSearchReadyToFinalize("mykey");
+           var finalize =  await _sut.IsWaveSearchReadyToFinalize("mykey");
 
             _cacheServiceMock.Verify(x => x.GetRequest(It.IsAny<string>()), Times.Exactly(1));
-            _cacheServiceMock.Verify(x => x.SearchKeys("mykey*"), Times.Exactly(1));
+            _cacheServiceMock.Verify(x => x.SearchKeys("deepsearch-mykey*"), Times.Exactly(1));
             _cacheServiceMock.Verify(x => x.Get("first"), Times.Exactly(1));
             _cacheServiceMock.Verify(x => x.Get("second"), Times.Exactly(1));
             _cacheServiceMock.Verify(x => x.Get("third"), Times.Exactly(1));
-            _searchApiNotifierMock
-               .Verify(x => x.NotifyEventAsync(It.IsAny<string>(), It.IsAny<PersonSearchAdapterEvent>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Exactly(1));
-            _cacheServiceMock.Verify(x => x.Delete(It.IsAny<string>()), Times.Exactly(3));
-            _cacheServiceMock.Verify(x => x.DeleteRequest(It.IsAny<string>()), Times.Exactly(1));
+
+            Assert.AreEqual(finalize, true);
         }
 
         [Test]
         public void should_throw_exception_if_wave_data_not_found()
         {
 
-            Assert.ThrowsAsync<InvalidOperationException>(async () => await _sut.ProcessWaveSearch("null"));
+            Assert.ThrowsAsync<InvalidOperationException>(async () => await _sut.IsWaveSearchReadyToFinalize("null"));
         }
     }
 }

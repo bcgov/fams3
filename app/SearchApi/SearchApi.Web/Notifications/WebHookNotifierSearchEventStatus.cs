@@ -83,7 +83,6 @@ namespace SearchApi.Web.Notifications
                             $"The webHook {webHookName} notification has not executed status {eventName} successfully for {webHook.Name} webHook. The error code is {response.StatusCode.GetHashCode()}.");
                         return;
                     }
-
                     _logger.LogInformation(
                         $"The webHook {webHookName} notification has executed status {eventName} successfully for {webHook.Name} webHook.");
                 }
@@ -93,12 +92,24 @@ namespace SearchApi.Web.Notifications
                     _logger.LogError($"The webHook {webHookName} notification failed for status {eventName} for {webHook.Name} webHook. [{exception.Message}]");
                 }
             }
+            if (EventName.Finalized.Equals(eventName))
+                await _deepSearchService.DeleteFromCache(searchRequestKey);
+            else
+                await ProcessEvents(searchRequestKey, eventStatus, eventName);
 
+        }
+
+        private async Task ProcessEvents(string searchRequestKey, PersonSearchAdapterEvent eventStatus, string eventName)
+        {
             await _deepSearchService.UpdateDataPartner(searchRequestKey, eventStatus.ProviderProfile.Name, eventName);
+
             if (EventName.Completed.Equals(eventName))
-                await _deepSearchService.UpdateParameters(eventName,(PersonSearchCompleted)eventStatus, searchRequestKey );
-            
+                await _deepSearchService.UpdateParameters(eventName, (PersonSearchCompleted)eventStatus, searchRequestKey, eventStatus.ProviderProfile.Name);
+
             await ProcessWaveSearch(searchRequestKey, eventName, eventStatus.ProviderProfile.Name);
+
+           
+               
         }
 
         private async Task ProcessWaveSearch(string searchRequestKey, string eventName,string dataPartner )
@@ -116,7 +127,7 @@ namespace SearchApi.Web.Notifications
                         ProviderProfile = new ProviderProfileDetails {  Name = dataPartner}
                     };
                     await NotifyEventAsync(searchRequestKey, (PersonSearchFinalized)finalizedSearch, EventName.Finalized, new CancellationToken());
-                    await _deepSearchService.DeleteFromCache(searchRequestKey);
+                    
                 }
             }
         }

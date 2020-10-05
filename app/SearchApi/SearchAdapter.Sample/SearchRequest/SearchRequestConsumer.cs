@@ -2,6 +2,7 @@
 using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 using BcGov.Fams3.SearchApi.Core.Adapters.Configuration;
 using BcGov.Fams3.SearchApi.Core.Adapters.Models;
+using BcGov.Fams3.SearchApi.Core.Configuration;
 using FluentValidation;
 using MassTransit;
 using Microsoft.Extensions.Logging;
@@ -21,33 +22,54 @@ namespace SearchAdapter.Sample.SearchRequest
 
         private readonly ILogger<SearchRequestConsumer> _logger;
         private readonly ProviderProfile _profile;
+        private readonly RetryConfiguration _retryConfigration;
         private readonly IValidator<Person> _personSearchValidator;
-
+        private int count = 0;
 
         public SearchRequestConsumer(
             IValidator<Person> personSearchValidator,
             IOptions<ProviderProfileOptions> profile,
+            IOptions<RetryConfiguration> retryConfiguration,
             ILogger<SearchRequestConsumer> logger)
         {
             _personSearchValidator = personSearchValidator;
             _profile = profile.Value;
+            _retryConfigration = retryConfiguration.Value;
             _logger = logger;
         }
 
         public async Task Consume(ConsumeContext<PersonSearchOrdered> context)
         {
-            _logger.LogInformation($"Successfully handling new search request [{context.Message.Person}]");
-
-            _logger.LogWarning("Sample Adapter, do not use in PRODUCTION.");
-
-            if (await ValidatePersonSearch(context))
+            try
             {
+                _logger.LogInformation($"Successfully handling new search request [{context.Message.Person}]");
 
-                if (string.Equals(context.Message.Person.FirstName, "exception", StringComparison.InvariantCultureIgnoreCase))
-                    throw new Exception("Exception from Sample Adapter, Your name is no exception");
-               
-                await context.Publish(FakePersonBuilder.BuildFakePersonSearchCompleted(context.Message.SearchRequestId, context.Message.SearchRequestKey, context.Message.Person.FirstName, context.Message.Person.LastName, (DateTime)context.Message.Person.DateOfBirth, _profile));
+                _logger.LogWarning("Sample Adapter, do not use in PRODUCTION.");
+
+                if (await ValidatePersonSearch(context))
+                {
+
+                    count++;
+                    if (string.Equals(context.Message.Person.FirstName, "exception", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        throw new Exception("Exception from Sample Adapter, Your name is no exception");
+
+                    }
+                    _logger.LogInformation(count.ToString());
+                    await context.Publish(FakePersonBuilder.BuildFakePersonSearchCompleted(context.Message.SearchRequestId, context.Message.SearchRequestKey, context.Message.Person.FirstName, context.Message.Person.LastName, (DateTime)context.Message.Person.DateOfBirth, _profile));
+
+
+                }
             }
+            catch (Exception ex)
+            {
+                if (context.GetRetryAttempt() == _retryConfigration.RetryTimes)
+                    await context.Publish(FakePersonBuilder.BuildFakePersonFailed(_profile, context.Message.SearchRequestId, context.Message.SearchRequestKey, ex.Message));
+                else
+                    throw new Exception(ex.Message);
+
+            }
+
         }
 
         private async Task<bool> ValidatePersonSearch(ConsumeContext<PersonSearchOrdered> context)

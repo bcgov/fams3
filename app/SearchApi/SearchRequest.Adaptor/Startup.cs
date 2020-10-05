@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
+using GreenPipes;
 
 namespace SearchRequestAdaptor
 {
@@ -201,10 +202,15 @@ namespace SearchRequestAdaptor
                     // Configure Search Request Ordered Consumer 
                     cfg.ReceiveEndpoint($"{nameof(SearchRequestOrdered)}_queue", e =>
                     {
+                       
+
                         e.Consumer(() =>
                             new SearchRequestOrderedConsumer(
                                 provider.GetRequiredService<ISearchRequestNotifier<SearchRequestOrdered>>(),
                                 provider.GetRequiredService<ILogger<SearchRequestOrderedConsumer>>()));
+
+                    
+                    
                     });
                 }));
             });

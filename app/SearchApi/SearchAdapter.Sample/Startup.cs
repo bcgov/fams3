@@ -66,12 +66,14 @@ namespace SearchAdapter.Sample
 
                 services.AddDataPartnerProvider(Configuration, (provider) => new SearchRequestConsumer(provider.GetRequiredService<IValidator<Person>>(),
                                       provider.GetRequiredService<IOptions<ProviderProfileOptions>>(),
+                                      provider.GetRequiredService<IOptions<RetryConfiguration>>(),
                                       provider.GetRequiredService<ILogger<SearchRequestConsumer>>()));
             }
             else
             {
                 services.AddDataPartnerProvider(Configuration, (provider) => new SearchRequestConsumer(provider.GetRequiredService<IValidator<Person>>(),
                                          provider.GetRequiredService<IOptions<ProviderProfileOptions>>(),
+                                          provider.GetRequiredService<IOptions<RetryConfiguration>>(),
                                          provider.GetRequiredService<ILogger<SearchRequestConsumer>>()), (provider) => new SearchResultConsumer(
                                         provider.GetRequiredService<IOptions<ProviderProfileOptions>>(),
                                         provider.GetRequiredService<ILogger<SearchResultConsumer>>()));

@@ -77,6 +77,18 @@ namespace SearchAdapter.Sample.Test
 
             await _harness.BusControl.Publish<PersonSearchOrdered>(new PersonSearchOrderedTest()
             {
+                SearchRequestId = validGuid,
+                TimeStamp = DateTime.Now,
+                Person = new Person()
+                {
+                    FirstName = "exception",
+                    LastName = "lastName",
+                    DateOfBirth = new DateTime(2001, 1, 1)
+                },
+                SearchRequestKey = "SearchRequestKey"
+            });
+            await _harness.BusControl.Publish<PersonSearchOrdered>(new PersonSearchOrderedTest()
+            {
                 SearchRequestId = inValidGuid,
                 TimeStamp = DateTime.Now,
                 Person = new Person()

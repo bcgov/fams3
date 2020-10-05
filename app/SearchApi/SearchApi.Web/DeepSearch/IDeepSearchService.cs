@@ -106,8 +106,7 @@ namespace SearchApi.Web.DeepSearch
             IEnumerable<WaveSearchData> waveSearches = await GetWaveDataForSearch(searchRequestKey);
             if (eventName.Equals(EventName.Completed))
             {
-                var paramsRegistry = Registry.DataPartnerParameters[eventStatus.ProviderProfile.Name];
-
+                PersonalIdentifierType[] paramsRegistry = ListDataPartnerRegistry(eventStatus);
 
                 ExtractIds(eventStatus, paramsRegistry, waveSearches, out IEnumerable<PersonalIdentifier> filteredExistingIdentifierForDataPartner, out IEnumerable<PersonalIdentifier> filteredNewFoundIdentifierForDataPartner);
 
@@ -120,18 +119,35 @@ namespace SearchApi.Web.DeepSearch
                         waveitem.AllParameter.Add(new Person { Identifiers = newToBeUsedId });
                         if (waveitem.NewParameter == null || waveitem.NewParameter?.Count == 0)
                             waveitem.NewParameter = new List<Person> { new Person { Identifiers = newToBeUsedId } };
-                           
+
                         else
                             waveitem.NewParameter[0] = new Person { Identifiers = newToBeUsedId };
                     }
                     await _cacheService.Save(searchRequestKey.DeepSearchKey(eventStatus.ProviderProfile.Name), waveitem);
-                    
+
                 }
 
-             
+
 
             }
-          
+
+        }
+
+        private PersonalIdentifierType[] ListDataPartnerRegistry(PersonSearchCompleted eventStatus)
+        {
+            PersonalIdentifierType[] paramsRegistry = new PersonalIdentifierType[] { };
+
+            try
+            {
+                paramsRegistry = Registry.DataPartnerParameters[eventStatus.ProviderProfile.Name];
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{eventStatus.ProviderProfile.Name} registry not found");
+            }
+
+            return paramsRegistry;
         }
 
         private void ExtractIds(PersonSearchCompleted eventStatus, PersonalIdentifierType[] paramsRegistry, IEnumerable<WaveSearchData> waveSearches, out IEnumerable<PersonalIdentifier> filteredExistingIdentifierForDataPartner, out IEnumerable<PersonalIdentifier> filteredNewFoundIdentifierForDataPartner)

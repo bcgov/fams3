@@ -6,6 +6,7 @@ using BcGov.Fams3.SearchApi.Core.Adapters.Middleware;
 using BcGov.Fams3.SearchApi.Core.Configuration;
 using BcGov.Fams3.SearchApi.Core.MassTransit;
 using BcGov.Fams3.SearchApi.Core.OpenTracing;
+using GreenPipes;
 using MassTransit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,7 +31,7 @@ namespace BcGov.Fams3.SearchApi.Core.DependencyInjection
             if (ordered == null) throw new ArgumentNullException("Consumer for search ordered cannot be null");
             var rabbitMqSettings = configuration.GetSection(Keys.RABBITMQ_SECTION_SETTING_KEY).Get<RabbitMqConfiguration>();
             var providerConfiguration = configuration.GetSection(Keys.PROVIDER_SECTION_SETTING_KEY).Get<ProviderProfileOptions>();
-
+            var retryConfiguration = configuration.GetSection(Keys.RETRY_SECTION_SETTING_KEY).Get<RetryConfiguration>();
 
             // Configures the Provider Profile Options
             services
@@ -61,18 +62,44 @@ namespace BcGov.Fams3.SearchApi.Core.DependencyInjection
                         {
                             cfg.ReceiveEndpoint($"{nameof(PersonSearchOrdered)}_{providerConfiguration.Name}", e =>
                             {
+                                e.UseConcurrencyLimit(retryConfiguration.ConcyrrencyLimit);
+                                e.UseMessageRetry(r =>
+                                {
+                                    r.Ignore<ArgumentNullException>();
+                                    r.Ignore<InvalidOperationException>();
+                                    r.Interval(retryConfiguration.RetryTimes, TimeSpan.FromMinutes(retryConfiguration.RetryInterval));
+                                });
+
                                 e.Consumer(() => ordered.Invoke(provider));
+
+                                
                             });
                         }
                         else
                         {
                             cfg.ReceiveEndpoint($"{nameof(PersonSearchReceived)}_{providerConfiguration.Name}", e =>
                             {
+
+                                e.UseConcurrencyLimit(retryConfiguration.ConcyrrencyLimit);
+                                e.UseMessageRetry(r =>
+                                {
+                                    r.Ignore<ArgumentNullException>();
+                                    r.Ignore<InvalidOperationException>();
+                                    r.Interval(retryConfiguration.RetryTimes, TimeSpan.FromMinutes(retryConfiguration.RetryInterval));
+                                });
                                 e.Consumer(() => recieved.Invoke(provider));
                             });
 
                             cfg.ReceiveEndpoint($"{nameof(PersonSearchOrdered)}_{providerConfiguration.Name}", e =>
                             {
+
+                                e.UseConcurrencyLimit(retryConfiguration.ConcyrrencyLimit);
+                                e.UseMessageRetry(r =>
+                                {
+                                    r.Ignore<ArgumentNullException>();
+                                    r.Ignore<InvalidOperationException>();
+                                    r.Interval(retryConfiguration.RetryTimes, TimeSpan.FromMinutes(retryConfiguration.RetryInterval));
+                                });
                                 e.Consumer(() => ordered.Invoke(provider));
                             });
                         }

@@ -29,6 +29,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
 using SearchApi.Web.DeepSearch;
 using StackExchange.Redis.Extensions.Core.Configuration;
+using GreenPipes;
 
 namespace SearchApi.Web
 {
@@ -201,6 +202,7 @@ namespace SearchApi.Web
                     // Configure Person Search Accepted Consumer 
                     cfg.ReceiveEndpoint( $"{nameof(PersonSearchCompleted)}_queue", e =>
                     {
+                        e.UseRateLimit(1, TimeSpan.FromSeconds(1));
                         e.Consumer(() =>
                             new PersonSearchCompletedConsumer(provider.GetRequiredService<ISearchApiNotifier<PersonSearchAdapterEvent>>(), provider.GetRequiredService<ILogger<PersonSearchCompletedConsumer>>()));
                     });
@@ -208,6 +210,7 @@ namespace SearchApi.Web
                     // Configure Person Search Rejected Consumer 
                     cfg.ReceiveEndpoint( $"{nameof(PersonSearchRejected)}_queue", e =>
                     {
+                       
                         e.Consumer(() =>
                             new PersonSearchRejectedConsumer(provider.GetRequiredService<ISearchApiNotifier<PersonSearchAdapterEvent>>(), provider.GetRequiredService<ILogger<PersonSearchRejectedConsumer>>()));
                     });
@@ -215,6 +218,7 @@ namespace SearchApi.Web
                     // Configure Person Search Failed Consumer 
                     cfg.ReceiveEndpoint( $"{nameof(PersonSearchFailed)}_queue", e =>
                     {
+                        e.UseRateLimit(1, TimeSpan.FromSeconds(1));
                         e.Consumer(() =>
                             new PersonSearchFailedConsumer(provider.GetRequiredService<ISearchApiNotifier<PersonSearchAdapterEvent>>(), provider.GetRequiredService<ILogger<PersonSearchFailedConsumer>>()));
                     });

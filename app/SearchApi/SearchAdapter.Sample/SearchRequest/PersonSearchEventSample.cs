@@ -18,6 +18,19 @@ namespace SearchAdapter.Sample.SearchRequest
         public SearchStatus Status { get; set; }
         public string Message { get; set; }
     }
+
+    public class PersonSearchFailedSample : PersonSearchFailed
+    {
+        public string Cause { get; set; }
+
+        public Guid SearchRequestId { get; set; }
+
+        public string SearchRequestKey { get; set; }
+
+        public DateTime TimeStamp { get; set; }
+
+        public ProviderProfile ProviderProfile { get; set; }
+    }
     public static class FakePersonBuilder
     {
         public static PersonSearchCompleted BuildFakePersonSearchCompleted(Guid searchrequestId, string SearchRequestKey, string firstname, string lastname, DateTime dob, ProviderProfile _profile)
@@ -464,7 +477,20 @@ namespace SearchAdapter.Sample.SearchRequest
 
         }
 
+        public static PersonSearchFailed BuildFakePersonFailed(ProviderProfile _profile, Guid searchrequestId, string searchRequestKey, string message)
+        {
+            return new PersonSearchFailedSample()
+            {
+                Cause = message,
+                ProviderProfile = _profile,
+                SearchRequestId = searchrequestId,
+                SearchRequestKey = searchRequestKey,
+                TimeStamp = DateTime.Now
+            };
+        }
+
     }
+
 
     public class PersonSearchRejectedEvent : PersonSearchRejected
     {

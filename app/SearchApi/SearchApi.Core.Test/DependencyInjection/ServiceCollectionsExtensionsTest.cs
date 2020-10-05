@@ -15,6 +15,7 @@ using System.Text;
 using BcGov.Fams3.SearchApi.Contracts.Person;
 using SearchAdapter.Sample.SearchResult;
 using System;
+using BcGov.Fams3.SearchApi.Core.Configuration;
 
 namespace SearchApi.Core.Test.DependencyInjection
 {
@@ -47,6 +48,7 @@ namespace SearchApi.Core.Test.DependencyInjection
 
             services.AddDataPartnerProvider(configuration, (provider) => new SearchRequestConsumer(provider.GetRequiredService<IValidator<Person>>(),
                                  provider.GetRequiredService<IOptions<ProviderProfileOptions>>(),
+                                  provider.GetRequiredService<IOptions<RetryConfiguration>>(),
                                  provider.GetRequiredService<ILogger<SearchRequestConsumer>>()));
 
             Assert.IsTrue(services.Count > 0);
@@ -61,6 +63,7 @@ namespace SearchApi.Core.Test.DependencyInjection
 
             services.AddDataPartnerProvider(configuration, (provider) => new SearchRequestConsumer(provider.GetRequiredService<IValidator<Person>>(),
                                  provider.GetRequiredService<IOptions<ProviderProfileOptions>>(),
+                                   provider.GetRequiredService<IOptions<RetryConfiguration>>(),
                                  provider.GetRequiredService<ILogger<SearchRequestConsumer>>()));
 
             Assert.IsTrue(services.Any(x => x.ServiceType == typeof(IBusControl)));
@@ -74,6 +77,7 @@ namespace SearchApi.Core.Test.DependencyInjection
 
             services.AddDataPartnerProvider(configuration, (provider) => new SearchRequestConsumer(provider.GetRequiredService<IValidator<Person>>(),
                                  provider.GetRequiredService<IOptions<ProviderProfileOptions>>(),
+                                   provider.GetRequiredService<IOptions<RetryConfiguration>>(),
                                  provider.GetRequiredService<ILogger<SearchRequestConsumer>>()));
 
             Assert.IsTrue(services.Any(x => x.ServiceType == typeof(IBusControl)));
@@ -87,6 +91,7 @@ namespace SearchApi.Core.Test.DependencyInjection
 
             services.AddDataPartnerProvider(configuration, (provider) => new SearchRequestConsumer(provider.GetRequiredService<IValidator<Person>>(),
                                  provider.GetRequiredService<IOptions<ProviderProfileOptions>>(),
+                                   provider.GetRequiredService<IOptions<RetryConfiguration>>(),
                                  provider.GetRequiredService<ILogger<SearchRequestConsumer>>()), (provider) => new SearchResultConsumer(
                                  provider.GetRequiredService<IOptions<ProviderProfileOptions>>(),
                                  provider.GetRequiredService<ILogger<SearchResultConsumer>>()));
@@ -112,6 +117,7 @@ namespace SearchApi.Core.Test.DependencyInjection
 
          services.AddDataPartnerProvider(configuration, (provider) => new SearchRequestConsumer(provider.GetRequiredService<IValidator<Person>>(),
                                  provider.GetRequiredService<IOptions<ProviderProfileOptions>>(),
+                                   provider.GetRequiredService<IOptions<RetryConfiguration>>(),
                                  provider.GetRequiredService<ILogger<SearchRequestConsumer>>()));
 
             Assert.IsTrue(services.Any(x => x.ServiceType == typeof(IBusControl)));

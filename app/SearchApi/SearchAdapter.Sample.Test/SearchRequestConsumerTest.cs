@@ -14,6 +14,7 @@ using NUnit.Framework;
 using SearchAdapter.Sample.SearchRequest;
 using BcGov.Fams3.SearchApi.Core.Adapters.Configuration;
 using ValidationResult = FluentValidation.Results.ValidationResult;
+using BcGov.Fams3.SearchApi.Core.Configuration;
 
 namespace SearchAdapter.Sample.Test
 {
@@ -25,6 +26,7 @@ namespace SearchAdapter.Sample.Test
 
         private Mock<ILogger<SearchRequestConsumer>> _loggerMock;
         private Mock<IOptions<ProviderProfileOptions>> _providerProfileMock;
+        private Mock<IOptions<RetryConfiguration>> _retryConfigurationMock;
         private Mock<IValidator<Person>> _personSearchValidatorMock;
 
         private Guid validGuid = Guid.NewGuid();
@@ -46,6 +48,7 @@ namespace SearchAdapter.Sample.Test
 
             _loggerMock = new Mock<ILogger<SearchRequestConsumer>>();
             _providerProfileMock = new Mock<IOptions<ProviderProfileOptions>>();
+            _retryConfigurationMock = new Mock<IOptions<RetryConfiguration>>();
             _personSearchValidatorMock = new Mock<IValidator<Person>>();
 
             _personSearchValidatorMock.Setup(x => x.Validate(It.Is<Person>(person => !string.IsNullOrEmpty(person.FirstName))))
@@ -58,7 +61,7 @@ namespace SearchAdapter.Sample.Test
                 }));
 
             _harness = new InMemoryTestHarness();
-            _sut = _harness.Consumer(() => new SearchRequestConsumer(_personSearchValidatorMock.Object, _providerProfileMock.Object, _loggerMock.Object));
+            _sut = _harness.Consumer(() => new SearchRequestConsumer(_personSearchValidatorMock.Object, _providerProfileMock.Object, _retryConfigurationMock.Object, _loggerMock.Object));
 
             await _harness.Start();
 

@@ -202,9 +202,10 @@ namespace SearchRequestAdaptor
                     // Configure Search Request Ordered Consumer 
                     cfg.ReceiveEndpoint($"{nameof(SearchRequestOrdered)}_queue", e =>
                     {
-                       
 
-                        e.Consumer(() =>
+                        e.UseRateLimit(1, TimeSpan.FromSeconds(1));
+
+                    e.Consumer(() =>
                             new SearchRequestOrderedConsumer(
                                 provider.GetRequiredService<ISearchRequestNotifier<SearchRequestOrdered>>(),
                                 provider.GetRequiredService<ILogger<SearchRequestOrderedConsumer>>()));

@@ -144,7 +144,7 @@ namespace SearchApi.Web.DeepSearch
             }
             catch (Exception ex)
             {
-                _logger.LogError($"{eventStatus.ProviderProfile.Name} registry not found");
+                _logger.LogError($"{eventStatus.ProviderProfile.Name} registry not found. Error: {ex.Message}");
             }
 
             return paramsRegistry;

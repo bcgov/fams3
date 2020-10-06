@@ -151,56 +151,6 @@ if (ex.Message == "Service name must not be null or empty")
         }
 
 
-        private void ConfigureRabbitMQ(IServiceCollection services )
-        {
-           
 
-                var rabbitMqSettings = Configuration.GetSection("RabbitMq").Get<RabbitMqConfiguration>();
-
-
-
-            var rabbitBaseUri = $"amqp://{rabbitMqSettings.Host}:{rabbitMqSettings.Port}";
-
-            services.AddTransient<IConsumeMessageObserver<SearchRequestOrdered>, SearchRequestObserver>();
-
-            services.AddMassTransit(x =>
-            {
-
-                // Add RabbitMq Service Bus
-                x.AddBus(provider =>
-                {
-
-                    var bus = Bus.Factory.CreateUsingRabbitMq(cfg =>
-                    {
-                        var host = cfg.Host(new Uri(rabbitBaseUri), hostConfigurator =>
-                        {
-                            hostConfigurator.Username(rabbitMqSettings.Username);
-                            hostConfigurator.Password(rabbitMqSettings.Password);
-                        });
-
-                        cfg.ReceiveEndpoint($"{nameof(SearchRequestSaved)}_queue", e =>
-                        {
-                            e.Consumer(() =>
-                             new SearchRequestResponseConsumer( provider.GetRequiredService<ILogger<SearchRequestResponseConsumer>>()));
-                        });
-
-
-                        // Add Diagnostic context for tracing
-                        cfg.PropagateOpenTracingContext();
-
-                    });
-
-                    bus.ConnectConsumeMessageObserver(new SearchRequestObserver(
-                        provider.GetRequiredService<ILogger<SearchRequestObserver>>()));
-
-                    return bus;
-
-                });
-
-            });
-
-            services.AddHostedService<BusHostedService>();
-
-        }
     }
 }

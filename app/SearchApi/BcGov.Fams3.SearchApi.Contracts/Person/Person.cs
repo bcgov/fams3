@@ -21,10 +21,8 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         public string Incacerated { get; set; }
         [Description("Height is in centimers")]
         public string Height { get; set; }
-        public string HeightUnits { get; set; }
         [Description("Weight is in pounds")]
         public string Weight { get; set; }
-        public string WeightUnits { get; set; }
         public string HairColour { get; set; }
         public string EyeColour { get; set; }
         public string Complexion { get; set; }

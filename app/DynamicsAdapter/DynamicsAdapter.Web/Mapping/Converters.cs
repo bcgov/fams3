@@ -405,13 +405,13 @@ namespace DynamicsAdapter.Web.Mapping
         }
     }
 
-    public class PersonSoughtRoleConverter : IValueConverter<int?, string>
+    public class PersonSoughtRoleConverter : IValueConverter<int?, SoughtPersonType>
     {
-        public string Convert(int? sourceMember, ResolutionContext context)
+        public SoughtPersonType Convert(int? sourceMember, ResolutionContext context)
         {
-            if (sourceMember == PersonSoughtType.P.Value) return "P";
-            if (sourceMember == PersonSoughtType.R.Value) return "R";
-            return null;
+            if (sourceMember == PersonSoughtType.P.Value) return SoughtPersonType.PAYOR;
+            if (sourceMember == PersonSoughtType.R.Value) return SoughtPersonType.RECIPIENT;
+            return SoughtPersonType.PAYOR;
         }
     }
 }

@@ -179,7 +179,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual("firstName", person.FirstName);
             Assert.AreEqual("middleName", person.MiddleName);
             Assert.AreEqual(new DateTimeOffset(new DateTime(2001, 1, 1)), person.DateOfBirth);
-            Assert.AreEqual("P", person.Type);
+            Assert.AreEqual(SoughtPersonType.PAYOR, person.Type);
             Assert.AreEqual("FMEP", person.Agency.Code);
             Assert.AreEqual(100, person.Agency.DaysOpen);
             Assert.AreEqual(1, person.ResponsePersons.Count);

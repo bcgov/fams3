@@ -29,10 +29,12 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
 
 
         [Description("Information requested by agency")]
-        public List<string> InformationRequested { get; set; }
+        public List<InformationRequested> InformationRequested { get; set; }
 
         [Description("first name and last name of agent")]
         public Name Agent { get; set; }
+
+        public Address AgentAddress { get; set; }
 
         [Description("Phone and fax of agent")]
         public IEnumerable<Phone> AgentContact { get; set; }
@@ -73,10 +75,38 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
 
     public enum SearchReasonCode
     {
-        AstRecpAgy,
-        ChngAccAgr,
+        Blank,
+        ObtCustAgr,
+        EnfCustAgr,
         ChngCustAg,
+        ObtAccAgr,
+        EnfAccAgr,
+        ChngAccAgr,
+        ObtGuardAg,
+        EnfGuardAg,
+        ChgGuardAg,
+        ObtPayAgr,
         EnfPayAgr,
-        Other
+        ChngPayAgr,
+        EnfPayAgND,
+        ChildAbduc,
+        AstRecpAgy,
+        Unknown,
+        Other,
+    }
+
+    public enum InformationRequested
+    {
+        Asset,
+        SIN,
+        DL,
+        Employment,
+        Location,
+        PHN,
+        Phone,
+        Carceration,
+        DateOfDeath,
+        IA,
+        SafetyConcern
     }
 }

@@ -49,13 +49,13 @@ namespace SearchRequestAdaptor.Publisher
             });
         }
 
-        public async Task PublishSearchRequestNotification(SearchRequestNotificationEvent notifyEvent)
+        public async Task PublishSearchRequestNotification(SearchRequestNotificationEvent baseEvent)
         {
-            if (notifyEvent == null) throw new ArgumentNullException(nameof(SearchRequestEvent));
+            if (baseEvent == null) throw new ArgumentNullException(nameof(SearchRequestEvent));
 
             var endpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri($"rabbitmq://{this._rabbitMqConfiguration.Host}:{this._rabbitMqConfiguration.Port}/{nameof(SearchRequestNotification)}_queue"));
 
-            await endpoint.Send<SearchRequestNotification>(notifyEvent);
+            await endpoint.Send<SearchRequestNotification>(baseEvent);
         }
 
         public async Task PublishSearchRequestRejected(SearchRequestEvent baseEvent, IEnumerable<ValidationResult> reasons)

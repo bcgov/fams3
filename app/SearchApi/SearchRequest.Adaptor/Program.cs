@@ -57,7 +57,7 @@ namespace SearchRequestAdaptor
                             splunkCollectorUrl,
                             splunkToken,
                             sourceType: "RequestAdaptor",
-                            restrictedToMinimumLevel: LogEventLevel.Debug,
+                            restrictedToMinimumLevel: LogEventLevel.Information,
                             messageHandler: new HttpClientHandler
                             {
 

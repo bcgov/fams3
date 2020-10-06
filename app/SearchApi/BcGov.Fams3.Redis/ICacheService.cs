@@ -15,7 +15,7 @@ namespace BcGov.Fams3.Redis
         Task SaveRequest(SearchRequest searchRequest);
         Task SaveRequest(string data, string key);
         Task<SearchRequest> GetRequest(string searchRequestKey);
-        Task DeleteRequest(string id);
+        Task DeleteRequest(string searchRequestKey);
         Task<IEnumerable<string>> SearchKeys(string pattern);
         Task Save(string key, dynamic data, TimeSpan expiry);
 

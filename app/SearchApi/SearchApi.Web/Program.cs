@@ -62,7 +62,7 @@ namespace SearchApi.Web
                             splunkCollectorUrl,
                             splunkToken,
                             sourceType: "SearchApi",
-                            restrictedToMinimumLevel: LogEventLevel.Debug,
+                            restrictedToMinimumLevel: LogEventLevel.Information,
                             messageHandler: new HttpClientHandler
                             {
                                 ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true

@@ -123,6 +123,9 @@
         },
         {
           "type": "object",
+          "required": [
+            "type"
+          ],
           "properties": {
             "agency": {
               "$ref": "#/definitions/Agency"
@@ -179,8 +182,11 @@
             "wearGlasses": {
               "type": "string"
             },
-            "type": {
+            "securityKeyword": {
               "type": "string"
+            },
+            "type": {
+              "$ref": "#/definitions/SoughtPersonType"
             },
             "identifiers": {
               "type": "array",
@@ -334,7 +340,7 @@
           "type": "array",
           "description": "Information requested by agency",
           "items": {
-            "type": "string"
+            "$ref": "#/definitions/InformationRequested"
           }
         },
         "agent": {
@@ -344,6 +350,9 @@
               "$ref": "#/definitions/Name"
             }
           ]
+        },
+        "agentAddress": {
+          "$ref": "#/definitions/Address"
         },
         "agentContact": {
           "type": "array",
@@ -407,18 +416,74 @@
       "type": "string",
       "description": "",
       "x-enumNames": [
-        "AstRecpAgy",
-        "ChngAccAgr",
+        "Blank",
+        "ObtCustAgr",
+        "EnfCustAgr",
         "ChngCustAg",
+        "ObtAccAgr",
+        "EnfAccAgr",
+        "ChngAccAgr",
+        "ObtGuardAg",
+        "EnfGuardAg",
+        "ChgGuardAg",
+        "ObtPayAgr",
         "EnfPayAgr",
+        "ChngPayAgr",
+        "EnfPayAgND",
+        "ChildAbduc",
+        "AstRecpAgy",
+        "Unknown",
         "Other"
       ],
       "enum": [
-        "AstRecpAgy",
-        "ChngAccAgr",
+        "Blank",
+        "ObtCustAgr",
+        "EnfCustAgr",
         "ChngCustAg",
+        "ObtAccAgr",
+        "EnfAccAgr",
+        "ChngAccAgr",
+        "ObtGuardAg",
+        "EnfGuardAg",
+        "ChgGuardAg",
+        "ObtPayAgr",
         "EnfPayAgr",
+        "ChngPayAgr",
+        "EnfPayAgND",
+        "ChildAbduc",
+        "AstRecpAgy",
+        "Unknown",
         "Other"
+      ]
+    },
+    "InformationRequested": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Asset",
+        "SIN",
+        "DL",
+        "Employment",
+        "Location",
+        "PHN",
+        "Phone",
+        "Carceration",
+        "DateOfDeath",
+        "IA",
+        "SafetyConcern"
+      ],
+      "enum": [
+        "Asset",
+        "SIN",
+        "DL",
+        "Employment",
+        "Location",
+        "PHN",
+        "Phone",
+        "Carceration",
+        "DateOfDeath",
+        "IA",
+        "SafetyConcern"
       ]
     },
     "Name": {
@@ -533,6 +598,65 @@
         }
       }
     },
+    "Address": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/PersonalInfo"
+        },
+        {
+          "type": "object",
+          "required": [
+            "owner"
+          ],
+          "properties": {
+            "type": {
+              "type": "string",
+              "description": "The type of address"
+            },
+            "addressLine1": {
+              "type": "string",
+              "description": "The Address Line 1"
+            },
+            "addressLine2": {
+              "type": "string",
+              "description": "The Address Line 2"
+            },
+            "addressLine3": {
+              "type": "string",
+              "description": "The Address Line 2"
+            },
+            "stateProvince": {
+              "type": "string",
+              "description": "The Address Province or state"
+            },
+            "city": {
+              "type": "string",
+              "description": "The Address City"
+            },
+            "countryRegion": {
+              "type": "string",
+              "description": "The Address Country"
+            },
+            "zipPostalCode": {
+              "type": "string",
+              "description": "The Address Zip or Postal Code"
+            },
+            "owner": {
+              "description": "The owner of the address e.g. Applicant, Person Sought, e.t.c",
+              "allOf": [
+                {
+                  "$ref": "#/definitions/OwnerType"
+                }
+              ]
+            },
+            "incarcerationStatus": {
+              "type": "string",
+              "description": "The incareration status of this address"
+            }
+          }
+        }
+      ]
+    },
     "Phone": {
       "allOf": [
         {
@@ -570,6 +694,18 @@
             }
           }
         }
+      ]
+    },
+    "SoughtPersonType": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "PAYOR",
+        "RECIPIENT"
+      ],
+      "enum": [
+        "PAYOR",
+        "RECIPIENT"
       ]
     },
     "PersonalIdentifier": {
@@ -646,65 +782,6 @@
         "BCID",
         "BCHydroBP",
         "OtherDriverLicense"
-      ]
-    },
-    "Address": {
-      "allOf": [
-        {
-          "$ref": "#/definitions/PersonalInfo"
-        },
-        {
-          "type": "object",
-          "required": [
-            "owner"
-          ],
-          "properties": {
-            "type": {
-              "type": "string",
-              "description": "The type of address"
-            },
-            "addressLine1": {
-              "type": "string",
-              "description": "The Address Line 1"
-            },
-            "addressLine2": {
-              "type": "string",
-              "description": "The Address Line 2"
-            },
-            "addressLine3": {
-              "type": "string",
-              "description": "The Address Line 2"
-            },
-            "stateProvince": {
-              "type": "string",
-              "description": "The Address Province or state"
-            },
-            "city": {
-              "type": "string",
-              "description": "The Address City"
-            },
-            "countryRegion": {
-              "type": "string",
-              "description": "The Address Country"
-            },
-            "zipPostalCode": {
-              "type": "string",
-              "description": "The Address Zip or Postal Code"
-            },
-            "owner": {
-              "description": "The owner of the address e.g. Applicant, Person Sought, e.t.c",
-              "allOf": [
-                {
-                  "$ref": "#/definitions/OwnerType"
-                }
-              ]
-            },
-            "incarcerationStatus": {
-              "type": "string",
-              "description": "The incareration status of this address"
-            }
-          }
-        }
       ]
     },
     "RelatedPerson": {

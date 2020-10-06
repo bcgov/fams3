@@ -20,7 +20,10 @@ namespace DynamicsAdapter.Web.Mapping
                 entity.AgentPhoneNumber = agencyPhone?.PhoneNumber;
                 entity.AgentPhoneExtension = agencyPhone?.Extension;
                 Phone agencyFax = src.Person.Agency.AgentContact.FirstOrDefault<Phone>(m => String.Equals(m.Type, "Fax", StringComparison.InvariantCultureIgnoreCase));
-                entity.AgentFax = agencyFax?.PhoneNumber;
+                if (string.IsNullOrEmpty(agencyFax?.Extension))
+                    entity.AgentFax = agencyFax?.PhoneNumber;
+                else
+                    entity.AgentFax = agencyFax?.PhoneNumber + " -" + agencyFax?.Extension;
             }
             if (src.Person.Agency.Agent != null)
             {
@@ -30,28 +33,28 @@ namespace DynamicsAdapter.Web.Mapping
             }
             if (src.Person.Agency.InformationRequested != null)
             {
-                foreach (string info in src.Person.Agency.InformationRequested)
+                foreach (InformationRequested info in src.Person.Agency.InformationRequested)
                 {
                     //todo: need to confirm with agency about the string
-                    switch (info.ToLower())
+                    switch (info)
                     {
-                        case "location":
+                        case InformationRequested.Location:
                             {
                                 entity.LocationRequested = true;
                                 entity.PhoneNumberRequested = true;
                                 //todo: set requested Email to be true
                                 break;
                             }
-                        case "employment": entity.EmploymentRequested = true; break;
-                        case "asset": entity.AssetRequested = true; break;
-                        case "sin": entity.SINRequested = true; break;
-                        case "dl": entity.DriverLicenseRequested = true; break;
-                        case "phn": entity.PHNRequested = true; break;
-                        case "phonenumber": entity.PhoneNumberRequested = true; break;
-                        case "carceration": entity.CarcerationStatusRequested = true; break;
-                        case "dateofdeath": entity.DateOfDeathRequested = true; break;
-                        case "ia": entity.IAStatusRequested = true; break;
-                        case "safety": entity.SafetyConcernRequested = true; break;
+                        case InformationRequested.Employment: entity.EmploymentRequested = true; break;
+                        case InformationRequested.Asset: entity.AssetRequested = true; break;
+                        case InformationRequested.SIN: entity.SINRequested = true; break;
+                        case InformationRequested.DL: entity.DriverLicenseRequested = true; break;
+                        case InformationRequested.PHN: entity.PHNRequested = true; break;
+                        case InformationRequested.Phone: entity.PhoneNumberRequested = true; break;
+                        case InformationRequested.Carceration: entity.CarcerationStatusRequested = true; break;
+                        case InformationRequested.DateOfDeath: entity.DateOfDeathRequested = true; break;
+                        case InformationRequested.IA: entity.IAStatusRequested = true; break;
+                        case InformationRequested.SafetyConcern: entity.SafetyConcernRequested = true; break;
                     };
                 }
             }

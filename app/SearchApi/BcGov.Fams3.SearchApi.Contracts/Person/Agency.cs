@@ -102,6 +102,11 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         DL,
         Employment,
         Location,
-        PHN
+        PHN,
+        Phone,
+        Carceration,
+        DateOfDeath,
+        IA,
+        SafetyConcern
     }
 }

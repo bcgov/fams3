@@ -59,6 +59,7 @@ namespace SearchApi.Web.Controllers
         [OpenApiTag("People API")]
         public async Task<IActionResult> Search([FromHeader(Name = "X-RequestId")] string id, [FromBody]PersonSearchRequest personSearchRequest)
         {
+            
             using (LogContext.PushProperty("SearchRequestKey", personSearchRequest?.SearchRequestKey))
             {
                 if (id == null || !Guid.TryParse(id, out var searchRequestId))
@@ -74,8 +75,8 @@ namespace SearchApi.Web.Controllers
                 {
                     Person = personSearchRequest,
                     SearchRequestId = searchRequestId,
-                    SearchRequestKey = personSearchRequest.SearchRequestKey,
-                    DataPartners = personSearchRequest.DataProviders.Select(x => new DataPartner { Name = x.Name, Completed = false, NumberOfRetries = x.NumberOfRetries, TimeBetweenRetries = x.TimeBetweenRetries})
+                    SearchRequestKey = personSearchRequest?.SearchRequestKey,
+                    DataPartners = personSearchRequest?.DataProviders.Select(x => new DataPartner { Name = x.Name, Completed = false, NumberOfRetries = x.NumberOfRetries, TimeBetweenRetries = x.TimeBetweenRetries})
                 };
 
                 _logger.LogInformation($"Save Complete Request [{searchRequestId}] to cache. ");

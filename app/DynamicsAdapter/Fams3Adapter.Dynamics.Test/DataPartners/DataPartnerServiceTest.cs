@@ -1,4 +1,5 @@
 ﻿using Fams3Adapter.Dynamics.DataProvider;
+using Fams3Adapter.Dynamics.Types;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
@@ -36,7 +37,7 @@ namespace Fams3Adapter.Dynamics.Test.DataPartners
                       {
                         AdaptorName = "ICBC",
                         NumberOfDaysToRetry =5,
-                        SearchSpeed = "Fast",
+                        SearchSpeed = SearchSpeedType.Fast.Value,
                         TimeBetweenRetries = 60,
                         NumberOfRetries = 3
 

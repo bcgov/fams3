@@ -30,6 +30,8 @@ namespace AgencyAdapter.Sample.SearchRequest
     public class AgencySample : ProviderProfile
     {
         public string Name { get; set; }
+
+        public SearchSpeedType SearchSpeedType { get; set; }
     }
 
     public static class FakeSearchrequestResponseBuilder

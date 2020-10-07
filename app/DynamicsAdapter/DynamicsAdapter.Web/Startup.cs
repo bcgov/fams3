@@ -1,5 +1,4 @@
 using AutoMapper;
-using BcGov.Fams3.Redis.Configuration;
 using BcGov.Fams3.Redis.DependencyInjection;
 using DynamicsAdapter.Web.ApiGateway;
 using DynamicsAdapter.Web.Auth;

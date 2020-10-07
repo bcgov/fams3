@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Fams3Adapter.Dynamics.DataProvider;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using Fams3Adapter.Dynamics.SearchRequest;
+using Fams3Adapter.Dynamics.Types;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.DataCollection;
 using Moq;
 using NUnit.Framework;
@@ -37,7 +38,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchApiRequest
                       {
                         AdaptorName = adaptorName,
                         NumberOfDaysToRetry =retries,
-                        SearchSpeed = "Fast",
+                        SearchSpeed = SearchSpeedType.Fast.Value,
                         TimeBetweenRetries = 60,
                         NumberOfRetries = 3
 
@@ -188,7 +189,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchApiRequest
             Assert.AreEqual(1, result.Count());
             Assert.AreEqual("ICBC", result.FirstOrDefault().AdaptorName);
             Assert.AreEqual(10, result.FirstOrDefault().NumberOfDaysToRetry);
-            Assert.AreEqual("Fast", result.FirstOrDefault().SearchSpeed);
+            Assert.AreEqual(SearchSpeedType.Fast.Value, result.FirstOrDefault().SearchSpeed);
             Assert.AreEqual(60, result.FirstOrDefault().TimeBetweenRetries);
             Assert.AreEqual(3, result.FirstOrDefault().NumberOfRetries);
         }

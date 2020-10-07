@@ -201,7 +201,7 @@ namespace SearchApi.Web.DeepSearch
            
                 
                 var waveData = await GetWaveDataForSearch(searchRequestKey);
-                if (!waveData.Any()) throw new InvalidOperationException("Unable to process wave");
+            if (!waveData.Any()) return true;
                 if (waveData.Any(x => x.CurrentWave == _deepSearchOptions.MaxWaveCount) || NoNewParameter(waveData))
                 {
                     return true;

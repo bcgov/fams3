@@ -97,7 +97,8 @@
       "required": [
         "completed",
         "numberOfRetries",
-        "timeBetweenRetries"
+        "timeBetweenRetries",
+        "speedType"
       ],
       "properties": {
         "name": {
@@ -113,8 +114,23 @@
         "timeBetweenRetries": {
           "type": "integer",
           "format": "int32"
+        },
+        "searchSpeed": {
+          "$ref": "#/definitions/SearchSpeed"
         }
       }
+    },
+    "SearchSpeed": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Fast",
+        "Slow"
+      ],
+      "enum": [
+        "Fast",
+        "Slow"
+      ]
     },
     "Person": {
       "allOf": [

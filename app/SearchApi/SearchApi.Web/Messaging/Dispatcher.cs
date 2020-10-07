@@ -63,7 +63,8 @@ namespace SearchApi.Web.Messaging
             foreach (var requestDataProvider in personSearchRequest.DataProviders)
             {
    
-                await SaveRequest(personSearchRequest, requestDataProvider);
+                if (requestDataProvider.SearchSpeedType == SearchSpeedType.Fast)
+                await SaveForDeepSearch(personSearchRequest, requestDataProvider);
 
                 var endpoint = await getEndpointAddress(requestDataProvider.Name);
 
@@ -83,7 +84,7 @@ namespace SearchApi.Web.Messaging
             return _sendEndpointProvider.GetSendEndpoint(new Uri($"rabbitmq://{this._rabbitMqConfiguration.Host}:{this._rabbitMqConfiguration.Port}/PersonSearchOrdered_{providerName.ToUpperInvariant()}"));
         }
 
-        private async Task SaveRequest(PersonSearchRequest person, DataProvider dataPartner)
+        private async Task SaveForDeepSearch(PersonSearchRequest person, DataProvider dataPartner)
         {
             _logger.Log(LogLevel.Debug, $"Check if request {person.SearchRequestKey} has an active wave on-going");
             string cacheKey = person.SearchRequestKey.DeepSearchKey(dataPartner.Name);

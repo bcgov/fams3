@@ -35,6 +35,7 @@ namespace Fams3Adapter.Dynamics.DataProvider
 
        
         public int TimeBetweenRetries { get; set; }
+        public int SearchSpeed { get; set; }
     }
 
     public class SSG_DataProvider
@@ -55,7 +56,7 @@ namespace Fams3Adapter.Dynamics.DataProvider
         public int NumberOfDaysToRetry { get; set; }
 
         [JsonProperty("ssg_SearchSpeed")]
-        public string  SearchSpeed { get; set; }
+        public int  SearchSpeed { get; set; }
 
 
     }

@@ -1,4 +1,5 @@
-﻿using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
+﻿using BcGov.Fams3.SearchApi.Contracts.Person;
+using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,5 +25,6 @@ namespace SearchApi.Web.Notifications
     public class ProviderProfileDetails : ProviderProfile
     {
         public string Name {get;set;}
+        public SearchSpeedType SearchSpeedType { get; set; } = SearchSpeedType.Fast;
     }
 }

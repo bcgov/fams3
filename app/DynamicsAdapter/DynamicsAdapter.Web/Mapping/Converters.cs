@@ -6,6 +6,7 @@ using Fams3Adapter.Dynamics.Types;
 using Fams3Adapter.Dynamics.OptionSets.Models;
 using System.Text;
 using Fams3Adapter.Dynamics.SearchRequest;
+using DynamicsAdapter.Web.PersonSearch.Models;
 
 namespace DynamicsAdapter.Web.Mapping
 {
@@ -294,17 +295,19 @@ namespace DynamicsAdapter.Web.Mapping
         }
     }
 
-    public class PersonSearchCompletedMessageConvertor : IValueConverter<IEnumerable<Person>, string>
+    public class PersonSearchCompletedMessageConvertor : IValueConverter<PersonSearchCompleted, string>
     {
-        public string Convert(IEnumerable<Person> sourceMember, ResolutionContext context)
+        public string Convert(PersonSearchCompleted sourceMember, ResolutionContext context)
         {
             var strbuilder = new StringBuilder();
-            if (sourceMember == null)
+            if (sourceMember.MatchedPersons == null)
                 return $"Auto search processing completed successfully. 0 Matched Persons found.";
-
-            strbuilder.Append($"Auto search processing completed successfully. {sourceMember.Count()} Matched Persons found.\n");
+            var matchedPersons = sourceMember.MatchedPersons;
+            if (!string.IsNullOrEmpty( sourceMember.Message))
+                strbuilder.Append(sourceMember.Message+ ". ");
+            strbuilder.Append($"Auto search processing completed successfully. {matchedPersons.Count()} Matched Persons found.\n");
             int i = 1;
-            foreach (Person p in sourceMember)
+            foreach (Person p in matchedPersons)
             {
                 strbuilder.Append($"For Matched Person {i} : ");
                 strbuilder.Append($"{(p.Identifiers == null ? 0 : p.Identifiers.Count)} identifier(s) found.  ");
@@ -323,6 +326,9 @@ namespace DynamicsAdapter.Web.Mapping
             return strbuilder.ToString();
         }
     }
+
+
+ 
 
     public class IncomeAssistanceConvertor : IValueConverter<bool?, int>
     {

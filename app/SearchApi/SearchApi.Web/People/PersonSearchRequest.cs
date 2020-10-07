@@ -62,5 +62,10 @@ namespace SearchApi.Web.Controllers
         public int NumberOfRetries { get; set; }
 
         public int TimeBetweenRetries { get; set; }
+
+        public SearchSpeedType SearchSpeedType { get; set; }
+
     }
+
+  
 }

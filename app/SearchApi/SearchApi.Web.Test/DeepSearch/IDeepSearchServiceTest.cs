@@ -7,15 +7,11 @@ using Microsoft.Extensions.Options;
 using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
-using SearchApi.Core.Test.Fake;
 using SearchApi.Web.Configuration;
-using SearchApi.Web.Controllers;
 using SearchApi.Web.DeepSearch;
 using SearchApi.Web.DeepSearch.Schema;
-using SearchApi.Web.Messaging;
 using SearchApi.Web.Notifications;
 using SearchApi.Web.Test.Utils;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -185,10 +181,10 @@ namespace SearchApi.Web.Test.DeepSearch
         }
 
         [Test]
-        public void should_throw_exception_if_wave_data_not_found()
+        public async Task should_returun_true_if_wave_data_not_found()
         {
 
-            Assert.ThrowsAsync<InvalidOperationException>(async () => await _sut.IsWaveSearchReadyToFinalize("null"));
+            Assert.IsTrue( await _sut.IsWaveSearchReadyToFinalize("null"));
         }
     }
 }

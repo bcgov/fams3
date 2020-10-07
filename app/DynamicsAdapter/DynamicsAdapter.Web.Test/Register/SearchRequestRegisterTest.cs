@@ -9,7 +9,6 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
-using Simple.OData.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -55,7 +54,7 @@ namespace DynamicsAdapter.Web.Test.Register
                       {
                         AdaptorName = adaptorName,
                         NumberOfDaysToRetry =retries,
-                        SearchSpeed = "Fast",
+                        SearchSpeed = SearchSpeedType.Fast.Value,
                         TimeBetweenRetries = 60,
                         NumberOfRetries = 3
 
@@ -101,7 +100,7 @@ namespace DynamicsAdapter.Web.Test.Register
                       {
                         AdaptorName = adaptorName,
                         NumberOfDaysToRetry =retries,
-                        SearchSpeed = "Fast",
+                        SearchSpeed = SearchSpeedType.Fast.Value,
                         TimeBetweenRetries = 60,
                         NumberOfRetries = 3
 

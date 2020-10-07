@@ -89,7 +89,7 @@ namespace DynamicsAdapter.Web.Mapping
 
             CreateMap<PersonSearchCompleted, SSG_SearchApiEvent>()
                .ForMember(dest => dest.EventType, opt => opt.MapFrom(src => Keys.EVENT_COMPLETED))
-               .ForMember(dest => dest.Message, opt => opt.ConvertUsing(new PersonSearchCompletedMessageConvertor(), src => src.MatchedPersons))
+               .ForMember(dest => dest.Message, opt => opt.ConvertUsing(new PersonSearchCompletedMessageConvertor(), src => src))
                .IncludeBase<PersonSearchStatus, SSG_SearchApiEvent>();
 
             CreateMap<PersonSearchSubmitted, SSG_SearchApiEvent>()
@@ -224,7 +224,8 @@ namespace DynamicsAdapter.Web.Mapping
                     ;
 
             CreateMap<SSG_SearchapiRequestDataProvider, DataProvider>()
-                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.AdaptorName.Replace(" ", String.Empty).ToUpperInvariant()));
+                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.AdaptorName.Replace(" ", String.Empty).ToUpperInvariant()))
+              .ForMember(dest => dest.SearchSpeed, opt => opt.MapFrom(src => (src.SearchSpeed == SearchSpeedType.Fast.Value) ? SearchSpeed.Fast : SearchSpeed.Slow));
 
             CreateMap<SSG_Notese, ResponseNote>()
                     .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description));

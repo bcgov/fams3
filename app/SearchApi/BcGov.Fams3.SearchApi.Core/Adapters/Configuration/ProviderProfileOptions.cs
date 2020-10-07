@@ -1,4 +1,5 @@
-﻿using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
+﻿using BcGov.Fams3.SearchApi.Contracts.Person;
+using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 using System.ComponentModel.DataAnnotations;
 
 namespace BcGov.Fams3.SearchApi.Core.Adapters.Configuration
@@ -10,5 +11,7 @@ namespace BcGov.Fams3.SearchApi.Core.Adapters.Configuration
     {
         [Required]
         public string Name { get; set; }
+
+        public SearchSpeedType SearchSpeedType { get; set; }
     }
 }

@@ -17,7 +17,7 @@ namespace SearchApi.Web.DeepSearch.Schema
 
         public int TimeBetweenRetries { get; set; }
 
-
+        public SearchSpeedType SearchSpeed { get; set; }
 
 
     }

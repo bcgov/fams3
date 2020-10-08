@@ -217,6 +217,21 @@ namespace SearchApi.Web.DeepSearch
                             await _deepSearchDispatcher.StartAnotherWave(searchRequestKey, wave, person, wave.NumberOfRetries, wave.TimeBetweenRetries);
                         }
                     }
+                    else
+                    {
+                        string cacheKey = searchRequestKey.DeepSearchKey(wave.DataPartner);
+                        var waveMetaData = await _cacheService.Get(cacheKey);
+                        if (waveMetaData != null)
+                        {
+                            _logger.Log(LogLevel.Information, $"{searchRequestKey} has an active wave but no new parameter");
+                            WaveSearchData metaData = JsonConvert.DeserializeObject<WaveSearchData>(waveMetaData);
+                            _logger.Log(LogLevel.Information, $"{searchRequestKey} Current Metadata Wave : {metaData.CurrentWave}");
+                            metaData.CurrentWave++;
+                            metaData.NewParameter = null;
+                            await _cacheService.Save(cacheKey, metaData);
+                            _logger.Log(LogLevel.Information, $"{searchRequestKey} New wave {metaData.CurrentWave} saved");
+                        }
+                    }
                 }
                         return false;
                     

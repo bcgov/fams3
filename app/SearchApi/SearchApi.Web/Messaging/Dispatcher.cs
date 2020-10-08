@@ -87,6 +87,9 @@ namespace SearchApi.Web.Messaging
         private async Task SaveForDeepSearch(PersonSearchRequest person, DataProvider dataPartner)
         {
             _logger.Log(LogLevel.Information, $"Check if request {person.SearchRequestKey} has an active wave on-going");
+
+            _logger.Log(LogLevel.Information, $"In wave for {person.SearchRequestKey} with {dataPartner.Name} -  {nameof(dataPartner.SearchSpeedType)} Search");
+
             string cacheKey = person.SearchRequestKey.DeepSearchKey(dataPartner.Name);
             var waveMetaData = await _cacheService.Get(cacheKey);
 

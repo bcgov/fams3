@@ -303,8 +303,8 @@ namespace DynamicsAdapter.Web.Mapping
             if (sourceMember.MatchedPersons == null)
                 return $"Auto search processing completed successfully. 0 Matched Persons found.";
             var matchedPersons = sourceMember.MatchedPersons;
-            if (!string.IsNullOrEmpty( sourceMember.Message))
-                strbuilder.Append(sourceMember.Message+ ". ");
+            if (!string.IsNullOrEmpty(sourceMember.Message))
+                strbuilder.Append(sourceMember.Message + ". ");
             strbuilder.Append($"Auto search processing completed successfully. {matchedPersons.Count()} Matched Persons found.\n");
             int i = 1;
             foreach (Person p in matchedPersons)

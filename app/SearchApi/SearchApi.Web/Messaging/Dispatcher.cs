@@ -86,13 +86,16 @@ namespace SearchApi.Web.Messaging
 
         private async Task SaveForDeepSearch(PersonSearchRequest person, DataProvider dataPartner)
         {
-            _logger.Log(LogLevel.Debug, $"Check if request {person.SearchRequestKey} has an active wave on-going");
+            _logger.Log(LogLevel.Information, $"Check if request {person.SearchRequestKey} has an active wave on-going");
+
+            _logger.Log(LogLevel.Information, $"In wave for {person.SearchRequestKey} with {dataPartner.Name} -  {nameof(dataPartner.SearchSpeedType)} Search");
+
             string cacheKey = person.SearchRequestKey.DeepSearchKey(dataPartner.Name);
             var waveMetaData = await _cacheService.Get(cacheKey);
 
             if (string.IsNullOrEmpty(waveMetaData))
             {
-                _logger.Log(LogLevel.Debug, $"{person.SearchRequestKey} does not have active wave");
+                _logger.Log(LogLevel.Information, $"{person.SearchRequestKey} does not have active wave");
                 await _cacheService.Save(cacheKey, new WaveSearchData
                 {
                     AllParameter = new List<Person>
@@ -104,21 +107,20 @@ namespace SearchApi.Web.Messaging
                     DataPartner = dataPartner.Name,
                     NumberOfRetries = dataPartner.NumberOfRetries,
                     TimeBetweenRetries = dataPartner.TimeBetweenRetries,
-                    SearchRequestKey = person.SearchRequestKey
-                   
-
+                    SearchRequestKey = person.SearchRequestKey,
+                    SearchSpeed = dataPartner.SearchSpeedType
                 });
-                _logger.Log(LogLevel.Debug, $"{person.SearchRequestKey} saved");
+                _logger.Log(LogLevel.Information, $"{person.SearchRequestKey} saved");
             }
             else
             {
-                _logger.Log(LogLevel.Debug, $"{person.SearchRequestKey} has an active wave");
+                _logger.Log(LogLevel.Information, $"{person.SearchRequestKey} has an active wave");
                 WaveSearchData metaData = JsonConvert.DeserializeObject<WaveSearchData>(waveMetaData);
-                _logger.Log(LogLevel.Debug, $"{person.SearchRequestKey} Current Metadata Wave : {metaData.CurrentWave}");
+                _logger.Log(LogLevel.Information, $"{person.SearchRequestKey} Current Metadata Wave : {metaData.CurrentWave}");
                 metaData.CurrentWave++;
                 metaData.NewParameter = null;
                 await _cacheService.Save(cacheKey, metaData);
-                _logger.Log(LogLevel.Debug, $"{person.SearchRequestKey} New wave {metaData.CurrentWave} saved");
+                _logger.Log(LogLevel.Information, $"{person.SearchRequestKey} New wave {metaData.CurrentWave} saved");
 
 
             }

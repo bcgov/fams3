@@ -60,7 +60,11 @@ namespace SearchApi.Web.Test.Messaging
       .Returns(Task.FromResult(JsonConvert.SerializeObject(wave)));
             _cacheServiceMock.Setup(x => x.SaveRequest(It.IsAny<SearchRequest>()))
               .Returns(Task.CompletedTask);
-          
+
+            _cacheServiceMock.Setup(x => x.GetRequest(It.IsAny<string>()))
+ .Returns(Task.FromResult(new SearchRequest { DataPartners = new List<DataPartner>() { new DataPartner { Completed = false, Name = "ICBC" } } }));
+           
+
             _cacheServiceMock.Setup(x => x.Get($"deepsearch-{SearchRequestKey}-{dataPartner}"))
             .Returns(Task.FromResult(""));
             wave = new WaveSearchData
@@ -138,11 +142,11 @@ namespace SearchApi.Web.Test.Messaging
                 new List<Employment>(),
                 new List<DataProvider>
                 {
-                    new DataProvider() {Name = "ICBC", Completed = false, NumberOfRetries = 5, TimeBetweenRetries=10},
-                    new DataProvider() {Name = "ICBC", Completed = false, NumberOfRetries = 3, TimeBetweenRetries=50},
-                    new DataProvider() {Name = "ICBC", Completed= true, NumberOfRetries = 6, TimeBetweenRetries=70},
-                    new DataProvider() {Name = "ICBC", Completed =false, NumberOfRetries = 3, TimeBetweenRetries=45},
-                    new DataProvider() {Name = "ICBC", Completed=false, NumberOfRetries = 5, TimeBetweenRetries=34}
+                    new DataProvider() {Name = "ICBC", Completed = false, NumberOfRetries = 5, TimeBetweenRetries=10, SearchSpeedType = SearchSpeedType.Fast},
+                    new DataProvider() {Name = "ICBC", Completed = false, NumberOfRetries = 3, TimeBetweenRetries=50, SearchSpeedType = SearchSpeedType.Fast},
+                    new DataProvider() {Name = "ICBC", Completed= true, NumberOfRetries = 6, TimeBetweenRetries=70, SearchSpeedType = SearchSpeedType.Fast},
+                    new DataProvider() {Name = "ICBC", Completed =false, NumberOfRetries = 3, TimeBetweenRetries=45, SearchSpeedType = SearchSpeedType.Slow},
+                    new DataProvider() {Name = "ICBC", Completed=false, NumberOfRetries = 5, TimeBetweenRetries=34, SearchSpeedType = SearchSpeedType.Slow}
                 },
                 NotSearchRequestKey), Guid.NewGuid());
 
@@ -150,11 +154,11 @@ namespace SearchApi.Web.Test.Messaging
 
             sendEndpointMock.Verify(x => x.Send<PersonSearchOrdered>(It.IsAny<PersonSearchOrdered>(), It.IsAny<CancellationToken>()),
                 () => { return Times.Exactly(5); });
-            _loggerMock.VerifyLog(LogLevel.Debug, $"{NotSearchRequestKey} has an active wave", Times.Exactly(5));
+            _loggerMock.VerifyLog(LogLevel.Information, $"{NotSearchRequestKey} has an active wave", Times.Exactly(3));
 
-            _loggerMock.VerifyLog(LogLevel.Debug, $"{NotSearchRequestKey} Current Metadata Wave : {wave.CurrentWave}", Times.Exactly(5));
+            _loggerMock.VerifyLog(LogLevel.Information, $"{NotSearchRequestKey} Current Metadata Wave : {wave.CurrentWave}", Times.Exactly(3));
             wave.CurrentWave++;
-            _loggerMock.VerifyLog(LogLevel.Debug, $"{NotSearchRequestKey} New wave {wave.CurrentWave} saved", Times.Exactly(5));
+            _loggerMock.VerifyLog(LogLevel.Information, $"{NotSearchRequestKey} New wave {wave.CurrentWave} saved", Times.Exactly(3));
 
         }
         [Test]
@@ -185,8 +189,8 @@ namespace SearchApi.Web.Test.Messaging
 
             sendEndpointMock.Verify(x => x.Send<PersonSearchOrdered>(It.IsAny<PersonSearchOrdered>(), It.IsAny<CancellationToken>()),
                 () => { return Times.Exactly(5); });
-            _loggerMock.VerifyLog(LogLevel.Debug, $"{ SearchRequestKey} does not have active wave",Times.Exactly(5));
-            _loggerMock.VerifyLog(LogLevel.Debug, $"{ SearchRequestKey} saved", Times.Exactly(5));
+            _loggerMock.VerifyLog(LogLevel.Information, $"{ SearchRequestKey} does not have active wave",Times.Exactly(5));
+            _loggerMock.VerifyLog(LogLevel.Information, $"{ SearchRequestKey} saved", Times.Exactly(5));
 
         }
 

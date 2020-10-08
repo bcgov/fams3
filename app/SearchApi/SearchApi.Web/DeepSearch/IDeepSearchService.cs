@@ -123,6 +123,7 @@ namespace SearchApi.Web.DeepSearch
                         else
                             waveitem.NewParameter[0] = new Person { Identifiers = newToBeUsedId };
                     }
+                    
                     await _cacheService.Save(searchRequestKey.DeepSearchKey(eventStatus.ProviderProfile.Name), waveitem);
 
                 }
@@ -202,12 +203,12 @@ namespace SearchApi.Web.DeepSearch
                 
                 var waveData = await GetWaveDataForSearch(searchRequestKey);
             if (!waveData.Any()) return true;
-                if (waveData.Any(x => x.CurrentWave == _deepSearchOptions.MaxWaveCount) || NoNewParameter(waveData))
-                {
-                    return true;
-                }
-                else
-                {
+            if (waveData.Any(x => x.CurrentWave == _deepSearchOptions.MaxWaveCount) || NoNewParameter(waveData))
+            {
+                return true;
+            }
+            else
+            {
                 foreach (var wave in waveData)
                 {
                     if (wave.NewParameter != null)
@@ -233,9 +234,9 @@ namespace SearchApi.Web.DeepSearch
                         }
                     }
                 }
-                        return false;
-                    
-                }
+                return false;
+
+            }
 
           
             

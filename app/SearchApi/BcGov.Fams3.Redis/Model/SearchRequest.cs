@@ -24,6 +24,8 @@ namespace BcGov.Fams3.Redis.Model
         public int NumberOfRetries { get; set; }
 
         public int TimeBetweenRetries { get; set; }
+
+        public SearchSpeedType SearchSpeed { get; set; }
     }
 
 }

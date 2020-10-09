@@ -13,6 +13,7 @@ using Fams3Adapter.Dynamics.Update;
 using Fams3Adapter.Dynamics.Vehicle;
 using Newtonsoft.Json;
 using System;
+using System.ComponentModel;
 
 namespace Fams3Adapter.Dynamics.Person
 {
@@ -28,57 +29,74 @@ namespace Fams3Adapter.Dynamics.Person
         public int? InformationSource { get; set; }
 
         [JsonProperty("ssg_dateofbirth")]
+        [DisplayName("DOB")]
         public DateTime? DateOfBirth { get; set; }
 
         [JsonProperty("ssg_dateofdeath")]
+        [DisplayName("Date of Death")]
         public DateTime? DateOfDeath { get; set; }
 
         [JsonProperty("ssg_dateofdeathconfirmed")]
+        [DisplayName("Date of Death Confirmed")]
         public bool? DateOfDeathConfirmed { get; set; }
 
         [JsonProperty("ssg_firstname")]
+        [DisplayName("First Name")]
         public string FirstName { get; set; }
 
         [JsonProperty("ssg_gender")]
         public string Gender { get; set; }
 
         [JsonProperty("ssg_genderoptionset")]
+        [DisplayName("Gender")]
         public int? GenderOptionSet { get; set; }
 
         [JsonProperty("ssg_incarcerated")]
         public int? Incacerated { get; set; }
 
         [JsonProperty("ssg_lastname")]
+        [DisplayName("Last Name")]
         public string LastName { get; set; }
 
         [JsonProperty("ssg_middlename")]
+        [DisplayName("Middle Name")]
         public string MiddleName { get; set; }
 
         [JsonProperty("ssg_notes")]
+        [DisplayName("Notes")]
         public string Notes { get; set; }
 
+
         [JsonProperty("ssg_thirdgivenname")]
+        [DisplayName("Middle Name 2")]
         public string ThirdGivenName { get; set; }
 
         [JsonProperty("ssg_distinguishingfeatures")]
+        [DisplayName("Distinguishing Features")]
         public string DistinguishingFeatures { get; set; }
 
         [JsonProperty("ssg_eyecolour")]
+        [DisplayName("Eye Colour")]
         public string EyeColor { get; set; }
 
         [JsonProperty("ssg_haircolour")]
+        [DisplayName("Hair Colour")]
         public string HairColor { get; set; }
 
         [JsonProperty("ssg_glassesflag")]
+        [DisplayName("Glasses")]
         public string WearGlasses { get; set; }
 
         [JsonProperty("ssg_height")]
+        [DisplayName("Height")]
         public string Height { get; set; }
 
         [JsonProperty("ssg_weight")]
+        [DisplayName("Weight")]
         public string Weight { get; set; }
 
         [JsonProperty("ssg_complexion")]
+        [DisplayName("Complexion")]
         public string Complexion { get; set; }
 
         [JsonProperty("ssg_duplicatedetectionhash")]

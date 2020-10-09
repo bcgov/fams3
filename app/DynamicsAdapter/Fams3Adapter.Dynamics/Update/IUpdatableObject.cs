@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 
@@ -13,7 +14,13 @@ namespace Fams3Adapter.Dynamics.Update
 
     public static class IUpdatableObjectExtensions
     {
-
+        /// <summary>
+        /// this method is not used in this project.
+        /// </summary>
+        /// <typeparam name="IUpdatableObject"></typeparam>
+        /// <param name="originObj"></param>
+        /// <param name="newObj"></param>
+        /// <returns></returns>
         public static IUpdatableObject MergeUpdates<IUpdatableObject>(this IUpdatableObject originObj, object newObj)
         {
             if (newObj == null || originObj == null) return originObj;
@@ -68,13 +75,17 @@ namespace Fams3Adapter.Dynamics.Update
         public static IDictionary<string, object> GetUpdateEntries<IUpdatableObject>(this IUpdatableObject originObj, object newObj)
         {
             IDictionary<string, object> entries = new Dictionary<string, object>();
-            if (newObj == null || originObj == null) return null;
-
+            if (newObj == null || originObj == null)
+            {
+                return null;
+            }
             Type newType = newObj.GetType();
             IList<PropertyInfo> props = new List<PropertyInfo>(newType.GetProperties());
+            string updatedDetails = null;
             foreach (PropertyInfo propertyInfo in props)
             {
-                if (Attribute.IsDefined(propertyInfo, typeof(UpdateIgnoreAttribute))) continue;
+                //only properties having DisplayName need to be updated.
+                if (!Attribute.IsDefined(propertyInfo, typeof(DisplayNameAttribute))) continue;
 
                 var newValue = propertyInfo.GetValue(newObj, null);
                 var oldValue = propertyInfo.GetValue(originObj, null);
@@ -91,17 +102,23 @@ namespace Fams3Adapter.Dynamics.Update
                     if (isDifferent)
                     {
                         string jsonPropertyName = propertyInfo.GetCustomAttributes<JsonPropertyAttribute>()?.FirstOrDefault()?.PropertyName;
+
                         if (jsonPropertyName != null)
                         {
                             entries.Add(new KeyValuePair<string, object>(
                                 propertyInfo.GetCustomAttributes<JsonPropertyAttribute>().FirstOrDefault().PropertyName,
                                 newValue));
+                            updatedDetails += propertyInfo.GetCustomAttributes<DisplayNameAttribute>()?.FirstOrDefault()?.DisplayName;
                         }
                     }
 
                 }
             }
 
+            if (entries.Count() > 0)
+            {
+                entries.Add(new KeyValuePair<string, object>("ssg_agencyupdatedescription", updatedDetails));
+            }
             return entries;
         }
 

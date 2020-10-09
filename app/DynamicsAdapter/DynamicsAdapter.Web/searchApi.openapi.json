@@ -6,7 +6,7 @@
     "description": "For Search",
     "version": "V0.1"
   },
-  "host": "localhost:5050",
+  "host": "localhost:5009",
   "schemes": [
     "http"
   ],
@@ -98,7 +98,7 @@
         "completed",
         "numberOfRetries",
         "timeBetweenRetries",
-        "speedType"
+        "searchSpeedType"
       ],
       "properties": {
         "name": {
@@ -115,12 +115,12 @@
           "type": "integer",
           "format": "int32"
         },
-        "searchSpeed": {
-          "$ref": "#/definitions/SearchSpeed"
+        "searchSpeedType": {
+          "$ref": "#/definitions/SearchSpeedType"
         }
       }
     },
-    "SearchSpeed": {
+    "SearchSpeedType": {
       "type": "string",
       "description": "",
       "x-enumNames": [

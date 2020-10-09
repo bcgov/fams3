@@ -1,4 +1,5 @@
 ﻿using BcGov.Fams3.Redis.Model;
+using BcGov.Fams3.SearchApi.Contracts.Person;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -44,7 +45,7 @@ namespace SearchApi.Web.Search
             if (!string.IsNullOrEmpty(json))
             {
                 var request = JsonConvert.DeserializeObject<SearchRequest>(json);
-                return !request.DataPartners.Any(x => x.Completed == false);
+                return !request.DataPartners.Any(x => x.Completed == false && x.SearchSpeed  == SearchSpeedType.Fast);
             }
             else return true; // we can't find request, possibly completed and already deleted from redis. requires refactor
             

@@ -54,7 +54,7 @@ namespace DynamicsAdapter.Web.Test.Register
                       {
                         AdaptorName = adaptorName,
                         NumberOfDaysToRetry =retries,
-                        SearchSpeed = SearchSpeedType.Fast.Value,
+                        SearchSpeed = AutoSearchSpeedType.Fast.Value,
                         TimeBetweenRetries = 60,
                         NumberOfRetries = 3
 
@@ -100,7 +100,7 @@ namespace DynamicsAdapter.Web.Test.Register
                       {
                         AdaptorName = adaptorName,
                         NumberOfDaysToRetry =retries,
-                        SearchSpeed = SearchSpeedType.Fast.Value,
+                        SearchSpeed = AutoSearchSpeedType.Fast.Value,
                         TimeBetweenRetries = 60,
                         NumberOfRetries = 3
 

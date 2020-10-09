@@ -2,15 +2,15 @@
 
 namespace Fams3Adapter.Dynamics.Types
 {
-    public class SearchSpeedType : Enumeration
+    public class AutoSearchSpeedType : Enumeration
     {
      
 
-        public static SearchSpeedType Fast = new SearchSpeedType(867670000, "Fast");
-        public static SearchSpeedType Slow = new SearchSpeedType(867670001, "Slow");
+        public static AutoSearchSpeedType Fast = new AutoSearchSpeedType(867670000, "Fast");
+        public static AutoSearchSpeedType Slow = new AutoSearchSpeedType(867670001, "Slow");
      
 
-        protected SearchSpeedType(int value, string name) : base(value, name)
+        protected AutoSearchSpeedType(int value, string name) : base(value, name)
         {
 
         }

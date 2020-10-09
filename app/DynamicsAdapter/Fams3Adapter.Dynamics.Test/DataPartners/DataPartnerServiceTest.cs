@@ -37,7 +37,7 @@ namespace Fams3Adapter.Dynamics.Test.DataPartners
                       {
                         AdaptorName = "ICBC",
                         NumberOfDaysToRetry =5,
-                        SearchSpeed = SearchSpeedType.Fast.Value,
+                        SearchSpeed = AutoSearchSpeedType.Fast.Value,
                         TimeBetweenRetries = 60,
                         NumberOfRetries = 3
 

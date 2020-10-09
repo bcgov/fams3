@@ -225,7 +225,9 @@ namespace DynamicsAdapter.Web.Mapping
 
             CreateMap<SSG_SearchapiRequestDataProvider, DataProvider>()
                  .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.AdaptorName.Replace(" ", String.Empty).ToUpperInvariant()))
-              .ForMember(dest => dest.SearchSpeed, opt => opt.MapFrom(src => (src.SearchSpeed == SearchSpeedType.Fast.Value) ? SearchSpeed.Fast : SearchSpeed.Slow));
+                   .ForMember(dest => dest.NumberOfRetries, opt => opt.MapFrom(src => src.NumberOfRetries))
+                   .ForMember(dest => dest.TimeBetweenRetries, opt => opt.MapFrom(src => src.TimeBetweenRetries))
+              .ForMember(dest => dest.SearchSpeedType, opt => opt.MapFrom(src => (src.SearchSpeed == AutoSearchSpeedType.Fast.Value) ? SearchSpeedType.Fast : SearchSpeedType.Slow));
 
             CreateMap<SSG_Notese, ResponseNote>()
                     .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description));

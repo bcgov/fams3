@@ -38,7 +38,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchApiRequest
                       {
                         AdaptorName = adaptorName,
                         NumberOfDaysToRetry =retries,
-                        SearchSpeed = SearchSpeedType.Fast.Value,
+                        SearchSpeed = AutoSearchSpeedType.Fast.Value,
                         TimeBetweenRetries = 60,
                         NumberOfRetries = 3
 
@@ -189,7 +189,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchApiRequest
             Assert.AreEqual(1, result.Count());
             Assert.AreEqual("ICBC", result.FirstOrDefault().AdaptorName);
             Assert.AreEqual(10, result.FirstOrDefault().NumberOfDaysToRetry);
-            Assert.AreEqual(SearchSpeedType.Fast.Value, result.FirstOrDefault().SearchSpeed);
+            Assert.AreEqual(AutoSearchSpeedType.Fast.Value, result.FirstOrDefault().SearchSpeed);
             Assert.AreEqual(60, result.FirstOrDefault().TimeBetweenRetries);
             Assert.AreEqual(3, result.FirstOrDefault().NumberOfRetries);
         }

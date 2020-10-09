@@ -6,7 +6,7 @@ namespace DynamicsAdapter.Web.PersonSearch.Models
     {
         public IEnumerable<PersonFound> MatchedPersons { get; set; }
 
-        public string Message { get; }
+        public string Message { get; set; }
 
     }
 }

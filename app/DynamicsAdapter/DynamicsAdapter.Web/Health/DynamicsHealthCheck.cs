@@ -84,7 +84,7 @@ namespace DynamicsAdapter.Web.Health
                 "ssg_selfemploymentcompanyrole" => Enumeration.GetAll<SelfEmploymentCompanyRoleType>(),
                 "ssg_famsincomeassistanceclasses" => Enumeration.GetAll<IncomeAssistanceClassType>(),
                 "ssg_bankaccounttype" => Enumeration.GetAll<BankAccountType>(),
-                "ssg_datapartnerspeedtypes" => Enumeration.GetAll<SearchSpeedType>(),
+                "ssg_datapartnerspeedtypes" => Enumeration.GetAll<AutoSearchSpeedType>(),
                 _ => Enumeration.GetAll<TelephoneNumberType>()
 
             };

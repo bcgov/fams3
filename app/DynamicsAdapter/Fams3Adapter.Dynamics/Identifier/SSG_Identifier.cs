@@ -3,24 +3,29 @@ using Fams3Adapter.Dynamics.SearchRequest;
 using Fams3Adapter.Dynamics.Update;
 using Newtonsoft.Json;
 using System;
+using System.ComponentModel;
 
 namespace Fams3Adapter.Dynamics.Identifier
 {
     public class IdentifierEntity : DynamicsEntity
     {
         [JsonProperty("ssg_identification")]
+        [DisplayName("ID")]
         public string Identification { get; set; }
 
         [JsonProperty("ssg_suppliertypecode")]
         public string SupplierTypeCode { get; set; }
 
         [JsonProperty("ssg_identificationcategorytext")]
+        [DisplayName("Type")]
         public int? IdentifierType { get; set; }
 
         [JsonProperty("ssg_notes")]
+        [DisplayName("Notes")]
         public string Notes { get; set; }
 
         [JsonProperty("ssg_description")]
+        [DisplayName("Description")]
         public string Description { get; set; }
 
         [JsonProperty("ssg_issuedby")]

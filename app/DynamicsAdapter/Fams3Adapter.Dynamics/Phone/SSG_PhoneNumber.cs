@@ -3,6 +3,7 @@ using Fams3Adapter.Dynamics.SearchRequest;
 using Fams3Adapter.Dynamics.Update;
 using Newtonsoft.Json;
 using System;
+using System.ComponentModel;
 
 namespace Fams3Adapter.Dynamics.PhoneNumber
 {
@@ -18,21 +19,25 @@ namespace Fams3Adapter.Dynamics.PhoneNumber
         public int? InformationSource { get; set; }
 
         [JsonProperty("ssg_originalphonenumber")]
+        [DisplayName("Phone Number")]
         public string TelePhoneNumber { get; set; }
 
         [JsonProperty("ssg_suppliertypecode")]
         public string SupplierTypeCode { get; set; }
 
         [JsonProperty("ssg_phoneextension")]
+        [DisplayName("Phone Extension")]
         public string PhoneExtension { get; set; }
 
         [JsonProperty("ssg_telephonenumbercategorytext")]
+        [DisplayName("Type")]
         public int? TelephoneNumberType { get; set; }
 
         [JsonProperty("ssg_description")]
         public string Description { get; set; }
 
         [JsonProperty("ssg_notes")]
+        [DisplayName("Notes")]
         public string Notes { get; set; }
 
         [JsonProperty("ssg_createdbyagency")]

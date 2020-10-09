@@ -3,6 +3,7 @@ using Fams3Adapter.Dynamics.SearchRequest;
 using Fams3Adapter.Dynamics.Update;
 using Newtonsoft.Json;
 using System;
+using System.ComponentModel;
 
 namespace Fams3Adapter.Dynamics.Name
 {
@@ -15,14 +16,18 @@ namespace Fams3Adapter.Dynamics.Name
         public int? InformationSource { get; set; }
 
         [JsonProperty("ssg_persongivenname")]
+        [DisplayName("First Name")]
         public string FirstName { get; set; }
 
+        [DisplayName("Middle Name")]
         [JsonProperty("ssg_personmiddlename")]
         public string MiddleName { get; set; }
 
-        [JsonProperty("ssg_PersonSurName")]
+        [DisplayName("Last Name")]
+        [JsonProperty("ssg_Personsurname")]
         public string LastName { get; set; }
 
+        [DisplayName("Middle Name 2")]
         [JsonProperty("ssg_personthirdgivenname")]
         public string ThirdGivenName { get; set; }
 
@@ -42,6 +47,7 @@ namespace Fams3Adapter.Dynamics.Name
         public string Comments { get; set; }
 
         [JsonProperty("ssg_notes")]
+        [DisplayName("Notes")]
         public string Notes { get; set; }
 
         [JsonProperty("ssg_personbirthdate")]

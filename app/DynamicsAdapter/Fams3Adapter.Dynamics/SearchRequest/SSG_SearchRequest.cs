@@ -215,16 +215,16 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         [DisplayName("Agency Code")]
         public virtual SSG_Agency Agency { get; set; }
 
+        [DisplayName("Reason")]
         public string SearchReasonCode { get; set; } //used to link ssg_searchrequestreason
 
         [JsonProperty("ssg_RequestCategoryText")]
-        [DisplayName("Reason")]
         public virtual SSG_SearchRequestReason SearchReason { get; set; }
 
+        [DisplayName("Agency Location")]
         public string AgencyOfficeLocationText { get; set; } //used to link ssg_AgencyLocation
 
         [JsonProperty("ssg_AgencyLocation")]
-        [DisplayName("Agency Location")]
         public virtual SSG_AgencyLocation AgencyLocation { get; set; }
 
         [JsonProperty("ssg_personmiddlename")]
@@ -255,9 +255,6 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
         [JsonProperty("ssg_ssg_searchrequest_ssg_notes_SearchRequest")]
         public SSG_Notese[] SSG_Notes { get; set; }
-
-        [UpdateIgnore]
-        public bool Updated { get; set; }
 
         public bool IsDuplicated { get; set; }
 

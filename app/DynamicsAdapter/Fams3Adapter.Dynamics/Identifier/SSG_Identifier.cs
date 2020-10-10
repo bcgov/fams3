@@ -43,6 +43,9 @@ namespace Fams3Adapter.Dynamics.Identifier
         [JsonProperty("ssg_createdbyagency")]
         [UpdateIgnore]
         public bool IsCreatedByAgency { get; set; }
+
+        [JsonProperty("ssg_agencyupdatedescription")]
+        public string UpdateDetails { get; set; }
     }
 
     public class SSG_Identifier : IdentifierEntity

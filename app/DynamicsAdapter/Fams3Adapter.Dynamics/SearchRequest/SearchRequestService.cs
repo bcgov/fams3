@@ -87,7 +87,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             {
                 Guid duplicatedIdentifierId = await _duplicateDetectService.Exists(identifier.Person, identifier);
                 if (duplicatedIdentifierId != Guid.Empty)
-                    return new SSG_Identifier() { IdentifierId = duplicatedIdentifierId };
+                    return new SSG_Identifier() { IdentifierId = duplicatedIdentifierId, Existed = true };
             }
             return await this._oDataClient.For<SSG_Identifier>().Set(identifier).InsertEntryAsync(cancellationToken);
         }
@@ -130,7 +130,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             {
                 Guid duplicatedPhoneId = await _duplicateDetectService.Exists(phone.Person, phone);
                 if (duplicatedPhoneId != Guid.Empty)
-                    return new SSG_PhoneNumber() { PhoneNumberId = duplicatedPhoneId };
+                    return new SSG_PhoneNumber() { PhoneNumberId = duplicatedPhoneId, Existed = true };
             }
             return await this._oDataClient.For<SSG_PhoneNumber>().Set(phone).InsertEntryAsync(cancellationToken);
         }
@@ -146,7 +146,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             {
                 Guid duplicatedAddressId = await _duplicateDetectService.Exists(address.Person, address);
                 if (duplicatedAddressId != Guid.Empty)
-                    return new SSG_Address() { AddressId = duplicatedAddressId };
+                    return new SSG_Address() { AddressId = duplicatedAddressId, Existed = true };
             }
 
             string countryName = address.CountryText;
@@ -171,7 +171,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             {
                 Guid duplicatedNameId = await _duplicateDetectService.Exists(name.Person, name);
                 if (duplicatedNameId != Guid.Empty)
-                    return new SSG_Aliase() { AliasId = duplicatedNameId };
+                    return new SSG_Aliase() { AliasId = duplicatedNameId, Existed = true };
             }
             return await this._oDataClient.For<SSG_Aliase>().Set(name).InsertEntryAsync(cancellationToken);
         }
@@ -215,7 +215,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             {
                 Guid duplicatedRelatedPersonId = await _duplicateDetectService.Exists(relatedPerson.Person, relatedPerson);
                 if (duplicatedRelatedPersonId != Guid.Empty)
-                    return new SSG_Identity() { RelatedPersonId = duplicatedRelatedPersonId };
+                    return new SSG_Identity() { RelatedPersonId = duplicatedRelatedPersonId, Existed = true };
             }
             return await this._oDataClient.For<SSG_Identity>().Set(relatedPerson).InsertEntryAsync(cancellationToken);
         }

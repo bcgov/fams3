@@ -44,6 +44,9 @@ namespace Fams3Adapter.Dynamics.PhoneNumber
         [UpdateIgnore]
         public bool IsCreatedByAgency { get; set; }
 
+        [JsonProperty("ssg_agencyupdatedescription")]
+        public string UpdateDetails { get; set; }
+
     }
 
     public class SSG_PhoneNumber : PhoneNumberEntity

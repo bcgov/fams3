@@ -9,7 +9,6 @@ namespace Fams3Adapter.Dynamics.Update
 {
     public interface IUpdatableObject
     {
-        bool Updated { get; set; }
     }
 
     public static class IUpdatableObjectExtensions
@@ -108,14 +107,15 @@ namespace Fams3Adapter.Dynamics.Update
                             entries.Add(new KeyValuePair<string, object>(
                                 propertyInfo.GetCustomAttributes<JsonPropertyAttribute>().FirstOrDefault().PropertyName,
                                 newValue));
-                            updatedDetails += propertyInfo.GetCustomAttributes<DisplayNameAttribute>()?.FirstOrDefault()?.DisplayName;
                         }
+                        updatedDetails += string.IsNullOrEmpty(updatedDetails) ? propertyInfo.GetCustomAttributes<DisplayNameAttribute>()?.FirstOrDefault()?.DisplayName
+                            : ", " + propertyInfo.GetCustomAttributes<DisplayNameAttribute>()?.FirstOrDefault()?.DisplayName;
                     }
 
                 }
             }
 
-            if (entries.Count() > 0)
+            if (!string.IsNullOrEmpty(updatedDetails))
             {
                 entries.Add(new KeyValuePair<string, object>("ssg_agencyupdatedescription", updatedDetails));
             }

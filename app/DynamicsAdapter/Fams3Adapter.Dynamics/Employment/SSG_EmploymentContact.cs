@@ -44,6 +44,9 @@ namespace Fams3Adapter.Dynamics.Employment
 
         [JsonProperty("ssg_name")]
         public string ContactName { get; set; }
+
+        [JsonProperty("ssg_agencyupdatedescription")]
+        public string UpdateDetails { get; set; }
     }
 
     public class SSG_EmploymentContact : EmploymentContactEntity

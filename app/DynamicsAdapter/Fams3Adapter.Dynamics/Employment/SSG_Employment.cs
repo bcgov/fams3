@@ -147,6 +147,9 @@ namespace Fams3Adapter.Dynamics.Employment
 
         [JsonProperty("ssg_primarycontactphoneextension")]
         public string PrimaryContactPhoneExt { get; set; }
+
+        [JsonProperty("ssg_agencyupdatedescription")]
+        public string UpdateDetails { get; set; }
     }
 
     public class SSG_Employment : EmploymentEntity

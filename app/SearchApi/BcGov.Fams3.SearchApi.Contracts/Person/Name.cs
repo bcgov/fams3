@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace BcGov.Fams3.SearchApi.Contracts.Person
@@ -25,6 +26,10 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
 
         [Description("The owner of the name e.g. Applicant, Person Sought, e.t.c")]
         public OwnerType Owner { get; set; }
+
+        public IEnumerable<PersonalIdentifier> Identifiers { get; set; }
+        public IEnumerable<Address> Addresses { get; set; }
+
 
     }
 }

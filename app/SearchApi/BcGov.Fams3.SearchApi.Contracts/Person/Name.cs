@@ -29,7 +29,6 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
 
         public IEnumerable<PersonalIdentifier> Identifiers { get; set; }
         public IEnumerable<Address> Addresses { get; set; }
-
-
+        public IEnumerable<Phone> Phones { get; set; }
     }
 }

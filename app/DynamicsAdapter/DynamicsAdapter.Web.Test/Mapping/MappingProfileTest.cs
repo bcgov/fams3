@@ -84,11 +84,12 @@ namespace DynamicsAdapter.Web.Test.Mapping
                     new SSG_SearchapiRequestDataProvider(){AdaptorName="ICBC"},
                     new SSG_SearchapiRequestDataProvider(){AdaptorName="BC Hydro"}
                 },
-                SearchRequest = new SSG_SearchRequest() { 
-                    FileId = "testFileId", 
-                    ApplicantFirstName="applicantFirstName",
-                    ApplicantLastName="applicantLastName",
-                    SearchReason = new SSG_SearchRequestReason { ReasonCode= "EnfPayAgr" }
+                SearchRequest = new SSG_SearchRequest()
+                {
+                    FileId = "testFileId",
+                    ApplicantFirstName = "applicantFirstName",
+                    ApplicantLastName = "applicantLastName",
+                    SearchReason = new SSG_SearchRequestReason { ReasonCode = "EnfPayAgr" }
                 },
                 SequenceNumber = "123456"
             };
@@ -805,8 +806,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual("MiddleName", ssg_name.MiddleName);
             Assert.AreEqual("OtherName", ssg_name.ThirdGivenName);
             Assert.AreEqual(PersonNameCategory.Other.Value, ssg_name.Type);
-            Assert.AreEqual("test name", ssg_name.Comments);
-            Assert.AreEqual("notes", ssg_name.Notes);
+            Assert.AreEqual("notes test name", ssg_name.Notes);
             Assert.AreEqual("Former", ssg_name.SupplierTypeCode);
             Assert.AreEqual(1, ssg_name.StatusCode);
             Assert.AreEqual(0, ssg_name.StateCode);

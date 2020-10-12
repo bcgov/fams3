@@ -154,6 +154,10 @@ namespace DynamicsAdapter.Web.Mapping
               .ForMember(dest => dest.CountryText, opt => opt.MapFrom(src => (src.Employer == null) ? string.Empty : (src.Employer.Address == null) ? string.Empty : src.Employer.Address.CountryRegion))
               .ForMember(dest => dest.BusinessOwner, opt => opt.MapFrom(src => (src.Employer == null) ? string.Empty : src.Employer.OwnerName))
               .ForMember(dest => dest.EmploymentConfirmed, opt => opt.MapFrom(src => src.EmploymentConfirmed))
+              .ForMember(dest => dest.PrimaryPhoneNumber, opt => opt.ConvertUsing(new PrimaryPhoneNumberConvertor(), src => src.Employer.Phones))
+              .ForMember(dest => dest.PrimaryPhoneExtension, opt => opt.ConvertUsing(new PrimaryPhoneExtConvertor(), src => src.Employer.Phones))
+              .ForMember(dest => dest.PrimaryContactPhone, opt => opt.ConvertUsing(new PrimaryContactPhoneNumberConvertor(), src => src.Employer.Phones))
+              .ForMember(dest => dest.PrimaryContactPhoneExt, opt => opt.ConvertUsing(new PrimaryContactPhoneExtConvertor(), src => src.Employer.Phones))
               .ForMember(dest => dest.ContactPerson, opt => opt.MapFrom(src => (src.Employer == null) ? string.Empty : src.Employer.ContactPerson))
               .IncludeBase<PersonalInfo, DynamicsEntity>();
 
@@ -195,8 +199,7 @@ namespace DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.ThirdGivenName, opt => opt.MapFrom(src => src.OtherName))
                  .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new NameCategoryConverter(), src => src.Type))
                  .ForMember(dest => dest.SupplierTypeCode, opt => opt.MapFrom(src => src.Type))
-                 .ForMember(dest => dest.Comments, opt => opt.MapFrom(src => src.Description))
-                 .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
+                 .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => $"{src.Notes} {src.Description}"))
                  .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => src.DateOfBirth))
                  .IncludeBase<PersonalInfo, DynamicsEntity>()
                  .ReverseMap()

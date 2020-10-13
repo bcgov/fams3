@@ -6,7 +6,7 @@
     "description": "For Search",
     "version": "V0.1"
   },
-  "host": "localhost:5009",
+  "host": "localhost:5050",
   "schemes": [
     "http"
   ],
@@ -315,8 +315,7 @@
       "required": [
         "requestPriority",
         "reasonCode",
-        "requestDate",
-        "daysOpen"
+        "requestDate"
       ],
       "properties": {
         "notes": {

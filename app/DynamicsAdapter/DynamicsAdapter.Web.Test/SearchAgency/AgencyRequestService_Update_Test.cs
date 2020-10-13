@@ -418,7 +418,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                         It.IsAny<CancellationToken>()), Times.Never);
             _searchRequestServiceMock.Verify(m => m.CreateNotes(It.IsAny<NotesEntity>()
                 , It.IsAny<CancellationToken>()), Times.Never);
-            _searchRequestServiceMock.Verify(m => m.CreateRelatedPerson(It.Is<RelatedPersonEntity>(m => m.FirstName == "newFirstName")
+            _searchRequestServiceMock.Verify(m => m.CreateRelatedPerson(It.Is<RelatedPersonEntity>(m => m.FirstName == "newFirstName" && m.UpdateDetails== "Create New Related Person")
             , It.IsAny<CancellationToken>()), Times.Once);
 
             Assert.AreEqual(_validRequestGuid, ssgSearchRequest.SearchRequestId);
@@ -516,7 +516,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
         }
 
         [Test]
-        public async Task Employment_changed_ProcessUpdateSearchRequest_should_run_updateEmployment_correctly()
+        public async Task Employment_changed_ProcessUpdateSearchRequest_should_run_addEmployment_correctly()
         {
             Guid guid = Guid.NewGuid();
             Guid personGuid = Guid.NewGuid();
@@ -616,11 +616,9 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                         It.IsAny<CancellationToken>()), Times.Never);
             _searchRequestServiceMock.Verify(m => m.CreateNotes(It.IsAny<NotesEntity>()
                 , It.IsAny<CancellationToken>()), Times.Never);
-            _searchRequestServiceMock.Verify(m => m.UpdateRelatedPerson(It.IsAny<Guid>(),
-                 It.IsAny<IDictionary<string, object>>(),
+            _searchRequestServiceMock.Verify(m => m.CreateRelatedPerson(It.IsAny<RelatedPersonEntity>(),
                  It.IsAny<CancellationToken>()), Times.Never);
-            _searchRequestServiceMock.Verify(m => m.UpdateEmployment(It.IsAny<Guid>(),
-                 It.IsAny<IDictionary<string, object>>(),
+            _searchRequestServiceMock.Verify(m => m.CreateEmployment(It.IsAny<EmploymentEntity>(),
                  It.IsAny<CancellationToken>()), Times.Once);
             _searchRequestServiceMock.Verify(m => m.CreateEmploymentContact(It.IsAny<EmploymentContactEntity>()
                 , It.IsAny<CancellationToken>()), Times.Once);

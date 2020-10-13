@@ -178,23 +178,23 @@ namespace DynamicsAdapter.Web.SearchAgency
 
             //update identifiers
             //await UpdateIdentifiers();
-            await UploadIdentifiers();
+            await UploadIdentifiers(true);
 
             //update employment
-            await UpdateEmployment();
+            await UploadEmployment(true);
 
             //for phones, addresses, relatedPersons, names are same as creation, as if different, add new one, if same, ignore
-            await UploadAddresses();
-            await UploadPhones();
-            await UploadRelatedPersons();
-            await UploadAliases();
+            await UploadAddresses(true);
+            await UploadPhones(true);
+            await UploadRelatedPersons(true);
+            await UploadAliases(true);
 
 
 
             return _uploadedSearchRequest;
         }
 
-        private async Task<bool> UploadIdentifiers()
+        private async Task<bool> UploadIdentifiers(bool inUpdateProcess = false)
         {
             if (_personSought.Identifiers == null) return true;
             _logger.LogDebug($"Attempting to create identifier records for SearchRequest.");
@@ -206,13 +206,15 @@ namespace DynamicsAdapter.Web.SearchAgency
                 identifier.InformationSource = InformationSourceType.Request.Value;
                 identifier.Person = _uploadedPerson;
                 identifier.IsCreatedByAgency = true;
+                if (inUpdateProcess)
+                    identifier.UpdateDetails = "New Identifier";
                 SSG_Identifier newIdentifier = await _searchRequestService.CreateIdentifier(identifier, _cancellationToken);
             }
             _logger.LogInformation("Create identifier records for SearchRequest successfully");
             return true;
         }
 
-        private async Task<bool> UploadAddresses()
+        private async Task<bool> UploadAddresses(bool inUpdateProcess = false)
         {
             if (_personSought.Addresses == null) return true;
 
@@ -225,13 +227,14 @@ namespace DynamicsAdapter.Web.SearchAgency
                 addr.InformationSource = InformationSourceType.Request.Value;
                 addr.Person = _uploadedPerson;
                 addr.IsCreatedByAgency = true;
+                if (inUpdateProcess) addr.UpdateDetails = "New Address";
                 SSG_Address uploadedAddr = await _searchRequestService.CreateAddress(addr, _cancellationToken);
             }
             _logger.LogInformation("Create addresses records for SearchRequest successfully");
             return true;
         }
 
-        private async Task<bool> UploadPhones()
+        private async Task<bool> UploadPhones(bool inUpdateProcess = false)
         {
             if (_personSought.Phones == null) return true;
 
@@ -244,13 +247,17 @@ namespace DynamicsAdapter.Web.SearchAgency
                 ph.InformationSource = InformationSourceType.Request.Value;
                 ph.Person = _uploadedPerson;
                 ph.IsCreatedByAgency = true;
+                if (inUpdateProcess)
+                {
+                    ph.UpdateDetails = "Create Phone";
+                }
                 SSG_PhoneNumber uploadedPhone = await _searchRequestService.CreatePhoneNumber(ph, _cancellationToken);
             }
             _logger.LogInformation("Create phones records for SearchRequest successfully");
             return true;
         }
 
-        private async Task<bool> UploadEmployment()
+        private async Task<bool> UploadEmployment(bool inUpdateProcess=false)
         {
             if (_personSought.Employments == null) return true;
 
@@ -263,6 +270,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                 e.InformationSource = InformationSourceType.Request.Value;
                 e.Person = _uploadedPerson;
                 e.IsCreatedByAgency = true;
+                if (inUpdateProcess) e.UpdateDetails = "New Employment";
                 SSG_Employment ssg_employment = await _searchRequestService.CreateEmployment(e, _cancellationToken);
 
                 if (employment.Employer != null)
@@ -271,6 +279,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                     {
                         EmploymentContactEntity p = _mapper.Map<EmploymentContactEntity>(phone);
                         p.Employment = ssg_employment;
+                        if (inUpdateProcess) e.UpdateDetails = "New EmploymentContact";
                         await _searchRequestService.CreateEmploymentContact(p, _cancellationToken);
                     }
                 }
@@ -280,7 +289,7 @@ namespace DynamicsAdapter.Web.SearchAgency
             return true;
         }
 
-        private async Task<bool> UploadRelatedPersons()
+        private async Task<bool> UploadRelatedPersons(bool inUpdateProcess = false)
         {
             if (_personSought.RelatedPersons == null) return true;
 
@@ -292,9 +301,14 @@ namespace DynamicsAdapter.Web.SearchAgency
                 n.SearchRequest = _uploadedSearchRequest;
                 n.InformationSource = InformationSourceType.Request.Value;
                 n.Person = _uploadedPerson;
+                if (inUpdateProcess)
+                {
+                    n.UpdateDetails = "Create New Related Person";
+                }
                 n.IsCreatedByAgency = true;
                 SSG_Identity relate = await _searchRequestService.CreateRelatedPerson(n, _cancellationToken);
             }
+
             _logger.LogInformation("Create RelatedPersons records for SearchRequest successfully");
             return true;
         }
@@ -322,7 +336,7 @@ namespace DynamicsAdapter.Web.SearchAgency
             return true;
         }
 
-        private async Task<bool> UploadAliases()
+        private async Task<bool> UploadAliases(bool inUpdateProcess = false)
         {
             if (_personSought.Names == null) return true;
 
@@ -335,6 +349,8 @@ namespace DynamicsAdapter.Web.SearchAgency
                 aliasEntity.InformationSource = InformationSourceType.Request.Value;
                 aliasEntity.Person = _uploadedPerson;
                 aliasEntity.IsCreatedByAgency = true;
+                if (inUpdateProcess)
+                    aliasEntity.UpdateDetails = "New Alias";
                 await _searchRequestService.CreateName(aliasEntity, _cancellationToken);
             }
             _logger.LogInformation("Create alias records for SearchRequest successfully");

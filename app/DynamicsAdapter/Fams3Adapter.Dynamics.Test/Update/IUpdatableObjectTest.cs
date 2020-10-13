@@ -4,6 +4,7 @@ using System;
 using Fams3Adapter.Dynamics.Update;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace Fams3Adapter.Dynamics.Test.Update
 {
@@ -18,63 +19,7 @@ namespace Fams3Adapter.Dynamics.Test.Update
         }
 
         [Test]
-        public void same_data_updated_should_be_false()
-        {
-            Guid guid = Guid.NewGuid();
-            TestUpdatableCls testUpdatableCls1 = new TestUpdatableCls()
-            {
-                PropInt = 2,
-                PropString = "test1",
-                PropNullableDateTime = null,
-                PropGuid = guid,
-                PropBool = true,
-            };
-            TestUpdatableCls testUpdatableCls2 = testUpdatableCls1.Clone();
-            TestUpdatableCls result = testUpdatableCls1.MergeUpdates(testUpdatableCls2);
-            Assert.AreEqual(false, result.Updated);
-        }
-
-        [Test]
-        public void null_data_no_updated_should_be_false()
-        {
-            Guid guid = Guid.NewGuid();
-            TestUpdatableCls testUpdatableCls1 = new TestUpdatableCls()
-            {
-                PropNullableDateTime = new DateTime(2000, 1, 1),
-            };
-            TestUpdatableCls testUpdatableCls2 = new TestUpdatableCls()
-            {
-                PropNullableDateTime = null,
-            };
-            TestUpdatableCls result = testUpdatableCls1.MergeUpdates(testUpdatableCls2);
-            Assert.AreEqual(false, result.Updated);
-        }
-
-        [Test]
-        public void different_data_updated_should_be_true()
-        {
-            TestUpdatableCls testUpdatableCls1 = new TestUpdatableCls()
-            {
-                PropInt = 2,
-                PropString = "test1",
-                PropNullableDateTime = new DateTime(2000, 1, 1),
-                PropBool = true,
-            };
-            TestUpdatableCls testUpdatableCls2 = new TestUpdatableCls()
-            {
-                PropInt = 2,
-                PropString = "test1",
-                PropNullableDateTime = null,
-                PropBool = false,
-            };
-            TestUpdatableCls result = testUpdatableCls1.MergeUpdates(testUpdatableCls2);
-            Assert.AreEqual(true, result.Updated);
-            Assert.AreEqual(new DateTime(2000, 1, 1), result.PropNullableDateTime);
-            Assert.AreEqual(false, result.PropBool);
-        }
-
-        [Test]
-        public void different_data_GetUpdateEntries_should_get_correct_updateFields()
+        public void different_data_havingDisplayname_GetUpdateEntries_should_get_correct_updateFields()
         {
             TestUpdatableCls testUpdatableCls1 = new TestUpdatableCls
             {
@@ -82,10 +27,10 @@ namespace Fams3Adapter.Dynamics.Test.Update
                 PropString = "test1",
                 PropNullableDateTime = new DateTime(2000, 1, 1),
                 PropBool = true,
-                Phone="1234",
-                Ignored="ignored",
-                PropGuid=_guid,
-                Updated=true               
+                Phone = "1234",
+                Ignored = "ignored",
+                PropGuid = _guid,
+                Updated = true
             };
             TestUpdatableCls testUpdatableCls2 = new TestUpdatableCls
             {
@@ -99,8 +44,8 @@ namespace Fams3Adapter.Dynamics.Test.Update
                 Updated = true
             };
             var updatedFields = testUpdatableCls1.GetUpdateEntries(testUpdatableCls2);
-            Assert.AreEqual(5, updatedFields.Count);
-            Assert.AreEqual(true, updatedFields.Contains(new KeyValuePair<string, object>("ssg_propInt", 2 )));
+            Assert.AreEqual(6, updatedFields.Count);
+            Assert.AreEqual(true, updatedFields.Contains(new KeyValuePair<string, object>("ssg_propInt", 2)));
             Assert.AreEqual(true, updatedFields.Contains(new KeyValuePair<string, object>("ssg_propstring", "test2")));
             Assert.AreEqual(true, updatedFields.Contains(new KeyValuePair<string, object>("ssg_propnullabledatetime", new DateTime(2001, 1, 1))));
             Assert.AreEqual(true, updatedFields.Contains(new KeyValuePair<string, object>("ssg_propbool", false)));
@@ -108,7 +53,7 @@ namespace Fams3Adapter.Dynamics.Test.Update
         }
 
         [Test]
-        public void updateignored_data_GetUpdateEntries_should_be_ignored_in_updateFields()
+        public void noDisplayName_data_GetUpdateEntries_should_be_ignored_in_updateFields()
         {
             TestUpdatableCls testUpdatableCls1 = new TestUpdatableCls
             {
@@ -161,19 +106,26 @@ namespace Fams3Adapter.Dynamics.Test.Update
     {
 
         [JsonProperty("ssg_propInt")]
+        [DisplayName("Prop")]
         public int PropInt { get; set; }
 
         [JsonProperty("ssg_propstring")]
+        [DisplayName("Prop")]
         public string PropString { get; set; }
 
         [JsonProperty("ssg_propnullabledatetime")]
+        [DisplayName("Prop")]
         public DateTime? PropNullableDateTime { get; set; }
 
         [JsonProperty("ssg_propbool")]
+        [DisplayName("Prop")]
+
         public bool PropBool { get; set; }
 
         [JsonProperty("ssg_phonenumber")]
         [CompareOnlyNumber]
+        [DisplayName("Prop")]
+
         public string Phone { get; set; }
 
         [JsonProperty("ssg_ignored")]

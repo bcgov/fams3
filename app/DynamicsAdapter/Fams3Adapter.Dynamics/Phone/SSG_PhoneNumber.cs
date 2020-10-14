@@ -22,6 +22,9 @@ namespace Fams3Adapter.Dynamics.PhoneNumber
         [DisplayName("Phone Number")]
         public string TelePhoneNumber { get; set; }
 
+        [JsonProperty("ssg_telephonenumber")]
+        public string PhoneNumber { get; set; }
+
         [JsonProperty("ssg_suppliertypecode")]
         public string SupplierTypeCode { get; set; }
 

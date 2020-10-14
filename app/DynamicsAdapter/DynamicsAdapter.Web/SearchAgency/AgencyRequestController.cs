@@ -1,4 +1,5 @@
 using DynamicsAdapter.Web.PersonSearch.Models;
+using DynamicsAdapter.Web.SearchAgency.Exceptions;
 using DynamicsAdapter.Web.SearchAgency.Models;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Microsoft.AspNetCore.Http;
@@ -54,10 +55,15 @@ namespace DynamicsAdapter.Web.SearchAgency
                     _logger.LogInformation("SearchRequest is created successfully.");
                     return Ok(BuildSearchRequestSaved_Create(createdSearchRequest, searchRequestOrdered));
                 }
+                catch (AgencyRequestException ex)
+                {
+                    _logger.LogError(ex.Message);
+                    return StatusCode(StatusCodes.Status500InternalServerError, new { ReasonCode = ex.Message, Message = ex.InnerException?.Message });
+                }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex.Message);
-                    return StatusCode(StatusCodes.Status500InternalServerError, new { Message = ex.Message });
+                    return StatusCode(StatusCodes.Status500InternalServerError, new { ReasonCode = "error", Message = "error" });
                 }
             }
         }
@@ -95,10 +101,15 @@ namespace DynamicsAdapter.Web.SearchAgency
                     if (updatedSearchRequest == null)
                         return BadRequest(new { Message = $"FileId ( {searchRequestOrdered.SearchRequestKey} ) is invalid." });
                 }
+                catch (AgencyRequestException ex)
+                {
+                    _logger.LogError(ex.Message);
+                    return StatusCode(StatusCodes.Status500InternalServerError, new { ReasonCode = ex.Message, Message = ex.InnerException?.Message });
+                }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex.Message);
-                    return StatusCode(StatusCodes.Status500InternalServerError, new { Message = ex.Message });
+                    return StatusCode(StatusCodes.Status500InternalServerError, new { ReasonCode = "error", Message = "error" });
                 }
                 _logger.LogInformation("UpdateSearchRequest successfully");
                 return Ok(BuildSearchRequestSaved_Update(updatedSearchRequest, searchRequestOrdered));
@@ -135,10 +146,15 @@ namespace DynamicsAdapter.Web.SearchAgency
                     if (cancelledSearchRequest == null)
                         return BadRequest(new { Message = $"FileId ( {searchRequestOrdered.SearchRequestKey} ) is invalid." });
                 }
+                catch (AgencyRequestException ex)
+                {
+                    _logger.LogError(ex.Message);
+                    return StatusCode(StatusCodes.Status500InternalServerError, new { ReasonCode = ex.Message, Message = ex.InnerException?.Message });
+                }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex.Message);
-                    return StatusCode(StatusCodes.Status500InternalServerError, new { Message = ex.Message });
+                    return StatusCode(StatusCodes.Status500InternalServerError, new { ReasonCode = "error", Message = "error" });
                 }
                 _logger.LogInformation("CancelSearchRequest successfully");
                 return Ok(BuildSearchRequestSaved_Cancel(cancelledSearchRequest, searchRequestOrdered));

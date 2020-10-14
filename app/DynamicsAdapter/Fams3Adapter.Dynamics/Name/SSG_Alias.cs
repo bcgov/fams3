@@ -43,9 +43,6 @@ namespace Fams3Adapter.Dynamics.Name
         [JsonProperty("ssg_PersonId")]
         public virtual SSG_Person Person { get; set; }
 
-        [JsonProperty("ssg_responsecomment")]
-        public string Comments { get; set; }
-
         [JsonProperty("ssg_notes")]
         [DisplayName("Notes")]
         public string Notes { get; set; }

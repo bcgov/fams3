@@ -19,6 +19,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Fams3Adapter.Dynamics.Agency;
+using DynamicsAdapter.Web.SearchAgency.Exceptions;
 
 namespace DynamicsAdapter.Web.SearchAgency
 {
@@ -86,18 +87,8 @@ namespace DynamicsAdapter.Web.SearchAgency
         {
             var cts = new CancellationTokenSource();
             _cancellationToken = cts.Token;
-            SSG_SearchRequest ssgSearchRequest = await _searchRequestService.GetSearchRequest(searchRequestOrdered.SearchRequestKey, _cancellationToken);
-
-            if (ssgSearchRequest == null)
-            {
-                _logger.LogInformation("the cancelling search request does not exist.");
-                return null;
-            }
-            if (ssgSearchRequest.Agency == null || ssgSearchRequest.Agency.AgencyCode != searchRequestOrdered?.Person?.Agency?.Code)
-            {
-                throw new Exception("the cancelling search request cannot be processed as wrong agency code.");
-            }
-
+            SSG_SearchRequest existedSearchRequest = await VerifySearchRequest(searchRequestOrdered);
+            if (existedSearchRequest == null) return null;
             return await _searchRequestService.CancelSearchRequest(searchRequestOrdered.SearchRequestKey, searchRequestOrdered?.Person?.Agency?.Notes, _cancellationToken);
         }
 
@@ -105,17 +96,8 @@ namespace DynamicsAdapter.Web.SearchAgency
         {
             var cts = new CancellationTokenSource();
             _cancellationToken = cts.Token;
-            //get existedSearchRequest
-            SSG_SearchRequest existedSearchRequest = await _searchRequestService.GetSearchRequest(searchRequestOrdered.SearchRequestKey, _cancellationToken);
-            if (existedSearchRequest == null)
-            {
-                _logger.LogInformation("the updating search request does not exist.");
-                return null;
-            }
-            if (existedSearchRequest.StatusCode == SEARCH_REQUEST_CANCELLED || existedSearchRequest.StatusCode == SEARCH_REQUEST_CLOSED)
-            {
-                throw new Exception($"Search Request {searchRequestOrdered.SearchRequestKey} is already closed or cancelled.");
-            }
+            SSG_SearchRequest existedSearchRequest = await VerifySearchRequest(searchRequestOrdered);
+            if (existedSearchRequest == null) return null;
             existedSearchRequest.IsDuplicated = true;
             _uploadedSearchRequest = existedSearchRequest;
 
@@ -139,12 +121,6 @@ namespace DynamicsAdapter.Web.SearchAgency
             if (newSearchRequest == null)
             {
                 _logger.LogError("cannot do updating as newSearchRequest is null");
-                return null;
-            }
-            //cannot update search request with different AgencyCode
-            if (newSearchRequest?.AgencyCode != _uploadedSearchRequest?.Agency?.AgencyCode)
-            {
-                _logger.LogError("cannot updating to a different Agency code. Not a vaild update request.");
                 return null;
             }
 
@@ -192,6 +168,30 @@ namespace DynamicsAdapter.Web.SearchAgency
 
 
             return _uploadedSearchRequest;
+        }
+
+        private async Task<SSG_SearchRequest> VerifySearchRequest(SearchRequestOrdered searchRequestOrdered)
+        {
+            //get existedSearchRequest
+            SSG_SearchRequest existedSearchRequest = await _searchRequestService.GetSearchRequest(searchRequestOrdered.SearchRequestKey, _cancellationToken);
+            if (existedSearchRequest == null)
+            {
+                _logger.LogInformation("the updating search request does not exist.");
+                return null;
+            }
+            if (existedSearchRequest.StatusCode == SEARCH_REQUEST_CANCELLED)
+            {
+                throw new AgencyRequestException("fileCancelled", new Exception($"File {searchRequestOrdered.SearchRequestKey} is cancelled."));
+            }
+            if (existedSearchRequest.StatusCode == SEARCH_REQUEST_CLOSED)
+            {
+                throw new AgencyRequestException("fileClosed", new Exception($"File {searchRequestOrdered.SearchRequestKey} is closed."));
+            }
+            if (existedSearchRequest.Agency == null || existedSearchRequest.Agency.AgencyCode != searchRequestOrdered?.Person?.Agency?.Code)
+            {
+                throw new AgencyRequestException("wrongAgency", new Exception($"Wrong Agency Code."));
+            }
+            return existedSearchRequest;
         }
 
         private async Task<bool> UploadIdentifiers(bool inUpdateProcess = false)
@@ -257,7 +257,7 @@ namespace DynamicsAdapter.Web.SearchAgency
             return true;
         }
 
-        private async Task<bool> UploadEmployment(bool inUpdateProcess=false)
+        private async Task<bool> UploadEmployment(bool inUpdateProcess = false)
         {
             if (_personSought.Employments == null) return true;
 

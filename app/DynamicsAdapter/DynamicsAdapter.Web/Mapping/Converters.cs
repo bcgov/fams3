@@ -304,12 +304,12 @@ namespace DynamicsAdapter.Web.Mapping
                 return $"Auto search processing completed successfully. 0 Matched Persons found.";
             var matchedPersons = sourceMember.MatchedPersons;
 
-  
+
             if (!string.IsNullOrEmpty(sourceMember.Message))
                 strbuilder.Append($"Auto search processing completed successfully. {sourceMember.Message}. {matchedPersons.Count()} Matched Persons found.\n");
             else
                 strbuilder.Append($"Auto search processing completed successfully. {matchedPersons.Count()} Matched Persons found.\n");
-  
+
 
             int i = 1;
             foreach (Person p in matchedPersons)
@@ -332,8 +332,47 @@ namespace DynamicsAdapter.Web.Mapping
         }
     }
 
+    public class PrimaryPhoneNumberConvertor : IValueConverter<ICollection<Phone>, string>
+    {
+        public string Convert(ICollection<Phone> phones, ResolutionContext context)
+        {
+            return phones?.FirstOrDefault(m => string.Equals(m.Type, "Phone", StringComparison.InvariantCultureIgnoreCase))?.PhoneNumber;
+        }
+    }
 
- 
+    public class PrimaryPhoneExtConvertor : IValueConverter<ICollection<Phone>, string>
+    {
+        public string Convert(ICollection<Phone> phones, ResolutionContext context)
+        {
+            return phones?.FirstOrDefault(m => string.Equals(m.Type, "Phone", StringComparison.InvariantCultureIgnoreCase))?.Extension;
+        }
+    }
+
+    public class PrimaryContactPhoneNumberConvertor : IValueConverter<ICollection<Phone>, string>
+    {
+        public string Convert(ICollection<Phone> phones, ResolutionContext context)
+        {
+            if (phones == null) return null;
+            if (phones.Where(m => string.Equals(m.Type, "Phone", StringComparison.InvariantCultureIgnoreCase)).Count() > 1)
+            {
+                return phones.Where(m => string.Equals(m.Type, "Phone", StringComparison.InvariantCultureIgnoreCase)).ElementAt(1).PhoneNumber;
+            };
+            return null;
+        }
+    }
+
+    public class PrimaryContactPhoneExtConvertor : IValueConverter<ICollection<Phone>, string>
+    {
+        public string Convert(ICollection<Phone> phones, ResolutionContext context)
+        {
+            if (phones == null) return null;
+            if (phones.Where(m => string.Equals(m.Type, "Phone", StringComparison.InvariantCultureIgnoreCase)).Count() > 1)
+            {
+                return phones.Where(m => string.Equals(m.Type, "Phone", StringComparison.InvariantCultureIgnoreCase)).ElementAt(1).Extension;
+            };
+            return null;
+        }
+    }
 
     public class IncomeAssistanceConvertor : IValueConverter<bool?, int>
     {

@@ -16,19 +16,26 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
 
         public DateTime? DateOfDeath { get; set; }
 
+        public int? AgeInYears { get; set; }
+
         public string Gender { get; set; }
         public bool? DateDeathConfirmed { get; set; }
         public string Incacerated { get; set; }
-        [Description("Height is in centimers")]
+
         public string Height { get; set; }
-        [Description("Weight is in pounds")]
+        public string HeightUnits { get; set; }
+
         public string Weight { get; set; }
+        public string WeightUnits { get; set; }
         public string HairColour { get; set; }
         public string EyeColour { get; set; }
         public string Complexion { get; set; }
         public string DistinguishingFeatures { get; set; }
         public string WearGlasses { get; set; }
         public string SecurityKeyword { get; set; }
+        public string CautionFlag { get; set; }
+        public string CautionReason { get; set; }
+        public string CautionNotes { get; set; }
         public SoughtPersonType Type { get; set; }
         public IEnumerable<PersonalIdentifier> Identifiers { get; set; }
         public IEnumerable<Address> Addresses { get; set; }

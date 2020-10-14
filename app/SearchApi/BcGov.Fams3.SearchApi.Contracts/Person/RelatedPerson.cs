@@ -33,5 +33,8 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
 
         [Description("The death date of the related person")]
         public DateTime? DateOfDeath { get; set; }
+
+        public Address Address { get; set; }
+        public Phone Phone { get; set; }
     }
 }

@@ -85,15 +85,34 @@ namespace SearchRequestAdaptor.Notifier
 
                     if (!response.IsSuccessStatusCode)
                     {
-                        _logger.LogError(
-                            $"The webHook {webHookName} notification has not executed status {eventName} successfully for {webHook.Name} webHook. The error code is {response.StatusCode.GetHashCode()}.");
-                        await _searchRequestEventPublisher.PublishSearchRequestRejected(
-                                searchRequestOrdered,
-                                new List<ValidationResult>()
-                                {
-                                    new ValidationResultData(){ PropertyName=response.StatusCode.ToString(), ErrorMessage=await response.Content.ReadAsStringAsync()}
-                                });
-                        return;
+                        if (response.StatusCode == System.Net.HttpStatusCode.InternalServerError)
+                        {
+                            string reason = await response.Content.ReadAsStringAsync();
+                            RejectReason reasonObj = JsonConvert.DeserializeObject<RejectReason>(reason);
+                            _logger.LogError(
+                                $"The webHook {webHookName} notification has not executed status {eventName} successfully for {webHook.Name} webHook. The error code is {response.StatusCode.GetHashCode()}.");
+                            await _searchRequestEventPublisher.PublishSearchRequestRejected(
+                                    searchRequestOrdered,
+                                    new List<ValidationResult>()
+                                    {
+                                    new ValidationResultData(){ PropertyName=reasonObj.ReasonCode, ErrorMessage=reasonObj.Message }
+                                    });
+                            return;
+                        }
+                        else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                        {
+                            await _searchRequestEventPublisher.PublishSearchRequestRejected(
+                                    searchRequestOrdered,
+                                    new List<ValidationResult>()
+                                    {
+                                        new ValidationResultData(){ PropertyName="badRequest", ErrorMessage=await response.Content.ReadAsStringAsync() }
+                                    });
+                            return;
+                        }
+                        else
+                        {
+                            throw new Exception("failed");
+                        }
                     }
 
                     _logger.LogInformation("get response successfully from webhook.");
@@ -115,5 +134,11 @@ namespace SearchRequestAdaptor.Notifier
                 }
             }
         }
+    }
+
+    public class RejectReason
+    {
+        public string ReasonCode { get; set; }
+        public string Message { get; set; }
     }
 }

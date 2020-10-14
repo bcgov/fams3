@@ -99,6 +99,16 @@ namespace SearchRequestAdaptor.Notifier
                                     });
                             return;
                         }
+                        else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                        {
+                            await _searchRequestEventPublisher.PublishSearchRequestRejected(
+                                    searchRequestOrdered,
+                                    new List<ValidationResult>()
+                                    {
+                                        new ValidationResultData(){ PropertyName="badRequest", ErrorMessage=await response.Content.ReadAsStringAsync() }
+                                    });
+                            return;
+                        }
                         else
                         {
                             throw new Exception("failed");

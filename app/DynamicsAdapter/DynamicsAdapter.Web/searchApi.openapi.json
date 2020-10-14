@@ -166,6 +166,10 @@
               "type": "string",
               "format": "date-time"
             },
+            "ageInYears": {
+              "type": "integer",
+              "format": "int32"
+            },
             "gender": {
               "type": "string"
             },
@@ -176,12 +180,16 @@
               "type": "string"
             },
             "height": {
-              "type": "string",
-              "description": "Height is in centimers"
+              "type": "string"
+            },
+            "heightUnits": {
+              "type": "string"
             },
             "weight": {
-              "type": "string",
-              "description": "Weight is in pounds"
+              "type": "string"
+            },
+            "weightUnits": {
+              "type": "string"
             },
             "hairColour": {
               "type": "string"
@@ -199,6 +207,15 @@
               "type": "string"
             },
             "securityKeyword": {
+              "type": "string"
+            },
+            "cautionFlag": {
+              "type": "string"
+            },
+            "cautionReason": {
+              "type": "string"
+            },
+            "cautionNotes": {
               "type": "string"
             },
             "type": {
@@ -384,10 +401,6 @@
           "type": "string",
           "description": "agency location code"
         },
-        "locationAddress": {
-          "type": "string",
-          "description": "agency location address"
-        },
         "daysOpen": {
           "type": "integer",
           "format": "int32"
@@ -544,6 +557,24 @@
                   "$ref": "#/definitions/OwnerType"
                 }
               ]
+            },
+            "identifiers": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/PersonalIdentifier"
+              }
+            },
+            "addresses": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Address"
+              }
+            },
+            "phones": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Phone"
+              }
             }
           }
         }
@@ -563,6 +594,82 @@
         "PersonSought",
         "InvolvedPerson",
         "NotApplicable"
+      ]
+    },
+    "PersonalIdentifier": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/PersonalInfo"
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "owner"
+          ],
+          "properties": {
+            "value": {
+              "type": "string",
+              "description": "The value of the identifier"
+            },
+            "type": {
+              "description": "The type of the identifier",
+              "allOf": [
+                {
+                  "$ref": "#/definitions/PersonalIdentifierType"
+                }
+              ]
+            },
+            "typeCode": {
+              "type": "string",
+              "description": "The type code of the identifier directly from data provider"
+            },
+            "issuedBy": {
+              "type": "string",
+              "description": "The issuer of the identifier"
+            },
+            "owner": {
+              "description": "The owner of the ID e.g. Applicant, Person Sought, e.t.c",
+              "allOf": [
+                {
+                  "$ref": "#/definitions/OwnerType"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "PersonalIdentifierType": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "BCDriverLicense",
+        "SocialInsuranceNumber",
+        "PersonalHealthNumber",
+        "BirthCertificate",
+        "CorrectionsId",
+        "NativeStatusCard",
+        "Passport",
+        "WorkSafeBCCCN",
+        "Other",
+        "BCID",
+        "BCHydroBP",
+        "OtherDriverLicense"
+      ],
+      "enum": [
+        "BCDriverLicense",
+        "SocialInsuranceNumber",
+        "PersonalHealthNumber",
+        "BirthCertificate",
+        "CorrectionsId",
+        "NativeStatusCard",
+        "Passport",
+        "WorkSafeBCCCN",
+        "Other",
+        "BCID",
+        "BCHydroBP",
+        "OtherDriverLicense"
       ]
     },
     "PersonalInfo": {
@@ -723,82 +830,6 @@
         "RECIPIENT"
       ]
     },
-    "PersonalIdentifier": {
-      "allOf": [
-        {
-          "$ref": "#/definitions/PersonalInfo"
-        },
-        {
-          "type": "object",
-          "required": [
-            "type",
-            "owner"
-          ],
-          "properties": {
-            "value": {
-              "type": "string",
-              "description": "The value of the identifier"
-            },
-            "type": {
-              "description": "The type of the identifier",
-              "allOf": [
-                {
-                  "$ref": "#/definitions/PersonalIdentifierType"
-                }
-              ]
-            },
-            "typeCode": {
-              "type": "string",
-              "description": "The type code of the identifier directly from data provider"
-            },
-            "issuedBy": {
-              "type": "string",
-              "description": "The issuer of the identifier"
-            },
-            "owner": {
-              "description": "The owner of the ID e.g. Applicant, Person Sought, e.t.c",
-              "allOf": [
-                {
-                  "$ref": "#/definitions/OwnerType"
-                }
-              ]
-            }
-          }
-        }
-      ]
-    },
-    "PersonalIdentifierType": {
-      "type": "string",
-      "description": "",
-      "x-enumNames": [
-        "BCDriverLicense",
-        "SocialInsuranceNumber",
-        "PersonalHealthNumber",
-        "BirthCertificate",
-        "CorrectionsId",
-        "NativeStatusCard",
-        "Passport",
-        "WorkSafeBCCCN",
-        "Other",
-        "BCID",
-        "BCHydroBP",
-        "OtherDriverLicense"
-      ],
-      "enum": [
-        "BCDriverLicense",
-        "SocialInsuranceNumber",
-        "PersonalHealthNumber",
-        "BirthCertificate",
-        "CorrectionsId",
-        "NativeStatusCard",
-        "Passport",
-        "WorkSafeBCCCN",
-        "Other",
-        "BCID",
-        "BCHydroBP",
-        "OtherDriverLicense"
-      ]
-    },
     "RelatedPerson": {
       "allOf": [
         {
@@ -844,6 +875,12 @@
               "type": "string",
               "description": "The death date of the related person",
               "format": "date-time"
+            },
+            "address": {
+              "$ref": "#/definitions/Address"
+            },
+            "phone": {
+              "$ref": "#/definitions/Phone"
             }
           }
         }

@@ -49,7 +49,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                         RequestDate = new DateTimeOffset(2018, 9, 28, 0, 0, 0, new TimeSpan(1, 0, 0)),
                         Email = "agencyemail@test.com",
                         InformationRequested = new List<InformationRequested> { InformationRequested.Location, InformationRequested.PHN, InformationRequested.DL },
-                        LocationAddress = "NORTHERN AND INTERIOR CLIENT OFFICE, KAMLOOPS, BC"
+                        LocationCode = "NORTHERN AND INTERIOR CLIENT OFFICE, KAMLOOPS, BC"
                     },
                     FirstName = "personSoughtFirstName",
                     LastName = "personSoughtLastName",

@@ -98,7 +98,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                 catch (Exception ex)
                 {
                     _logger.LogError(ex.Message);
-                    return StatusCode(StatusCodes.Status500InternalServerError, new { Message = ex.Message });
+                    return StatusCode(StatusCodes.Status500InternalServerError, new { ReasonCode = ex.Message, Message = ex.InnerException?.Message });
                 }
                 _logger.LogInformation("UpdateSearchRequest successfully");
                 return Ok(BuildSearchRequestSaved_Update(updatedSearchRequest, searchRequestOrdered));
@@ -138,7 +138,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                 catch (Exception ex)
                 {
                     _logger.LogError(ex.Message);
-                    return StatusCode(StatusCodes.Status500InternalServerError, new { Message = ex.Message });
+                    return StatusCode(StatusCodes.Status500InternalServerError, new { ReasonCode = ex.Message, Message = ex.InnerException?.Message });
                 }
                 _logger.LogInformation("CancelSearchRequest successfully");
                 return Ok(BuildSearchRequestSaved_Cancel(cancelledSearchRequest, searchRequestOrdered));

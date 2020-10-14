@@ -261,7 +261,8 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 TelePhoneNumber = "123456",
                 PhoneExtension = "123",
                 TelephoneNumberType = TelephoneNumberType.Home.Value,
-                ResponseComments = "responseComments"
+                ResponseComments = "responseComments",
+                PhoneNumber="123456"
             };
 
             Phone phone = _mapper.Map<Phone>(phoneNumber);

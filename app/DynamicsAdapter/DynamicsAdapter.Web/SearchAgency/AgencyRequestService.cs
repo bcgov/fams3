@@ -19,6 +19,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Fams3Adapter.Dynamics.Agency;
+using DynamicsAdapter.Web.SearchAgency.Exceptions;
 
 namespace DynamicsAdapter.Web.SearchAgency
 {
@@ -180,15 +181,15 @@ namespace DynamicsAdapter.Web.SearchAgency
             }
             if (existedSearchRequest.StatusCode == SEARCH_REQUEST_CANCELLED)
             {
-                throw new Exception("fileCancelled", new Exception($"File {searchRequestOrdered.SearchRequestKey} is cancelled."));
+                throw new AgencyRequestException("fileCancelled", new Exception($"File {searchRequestOrdered.SearchRequestKey} is cancelled."));
             }
             if (existedSearchRequest.StatusCode == SEARCH_REQUEST_CLOSED)
             {
-                throw new Exception("fileClosed", new Exception($"File {searchRequestOrdered.SearchRequestKey} is closed."));
+                throw new AgencyRequestException("fileClosed", new Exception($"File {searchRequestOrdered.SearchRequestKey} is closed."));
             }
             if (existedSearchRequest.Agency == null || existedSearchRequest.Agency.AgencyCode != searchRequestOrdered?.Person?.Agency?.Code)
             {
-                throw new Exception("wrongAgency", new Exception($"Wrong Agency Code."));
+                throw new AgencyRequestException("wrongAgency", new Exception($"Wrong Agency Code."));
             }
             return existedSearchRequest;
         }

@@ -1,5 +1,6 @@
 using AutoMapper;
 using DynamicsAdapter.Web.SearchAgency;
+using DynamicsAdapter.Web.SearchAgency.Exceptions;
 using DynamicsAdapter.Web.SearchAgency.Models;
 using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.Employment;
@@ -398,7 +399,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 Agency = new Fams3Adapter.Dynamics.Agency.SSG_Agency { AgencyCode = "FMEP2" }
             }));
 
-            Assert.ThrowsAsync<Exception>(async () => await _sut.ProcessCancelSearchRequest(_searchRequstOrdered));
+            Assert.ThrowsAsync<AgencyRequestException>(async () => await _sut.ProcessCancelSearchRequest(_searchRequstOrdered));
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using DynamicsAdapter.Web.SearchAgency;
+using DynamicsAdapter.Web.SearchAgency.Exceptions;
 using DynamicsAdapter.Web.SearchAgency.Models;
 using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.Agency;
@@ -1100,7 +1101,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                     }));
 
             SearchRequestOrdered searchRequestOrdered = new SearchRequestOrdered();
-            Assert.ThrowsAsync<Exception>(async () => await _sut.ProcessUpdateSearchRequest(searchRequestOrdered));
+            Assert.ThrowsAsync<AgencyRequestException>(async () => await _sut.ProcessUpdateSearchRequest(searchRequestOrdered));
         }
 
         [Test]
@@ -1114,7 +1115,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                     }));
 
             SearchRequestOrdered searchRequestOrdered = new SearchRequestOrdered();
-            Assert.ThrowsAsync<Exception>(async () => await _sut.ProcessUpdateSearchRequest(searchRequestOrdered));
+            Assert.ThrowsAsync<AgencyRequestException>(async () => await _sut.ProcessUpdateSearchRequest(searchRequestOrdered));
         }
 
         [Test]
@@ -1130,7 +1131,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
         }
 
         [Test]
-        public async Task wrong_agencyCode_searchRequestOrdered_ProcessUpdateSearchRequest_should_return_throwException()
+        public void wrong_agencyCode_searchRequestOrdered_ProcessUpdateSearchRequest_should_return_throwException()
         {
             _searchRequestServiceMock.Setup(x => x.GetPerson(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
                     .Returns(Task.FromResult<SSG_Person>(new SSG_Person()
@@ -1140,7 +1141,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                     }));
             Guid guid = Guid.NewGuid();
             SearchRequestOrdered searchRequestOrdered = new SearchRequestOrdered { Person = new Person { Agency = new Agency { Code = "TEST" } } };
-            Assert.ThrowsAsync<Exception>(async()=>await _sut.ProcessUpdateSearchRequest(searchRequestOrdered));
+            Assert.ThrowsAsync<AgencyRequestException>(async()=>await _sut.ProcessUpdateSearchRequest(searchRequestOrdered));
         }
 
         [Test]

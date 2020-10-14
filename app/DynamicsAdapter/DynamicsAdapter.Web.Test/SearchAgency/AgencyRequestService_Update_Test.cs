@@ -439,6 +439,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                     ApplicantLastName = "applicantLastName",
                     CreatedByApi = true,
                     SendNotificationOnCreation = true,
+                    Agency= new SSG_Agency { AgencyCode="FMEP" },
                     SSG_Persons = new List<SSG_Person>()
                     {
                         new SSG_Person()
@@ -528,6 +529,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                     PersonSoughtLastName = "lastName",
                     CreatedByApi = true,
                     AgencyCode = "FMEP",
+                    Agency= new SSG_Agency {AgencyCode="FMEP"},
                     SendNotificationOnCreation = true,
                     SSG_Persons = new List<SSG_Person>()
                     {
@@ -1128,7 +1130,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
         }
 
         [Test]
-        public async Task wrong_agencyCode_searchRequestOrdered_ProcessUpdateSearchRequest_should_return_null()
+        public async Task wrong_agencyCode_searchRequestOrdered_ProcessUpdateSearchRequest_should_return_throwException()
         {
             _searchRequestServiceMock.Setup(x => x.GetPerson(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
                     .Returns(Task.FromResult<SSG_Person>(new SSG_Person()
@@ -1138,9 +1140,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                     }));
             Guid guid = Guid.NewGuid();
             SearchRequestOrdered searchRequestOrdered = new SearchRequestOrdered { Person = new Person { Agency = new Agency { Code = "TEST" } } };
-            SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(searchRequestOrdered);
-            _searchRequestServiceMock.Verify(m => m.CreateNotes(It.IsAny<NotesEntity>(), It.IsAny<CancellationToken>()), Times.Never);
-            Assert.AreEqual(null, ssgSearchRequest);
+            Assert.ThrowsAsync<Exception>(async()=>await _sut.ProcessUpdateSearchRequest(searchRequestOrdered));
         }
 
         [Test]

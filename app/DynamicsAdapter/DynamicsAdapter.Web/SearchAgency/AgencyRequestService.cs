@@ -122,12 +122,6 @@ namespace DynamicsAdapter.Web.SearchAgency
                 _logger.LogError("cannot do updating as newSearchRequest is null");
                 return null;
             }
-            //cannot update search request with different AgencyCode
-            if (newSearchRequest?.AgencyCode != _uploadedSearchRequest?.Agency?.AgencyCode)
-            {
-                _logger.LogError("cannot updating to a different Agency code. Not a vaild update request.");
-                return null;
-            }
 
             //update searchRequestEntity
             await UpdateSearchRequest(newSearchRequest);

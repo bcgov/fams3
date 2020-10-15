@@ -82,6 +82,9 @@ namespace Fams3Adapter.Dynamics.Address
 
         [JsonProperty("ssg_agencyupdatedescription")]
         public string UpdateDetails { get; set; }
+
+        [JsonProperty("ssg_couldnotlocate")]
+        public bool CouldNotLocate { get; set; }
     }
 
     public class SSG_Address : AddressEntity

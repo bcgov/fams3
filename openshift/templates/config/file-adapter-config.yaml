@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: Template
+labels:
+  template: file-adapter-config
+message: |-
+  File adapter config template.
+metadata:
+  annotations:
+    description: |-
+      File adapter config template.
+    tags: file-adapter-config
+    template: file-adapter-config
+  name: file-adapter-config
+
+# Parameters
+parameters:
+- name: APP_NAME
+  required: true
+  value: "set.app.name"
+- name: URL
+  required: true
+  value: "set.url.com"
+- name: PROFILE_NAME
+  required: true
+  value: "set.name"
+
+# Objects
+objects:
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    name: ${APP_NAME}-file-adapter-config
+    label:
+      app: ${APP_NAME}
+  stringData:
+    DATAPARTNERRESTADAPTER__BASEURL: ${URL}
+    PROVIDERPROFILE__NAME: ${PROFILE_NAME}
+    DATAPARTNERFTP__SERVER: "server.name"
+    DATAPARTNERFTP__UPLOADPATH: "upload_path"
+    DATAPARTNERFTP__DOWNLOADPATH: "download_path"
+    DATAPARTNERFTP__ARCHIVEPATH: "archive_path"
+    DATAPARTNERFTP__PORT: 22
+    DATAPARTNERFTP__USERNAME: "sftp.user"
+    DATAPARTNERFTP__PASSWORD: "sftp.pass"
+    DATAPARTNERFTP__PRIVATEKEY: "private.key"

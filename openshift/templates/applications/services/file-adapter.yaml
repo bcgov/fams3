@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Template
+labels:
+  template: file-adapter-template
+message: |-
+  A Jenkins server must be instantiated in this project to manage
+  the Pipeline BuildConfig created by this template. You will be able to log in to
+  it using your OpenShift user credentials.
+metadata:
+  annotations:
+    openshift.io/display-name: file-adapter template
+    description: |-
+      This is a template for file-adapter.
+    iconClass: icon-jenkins
+    tags: instant-app,jenkins
+  name: file-adapter-template
+parameters:
+- description: Data partner service name.
+  displayName: Name of the data partner service
+  name: dataPartnerService
+  required: true
+  value:
+objects:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      description: Exposes and load balances the application pods
+    labels:
+      app: ${dataPartnerService}-file-adapter
+      template: meta-service
+    name: ${dataPartnerService}-file-adapter
+  spec:
+    ports:
+    - name: file
+      port: 80
+      protocol: TCP
+      targetPort: 8080
+    selector:
+      deploymentconfig: ${dataPartnerService}-file-adapter
+    sessionAffinity: None
+    type: ClusterIP

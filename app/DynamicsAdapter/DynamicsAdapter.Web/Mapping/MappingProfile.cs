@@ -135,6 +135,7 @@ namespace DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.IncarcerationStatus, opt => opt.MapFrom(src => src.IncarcerationStatus))
                  .IncludeBase<PersonalInfo, DynamicsEntity>()
                  .ReverseMap()
+                    .ForMember(dest => dest.AddressLine1, opt => opt.MapFrom(src => src.CouldNotLocate ? "Could Not Locate" : src.AddressLine1))
                     .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => OwnerType.PersonSought))
                     .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new AddressTypeResponseConverter(), src => src.Category));
 
@@ -287,7 +288,7 @@ namespace DynamicsAdapter.Web.Mapping
 
             CreateMap<SSG_Employment, Employer>()
                   .ForMember(dest => dest.DbaName, opt => opt.MapFrom(src => src.DBAName))
-                  .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.BusinessName))
+                  .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.CouldNotLocate ? "Could Not Locate" : src.BusinessName))
                   .ForMember(dest => dest.Phones, opt => opt.MapFrom<EmployerPhoneResponseResolver>())
                   .ForMember(dest => dest.ContactPerson, opt => opt.MapFrom(src => src.ContactPerson))
                   .ForMember(dest => dest.Address, opt => opt.MapFrom<EmployerAddressResponseResolver>());

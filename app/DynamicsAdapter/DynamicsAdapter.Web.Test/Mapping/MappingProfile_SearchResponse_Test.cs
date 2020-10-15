@@ -254,6 +254,20 @@ namespace DynamicsAdapter.Web.Test.Mapping
         }
 
         [Test]
+        public void SSG_Address_couldnotlocate_map_to_Person_Address_correctly()
+        {
+            var address = new SSG_Address
+            {
+                CouldNotLocate = true,
+                Category = LocationType.Business.Value,
+                IncarcerationStatus = "incarceration"
+            };
+
+            Address addr = _mapper.Map<Address>(address);
+            Assert.AreEqual("Could Not Locate", addr.AddressLine1);
+        }
+
+        [Test]
         public void SSG_PhoneNumber_should_map_to_Person_Phone_correctly()
         {
             SSG_PhoneNumber phoneNumber = new SSG_PhoneNumber
@@ -325,6 +339,20 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual("Not Employed", e.EmploymentStatus);
             Assert.AreEqual("Extraprovincial Non-Share Corporation", e.SelfEmployComType);
             Assert.AreEqual(5, e.Employer.Phones.Count);
+        }
+
+        [Test]
+        public void SSG_Employment_couldnotlocate_should_map_to_Employment_correctly()
+        {
+            SSG_Employment employment = new SSG_Employment
+            {
+                CouldNotLocate = true
+            };
+
+            Employment e = _mapper.Map<Employment>(employment);
+
+            Assert.AreEqual("Could Not Locate", e.Employer.Name);
+
         }
 
         [Test]

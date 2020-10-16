@@ -24,6 +24,7 @@ parameters:
   required: true
   value: "set.name"
 
+
 # Objects
 objects:
 - apiVersion: v1
@@ -39,7 +40,7 @@ objects:
     DATAPARTNERFTP__UPLOADPATH: "upload_path"
     DATAPARTNERFTP__DOWNLOADPATH: "download_path"
     DATAPARTNERFTP__ARCHIVEPATH: "archive_path"
-    DATAPARTNERFTP__PORT: 22
+    DATAPARTNERFTP__PORT: "22"
     DATAPARTNERFTP__USERNAME: "sftp.user"
     DATAPARTNERFTP__PASSWORD: "sftp.pass"
     DATAPARTNERFTP__PRIVATEKEY: "private.key"

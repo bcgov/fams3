@@ -612,6 +612,73 @@ oc process -o=yaml \
   -p dataPartnerService=${DATAPARTNERSERVICE}  \
   | oc apply -f - -n ${TOOLS_NAMESPACE}
 ```
+
+### JCA Adapter Deployment Pipeline
+```shell script
+export NAMESPACE_PREFIX=
+export NAMESPACE_SUFFIX=
+export TARGET_NAMESPACE=${NAMESPACE_PREFIX}-${NAMESPACE_SUFFIX}
+export TOOLS_NAMESPACE=${NAMESPACE_PREFIX}-tools
+export DATAPARTNERSERVICE=
+export GIT_REPO="bcgov/fams3"
+export GIT_BRANCH="master"
+export GIT_URL="https://raw.githubusercontent.com/${GIT_REPO}/${GIT_BRANCH}"
+
+# Configuration evn/secrets
+oc process -o=yaml \
+  -f ${GIT_URL}/openshift/templates/config/rabbit-mq-configuration.yaml \
+  -p HOST=  \
+  -p PORT=  \
+  -p USERNAME=  \
+  -p PASSWORD=  \
+  | oc apply -f - -n ${TARGET_NAMESPACE}
+
+oc process -o=yaml \
+  -f ${GIT_URL}/openshift/templates/config/aspnet-env.yaml \
+  -p ENVIRONMENT=  \
+  | oc apply -f - -n ${TARGET_NAMESPACE}
+
+oc process -o=yaml \
+  -f ${GIT_URL}/openshift/templates/config/file-adapter-config.yaml \
+  -p APP_NAME=  \
+  -p URL=  \
+  -p PROFILE_NAME=  \
+  | oc apply -f - -n ${TARGET_NAMESPACE}
+
+oc process -o=yaml \
+  -f ${GIT_URL}/openshift/templates/config/jeager-config.yaml \
+  -p URL=  \
+  -p TYPE=  \
+  | oc apply -f - -n ${TARGET_NAMESPACE}
+
+oc process -o=yaml \
+  -f ${GIT_URL}/openshift/templates/config/splunk-config.yaml \
+  -p URL=  \
+  -p TOKEN=  \
+  | oc apply -f - -n ${TARGET_NAMESPACE}
+
+# Image stream
+oc process -o=yaml \
+  -f ${GIT_URL}/openshift/templates/builds/images/file-adapter.yaml \
+  -p namespacePrefix=${NAMESPACE_PREFIX}  \
+  -p dataPartnerService=${DATAPARTNERSERVICE}  \
+  | oc apply -f - -n ${TOOLS_NAMESPACE}
+
+# Build config
+oc process -o=yaml \
+  -f ${GIT_URL}/openshift/templates/builds/builds/file-adapter.yaml \
+  -p namespacePrefix=${NAMESPACE_PREFIX}  \
+  -p dataPartnerService=${DATAPARTNERSERVICE}  \
+  | oc apply -f - -n ${TOOLS_NAMESPACE}
+
+# Pipeline
+oc process -o=yaml \
+  -f ${GIT_URL}/openshift/templates/builds/pipelines/file-adapter.yaml \
+  -p namespacePrefix=${NAMESPACE_PREFIX}  \
+  -p dataPartnerService=${DATAPARTNERSERVICE}  \
+  | oc apply -f - -n ${TOOLS_NAMESPACE}
+```
+
 ### web/rest adapters Scans Pipeline
 ```shell script
 export NAMESPACE_PREFIX=

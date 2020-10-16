@@ -44,3 +44,5 @@ objects:
     DATAPARTNERFTP__USERNAME: "sftp.user"
     DATAPARTNERFTP__PASSWORD: "sftp.pass"
     DATAPARTNERFTP__PRIVATEKEY: "private.key"
+    BATCHPROCESSCRON: 0 0/1 * ? * * *
+    FILEWATCHERCRON: 0 0/1 * ? * * *

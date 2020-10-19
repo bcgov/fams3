@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using BcGov.Fams3.SearchApi.Contracts.Person;
@@ -19,6 +19,7 @@ namespace SearchApi.Web.Controllers
         /// This is the key to identify this search request, it is composed of fileId_SequenceNumber
         /// </summary>
         public string SearchRequestKey { get; set; }
+        public bool IsPreScreenSearch { get; set; }
 
         [JsonConstructor]
         public PersonSearchRequest(
@@ -32,7 +33,8 @@ namespace SearchApi.Web.Controllers
             IEnumerable<RelatedPerson> relatedPersons,
             IEnumerable<Employment> employments,
             IEnumerable<DataProvider> dataProviders,
-            string searchRequestKey)
+            string searchRequestKey,
+            bool isPreScreenSearch = false)
         {
             FirstName = firstName;
             LastName = lastName;
@@ -45,6 +47,7 @@ namespace SearchApi.Web.Controllers
             this.RelatedPersons = relatedPersons;
             this.DataProviders = dataProviders;
             this.SearchRequestKey = searchRequestKey;
+            this.IsPreScreenSearch = isPreScreenSearch;
         }
 
     }

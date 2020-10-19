@@ -78,6 +78,9 @@
         {
           "type": "object",
           "description": "Represents a set of information to execute a search on a person",
+          "required": [
+            "isPreScreenSearch"
+          ],
           "properties": {
             "dataProviders": {
               "type": "array",
@@ -87,6 +90,9 @@
             },
             "searchRequestKey": {
               "type": "string"
+            },
+            "isPreScreenSearch": {
+              "type": "boolean"
             }
           }
         }

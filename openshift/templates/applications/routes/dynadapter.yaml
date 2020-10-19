@@ -32,7 +32,7 @@ objects:
       template: meta-service
     name: dynadapter
   spec:
-    host: dynadapter-${namespacePrefix}-${TAG}.pathfinder.gov.bc.ca
+    host: dynadapter-${namespacePrefix}-${TAG}.pathfinder.bcgov
     port:
       targetPort: web
     tls:

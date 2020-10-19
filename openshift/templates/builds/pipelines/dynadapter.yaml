@@ -75,7 +75,7 @@ objects:
         - name: PROD_NAMESPACE
           value: ${namespacePrefix}-prod
         - name: ROUTE_TYPE
-          value: public
+          value: private
         jenkinsfile: |-
           try {
 

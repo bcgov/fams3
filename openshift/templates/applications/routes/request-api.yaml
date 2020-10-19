@@ -32,7 +32,7 @@ objects:
       template: meta-service
     name: request-api
   spec:
-    host: request-api-${namespacePrefix}-${TAG}.pathfinder.gov.bc.ca
+    host: request-api-${namespacePrefix}-${TAG}.pathfinder.bcgov
     port:
       targetPort: web
     tls:

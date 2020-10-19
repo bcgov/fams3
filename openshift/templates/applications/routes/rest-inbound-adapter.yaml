@@ -38,7 +38,7 @@ objects:
       template: meta-service
     name: ${dataPartnerService}-rest-inbound-adapter
   spec:
-    host: ${dataPartnerService}-rest-inbound-adapter-${namespacePrefix}-${TAG}.pathfinder.gov.bc.ca
+    host: ${dataPartnerService}-rest-inbound-adapter-${namespacePrefix}-${TAG}.pathfinder.bcgov
     port:
       targetPort: web
     tls:

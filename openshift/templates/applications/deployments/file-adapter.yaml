@@ -88,8 +88,15 @@ objects:
               memory: 256Mi
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
+          volumeMounts:
+            - mountPath: /app/.ssh/keys/
+              name: ssh-key
         dnsPolicy: ClusterFirst
         restartPolicy: Always
+        volumes:
+        - name: ssh-key
+          secret:
+            secretName: fams3-jca-private-key
         schedulerName: default-scheduler
         securityContext: {}
         terminationGracePeriodSeconds: 30

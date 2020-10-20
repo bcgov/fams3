@@ -76,6 +76,7 @@ namespace SearchApi.Web.Controllers
                     Person = personSearchRequest,
                     SearchRequestId = searchRequestId,
                     SearchRequestKey = personSearchRequest?.SearchRequestKey,
+                    IsPreScreenSearch=personSearchRequest.IsPreScreenSearch,
                     DataPartners = personSearchRequest?.DataProviders.Select(x => new DataPartner { Name = x.Name, Completed = false, NumberOfRetries = x.NumberOfRetries, TimeBetweenRetries = x.TimeBetweenRetries, SearchSpeed = x.SearchSpeedType})
                 };
 

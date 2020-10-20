@@ -62,9 +62,9 @@ namespace SearchApi.Web.Messaging
 
             foreach (var requestDataProvider in personSearchRequest.DataProviders)
             {
-   
-                if (requestDataProvider.SearchSpeedType == SearchSpeedType.Fast)
-                await SaveForDeepSearch(personSearchRequest, requestDataProvider);
+
+                if (requestDataProvider.SearchSpeedType == SearchSpeedType.Fast && !personSearchRequest.IsPreScreenSearch)
+                    await SaveForDeepSearch(personSearchRequest, requestDataProvider);
 
                 var endpoint = await getEndpointAddress(requestDataProvider.Name);
 

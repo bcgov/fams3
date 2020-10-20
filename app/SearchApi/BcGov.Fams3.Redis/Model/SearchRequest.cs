@@ -11,12 +11,12 @@ namespace BcGov.Fams3.Redis.Model
         public Guid SearchRequestId { get; set; }
         public string SearchRequestKey { get; set; }
         public Person Person { get; set; }
-
+        public bool IsPreScreenSearch { get; set; }
         public IEnumerable<DataPartner> DataPartners { get; set; }
 
     }
 
-   public class DataPartner
+    public class DataPartner
     {
         public string Name { get; set; }
         public bool Completed { get; set; }

@@ -14,7 +14,6 @@ metadata:
 
 # Objects
 objects:
-
 - apiVersion: v1
   data:
     ssh-privatekey: "privatekey"

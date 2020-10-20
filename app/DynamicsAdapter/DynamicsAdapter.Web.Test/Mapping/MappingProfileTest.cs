@@ -91,7 +91,8 @@ namespace DynamicsAdapter.Web.Test.Mapping
                     ApplicantLastName = "applicantLastName",
                     SearchReason = new SSG_SearchRequestReason { ReasonCode = "EnfPayAgr" }
                 },
-                SequenceNumber = "123456"
+                SequenceNumber = "123456",
+                IsPrescreenSearch = true
             };
             PersonSearchRequest personSearchRequest = _mapper.Map<PersonSearchRequest>(sSG_SearchApiRequest);
             Assert.AreEqual("firstName", personSearchRequest.FirstName);
@@ -100,6 +101,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(2, personSearchRequest.Identifiers.Count);
             Assert.AreEqual(2, personSearchRequest.DataProviders.Count);
             Assert.AreEqual(1, personSearchRequest.Names.Count);
+            Assert.AreEqual(true, personSearchRequest.IsPreScreenSearch);
             Assert.AreEqual(OwnerType.Applicant, personSearchRequest.Names.ElementAt(0).Owner);
             Assert.AreEqual("testFileId_123456", personSearchRequest.SearchRequestKey);
             Assert.AreEqual(SearchReasonCode.EnfPayAgr, personSearchRequest.Agency.ReasonCode);

@@ -53,6 +53,40 @@
           }
         }
       }
+    },
+    "/Rfi/send": {
+      "post": {
+        "tags": [
+          "RequestForInformation API"
+        ],
+        "operationId": "Rfi_Send",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "X-RequestId",
+            "in": "header",
+            "x-nullable": true
+          },
+          {
+            "name": "rfi",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RequestForInformation"
+            },
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "202": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/RfiResponse"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -1479,6 +1513,39 @@
           }
         }
       ]
+    },
+    "RfiResponse": {
+      "type": "object",
+      "description": "Represents the acknowledgement that the request for information will be conducted",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "The unique identifier of the request for information",
+          "format": "guid"
+        }
+      }
+    },
+    "RequestForInformation": {
+      "type": "object",
+      "description": "Represents a set of information to execute a request for information",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "guid"
+        },
+        "recipient": {
+          "type": "string"
+        },
+        "documentBody": {
+          "type": "string"
+        }
+      }
     }
   },
   "tags": [

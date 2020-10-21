@@ -19,6 +19,7 @@ namespace SearchApi.Web.Messaging
     public interface IDispatcher
     {
         Task Dispatch(PersonSearchRequest personSearchRequest, Guid searchRequestId);
+        Task Dispatch(RequestForInformation requestForInformation, Guid rfiId);
     }
 
     /// <summary>
@@ -79,9 +80,26 @@ namespace SearchApi.Web.Messaging
             }
         }
 
+
+        public async Task Dispatch(RequestForInformation rfi, Guid id)
+        {
+            var endpoint = await getRfiEndpointAddress();
+
+            await endpoint.Send<RequestForInformation>(new RequestForInformation(id)
+            {
+                Recipient = rfi.Recipient,
+                DocumentBody = rfi.DocumentBody
+            });
+        }
+
         private Task<ISendEndpoint> getEndpointAddress(string providerName)
         {
             return _sendEndpointProvider.GetSendEndpoint(new Uri($"rabbitmq://{this._rabbitMqConfiguration.Host}:{this._rabbitMqConfiguration.Port}/PersonSearchOrdered_{providerName.ToUpperInvariant()}"));
+        }
+        
+        private Task<ISendEndpoint> getRfiEndpointAddress()
+        {
+            return _sendEndpointProvider.GetSendEndpoint(new Uri($"rabbitmq://{this._rabbitMqConfiguration.Host}:{this._rabbitMqConfiguration.Port}/RequestForInfo"));
         }
 
         private async Task SaveForDeepSearch(PersonSearchRequest person, DataProvider dataPartner)

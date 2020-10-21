@@ -15,6 +15,7 @@ using DynamicsAdapter.Web.SearchRequest;
 using Fams3Adapter.Dynamics.DataProvider;
 using Fams3Adapter.Dynamics.Duplicate;
 using Fams3Adapter.Dynamics.OptionSets;
+using Fams3Adapter.Dynamics.RfiService;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Fams3Adapter.Dynamics.SearchResponse;
@@ -157,6 +158,7 @@ namespace DynamicsAdapter.Web
             // Add other Services
             services.AddTransient<ITokenService, TokenService>();
             services.AddTransient<ISearchApiRequestService, SearchApiRequestService>();
+            services.AddTransient<IRfiSubmittalService, RfiSubmittalService>();
             services.AddTransient<ISearchRequestService, SearchRequestService>();
             services.AddTransient<ISearchResponseService, SearchResponseService>();
             services.AddTransient<IDataPartnerService, DataPartnerService>();
@@ -187,6 +189,11 @@ namespace DynamicsAdapter.Web
             services.AddSingleton(new JobSchedule(
                 jobType: typeof(FailedSearchRequestJob),
                 cronExpression: schedulerConfiguration.Failed));
+                
+            services.AddTransient<RequestForInformationJob>();
+            services.AddSingleton(new JobSchedule(
+                jobType: typeof(RequestForInformationJob),
+                cronExpression: schedulerConfiguration.Cron));
 
             //Registering the Quartz Hosted Service
             services.AddHostedService<QuartzHostedService>();

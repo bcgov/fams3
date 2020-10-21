@@ -92,11 +92,17 @@ namespace DynamicsAdapter.Web.Test.Mapping
                     SearchReason = new SSG_SearchRequestReason { ReasonCode = "EnfPayAgr" }
                 },
                 SequenceNumber = "123456",
-                IsPrescreenSearch = true
+                IsPrescreenSearch = true,
+                JCAPersonBirthDate = new DateTime(1999, 1, 1),
+                JCAMotherBirthSurname = "MotherMaidName",
+                JCAGender = GenderType.Female.Value
             };
             PersonSearchRequest personSearchRequest = _mapper.Map<PersonSearchRequest>(sSG_SearchApiRequest);
             Assert.AreEqual("firstName", personSearchRequest.FirstName);
             Assert.AreEqual("lastName", personSearchRequest.LastName);
+            Assert.AreEqual(new DateTimeOffset(new DateTime(1999,1,1)), personSearchRequest.JcaPerson.BirthDate);
+            Assert.AreEqual("f", personSearchRequest.JcaPerson.Gender);
+            Assert.AreEqual("MotherMaidName", personSearchRequest.JcaPerson.MotherMaidName);
             Assert.AreEqual(new DateTimeOffset(new DateTime(2002, 2, 2)), personSearchRequest.DateOfBirth);
             Assert.AreEqual(2, personSearchRequest.Identifiers.Count);
             Assert.AreEqual(2, personSearchRequest.DataProviders.Count);

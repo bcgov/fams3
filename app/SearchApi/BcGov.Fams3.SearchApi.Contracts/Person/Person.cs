@@ -54,6 +54,8 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         public IEnumerable<Pension> Pensions { get; set; }
         public IEnumerable<RealEstateProperty> RealEstateProperties { get; set; }
         public IEnumerable<ResponsePerson> ResponsePersons { get; set; }
+
+        public JCAPerson JCAPerson { get; set; }
     }
 
     public enum SoughtPersonType

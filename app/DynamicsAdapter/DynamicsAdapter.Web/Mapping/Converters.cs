@@ -212,7 +212,7 @@ namespace DynamicsAdapter.Web.Mapping
         {
             if (sourceMember == null) return null;
             return
-                Enumeration.GetAll<GenderType>().SingleOrDefault(m => m.Value == sourceMember)?.Name;
+                GenderDictionary.GenderTypeDictionary.FirstOrDefault(m => m.Value == (int)sourceMember).Key;
 
         }
     }

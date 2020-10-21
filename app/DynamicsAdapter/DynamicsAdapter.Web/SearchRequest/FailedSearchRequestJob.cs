@@ -70,7 +70,7 @@ namespace DynamicsAdapter.Web.SearchRequest
 
                                 if (registerSuccessfully)
                                 {
-                                    var result = await _searchApiClient.SearchAsync(
+                                    var result = await _searchApiClient.People_SearchAsync(
                                         _mapper.Map<PersonSearchRequest>(request),
                                         $"{request.SearchApiRequestId}",
                                         cts.Token);

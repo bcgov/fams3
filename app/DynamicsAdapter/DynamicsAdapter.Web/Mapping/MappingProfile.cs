@@ -19,6 +19,7 @@ using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.RealEstate;
 using Fams3Adapter.Dynamics.RelatedPerson;
+using Fams3Adapter.Dynamics.RfiService;
 using Fams3Adapter.Dynamics.SafetyConcern;
 using Fams3Adapter.Dynamics.SearchApiEvent;
 using Fams3Adapter.Dynamics.SearchApiRequest;
@@ -511,6 +512,16 @@ namespace DynamicsAdapter.Web.Mapping
                .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => src.SSG_SearchRequests[0].PersonSoughtDateOfBirth))
                .ForMember(dest => dest.Gender, opt => opt.ConvertUsing(new PersonGenderTypeConverter(), src => src.SSG_SearchRequests[0].PersonSoughtGender))
                ;
+
+            /*CreateMap<SSG_RequestForInformationLetter, RequestForInformation>()
+            .ForMember(dest => dest.Id, OpenTracing=> OpenTracing.MapFrom(src => src.Id))
+            .ForMember(dest => dest.FaxNumber, OpenTracing=> OpenTracing.MapFrom(src => src.FaxNumber))
+            .ForMember(dest => dest.DocumentBody, OpenTracing=> OpenTracing.MapFrom(src => src.Annotations.First().DocumentBody));
+            */
+            CreateMap<SSG_RfiMessage, RequestForInformation>()
+            .ForMember(dest => dest.Id, OpenTracing=> OpenTracing.MapFrom(src => src.Id))
+            .ForMember(dest => dest.Recipient, OpenTracing=> OpenTracing.MapFrom(src => src.Recipient))
+            .ForMember(dest => dest.DocumentBody, OpenTracing=> OpenTracing.MapFrom(src => src.DocumentBody));
         }
     }
 

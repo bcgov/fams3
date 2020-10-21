@@ -85,7 +85,7 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
                 .Returns(Task.FromResult(true));
 
             _searchApiClientMock.Setup(
-                x => x.SearchAsync(
+                x => x.People_SearchAsync(
                     It.IsAny<PersonSearchRequest>(),
                     It.Is<string>(m => m == _validSearchApiRequestId.ToString()),
                     It.IsAny<CancellationToken>()))
@@ -124,7 +124,7 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
 
             await _sut.Execute(_jobContext.Object);
             _searchApiClientMock
-              .Verify(x => x.SearchAsync(
+              .Verify(x => x.People_SearchAsync(
                   It.IsAny<PersonSearchRequest>(),
                   It.Is<string>(m => m == _validSearchApiRequestId.ToString()),
                   It.IsAny<CancellationToken>()),
@@ -150,7 +150,7 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
 
             await _sut.Execute(_jobContext.Object);
             _searchApiClientMock
-              .Verify(x => x.SearchAsync(
+              .Verify(x => x.People_SearchAsync(
                   It.IsAny<PersonSearchRequest>(),
                   It.Is<string>(m => m == _emptySearchApiRequestId.ToString()),
                   It.IsAny<CancellationToken>()),
@@ -174,7 +174,7 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
             .Returns(Task.FromResult<IEnumerable<SSG_SearchApiRequest>>(exceptionSearchRequestIDRequests));
 
             _searchApiClientMock.Setup(
-                x => x.SearchAsync(
+                x => x.People_SearchAsync(
                     It.IsAny<PersonSearchRequest>(),
                     It.Is<string>(m => m == _searchAsyncExceptionSearchRequestId.ToString()),
                     It.IsAny<CancellationToken>()))
@@ -182,7 +182,7 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
 
             await _sut.Execute(_jobContext.Object);
             _searchApiClientMock
-              .Verify(x => x.SearchAsync(
+              .Verify(x => x.People_SearchAsync(
                   It.IsAny<PersonSearchRequest>(),
                   It.Is<string>(m => m == _searchAsyncExceptionSearchRequestId.ToString()),
                   It.IsAny<CancellationToken>()),

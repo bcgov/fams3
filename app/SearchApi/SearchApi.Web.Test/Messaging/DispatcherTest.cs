@@ -243,7 +243,7 @@ namespace SearchApi.Web.Test.Messaging
         public void withNullRequestShouldSendThrowArgumentNullException()
         {
 
-            Assert.ThrowsAsync<ArgumentNullException>(() => sut.Dispatch(null, Guid.NewGuid()));
+            Assert.ThrowsAsync<ArgumentNullException>(() => sut.Dispatch(null as PersonSearchRequest, Guid.NewGuid()));
 
         }
 

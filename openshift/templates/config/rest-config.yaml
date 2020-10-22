@@ -35,7 +35,9 @@ objects:
     label:
       app: ${APP_NAME}
   stringData:
-    DataPartnerSoapApi__BaseAddress: ${URL}
-    DataPartnerSoapApi__Code: ${CODE}
-    DataPartnerSoapApi__Password: ${PASSWORD}
-    DataPartnerSoapApi__Username: ${USERNAME}
+    DATAPARTNERSOAPAPI__BASEADDRESS: ${URL}
+    DATAPARTNERSOAPAPI__CODE: ${CODE}
+    DATAPARTNERSOAPAPI__PASSWORD: ${PASSWORD}
+    DATAPARTNERSOAPAPI__USERNAME: ${USERNAME}
+    DATAPARTNERSOAPAPI__TIMEBETWEENTRIES: "2"
+    DATAPARTNERSOAPAPI__NOOFTRIES: "2"

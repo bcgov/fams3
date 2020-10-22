@@ -328,6 +328,9 @@
               "items": {
                 "$ref": "#/definitions/ResponsePerson"
               }
+            },
+            "jcaPerson": {
+              "$ref": "#/definitions/JCAPerson"
             }
           }
         }
@@ -1485,6 +1488,33 @@
           }
         }
       ]
+    },
+    "JCAPerson": {
+      "type": "object",
+      "properties": {
+        "firstName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        },
+        "middleName": {
+          "type": "string"
+        },
+        "motherMaidName": {
+          "type": "string"
+        },
+        "birthDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "notes": {
+          "type": "string"
+        },
+        "gender": {
+          "type": "string"
+        }
+      }
     }
   },
   "tags": [

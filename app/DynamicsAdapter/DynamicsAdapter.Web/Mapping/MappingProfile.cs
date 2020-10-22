@@ -70,9 +70,19 @@ namespace DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.Identifiers, opt => opt.MapFrom(src => src.Identifiers))
                  .ForMember(dest => dest.Names, opt => opt.MapFrom<NamesResolver>())
                  .ForMember(dest => dest.Agency, opt => opt.MapFrom<AgencyResolver>())
+                 .ForMember(dest => dest.JcaPerson, opt => opt.MapFrom(src => src))
                  .ForMember(dest => dest.IsPreScreenSearch, opt => opt.MapFrom(src => src.IsPrescreenSearch))
                  .ForMember(dest => dest.SearchRequestKey, opt => opt.MapFrom(src => src.SearchRequest == null ? "0" : $"{src.SearchRequest.FileId}_{src.SequenceNumber}"))
                  .ForMember(dest => dest.DataProviders, opt => opt.MapFrom(src => src.DataProviders));
+
+            CreateMap<SSG_SearchApiRequest, JCAPerson>()
+                 .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.JCAFirstName))
+                 .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.JCALastName))
+                 .ForMember(dest => dest.MiddleName, opt => opt.MapFrom(src => src.JCAMiddleName))
+                 .ForMember(dest => dest.MotherMaidName, opt => opt.MapFrom(src => src.JCAMotherBirthSurname))
+                 .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.JCANotes))
+                 .ForMember(dest => dest.BirthDate, opt => opt.MapFrom(src => src.JCAPersonBirthDate))
+                 .ForMember(dest => dest.Gender, opt => opt.ConvertUsing(new PersonGenderTypeConverter(), src => src.JCAGender));
 
             CreateMap<PersonSearchAccepted, SSG_SearchApiEvent>()
               .ForMember(dest => dest.EventType, opt => opt.MapFrom(src => Keys.EVENT_ACCEPTED))

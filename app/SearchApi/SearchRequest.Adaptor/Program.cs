@@ -11,7 +11,7 @@ namespace SearchRequestAdaptor
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public void Main(string[] args)
         {
 
             var configuration = new ConfigurationBuilder()

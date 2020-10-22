@@ -455,7 +455,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             RelatedPerson person = _mapper.Map<RelatedPerson>(relatedPerson);
 
             Assert.AreEqual("firstName", person.FirstName);
-            Assert.AreEqual("Female", person.Gender);
+            Assert.AreEqual("f", person.Gender);
             Assert.AreEqual("Relation", person.PersonType);
             Assert.AreEqual("Friend", person.Type);
             Assert.AreEqual(new DateTimeOffset(new DateTime(2015, 1, 1)), person.DateOfBirth);
@@ -579,7 +579,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
 
             ResponsePerson rp = _mapper.Map<ResponsePerson>(person);
             Assert.AreEqual(new DateTimeOffset(new DateTime(2015, 1, 1)), rp.DateOfDeath);
-            Assert.AreEqual("Other", rp.Gender);
+            Assert.AreEqual("u", rp.Gender);
             Assert.AreEqual("firstName", rp.FirstName);
         }
     }

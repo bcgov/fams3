@@ -430,7 +430,7 @@ namespace DynamicsAdapter.Web.Mapping
                    .ForMember(dest => dest.RequestDate, opt => opt.MapFrom(src => src.RequestDate))
                    .ForMember(dest => dest.ReasonCode, opt => opt.ConvertUsing(new SearchReasonCodeConverter(), src => src.SearchReason))
                    .ForMember(dest => dest.Code, opt => opt.MapFrom(src => src.Agency.AgencyCode))
-                   .ForMember(dest => dest.DaysOpen, opt => opt.MapFrom(src => src.DaysOpen))
+                   .ForMember(dest => dest.DaysOpen, opt => opt.ConvertUsing(new MinsToDaysConverter(), src => src.MinsOpen))
                    .ForMember(dest => dest.RequestId, opt => opt.MapFrom(src => src.OriginalRequestorReference))
                    .ForMember(dest => dest.RequestPriority, opt => opt.ConvertUsing(new RequestPriorityTypeConverter(), src => src.RequestPriority));
 

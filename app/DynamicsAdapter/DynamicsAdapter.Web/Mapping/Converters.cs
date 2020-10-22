@@ -464,4 +464,14 @@ namespace DynamicsAdapter.Web.Mapping
             return SoughtPersonType.PAYOR;
         }
     }
+
+    public class MinsToDaysConverter : IValueConverter<int, int?>
+    {
+        public int? Convert(int mins, ResolutionContext context)
+        {
+            if(mins<=0) return null;
+            TimeSpan timeSpan = new TimeSpan(0,mins,0);
+            return timeSpan.Days+1;
+        }
+    }
 }

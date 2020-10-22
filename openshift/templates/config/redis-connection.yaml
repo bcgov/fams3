@@ -26,8 +26,10 @@ objects:
 
 - apiVersion: v1
   stringData:
-    Redis__Host: ${HOST}
-    Redis__Port: ${PORT}
+    REDIS__CONNECTRETRY: 2
+    REDIS__CONNECTTIMEOUT: 6000
+    REDIS__HOSTS__0__HOST: ${HOST}
+    REDIS__HOSTS__0__PORT: ${PORT}
   kind: Secret
   metadata:
     name: redis-connection

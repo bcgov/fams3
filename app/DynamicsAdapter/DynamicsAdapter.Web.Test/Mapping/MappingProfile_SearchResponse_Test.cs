@@ -520,7 +520,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             SafetyConcern concern = _mapper.Map<SafetyConcern>(safe);
 
             Assert.AreEqual("detail", concern.Description);
-            Assert.AreEqual("type", concern.Type);
+            Assert.AreEqual("Suicidal", concern.Type);
         }
 
         [Test]

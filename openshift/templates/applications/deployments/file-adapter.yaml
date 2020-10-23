@@ -91,11 +91,13 @@ objects:
             volumeMounts:
               - mountPath: /app/.ssh/keys/
                 name: ssh-key
+                readOnly: true
         dnsPolicy: ClusterFirst
         restartPolicy: Always
         volumes:
         - name: ssh-key
           secret:
+            defaultMode: 420
             secretName: fams3-jca-private-key
         schedulerName: default-scheduler
         securityContext: {}

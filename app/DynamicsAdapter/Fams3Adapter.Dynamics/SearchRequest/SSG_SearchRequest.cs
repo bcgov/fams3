@@ -236,7 +236,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         public string PersonSoughtThirdGiveName { get; set; }
 
         [JsonProperty("ssg_durationrequestwasopen")]
-        public int DaysOpen { get; set; }
+        public int MinsOpen { get; set; }
     }
 
     public class SSG_SearchRequest : SearchRequestEntity, IUpdatableObject

@@ -162,7 +162,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                         OriginalRequestorReference="originalRef",
                         RequestPriority = RequestPriorityType.Rush.Value,
                         PersonSoughtRole = PersonSoughtType.P.Value,
-                        DaysOpen = 100
+                        MinsOpen = 100
                     }
                 }.ToArray(),
                 SSG_Persons = new List<SSG_Person>
@@ -181,7 +181,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(new DateTimeOffset(new DateTime(2001, 1, 1)), person.DateOfBirth);
             Assert.AreEqual(SoughtPersonType.PAYOR, person.Type);
             Assert.AreEqual("FMEP", person.Agency.Code);
-            Assert.AreEqual(100, person.Agency.DaysOpen);
+            Assert.AreEqual(1, person.Agency.DaysOpen);
             Assert.AreEqual(1, person.ResponsePersons.Count);
         }
 

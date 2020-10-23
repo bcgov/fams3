@@ -514,7 +514,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             SSG_SafetyConcernDetail safe = new SSG_SafetyConcernDetail
             {
                 Detail = "detail",
-                Type = "type"
+                Type = SafetyConcernType.Suicidal.Value
             };
 
             SafetyConcern concern = _mapper.Map<SafetyConcern>(safe);

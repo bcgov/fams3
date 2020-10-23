@@ -20,6 +20,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using Fams3Adapter.Dynamics.Agency;
 using DynamicsAdapter.Web.SearchAgency.Exceptions;
+using Fams3Adapter.Dynamics.SafetyConcern;
 
 namespace DynamicsAdapter.Web.SearchAgency
 {
@@ -79,6 +80,7 @@ namespace DynamicsAdapter.Web.SearchAgency
             await UploadRelatedPersons();
             await UploadRelatedApplicant(_uploadedSearchRequest.ApplicantFirstName, _uploadedSearchRequest.ApplicantLastName);
             await UploadAliases();
+            await UploadSafetyConcern();
             await SubmitToQueue();
             return _uploadedSearchRequest;
         }
@@ -254,6 +256,28 @@ namespace DynamicsAdapter.Web.SearchAgency
                 SSG_PhoneNumber uploadedPhone = await _searchRequestService.CreatePhoneNumber(ph, _cancellationToken);
             }
             _logger.LogInformation("Create phones records for SearchRequest successfully");
+            return true;
+        }
+
+         private async Task<bool> UploadSafetyConcern(bool inUpdateProcess = false)
+        {
+            if( string.IsNullOrEmpty(_personSought.CautionFlag) 
+                && string.IsNullOrEmpty(_personSought.CautionReason) 
+                && string.IsNullOrEmpty(_personSought.CautionNotes))
+                return true;
+
+            SafetyConcernEntity entity = new SafetyConcernEntity
+            {
+                Type = string.Equals(_personSought.CautionReason, "violent", StringComparison.InvariantCultureIgnoreCase) ? SafetyConcernType.Violence.Value : SafetyConcernType.Other.Value,
+                Detail=$"{_personSought.CautionFlag} {_personSought.CautionReason} {_personSought.CautionNotes}",
+                SearchRequest = _uploadedSearchRequest,
+                InformationSource = InformationSourceType.Request.Value,
+                Person = _uploadedPerson,
+                IsCreatedByAgency = true,
+                StatusCode =1
+            };
+            await _searchRequestService.CreateSafetyConcern(entity, _cancellationToken);
+            _logger.LogInformation("Create Safety Concern records for SearchRequest successfully");
             return true;
         }
 

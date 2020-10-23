@@ -77,7 +77,14 @@ namespace DynamicsAdapter.Web.Mapping
         }
     }
 
-
+    public class SafetyConcernTypeResponseConverter : IValueConverter<int?, string>
+    {
+        public string Convert(int? sourceMember, ResolutionContext context)
+        {
+            if (sourceMember == null) return null;
+            return SafetyConcernType.GetAll<SafetyConcernType>().SingleOrDefault(m => m.Value == sourceMember)?.Name;
+        }
+    }
 
     public class NameCategoryConverter : IValueConverter<string, int?>
     {

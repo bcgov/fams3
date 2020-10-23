@@ -444,7 +444,7 @@ namespace DynamicsAdapter.Web.Mapping
 
             CreateMap<SSG_SafetyConcernDetail, SafetyConcern>()
                 .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Detail))
-                .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type))
+                .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new SafetyConcernTypeResponseConverter(), src => src.Type))
                 .IncludeBase<DynamicsEntity, PersonalInfo>();
 
             CreateMap<SSG_Asset_PensionDisablility, Pension>()

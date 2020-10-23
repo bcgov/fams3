@@ -145,6 +145,7 @@ namespace DynamicsAdapter.Web.SearchAgency
             _personSought = searchRequestOrdered.Person;
 
             await UpdatePersonSought();
+            await UpdateSafetyConcern();
 
             //update RelatedPerson applicant
             await UpdateRelatedApplicant((string.IsNullOrEmpty(newSearchRequest.ApplicantFirstName) && string.IsNullOrEmpty(newSearchRequest.ApplicantLastName)) ? null : new RelatedPersonEntity()
@@ -265,17 +266,12 @@ namespace DynamicsAdapter.Web.SearchAgency
                 && string.IsNullOrEmpty(_personSought.CautionReason) 
                 && string.IsNullOrEmpty(_personSought.CautionNotes))
                 return true;
-
-            SafetyConcernEntity entity = new SafetyConcernEntity
-            {
-                Type = string.Equals(_personSought.CautionReason, "violent", StringComparison.InvariantCultureIgnoreCase) ? SafetyConcernType.Violence.Value : SafetyConcernType.Other.Value,
-                Detail=$"{_personSought.CautionFlag} {_personSought.CautionReason} {_personSought.CautionNotes}",
-                SearchRequest = _uploadedSearchRequest,
-                InformationSource = InformationSourceType.Request.Value,
-                Person = _uploadedPerson,
-                IsCreatedByAgency = true,
-                StatusCode =1
-            };
+            SafetyConcernEntity entity = _mapper.Map<SafetyConcernEntity>(_personSought);
+            entity.SearchRequest = _uploadedSearchRequest;
+            entity.InformationSource = InformationSourceType.Request.Value;
+            entity.Person = _uploadedPerson;
+            entity.IsCreatedByAgency = true;
+            if (inUpdateProcess) entity.UpdateDetails = "New Safety Concern";
             await _searchRequestService.CreateSafetyConcern(entity, _cancellationToken);
             _logger.LogInformation("Create Safety Concern records for SearchRequest successfully");
             return true;
@@ -423,6 +419,27 @@ namespace DynamicsAdapter.Web.SearchAgency
                 await _searchRequestService.UpdatePerson(_uploadedPerson.PersonId, updatedFields, newPersonEntity, _cancellationToken);
                 _logger.LogInformation("Update Person successfully");
             }
+            return true;
+        }
+
+        private async Task<bool> UpdateSafetyConcern()
+        {
+            SafetyConcernEntity newSafeEntity = _mapper.Map<SafetyConcernEntity>(_personSought);
+            SSG_SafetyConcernDetail originalSafeEntity = _uploadedPerson.sSG_SafetyConcernDetails.FirstOrDefault(m => m.InformationSource == InformationSourceType.Request.Value);
+            if(originalSafeEntity == null)
+            {
+                UploadSafetyConcern(true);
+            }
+            else
+            {
+                Dictionary<string, object> updatedFields = (Dictionary<string, object>)originalSafeEntity.Clone().GetUpdateEntries(newSafeEntity);
+                if (updatedFields.Count > 0)
+                {
+                    await _searchRequestService.UpdateSafetyConcern(originalSafeEntity.SafetyConcernDetailId, updatedFields, _cancellationToken);
+                    _logger.LogInformation("Update Person successfully");
+                }
+            }
+
             return true;
         }
 

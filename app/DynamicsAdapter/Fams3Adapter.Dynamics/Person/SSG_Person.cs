@@ -8,6 +8,7 @@ using Fams3Adapter.Dynamics.Name;
 using Fams3Adapter.Dynamics.OtherAsset;
 using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.RelatedPerson;
+using Fams3Adapter.Dynamics.SafetyConcern;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Fams3Adapter.Dynamics.Update;
 using Fams3Adapter.Dynamics.Vehicle;
@@ -148,6 +149,9 @@ namespace Fams3Adapter.Dynamics.Person
 
         [JsonProperty("ssg_ssg_person_ssg_phonenumber")]
         public SSG_PhoneNumber[] SSG_PhoneNumbers { get; set; }
+
+        [JsonProperty("ssg_ssg_person_ssg_safetyconcerndetail_PersonId")]
+        public SSG_SafetyConcernDetail[] sSG_SafetyConcernDetails { get; set; }
 
         public bool IsDuplicated { get; set; }
         public override string ToString()

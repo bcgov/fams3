@@ -369,6 +369,11 @@ namespace DynamicsAdapter.Web.Mapping
                   .ReverseMap()
                     .ForMember(dest => dest.ClaimAmount, opt => opt.MapFrom(src => src.ClaimAmount));
 
+            CreateMap<Person, SafetyConcernEntity>()
+                    .ForMember(dest => dest.Detail, opt => opt.MapFrom(src => $"{src.CautionFlag} {src.CautionReason} {src.CautionNotes}"))
+                    .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new SafetyConcernTypeConverter(), src => src.CautionReason))
+                    .IncludeBase<PersonalInfo, DynamicsEntity>();
+
             CreateMap<InsuranceClaim, ICBCClaimEntity>()
                   .ForMember(dest => dest.ClaimType, opt => opt.MapFrom(src => src.ClaimType))
                   .ForMember(dest => dest.ClaimNumber, opt => opt.MapFrom(src => src.ClaimNumber))

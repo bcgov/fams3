@@ -57,6 +57,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         Task<SSG_SearchRequest> UpdateSearchRequest(Guid requestId, IDictionary<string, object> updatedFields, CancellationToken cancellationToken);
         Task<SSG_Person> UpdatePerson(Guid personId, IDictionary<string, object> updatedFields, PersonEntity newPerson, CancellationToken cancellationToken);
         Task<SSG_Identity> UpdateRelatedPerson(Guid personId, IDictionary<string, object> updatedFields, CancellationToken cancellationToken);
+        Task<SSG_SafetyConcernDetail> UpdateSafetyConcern(Guid safetyId, IDictionary<string, object> updatedFields, CancellationToken cancellationToken);
         Task<SSG_Employment> UpdateEmployment(Guid employmentId, IDictionary<string, object> updatedFields, CancellationToken cancellationToken);
         Task<SSG_Identifier> UpdateIdentifier(Guid identifierId, IDictionary<string, object> updatedFields, CancellationToken cancellationToken);
         Task<SSG_Country> GetEmploymentCountry(string countryText, CancellationToken cancellationToken);
@@ -445,6 +446,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                 .Expand(x => x.SSG_Employments)
                 .Expand(x => x.SSG_Addresses)
                 .Expand(x => x.SSG_Aliases)
+                .Expand(x => x.sSG_SafetyConcernDetails)
                 .FindEntryAsync(cancellationToken);
 
             return person;
@@ -482,6 +484,11 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         public async Task<SSG_Identifier> UpdateIdentifier(Guid identifierId, IDictionary<string, object> updatedFields, CancellationToken cancellationToken)
         {
             return await this._oDataClient.For<SSG_Identifier>().Key(identifierId).Set(updatedFields).UpdateEntryAsync(cancellationToken);
+        }
+
+        public async Task<SSG_SafetyConcernDetail> UpdateSafetyConcern(Guid safetyId, IDictionary<string, object> updatedFields, CancellationToken cancellationToken)
+        {
+            return await this._oDataClient.For<SSG_SafetyConcernDetail>().Key(safetyId).Set(updatedFields).UpdateEntryAsync(cancellationToken);
         }
 
         public async Task<SSG_Notese> CreateNotes(NotesEntity note, CancellationToken cancellationToken)

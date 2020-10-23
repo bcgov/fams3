@@ -424,14 +424,14 @@ namespace DynamicsAdapter.Web.SearchAgency
 
         private async Task<bool> UpdateSafetyConcern()
         {
-            SafetyConcernEntity newSafeEntity = _mapper.Map<SafetyConcernEntity>(_personSought);
-            SSG_SafetyConcernDetail originalSafeEntity = _uploadedPerson.sSG_SafetyConcernDetails.FirstOrDefault(m => m.InformationSource == InformationSourceType.Request.Value);
+            SSG_SafetyConcernDetail originalSafeEntity = _uploadedPerson.sSG_SafetyConcernDetails?.FirstOrDefault(m => m.IsCreatedByAgency);
             if(originalSafeEntity == null)
             {
-                UploadSafetyConcern(true);
+                await UploadSafetyConcern(true);
             }
             else
             {
+                SafetyConcernEntity newSafeEntity = _mapper.Map<SafetyConcernEntity>(_personSought);
                 Dictionary<string, object> updatedFields = (Dictionary<string, object>)originalSafeEntity.Clone().GetUpdateEntries(newSafeEntity);
                 if (updatedFields.Count > 0)
                 {

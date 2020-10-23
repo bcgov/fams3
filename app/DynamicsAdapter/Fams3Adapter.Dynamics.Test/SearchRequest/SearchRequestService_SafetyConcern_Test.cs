@@ -7,6 +7,7 @@ using Moq;
 using NUnit.Framework;
 using Simple.OData.Client;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -48,7 +49,25 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             Assert.AreEqual(_testAliasId, result.SafetyConcernDetailId);
         }
 
- 
+        [Test]
+        public async Task update_SafetyConcern_should_success()
+        {
+            Guid testId = Guid.NewGuid();
+            _odataClientMock.Setup(x => x.For<SSG_SafetyConcernDetail>(null).Key(It.Is<Guid>(m => m == testId)).Set(It.IsAny<Dictionary<string, object>>())
+                .UpdateEntryAsync(It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult(new SSG_SafetyConcernDetail()
+                {
+                    SafetyConcernDetailId = testId,
+                })
+                );
+            IDictionary<string, object> updatedFields = new Dictionary<string, object> { { "ssg_name", "new" } };
+
+            var result = await _sut.UpdateSafetyConcern(testId, updatedFields, CancellationToken.None);
+
+            Assert.AreEqual(testId, result.SafetyConcernDetailId);
+
+        }
+
         #endregion
 
 

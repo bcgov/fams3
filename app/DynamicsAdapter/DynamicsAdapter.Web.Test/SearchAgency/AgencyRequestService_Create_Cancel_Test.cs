@@ -42,6 +42,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
         private EmploymentContactEntity _fakeEmploymentContact;
         private PersonEntity _ssg_fakePerson;
         private SearchRequestEntity _fakeSearchRequest;
+        private SafetyConcernEntity _fakeSafety;
         private Person _searchRequestPerson;
 
         [SetUp]
@@ -203,6 +204,8 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 DateOfDeathRequested = false
             };
 
+            _fakeSafety = new SafetyConcernEntity { Detail = "safety" };
+
             _ssg_fakePerson = new PersonEntity
             {
             };
@@ -233,6 +236,9 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
 
             _mapper.Setup(m => m.Map<SearchRequestEntity>(It.IsAny<SearchRequestOrdered>()))
                     .Returns(_fakeSearchRequest);
+
+            _mapper.Setup(m => m.Map<SafetyConcernEntity>(It.IsAny<Person>()))
+                    .Returns(_fakeSafety);
 
             _searchRequestServiceMock.Setup(x => x.CreateSearchRequest(It.Is<SearchRequestEntity>(x => x.AgencyCode == "FMEP"), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<SSG_SearchRequest>(new SSG_SearchRequest()

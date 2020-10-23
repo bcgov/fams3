@@ -14,6 +14,7 @@ using Fams3Adapter.Dynamics.OtherAsset;
 using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.RelatedPerson;
+using Fams3Adapter.Dynamics.SafetyConcern;
 using Fams3Adapter.Dynamics.SearchApiEvent;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using Fams3Adapter.Dynamics.SearchRequest;
@@ -322,6 +323,20 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(new DateTime(2020, 9, 1), addr.Date2);
             Assert.AreEqual("description", addr.Description);
             Assert.AreEqual("notes", addr.Notes);
+        }
+
+        [Test]
+        public void Person_should_map_to_SSG_SafetyConcern_correctly()
+        {
+            var p = new Person()
+            {
+                CautionFlag="flag",
+                CautionNotes="notes",
+                CautionReason="violent",
+            };
+            SafetyConcernEntity safe = _mapper.Map<SafetyConcernEntity>(p);
+            Assert.AreEqual(SafetyConcernType.Violence.Value, safe.Type);
+            Assert.AreEqual("flag violent notes", safe.Detail);
         }
 
         [Test]

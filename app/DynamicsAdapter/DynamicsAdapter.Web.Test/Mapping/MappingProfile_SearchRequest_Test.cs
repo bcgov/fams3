@@ -55,6 +55,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                     LastName = "personSoughtLastName",
                     Gender = "M",
                     DateOfBirth = new DateTimeOffset(1995, 1, 1, 0, 0, 0, new TimeSpan(1, 0, 0)),
+                    CautionFlag="flag",
                     Identifiers = new List<PersonalIdentifier>()
                     {
                         new PersonalIdentifier(){Value="123456", TypeCode="SIN", Type=PersonalIdentifierType.SocialInsuranceNumber,Owner=OwnerType.PersonSought},

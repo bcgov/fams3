@@ -213,6 +213,25 @@ namespace DynamicsAdapter.Web.SearchAgency
                     identifier.UpdateDetails = "New Identifier";
                 SSG_Identifier newIdentifier = await _searchRequestService.CreateIdentifier(identifier, _cancellationToken);
             }
+
+            //following is for alias person has identifiers, this situation never happened before. But the data structure is there.
+            foreach (Name personName in _personSought.Names.Where(m => m.Owner == OwnerType.PersonSought))
+            {
+                if(personName.Identifiers != null)
+                {
+                    foreach (var personId in personName.Identifiers)
+                    {
+                        IdentifierEntity identifier = _mapper.Map<IdentifierEntity>(personId);
+                        identifier.SearchRequest = _uploadedSearchRequest;
+                        identifier.InformationSource = InformationSourceType.Request.Value;
+                        identifier.Person = _uploadedPerson;
+                        identifier.IsCreatedByAgency = true;
+                        if (inUpdateProcess)
+                            identifier.UpdateDetails = "New Identifier";
+                        SSG_Identifier newIdentifier = await _searchRequestService.CreateIdentifier(identifier, _cancellationToken);
+                    }
+                }
+            }
             _logger.LogInformation("Create identifier records for SearchRequest successfully");
             return true;
         }
@@ -232,6 +251,23 @@ namespace DynamicsAdapter.Web.SearchAgency
                 addr.IsCreatedByAgency = true;
                 if (inUpdateProcess) addr.UpdateDetails = "New Address";
                 SSG_Address uploadedAddr = await _searchRequestService.CreateAddress(addr, _cancellationToken);
+            }
+
+            //following is for alias person has addresses, this situation never happened before. But the data structure is there.
+            foreach (Name personName in _personSought.Names.Where(m => m.Owner == OwnerType.PersonSought))
+            {
+                if (personName.Addresses != null)
+                {
+                    foreach (var address in personName.Addresses)
+                    {
+                        AddressEntity addr = _mapper.Map<AddressEntity>(address);
+                        addr.SearchRequest = _uploadedSearchRequest;
+                        addr.InformationSource = InformationSourceType.Request.Value;
+                        addr.Person = _uploadedPerson;
+                        addr.IsCreatedByAgency = true;
+                        SSG_Address uploadedAddr = await _searchRequestService.CreateAddress(addr, _cancellationToken);
+                    }
+                }
             }
             _logger.LogInformation("Create addresses records for SearchRequest successfully");
             return true;

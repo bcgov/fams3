@@ -215,9 +215,10 @@ namespace DynamicsAdapter.Web.SearchAgency
             }
 
             //following is for alias person has identifiers, this situation never happened before. But the data structure is there.
+            if (_personSought.Names == null) return true;
             foreach (Name personName in _personSought.Names.Where(m => m.Owner == OwnerType.PersonSought))
             {
-                if(personName.Identifiers != null)
+                if (personName.Identifiers != null)
                 {
                     foreach (var personId in personName.Identifiers)
                     {
@@ -254,7 +255,8 @@ namespace DynamicsAdapter.Web.SearchAgency
             }
 
             //following is for alias person has addresses, this situation never happened before. But the data structure is there.
-            foreach (Name personName in _personSought.Names.Where(m => m.Owner == OwnerType.PersonSought))
+            if (_personSought.Names == null) return true;
+            foreach (Name personName in _personSought.Names?.Where(m => m.Owner == OwnerType.PersonSought))
             {
                 if (personName.Addresses != null)
                 {
@@ -291,6 +293,24 @@ namespace DynamicsAdapter.Web.SearchAgency
                     ph.UpdateDetails = "Create Phone";
                 }
                 SSG_PhoneNumber uploadedPhone = await _searchRequestService.CreatePhoneNumber(ph, _cancellationToken);
+            }
+
+            //following is for alias person has phones, this situation never happened before. But the data structure is there.
+            if (_personSought.Names == null) return true;
+            foreach (Name personName in _personSought.Names?.Where(m => m.Owner == OwnerType.PersonSought))
+            {
+                if (personName.Phones != null)
+                {
+                    foreach (var phone in personName.Phones)
+                    {
+                        PhoneNumberEntity phoneNumber = _mapper.Map<PhoneNumberEntity>(phone);
+                        phoneNumber.SearchRequest = _uploadedSearchRequest;
+                        phoneNumber.InformationSource = InformationSourceType.Request.Value;
+                        phoneNumber.Person = _uploadedPerson;
+                        phoneNumber.IsCreatedByAgency = true;
+                        SSG_PhoneNumber uploadedPhone = await _searchRequestService.CreatePhoneNumber(phoneNumber, _cancellationToken);
+                    }
+                }
             }
             _logger.LogInformation("Create phones records for SearchRequest successfully");
             return true;

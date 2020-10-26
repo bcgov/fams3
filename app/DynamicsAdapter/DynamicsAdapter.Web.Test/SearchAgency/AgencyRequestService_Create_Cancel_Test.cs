@@ -97,7 +97,17 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                     new Name()
                     {
                         FirstName = "firstName",
-                        Owner=OwnerType.PersonSought
+                        Owner=OwnerType.PersonSought,
+                        Identifiers= new List<PersonalIdentifier>{
+                            new PersonalIdentifier{Value="123222", Type= PersonalIdentifierType.BCDriverLicense}
+                        },
+                        Addresses = new List<Address>{
+                            new Address{AddressLine1="line1"}
+                        },
+                        Phones = new List<Phone>
+                        {
+                            new Phone{PhoneNumber="12343"}
+                        }
                     },
                     new Name()
                     {
@@ -307,9 +317,9 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             SSG_SearchRequest ssgSearchRequest = await _sut.ProcessSearchRequestOrdered(_searchRequstOrdered);
             _searchRequestServiceMock.Verify(m => m.CreateSearchRequest(It.IsAny<SearchRequestEntity>(), It.IsAny<CancellationToken>()), Times.Once);
             _searchRequestServiceMock.Verify(m => m.SavePerson(It.IsAny<PersonEntity>(), It.IsAny<CancellationToken>()), Times.Once);
-            _searchRequestServiceMock.Verify(m => m.CreateIdentifier(It.IsAny<IdentifierEntity>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
-            _searchRequestServiceMock.Verify(m => m.CreateAddress(It.IsAny<AddressEntity>(), It.IsAny<CancellationToken>()), Times.Once);
-            _searchRequestServiceMock.Verify(m => m.CreatePhoneNumber(It.IsAny<PhoneNumberEntity>(), It.IsAny<CancellationToken>()), Times.Never);
+            _searchRequestServiceMock.Verify(m => m.CreateIdentifier(It.IsAny<IdentifierEntity>(), It.IsAny<CancellationToken>()), Times.Exactly(3));
+            _searchRequestServiceMock.Verify(m => m.CreateAddress(It.IsAny<AddressEntity>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
+            _searchRequestServiceMock.Verify(m => m.CreatePhoneNumber(It.IsAny<PhoneNumberEntity>(), It.IsAny<CancellationToken>()), Times.Once);
             _searchRequestServiceMock.Verify(m => m.CreateEmployment(It.IsAny<EmploymentEntity>(), It.IsAny<CancellationToken>()), Times.Once);
             _searchRequestServiceMock.Verify(m => m.CreateEmploymentContact(It.IsAny<EmploymentContactEntity>(), It.IsAny<CancellationToken>()), Times.Once);
             _searchRequestServiceMock.Verify(m => m.CreateRelatedPerson(It.IsAny<RelatedPersonEntity>(), It.IsAny<CancellationToken>()), Times.Once);

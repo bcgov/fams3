@@ -220,6 +220,25 @@ namespace DynamicsAdapter.Web.Mapping
         }
     }
 
+    public class EmploymentEntityNotesResolver : IValueResolver<Employment, EmploymentEntity, string>
+    {
+        public string Resolve(Employment source, EmploymentEntity destination, string destMember, ResolutionContext context)
+        {
+            if (source.Employer == null || source.Employer.Phones==null || source.Employer.Phones.Count <= 2) return source.Notes;
+            int index = 0;
+            string notes=string.Empty;
+            foreach(Phone p in source.Employer.Phones)
+            {
+                if( index > 2)
+                {
+                    notes += $"{p.ContactName} {p.PhoneNumber} {p.Extension}\r\n";
+                }
+                index++;
+            }
+            return $"{notes}{source.Notes}";
+        }
+    }
+
     public class ProviderAddressResponseResolver : IValueResolver<SSG_Asset_PensionDisablility, Pension, Address>
     {
         public Address Resolve(SSG_Asset_PensionDisablility source, Pension destination, Address destMember, ResolutionContext context)

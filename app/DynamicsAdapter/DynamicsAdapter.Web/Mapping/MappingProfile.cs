@@ -156,7 +156,7 @@ namespace DynamicsAdapter.Web.Mapping
               .ForMember(dest => dest.AddressLine3, opt => opt.MapFrom(src => (src.Employer == null) ? string.Empty : (src.Employer.Address == null) ? string.Empty : src.Employer.Address.AddressLine3))
               .ForMember(dest => dest.BusinessName, opt => opt.MapFrom(src => (src.Employer == null) ? string.Empty : src.Employer.Name))
               .ForMember(dest => dest.Occupation, opt => opt.MapFrom(src => src.Occupation))
-              .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
+              .ForMember(dest => dest.Notes, opt => opt.MapFrom<EmploymentEntityNotesResolver>())
               .ForMember(dest => dest.Website, opt => opt.MapFrom(src => src.Website))
               .ForMember(dest => dest.PostalCode, opt => opt.MapFrom(src => (src.Employer == null) ? string.Empty : (src.Employer.Address == null) ? string.Empty : src.Employer.Address.ZipPostalCode))
               .ForMember(dest => dest.City, opt => opt.MapFrom(src => (src.Employer == null) ? string.Empty : (src.Employer.Address == null) ? string.Empty : src.Employer.Address.City))
@@ -369,6 +369,11 @@ namespace DynamicsAdapter.Web.Mapping
                   .ReverseMap()
                     .ForMember(dest => dest.ClaimAmount, opt => opt.MapFrom(src => src.ClaimAmount));
 
+            CreateMap<Person, SafetyConcernEntity>()
+                    .ForMember(dest => dest.Detail, opt => opt.MapFrom(src => $"{src.CautionFlag} {src.CautionReason} {src.CautionNotes}"))
+                    .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new SafetyConcernTypeConverter(), src => src.CautionReason))
+                    .IncludeBase<PersonalInfo, DynamicsEntity>();
+
             CreateMap<InsuranceClaim, ICBCClaimEntity>()
                   .ForMember(dest => dest.ClaimType, opt => opt.MapFrom(src => src.ClaimType))
                   .ForMember(dest => dest.ClaimNumber, opt => opt.MapFrom(src => src.ClaimNumber))
@@ -444,7 +449,7 @@ namespace DynamicsAdapter.Web.Mapping
 
             CreateMap<SSG_SafetyConcernDetail, SafetyConcern>()
                 .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Detail))
-                .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type))
+                .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new SafetyConcernTypeResponseConverter(), src => src.Type))
                 .IncludeBase<DynamicsEntity, PersonalInfo>();
 
             CreateMap<SSG_Asset_PensionDisablility, Pension>()

@@ -10,6 +10,7 @@ using Fams3Adapter.Dynamics.Notes;
 using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.RelatedPerson;
+using Fams3Adapter.Dynamics.SafetyConcern;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Fams3Adapter.Dynamics.Types;
 using Microsoft.Extensions.Logging;
@@ -41,6 +42,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
         private EmploymentContactEntity _fakeEmploymentContact;
         private PersonEntity _ssg_fakePerson;
         private SearchRequestEntity _fakeSearchRequest;
+        private SafetyConcernEntity _fakeSafety;
         private Person _searchRequestPerson;
 
         [SetUp]
@@ -56,6 +58,8 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 DateOfBirth = DateTime.Now,
                 FirstName = "TEST1",
                 LastName = "TEST2",
+                CautionFlag="cautionFlag",
+                CautionReason="violence",
                 Identifiers = new List<PersonalIdentifier>()
                 {
                     new PersonalIdentifier()
@@ -93,7 +97,17 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                     new Name()
                     {
                         FirstName = "firstName",
-                        Owner=OwnerType.PersonSought
+                        Owner=OwnerType.PersonSought,
+                        Identifiers= new List<PersonalIdentifier>{
+                            new PersonalIdentifier{Value="123222", Type= PersonalIdentifierType.BCDriverLicense}
+                        },
+                        Addresses = new List<Address>{
+                            new Address{AddressLine1="line1"}
+                        },
+                        Phones = new List<Phone>
+                        {
+                            new Phone{PhoneNumber="12343"}
+                        }
                     },
                     new Name()
                     {
@@ -200,6 +214,8 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 DateOfDeathRequested = false
             };
 
+            _fakeSafety = new SafetyConcernEntity { Detail = "safety" };
+
             _ssg_fakePerson = new PersonEntity
             {
             };
@@ -230,6 +246,9 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
 
             _mapper.Setup(m => m.Map<SearchRequestEntity>(It.IsAny<SearchRequestOrdered>()))
                     .Returns(_fakeSearchRequest);
+
+            _mapper.Setup(m => m.Map<SafetyConcernEntity>(It.IsAny<Person>()))
+                    .Returns(_fakeSafety);
 
             _searchRequestServiceMock.Setup(x => x.CreateSearchRequest(It.Is<SearchRequestEntity>(x => x.AgencyCode == "FMEP"), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<SSG_SearchRequest>(new SSG_SearchRequest()
@@ -298,13 +317,14 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             SSG_SearchRequest ssgSearchRequest = await _sut.ProcessSearchRequestOrdered(_searchRequstOrdered);
             _searchRequestServiceMock.Verify(m => m.CreateSearchRequest(It.IsAny<SearchRequestEntity>(), It.IsAny<CancellationToken>()), Times.Once);
             _searchRequestServiceMock.Verify(m => m.SavePerson(It.IsAny<PersonEntity>(), It.IsAny<CancellationToken>()), Times.Once);
-            _searchRequestServiceMock.Verify(m => m.CreateIdentifier(It.IsAny<IdentifierEntity>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
-            _searchRequestServiceMock.Verify(m => m.CreateAddress(It.IsAny<AddressEntity>(), It.IsAny<CancellationToken>()), Times.Once);
-            _searchRequestServiceMock.Verify(m => m.CreatePhoneNumber(It.IsAny<PhoneNumberEntity>(), It.IsAny<CancellationToken>()), Times.Never);
+            _searchRequestServiceMock.Verify(m => m.CreateIdentifier(It.IsAny<IdentifierEntity>(), It.IsAny<CancellationToken>()), Times.Exactly(3));
+            _searchRequestServiceMock.Verify(m => m.CreateAddress(It.IsAny<AddressEntity>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
+            _searchRequestServiceMock.Verify(m => m.CreatePhoneNumber(It.IsAny<PhoneNumberEntity>(), It.IsAny<CancellationToken>()), Times.Once);
             _searchRequestServiceMock.Verify(m => m.CreateEmployment(It.IsAny<EmploymentEntity>(), It.IsAny<CancellationToken>()), Times.Once);
             _searchRequestServiceMock.Verify(m => m.CreateEmploymentContact(It.IsAny<EmploymentContactEntity>(), It.IsAny<CancellationToken>()), Times.Once);
             _searchRequestServiceMock.Verify(m => m.CreateRelatedPerson(It.IsAny<RelatedPersonEntity>(), It.IsAny<CancellationToken>()), Times.Once);
             _searchRequestServiceMock.Verify(m => m.CreateName(It.IsAny<AliasEntity>(), It.IsAny<CancellationToken>()), Times.Once);
+            _searchRequestServiceMock.Verify(m => m.CreateSafetyConcern(It.IsAny<SafetyConcernEntity>(), It.IsAny<CancellationToken>()), Times.Once);
             _searchRequestServiceMock.Verify(m => m.SubmitToQueue(It.IsAny<Guid>()), Times.Once);
         }
 
@@ -342,6 +362,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             _searchRequestServiceMock.Verify(m => m.CreateEmploymentContact(It.IsAny<EmploymentContactEntity>(), It.IsAny<CancellationToken>()), Times.Never);
             _searchRequestServiceMock.Verify(m => m.CreateRelatedPerson(It.IsAny<RelatedPersonEntity>(), It.IsAny<CancellationToken>()), Times.Never);
             _searchRequestServiceMock.Verify(m => m.CreateName(It.IsAny<AliasEntity>(), It.IsAny<CancellationToken>()), Times.Never);
+            _searchRequestServiceMock.Verify(m => m.CreateSafetyConcern(It.IsAny<SafetyConcernEntity>(), It.IsAny<CancellationToken>()), Times.Never);
         }
 
         [Test]

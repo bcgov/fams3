@@ -514,13 +514,13 @@ namespace DynamicsAdapter.Web.Test.Mapping
             SSG_SafetyConcernDetail safe = new SSG_SafetyConcernDetail
             {
                 Detail = "detail",
-                Type = "type"
+                Type = SafetyConcernType.Suicidal.Value
             };
 
             SafetyConcern concern = _mapper.Map<SafetyConcern>(safe);
 
             Assert.AreEqual("detail", concern.Description);
-            Assert.AreEqual("type", concern.Type);
+            Assert.AreEqual("Suicidal", concern.Type);
         }
 
         [Test]

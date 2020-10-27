@@ -85,6 +85,7 @@ namespace DynamicsAdapter.Web.Health
                 "ssg_famsincomeassistanceclasses" => Enumeration.GetAll<IncomeAssistanceClassType>(),
                 "ssg_bankaccounttype" => Enumeration.GetAll<BankAccountType>(),
                 "ssg_datapartnerspeedtypes" => Enumeration.GetAll<AutoSearchSpeedType>(),
+                "ssg_safetyconcerntypes" => Enumeration.GetAll<SafetyConcernType>(),
                 _ => Enumeration.GetAll<TelephoneNumberType>()
 
             };

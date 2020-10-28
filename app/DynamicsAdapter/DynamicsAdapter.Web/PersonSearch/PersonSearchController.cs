@@ -110,7 +110,7 @@ namespace DynamicsAdapter.Web.PersonSearch
            
             if (dataSearchApiDataProvider != null)
             {
-                _logger.LogInformation($"Updating the no of tries for search api request {request.SearchApiRequestId}");
+                //_logger.LogInformation($"Updating the no of tries for search api request {request.SearchApiRequestId}");
                 dataSearchApiDataProvider.NumberOfFailures = (noOfTry == 1) ? dataSearchApiDataProvider.NumberOfFailures + noOfTry : noOfTry;
                 if (dataSearchApiDataProvider.NumberOfDaysToRetry == dataSearchApiDataProvider.NumberOfFailures)
                     dataSearchApiDataProvider.AllRetriesDone = NullableBooleanType.Yes.Value;
@@ -119,7 +119,7 @@ namespace DynamicsAdapter.Web.PersonSearch
 
 
                 await _dataPartnerService.UpdateSearchRequestApiProvider(dataSearchApiDataProvider, cts.Token);
-                _logger.LogInformation($"Updated the no of tries for search api request {request.SearchApiRequestId}");
+               // _logger.LogInformation($"Updated the no of tries for search api request {request.SearchApiRequestId}");
             }
         }
 

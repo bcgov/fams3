@@ -321,7 +321,7 @@ namespace DynamicsAdapter.Web.Mapping
                 return $"Auto search processing completed successfully. 0 Matched Persons found.";
             var matchedPersons = sourceMember.MatchedPersons;
 
-
+            
             if (!string.IsNullOrEmpty(sourceMember.Message))
                 strbuilder.Append($"Auto search processing completed successfully. {sourceMember.Message}. {matchedPersons.Count()} Matched Persons found.\n");
             else
@@ -329,9 +329,13 @@ namespace DynamicsAdapter.Web.Mapping
 
 
             int i = 1;
-            foreach (Person p in matchedPersons)
+            foreach (PersonFound p in matchedPersons)
             {
+           
+               
                 strbuilder.Append($"For Matched Person {i} : ");
+                if (p.SourcePersonalIdentifier != null)
+                    strbuilder.Append($" Source ID:- {p.SourcePersonalIdentifier.Type}/{p.SourcePersonalIdentifier.Value} - ");
                 strbuilder.Append($"{(p.Identifiers == null ? 0 : p.Identifiers.Count)} identifier(s) found.  ");
                 strbuilder.Append($"{(p.Addresses == null ? 0 : p.Addresses.Count)} addresses found. ");
                 strbuilder.Append($"{(p.Phones == null ? 0 : p.Phones.Count)} phone number(s) found. ");

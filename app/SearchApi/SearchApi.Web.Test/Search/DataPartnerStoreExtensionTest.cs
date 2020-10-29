@@ -45,7 +45,7 @@ namespace SearchApi.Web.Test.Search
         [Test]
         public void update_all_should_return_true_all_complete()
         {
-            Assert.AreEqual(false, jsonData.AllPartnerCompleted());
+            Assert.AreEqual(false, jsonData.AllFastSearchPartnerCompleted());
             var sr = jsonData.UpdateDataPartner("BCHydro");
             sr = JsonConvert.SerializeObject(sr).UpdateDataPartner("ICBC");
             Assert.AreEqual(true, JsonConvert.SerializeObject(sr).AllPartnerCompleted());
@@ -57,8 +57,20 @@ namespace SearchApi.Web.Test.Search
             Assert.AreEqual(false, jsonDataJCA.AllPartnerCompleted());
             var sr = jsonDataJCA.UpdateDataPartner("BCHydro");
             sr = JsonConvert.SerializeObject(sr).UpdateDataPartner("ICBC");
-          
-            Assert.AreEqual(true, JsonConvert.SerializeObject(sr).AllPartnerCompleted());
+  
+            Assert.AreEqual(true, JsonConvert.SerializeObject(sr).AllFastSearchPartnerCompleted());
+            Assert.AreEqual(false, JsonConvert.SerializeObject(sr).AllPartnerCompleted());
+
+        }
+
+        [Test]
+        public void update_all_should_return_true_all_completed_even_if_jca_false()
+        {
+            Assert.AreEqual(false, jsonDataJCA.AllFastSearchPartnerCompleted());
+            var sr = jsonDataJCA.UpdateDataPartner("BCHydro");
+            sr = JsonConvert.SerializeObject(sr).UpdateDataPartner("ICBC");
+
+            Assert.AreEqual(true, JsonConvert.SerializeObject(sr).AllFastSearchPartnerCompleted());
 
         }
 

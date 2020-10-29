@@ -56,7 +56,7 @@ namespace SearchApi.Web.DeepSearch
         {
             try
             {
-                return JsonConvert.SerializeObject(await _cacheService.GetRequest(searchRequestKey)).AllPartnerCompleted();
+                return JsonConvert.SerializeObject(await _cacheService.GetRequest(searchRequestKey)).AllFastSearchPartnerCompleted();
 
             }
             catch (Exception exception)
@@ -90,6 +90,7 @@ namespace SearchApi.Web.DeepSearch
         {
             try
             {
+                if (JsonConvert.SerializeObject(await _cacheService.GetRequest(searchRequestKey)).AllPartnerCompleted())
                 await _cacheService.DeleteRequest(searchRequestKey);
                 IEnumerable<string> keys = await SearchDeepSearchKeys(searchRequestKey);
                 foreach (var key in keys)

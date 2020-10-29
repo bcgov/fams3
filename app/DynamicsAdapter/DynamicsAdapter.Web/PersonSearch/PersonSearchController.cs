@@ -215,7 +215,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                     SSG_SearchApiRequest request = await _register.GetSearchApiRequest(key);
                     await _searchApiRequestService.MarkComplete(request.SearchApiRequestId, token.Token);
                     _logger.LogInformation($"Successfully finalized Person Search.");
-                    await _register.RemoveSearchApiRequest(key);
+                   // await _register.RemoveSearchApiRequest(key);
                 }
                 catch (Exception ex)
                 {

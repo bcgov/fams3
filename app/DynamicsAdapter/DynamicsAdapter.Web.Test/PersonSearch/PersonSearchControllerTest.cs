@@ -310,7 +310,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             var result = await _sut.Finalized(_searchRequestKey, _fakePersonFinalizedEvent);
            _searchApiRequestServiceMock
                 .Verify(x => x.MarkComplete(It.Is<Guid>(x => x == _testGuid), It.IsAny<CancellationToken>()), Times.Once);
-            _registerMock.Verify(x => x.RemoveSearchApiRequest(It.IsAny<string>()), Times.Once);
+           // _registerMock.Verify(x => x.RemoveSearchApiRequest(It.IsAny<string>()), Times.Once);
             Assert.IsInstanceOf(typeof(OkResult), result);
         }
 

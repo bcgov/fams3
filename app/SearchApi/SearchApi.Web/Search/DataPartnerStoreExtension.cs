@@ -45,10 +45,21 @@ namespace SearchApi.Web.Search
             if (!string.IsNullOrEmpty(json))
             {
                 var request = JsonConvert.DeserializeObject<SearchRequest>(json);
-                return !request.DataPartners.Any(x => x.Completed == false && x.SearchSpeed  == SearchSpeedType.Fast);
+                return !request.DataPartners.Any(x => x.Completed == false);
             }
             else return true; // we can't find request, possibly completed and already deleted from redis. requires refactor
             
+        }
+
+        public static bool AllFastSearchPartnerCompleted(this string json)
+        {
+            if (!string.IsNullOrEmpty(json))
+            {
+                var request = JsonConvert.DeserializeObject<SearchRequest>(json);
+                return !request.DataPartners.Any(x => x.Completed == false && x.SearchSpeed == SearchSpeedType.Fast);
+            }
+            else return true; // we can't find request, possibly completed and already deleted from redis. requires refactor
+
         }
 
         public static string DeepSearchKey(this string searchRequestKey, string datapartner)

@@ -46,6 +46,9 @@ namespace BcGov.Fams3.Redis.Test
                 It.IsAny<byte[]>(), It.IsAny<DistributedCacheEntryOptions>(), It.IsAny<CancellationToken>()))
                 .Verifiable();
 
+           // _distributedCacheMock.Setup(x => x.Get(It.IsAny<string>())).Returns(Task.FromResult("data"));
+
+
             _distributedCacheMock.Setup(x => x.SetAsync("key",
       It.IsAny<byte[]>(), It.IsAny<DistributedCacheEntryOptions>(), It.IsAny<CancellationToken>()))
       .Verifiable();
@@ -123,13 +126,22 @@ namespace BcGov.Fams3.Redis.Test
         }
 
         [Test]
-        public void with_correct_data_and_key_saveRequest_successfully()
+        public void with_correct_data_and_key_saveString_in_cache_successfully()
         {
-            _sut.SaveRequest("data","key");
+            _sut.SaveString("data","key");
             _distributedCacheMock.Verify(x => x.SetAsync("key",
                 It.IsAny<byte[]>(),
                 It.IsAny<DistributedCacheEntryOptions>(),
                 It.IsAny<CancellationToken>()), Times.AtLeastOnce());
+
+        }
+
+        [Test]
+        public async Task with_correct_data_and_key_gettring_in_cache_successfully()
+        {
+          await   _sut.SaveString("data", "key");
+            var data = await _sut.GetString("key");
+            _distributedCacheMock.Verify(x => x.GetAsync("key", It.IsAny<CancellationToken>()), Times.AtLeastOnce());
 
         }
 

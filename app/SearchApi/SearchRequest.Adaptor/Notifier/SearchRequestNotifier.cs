@@ -119,8 +119,9 @@ namespace SearchRequestAdaptor.Notifier
                     string responseContent = await response.Content.ReadAsStringAsync();
                     var saved = JsonConvert.DeserializeObject<SearchRequestSavedEvent>(responseContent);
 
-                    //the new action will get Notification, only failed or rejected are got published.
-                    if (saved.Action != RequestAction.NEW)
+                    //for the new and update action will get Notification, only failed or rejected are got published.
+                    //here, we only send Saved event for Cancel.
+                    if (saved.Action != RequestAction.NEW && saved.Action != RequestAction.UPDATE)
                     {
                         _logger.LogInformation(
                             $"publish SearchRequestSaved");

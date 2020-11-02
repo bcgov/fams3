@@ -27,7 +27,7 @@ namespace DynamicsAdapter.Web.Register
         Task<SSG_Identifier> GetMatchedSourceIdentifier(PersonalIdentifier identifer, string searchRequestKey);
         Task<SSG_Identifier> GetMatchedSourceIdentifier(PersonalIdentifier identifer, Guid searchApiRequestId);
 
-        //Task<bool> AllDataPartnerComplete(string searchRequestKey);
+        Task<bool> DataPartnerSearchIsComplete(string searchRequestKey);
     }
 
     public class SearchRequestRegister : ISearchRequestRegister
@@ -150,15 +150,12 @@ namespace DynamicsAdapter.Web.Register
             return true;
         }
 
-        //public  Task<bool> AllDataPartnerComplete(string searchRequestKey)
-        //{
-
-        //    throw NotSupportedException();
-        ////    string data = await _cache.Get($"{searchRequestKey}");
-        ////    if (string.IsNullOrEmpty(data)) return true;
-        ////    IEnumerable<JToken> tokens = JObject.Parse(data).SelectTokens("$.DataPartners[?(@.Completed == false)].Completed");
-        ////    IEnumerable<JToken> tokens = JObject.Parse(data).SelectTokens("$.DataPartners[?(@.Completed == false)].Completed"); 
-            
-        //}
+        public async Task<bool> DataPartnerSearchIsComplete(string searchRequestKey)
+        {
+            string data = await _cache.Get($"{searchRequestKey}");
+            if (string.IsNullOrEmpty(data)) return true;
+            IEnumerable<JToken> tokens = JObject.Parse(data).SelectTokens("$.DataPartners[?(@.Completed == false)].Completed");
+            return !tokens.Any();
+        }
     }
 }

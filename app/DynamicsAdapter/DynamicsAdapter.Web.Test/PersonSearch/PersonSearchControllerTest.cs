@@ -28,6 +28,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         private Guid _testGuid;
         private Guid _exceptionGuid;
         private string _searchRequestKey;
+        private string _searchRequestKeySearchNotComplete;
         private string _exceptionSearchRequestKey;
 
         private PersonSearchController _sut;
@@ -58,6 +59,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         {
             _testGuid = Guid.NewGuid();
             _searchRequestKey = "fileId_SequenceNumber";
+            _searchRequestKeySearchNotComplete = "fileId_SequenceNumber_NotComplete";
             _exceptionSearchRequestKey = "exception_seqNum";
             _exceptionGuid = Guid.NewGuid();
             _loggerMock = new Mock<ILogger<PersonSearchController>>();
@@ -277,6 +279,14 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
 
             _registerMock.Setup(x => x.GetSearchApiRequest(It.Is<string>(m => m == _searchRequestKey)))
                 .Returns(Task.FromResult(_fakeSearchApiRequest));
+            _registerMock.Setup(x => x.GetSearchApiRequest(It.Is<string>(m => m == _searchRequestKeySearchNotComplete)))
+                .Returns(Task.FromResult(_fakeSearchApiRequest));
+
+            _registerMock.Setup(x => x.DataPartnerSearchIsComplete(It.Is<string>(m => m == _searchRequestKey)))
+            .Returns(Task.FromResult(true));
+
+            _registerMock.Setup(x => x.DataPartnerSearchIsComplete(It.Is<string>(m => m == _searchRequestKeySearchNotComplete)))
+           .Returns(Task.FromResult(false));
 
             _registerMock.Setup(x => x.GetMatchedSourceIdentifier(It.IsAny<PersonalIdentifier>(), It.IsAny<Guid>()))
                 .Returns(Task.FromResult(_fakeSourceIdentifier));
@@ -310,7 +320,17 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             var result = await _sut.Finalized(_searchRequestKey, _fakePersonFinalizedEvent);
            _searchApiRequestServiceMock
                 .Verify(x => x.MarkComplete(It.Is<Guid>(x => x == _testGuid), It.IsAny<CancellationToken>()), Times.Once);
-           // _registerMock.Verify(x => x.RemoveSearchApiRequest(It.IsAny<string>()), Times.Once);
+           _registerMock.Verify(x => x.RemoveSearchApiRequest(It.IsAny<string>()), Times.Once);
+            Assert.IsInstanceOf(typeof(OkResult), result);
+        }
+
+        [Test]
+        public async Task With_valid_finalized_event_with_inomcplete_search_jca_it_should_return_ok_but_not_delete_key()
+        {
+            var result = await _sut.Finalized(_searchRequestKeySearchNotComplete, _fakePersonFinalizedEvent);
+            _searchApiRequestServiceMock
+                 .Verify(x => x.MarkComplete(It.Is<Guid>(x => x == _testGuid), It.IsAny<CancellationToken>()), Times.Once);
+            _registerMock.Verify(x => x.RemoveSearchApiRequest(It.IsAny<string>()), Times.Never);
             Assert.IsInstanceOf(typeof(OkResult), result);
         }
 

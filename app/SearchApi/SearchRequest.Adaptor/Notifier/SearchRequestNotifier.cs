@@ -119,9 +119,9 @@ namespace SearchRequestAdaptor.Notifier
                     string responseContent = await response.Content.ReadAsStringAsync();
                     var saved = JsonConvert.DeserializeObject<SearchRequestSavedEvent>(responseContent);
 
-                    //for the new and update action will get Notification, only failed or rejected are got published.
-                    //here, we only send Saved event for Cancel.
-                    if (saved.Action != RequestAction.NEW && saved.Action != RequestAction.UPDATE)
+                    //for the new action will get Notification, only failed or rejected are got published.
+                    //for the update action, fmep needs notified and notification from dynamics.
+                    if (saved.Action != RequestAction.NEW)
                     {
                         _logger.LogInformation(
                             $"publish SearchRequestSaved");

@@ -72,14 +72,13 @@ namespace SearchRequest.Adaptor.Test.Notifier
                 Action = BcGov.Fams3.SearchApi.Contracts.Person.RequestAction.NEW,
                 RequestId = "id"
             };
+
+            _searchRequestOptionsMock.Setup(x => x.Value).Returns(new SearchRequestAdaptorOptions().AddWebHook("test", "http://test:1234/"));
         }
 
         [Test]
         public async Task NotifySearchRequestEventAsync_should_send_httpRequest_to_one_subscribers_and_not_publish_saved()
         {
-            _searchRequestOptionsMock.Setup(x => x.Value).Returns(
-               new SearchRequestAdaptorOptions().AddWebHook("test", "http://test:1234/"));
-
             _sut = new WebHookSearchRequestNotifier(_httpClient, _searchRequestOptionsMock.Object, _loggerMock.Object, _searchRquestEventPublisherMock.Object);
 
 
@@ -102,6 +101,55 @@ namespace SearchRequest.Adaptor.Test.Notifier
             _searchRquestEventPublisherMock.Verify(
                 x => x.PublishSearchRequestSaved(
                 It.IsAny<SearchRequestSavedEvent>()), Times.Never);
+        }
+
+        [Test]
+        public async Task NotifySearchRequestEventAsync_update_should_send_httpRequest_to_one_subscribers_and_publish_saved()
+        {
+            _sut = new WebHookSearchRequestNotifier(_httpClient, _searchRequestOptionsMock.Object, _loggerMock.Object, _searchRquestEventPublisherMock.Object);
+            _fakeSearchRequestOrdered.Action = BcGov.Fams3.SearchApi.Contracts.Person.RequestAction.UPDATE;
+            _httpHandlerMock
+                .Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>()
+                )
+                // prepare the expected response of the mocked http call
+                .ReturnsAsync(new HttpResponseMessage()
+                {
+                    StatusCode = HttpStatusCode.OK,
+                    Content = new StringContent(JsonConvert.SerializeObject(
+                        new SearchRequestSavedEvent()
+                        {
+                            SearchRequestId = Guid.NewGuid(),
+                            Action=BcGov.Fams3.SearchApi.Contracts.Person.RequestAction.UPDATE,
+                            SearchRequestKey = "fileId",
+                            RequestId = "requestId",
+                            ProviderProfile = new SearchRequest.Adaptor.Publisher.Models.ProviderProfile() { Name = "AgencyName" }
+                        })),
+                })
+                .Verifiable();
+
+            await _sut.NotifySearchRequestEventAsync(
+                _fakeSearchRequestOrdered.RequestId,
+                _fakeSearchRequestOrdered, CancellationToken.None);
+
+            var expectedUri = new Uri("http://test:1234/UpdateSearchRequest/id");
+
+            _httpHandlerMock.Protected().Verify(
+                "SendAsync",
+                Times.Exactly(1),
+                ItExpr.Is<HttpRequestMessage>(req =>
+                        req.Method == HttpMethod.Post
+                        && req.RequestUri.AbsoluteUri == expectedUri.AbsoluteUri // to this uri
+                ),
+                ItExpr.IsAny<CancellationToken>()
+            );
+
+            _searchRquestEventPublisherMock.Verify(
+                x => x.PublishSearchRequestSaved(
+                It.IsAny<SearchRequestSavedEvent>()), Times.Once);
         }
 
 

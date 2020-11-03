@@ -455,11 +455,13 @@ namespace DynamicsAdapter.Web.SearchAgency
                 updatedFields.Add("ssg_AgencyLocation", location);
             }
 
-            if (updatedFields.Count > 0) //except notes, there is something else changed.
-            {
-                await _searchRequestService.UpdateSearchRequest(_uploadedSearchRequest.SearchRequestId, updatedFields, _cancellationToken);
+            //comment out this as even there is nothing needed to change, we still need to set ssg_updatedbyagency to true to
+            //trigger the Dynamics to send out the estimation date notification.
+            //if (updatedFields.Count > 0) //except notes, there is something else changed.
+            //{
+            await _searchRequestService.UpdateSearchRequest(_uploadedSearchRequest.SearchRequestId, updatedFields, _cancellationToken);
                 _logger.LogInformation("Update Search Request successfully");
-            }
+            //}
 
 
             return true;

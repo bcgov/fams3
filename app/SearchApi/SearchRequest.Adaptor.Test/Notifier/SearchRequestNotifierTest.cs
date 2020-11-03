@@ -104,7 +104,7 @@ namespace SearchRequest.Adaptor.Test.Notifier
         }
 
         [Test]
-        public async Task NotifySearchRequestEventAsync_update_should_send_httpRequest_to_one_subscribers_and_not_publish_saved()
+        public async Task NotifySearchRequestEventAsync_update_should_send_httpRequest_to_one_subscribers_and_publish_saved()
         {
             _sut = new WebHookSearchRequestNotifier(_httpClient, _searchRequestOptionsMock.Object, _loggerMock.Object, _searchRquestEventPublisherMock.Object);
             _fakeSearchRequestOrdered.Action = BcGov.Fams3.SearchApi.Contracts.Person.RequestAction.UPDATE;
@@ -149,7 +149,7 @@ namespace SearchRequest.Adaptor.Test.Notifier
 
             _searchRquestEventPublisherMock.Verify(
                 x => x.PublishSearchRequestSaved(
-                It.IsAny<SearchRequestSavedEvent>()), Times.Never);
+                It.IsAny<SearchRequestSavedEvent>()), Times.Once);
         }
 
 

@@ -395,11 +395,12 @@ namespace DynamicsAdapter.Web.Mapping
         }
     }
 
-    public class IncomeAssistanceConvertor : IValueConverter<bool?, int>
+    public class IncomeAssistanceConvertor : IValueConverter<string, int>
     {
-        public int Convert(bool? sourceMember, ResolutionContext context)
+        public int Convert(string sourceMember, ResolutionContext context)
         {
-            if (sourceMember == null || sourceMember == false)
+            int ? source = Enumeration.GetAll<IncomeAssistanceStatusType>().FirstOrDefault(m => m.Name.Equals(sourceMember, StringComparison.OrdinalIgnoreCase))?.Value;
+            if( source==null || source== IncomeAssistanceStatusType.Unknown.Value)
                 return EmploymentRecordType.Employment.Value;
             else
                 return EmploymentRecordType.IncomeAssistance.Value;

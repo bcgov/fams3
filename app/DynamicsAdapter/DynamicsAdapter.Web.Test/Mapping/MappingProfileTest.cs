@@ -252,6 +252,23 @@ namespace DynamicsAdapter.Web.Test.Mapping
         }
 
         [Test]
+        public void Employment_with_closed_status_employer_should_map_to_SSG_Employment_incomeAssistance_employmentType_correctly()
+        {
+            var employment = new Employment()
+            {
+                Employer = null,
+                IncomeAssistance = false,
+                EmploymentConfirmed = false,
+                IncomeAssistanceStatus = "Closed",
+            };
+            EmploymentEntity ssg_empl = _mapper.Map<EmploymentEntity>(employment);
+            Assert.AreEqual(false, ssg_empl.EmploymentConfirmed);
+            Assert.AreEqual(EmploymentRecordType.IncomeAssistance.Value, ssg_empl.EmploymentType);
+            Assert.AreEqual("Closed", ssg_empl.IncomeAssistanceStatus);
+            Assert.AreEqual(IncomeAssistanceStatusType.Closed.Value, ssg_empl.IncomeAssistanceStatusOption);
+        }
+
+        [Test]
         public void Phone_should_map_to_SSG_EmploymentContact_correctly()
         {
             Phone phoneNumber = new Phone()

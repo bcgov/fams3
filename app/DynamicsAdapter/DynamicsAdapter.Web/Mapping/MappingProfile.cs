@@ -162,7 +162,7 @@ namespace DynamicsAdapter.Web.Mapping
               .ForMember(dest => dest.City, opt => opt.MapFrom(src => (src.Employer == null) ? string.Empty : (src.Employer.Address == null) ? string.Empty : src.Employer.Address.City))
               .ForMember(dest => dest.IncomeAssistanceStatus, opt => opt.MapFrom(src => src.IncomeAssistanceStatus))
               .ForMember(dest => dest.IncomeAssistanceStatusOption, opt => opt.ConvertUsing(new IncomeAssistanceStatusConvertor(), src => src.IncomeAssistanceStatus))
-              .ForMember(dest => dest.EmploymentType, opt => opt.ConvertUsing(new IncomeAssistanceConvertor(), src => src.IncomeAssistance))
+              .ForMember(dest => dest.EmploymentType, opt => opt.ConvertUsing(new IncomeAssistanceConvertor(), src => src.IncomeAssistanceStatus))
               .ForMember(dest => dest.CountrySubdivisionText, opt => opt.MapFrom(src => (src.Employer == null) ? string.Empty : (src.Employer.Address == null) ? string.Empty : src.Employer.Address.StateProvince))
               .ForMember(dest => dest.CountryText, opt => opt.MapFrom(src => (src.Employer == null) ? string.Empty : (src.Employer.Address == null) ? string.Empty : src.Employer.Address.CountryRegion))
               .ForMember(dest => dest.BusinessOwner, opt => opt.MapFrom(src => (src.Employer == null) ? string.Empty : src.Employer.OwnerName))

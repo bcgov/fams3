@@ -325,11 +325,11 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         }
 
         [Test]
-        public async Task With_valid_finalized_event_with_inomcplete_search_jca_it_should_return_ok_but_not_delete_key()
+        public async Task With_valid_finalized_event_with_inomcplete_search_jca_it_should_not_mark_complete_and_not_delete_key()
         {
             var result = await _sut.Finalized(_searchRequestKeySearchNotComplete, _fakePersonFinalizedEvent);
             _searchApiRequestServiceMock
-                 .Verify(x => x.MarkComplete(It.Is<Guid>(x => x == _testGuid), It.IsAny<CancellationToken>()), Times.Once);
+                 .Verify(x => x.MarkComplete(It.Is<Guid>(x => x == _testGuid), It.IsAny<CancellationToken>()), Times.Never());
             _registerMock.Verify(x => x.RemoveSearchApiRequest(It.IsAny<string>()), Times.Never);
             Assert.IsInstanceOf(typeof(OkResult), result);
         }

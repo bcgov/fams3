@@ -152,7 +152,7 @@ namespace DynamicsAdapter.Web.Register
 
         public async Task<bool> DataPartnerSearchIsComplete(string searchRequestKey)
         {
-            string data = await _cache.Get($"{searchRequestKey}");
+            string data = await _cache.GetString($"{searchRequestKey}");
             if (string.IsNullOrEmpty(data)) return true;
             IEnumerable<JToken> tokens = JObject.Parse(data).SelectTokens("$.DataPartners[?(@.Completed == false)].Completed");
             return !tokens.Any();

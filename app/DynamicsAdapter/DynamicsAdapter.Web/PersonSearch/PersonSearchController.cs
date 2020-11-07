@@ -72,6 +72,11 @@ namespace DynamicsAdapter.Web.PersonSearch
                     await _searchApiRequestService.AddEventAsync(request.SearchApiRequestId, searchApiEvent, cts.Token);
                     _logger.LogInformation($"Successfully created completed event for SearchApiRequest");
 
+                    while (await ResultIsInUploading(personCompletedEvent))
+                        Thread.Yield();
+
+                    await RegisterResultUploading(personCompletedEvent);
+        
                     //upload search result to dynamic search api
                     var searchRequestId = await _searchApiRequestService.GetLinkedSearchRequestIdAsync(request.SearchApiRequestId, cts.Token);
                     SSG_SearchRequest searchRequest = new SSG_SearchRequest()
@@ -93,6 +98,8 @@ namespace DynamicsAdapter.Web.PersonSearch
                         }
                     }
 
+                    await DeRegisterResultUploading(personCompletedEvent);
+
                     await UpdateRetries(personCompletedEvent?.ProviderProfile.Name,0, cts, request);
                     return Ok();
                 }
@@ -101,6 +108,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             catch(Exception ex)
             {
                 _logger.LogError(ex.Message);
+                await DeRegisterResultUploading(personCompletedEvent);
                 return BadRequest();
             }
         }
@@ -124,6 +132,20 @@ namespace DynamicsAdapter.Web.PersonSearch
             }
         }
 
+        private async Task<bool> ResultIsInUploading(PersonSearchCompleted searchCompleted)
+        {
+            return await _register.IsSearchResultUploading($"{searchCompleted.SearchRequestKey.Substring(0, 6)}_{searchCompleted.ProviderProfile.Name}");
+        }
+
+        private async Task<bool> RegisterResultUploading(PersonSearchCompleted searchCompleted)
+        {
+            return await _register.RegisterSearchResultUploading($"{searchCompleted.SearchRequestKey.Substring(0, 6)}_{searchCompleted.ProviderProfile.Name}");
+        }
+
+        private async Task<bool> DeRegisterResultUploading(PersonSearchCompleted searchCompleted)
+        {
+            return await _register.DeRegisterSearchResultUploading($"{searchCompleted.SearchRequestKey.Substring(0, 6)}_{searchCompleted.ProviderProfile.Name}");
+        }
         [HttpPost]
         [Consumes("application/json")]
         [Produces("application/json")]

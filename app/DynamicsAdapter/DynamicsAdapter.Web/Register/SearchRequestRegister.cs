@@ -1,5 +1,6 @@
 ﻿using BcGov.Fams3.Redis;
 using DynamicsAdapter.Web.Mapping;
+using DynamicsAdapter.Web.PersonSearch.Models;
 using Fams3Adapter.Dynamics.DataProvider;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.SearchApiRequest;
@@ -28,6 +29,10 @@ namespace DynamicsAdapter.Web.Register
         Task<SSG_Identifier> GetMatchedSourceIdentifier(PersonalIdentifier identifer, Guid searchApiRequestId);
 
         Task<bool> DataPartnerSearchIsComplete(string searchRequestKey);
+
+        Task<bool> IsSearchResultUploading(string key);
+        Task<bool> RegisterSearchResultUploading(string key);
+        Task<bool> DeRegisterSearchResultUploading(string key);
     }
 
     public class SearchRequestRegister : ISearchRequestRegister
@@ -57,6 +62,33 @@ namespace DynamicsAdapter.Web.Register
         {
             if (request == null) return false;
             await _cache.Save($"{Keys.REDIS_KEY_PREFIX}{request.SearchRequest.FileId}_{request.SequenceNumber}", request);
+            return true;
+        }
+        public async Task<bool> IsSearchResultUploading(string key)
+        {
+            if (string.IsNullOrEmpty(key)) return false;
+            string existedData = await _cache.GetString($"{Keys.REDIS_RESULT_UPLOAD_KEY_PREFIX}{key}");
+
+            if (string.Equals(existedData, "inProgress", StringComparison.InvariantCultureIgnoreCase)) return true;
+            return false;
+        }
+
+        public async Task<bool> RegisterSearchResultUploading(string key)
+        {
+            if (string.IsNullOrEmpty(key)) return false;
+            string existedData = await _cache.GetString($"{Keys.REDIS_RESULT_UPLOAD_KEY_PREFIX}{key}");
+
+            if (string.Equals(existedData, "inProgress", StringComparison.InvariantCultureIgnoreCase)) return false;
+            else
+            {
+                await _cache.SaveString("inProgress", $"{Keys.REDIS_RESULT_UPLOAD_KEY_PREFIX}{key}");
+                return true;
+            }
+        }
+
+        public async Task<bool> DeRegisterSearchResultUploading(string key) 
+        {
+            await _cache.Delete($"{Keys.REDIS_RESULT_UPLOAD_KEY_PREFIX}{key}");
             return true;
         }
 

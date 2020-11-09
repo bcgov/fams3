@@ -108,7 +108,8 @@ namespace DynamicsAdapter.Web.PersonSearch
             catch(Exception ex)
             {
                 _logger.LogError(ex.Message);
-                await DeRegisterResultUploading(personCompletedEvent);
+                if(personCompletedEvent!=null)
+                    await DeRegisterResultUploading(personCompletedEvent);
                 return BadRequest();
             }
         }

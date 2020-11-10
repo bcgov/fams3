@@ -82,6 +82,7 @@ namespace SearchApi.Web.DeepSearch
         {
             try
             {
+                _logger.LogInformation($"Updating data partner as completed for {dataPartner} for {eventName} event - {searchRequestKey}");
                 if (eventName.Equals(EventName.Completed) || eventName.Equals(EventName.Rejected))
                 {
                     var searchRequest = JsonConvert.SerializeObject(await _cacheService.GetRequest(searchRequestKey)).UpdateDataPartner(dataPartner);
@@ -219,6 +220,7 @@ namespace SearchApi.Web.DeepSearch
 
                 if (waveData.Any(x => x.CurrentWave == _deepSearchOptions.MaxWaveCount) || NoNewParameter(waveData))
                 {
+                    _logger.Log(LogLevel.Information, $"{searchRequestKey} no new wave to initiate");
                     return true;
                 }
                 else

@@ -55,6 +55,7 @@ namespace SearchApi.Web.Notifications
                     StringContent content;
                     if (eventName == EventName.Finalized)
                     {
+                        _logger.LogInformation($"Initiating {eventName} event for {eventStatus.SearchRequestKey} for {eventStatus.ProviderProfile.Name}");
                         PersonSearchEvent finalizedSearch = new PersonSearchFinalizedEvent()
                         {
                             SearchRequestKey = eventStatus.SearchRequestKey,

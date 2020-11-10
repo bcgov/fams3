@@ -47,7 +47,7 @@ services:
       DeepSearch__MaxWaveCount: 4
       JAEGER_ENDPOINT: http://jaeger-collector:14268/api/traces
       SearchApi__WebHooks__0__Name: dynadapter
-      SearchApi__WebHooks__0__Uri: http://dynadapter/PersonSearch
+      SearchApi__WebHooks__0__Uri: http://localhost:5000/PersonSearch
       SPLUNK_COLLECTOR_URL: https://splunk:8088
       SPLUNK_TOKEN: ${SPLUNK_TOKEN}
     ports:

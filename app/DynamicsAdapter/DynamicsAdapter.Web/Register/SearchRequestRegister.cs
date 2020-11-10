@@ -154,7 +154,7 @@ namespace DynamicsAdapter.Web.Register
         {
             string data = await _cache.GetString($"{searchRequestKey}");
 
-            _logger.LogDebug($"DataPartnerSearchIsComplete {data}");
+            _logger.LogDebug($"DataPartnerSearchIsComplete : {data}");
             if (string.IsNullOrEmpty(data)) return true;
             IEnumerable<JToken> tokens = JObject.Parse(data).SelectTokens("$.DataPartners[?(@.Completed == false)]");
             return !tokens.Any();

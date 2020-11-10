@@ -72,10 +72,12 @@ namespace DynamicsAdapter.Web.PersonSearch
                     await _searchApiRequestService.AddEventAsync(request.SearchApiRequestId, searchApiEvent, cts.Token);
                     _logger.LogInformation($"Successfully created completed event for SearchApiRequest");
 
-                    while (await ResultIsInUploading(personCompletedEvent))
-                        Thread.Yield();
-
-                    await RegisterResultUploading(personCompletedEvent);
+                    string resultUploadRedisKey = GetRedisResultUploadKey(personCompletedEvent);
+                    while (await ResultIsInUploading(resultUploadRedisKey))
+                    {
+                        await DelayFunc(10000);
+                    }
+                    await RegisterResultUploading(resultUploadRedisKey);
         
                     //upload search result to dynamic search api
                     var searchRequestId = await _searchApiRequestService.GetLinkedSearchRequestIdAsync(request.SearchApiRequestId, cts.Token);
@@ -98,7 +100,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                         }
                     }
 
-                    await DeRegisterResultUploading(personCompletedEvent);
+                    await DeRegisterResultUploading(resultUploadRedisKey);
 
                     await UpdateRetries(personCompletedEvent?.ProviderProfile.Name,0, cts, request);
                     return Ok();
@@ -109,10 +111,13 @@ namespace DynamicsAdapter.Web.PersonSearch
             {
                 _logger.LogError(ex.Message);
                 if(personCompletedEvent!=null)
-                    await DeRegisterResultUploading(personCompletedEvent);
+                    await DeRegisterResultUploading(GetRedisResultUploadKey(personCompletedEvent));
                 return BadRequest();
             }
         }
+
+        //this is for writing unit tests easier. Or we can just use Task.Delay directly in controller.
+        internal Func<int, Task> DelayFunc = ( milliSec )=> Task.Delay( milliSec );
 
         private async Task UpdateRetries(string providerProfileName, int noOfTry, CancellationTokenSource cts, SSG_SearchApiRequest request)
         {
@@ -133,20 +138,26 @@ namespace DynamicsAdapter.Web.PersonSearch
             }
         }
 
-        private async Task<bool> ResultIsInUploading(PersonSearchCompleted searchCompleted)
+        private async Task<bool> ResultIsInUploading(string redisResultUploadKey)
         {
-            return await _register.IsSearchResultUploading($"{searchCompleted.SearchRequestKey.Substring(0, 6)}_{searchCompleted.ProviderProfile.Name}");
+            return await _register.IsSearchResultUploading(redisResultUploadKey);
         }
 
-        private async Task<bool> RegisterResultUploading(PersonSearchCompleted searchCompleted)
+        private async Task<bool> RegisterResultUploading(string redisResultUploadKey)
         {
-            return await _register.RegisterSearchResultUploading($"{searchCompleted.SearchRequestKey.Substring(0, 6)}_{searchCompleted.ProviderProfile.Name}");
+            return await _register.RegisterSearchResultUploading(redisResultUploadKey);
         }
 
-        private async Task<bool> DeRegisterResultUploading(PersonSearchCompleted searchCompleted)
+        private async Task<bool> DeRegisterResultUploading(string redisResultUploadKey)
         {
-            return await _register.DeRegisterSearchResultUploading($"{searchCompleted.SearchRequestKey.Substring(0, 6)}_{searchCompleted.ProviderProfile.Name}");
+            return await _register.DeRegisterSearchResultUploading(redisResultUploadKey);
         }
+
+        private string GetRedisResultUploadKey(PersonSearchCompleted personCompletedEvent)
+        {
+            return $"{personCompletedEvent.SearchRequestKey.Substring(0, 6)}_{personCompletedEvent.ProviderProfile.Name}";
+        }
+
         [HttpPost]
         [Consumes("application/json")]
         [Produces("application/json")]

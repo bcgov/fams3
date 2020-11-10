@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -315,6 +315,38 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _dataPartnerServiceMock
               .Verify(x => x.UpdateSearchRequestApiProvider(It.IsAny<SSG_SearchapiRequestDataProvider>(), It.IsAny<CancellationToken>()), Times.Once);
             Assert.IsInstanceOf(typeof(OkResult), result);
+        }
+
+        [Test]
+        public async Task With_valid_completed_event_if_for_same_sr_dp_is_uplodaing_result_should_wait_for_existing_complete()
+        {
+            _registerMock.SetupSequence(x => x.IsSearchResultUploading(It.IsAny<string>()))
+                .Returns(Task.FromResult(true))
+                .Returns(Task.FromResult(true))
+                .Returns(Task.FromResult(false));
+            
+            int actualDelayMilliSec = 0;
+            int actualDelayCallCount = 0;
+
+            _sut.DelayFunc = (milliSec) =>
+            {
+                actualDelayCallCount++;
+                actualDelayMilliSec += milliSec;
+                return Task.CompletedTask;
+            };
+
+            var result = await _sut.Completed(_searchRequestKey, _fakePersonCompletedEvent);
+
+            _searchResultServiceMock.Verify(x => x.ProcessPersonFound(It.Is<Person>(x => x.FirstName == "TEST1"), It.IsAny<ProviderProfile>(), It.IsAny<SSG_SearchRequest>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>(), It.IsAny<SSG_Identifier>()), Times.Once);
+            _searchApiRequestServiceMock
+                .Verify(x => x.AddEventAsync(It.Is<Guid>(x => x == _testGuid), It.IsAny<SSG_SearchApiEvent>(), It.IsAny<CancellationToken>()), Times.Once);
+            _dataPartnerServiceMock
+               .Verify(x => x.GetSearchApiRequestDataProvider(It.Is<Guid>(x => x == _testGuid), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
+            _dataPartnerServiceMock
+              .Verify(x => x.UpdateSearchRequestApiProvider(It.IsAny<SSG_SearchapiRequestDataProvider>(), It.IsAny<CancellationToken>()), Times.Once);
+            Assert.IsInstanceOf(typeof(OkResult), result);
+            Assert.AreEqual(20000, actualDelayMilliSec);
+            Assert.AreEqual(2, actualDelayCallCount);
         }
 
         [Test]

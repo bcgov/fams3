@@ -297,6 +297,9 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _registerMock.Setup(x => x.DeRegisterSearchResultUploading(It.IsAny<string>()))
                 .Returns(Task.FromResult(true));
 
+            _registerMock.Setup(x => x.RegisterSearchResultUploading(It.IsAny<string>()))
+                .Returns(Task.FromResult(true));
+
             _sut = new PersonSearchController(_searchResultServiceMock.Object, _searchApiRequestServiceMock.Object, _dataPartnerServiceMock.Object, _loggerMock.Object, _mapper.Object, _registerMock.Object);
 
         }

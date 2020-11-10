@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 using SearchApi.Web.DeepSearch;
+using BcGov.Fams3.SearchApi.Contracts.Person;
 
 namespace SearchApi.Web.Notifications
 {
@@ -54,6 +55,7 @@ namespace SearchApi.Web.Notifications
                     StringContent content;
                     if (eventName == EventName.Finalized)
                     {
+                        _logger.LogInformation($"Initiating {eventName} event for {eventStatus.SearchRequestKey} for {eventStatus.ProviderProfile.Name}");
                         PersonSearchEvent finalizedSearch = new PersonSearchFinalizedEvent()
                         {
                             SearchRequestKey = eventStatus.SearchRequestKey,
@@ -105,7 +107,7 @@ namespace SearchApi.Web.Notifications
         {
             await _deepSearchService.UpdateDataPartner(searchRequestKey, eventStatus.ProviderProfile.Name, eventName);
 
-            if (EventName.Completed.Equals(eventName))
+            if (EventName.Completed.Equals(eventName) && eventStatus.ProviderProfile.SearchSpeedType == SearchSpeedType.Fast)
                 await _deepSearchService.UpdateParameters(eventName, (PersonSearchCompleted)eventStatus, searchRequestKey, eventStatus.ProviderProfile.Name);
 
             await ProcessWaveSearch(searchRequestKey, eventName, eventStatus.ProviderProfile.Name);

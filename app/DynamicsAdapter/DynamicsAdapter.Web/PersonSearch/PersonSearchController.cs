@@ -1,13 +1,10 @@
-﻿using AutoMapper;
+using AutoMapper;
 using DynamicsAdapter.Web.PersonSearch.Models;
 using DynamicsAdapter.Web.Register;
 using Fams3Adapter.Dynamics;
 using Fams3Adapter.Dynamics.DataProvider;
-using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.SearchApiEvent;
 using Fams3Adapter.Dynamics.SearchApiRequest;
-using Fams3Adapter.Dynamics.SearchRequest;
-using Fams3Adapter.Dynamics.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -15,7 +12,6 @@ using Newtonsoft.Json;
 using NSwag.Annotations;
 using Serilog.Context;
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -31,13 +27,15 @@ namespace DynamicsAdapter.Web.PersonSearch
         private readonly IDataPartnerService _dataPartnerService;
         private readonly IMapper _mapper;
         private readonly ISearchRequestRegister _register;
+        private ISearchResultQueue _resultQueue;
 
         public PersonSearchController(ISearchResultService searchResultService,
             ISearchApiRequestService searchApiRequestService,
             IDataPartnerService dataPartnerService,
-            ILogger<PersonSearchController> logger, 
+            ILogger<PersonSearchController> logger,
             IMapper mapper,
-            ISearchRequestRegister register)
+            ISearchRequestRegister register,
+            ISearchResultQueue resultQueue)
         {
             _searchResultService = searchResultService;
             _searchApiRequestService = searchApiRequestService;
@@ -45,6 +43,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             _logger = logger;
             _mapper = mapper;
             _register = register;
+            _resultQueue = resultQueue;
         }
 
         //POST: Completed/id
@@ -55,7 +54,7 @@ namespace DynamicsAdapter.Web.PersonSearch
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Route("Completed/{key}")]
         [OpenApiTag("Person Search Events API")]
-        public async Task<IActionResult> Completed(string key, [FromBody]PersonSearchCompleted personCompletedEvent)
+        public IActionResult Completed(string key, [FromBody]PersonSearchCompleted personCompletedEvent)
         {
             try
             {
@@ -63,99 +62,15 @@ namespace DynamicsAdapter.Web.PersonSearch
                 using (LogContext.PushProperty("SearchRequestKey", personCompletedEvent?.SearchRequestKey))
                 using (LogContext.PushProperty("DataPartner", personCompletedEvent?.ProviderProfile.Name))
                 {
-                    _logger.LogInformation("Received Person search completed event");
-                    var cts = new CancellationTokenSource();
-                    SSG_SearchApiRequest request = await _register.GetSearchApiRequest(key);
-                    //update completed event
-                    var searchApiEvent = _mapper.Map<SSG_SearchApiEvent>(personCompletedEvent);
-                    _logger.LogDebug($"Attempting to create a new event for SearchApiRequest");
-                    await _searchApiRequestService.AddEventAsync(request.SearchApiRequestId, searchApiEvent, cts.Token);
-                    _logger.LogInformation($"Successfully created completed event for SearchApiRequest");
-
-                    string resultUploadRedisKey = GetRedisResultUploadKey(personCompletedEvent);
-                    while (await ResultIsInUploading(resultUploadRedisKey))
-                    {
-                        await DelayFunc(10000);
-                    }
-                    await RegisterResultUploading(resultUploadRedisKey);
-        
-                    //upload search result to dynamic search api
-                    var searchRequestId = await _searchApiRequestService.GetLinkedSearchRequestIdAsync(request.SearchApiRequestId, cts.Token);
-                    SSG_SearchRequest searchRequest = new SSG_SearchRequest()
-                    {
-                        SearchRequestId = searchRequestId
-                    };
-
-                    if (personCompletedEvent?.MatchedPersons != null)
-                    {
-                        //try following code, but automapper throws exception.Cannot access a disposed object.Object name: 'IServiceProvider'.
-                        //Parallel.ForEach<Person>(personCompletedEvent.MatchedPersons, async p =>
-                        //{
-                        //    await _searchResultService.ProcessPersonFound(p, personCompletedEvent.ProviderProfile, searchRequest, cts.Token);
-                        //});
-                        foreach (PersonFound p in personCompletedEvent.MatchedPersons)
-                        {
-                            SSG_Identifier sourceIdentifer = await _register.GetMatchedSourceIdentifier(p.SourcePersonalIdentifier, key);
-                            await _searchResultService.ProcessPersonFound(p, personCompletedEvent.ProviderProfile, searchRequest, request.SearchApiRequestId, cts.Token, sourceIdentifer);
-                        }
-                    }
-
-                    await DeRegisterResultUploading(resultUploadRedisKey);
-
-                    await UpdateRetries(personCompletedEvent?.ProviderProfile.Name,0, cts, request);
+                    _resultQueue.Enqueue(personCompletedEvent);
                     return Ok();
                 }
-
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                if(personCompletedEvent!=null)
-                    await DeRegisterResultUploading(GetRedisResultUploadKey(personCompletedEvent));
                 return BadRequest();
             }
-        }
-
-        //this is for writing unit tests easier. Or we can just use Task.Delay directly in controller.
-        internal Func<int, Task> DelayFunc = ( milliSec )=> Task.Delay( milliSec );
-
-        private async Task UpdateRetries(string providerProfileName, int noOfTry, CancellationTokenSource cts, SSG_SearchApiRequest request)
-        {
-            var dataSearchApiDataProvider = await _dataPartnerService.GetSearchApiRequestDataProvider(request.SearchApiRequestId, providerProfileName, cts.Token);
-           
-            if (dataSearchApiDataProvider != null)
-            {
-                //_logger.LogInformation($"Updating the no of tries for search api request {request.SearchApiRequestId}");
-                dataSearchApiDataProvider.NumberOfFailures = (noOfTry == 1) ? dataSearchApiDataProvider.NumberOfFailures + noOfTry : noOfTry;
-                if (dataSearchApiDataProvider.NumberOfDaysToRetry == dataSearchApiDataProvider.NumberOfFailures)
-                    dataSearchApiDataProvider.AllRetriesDone = NullableBooleanType.Yes.Value;
-                else
-                    dataSearchApiDataProvider.AllRetriesDone = NullableBooleanType.No.Value;
-
-
-                await _dataPartnerService.UpdateSearchRequestApiProvider(dataSearchApiDataProvider, cts.Token);
-               // _logger.LogInformation($"Updated the no of tries for search api request {request.SearchApiRequestId}");
-            }
-        }
-
-        private async Task<bool> ResultIsInUploading(string redisResultUploadKey)
-        {
-            return await _register.IsSearchResultUploading(redisResultUploadKey);
-        }
-
-        private async Task<bool> RegisterResultUploading(string redisResultUploadKey)
-        {
-            return await _register.RegisterSearchResultUploading(redisResultUploadKey);
-        }
-
-        private async Task<bool> DeRegisterResultUploading(string redisResultUploadKey)
-        {
-            return await _register.DeRegisterSearchResultUploading(redisResultUploadKey);
-        }
-
-        private string GetRedisResultUploadKey(PersonSearchCompleted personCompletedEvent)
-        {
-            return $"{personCompletedEvent.SearchRequestKey.Substring(0, 6)}_{personCompletedEvent.ProviderProfile.Name}";
         }
 
         [HttpPost]
@@ -219,7 +134,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                     var searchApiEvent = _mapper.Map<SSG_SearchApiEvent>(personFailedEvent);
                     _logger.LogDebug($"Attempting to create a new event for SearchApiRequest.");
                     await _searchApiRequestService.AddEventAsync(request.SearchApiRequestId, searchApiEvent, token.Token);
-                    await UpdateRetries(personFailedEvent?.ProviderProfile.Name, 1, token, request);
+                    await _dataPartnerService.UpdateRetries(personFailedEvent?.ProviderProfile.Name, 1, token, request);
                     _logger.LogInformation($"Successfully created failed event for SearchApiRequest");
                 }
                 catch (Exception ex)

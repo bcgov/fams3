@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Fams3Adapter.Dynamics.SearchApiRequest;
+using Fams3Adapter.Dynamics.Types;
+using Microsoft.Extensions.Logging;
 using Simple.OData.Client;
 using System;
 using System.Collections.Generic;
@@ -10,6 +12,7 @@ namespace Fams3Adapter.Dynamics.DataProvider
 
     public interface IDataPartnerService
     {
+        Task UpdateRetries(string providerProfileName, int noOfTry, CancellationTokenSource cts, SSG_SearchApiRequest request);
 
         Task<IEnumerable<SSG_DataProvider>> GetAllDataProviders(CancellationToken cancellationToken);
 
@@ -49,6 +52,25 @@ namespace Fams3Adapter.Dynamics.DataProvider
                 .Key(searchapiRequestDataProvider.SearchApiRequestDataProvider)
                 .Set(new Entry { { "ssg_numberoffailures", searchapiRequestDataProvider.NumberOfFailures }, { "ssg_allretriesflag", searchapiRequestDataProvider.AllRetriesDone } })
                 .UpdateEntryAsync(cancellationToken);
+        }
+
+        public async Task UpdateRetries(string providerProfileName, int noOfTry, CancellationTokenSource cts, SSG_SearchApiRequest request)
+        {
+            var dataSearchApiDataProvider = await GetSearchApiRequestDataProvider(request.SearchApiRequestId, providerProfileName, cts.Token);
+
+            if (dataSearchApiDataProvider != null)
+            {
+                //_logger.LogInformation($"Updating the no of tries for search api request {request.SearchApiRequestId}");
+                dataSearchApiDataProvider.NumberOfFailures = (noOfTry == 1) ? dataSearchApiDataProvider.NumberOfFailures + noOfTry : noOfTry;
+                if (dataSearchApiDataProvider.NumberOfDaysToRetry == dataSearchApiDataProvider.NumberOfFailures)
+                    dataSearchApiDataProvider.AllRetriesDone = NullableBooleanType.Yes.Value;
+                else
+                    dataSearchApiDataProvider.AllRetriesDone = NullableBooleanType.No.Value;
+
+
+                await UpdateSearchRequestApiProvider(dataSearchApiDataProvider, cts.Token);
+                // _logger.LogInformation($"Updated the no of tries for search api request {request.SearchApiRequestId}");
+            }
         }
     }
 }

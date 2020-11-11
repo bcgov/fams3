@@ -12,6 +12,7 @@
         {
             Cron = "0/5 * * * * ?";
             Failed = "0 0 15 * * ?";
+            ResultUpload = "0/2 * * ? * * *";
         }
 
         /// <summary>
@@ -22,6 +23,6 @@
 
         public string Failed { get; set; }
 
-
+        public string ResultUpload { get; set; }
     }
 }

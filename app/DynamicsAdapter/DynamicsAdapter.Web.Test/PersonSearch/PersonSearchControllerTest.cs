@@ -37,6 +37,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         private Mock<ISearchApiRequestService> _searchApiRequestServiceMock;
         private Mock<IDataPartnerService> _dataPartnerServiceMock; 
         private Mock<ISearchRequestRegister> _registerMock;
+        private Mock<ISearchResultQueue> _resultQueueMock;
         private PersonSearchCompleted _fakePersonCompletedEvent;
         private PersonSearchAccepted _fakePersonAcceptedEvent;
         private PersonSearchFailed _fakePersonFailedEvent;
@@ -66,6 +67,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _searchApiRequestServiceMock = new Mock<ISearchApiRequestService>();
             _searchResultServiceMock = new Mock<ISearchResultService>();
             _dataPartnerServiceMock = new Mock<IDataPartnerService>();
+            _resultQueueMock = new Mock<ISearchResultQueue>();
             _mapper = new Mock<IMapper>();
             _registerMock = new Mock<ISearchRequestRegister>();
 
@@ -299,6 +301,8 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
 
             _registerMock.Setup(x => x.RegisterSearchResultUploading(It.IsAny<string>()))
                 .Returns(Task.FromResult(true));
+
+            _resultQueueMock.Setup
 
             _sut = new PersonSearchController(_searchResultServiceMock.Object, _searchApiRequestServiceMock.Object, _dataPartnerServiceMock.Object, _loggerMock.Object, _mapper.Object, _registerMock.Object);
 

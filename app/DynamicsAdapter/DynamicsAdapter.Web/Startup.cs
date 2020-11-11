@@ -86,6 +86,7 @@ namespace DynamicsAdapter.Web
 
             services.AddTransient<ISearchResultService, SearchResultService>();
             services.AddTransient<ISearchRequestRegister, SearchRequestRegister>();
+            services.AddSingleton<ISearchResultQueue, SearchResultQueue>();
         }
 
         private void ConfigureFluentValidation(IServiceCollection services)
@@ -187,6 +188,11 @@ namespace DynamicsAdapter.Web
             services.AddSingleton(new JobSchedule(
                 jobType: typeof(FailedSearchRequestJob),
                 cronExpression: schedulerConfiguration.Failed));
+
+            services.AddTransient<SearchResultUploadJob>();
+            services.AddSingleton(new JobSchedule(
+                jobType: typeof(SearchResultUploadJob),
+                cronExpression: schedulerConfiguration.ResultUpload));
 
             //Registering the Quartz Hosted Service
             services.AddHostedService<QuartzHostedService>();

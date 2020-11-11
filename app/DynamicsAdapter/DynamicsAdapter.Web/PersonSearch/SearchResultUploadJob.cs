@@ -45,7 +45,6 @@ namespace DynamicsAdapter.Web.PersonSearch
         public async Task Execute(IJobExecutionContext context)
         {
             try { 
-                _logger.LogInformation("Search Request started!");
                 PersonSearchCompleted completeEvent = _searchResultQueue.Dequeue();
 
                 if (completeEvent != null && !_inProcessing)

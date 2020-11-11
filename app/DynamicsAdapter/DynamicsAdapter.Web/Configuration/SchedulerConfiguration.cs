@@ -12,7 +12,7 @@
         {
             Cron = "0/5 * * * * ?";
             Failed = "0 0 15 * * ?";
-            ResultUpload = "0/2 * * ? * * *";
+            ResultUpload = "0/10 * * * * ?"; 
         }
 
         /// <summary>

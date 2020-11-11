@@ -58,10 +58,12 @@ namespace DynamicsAdapter.Web.PersonSearch
         {
             try
             {
+                _logger.LogInformation("get completedEvent");
                 Guard.NotNull(personCompletedEvent, nameof(personCompletedEvent));
                 using (LogContext.PushProperty("SearchRequestKey", personCompletedEvent?.SearchRequestKey))
                 using (LogContext.PushProperty("DataPartner", personCompletedEvent?.ProviderProfile.Name))
                 {
+                    _logger.LogInformation("get completedEvent");
                     _resultQueue.Enqueue(personCompletedEvent);
                     return Ok();
                 }

@@ -45,7 +45,7 @@ namespace DynamicsAdapter.Web.SearchRequest
         public async Task Execute(IJobExecutionContext context)
         {
 
-            _logger.LogInformation("Search Request started!");
+            _logger.LogInformation("Search Request started now!");
 
             var cts = new CancellationTokenSource();
 

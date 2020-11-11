@@ -44,13 +44,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Fams3Adapter.Dynamics\Fams3Adapter.Dynamics.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
-      <_Parameter1>DynamicsAdapter.Web.Test</_Parameter1>
-    </AssemblyAttribute>
-  </ItemGroup>
-  
+ 
   <Target Name="GenerateNSwagClient">
         <PropertyGroup>
             <InputSwagger>searchApi.openapi.json</InputSwagger>

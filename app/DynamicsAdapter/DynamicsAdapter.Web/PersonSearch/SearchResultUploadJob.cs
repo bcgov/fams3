@@ -17,7 +17,6 @@ using System.Threading.Tasks;
 
 namespace DynamicsAdapter.Web.PersonSearch
 {
-    [DisallowConcurrentExecution]
     public class SearchResultUploadJob : IJob
     {
         private readonly ILogger<SearchResultUploadJob> _logger;
@@ -44,7 +43,8 @@ namespace DynamicsAdapter.Web.PersonSearch
 
         public async Task Execute(IJobExecutionContext context)
         {
-            try { 
+            try {
+                _logger.LogInformation("Upload Job is running.");
                 PersonSearchCompleted completeEvent = _searchResultQueue.Dequeue();
 
                 if (completeEvent != null && !_inProcessing)

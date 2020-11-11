@@ -189,7 +189,7 @@ namespace DynamicsAdapter.Web
                 jobType: typeof(FailedSearchRequestJob),
                 cronExpression: schedulerConfiguration.Failed));
 
-            services.AddTransient<SearchResultUploadJob>();
+            services.AddSingleton<SearchResultUploadJob>();
             services.AddSingleton(new JobSchedule(
                 jobType: typeof(SearchResultUploadJob),
                 cronExpression: schedulerConfiguration.ResultUpload));

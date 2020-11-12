@@ -6,12 +6,9 @@ using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.SearchApiEvent;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using Fams3Adapter.Dynamics.SearchRequest;
-using Fams3Adapter.Dynamics.Types;
 using Microsoft.Extensions.Logging;
 using Quartz;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -43,48 +40,56 @@ namespace DynamicsAdapter.Web.PersonSearch
 
         public async Task Execute(IJobExecutionContext context)
         {
-            try {
-                _logger.LogInformation("Upload Job is running.");
-                PersonSearchCompleted completeEvent = _searchResultQueue.Dequeue();
-
-                if (completeEvent != null && !_inProcessing)
+            _logger.LogInformation("Upload Job is running.");
+            if (_searchResultQueue.IsEmpty())
+            {
+                return;
+            }
+            else
+            {
+                if (!_inProcessing)
                 {
-                    _inProcessing = true;
-                    _logger.LogInformation("Received Person search completed event");
-                    var cts = new CancellationTokenSource();
-                    SSG_SearchApiRequest request = await _register.GetSearchApiRequest(completeEvent?.SearchRequestKey);
-                    //update completed event
-                    var searchApiEvent = _mapper.Map<SSG_SearchApiEvent>(completeEvent);
-                    _logger.LogDebug($"Attempting to create a new event for SearchApiRequest");
-                    await _searchApiRequestService.AddEventAsync(request.SearchApiRequestId, searchApiEvent, cts.Token);
-                    _logger.LogInformation($"Successfully created completed event for SearchApiRequest");
-
-                    //upload search result to dynamic search api
-                    var searchRequestId = await _searchApiRequestService.GetLinkedSearchRequestIdAsync(request.SearchApiRequestId, cts.Token);
-                    SSG_SearchRequest searchRequest = new SSG_SearchRequest()
+                    try
                     {
-                        SearchRequestId = searchRequestId
-                    };
+                        PersonSearchCompleted completeEvent = _searchResultQueue.Dequeue();
+                        _inProcessing = true;
+                        _logger.LogInformation("Received Person search completed event");
+                        var cts = new CancellationTokenSource();
+                        SSG_SearchApiRequest request = await _register.GetSearchApiRequest(completeEvent?.SearchRequestKey);
+                        //update completed event
+                        var searchApiEvent = _mapper.Map<SSG_SearchApiEvent>(completeEvent);
+                        _logger.LogDebug($"Attempting to create a new event for SearchApiRequest");
+                        await _searchApiRequestService.AddEventAsync(request.SearchApiRequestId, searchApiEvent, cts.Token);
+                        _logger.LogInformation($"Successfully created completed event for SearchApiRequest");
 
-                    if (completeEvent?.MatchedPersons != null)
-                    {
-
-                        foreach (PersonFound p in completeEvent.MatchedPersons)
+                        //upload search result to dynamic search api
+                        var searchRequestId = await _searchApiRequestService.GetLinkedSearchRequestIdAsync(request.SearchApiRequestId, cts.Token);
+                        SSG_SearchRequest searchRequest = new SSG_SearchRequest()
                         {
-                            SSG_Identifier sourceIdentifer = await _register.GetMatchedSourceIdentifier(p.SourcePersonalIdentifier, completeEvent?.SearchRequestKey);
-                            await _searchResultService.ProcessPersonFound(p, completeEvent.ProviderProfile, searchRequest, request.SearchApiRequestId, cts.Token, sourceIdentifer);
-                        }
-                    }
+                            SearchRequestId = searchRequestId
+                        };
 
-                    await _dataPartnerService.UpdateRetries(completeEvent?.ProviderProfile.Name, 0, cts, request);
-                    _inProcessing = false;
+                        if (completeEvent?.MatchedPersons != null)
+                        {
+
+                            foreach (PersonFound p in completeEvent.MatchedPersons)
+                            {
+                                SSG_Identifier sourceIdentifer = await _register.GetMatchedSourceIdentifier(p.SourcePersonalIdentifier, completeEvent?.SearchRequestKey);
+                                await _searchResultService.ProcessPersonFound(p, completeEvent.ProviderProfile, searchRequest, request.SearchApiRequestId, cts.Token, sourceIdentifer);
+                            }
+                        }
+
+                        await _dataPartnerService.UpdateRetries(completeEvent?.ProviderProfile.Name, 0, cts, request);
+                        _inProcessing = false;
+                    }
+                    catch (Exception e)
+                    {
+                        _inProcessing = false;
+                        _logger.LogError(e, e.Message, null);
+                    }
                 }
             }
-            catch (Exception e)
-            {
-                _inProcessing = false;
-                _logger.LogError(e, e.Message, null);
-            }
+
         }
     }
 }

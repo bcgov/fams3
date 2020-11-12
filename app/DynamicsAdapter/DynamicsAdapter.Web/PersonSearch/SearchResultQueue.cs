@@ -7,6 +7,7 @@ namespace DynamicsAdapter.Web.PersonSearch
     {
         bool Enqueue(PersonSearchCompleted completeEvent);
         PersonSearchCompleted Dequeue();
+        bool IsEmpty();
     }
 
     public class SearchResultQueue : ISearchResultQueue
@@ -26,6 +27,11 @@ namespace DynamicsAdapter.Web.PersonSearch
                 _resultQueue.Enqueue(completeEvent);
                 return true;
             }
+        }
+
+        public bool IsEmpty()
+        {
+            return _resultQueue.Count <= 0;
         }
 
         public PersonSearchCompleted Dequeue()

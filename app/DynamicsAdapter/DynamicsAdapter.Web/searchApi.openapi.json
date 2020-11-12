@@ -756,6 +756,9 @@
               "type": "string",
               "description": "The Address Line 2"
             },
+            "informationSourceCode": {
+              "type": "string"
+            },
             "stateProvince": {
               "type": "string",
               "description": "The Address Province or state"

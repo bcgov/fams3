@@ -381,6 +381,27 @@ namespace DynamicsAdapter.Web.Test.Mapping
         }
 
         [Test]
+        public void PersonSearchAccepted_with_message_should_map_to_SSG_SearchApiEvent_correctly()
+        {
+            PersonSearchAccepted accepted = new PersonSearchAccepted()
+            {
+                SearchRequestId = Guid.NewGuid(),
+                TimeStamp = new DateTime(2003, 3, 3),
+                ProviderProfile = new ProviderProfile()
+                {
+                    Name = "acceptedProfile"
+                },
+                Message = "This is for real"
+            };
+            SSG_SearchApiEvent searchEvent = _mapper.Map<SSG_SearchApiEvent>(accepted);
+            Assert.AreEqual("acceptedProfile", searchEvent.ProviderName);
+            Assert.AreEqual(new DateTime(2003, 3, 3), searchEvent.TimeStamp);
+            Assert.AreEqual(Keys.EVENT_ACCEPTED, searchEvent.EventType);
+            Assert.AreEqual(Keys.SEARCH_API_EVENT_NAME, searchEvent.Name);
+            Assert.AreEqual("Auto search has been accepted for processing. This is for real", searchEvent.Message);
+        }
+
+        [Test]
         public void PersonSearchRejected_should_map_to_SSG_SearchApiEvent_correctly()
         {
             PersonSearchRejected rejected = new PersonSearchRejected()

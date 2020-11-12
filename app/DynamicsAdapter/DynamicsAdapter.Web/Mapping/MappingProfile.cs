@@ -86,7 +86,7 @@ namespace DynamicsAdapter.Web.Mapping
 
             CreateMap<PersonSearchAccepted, SSG_SearchApiEvent>()
               .ForMember(dest => dest.EventType, opt => opt.MapFrom(src => Keys.EVENT_ACCEPTED))
-              .ForMember(dest => dest.Message, opt => opt.MapFrom(src => "Auto search has been accepted for processing"))
+              .ForMember(dest => dest.Message, opt => opt.MapFrom(src => src.Message == null ? "Auto search has been accepted for processing" : $"Auto search has been accepted for processing. {src.Message}"))
               .IncludeBase<PersonSearchStatus, SSG_SearchApiEvent>();
 
             CreateMap<PersonSearchRejected, SSG_SearchApiEvent>()

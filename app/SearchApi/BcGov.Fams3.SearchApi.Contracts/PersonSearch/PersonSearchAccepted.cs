@@ -2,6 +2,6 @@
 {
     public interface PersonSearchAccepted : PersonSearchAdapterEvent
     {
-        
+        string Message { get; }
     }
 }

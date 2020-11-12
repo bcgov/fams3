@@ -935,6 +935,9 @@
               "type": "string",
               "description": "the employment type"
             },
+            "informationSourceCode": {
+              "type": "string"
+            },
             "employmentStatus": {
               "type": "string"
             },

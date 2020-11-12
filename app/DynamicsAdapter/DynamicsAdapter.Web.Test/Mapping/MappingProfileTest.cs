@@ -158,7 +158,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                     ContactPerson = "Person",
                     Name = "Name",
                     OwnerName = "OwnerName",
-
+                    
                     Address = new Address
                     {
                         AddressLine1 = "AddressLine1",
@@ -174,6 +174,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 IncomeAssistance = false,
                 EmploymentConfirmed = true,
                 IncomeAssistanceStatus = "Status",
+                InformationSourceCode = "UI00",
                 Occupation = "Occupation",
                 Website = "Website",
                 ReferenceDates = new List<ReferenceDate>(){
@@ -191,6 +192,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual("Occupation", ssg_empl.Occupation);
             Assert.AreEqual("Website", ssg_empl.Website);
             Assert.AreEqual("Status", ssg_empl.IncomeAssistanceStatus);
+            Assert.AreEqual("UI00", ssg_empl.InformationSourceCode);
             Assert.AreEqual(IncomeAssistanceStatusType.Unknown.Value, ssg_empl.IncomeAssistanceStatusOption);
             Assert.AreEqual("AddressLine1", ssg_empl.AddressLine1);
             Assert.AreEqual("AddressLine2", ssg_empl.AddressLine2);
@@ -217,6 +219,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 IncomeAssistance = true,
                 EmploymentConfirmed = true,
                 IncomeAssistanceStatus = "Active",
+                InformationSourceCode = "YUI00",
                 Occupation = "Occupation",
                 Website = "Website",
                 ReferenceDates = new List<ReferenceDate>(){
@@ -235,6 +238,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual("Occupation", ssg_empl.Occupation);
             Assert.AreEqual("Website", ssg_empl.Website);
             Assert.AreEqual("Active", ssg_empl.IncomeAssistanceStatus);
+            Assert.AreEqual("YUI00", ssg_empl.InformationSourceCode);
             Assert.AreEqual(IncomeAssistanceStatusType.Active.Value, ssg_empl.IncomeAssistanceStatusOption);
             Assert.AreEqual(string.Empty, ssg_empl.AddressLine1);
             Assert.AreEqual(string.Empty, ssg_empl.AddressLine2);
@@ -1115,6 +1119,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                     CountryRegion = "Canada",
                     ZipPostalCode = "VR4 123"
                 },
+                
                 ContactPerson = "compensation Employer Surname FirstName",
                 Name = "compensation Employer Sample Company",
                 Phones = new List<Phone>()

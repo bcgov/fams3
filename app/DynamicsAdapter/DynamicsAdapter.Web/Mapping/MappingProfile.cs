@@ -108,6 +108,10 @@ namespace DynamicsAdapter.Web.Mapping
                 .ForMember(dest => dest.EventType, opt => opt.MapFrom(src => Keys.EVENT_SUBMITTED))
                 .IncludeBase<PersonSearchStatus, SSG_SearchApiEvent>();
 
+            CreateMap<PersonSearchInformation, SSG_SearchApiEvent>()
+             .ForMember(dest => dest.EventType, opt => opt.MapFrom(src => Keys.EVENT_INFORMATION_RECEIVED))
+             .IncludeBase<PersonSearchStatus, SSG_SearchApiEvent>();
+
             CreateMap<PersonSearchStatus, SSG_SearchApiEvent>()
                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => Guid.NewGuid()))
                .ForMember(dest => dest.ProviderName, opt => opt.MapFrom(src => src.ProviderProfile.Name))
@@ -166,6 +170,7 @@ namespace DynamicsAdapter.Web.Mapping
               .ForMember(dest => dest.CountrySubdivisionText, opt => opt.MapFrom(src => (src.Employer == null) ? string.Empty : (src.Employer.Address == null) ? string.Empty : src.Employer.Address.StateProvince))
               .ForMember(dest => dest.CountryText, opt => opt.MapFrom(src => (src.Employer == null) ? string.Empty : (src.Employer.Address == null) ? string.Empty : src.Employer.Address.CountryRegion))
               .ForMember(dest => dest.BusinessOwner, opt => opt.MapFrom(src => (src.Employer == null) ? string.Empty : src.Employer.OwnerName))
+               .ForMember(dest => dest.InformationSourceCode, opt => opt.MapFrom(src => (src.InformationSourceCode == null) ? string.Empty : src.InformationSourceCode))
               .ForMember(dest => dest.EmploymentConfirmed, opt => opt.MapFrom(src => src.EmploymentConfirmed))
               .ForMember(dest => dest.PrimaryPhoneNumber, opt => opt.ConvertUsing(new PrimaryPhoneNumberConvertor(), src => src.Employer == null ? null : src.Employer.Phones))
               .ForMember(dest => dest.PrimaryPhoneExtension, opt => opt.ConvertUsing(new PrimaryPhoneExtConvertor(), src => src.Employer == null ? null : src.Employer.Phones))

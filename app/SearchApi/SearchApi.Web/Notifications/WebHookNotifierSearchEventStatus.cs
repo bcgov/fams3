@@ -118,7 +118,7 @@ namespace SearchApi.Web.Notifications
 
         private async Task ProcessWaveSearch(string searchRequestKey, string eventName,string dataPartner )
         {
-            if (!EventName.Finalized.Equals(eventName))
+            if (!EventName.Finalized.Equals(eventName) || !EventName.InformationReceived.Equals(eventName))
             {
                 if (await _deepSearchService.IsWaveSearchReadyToFinalize(searchRequestKey))
                 {

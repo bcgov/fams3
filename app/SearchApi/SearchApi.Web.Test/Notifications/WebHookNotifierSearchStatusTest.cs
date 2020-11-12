@@ -337,8 +337,66 @@ namespace SearchApi.Web.Test.Notifications
 
             }
 
+        [Test]
+        public async Task it_should_send_info_notification_to_all_subscribers()
+        {
+            _searchApiOptionsMock.Setup(x => x.Value).Returns(new SearchApiOptions()
+                .AddWebHook("test", "http://test:1234")
+                .AddWebHook("test2", "http://test:5678"));
 
-            [Test]
+            var handlerMock = new Mock<HttpMessageHandler>(MockBehavior.Strict);
+            handlerMock
+                .Protected()
+                // Setup the PROTECTED method to mock
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>()
+                )
+                // prepare the expected response of the mocked http call
+                .ReturnsAsync(new HttpResponseMessage()
+                {
+                    StatusCode = HttpStatusCode.OK,
+                    Content = new StringContent("worked!"),
+                })
+                .Verifiable();
+
+            var httpClient = new HttpClient(handlerMock.Object);
+            _sut = new WebHookNotifierSearchEventStatus(httpClient, _searchApiOptionsMock.Object, _loggerMock.Object, _deepSearchServiceMock.Object);
+
+            await _sut.NotifyEventAsync(fakePersonSearchStatus.SearchRequestKey, fakePersonSearchStatus, "InformationReceived", CancellationToken.None);
+            //
+            var expectedUri = new Uri($"http://test:1234/InformationReceived/{fakePersonSearchStatus.SearchRequestKey}");
+            var expectedUri2 = new Uri($"http://test:5678/InformationReceived/{fakePersonSearchStatus.SearchRequestKey}");
+
+            handlerMock.Protected().Verify(
+                "SendAsync",
+                Times.Exactly(1),
+                ItExpr.Is<HttpRequestMessage>(req =>
+                        req.Method == HttpMethod.Post
+                        && req.RequestUri == expectedUri // to this uri
+                ),
+                ItExpr.IsAny<CancellationToken>()
+            );
+
+            handlerMock.Protected().Verify(
+                "SendAsync",
+                Times.Exactly(1),
+                ItExpr.Is<HttpRequestMessage>(req =>
+                        req.Method == HttpMethod.Post
+                        && req.RequestUri == expectedUri2 // to this uri
+                ),
+                ItExpr.IsAny<CancellationToken>()
+            );
+
+            _loggerMock.VerifyLog(LogLevel.Information, $"The webHook PersonSearch notification has executed status InformationReceived successfully for test webHook.", "failed");
+
+            _loggerMock.VerifyLog(LogLevel.Information, $"The webHook PersonSearch notification has executed status InformationReceived successfully for test2 webHook.", "failed");
+
+        }
+
+
+        [Test]
             public async Task it_should_log_error_when_not_uri()
             {
 

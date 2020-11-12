@@ -18,5 +18,6 @@
         internal const string Finalized = "Finalized";
         internal const string WaveCompleted = "WaveCompleted";
         internal const string Submitted = "Submitted";
+        internal const string InformationReceived = "InformationReceived";
     }
 }

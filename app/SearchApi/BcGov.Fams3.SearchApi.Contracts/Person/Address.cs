@@ -16,6 +16,8 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         [Description("The Address Line 2")]
         public string AddressLine3 { get; set; }
 
+        public string InformationSourceCode { get; set; }
+
         [Description("The Address Province or state")]
         public string StateProvince { get; set; }
 

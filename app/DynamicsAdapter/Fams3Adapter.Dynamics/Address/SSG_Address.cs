@@ -29,6 +29,11 @@ namespace Fams3Adapter.Dynamics.Address
         [DisplayName("Address Line 3")]
         public string AddressLine3 { get; set; }
 
+
+        [JsonProperty("ssg_jcacode")]
+        [DisplayName("Information Source Code ")]
+        public string InformationSourceCode { get; set; }
+
         [JsonProperty("ssg_CountrySubdivision")]
         [DisplayName("Province/State")]
         public virtual SSG_CountrySubdivision CountrySubdivision { get; set; }

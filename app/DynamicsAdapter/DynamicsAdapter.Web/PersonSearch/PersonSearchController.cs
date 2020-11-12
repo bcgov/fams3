@@ -199,6 +199,44 @@ namespace DynamicsAdapter.Web.PersonSearch
         }
 
 
+
+        [HttpPost]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Route("InformationReceived/{key}")]
+        [OpenApiTag("Person Search Events API")]
+        public async Task<IActionResult> InformationReceived(string key, [FromBody] PersonSearchInformation personInformationEvent)
+        {
+
+
+            using (LogContext.PushProperty("SearchRequestKey", personInformationEvent?.SearchRequestKey))
+            using (LogContext.PushProperty("DataPartner", personInformationEvent?.ProviderProfile.Name))
+            {
+                _logger.LogInformation($"Received new event for SearchApiRequest.");
+
+                var token = new CancellationTokenSource();
+
+                try
+                {
+                    SSG_SearchApiRequest request = await _register.GetSearchApiRequest(key);
+                    var searchApiEvent = _mapper.Map<SSG_SearchApiEvent>(personInformationEvent);
+                    _logger.LogDebug($"Attempting to create a new event for SearchApiRequest.");
+                    await _searchApiRequestService.AddEventAsync(request.SearchApiRequestId, searchApiEvent, token.Token);
+                  
+                    _logger.LogInformation($"Successfully created failed event for SearchApiRequest");
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex.Message);
+                    return BadRequest();
+                }
+
+                return Ok();
+            }
+        }
+
         [HttpPost]
         [Consumes("application/json")]
         [Produces("application/json")]

@@ -56,6 +56,12 @@ namespace Fams3Adapter.Dynamics.Employment
         [DisplayName("Employment Owner")]
         public string BusinessOwner { get; set; }
 
+        [JsonProperty("ssg_jcacode")]
+        [DisplayName("Information Source Code ")]
+        public string InformationSourceCode { get; set; }
+
+
+
         [JsonProperty("ssg_employmentconfirmed")]
         [DisplayName("Employment Confirmed")]
         public bool? EmploymentConfirmed { get; set; }

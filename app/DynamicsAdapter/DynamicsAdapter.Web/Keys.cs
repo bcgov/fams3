@@ -10,6 +10,7 @@
         public static readonly string EVENT_COMPLETED = "Completed";
         public static readonly string EVENT_FAILED = "Failed";
         public static readonly string EVENT_SUBMITTED = "Submitted";
+        public static readonly string EVENT_INFORMATION_RECEIVED = "Information";
         public static readonly string REDIS_SECTION_SETTING_KEY = "Redis";
         public static readonly string REDIS_KEY_PREFIX = "dyna_";
         public static readonly string DATA_PROVIDER_KEY = "ProviderList";

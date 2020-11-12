@@ -86,7 +86,7 @@ namespace DynamicsAdapter.Web.Mapping
 
             CreateMap<PersonSearchAccepted, SSG_SearchApiEvent>()
               .ForMember(dest => dest.EventType, opt => opt.MapFrom(src => Keys.EVENT_ACCEPTED))
-              .ForMember(dest => dest.Message, opt => opt.MapFrom(src => "Auto search has been accepted for processing"))
+              .ForMember(dest => dest.Message, opt => opt.MapFrom(src => src.Message == null ? "Auto search has been accepted for processing" : $"Auto search has been accepted for processing. {src.Message}"))
               .IncludeBase<PersonSearchStatus, SSG_SearchApiEvent>();
 
             CreateMap<PersonSearchRejected, SSG_SearchApiEvent>()
@@ -107,6 +107,10 @@ namespace DynamicsAdapter.Web.Mapping
             CreateMap<PersonSearchSubmitted, SSG_SearchApiEvent>()
                 .ForMember(dest => dest.EventType, opt => opt.MapFrom(src => Keys.EVENT_SUBMITTED))
                 .IncludeBase<PersonSearchStatus, SSG_SearchApiEvent>();
+
+            CreateMap<PersonSearchInformation, SSG_SearchApiEvent>()
+             .ForMember(dest => dest.EventType, opt => opt.MapFrom(src => Keys.EVENT_INFORMATION_RECEIVED))
+             .IncludeBase<PersonSearchStatus, SSG_SearchApiEvent>();
 
             CreateMap<PersonSearchStatus, SSG_SearchApiEvent>()
                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => Guid.NewGuid()))
@@ -135,6 +139,7 @@ namespace DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.AddressLine1, opt => opt.MapFrom(src => src.AddressLine1))
                  .ForMember(dest => dest.AddressLine2, opt => opt.MapFrom(src => src.AddressLine2))
                  .ForMember(dest => dest.AddressLine3, opt => opt.MapFrom(src => src.AddressLine3))
+                 .ForMember(dest => dest.InformationSourceCode, opt => opt.MapFrom(src => src.InformationSourceCode))
                  .ForMember(dest => dest.SupplierTypeCode, opt => opt.MapFrom(src => src.Type))
                  .ForMember(dest => dest.CountrySubdivisionText, opt => opt.MapFrom(src => src.StateProvince))
                  .ForMember(dest => dest.CountryText, opt => opt.MapFrom(src => src.CountryRegion))
@@ -161,11 +166,13 @@ namespace DynamicsAdapter.Web.Mapping
               .ForMember(dest => dest.PostalCode, opt => opt.MapFrom(src => (src.Employer == null) ? string.Empty : (src.Employer.Address == null) ? string.Empty : src.Employer.Address.ZipPostalCode))
               .ForMember(dest => dest.City, opt => opt.MapFrom(src => (src.Employer == null) ? string.Empty : (src.Employer.Address == null) ? string.Empty : src.Employer.Address.City))
               .ForMember(dest => dest.IncomeAssistanceStatus, opt => opt.MapFrom(src => src.IncomeAssistanceStatus))
+              .ForMember(dest => dest.InformationSourceCode, opt => opt.MapFrom(src => src.InformationSourceCode))
               .ForMember(dest => dest.IncomeAssistanceStatusOption, opt => opt.ConvertUsing(new IncomeAssistanceStatusConvertor(), src => src.IncomeAssistanceStatus))
               .ForMember(dest => dest.EmploymentType, opt => opt.ConvertUsing(new IncomeAssistanceConvertor(), src => src.IncomeAssistanceStatus))
               .ForMember(dest => dest.CountrySubdivisionText, opt => opt.MapFrom(src => (src.Employer == null) ? string.Empty : (src.Employer.Address == null) ? string.Empty : src.Employer.Address.StateProvince))
               .ForMember(dest => dest.CountryText, opt => opt.MapFrom(src => (src.Employer == null) ? string.Empty : (src.Employer.Address == null) ? string.Empty : src.Employer.Address.CountryRegion))
               .ForMember(dest => dest.BusinessOwner, opt => opt.MapFrom(src => (src.Employer == null) ? string.Empty : src.Employer.OwnerName))
+               .ForMember(dest => dest.InformationSourceCode, opt => opt.MapFrom(src => (src.InformationSourceCode == null) ? string.Empty : src.InformationSourceCode))
               .ForMember(dest => dest.EmploymentConfirmed, opt => opt.MapFrom(src => src.EmploymentConfirmed))
               .ForMember(dest => dest.PrimaryPhoneNumber, opt => opt.ConvertUsing(new PrimaryPhoneNumberConvertor(), src => src.Employer == null ? null : src.Employer.Phones))
               .ForMember(dest => dest.PrimaryPhoneExtension, opt => opt.ConvertUsing(new PrimaryPhoneExtConvertor(), src => src.Employer == null ? null : src.Employer.Phones))

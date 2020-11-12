@@ -1,6 +1,6 @@
 ﻿namespace DynamicsAdapter.Web.PersonSearch.Models
 {
-    public class PersonSearchAccepted : PersonSearchStatus
+    public class PersonSearchInformation : PersonSearchStatus
     {
         public string Message { get; set; }
     }

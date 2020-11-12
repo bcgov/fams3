@@ -229,6 +229,15 @@ namespace SearchApi.Web
                         e.Consumer(() =>
                             new PersonSearchSubmittedConsumer(provider.GetRequiredService<ISearchApiNotifier<PersonSearchAdapterEvent>>(), provider.GetRequiredService<ILogger<PersonSearchSubmittedConsumer>>()));
                     });
+
+                    // Configure Person Search Information Consumer 
+                    cfg.ReceiveEndpoint($"{nameof(PersonSearchInformation)}_queue", e =>
+                    {
+                        e.Consumer(() =>
+                            new PersonSearchInformationConsumer(provider.GetRequiredService<ISearchApiNotifier<PersonSearchAdapterEvent>>(), provider.GetRequiredService<ILogger<PersonSearchInformationConsumer>>()));
+                    });
+
+
                 }));
             });
 

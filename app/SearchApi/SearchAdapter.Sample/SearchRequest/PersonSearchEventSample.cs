@@ -268,6 +268,7 @@ namespace SearchAdapter.Sample.SearchRequest
                                 IncomeAssistanceStatus = "Real Status",
                                  Notes = "Sample Notes",
                                  Occupation = "Occupation",
+                                 InformationSourceCode = "UIOO",
                                  ReferenceDates = new List<ReferenceDate>(){
                                     new ReferenceDate(){ Index=0, Key="Start Date", Value=new DateTime(2019,9,1) },
                                     new ReferenceDate(){ Index=1, Key="End Date", Value=new DateTime(2020,9,1) }
@@ -303,6 +304,7 @@ namespace SearchAdapter.Sample.SearchRequest
                                 IncomeAssistanceStatus = "Real Status",
                                  Notes = "Sample Notes",
                                  Occupation = "Occupation",
+                                 InformationSourceCode = "UIOO",
                                  ReferenceDates = new List<ReferenceDate>(){
                                     new ReferenceDate(){ Index=0, Key="Start Date", Value=new DateTime(2019,9,1) },
                                     new ReferenceDate(){ Index=1, Key="End Date", Value=new DateTime(2020,9,1) }

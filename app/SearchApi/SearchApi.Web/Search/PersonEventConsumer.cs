@@ -134,4 +134,23 @@ namespace SearchApi.Web.Search
         }
 
     }
+
+    public class PersonSearchInformationConsumer : PersonEventConsumer, IConsumer<PersonSearchInformation>
+    {
+        private readonly ILogger<PersonSearchInformationConsumer> _logger;
+        private readonly ISearchApiNotifier<PersonSearchAdapterEvent> _searchApiNotifier;
+
+        public PersonSearchInformationConsumer(ISearchApiNotifier<PersonSearchAdapterEvent> searchApiNotifier, ILogger<PersonSearchInformationConsumer> logger) : base(searchApiNotifier, logger)
+        {
+            _searchApiNotifier = searchApiNotifier;
+            _logger = logger;
+
+        }
+
+        public async Task Consume(ConsumeContext<PersonSearchInformation> context)
+        {
+            await base.Consume(context, EventName.InformationReceived);
+        }
+
+    }
 }

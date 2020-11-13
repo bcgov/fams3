@@ -333,7 +333,7 @@ namespace DynamicsAdapter.Web.Mapping
             {
                 strbuilder.Append($"{p.FirstName} {p.LastName}:");
                 if (p.SourcePersonalIdentifier != null)
-                    strbuilder.Append($" Source ID:- {p.SourcePersonalIdentifier.Type}/{p.SourcePersonalIdentifier.Value} - ");
+                    strbuilder.Append($" Source ID:- {p.SourcePersonalIdentifier.Type}/{p.SourcePersonalIdentifier.Value} \n ");
                 //strbuilder.Append($"{(p.Identifiers == null ? 0 : p.Identifiers.Count)} identifier(s) found.  ");
                 //strbuilder.Append($"{(p.Addresses == null ? 0 : p.Addresses.Count)} addresses found. ");
                 //strbuilder.Append($"{(p.Phones == null ? 0 : p.Phones.Count)} phone number(s) found. ");

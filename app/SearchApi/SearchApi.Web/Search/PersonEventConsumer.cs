@@ -28,7 +28,7 @@ namespace SearchApi.Web.Search
             using (LogContext.PushProperty("SearchRequestKey",context.Message?.SearchRequestKey))
             {
                 var cts = new CancellationTokenSource();
-                _logger.LogInformation($"received new {nameof(PersonSearchAdapterEvent)} event from {context.Message.ProviderProfile?.Name}");
+                _logger.LogInformation($"received new {eventName} event from {context.Message.ProviderProfile?.Name}");
                 await _searchApiNotifier.NotifyEventAsync(context.Message.SearchRequestKey, context.Message, eventName,
                     cts.Token);
             }

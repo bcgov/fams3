@@ -24,7 +24,7 @@ namespace SearchApi.Web.DeepSearch
 
         Task UpdateDataPartner(string searchRequestKey, string dataPartner, string eventName);
         
-        Task UpdateParameters(string eventName, PersonSearchCompleted eventStatus, string searchRequestKey, string dataPartner);
+        Task UpdateParameters(string eventName, PersonSearchCompleted eventStatus, string searchRequestKey);
         Task  DeleteFromCache(string searchRequestKey);
 
         Task<bool> IsWaveSearchReadyToFinalize(string searchRequestKey);
@@ -116,18 +116,52 @@ namespace SearchApi.Web.DeepSearch
             }
         }
 
-        public async Task UpdateParameters(string eventName, PersonSearchCompleted eventStatus, string searchRequestKey, string dataPartner)
+        public async Task UpdateParameters(string eventName, PersonSearchCompleted eventStatus, string searchRequestKey)
         {
             IEnumerable<WaveSearchData> waveSearches = await GetWaveDataForSearch(searchRequestKey);
             if (eventName.Equals(EventName.Completed))
             {
-                PersonalIdentifierType[] paramsRegistry = ListDataPartnerRegistry(eventStatus);
-
-                ExtractIds(eventStatus, paramsRegistry, waveSearches, out IEnumerable<PersonalIdentifier> filteredExistingIdentifierForDataPartner, out IEnumerable<PersonalIdentifier> filteredNewFoundIdentifierForDataPartner);
+                List<PersonalIdentifier> existingIds = new List<PersonalIdentifier>();
 
                 foreach (var waveitem in waveSearches)
                 {
+                    _logger.LogInformation($"Store all existing params {waveitem.DataPartner}");
+                   
+
+                    foreach (var person in waveitem.AllParameter)
+                    {
+                        foreach (var identifier in person.Identifiers)
+                        {
+                            if (!existingIds.Any(i => i.Type == identifier.Type && i.Value == identifier.Value))
+                                existingIds.Add(identifier);
+                        }
+                    }
+
+
+                }
+
+                var matchedPersons = eventStatus.MatchedPersons;
+                List<PersonalIdentifier> foundId = new List<PersonalIdentifier>();
+                _logger.LogInformation($"Store all newly found  params from {eventStatus.ProviderProfile.Name}");
+
+                foreach (var person in matchedPersons)
+                {
+                    foreach (var identifier in person.Identifiers)
+                    {
+                        if (!foundId.Any(i => i.Type == identifier.Type && i.Value == identifier.Value))
+                            foundId.Add(identifier);
+                    }
+                }
+
+                foreach (var waveitem in waveSearches)
+                {
+                    PersonalIdentifierType[] paramsRegistry = ListDataPartnerRegistry(waveitem.DataPartner);
+
+                    ExtractIds(eventStatus, existingIds, waveitem.DataPartner, foundId, paramsRegistry, waveSearches, out IEnumerable<PersonalIdentifier> filteredExistingIdentifierForDataPartner, out IEnumerable<PersonalIdentifier> filteredNewFoundIdentifierForDataPartner);
+
                     var newToBeUsedId = filteredExistingIdentifierForDataPartner.DetailedCompare(filteredNewFoundIdentifierForDataPartner);
+
+                    _logger.LogInformation($"{newToBeUsedId.Count()} ids to be stored as new parameter for {waveitem.DataPartner}");
 
                     if (newToBeUsedId.Count() != 0)
                     {
@@ -139,7 +173,7 @@ namespace SearchApi.Web.DeepSearch
                             waveitem.NewParameter[0] = new Person { Identifiers = newToBeUsedId };
                     }
                     
-                    await _cacheService.Save(searchRequestKey.DeepSearchKey(eventStatus.ProviderProfile.Name), waveitem);
+                    await _cacheService.Save(searchRequestKey.DeepSearchKey(waveitem.DataPartner), waveitem);
 
                 }
 
@@ -149,44 +183,33 @@ namespace SearchApi.Web.DeepSearch
 
         }
 
-        private PersonalIdentifierType[] ListDataPartnerRegistry(PersonSearchCompleted eventStatus)
+        private PersonalIdentifierType[] ListDataPartnerRegistry(string  dataPartner)
         {
             PersonalIdentifierType[] paramsRegistry = new PersonalIdentifierType[] { };
 
             try
             {
-                paramsRegistry = Registry.DataPartnerParameters[eventStatus.ProviderProfile.Name];
+                paramsRegistry = Registry.DataPartnerParameters[dataPartner];
 
             }
             catch (Exception ex)
             {
-                _logger.LogError($"{eventStatus.ProviderProfile.Name} registry not found. Error: {ex.Message}");
+                _logger.LogError($"{dataPartner} registry not found. Error: {ex.Message}");
             }
 
             return paramsRegistry;
         }
 
-        private void ExtractIds(PersonSearchCompleted eventStatus, PersonalIdentifierType[] paramsRegistry, IEnumerable<WaveSearchData> waveSearches, out IEnumerable<PersonalIdentifier> filteredExistingIdentifierForDataPartner, out IEnumerable<PersonalIdentifier> filteredNewFoundIdentifierForDataPartner)
+        private void ExtractIds(PersonSearchCompleted eventStatus, List<PersonalIdentifier> existingIds,string DataPartner, List<PersonalIdentifier>  foundId, PersonalIdentifierType[] paramsRegistry, IEnumerable<WaveSearchData> waveSearches, out IEnumerable<PersonalIdentifier> filteredExistingIdentifierForDataPartner, out IEnumerable<PersonalIdentifier> filteredNewFoundIdentifierForDataPartner)
         {
-            List<PersonalIdentifier> existingIds = new List<PersonalIdentifier>();
-
-            foreach (var waveitem in waveSearches)
-            {
-                _logger.LogInformation($"Store all parameters {waveitem.DataPartner}");
-                waveitem.AllParameter.ForEach(p => existingIds.AddRange(p.Identifiers));
-            }
-
             _logger.LogInformation($"{existingIds.Count()} Identifier exists");
             filteredExistingIdentifierForDataPartner = existingIds.Where(identifer => paramsRegistry.Contains(identifer.Type));
-            _logger.LogInformation($"{existingIds.Count()} Identifier matched the require types for {eventStatus.ProviderProfile.Name}");
+            _logger.LogInformation($"{existingIds.Count()} Identifier matched the require types for {DataPartner}");
 
-            var matchedPersons = eventStatus.MatchedPersons;
-            List<PersonalIdentifier> foundId = new List<PersonalIdentifier>();
-            matchedPersons.ToList().ForEach(p => p.Identifiers.ToList().ForEach(id => foundId.Add(id)));
 
             _logger.LogInformation($"{foundId.Count()} Identifier was returned by {eventStatus.ProviderProfile.Name}");
             filteredNewFoundIdentifierForDataPartner = foundId.Where(identifer => paramsRegistry.Contains(identifer.Type));
-            _logger.LogInformation($"{filteredNewFoundIdentifierForDataPartner.Count()} returned Identifier matched the require types for {eventStatus.ProviderProfile.Name}");
+            _logger.LogInformation($"{filteredNewFoundIdentifierForDataPartner.Count()} returned Identifier matched the required types for {DataPartner}");
         }
 
 

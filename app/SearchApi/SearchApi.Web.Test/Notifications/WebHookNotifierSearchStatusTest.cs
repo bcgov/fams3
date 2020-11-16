@@ -59,7 +59,7 @@ namespace SearchApi.Web.Test.Notifications
               .Returns(Task.FromResult(true));
 
             _deepSearchServiceMock
-                .Setup(x => x.UpdateParameters(It.IsAny<string>(), It.IsAny<PersonSearchCompleted>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Setup(x => x.UpdateParameters(It.IsAny<string>(), It.IsAny<PersonSearchCompleted>(), It.IsAny<string>()))
                 .Returns(Task.CompletedTask);
 
             _allcompleted = new SearchRequest

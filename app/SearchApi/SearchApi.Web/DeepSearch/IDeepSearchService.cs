@@ -161,6 +161,8 @@ namespace SearchApi.Web.DeepSearch
 
                     var newToBeUsedId = filteredExistingIdentifierForDataPartner.DetailedCompare(filteredNewFoundIdentifierForDataPartner);
 
+                    _logger.LogInformation($"{newToBeUsedId.Count()} ids to be stored as new parameter for {waveitem.DataPartner}");
+
                     if (newToBeUsedId.Count() != 0)
                     {
                         waveitem.AllParameter.Add(new Person { Identifiers = newToBeUsedId });
@@ -207,7 +209,7 @@ namespace SearchApi.Web.DeepSearch
 
             _logger.LogInformation($"{foundId.Count()} Identifier was returned by {eventStatus.ProviderProfile.Name}");
             filteredNewFoundIdentifierForDataPartner = foundId.Where(identifer => paramsRegistry.Contains(identifer.Type));
-            _logger.LogInformation($"{filteredNewFoundIdentifierForDataPartner.Count()} returned Identifier matched the require types for {DataPartner}");
+            _logger.LogInformation($"{filteredNewFoundIdentifierForDataPartner.Count()} returned Identifier matched the required types for {DataPartner}");
         }
 
 

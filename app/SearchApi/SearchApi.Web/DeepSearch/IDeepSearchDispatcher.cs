@@ -33,13 +33,12 @@ namespace SearchApi.Web.DeepSearch
 
         public async Task StartAnotherWave(string searchRequestKey, WaveSearchData wave, Person person, int noOfRetries, int timeBetweenRetries)
         {
-            _logger.LogInformation($"About to dispatch new wave for {searchRequestKey} for {wave.DataPartner}");
+            _logger.LogInformation($"About to dispatch new wave {wave.CurrentWave} for {wave.DataPartner}");
             await _dispatcher.Dispatch(new PersonSearchRequest(person.FirstName, person.LastName, person.DateOfBirth, person.Identifiers, person.Addresses, person.Phones, person.Names, person.RelatedPersons, person.Employments, new List<DataProvider>
                         {
                             new DataProvider { Completed = false, Name = wave.DataPartner, NumberOfRetries = noOfRetries, TimeBetweenRetries = timeBetweenRetries, SearchSpeedType = wave.SearchSpeed }
                         }, searchRequestKey), Guid.NewGuid());
 
-            _logger.LogInformation($"Dispatched new wave for {searchRequestKey} for {wave.DataPartner}");
         }
 
 

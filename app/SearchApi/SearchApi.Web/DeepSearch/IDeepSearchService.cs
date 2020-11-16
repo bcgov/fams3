@@ -251,7 +251,7 @@ namespace SearchApi.Web.DeepSearch
                 if (!await CurrentWaveIsCompleted(searchRequestKey))
                     return false;
 
-                if (waveData.All(x => x.CurrentWave == _deepSearchOptions.MaxWaveCount) || NoNewParameter(waveData))
+                if (waveData.Any(x => x.CurrentWave == _deepSearchOptions.MaxWaveCount) || NoNewParameter(waveData))
                 {
                     _logger.Log(LogLevel.Information, $"{searchRequestKey} no new wave to initiate");
                     return true;

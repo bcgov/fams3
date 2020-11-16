@@ -108,7 +108,7 @@ namespace SearchApi.Web.Notifications
             await _deepSearchService.UpdateDataPartner(searchRequestKey, eventStatus.ProviderProfile.Name, eventName);
 
             if (EventName.Completed.Equals(eventName) && eventStatus.ProviderProfile.SearchSpeedType == SearchSpeedType.Fast)
-                await _deepSearchService.UpdateParameters(eventName, (PersonSearchCompleted)eventStatus, searchRequestKey, eventStatus.ProviderProfile.Name);
+                await _deepSearchService.UpdateParameters(eventName, (PersonSearchCompleted)eventStatus, searchRequestKey);
 
             await ProcessWaveSearch(searchRequestKey, eventName, eventStatus.ProviderProfile.Name);
 

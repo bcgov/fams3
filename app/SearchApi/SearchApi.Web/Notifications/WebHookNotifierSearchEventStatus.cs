@@ -118,20 +118,28 @@ namespace SearchApi.Web.Notifications
 
         private async Task ProcessWaveSearch(string searchRequestKey, string eventName,string dataPartner )
         {
-            if (!EventName.Finalized.Equals(eventName) || !EventName.InformationReceived.Equals(eventName))
+            if (!EventName.Finalized.Equals(eventName))
             {
-                if (await _deepSearchService.IsWaveSearchReadyToFinalize(searchRequestKey))
+
+
+
+                if (EventName.Completed.Equals(eventName))
                 {
-                    PersonSearchAdapterEvent finalizedSearch = new PersonSearchFinalizedEvent()
+                    if (await _deepSearchService.IsWaveSearchReadyToFinalize(searchRequestKey))
                     {
-                        SearchRequestKey = searchRequestKey,
-                        Message = "Search Request Finalized",
-                        SearchRequestId = Guid.NewGuid(),
-                        TimeStamp = DateTime.Now,
-                        ProviderProfile = new ProviderProfileDetails {  Name = dataPartner}
-                    };
-                    await NotifyEventAsync(searchRequestKey, (PersonSearchFinalized)finalizedSearch, EventName.Finalized, new CancellationToken());
-                    
+                        PersonSearchAdapterEvent finalizedSearch = new PersonSearchFinalizedEvent()
+                        {
+                            SearchRequestKey = searchRequestKey,
+                            Message = "Search Request Finalized",
+                            SearchRequestId = Guid.NewGuid(),
+                            TimeStamp = DateTime.Now,
+                            ProviderProfile = new ProviderProfileDetails { Name = dataPartner }
+                        };
+                        await NotifyEventAsync(searchRequestKey, (PersonSearchFinalized)finalizedSearch, EventName.Finalized, new CancellationToken());
+
+
+
+                    }
                 }
             }
         }

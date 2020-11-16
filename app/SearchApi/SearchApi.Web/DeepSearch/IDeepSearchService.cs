@@ -82,13 +82,11 @@ namespace SearchApi.Web.DeepSearch
         {
             try
             {
-                _logger.LogInformation($"Updating data partner as completed for {dataPartner} for {eventName} event - {searchRequestKey}");
                 if (eventName.Equals(EventName.Completed) || eventName.Equals(EventName.Rejected))
                 {
+                    _logger.LogInformation($"Updating data partner as completed for {dataPartner} for {eventName} event");
                     var searchRequest = JsonConvert.SerializeObject(await _cacheService.GetRequest(searchRequestKey)).UpdateDataPartner(dataPartner);
-                    await _cacheService.SaveRequest(searchRequest);
-                  
-                   
+                    await _cacheService.SaveRequest(searchRequest);                  
                 }
             }
             catch (Exception exception)
@@ -162,15 +160,17 @@ namespace SearchApi.Web.DeepSearch
                     var newToBeUsedId = filteredExistingIdentifierForDataPartner.DetailedCompare(filteredNewFoundIdentifierForDataPartner);
 
                     _logger.LogInformation($"{newToBeUsedId.Count()} ids to be stored as new parameter for {waveitem.DataPartner}");
+                    _logger.LogInformation($"new to be used ID are: {JsonConvert.SerializeObject(newToBeUsedId)}");
 
-                    if (newToBeUsedId.Count() != 0)
+                    if (newToBeUsedId.Count() > 0)
                     {
                         waveitem.AllParameter.Add(new Person { Identifiers = newToBeUsedId });
                         if (waveitem.NewParameter == null || waveitem.NewParameter?.Count == 0)
                             waveitem.NewParameter = new List<Person> { new Person { Identifiers = newToBeUsedId } };
-
                         else
-                            waveitem.NewParameter[0] = new Person { Identifiers = newToBeUsedId };
+                        {
+                            waveitem.NewParameter[0].Identifiers = AddUniqueIds(waveitem.NewParameter[0].Identifiers, newToBeUsedId);
+                        }
                     }
                     
                     await _cacheService.Save(searchRequestKey.DeepSearchKey(waveitem.DataPartner), waveitem);
@@ -212,7 +212,17 @@ namespace SearchApi.Web.DeepSearch
             _logger.LogInformation($"{filteredNewFoundIdentifierForDataPartner.Count()} returned Identifier matched the required types for {DataPartner}");
         }
 
-
+        private IEnumerable<PersonalIdentifier> AddUniqueIds(IEnumerable<PersonalIdentifier> sourceIds, IEnumerable<PersonalIdentifier> newIds)
+        {
+            foreach(PersonalIdentifier pi in newIds)
+            {
+                if( !sourceIds.Any(m=>m.Value==pi.Value && m.Type==pi.Type) )
+                {
+                    sourceIds.ToList().Add(pi);
+                }
+            }
+            return sourceIds;
+        }
 
 
         private async Task<IEnumerable<WaveSearchData>> GetWaveDataForSearch(string searchRequestKey)
@@ -252,6 +262,7 @@ namespace SearchApi.Web.DeepSearch
                     {
                         if (wave.NewParameter != null)
                         {
+                            //new parameter only contain 1 person.
                             foreach (var person in wave.NewParameter)
                             {
                                 await _deepSearchDispatcher.StartAnotherWave(searchRequestKey, wave, person, wave.NumberOfRetries, wave.TimeBetweenRetries);

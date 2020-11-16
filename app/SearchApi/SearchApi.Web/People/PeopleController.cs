@@ -67,7 +67,7 @@ namespace SearchApi.Web.Controllers
                     searchRequestId = Guid.NewGuid();
                 }
 
-                _logger.LogInformation($"Successfully received new search request [{searchRequestId}].");
+                _logger.LogInformation($"Successfully received new search request.");
 
                 _tracer.ActiveSpan.SetTag("searchRequestId", $"{searchRequestId}");
 

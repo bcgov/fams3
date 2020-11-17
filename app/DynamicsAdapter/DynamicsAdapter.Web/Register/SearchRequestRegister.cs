@@ -17,6 +17,8 @@ namespace DynamicsAdapter.Web.Register
     public interface ISearchRequestRegister
     {
         SSG_SearchApiRequest FilterDuplicatedIdentifier(SSG_SearchApiRequest request);
+
+        Task <bool> SearchForSearchRequestKeys(SSG_SearchApiRequest request);
         Task<bool> RegisterSearchApiRequest(SSG_SearchApiRequest request);
         Task<SSG_SearchApiRequest> GetSearchApiRequest(Guid guid);
 
@@ -58,6 +60,13 @@ namespace DynamicsAdapter.Web.Register
             if (request == null) return false;
             await _cache.Save($"{Keys.REDIS_KEY_PREFIX}{request.SearchRequest.FileId}_{request.SequenceNumber}", request);
             return true;
+        }
+
+        public async Task<bool> SearchForSearchRequestKeys(SSG_SearchApiRequest request)
+        {
+            if (request == null) return false;
+          return   (await _cache.SearchKeys($"{Keys.REDIS_KEY_PREFIX}{request.SearchRequest.FileId}_{request.SequenceNumber}")).Count () > 0 ;
+        //    return true;
         }
 
         public async Task<bool> RegisterDataProviders(SSG_DataProvider[] providers)

@@ -74,6 +74,11 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
                 x => x.FilterDuplicatedIdentifier(It.Is<SSG_SearchApiRequest>(x => x.SearchApiRequestId == _exceptionSearchRequestId)))
                 .Returns(ssgExceptionSearchApiRequest);
 
+
+            //_searchApiRequestRegisterMock.Setup(
+            //  x => x.SearchForSearchRequestKeys(It.Is<SSG_SearchApiRequest>(x => x.SearchApiRequestId == _validSearchApiRequestId)))
+            //  .Returns(Task.FromResult(true));
+
             _searchApiRequestRegisterMock.Setup(
                 x => x.FilterDuplicatedIdentifier(It.Is<SSG_SearchApiRequest>(x => x.SearchApiRequestId == _searchAsyncExceptionSearchRequestId)))
                 .Returns(ssgSearchAsyncExceptionSearchApiRequest);

@@ -80,6 +80,7 @@ namespace BcGov.Fams3.Redis.Test
             _mockRedisDB.Setup(x => x.AddAsync(It.IsAny<string>(), It.IsAny<object>(),It.IsAny<TimeSpan>(), default, default)).Returns(Task.FromResult(true));
             _mockRedisDB.Setup(x => x.ReplaceAsync(It.IsAny<string>(), It.IsAny<object>(), default, default)).Returns(Task.FromResult(true));
             _mockRedisDB.Setup(x => x.SearchKeysAsync(It.IsAny<string>())).Returns(Task.FromResult(new List<string> { "first","second"}.AsEnumerable()));
+            _mockRedisDB.Setup(x => x.SearchKeysAsync("test")).Returns(Task.FromResult(new List<string> {  }.AsEnumerable()));
             _mockRedisDB.Setup(x => x.GetAsync<string>("key", default)).Returns(Task.FromResult("data"));
             //_stackRedisCacheClient.Db0.GetAsync<string>(key)
             _loggerMock = new Mock<ILogger<CacheService>>();
@@ -151,6 +152,14 @@ namespace BcGov.Fams3.Redis.Test
           var items =  await _sut.SearchKeys("data");
             _mockRedisDB.Verify(x => x.SearchKeysAsync(It.IsAny<string>()), Times.AtLeastOnce());
             Assert.AreEqual(2, items.Count());
+        }
+
+        [Test]
+        public async Task search_request_keys_from_pattern_returns_0_count()
+        {
+            var items = await _sut.SearchKeys("test");
+            _mockRedisDB.Verify(x => x.SearchKeysAsync(It.IsAny<string>()), Times.AtLeastOnce());
+            Assert.AreEqual(0, items.Count());
         }
 
 

@@ -72,15 +72,24 @@ namespace DynamicsAdapter.Web.SearchRequest
 
                                     if (registerSuccessfully)
                                     {
-                                        var result = await _searchApiClient.SearchAsync(
-                                            _mapper.Map<PersonSearchRequest>(request),
-                                            $"{request.SearchApiRequestId}",
-                                            cts.Token);
+                                        try
+                                        {
+                                    
+                                            var result = await _searchApiClient.SearchAsync(
+                                                _mapper.Map<PersonSearchRequest>(request),
+                                                $"{request.SearchApiRequestId}",
+                                                cts.Token);
+                                          
+                                            _logger.LogInformation($"Successfully posted person search id:{result.Id}");
+                                            await MarkInProgress(ssgSearchRequest, cts.Token);
 
-                                        _logger.LogInformation($"Successfully posted person search id:{result.Id}");
-
-
-                                        await MarkInProgress(ssgSearchRequest, cts.Token);
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            _logger.LogError(ex, ex.Message, null);
+                                            await _register.RemoveSearchApiRequest(request);
+                                        }
+                                   
                                     }
                                     else
                                     {
@@ -91,6 +100,7 @@ namespace DynamicsAdapter.Web.SearchRequest
                             catch (Exception e)
                             {
                                 _logger.LogError(e, e.Message, null);
+                                await _register.RemoveSearchApiRequest(ssgSearchRequest);
                             }
                         }
                     }

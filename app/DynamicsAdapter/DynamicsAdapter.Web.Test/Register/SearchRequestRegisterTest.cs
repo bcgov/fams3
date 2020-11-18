@@ -353,6 +353,13 @@ namespace DynamicsAdapter.Web.Test.Register
         }
 
         [Test]
+        public async Task valid_searchApiRequest_will_be_removed_successfully()
+        {
+            bool result = await _sut.RemoveSearchApiRequest(_fakeRequest);
+            Assert.AreEqual(true, result);
+        }
+
+        [Test]
         public async Task valid_fileId_seqNumber_request_will_be_removed_successfully()
         {
             bool result = await _sut.RemoveSearchApiRequest(_validSearchRequestKey);

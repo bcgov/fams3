@@ -20,6 +20,8 @@ namespace DynamicsAdapter.Web.Register
 
         Task <bool> SearchForSearchRequestKeys(SSG_SearchApiRequest request);
         Task<bool> RegisterSearchApiRequest(SSG_SearchApiRequest request);
+
+        Task<bool> RemoveSearchApiRequest(SSG_SearchApiRequest request);
         Task<SSG_SearchApiRequest> GetSearchApiRequest(Guid guid);
 
         Task<SSG_DataProvider[]> GetDataProvidersList();
@@ -156,6 +158,12 @@ namespace DynamicsAdapter.Web.Register
         public async Task<bool> RemoveSearchApiRequest(string searchRequestKey)
         {
             await _cache.Delete($"{Keys.REDIS_KEY_PREFIX}{searchRequestKey}");
+            return true;
+        }
+
+        public async Task<bool> RemoveSearchApiRequest(SSG_SearchApiRequest request)
+        {
+            await _cache.Delete($"{Keys.REDIS_KEY_PREFIX}{request.SearchRequest.FileId}_{request.SequenceNumber}");
             return true;
         }
 

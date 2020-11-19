@@ -120,7 +120,7 @@ namespace SearchApi.Web.Notifications
         {
             if (!EventName.Finalized.Equals(eventName))
             {
-                if (EventName.Completed.Equals(eventName))
+                if (EventName.Completed.Equals(eventName)|| EventName.Rejected.Equals(eventName))
                 {
                     if (await _deepSearchService.IsWaveSearchReadyToFinalize(searchRequestKey))
                     {

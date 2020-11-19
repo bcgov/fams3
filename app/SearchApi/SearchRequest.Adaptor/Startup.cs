@@ -203,7 +203,7 @@ namespace SearchRequestAdaptor
                     cfg.ReceiveEndpoint($"{nameof(SearchRequestOrdered)}_queue", e =>
                     {
 
-                        e.UseRateLimit(1, TimeSpan.FromSeconds(1));
+                        e.UseRateLimit(1, TimeSpan.FromSeconds(5));
 
                     e.Consumer(() =>
                             new SearchRequestOrderedConsumer(

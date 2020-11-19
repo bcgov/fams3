@@ -5,7 +5,6 @@ using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
-using Newtonsoft.Json;
 using NUnit.Framework;
 using SearchApi.Core.Test.Fake;
 using SearchApi.Web.Configuration;
@@ -33,7 +32,6 @@ namespace SearchApi.Web.Test.DeepSearch
         WaveSearchData wave;
         string dataPartner = "ICBC";
         string SearchRequestKey = "FirstTimeWave";
-        string NotSearchRequestKey = "AnotherWave";
         string _Update_Parameter_SK = "000000_111111";
         string _Update_Parameter_SK_CCN = "000000_222222";
         PersonSearchCompleted completedStatus;

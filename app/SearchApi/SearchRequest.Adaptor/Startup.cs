@@ -205,7 +205,7 @@ namespace SearchRequestAdaptor
 
                         e.UseRateLimit(1, TimeSpan.FromSeconds(5));
 
-                    e.Consumer(() =>
+                        e.Consumer(() =>
                             new SearchRequestOrderedConsumer(
                                 provider.GetRequiredService<ISearchRequestNotifier<SearchRequestOrdered>>(),
                                 provider.GetRequiredService<ILogger<SearchRequestOrderedConsumer>>()));

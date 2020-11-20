@@ -10,7 +10,7 @@ namespace BcGov.Fams3.SearchApi.Core.Configuration
         {
             this.RetryTimes = 5;
             this.RetryInterval = 5;
-            this.ConcyrrencyLimit = 5;
+            this.ConcurrencyLimit = 5;
         }
 
 
@@ -27,6 +27,6 @@ namespace BcGov.Fams3.SearchApi.Core.Configuration
         /// <summary>
         /// Concurrency limit for consumer
         /// </summary>
-        public int ConcyrrencyLimit { get; set; }
+        public int ConcurrencyLimit { get; set; }
     }
 }

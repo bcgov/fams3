@@ -12,7 +12,7 @@ namespace SearchApi.Core.Test.Configuration
 
             Assert.AreEqual(5, sut.RetryInterval);
             Assert.AreEqual(5, sut.RetryTimes);
-            Assert.AreEqual(5, sut.ConcyrrencyLimit);
+            Assert.AreEqual(5, sut.ConcurrencyLimit);
 
         }
 
@@ -23,12 +23,12 @@ namespace SearchApi.Core.Test.Configuration
             {
                 RetryTimes = 3,
                 RetryInterval = 20,
-                ConcyrrencyLimit = 9
+                ConcurrencyLimit = 9
             };
 
             Assert.AreEqual(20, sut.RetryInterval);
             Assert.AreEqual(3, sut.RetryTimes);
-            Assert.AreEqual(9, sut.ConcyrrencyLimit);
+            Assert.AreEqual(9, sut.ConcurrencyLimit);
 
         }
     }

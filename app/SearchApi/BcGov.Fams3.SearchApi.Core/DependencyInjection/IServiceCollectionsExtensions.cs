@@ -39,6 +39,10 @@ namespace BcGov.Fams3.SearchApi.Core.DependencyInjection
                 .Bind(configuration.GetSection(Keys.PROVIDER_SECTION_SETTING_KEY))
                 .ValidateDataAnnotations();
 
+            services
+               .AddOptions<RetryConfiguration>()
+               .Bind(configuration.GetSection(Keys.RETRY_SECTION_SETTING_KEY))
+               .ValidateDataAnnotations();
 
             var rabbitBaseUri = $"amqp://{rabbitMqSettings.Host}:{rabbitMqSettings.Port}";
 

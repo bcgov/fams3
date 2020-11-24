@@ -482,7 +482,7 @@ namespace DynamicsAdapter.Web.SearchAgency
 
         private async Task<bool> UpdateSafetyConcern()
         {
-            SSG_SafetyConcernDetail originalSafeEntity = _uploadedPerson.sSG_SafetyConcernDetails?.FirstOrDefault(m => m.IsCreatedByAgency);
+            SSG_SafetyConcernDetail originalSafeEntity = _uploadedPerson.SSG_SafetyConcernDetails?.FirstOrDefault(m => m.IsCreatedByAgency);
             if(originalSafeEntity == null)
             {
                 await UploadSafetyConcern(true);

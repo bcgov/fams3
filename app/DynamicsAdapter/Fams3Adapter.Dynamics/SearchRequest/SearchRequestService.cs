@@ -120,6 +120,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                         .Expand(x => x.SSG_Employments)
                         .Expand(x => x.SSG_Identities)
                         .Expand(x => x.SSG_PhoneNumbers)
+                        .Expand(x => x.SSG_SafetyConcernDetails)
                         .Expand(x => x.SearchRequest)
                         .FindEntryAsync(cancellationToken);
                 duplicatedPerson.IsDuplicated = true;
@@ -389,6 +390,12 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
         public async Task<SSG_SafetyConcernDetail> CreateSafetyConcern(SafetyConcernEntity safety, CancellationToken cancellationToken)
         {
+            if (safety.Person.IsDuplicated)
+            {
+                Guid duplicatedSafetyId = await _duplicateDetectService.Exists(safety.Person, safety);
+                if (duplicatedSafetyId != Guid.Empty)
+                    return new SSG_SafetyConcernDetail() { SafetyConcernDetailId = duplicatedSafetyId };
+            }
             return await this._oDataClient.For<SSG_SafetyConcernDetail>().Set(safety).InsertEntryAsync(cancellationToken);
         }
 
@@ -446,7 +453,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                 .Expand(x => x.SSG_Employments)
                 .Expand(x => x.SSG_Addresses)
                 .Expand(x => x.SSG_Aliases)
-                .Expand(x => x.sSG_SafetyConcernDetails)
+                .Expand(x => x.SSG_SafetyConcernDetails)
                 .FindEntryAsync(cancellationToken);
 
             return person;

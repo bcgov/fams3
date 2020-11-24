@@ -12,6 +12,10 @@ namespace Fams3Adapter.Dynamics.SafetyConcern
         [DisplayName("Type")]
         public int? Type { get; set; }
 
+        [JsonProperty("ssg_suppliertypecode")]
+        [DisplayName("Data Partner Type")]
+        public string SupplierTypeCode { get; set; }
+
         [JsonProperty("ssg_name")]
         [DisplayName("Details")]
         public string Detail { get; set; }

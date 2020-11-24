@@ -9,6 +9,7 @@ using Fams3Adapter.Dynamics.OtherAsset;
 using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.RelatedPerson;
+using Fams3Adapter.Dynamics.SafetyConcern;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using Fams3Adapter.Dynamics.Vehicle;
 using Newtonsoft.Json;
@@ -56,6 +57,9 @@ namespace Fams3Adapter.Dynamics.ResultTransaction
 
         [JsonProperty("ssg_WorkSafeBCClaim")]
         public virtual SSG_Asset_WorkSafeBcClaim CompensationClaim { get; set; }
+
+        [JsonProperty("ssg_SafetyConcernDetail")]
+        public virtual SSG_SafetyConcernDetail SafetyConcern { get; set; }
 
         [JsonProperty("ssg_SearchAPIRequest")]
         public virtual SSG_SearchApiRequest SearchApiRequest { get; set; }

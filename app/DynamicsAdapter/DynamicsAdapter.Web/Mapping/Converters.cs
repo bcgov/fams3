@@ -86,16 +86,6 @@ namespace DynamicsAdapter.Web.Mapping
         }
     }
 
-    public class SafetyConcernTypeConverter : IValueConverter<string, int?>
-    {
-        public int? Convert(string sourceMember, ResolutionContext context)
-        {
-            if (sourceMember == null) return null;
-            if (string.Equals(sourceMember, "Violent", StringComparison.InvariantCultureIgnoreCase)) return SafetyConcernType.Violence.Value;
-            else return SafetyConcernType.Other.Value;
-        }
-    }
-
     public class NameCategoryConverter : IValueConverter<string, int?>
     {
         public int? Convert(string sourceMember, ResolutionContext context)

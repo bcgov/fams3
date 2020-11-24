@@ -151,7 +151,7 @@ namespace Fams3Adapter.Dynamics.Person
         public SSG_PhoneNumber[] SSG_PhoneNumbers { get; set; }
 
         [JsonProperty("ssg_ssg_person_ssg_safetyconcerndetail_PersonId")]
-        public SSG_SafetyConcernDetail[] sSG_SafetyConcernDetails { get; set; }
+        public SSG_SafetyConcernDetail[] SSG_SafetyConcernDetails { get; set; }
 
         public bool IsDuplicated { get; set; }
         public override string ToString()

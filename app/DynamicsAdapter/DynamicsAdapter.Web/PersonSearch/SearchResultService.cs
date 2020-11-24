@@ -14,6 +14,7 @@ using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.RelatedPerson;
 using Fams3Adapter.Dynamics.ResultTransaction;
+using Fams3Adapter.Dynamics.SafetyConcern;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Fams3Adapter.Dynamics.Vehicle;
@@ -83,6 +84,8 @@ namespace DynamicsAdapter.Web.PersonSearch
 
             _returnedPerson = await UploadPerson();
 
+            await UploadSafetyConcern();
+
             await UploadIdentifiers( );
 
             await UploadAddresses();
@@ -135,6 +138,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                         case "SSG_Asset_Other": trans.OtherAsset = (SSG_Asset_Other)o; break;
                         case "SSG_Asset_WorkSafeBcClaim": trans.CompensationClaim = (SSG_Asset_WorkSafeBcClaim)o; break;
                         case "SSG_Asset_ICBCClaim": trans.InsuranceClaim = (SSG_Asset_ICBCClaim)o; break;
+                        case "SSG_SafetyConcernDetail": trans.SafetyConcern = (SSG_SafetyConcernDetail)o; break;
                         default: return false;
                     }
                 }
@@ -153,6 +157,27 @@ namespace DynamicsAdapter.Web.PersonSearch
             SSG_Person returnedPerson = await _searchRequestService.SavePerson(ssg_person, _cancellationToken);
             await CreateResultTransaction(returnedPerson);
             return returnedPerson;
+        }
+
+        private async Task<bool> UploadSafetyConcern()
+        {
+            if (string.IsNullOrEmpty(_foundPerson.CautionFlag)) return false;
+            try 
+            { 
+                SafetyConcernEntity entity = _mapper.Map<SafetyConcernEntity>(_foundPerson);
+                entity.SearchRequest = _searchRequest;
+                entity.InformationSource = _providerDynamicsID;
+                entity.Person = _returnedPerson;
+                SSG_SafetyConcernDetail safetyConcern = await _searchRequestService.CreateSafetyConcern(entity, _cancellationToken);
+                await CreateResultTransaction(safetyConcern);
+                _logger.LogInformation("Create Safety Concern records for SearchRequest successfully");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return false;
+            }
         }
 
         private async Task<bool> UploadIdentifiers()

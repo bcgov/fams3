@@ -378,7 +378,8 @@ namespace DynamicsAdapter.Web.Mapping
 
             CreateMap<Person, SafetyConcernEntity>()
                     .ForMember(dest => dest.Detail, opt => opt.MapFrom(src => $"{src.CautionFlag} {src.CautionReason} {src.CautionNotes}"))
-                    .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new SafetyConcernTypeConverter(), src => src.CautionReason))
+                    .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new SafetyConcernTypeConverter(), src => src.CautionFlag))
+                    .ForMember(dest => dest.SupplierTypeCode, opt => opt.MapFrom(src =>src.CautionFlag))
                     .IncludeBase<PersonalInfo, DynamicsEntity>();
 
             CreateMap<InsuranceClaim, ICBCClaimEntity>()

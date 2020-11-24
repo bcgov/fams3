@@ -1137,7 +1137,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                     LastName = "lastName",
                     FirstName = "firstName",
                     IsCreatedByAgency = true,
-                    sSG_SafetyConcernDetails= new List<SSG_SafetyConcernDetail>() {
+                    SSG_SafetyConcernDetails= new List<SSG_SafetyConcernDetail>() {
                         new SSG_SafetyConcernDetail()
                         {
                             Detail = "originalDetail", IsCreatedByAgency=true

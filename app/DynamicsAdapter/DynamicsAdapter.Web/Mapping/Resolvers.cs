@@ -5,6 +5,7 @@ using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.OptionSets.Models;
 using Fams3Adapter.Dynamics.Pension;
 using Fams3Adapter.Dynamics.RealEstate;
+using Fams3Adapter.Dynamics.SafetyConcern;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using Fams3Adapter.Dynamics.SearchResponse;
 using Fams3Adapter.Dynamics.Types;
@@ -301,6 +302,31 @@ namespace DynamicsAdapter.Web.Mapping
                 });
                 return owners;
             }
+            return null;
+        }
+    }
+
+    public class SafetyConcernTypeResolver : IValueResolver<Person, SafetyConcernEntity, int?>
+    {
+        public int? Resolve(Person source, SafetyConcernEntity destination, int? destMember, ResolutionContext context)
+        {
+            if (string.IsNullOrEmpty(source.CautionFlag) && string.IsNullOrEmpty(source.CautionReason)) return null;
+            SafetyConcernType type = null;
+            if (!string.IsNullOrEmpty(source.CautionFlag))
+            {
+                type = SafetyConcernType.GetAll<SafetyConcernType>().SingleOrDefault(m => string.Equals(m.Name, source.CautionFlag, StringComparison.InvariantCultureIgnoreCase));
+                destination.SupplierTypeCode = source.CautionFlag;
+                if (type == null) return SafetyConcernType.Other.Value;
+                return type.Value;
+            }
+            if (!string.IsNullOrEmpty(source.CautionReason))
+            {
+                type = SafetyConcernType.GetAll<SafetyConcernType>().SingleOrDefault(m => string.Equals(m.Name, source.CautionReason, StringComparison.InvariantCultureIgnoreCase));
+                destination.SupplierTypeCode = source.CautionReason;
+                if (type == null) return SafetyConcernType.Other.Value;
+                return type.Value;
+            }
+
             return null;
         }
     }

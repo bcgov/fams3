@@ -347,17 +347,33 @@ namespace DynamicsAdapter.Web.Test.Mapping
         }
 
         [Test]
-        public void Person_should_map_to_SSG_SafetyConcern_correctly()
+        public void Person_without_cautionflag_should_map_to_SSG_SafetyConcern_correctly()
         {
             var p = new Person()
             {
-                CautionFlag="flag",
+                CautionFlag="",
                 CautionNotes="notes",
                 CautionReason="violent",
             };
             SafetyConcernEntity safe = _mapper.Map<SafetyConcernEntity>(p);
-            Assert.AreEqual(SafetyConcernType.Violence.Value, safe.Type);
-            Assert.AreEqual("flag violent notes", safe.Detail);
+            Assert.AreEqual(SafetyConcernType.Other.Value, safe.Type);
+            Assert.AreEqual(" violent notes", safe.Detail);
+            Assert.AreEqual("violent", safe.SupplierTypeCode);
+        }
+
+        [Test]
+        public void Person_with_cautionflag_should_map_to_SSG_SafetyConcern_correctly()
+        {
+            var p = new Person()
+            {
+                CautionFlag = "Threat",
+                CautionNotes = "notes",
+                CautionReason = "violent",
+            };
+            SafetyConcernEntity safe = _mapper.Map<SafetyConcernEntity>(p);
+            Assert.AreEqual(SafetyConcernType.Threat.Value, safe.Type);
+            Assert.AreEqual("Threat violent notes", safe.Detail);
+            Assert.AreEqual("Threat", safe.SupplierTypeCode);
         }
 
         [Test]

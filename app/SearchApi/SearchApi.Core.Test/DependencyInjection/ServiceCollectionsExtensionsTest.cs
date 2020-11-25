@@ -16,6 +16,7 @@ using BcGov.Fams3.SearchApi.Contracts.Person;
 using SearchAdapter.Sample.SearchResult;
 using System;
 using BcGov.Fams3.SearchApi.Core.Configuration;
+using SearchAdapter.Sample.IA;
 
 namespace SearchApi.Core.Test.DependencyInjection
 {
@@ -55,9 +56,29 @@ namespace SearchApi.Core.Test.DependencyInjection
 
         }
 
+        [Test]
+        public void should_register_ia_services()
+        {
 
+            services.AddIASearchDataPartner(configuration, (provider) => new IASearchConsumer(
+                                 provider.GetRequiredService<ILogger<IASearchConsumer>>()));
 
-              [Test]
+            Assert.IsTrue(services.Count > 0);
+
+        }
+
+        [Test]
+        public void should_register_service_ia_bus()
+        {
+
+            services.AddIASearchDataPartner(configuration, (provider) => new IASearchConsumer(
+                                 provider.GetRequiredService<ILogger<IASearchConsumer>>()));
+
+            Assert.IsTrue(services.Any(x => x.ServiceType == typeof(IBusControl)));
+
+        }
+
+        [Test]
         public void should_register_service_bus()
         {
 
@@ -110,6 +131,14 @@ namespace SearchApi.Core.Test.DependencyInjection
                                   provider.GetRequiredService<IOptions<ProviderProfileOptions>>(),
                                   provider.GetRequiredService<ILogger<SearchResultConsumer>>())));
         }
+
+        [Test]
+        public void should_throw_exception_if_null_ordered_ia_consumer()
+        {
+
+            Assert.Throws<ArgumentNullException>(() => services.AddIASearchDataPartner(configuration, null));
+        }
+
 
         [Test]
         public void should_register_one_consumer_if_null_recieved_consumer()

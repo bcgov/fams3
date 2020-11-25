@@ -19,6 +19,7 @@ using BcGov.Fams3.SearchApi.Core.Adapters.Configuration;
 using BcGov.Fams3.SearchApi.Core.Configuration;
 using BcGov.Fams3.SearchApi.Core.DependencyInjection;
 using SearchAdapter.Sample.SearchResult;
+using SearchAdapter.Sample.IA;
 
 namespace SearchAdapter.Sample
 {
@@ -78,6 +79,8 @@ namespace SearchAdapter.Sample
                                         provider.GetRequiredService<IOptions<ProviderProfileOptions>>(),
                                         provider.GetRequiredService<ILogger<SearchResultConsumer>>()));
             }
+
+            services.AddIASearchDataPartner(Configuration, (provider) => new IASearchConsumer(provider.GetRequiredService<ILogger<IASearchConsumer>>()));
         }
 
         private void ConfigureHealthChecks(IServiceCollection services)

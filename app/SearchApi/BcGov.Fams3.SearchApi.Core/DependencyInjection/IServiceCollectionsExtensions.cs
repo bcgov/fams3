@@ -1,4 +1,5 @@
 ﻿using System;
+using BcGov.Fams3.SearchApi.Contracts.IA;
 using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 using BcGov.Fams3.SearchApi.Contracts.SearchRequest;
 using BcGov.Fams3.SearchApi.Core.Adapters.Configuration;
@@ -131,6 +132,63 @@ namespace BcGov.Fams3.SearchApi.Core.DependencyInjection
         }
 
 
+
+
+        public static void AddIASearchDataPartner(this IServiceCollection services, IConfiguration configuration, Func<IServiceProvider, IConsumer<IASearchOrdered>> ordered)
+        {
+            if (ordered == null) throw new ArgumentNullException("Consumer for ia search ordered cannot be null");
+            var rabbitMqSettings = configuration.GetSection(Keys.RABBITMQ_SECTION_SETTING_KEY).Get<RabbitMqConfiguration>();
+
+            var throttleSettings = configuration.GetSection(Keys.THROTTLE_SECTION_SETTLE_KEY).Get<ThrottleConfiguration>();
+
+            var rabbitBaseUri = $"amqp://{rabbitMqSettings.Host}:{rabbitMqSettings.Port}";
+
+            services
+              .AddOptions<ThrottleConfiguration>()
+              .Bind(configuration.GetSection(Keys.THROTTLE_SECTION_SETTLE_KEY))
+              .ValidateDataAnnotations();
+
+            services.AddTransient<IConsumeMessageObserver<PersonSearchOrdered>, PersonSearchObserver>();
+
+            services.AddMassTransit(x =>
+            {
+
+                // Add RabbitMq Service Bus
+                x.AddBus(provider =>
+                {
+
+                    var bus = Bus.Factory.CreateUsingRabbitMq(cfg =>
+                    {
+                        var host = cfg.Host(new Uri(rabbitBaseUri), hostConfigurator =>
+                        {
+                            hostConfigurator.Username(rabbitMqSettings.Username);
+                            hostConfigurator.Password(rabbitMqSettings.Password);
+                        });
+
+                        cfg.ReceiveEndpoint($"{nameof(IASearchOrdered)}_queue", e =>
+                        {
+                            e.UseRateLimit(throttleSettings.IntervalInMinutes, new TimeSpan(throttleSettings.IntervalInMinutes, 0, 0));
+
+                            e.Consumer(() => ordered.Invoke(provider));
+                        });
+
+                        // Add Diagnostic context for tracing
+                        cfg.PropagateOpenTracingContext();
+
+                    });
+
+                    bus.ConnectConsumeMessageObserver(new PersonSearchObserver(
+                        provider.GetRequiredService<IOptions<ProviderProfileOptions>>(),
+                        provider.GetRequiredService<ILogger<PersonSearchObserver>>()));
+
+                    return bus;
+
+                });
+
+            });
+
+            services.AddHostedService<BusHostedService>();
+        }
 
 
     }

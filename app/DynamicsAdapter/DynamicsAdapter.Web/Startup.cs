@@ -11,6 +11,7 @@ using DynamicsAdapter.Web.SearchAgency;
 using DynamicsAdapter.Web.SearchAgency.Models;
 using DynamicsAdapter.Web.SearchAgency.Validation;
 using DynamicsAdapter.Web.SearchAgency.Webhook;
+using DynamicsAdapter.Web.SearchApi;
 using DynamicsAdapter.Web.SearchRequest;
 using Fams3Adapter.Dynamics.DataProvider;
 using Fams3Adapter.Dynamics.Duplicate;
@@ -104,8 +105,11 @@ namespace DynamicsAdapter.Web
         public void ConfigureSearchApi(IServiceCollection services)
         {
             var searchApiConfiguration = Configuration.GetSection("SearchApi").Get<SearchApiConfiguration>();
+            services.AddOptions<SearchApiConfiguration>().Bind(Configuration.GetSection("SearchApi")).ValidateDataAnnotations();
+            services.AddTransient<SearchApiKeyHandler>();
 
-            services.AddHttpClient<ISearchApiClient, SearchApiClient>(c => c.BaseAddress = new Uri(searchApiConfiguration.BaseUrl));
+            services.AddHttpClient<ISearchApiClient, SearchApiClient>(c => c.BaseAddress = new Uri(searchApiConfiguration.BaseUrl))
+                .AddHttpMessageHandler<SearchApiKeyHandler>();
         }
 
         public void ConfigureDynamicsClient(IServiceCollection services)

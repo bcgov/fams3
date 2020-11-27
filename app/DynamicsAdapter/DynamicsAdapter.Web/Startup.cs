@@ -1,4 +1,5 @@
 using AutoMapper;
+using BcGov.ApiKey.Middleware;
 using BcGov.Fams3.Redis.DependencyInjection;
 using DynamicsAdapter.Web.ApiGateway;
 using DynamicsAdapter.Web.Auth;
@@ -300,6 +301,7 @@ namespace DynamicsAdapter.Web
 
             app.UseAuthorization();
 
+            app.UseMiddleware<ApiKeyMiddleware>();
 
             app.UseOpenApi();
 

@@ -12,12 +12,13 @@ namespace DynamicsAdapter.Web.SearchApi
 
         public SearchApiKeyHandler(IOptions<SearchApiConfiguration> apiConfig)
         {
-            _searchApiConfig = apiConfig.Value;
+            _searchApiConfig = apiConfig?.Value;
         }
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            request.Headers.Add("X-ApiKey", _searchApiConfig.ApiKey);
+            if(_searchApiConfig?.ApiKey != null)
+                request.Headers.Add("X-ApiKey", _searchApiConfig.ApiKey);
             return await base.SendAsync(request, cancellationToken);
         }
     }

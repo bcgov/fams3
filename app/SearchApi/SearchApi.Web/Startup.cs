@@ -263,7 +263,7 @@ namespace SearchApi.Web
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwaggerUi3(m=> { });
+                app.UseSwaggerUi3();
             }
 
             app.Use(async (context, next) =>

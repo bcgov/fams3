@@ -12,12 +12,13 @@ namespace DynamicsAdapter.Web.Configuration
     {
         public List<WebHookNotification> WebHooks { get; set; } = new List<WebHookNotification>();
 
-        public AgencyNotificationOptions AddWebHook(string name, string uri)
+        public AgencyNotificationOptions AddWebHook(string name, string uri, string apikey=null)
         {
             WebHooks.Add(new WebHookNotification()
             {
                 Name = name,
                 Uri = uri,
+                ApiKey= apikey
             });
             return this;
         }
@@ -27,5 +28,6 @@ namespace DynamicsAdapter.Web.Configuration
     {
         public string Name { get; set; }
         public string Uri { get; set; }
+        public string ApiKey { get; set; }
     }
 }

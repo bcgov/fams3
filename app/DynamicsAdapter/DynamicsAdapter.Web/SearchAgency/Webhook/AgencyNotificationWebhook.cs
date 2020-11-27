@@ -64,6 +64,7 @@ namespace DynamicsAdapter.Web.SearchAgency.Webhook
                 request.Headers.Accept.Add(
                     System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
                 request.RequestUri = endpoint;
+                request.Headers.Add("X-ApiKey", webHook.ApiKey);
                 var response = await _httpClient.SendAsync(request, cancellationToken);
 
                 if (!response.IsSuccessStatusCode)

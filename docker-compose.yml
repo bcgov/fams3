@@ -48,8 +48,10 @@ services:
       JAEGER_ENDPOINT: http://jaeger-collector:14268/api/traces
       SearchApi__WebHooks__0__Name: dynadapter
       SearchApi__WebHooks__0__Uri: http://dynadapter/PersonSearch
+      SearchApi__WebHooks__0__APIKEY: ${DYNADAPTOR_XAPIKEY}
       SPLUNK_COLLECTOR_URL: https://splunk:8088
       SPLUNK_TOKEN: ${SPLUNK_TOKEN}
+      X-APIKEY: ${SEARCHAPI_XAPIKEY}
     ports:
       - "5050:80"
     restart: always
@@ -119,6 +121,7 @@ services:
       SCHEDULER__CRON: 0/5 * * * * ?
       SCHEDULER_FAILED: 0 30 11 * * ? *
       SEARCHAPI__BASEURL: http://search-api
+      SEARCHAPI__APIKEY: ${SEARCHAPI_XAPIKEY}
       OAUTH__OAUTHURL: ${OAUTH__OAUTHURL}
       OAUTH__RESOURCEURL: ${OAUTH__RESOURCEURL}
       OAUTH__CLIENTID: ${OAUTH__CLIENTID}
@@ -133,9 +136,14 @@ services:
       Redis__ConnectRetry: 2
       Redis__Hosts__0__Host: ${REDIS__HOST}
       Redis__Hosts__0__Port: 6379
+      X-APIKEY: ${DYNADAPTOR_XAPIKEY}
+      AgencyNotification__WebHooks__0__Name: requestApi
+      AgencyNotification__WebHooks__0__Uri: http://request-api/AgencyRequest
+      AgencyNotification__WebHooks__0__APIKEY: ${REQUESTAPI_XAPIKEY}
     restart: always
     networks:
       - search-api-net
+
   request-api:
     build:
       context: app/SearchApi
@@ -157,8 +165,10 @@ services:
       JAEGER_ENDPOINT: http://jaeger-collector:14268/api/traces
       SearchRequestAdaptor__WebHooks__0__Name: dynadapter
       SearchRequestAdaptor__WebHooks__0__Uri: http://dynadapter/AgencyRequest
+      SearchRequestAdaptor__WebHooks__0__APIKEY: ${DYNADAPTOR_XAPIKEY}
       SPLUNK_COLLECTOR_URL: https://splunk:8088
       SPLUNK_TOKEN: ${SPLUNK_TOKEN}
+      X-APIKEY: ${REQUESTAPI_XAPIKEY}
     restart: always
     networks:
       - search-api-net

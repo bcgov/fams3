@@ -211,6 +211,7 @@ namespace DynamicsAdapter.Web
 
             services.AddSwaggerDocument(config =>
             {
+                config.OperationProcessors.Add(new SwaggerApiKeyHeader());
                 // configure swagger properties
                 config.PostProcess = document =>
                 {

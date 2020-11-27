@@ -9,12 +9,13 @@ namespace SearchApi.Web.Configuration
     {
         public List<WebHookNotification> WebHooks { get; set; } = new List<WebHookNotification>();
 
-        public SearchApiOptions AddWebHook(string name, string uri)
+        public SearchApiOptions AddWebHook(string name, string uri, string apiKey=null)
         {
             WebHooks.Add(new WebHookNotification()
             {
                 Name = name,
                 Uri = uri,
+                ApiKey = apiKey
             });
             return this;
         }
@@ -28,6 +29,7 @@ namespace SearchApi.Web.Configuration
     {
         public string Name { get; set; }
         public string Uri { get; set; }
+        public string ApiKey { get; set; }
     }
 
 }

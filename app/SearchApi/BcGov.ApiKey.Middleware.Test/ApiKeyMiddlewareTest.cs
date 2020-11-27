@@ -36,7 +36,7 @@ namespace BcGov.ApiKey.Middleware.Test
         private HttpContext GetWrongKeyHttpContext()
         {
             IHeaderDictionary headers = new HeaderDictionary();
-            headers.Add("X-ApiKey", "wrongKey");
+            headers.Add(ApiKeyMiddleware.APIKEYNAME, "wrongKey");
             var request = new Mock<HttpRequest>();
             request.SetupGet(r => r.Headers).Returns(headers);
             string actual = null;
@@ -60,7 +60,7 @@ namespace BcGov.ApiKey.Middleware.Test
         private HttpContext GetRightKeyHttpContext()
         {
             IHeaderDictionary headers = new HeaderDictionary();
-            headers.Add("X-ApiKey", "apiValidKey");
+            headers.Add(ApiKeyMiddleware.APIKEYNAME, "apiValidKey");
             var request = new Mock<HttpRequest>();
             request.SetupGet(r => r.Headers).Returns(headers);
 

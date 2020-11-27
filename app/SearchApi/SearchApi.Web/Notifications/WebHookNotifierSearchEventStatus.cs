@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 using SearchApi.Web.DeepSearch;
 using BcGov.Fams3.SearchApi.Contracts.Person;
+using BcGov.ApiKey.Middleware;
 
 namespace SearchApi.Web.Notifications
 {
@@ -79,7 +80,7 @@ namespace SearchApi.Web.Notifications
                     request.Headers.Accept.Add(
                         System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
                     request.RequestUri = endpoint;
-                    request.Headers.Add("X-ApiKey", webHook.ApiKey);
+                    request.Headers.Add(ApiKeyMiddleware.APIKEYNAME, webHook.ApiKey);
                     var response = await _httpClient.SendAsync(request, cancellationToken);
 
                     if (!response.IsSuccessStatusCode)

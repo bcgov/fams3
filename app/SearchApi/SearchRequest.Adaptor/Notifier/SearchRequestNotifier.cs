@@ -1,4 +1,5 @@
-﻿using BcGov.Fams3.SearchApi.Contracts.Person;
+﻿using BcGov.ApiKey.Middleware;
+using BcGov.Fams3.SearchApi.Contracts.Person;
 using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 using BcGov.Fams3.SearchApi.Contracts.SearchRequest;
 using BcGov.Fams3.Utils.Url;
@@ -81,7 +82,7 @@ namespace SearchRequestAdaptor.Notifier
                     request.Headers.Accept.Add(
                         System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
                     request.RequestUri = endpoint;
-                    request.Headers.Add("X-ApiKey", webHook.ApiKey);
+                    request.Headers.Add(ApiKeyMiddleware.APIKEYNAME, webHook.ApiKey);
                     var response = await _httpClient.SendAsync(request, cancellationToken);
 
                     if (!response.IsSuccessStatusCode)

@@ -93,7 +93,7 @@ namespace DynamicsAdapter.Web.Test.SearchApi
                 var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, "http://foo.com/somepath");
                 var invoker = new HttpMessageInvoker(_sut);
                 var result = await invoker.SendAsync(httpRequestMessage, new CancellationToken());
-                Assert.IsFalse(httpRequestMessage.Headers.Contains("X-ApiKey"));
+                Assert.IsTrue(httpRequestMessage.Headers.Contains("X-ApiKey"));
                 Assert.IsTrue(result.IsSuccessStatusCode);
             }
         }

@@ -9,7 +9,7 @@ namespace BcGov.ApiKey.Middleware
     public class ApiKeyMiddleware
     {
         private readonly RequestDelegate _next;
-        private const string APIKEYNAME = "X-ApiKey";
+        public static string APIKEYNAME = "X-ApiKey";
         public ApiKeyMiddleware(RequestDelegate next)
         {
             _next = next;

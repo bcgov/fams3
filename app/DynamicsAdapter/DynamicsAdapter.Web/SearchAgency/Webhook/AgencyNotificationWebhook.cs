@@ -1,4 +1,5 @@
-﻿using BcGov.Fams3.Utils.Url;
+﻿using BcGov.ApiKey.Middleware;
+using BcGov.Fams3.Utils.Url;
 using DynamicsAdapter.Web.Configuration;
 using DynamicsAdapter.Web.SearchAgency.Models;
 using Microsoft.Extensions.Logging;
@@ -64,7 +65,7 @@ namespace DynamicsAdapter.Web.SearchAgency.Webhook
                 request.Headers.Accept.Add(
                     System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
                 request.RequestUri = endpoint;
-                request.Headers.Add("X-ApiKey", webHook.ApiKey);
+                request.Headers.Add(ApiKeyMiddleware.APIKEYNAME, webHook.ApiKey);
                 var response = await _httpClient.SendAsync(request, cancellationToken);
 
                 if (!response.IsSuccessStatusCode)

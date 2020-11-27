@@ -1,4 +1,5 @@
-﻿using DynamicsAdapter.Web.Configuration;
+﻿using BcGov.ApiKey.Middleware;
+using DynamicsAdapter.Web.Configuration;
 using Microsoft.Extensions.Options;
 using System.Net.Http;
 using System.Threading;
@@ -18,7 +19,7 @@ namespace DynamicsAdapter.Web.SearchApi
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             if(_searchApiConfig?.ApiKey != null)
-                request.Headers.Add("X-ApiKey", _searchApiConfig.ApiKey);
+                request.Headers.Add(ApiKeyMiddleware.APIKEYNAME, _searchApiConfig.ApiKey);
             return await base.SendAsync(request, cancellationToken);
         }
     }

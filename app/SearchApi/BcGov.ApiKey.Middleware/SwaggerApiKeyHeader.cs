@@ -11,7 +11,7 @@ namespace BcGov.ApiKey.Middleware
             context.OperationDescription.Operation.Parameters.Add(
             new OpenApiParameter
             {
-                Name = "X-ApiKey",
+                Name = ApiKeyMiddleware.APIKEYNAME,
                 Kind = OpenApiParameterKind.Header,
                 Type = NJsonSchema.JsonObjectType.String,
                 IsRequired = true

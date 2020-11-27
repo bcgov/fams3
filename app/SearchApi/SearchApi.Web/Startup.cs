@@ -30,6 +30,10 @@ using Microsoft.Net.Http.Headers;
 using SearchApi.Web.DeepSearch;
 using StackExchange.Redis.Extensions.Core.Configuration;
 using GreenPipes;
+using BcGov.ApiKey.Middleware;
+using System.Threading.Tasks;
+using NSwag.Generation.Processors;
+using NSwag.Generation.Processors.Contexts;
 
 namespace SearchApi.Web
 {
@@ -59,8 +63,8 @@ namespace SearchApi.Web
 
             services.AddOptions<DeepSearchOptions>()
                 .Bind(Configuration.GetSection(Keys.DEEPSEARCH_SECTION_SETTING_KEY));
-      
-          services.AddCacheService(Configuration.GetSection(Keys.REDIS_SECTION_SETTING_KEY).Get<RedisConfiguration>());
+
+            services.AddCacheService(Configuration.GetSection(Keys.REDIS_SECTION_SETTING_KEY).Get<RedisConfiguration>());
 
             services.AddWebHooks();
 
@@ -78,7 +82,7 @@ namespace SearchApi.Web
         {
             services.AddAutoMapper(System.Reflection.Assembly.GetExecutingAssembly());
         }
-            private void ConfigureHealthChecks(IServiceCollection services)
+        private void ConfigureHealthChecks(IServiceCollection services)
         {
 
             var rabbitMqSettings = Configuration.GetSection("RabbitMq").Get<RabbitMqConfiguration>();
@@ -141,9 +145,10 @@ namespace SearchApi.Web
         /// <param name="services"></param>
         public void ConfigureOpenApi(IServiceCollection services)
         {
-
             services.AddSwaggerDocument(config =>
             {
+                config.OperationProcessors.Add(new SwaggerApiKeyHeader());
+                config.DocumentName = "SearchApi";
                 // configure swagger properties
                 config.PostProcess = document =>
                 {
@@ -194,34 +199,34 @@ namespace SearchApi.Web
 
 
                     // Configure Person Search Accepted Consumer 
-                    cfg.ReceiveEndpoint( $"{nameof(PersonSearchAccepted)}_queue", e =>
-                    {
-                        e.Consumer(() =>
-                            new PersonSearchAcceptedConsumer(provider.GetRequiredService<ISearchApiNotifier<PersonSearchAdapterEvent>>(), provider.GetRequiredService<ILogger<PersonSearchAcceptedConsumer>>()));
-                    });
+                    cfg.ReceiveEndpoint($"{nameof(PersonSearchAccepted)}_queue", e =>
+                   {
+                       e.Consumer(() =>
+                           new PersonSearchAcceptedConsumer(provider.GetRequiredService<ISearchApiNotifier<PersonSearchAdapterEvent>>(), provider.GetRequiredService<ILogger<PersonSearchAcceptedConsumer>>()));
+                   });
                     // Configure Person Search Accepted Consumer 
-                    cfg.ReceiveEndpoint( $"{nameof(PersonSearchCompleted)}_queue", e =>
-                    {
-                        e.UseRateLimit(1, TimeSpan.FromSeconds(1));
-                        e.Consumer(() =>
-                            new PersonSearchCompletedConsumer(provider.GetRequiredService<ISearchApiNotifier<PersonSearchAdapterEvent>>(), provider.GetRequiredService<ILogger<PersonSearchCompletedConsumer>>()));
-                    });
+                    cfg.ReceiveEndpoint($"{nameof(PersonSearchCompleted)}_queue", e =>
+                   {
+                       e.UseRateLimit(1, TimeSpan.FromSeconds(1));
+                       e.Consumer(() =>
+                           new PersonSearchCompletedConsumer(provider.GetRequiredService<ISearchApiNotifier<PersonSearchAdapterEvent>>(), provider.GetRequiredService<ILogger<PersonSearchCompletedConsumer>>()));
+                   });
 
                     // Configure Person Search Rejected Consumer 
-                    cfg.ReceiveEndpoint( $"{nameof(PersonSearchRejected)}_queue", e =>
-                    {
-                       
-                        e.Consumer(() =>
-                            new PersonSearchRejectedConsumer(provider.GetRequiredService<ISearchApiNotifier<PersonSearchAdapterEvent>>(), provider.GetRequiredService<ILogger<PersonSearchRejectedConsumer>>()));
-                    });
+                    cfg.ReceiveEndpoint($"{nameof(PersonSearchRejected)}_queue", e =>
+                   {
+
+                       e.Consumer(() =>
+                           new PersonSearchRejectedConsumer(provider.GetRequiredService<ISearchApiNotifier<PersonSearchAdapterEvent>>(), provider.GetRequiredService<ILogger<PersonSearchRejectedConsumer>>()));
+                   });
 
                     // Configure Person Search Failed Consumer 
-                    cfg.ReceiveEndpoint( $"{nameof(PersonSearchFailed)}_queue", e =>
-                    {
-                        e.UseRateLimit(1, TimeSpan.FromSeconds(1));
-                        e.Consumer(() =>
-                            new PersonSearchFailedConsumer(provider.GetRequiredService<ISearchApiNotifier<PersonSearchAdapterEvent>>(), provider.GetRequiredService<ILogger<PersonSearchFailedConsumer>>()));
-                    });
+                    cfg.ReceiveEndpoint($"{nameof(PersonSearchFailed)}_queue", e =>
+                   {
+                       e.UseRateLimit(1, TimeSpan.FromSeconds(1));
+                       e.Consumer(() =>
+                           new PersonSearchFailedConsumer(provider.GetRequiredService<ISearchApiNotifier<PersonSearchAdapterEvent>>(), provider.GetRequiredService<ILogger<PersonSearchFailedConsumer>>()));
+                   });
 
                     // Configure Person Search Submitted Consumer 
                     cfg.ReceiveEndpoint($"{nameof(PersonSearchSubmitted)}_queue", e =>
@@ -258,29 +263,31 @@ namespace SearchApi.Web
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwaggerUi3();
+                app.UseSwaggerUi3(m=> { });
             }
 
-         app.Use(async (context, next) =>
-            {
-                context.Response.GetTypedHeaders().CacheControl =
-                 new CacheControlHeaderValue()
-                 {
-                     NoStore = true,
-                     NoCache = true,
-                     MustRevalidate = true,
-                     MaxAge = TimeSpan.FromSeconds(0),
-                     Private = true,
-                     
+            app.Use(async (context, next) =>
+               {
+                   context.Response.GetTypedHeaders().CacheControl =
+                    new CacheControlHeaderValue()
+                    {
+                        NoStore = true,
+                        NoCache = true,
+                        MustRevalidate = true,
+                        MaxAge = TimeSpan.FromSeconds(0),
+                        Private = true,
 
-                 };
-                context.Response.Headers.Add("Pragma", "no-cache");
+
+                    };
+                   context.Response.Headers.Add("Pragma", "no-cache");
                    context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
-                await next();
-            });
+                   await next();
+               });
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.UseMiddleware<ApiKeyMiddleware>();
 
             app.UseOpenApi();
 

@@ -110,6 +110,7 @@ namespace SearchRequestAdaptor
                 await next();
             });
             app.UseRouting();
+           // app.UseMiddleware<ApiKeyMiddleware>();
             app.UseOpenApi();
             app.UseEndpoints(endpoints =>
             {

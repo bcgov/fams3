@@ -28,7 +28,6 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
 using GreenPipes;
-using BcGov.ApiKey.Middleware;
 
 namespace SearchRequestAdaptor
 {

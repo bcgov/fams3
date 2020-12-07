@@ -28,7 +28,6 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
 using GreenPipes;
-using BcGov.ApiKey.Middleware;
 
 namespace SearchRequestAdaptor
 {
@@ -111,7 +110,6 @@ namespace SearchRequestAdaptor
                 await next();
             });
             app.UseRouting();
-            app.UseMiddleware<ApiKeyMiddleware>();
             app.UseOpenApi();
             app.UseEndpoints(endpoints =>
             {

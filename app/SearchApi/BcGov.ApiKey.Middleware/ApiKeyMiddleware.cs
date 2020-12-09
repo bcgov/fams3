@@ -58,6 +58,8 @@ namespace BcGov.ApiKey.Middleware
                     }
                 }
             }
+            if (context.Request.Path != null)
+                return !context.Request.Path.Value.Contains("/swagger/");
             return true;
         }
     }

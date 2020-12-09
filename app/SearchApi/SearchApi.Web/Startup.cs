@@ -284,6 +284,8 @@ namespace SearchApi.Web
 
             app.UseOpenApi();
 
+
+
             app.Use(async (context, next) =>
             {
                 await next();

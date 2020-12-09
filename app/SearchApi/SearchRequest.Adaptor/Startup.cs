@@ -111,7 +111,7 @@ namespace SearchRequestAdaptor
                 await next();
             });
             app.UseRouting();
-            app.UseMiddleware<ApiKeyMiddleware>();
+            app.UseMiddleware<ApiKeyMiddleware>("RequestApi_ApiKey");
             app.UseOpenApi();
             app.UseEndpoints(endpoints =>
             {

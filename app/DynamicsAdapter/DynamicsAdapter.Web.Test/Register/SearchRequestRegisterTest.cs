@@ -159,6 +159,13 @@ namespace DynamicsAdapter.Web.Test.Register
                             IdentifierType=IdentificationType.BirthCertificate.Value,
                             IssuedBy="bc",
                             IdentifierId=identifier3Guid
+                        },
+                        new SSG_Identifier()
+                        {
+                            Identification="12340000",
+                            IdentifierType=IdentificationType.BirthCertificate.Value,
+                            IssuedBy="bc",
+                            IsCouldNotLocate=true
                         }
                     }.ToArray()
             };
@@ -172,6 +179,31 @@ namespace DynamicsAdapter.Web.Test.Register
             Assert.AreEqual("bc", newRequest.Identifiers[1].IssuedBy.ToLower());
             Assert.AreEqual(identifier3Guid, newRequest.Identifiers[1].IdentifierId);
             Assert.AreEqual(2, newRequest.Identifiers.Length);
+        }
+
+        [Test]
+        public void couldNotLocate_Identifier_searchapiRequest_filtered_correctly()
+        {
+            Guid identifier1Guid = Guid.NewGuid();
+            SSG_SearchApiRequest request = new SSG_SearchApiRequest
+            {
+                SearchRequest = new SSG_SearchRequest() { FileId = "111111" },
+                Identifiers = new List<SSG_Identifier>()
+                    {
+                        new SSG_Identifier()
+                        {
+                            Identification="1234567",
+                            IsCouldNotLocate=true,
+                            IdentifierType=IdentificationType.BCDriverLicense.Value,
+                            IssuedBy="BC",
+                            IdentifierId=identifier1Guid
+                        }
+                       
+                    }.ToArray()
+            };
+            SSG_SearchApiRequest newRequest = _sut.FilterDuplicatedIdentifier(request);
+
+            Assert.AreEqual(0, newRequest.Identifiers.Length);
         }
 
         [Test]

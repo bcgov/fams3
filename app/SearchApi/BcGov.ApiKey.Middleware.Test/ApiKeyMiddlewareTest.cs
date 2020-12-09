@@ -36,12 +36,15 @@ namespace BcGov.ApiKey.Middleware.Test
             _isNextDelegateCalled = false;
         }
 
-        private HttpContext GetNoKeyHttpContext()
+        private HttpContext GetNoKeyHttpContext(bool pathContainSwagger = false)
         {
             IHeaderDictionary headers = new HeaderDictionary();
             var request = new Mock<HttpRequest>();
             request.SetupGet(r => r.Headers).Returns(headers);
             request.SetupGet(r => r.Host).Returns(new HostString("host1", 9000));
+            if( pathContainSwagger )
+                request.SetupGet(r => r.Path).Returns(new PathString("/swagger/"));
+
             string actual = null;
             var response = new Mock<HttpResponse>();
             response.Setup(_ => _.Body.WriteAsync(It.IsAny<byte[]>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
@@ -160,6 +163,14 @@ namespace BcGov.ApiKey.Middleware.Test
             await _apiMw.InvokeAsync(httpContext);
             Assert.IsTrue(_isNextDelegateCalled);
 
+        }
+
+        [Test]
+        public async Task with_swagger_visit_should_go_on()
+        {
+            HttpContext httpContext = GetNoKeyHttpContext(true);
+            await _apiMw.InvokeAsync(httpContext);
+            Assert.IsTrue(_isNextDelegateCalled);
         }
     }
 }

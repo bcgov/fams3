@@ -14,7 +14,7 @@ namespace BcGov.ApiKey.Middleware
                 Name = ApiKeyMiddleware.HEADER_APIKEYNAME,
                 Kind = OpenApiParameterKind.Header,
                 Type = NJsonSchema.JsonObjectType.String,
-                IsRequired = true
+                //IsRequired = true
             });
 
             return true;

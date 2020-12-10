@@ -80,7 +80,7 @@ namespace SearchAdapter.Sample
                                         provider.GetRequiredService<ILogger<SearchResultConsumer>>()));
             }
 
-            services.AddIASearchDataPartner(Configuration, (provider) => new IASearchConsumer(provider.GetRequiredService<ILogger<IASearchConsumer>>()));
+          //  services.AddIASearchDataPartner(Configuration, (provider) => new IASearchConsumer(provider.GetRequiredService<ILogger<IASearchConsumer>>()));
         }
 
         private void ConfigureHealthChecks(IServiceCollection services)

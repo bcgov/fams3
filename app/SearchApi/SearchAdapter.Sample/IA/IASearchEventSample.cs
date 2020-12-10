@@ -18,84 +18,90 @@ namespace SearchAdapter.Sample.IA
         public Person Person { get; set; }
 
         public string BatchNo { get; set; }
+
+        public string RequestorTimeStamp { get; set; }
+
     }
 
-  
-
-    public class IASearchFailedSample : IASearchFailed
-    {
-        public Guid SearchRequestId { get; set; }
-
-        public string SearchRequestKey { get; set; }
-
-        public DateTime TimeStamp { get; set; }
-
-        public Person Person { get; set; }
-
-        public string BatchNo { get; set; }
-
-        public bool Retry { get; set; }
-
-        public string Cause { get; set; }
-    }
-
-    public static class FakeIABuilder
-    {
-        public static IASearchResult BuildFakeIASeachResult(Guid searchrequestId, string SearchRequestKey, string batchno)
+        public class IASearchFailedSample : IASearchFailed
         {
+            public Guid SearchRequestId { get; set; }
 
-            return new IASearchResultSample
+            public string SearchRequestKey { get; set; }
+
+            public DateTime TimeStamp { get; set; }
+
+            public Person Person { get; set; }
+
+            public string BatchNo { get; set; }
+
+            public bool Retry { get; set; }
+
+            public string Cause { get; set; }
+
+            public string RequestorTimeStamp { get; set; }
+        }
+
+        public static class FakeIABuilder
+        {
+            public static IASearchResult BuildFakeIASeachResult(Guid searchrequestId, string SearchRequestKey, string batchno)
             {
-                BatchNo = batchno,
-                SearchRequestKey =SearchRequestKey,
-                SearchRequestId = searchrequestId,
-                TimeStamp = DateTime.Now,
-                Person = new Person
+
+                return new IASearchResultSample
                 {
-                 
-                    FirstName = "firstname",
-                    LastName = "secondname",
-                    MiddleName = "middlename",
-                    OtherName = "othername",
-                    Identifiers = new List<PersonalIdentifier>()
+                    BatchNo = batchno,
+                    SearchRequestKey = SearchRequestKey,
+                    SearchRequestId = searchrequestId,
+                    TimeStamp = DateTime.Now,
+                    RequestorTimeStamp = "RequestorTimeStamp",
+                    Person = new Person
+                    {
+
+                        FirstName = "firstname",
+                        LastName = "secondname",
+                        MiddleName = "middlename",
+                        OtherName = "othername",
+                        Identifiers = new List<PersonalIdentifier>()
                     {
                         new PersonalIdentifier {Type = PersonalIdentifierType.SocialInsuranceNumber, Value = "123123123123",    ReferenceDates  = new List<ReferenceDate>(){
                                     new ReferenceDate(){ Index=0, Key="Effective Date", Value=new DateTime(2019,9,1) },
                                     new ReferenceDate(){ Index=1, Key="Expiration Date", Value=new DateTime(2020,9,1) }
                                 }}
                     }
-                }
-            };
+                    }
+                };
 
-        }
+            }
 
-        public static IASearchFailed BuildFakeIAFailed( Guid searchrequestId, string searchRequestKey,  string batchno, string message, bool retry)
-        {
-            return new IASearchFailedSample()
+            public static IASearchFailed BuildFakeIAFailed(Guid searchrequestId, string searchRequestKey, string batchno, string message, bool retry)
             {
-               Cause = message,
-               Retry = retry,
-                BatchNo = batchno,
-                SearchRequestKey = searchRequestKey,
-                SearchRequestId = searchrequestId,
-                TimeStamp = DateTime.Now,
-                Person = new Person
+                return new IASearchFailedSample()
                 {
+                    Cause = message,
+                    Retry = retry,
+                    BatchNo = batchno,
+                    SearchRequestKey = searchRequestKey,
+                    SearchRequestId = searchrequestId,
+                    TimeStamp = DateTime.Now,
+                    RequestorTimeStamp = "RequestorTimeStamp",
+                    Person = new Person
+                    {
 
-                    FirstName = "firstname",
-                    LastName = "secondname",
-                    MiddleName = "middlename",
-                    OtherName = "othername",
-                    Identifiers = new List<PersonalIdentifier>()
+                        FirstName = "firstname",
+                        LastName = "secondname",
+                        MiddleName = "middlename",
+                        OtherName = "othername",
+                        Identifiers = new List<PersonalIdentifier>()
                     {
                         new PersonalIdentifier {Type = PersonalIdentifierType.SocialInsuranceNumber, Value = "123123123123",    ReferenceDates  = new List<ReferenceDate>(){
                                     new ReferenceDate(){ Index=0, Key="Effective Date", Value=new DateTime(2019,9,1) },
                                     new ReferenceDate(){ Index=1, Key="Expiration Date", Value=new DateTime(2020,9,1) }
                                 }}
                     }
-                }
-            };
-        }
+                    }
+                };
+            }
 
-    }
+        }
+    
 }

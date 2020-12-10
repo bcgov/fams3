@@ -30,6 +30,7 @@ namespace SearchAdapter.Sample.Test
 
             public string BatchNo { get; set; }
 
+            public string RequestorTimeStamp { get; set; }
         }
 
         [OneTimeSetUp]

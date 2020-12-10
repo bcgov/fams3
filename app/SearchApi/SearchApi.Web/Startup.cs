@@ -202,7 +202,7 @@ namespace SearchApi.Web
                     // Configure Person Search Accepted Consumer 
                     cfg.ReceiveEndpoint( $"{nameof(PersonSearchCompleted)}_queue", e =>
                     {
-                        e.UseRateLimit(1, TimeSpan.FromSeconds(1));
+                        e.UseRateLimit(1, TimeSpan.FromSeconds(5));
                         e.Consumer(() =>
                             new PersonSearchCompletedConsumer(provider.GetRequiredService<ISearchApiNotifier<PersonSearchAdapterEvent>>(), provider.GetRequiredService<ILogger<PersonSearchCompletedConsumer>>()));
                     });

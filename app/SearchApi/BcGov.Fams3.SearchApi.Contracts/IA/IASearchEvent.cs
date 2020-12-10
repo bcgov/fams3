@@ -4,5 +4,7 @@
     {
         Person.Person Person { get; }
         string BatchNo { get; }
+
+        string RequestorTimeStamp { get; }
     }
 }

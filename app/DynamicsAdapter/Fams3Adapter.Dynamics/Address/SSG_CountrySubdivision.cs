@@ -10,5 +10,9 @@ namespace Fams3Adapter.Dynamics.Address
 
         [JsonProperty("ssg_name")]
         public String Name { get; set; }
+
+        [JsonProperty("ssg_provincecodewithoutcountry")]
+        public String ProvinceCode { get; set; }
+
     }
 }

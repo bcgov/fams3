@@ -67,6 +67,22 @@ namespace Fams3Adapter.Dynamics.SearchResponse
                 .Expand(x => x.SSG_Asset_RealEstatePropertys)
                 .FindEntryAsync(cancellationToken);
 
+            if (ssgSearchResponse.SSG_Addresses != null)
+            {
+                foreach (SSG_Address address in ssgSearchResponse.SSG_Addresses)
+                {
+                    SSG_Address addr = await _oDataClient.For<SSG_Address>()
+                        .Key(address.AddressId)
+                        .Expand(x => x.CountrySubdivision)
+                        .FindEntryAsync(cancellationToken);
+
+                    if (addr.CountrySubdivision != null)
+                    {
+                        address.CountrySubdivisionText = addr.CountrySubdivision.ProvinceCode;
+                    }
+
+                }
+            }
             return ssgSearchResponse;
         }
 

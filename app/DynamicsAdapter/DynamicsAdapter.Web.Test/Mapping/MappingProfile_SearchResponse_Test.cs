@@ -327,7 +327,11 @@ namespace DynamicsAdapter.Web.Test.Mapping
                         FaxNumber="faxNumber",
                         PhoneType=TelephoneNumberType.Cell.Value
                     }
-                }.ToArray()
+                }.ToArray(),
+                Date1=new DateTime(2002,1,1),
+                Date1Label="Effective Date",
+                Date2=new DateTime(2003,1,1),
+                Date2Label="End Date"
             };
 
             Employment e = _mapper.Map<Employment>(employment);
@@ -339,6 +343,10 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual("Not Employed", e.EmploymentStatus);
             Assert.AreEqual("Extraprovincial Non-Share Corporation", e.SelfEmployComType);
             Assert.AreEqual(5, e.Employer.Phones.Count);
+            Assert.AreEqual(new DateTimeOffset(new DateTime(2002, 1, 1)), e.ReferenceDates.ElementAt(0).Value);
+            Assert.AreEqual("Effective Date", e.ReferenceDates.ElementAt(0).Key);
+            Assert.AreEqual(new DateTimeOffset(new DateTime(2003, 1, 1)), e.ReferenceDates.ElementAt(1).Value);
+            Assert.AreEqual("End Date", e.ReferenceDates.ElementAt(1).Key);
         }
 
         [Test]

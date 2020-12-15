@@ -83,6 +83,40 @@ namespace Fams3Adapter.Dynamics.SearchResponse
 
                 }
             }
+
+            if (ssgSearchResponse.SSG_Asset_ICBCClaims != null)
+            {
+                foreach (SSG_Asset_ICBCClaim claim in ssgSearchResponse.SSG_Asset_ICBCClaims)
+                {
+                    SSG_Asset_ICBCClaim expandedClaim = await _oDataClient.For<SSG_Asset_ICBCClaim>()
+                        .Key(claim.ICBCClaimId)
+                        .Expand(x => x.CountrySubdivision)
+                        .FindEntryAsync(cancellationToken);
+
+                    if (expandedClaim.CountrySubdivision != null)
+                    {
+                        claim.SupplierCountrySubdivisionCode = expandedClaim.CountrySubdivision.ProvinceCode;
+                    }
+
+                }
+            }
+
+            if(ssgSearchResponse.SSG_Employments != null)
+            {
+                foreach (SSG_Employment e in ssgSearchResponse.SSG_Employments)
+                {
+                    SSG_Employment expandedEmployment = await _oDataClient.For<SSG_Employment>()
+                        .Key(e.EmploymentId)
+                        .Expand(x => x.CountrySubdivision)
+                        .FindEntryAsync(cancellationToken);
+
+                    if (expandedEmployment.CountrySubdivision != null)
+                    {
+                        e.CountrySubdivisionText = expandedEmployment.CountrySubdivision.ProvinceCode;
+                    }
+                }
+            }
+
             return ssgSearchResponse;
         }
 

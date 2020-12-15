@@ -340,6 +340,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual("legalBizName", e.Employer.Name);
             Assert.AreEqual("dbaName", e.Employer.DbaName);
             Assert.AreEqual("employmentAddress1", e.Employer.Address.AddressLine1);
+            Assert.AreEqual("province", e.Employer.Address.StateProvince);
             Assert.AreEqual("Not Employed", e.EmploymentStatus);
             Assert.AreEqual("Extraprovincial Non-Share Corporation", e.SelfEmployComType);
             Assert.AreEqual(5, e.Employer.Phones.Count);
@@ -397,7 +398,8 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 ClaimCenterLocationCode = "claimCentre",
                 AdjusterFirstName = "adjustfirstName",
                 AdjusterLastName = "adjustlastName",
-                AdjusterPhoneNumber = "phonenumber"
+                AdjusterPhoneNumber = "phonenumber",
+                SupplierCountrySubdivisionCode="BC"
             };
 
             InsuranceClaim claim = _mapper.Map<InsuranceClaim>(icbcClaim);

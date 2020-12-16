@@ -323,6 +323,7 @@ namespace DynamicsAdapter.Web.Mapping
                     .ForMember(dest => dest.SelfEmployPercentOfShare, opt => opt.MapFrom(src => src.SelfEmployPercentOfShare))
                     .ForMember(dest => dest.IncomeAssistanceStatus, opt => opt.ConvertUsing(new IncomeAssistanceStatusResponseConverter(), src => src.IncomeAssistanceStatusOption))
                     .ForMember(dest => dest.IncomeAssistanceDesc, opt => opt.MapFrom(src => src.IncomeAssistanceDesc))
+                    .IncludeBase<DynamicsEntity, PersonalInfo>()
             ;
 
             CreateMap<Vehicle, VehicleEntity>()

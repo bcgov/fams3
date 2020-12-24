@@ -33,8 +33,16 @@ namespace DynamicsAdapter.Web.SearchAgency
         {
             if (Guid.Parse(searchResponseReady.ResponseGuid) == Guid.Empty) return null;
             var cts = new CancellationTokenSource();
-
-            SSG_SearchRequestResponse sr = await _searchResponseService.GetSearchResponse(Guid.Parse(searchResponseReady.ResponseGuid), cts.Token);
+            SSG_SearchRequestResponse sr;
+            try
+            {
+                sr = await _searchResponseService.GetSearchResponse(Guid.Parse(searchResponseReady.ResponseGuid), cts.Token);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        
             if (sr == null) return null;
             Person person = _mapper.Map<Person>(sr);
 

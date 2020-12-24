@@ -44,10 +44,13 @@ namespace Fams3Adapter.Dynamics.SearchResponse
 
         public async Task<SSG_SearchRequestResponse> GetSearchResponse(Guid responseId, CancellationToken cancellationToken)
         {
-            SSG_SearchRequestResponse ssgSearchResponse = await _oDataClient
+
+            try
+            {
+                SSG_SearchRequestResponse ssgSearchResponse = await _oDataClient
                 .For<SSG_SearchRequestResponse>()
                 .Key(responseId)
-                .Expand(x => x.SSG_BankInfos)
+                 .Expand(x => x.SSG_BankInfos)
                 .Expand(x => x.SSG_Asset_Others)
                 .Expand(x => x.SSG_Addresses)
                 .Expand(x => x.SSG_Aliases)
@@ -66,6 +69,8 @@ namespace Fams3Adapter.Dynamics.SearchResponse
                 .Expand(x => x.SSG_Asset_PensionDisablilitys)
                 .Expand(x => x.SSG_Asset_RealEstatePropertys)
                 .FindEntryAsync(cancellationToken);
+           
+            
 
             if (ssgSearchResponse.SSG_Addresses != null)
             {
@@ -88,15 +93,20 @@ namespace Fams3Adapter.Dynamics.SearchResponse
             {
                 foreach (SSG_Asset_ICBCClaim claim in ssgSearchResponse.SSG_Asset_ICBCClaims)
                 {
-                    SSG_Asset_ICBCClaim expandedClaim = await _oDataClient.For<SSG_Asset_ICBCClaim>()
-                        .Key(claim.ICBCClaimId)
-                        .Expand(x => x.CountrySubdivision)
-                        .FindEntryAsync(cancellationToken);
+                        if (claim.CountrySubdivision != null)
+                        {
+                            SSG_Asset_ICBCClaim expandedClaim = await _oDataClient.For<SSG_Asset_ICBCClaim>()
+                                .Key(claim.ICBCClaimId)
+                                .Expand(x => x.CountrySubdivision)
+                                .FindEntryAsync(cancellationToken);
 
-                    if (expandedClaim.CountrySubdivision != null)
-                    {
-                        claim.SupplierCountrySubdivisionCode = expandedClaim.CountrySubdivision.ProvinceCode;
-                    }
+
+                            if (expandedClaim.CountrySubdivision != null)
+                            {
+                                claim.SupplierCountrySubdivisionCode = expandedClaim.CountrySubdivision.ProvinceCode;
+
+                            }
+                        }
 
                 }
             }
@@ -117,7 +127,13 @@ namespace Fams3Adapter.Dynamics.SearchResponse
                 }
             }
 
-            return ssgSearchResponse;
+          
+                return ssgSearchResponse;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
 

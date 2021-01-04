@@ -947,7 +947,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(new DateTime(2014, 1, 1), ssg_relatedPerson.Date2);
             Assert.AreEqual("relation start date", ssg_relatedPerson.Date1Label);
             Assert.AreEqual("relation end date", ssg_relatedPerson.Date2Label);
-          //  Assert.AreEqual(867670000, ssg_relatedPerson.PersonType);
+            Assert.AreEqual(867670000, ssg_relatedPerson.PersonType);
         }
 
         [Test]
@@ -959,7 +959,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             };
             RelatedPersonEntity ssg_relatedPerson = _mapper.Map<RelatedPersonEntity>(relatedPerson);
             Assert.AreEqual(867670008, ssg_relatedPerson.Type);
-           // Assert.AreEqual(867670000, ssg_relatedPerson.PersonType);
+            Assert.AreEqual(867670000, ssg_relatedPerson.PersonType);
             Assert.AreEqual("LALW", ssg_relatedPerson.SupplierRelationType);
             Assert.AreEqual(1, ssg_relatedPerson.StatusCode);
             Assert.AreEqual(0, ssg_relatedPerson.StateCode);

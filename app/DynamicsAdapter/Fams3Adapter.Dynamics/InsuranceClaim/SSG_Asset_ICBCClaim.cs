@@ -71,7 +71,7 @@ namespace Fams3Adapter.Dynamics.InsuranceClaim
         [JsonProperty("ssg_claimcentre")]
         public string ClaimCenterLocationCode { get; set; }
 
-        [JsonProperty("ssg_suppliertypecode")]
+        [JsonProperty("ssg_claimtypetext")]
         public string ClaimType { get; set; }
 
         [JsonProperty("ssg_claimstatus")]

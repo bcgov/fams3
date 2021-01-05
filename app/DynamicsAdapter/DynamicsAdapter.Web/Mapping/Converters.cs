@@ -291,6 +291,15 @@ namespace DynamicsAdapter.Web.Mapping
         }
     }
 
+    public class RelatedPersonTypeConverter : IValueConverter<RelatedPerson, int?>
+    {
+        public int? Convert(RelatedPerson sourceMember, ResolutionContext context)
+        {
+            return Fams3Adapter.Dynamics.Types.RelatedPersonPersonType.Relation.Value;
+
+        }
+    }
+
     public class RelatedPersonTypeResponseConverter : IValueConverter<int?, string>
     {
         public string Convert(int? sourceMember, ResolutionContext context)

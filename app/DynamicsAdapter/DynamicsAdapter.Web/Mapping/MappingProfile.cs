@@ -237,7 +237,7 @@ namespace DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
                  .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
                  .ForMember(dest => dest.Gender, opt => opt.ConvertUsing(new PersonGenderConverter(), src => src.Gender))
-                 .ForMember(dest => dest.PersonType, opt => opt.MapFrom(src => RelatedPersonPersonType.Relation.Value))
+                 .ForMember(dest => dest.PersonType, opt => opt.ConvertUsing(new RelatedPersonTypeConverter(), src => src))
                  .IncludeBase<PersonalInfo, DynamicsEntity>()
                  .ReverseMap()
                     .ForMember(dest => dest.Gender, opt => opt.ConvertUsing(new PersonGenderTypeConverter(), src => src.Gender))

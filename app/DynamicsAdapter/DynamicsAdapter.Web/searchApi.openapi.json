@@ -786,6 +786,14 @@
             "incarcerationStatus": {
               "type": "string",
               "description": "The incareration status of this address"
+            },
+            "incarcerationOutReason": {
+              "type": "string",
+              "description": "The incareration out reason"
+            },
+            "probationStatus": {
+              "type": "string",
+              "description": "The probation Status"
             }
           }
         }

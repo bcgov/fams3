@@ -149,6 +149,8 @@ namespace DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.Category, opt => opt.ConvertUsing(new AddressTypeConverter(), src => src.Type))
                  .ForMember(dest => dest.PostalCode, opt => opt.MapFrom(src => src.ZipPostalCode))
                  .ForMember(dest => dest.IncarcerationStatus, opt => opt.MapFrom(src => src.IncarcerationStatus))
+                 .ForMember(dest => dest.IncarcerationOutReason, opt => opt.MapFrom(src => src.IncarcerationOutReason))
+                 .ForMember(dest => dest.ProbationStatus, opt => opt.MapFrom(src => src.ProbationStatus))
                  .IncludeBase<PersonalInfo, DynamicsEntity>()
                  .ReverseMap()
                     .ForMember(dest => dest.AddressLine1, opt => opt.MapFrom(src => src.CouldNotLocate ? "Could Not Locate" : src.AddressLine1))

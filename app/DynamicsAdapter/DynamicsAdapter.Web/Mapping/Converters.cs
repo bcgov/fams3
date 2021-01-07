@@ -311,6 +311,28 @@ namespace DynamicsAdapter.Web.Mapping
         }
     }
 
+    public class EmailTypeResponseConverter : IValueConverter<int?, string>
+    {
+        public string Convert(int? sourceMember, ResolutionContext context)
+        {
+            if (sourceMember == null) return null;
+            return
+                Enumeration.GetAll<EmailType>().SingleOrDefault(m => m.Value == sourceMember)?.Name;
+
+        }
+    }
+
+    public class SocailMediaTypeResponseConverter : IValueConverter<int?, string>
+    {
+        public string Convert(int? sourceMember, ResolutionContext context)
+        {
+            if (sourceMember == null) return null;
+            return
+                Enumeration.GetAll<SocialMediaType>().SingleOrDefault(m => m.Value == sourceMember)?.Name;
+
+        }
+    }
+
     public class PersonSearchCompletedMessageConvertor : IValueConverter<PersonSearchCompleted, string>
     {
         public string Convert(PersonSearchCompleted sourceMember, ResolutionContext context)

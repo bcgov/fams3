@@ -7,6 +7,7 @@ using Fams3Adapter.Dynamics.AssetOwner;
 using Fams3Adapter.Dynamics.BankInfo;
 using Fams3Adapter.Dynamics.CompensationClaim;
 using Fams3Adapter.Dynamics.DataProvider;
+using Fams3Adapter.Dynamics.Email;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.InsuranceClaim;
@@ -24,6 +25,7 @@ using Fams3Adapter.Dynamics.SearchApiEvent;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Fams3Adapter.Dynamics.SearchResponse;
+using Fams3Adapter.Dynamics.SocialMedia;
 using Fams3Adapter.Dynamics.Types;
 using Fams3Adapter.Dynamics.Vehicle;
 using System;
@@ -499,6 +501,18 @@ namespace DynamicsAdapter.Web.Mapping
                 .IncludeBase<DynamicsEntity, PersonalInfo>()
                 .ForMember(dest => dest.ResponseComments, opt => opt.MapFrom(src => src.ResponseComments));
 
+            CreateMap<SSG_Email, Email>() 
+                .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new EmailTypeResponseConverter(), src => src.EmailType))
+                .ForMember(dest => dest.EmailAddress, opt => opt.MapFrom(src => src.Email))
+                .ForMember(dest => dest.ResponseComments, opt => opt.MapFrom(src => src.ResponseComments))
+                .IncludeBase<DynamicsEntity, PersonalInfo>();
+
+            CreateMap<SSG_Electronica, SocialMedia>()
+                .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new SocailMediaTypeResponseConverter(), src => src.SocialMediaAccountType))
+                .ForMember(dest => dest.AccountAddress, opt => opt.MapFrom(src => src.SocialMediaAddress))
+                .ForMember(dest => dest.ResponseComments, opt => opt.MapFrom(src => src.ResponseComments))
+                .IncludeBase<DynamicsEntity, PersonalInfo>();
+
             CreateMap<SSG_SearchRequestResponse, Person>()
                .ForMember(dest => dest.Names, opt => opt.MapFrom(src => src.SSG_Aliases))
                .ForMember(dest => dest.Identifiers, opt => opt.MapFrom(src => src.SSG_Identifiers))
@@ -516,6 +530,8 @@ namespace DynamicsAdapter.Web.Mapping
                .ForMember(dest => dest.SafetyConcerns, opt => opt.MapFrom(src => src.SSG_SafetyConcernDetails))
                .ForMember(dest => dest.Pensions, opt => opt.MapFrom(src => src.SSG_Asset_PensionDisablilitys))
                .ForMember(dest => dest.RealEstateProperties, opt => opt.MapFrom(src => src.SSG_Asset_RealEstatePropertys))
+               .ForMember(dest => dest.Emails, opt => opt.MapFrom(src => src.SSG_Emails))
+               .ForMember(dest => dest.SocialMedias, opt => opt.MapFrom(src => src.SSG_Electronicas))
                .ForMember(dest => dest.ResponsePersons, opt => opt.MapFrom(src => src.SSG_Persons))
                .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new PersonSoughtRoleConverter(), src => src.SSG_SearchRequests[0].PersonSoughtRole))
                .ForMember(dest => dest.Agency, opt => opt.MapFrom(src => src.SSG_SearchRequests[0]))

@@ -322,6 +322,18 @@ namespace DynamicsAdapter.Web.Mapping
         }
     }
 
+    public class EmploymentIncomeClsResponseConverter : IValueConverter<int?, string>
+    {
+        public string Convert(int? sourceMember, ResolutionContext context)
+        {
+            if (sourceMember == null) return null;
+            return
+                Enumeration.GetAll<IncomeAssistanceClassType>().SingleOrDefault(m => m.Value == sourceMember)?.Name;
+
+        }
+    }
+    
+
     public class SocailMediaTypeResponseConverter : IValueConverter<int?, string>
     {
         public string Convert(int? sourceMember, ResolutionContext context)

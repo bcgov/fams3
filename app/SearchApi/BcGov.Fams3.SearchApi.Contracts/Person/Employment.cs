@@ -32,5 +32,6 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         public string SelfEmployComRole { get; set; }
         public string SelfEmployPercentOfShare { get; set; }
         public string IncomeAssistanceDesc { get; set; }
+        public string IncomeAssistanceClass { get; set; }
     }
 }

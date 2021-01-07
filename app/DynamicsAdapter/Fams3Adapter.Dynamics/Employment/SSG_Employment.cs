@@ -144,7 +144,7 @@ namespace Fams3Adapter.Dynamics.Employment
         [UpdateIgnore]
         public int? SelfEmployPercentOfShare { get; set; }
 
-        [JsonProperty("incomeassistanceclass")]
+        [JsonProperty("ssg_incomeassistanceclass")]
         [UpdateIgnore]
         public int? IncomeAssistanceCls { get; set; }
 

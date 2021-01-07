@@ -907,12 +907,6 @@
               "type": "string",
               "description": "The death date of the related person",
               "format": "date-time"
-            },
-            "address": {
-              "$ref": "#/definitions/Address"
-            },
-            "phone": {
-              "$ref": "#/definitions/Phone"
             }
           }
         }
@@ -981,6 +975,9 @@
               "type": "string"
             },
             "incomeAssistanceDesc": {
+              "type": "string"
+            },
+            "incomeAssistanceClass": {
               "type": "string"
             }
           }

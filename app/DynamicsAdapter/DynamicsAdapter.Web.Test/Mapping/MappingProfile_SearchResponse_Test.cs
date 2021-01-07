@@ -327,6 +327,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 SelfEmployPercentOfShare = 50,
                 IncomeAssistanceStatusOption = IncomeAssistanceStatusType.Closed.Value,
                 IncomeAssistanceDesc = "income assistance description",
+                IncomeAssistanceCls = IncomeAssistanceClassType.LongTermCare.Value,
                 ContactPerson = "contact person",
                 PrimaryContactPhone = "primaryContactPhoneNumber",
                 PrimaryContactPhoneExt = "primaryContactExt",
@@ -358,6 +359,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual("province", e.Employer.Address.StateProvince);
             Assert.AreEqual("Not Employed", e.EmploymentStatus);
             Assert.AreEqual("Extraprovincial Non-Share Corporation", e.SelfEmployComType);
+            Assert.AreEqual("05 - Long Term Care", e.IncomeAssistanceClass);
             Assert.AreEqual(5, e.Employer.Phones.Count);
             Assert.AreEqual(2, e.Employer.Emails.Count);
             Assert.AreEqual("test@test.com", e.Email);

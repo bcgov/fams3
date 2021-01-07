@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Template
+labels:
+  template: ia-search-config
+message: |-
+  SFTP config template.
+metadata:
+  annotations:
+    description: |-
+      SFTP config template.
+    tags: ia-search-config
+    template: ia-search-config
+    template: ia-search-config
+  name: ia-search-config
+# Objects
+objects:
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    name: ia-search-config
+    label:
+      app: ia-search-web-adatper
+  stringData:
+    IACONFIG__DOWNLOADPATH: "set.download.path"
+    IACONFIG__UPLOADPATH: "set.upload.path"

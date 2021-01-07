@@ -50,7 +50,7 @@ namespace Fams3Adapter.Dynamics.SearchResponse
                 SSG_SearchRequestResponse ssgSearchResponse = await _oDataClient
                 .For<SSG_SearchRequestResponse>()
                 .Key(responseId)
-                 .Expand(x => x.SSG_BankInfos)
+                .Expand(x => x.SSG_BankInfos)
                 .Expand(x => x.SSG_Asset_Others)
                 .Expand(x => x.SSG_Addresses)
                 .Expand(x => x.SSG_Aliases)

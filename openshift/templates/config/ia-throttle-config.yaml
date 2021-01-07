@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Template
+labels:
+  template: ia-throttle-config
+message: |-
+  Throttle config template.
+metadata:
+  annotations:
+    description: |-
+      Rest config template.
+    tags: ia-throttle-config
+    template: ia-throttle-config
+  name: ia-throttle-config
+# Objects
+objects:
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    name: ia-throttle-config
+    label:
+      app: ia-search-web-adatper
+  stringData:
+    THROTTLE__MESSAGEPERTIME: "set.throttle.settings"
+    THROTTLE__INTERVALINMINUTES: "set.thorttle.settings"

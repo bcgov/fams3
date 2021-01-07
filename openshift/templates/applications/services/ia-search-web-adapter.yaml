@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Template
+labels:
+  template: ia-search-template
+message: |-
+  A Jenkins server must be instantiated in this project to manage
+  the Pipeline BuildConfig created by this template. You will be able to log in to
+  it using your OpenShift user credentials.
+metadata:
+  annotations:
+    openshift.io/display-name: ia-search template
+    description: |-
+      This is a template for ia-search.
+    iconClass: icon-jenkins
+    tags: instant-app,jenkins
+  name: ia-search-template
+objects:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      description: Exposes and load balances the application pods
+    labels:
+      app: ia-search
+      template: meta-service
+    name: ia-search
+  spec:
+    ports:
+    - name: web
+      port: 80
+      protocol: TCP
+      targetPort: 8080
+    selector:
+      deploymentconfig: ia-search
+    sessionAffinity: None
+    type: ClusterIP

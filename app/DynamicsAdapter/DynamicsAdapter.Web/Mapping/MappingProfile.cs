@@ -349,7 +349,7 @@ namespace DynamicsAdapter.Web.Mapping
                  ;
 
             CreateMap<VehicleEntity, InvolvedParty>()
-             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Lessee))
+             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => string.IsNullOrEmpty(src.Lessee)? null: new Name() { FirstName=src.Lessee}))
              .ForMember(dest => dest.Organization, opt => opt.MapFrom(src => src.LeasingCom))
              .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.LeasingComAddr))
              .ForMember(dest => dest.Type, opt => opt.MapFrom(src => string.IsNullOrEmpty(src.Lessee) ? null : "Leased"))

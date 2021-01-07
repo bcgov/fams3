@@ -163,6 +163,7 @@ namespace DynamicsAdapter.Web.Mapping
         public ICollection<Phone> Resolve(SSG_Employment source, Employer destination, ICollection<Phone> destMember, ResolutionContext context)
         {
             List<Phone> phones = new List<Phone>();
+            List<Email> emails = new List<Email>();
             if (!string.IsNullOrEmpty(source?.PrimaryPhoneNumber))
                 phones.Add(new Phone { PhoneNumber = source.PrimaryPhoneNumber, Extension = source.PrimaryPhoneExtension, Type = "primaryPhone" });
 
@@ -171,6 +172,10 @@ namespace DynamicsAdapter.Web.Mapping
 
             if (!string.IsNullOrEmpty(source?.PrimaryContactPhone))
                 phones.Add(new Phone { PhoneNumber = source.PrimaryContactPhone, Extension = source.PrimaryContactPhoneExt, Type = "primaryContactPhone" });
+
+            if (!string.IsNullOrEmpty(source?.PrimaryContactEmail))
+                emails.Add(new Email { EmailAddress = source.PrimaryContactEmail, Type = "primaryEmail" });
+
             if (source.SSG_EmploymentContacts != null)
             {
                 foreach (SSG_EmploymentContact contact in source.SSG_EmploymentContacts)
@@ -196,8 +201,19 @@ namespace DynamicsAdapter.Web.Mapping
                             Type = contact.PhoneType == null ? "Fax" : Enumeration.GetAll<TelephoneNumberType>().SingleOrDefault(m => m.Value == contact.PhoneType.Value)?.Name
                         });
                     }
+                    if (!string.IsNullOrEmpty(contact.Email))
+                    {
+                        emails.Add(new Email
+                        {
+                            EmailAddress = contact.Email,
+                            Type = "contactEmail"
+                        });
+                    }
                 }
             }
+            if (emails.Count > 0)
+                destination.Emails = emails;
+
             return phones;
         }
     }

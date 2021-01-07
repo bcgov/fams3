@@ -311,7 +311,7 @@ namespace DynamicsAdapter.Web.Mapping
             CreateMap<SSG_Employment, Employer>()
                   .ForMember(dest => dest.DbaName, opt => opt.MapFrom(src => src.DBAName))
                   .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.CouldNotLocate ? "Could Not Locate" : src.BusinessName))
-                  .ForMember(dest => dest.Phones, opt => opt.MapFrom<EmployerPhoneResponseResolver>())
+                  .ForMember(dest => dest.Phones, opt => opt.MapFrom<EmployerPhoneResponseResolver>())                  
                   .ForMember(dest => dest.ContactPerson, opt => opt.MapFrom(src => src.ContactPerson))
                   .ForMember(dest => dest.Address, opt => opt.MapFrom<EmployerAddressResponseResolver>());
 
@@ -319,6 +319,7 @@ namespace DynamicsAdapter.Web.Mapping
                     .ForMember(dest => dest.IncomeAssistance, opt => opt.ConvertUsing(new IncomeAssistanceResponseConvertor(), src => src.EmploymentType))
                     .ForMember(dest => dest.Employer, opt => opt.MapFrom(src => src))
                     .ForMember(dest => dest.Website, opt => opt.MapFrom(src => src.Website))
+                    .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
                     .ForMember(dest => dest.EmploymentStatus, opt => opt.ConvertUsing(new EmploymentStatusResponseConverter(), src => src.EmploymentStatus))
                     .ForMember(dest => dest.SelfEmployComRegistrationNo, opt => opt.MapFrom(src => src.SelfEmployComRegistrationNo))
                     .ForMember(dest => dest.SelfEmployComType, opt => opt.ConvertUsing(new SelfEmployComTypeResponseConverter(), src => src.SelfEmployComType))

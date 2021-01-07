@@ -1,4 +1,4 @@
-﻿using Fams3Adapter.Dynamics.Address;
+using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Fams3Adapter.Dynamics.Types;
@@ -13,6 +13,9 @@ namespace Fams3Adapter.Dynamics.Employment
     {
         [JsonProperty("ssg_websiteurl")]
         public string Website { get; set; }
+
+        [JsonProperty("ssg_email")]
+        public string Email { get; set; }
 
         [JsonProperty("ssg_PersonId")]
         public virtual SSG_Person Person { get; set; }
@@ -153,6 +156,9 @@ namespace Fams3Adapter.Dynamics.Employment
 
         [JsonProperty("ssg_primarycontactphoneextension")]
         public string PrimaryContactPhoneExt { get; set; }
+
+        [JsonProperty("ssg_primarycontactemail")]
+        public string PrimaryContactEmail { get; set; }
 
         [JsonProperty("ssg_agencyupdatedescription")]
         public string UpdateDetails { get; set; }

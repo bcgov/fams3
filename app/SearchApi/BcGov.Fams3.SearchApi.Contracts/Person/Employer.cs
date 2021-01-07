@@ -13,6 +13,9 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         [Description("the phone numbers and fax of the company")]
         public IEnumerable<Phone> Phones { get; set; }
 
+        [Description("the emails of the company")]
+        public IEnumerable<Email> Emails { get; set; }
+
         [Description("The address of the employer")]
         public Address Address { get; set; }
 

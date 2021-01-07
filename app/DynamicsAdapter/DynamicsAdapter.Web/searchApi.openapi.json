@@ -954,6 +954,10 @@
               "type": "string",
               "description": "company website"
             },
+            "email": {
+              "type": "string",
+              "description": "company email"
+            },
             "employmentType": {
               "type": "string",
               "description": "the employment type"
@@ -1001,6 +1005,13 @@
             "$ref": "#/definitions/Phone"
           }
         },
+        "emails": {
+          "type": "array",
+          "description": "the emails of the company",
+          "items": {
+            "$ref": "#/definitions/Email"
+          }
+        },
         "address": {
           "description": "The address of the employer",
           "allOf": [
@@ -1018,6 +1029,26 @@
           "description": "The Employer DBA name"
         }
       }
+    },
+    "Email": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/PersonalInfo"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "description": "the type of email"
+            },
+            "emailAddress": {
+              "type": "string",
+              "description": "the social media account address"
+            }
+          }
+        }
+      ]
     },
     "BankInfo": {
       "allOf": [
@@ -1446,26 +1477,6 @@
             },
             "propertyAddress": {
               "$ref": "#/definitions/Address"
-            }
-          }
-        }
-      ]
-    },
-    "Email": {
-      "allOf": [
-        {
-          "$ref": "#/definitions/PersonalInfo"
-        },
-        {
-          "type": "object",
-          "properties": {
-            "type": {
-              "type": "string",
-              "description": "the type of email"
-            },
-            "emailAddress": {
-              "type": "string",
-              "description": "the social media account address"
             }
           }
         }

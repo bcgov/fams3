@@ -310,6 +310,8 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 PrimaryPhoneNumber = "primaryPhone",
                 PrimaryPhoneExtension = "primaryExt",
                 PrimaryFax = "primaryFax",
+                Email="test@test.com",
+                PrimaryContactEmail="test@primaryContact.com",
                 Website = "www.website.com",
                 AddressLine1 = "employmentAddress1",
                 AddressLine2 = "employmentAddress2",
@@ -337,7 +339,8 @@ namespace DynamicsAdapter.Web.Test.Mapping
                         PhoneNumber="phone",
                         PhoneExtension="ext",
                         FaxNumber="faxNumber",
-                        PhoneType=TelephoneNumberType.Cell.Value
+                        PhoneType=TelephoneNumberType.Cell.Value,
+                        Email = "contactemail"
                     }
                 }.ToArray(),
                 Date1=new DateTime(2002,1,1),
@@ -356,6 +359,8 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual("Not Employed", e.EmploymentStatus);
             Assert.AreEqual("Extraprovincial Non-Share Corporation", e.SelfEmployComType);
             Assert.AreEqual(5, e.Employer.Phones.Count);
+            Assert.AreEqual(2, e.Employer.Emails.Count);
+            Assert.AreEqual("test@test.com", e.Email);
             Assert.AreEqual(new DateTimeOffset(new DateTime(2002, 1, 1)), e.ReferenceDates.ElementAt(0).Value);
             Assert.AreEqual("Effective Date", e.ReferenceDates.ElementAt(0).Key);
             Assert.AreEqual(new DateTimeOffset(new DateTime(2003, 1, 1)), e.ReferenceDates.ElementAt(1).Value);

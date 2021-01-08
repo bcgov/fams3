@@ -1,16 +1,16 @@
 apiVersion: v1
 kind: Template
 labels:
-  template: ia-search-template
+  template: ia-search-web-adapter-template
 message: |-
   A Jenkins server must be instantiated in this project to manage
   the Pipeline BuildConfig created by this template. You will be able to log in to
   it using your OpenShift user credentials.
 metadata:
   annotations:
-    openshift.io/display-name: ia-search template
+    openshift.io/display-name: ia-search-web-adapter template
     description: |-
-      This is a template for ia-search.
+      This is a template for ia-search-web-adapter.
     iconClass: icon-jenkins
     tags: instant-app,jenkins
   name: ia-search-template
@@ -28,13 +28,13 @@ objects:
   kind: DeploymentConfig
   metadata:
     labels:
-      app: ia-search
-    name: ia-search
+      app: ia-search-web-adapter
+    name: ia-search-web-adapter
   spec:
     replicas: 1
     revisionHistoryLimit: 10
     selector:
-      io.kompose.service: ia-search
+      io.kompose.service: ia-search-web-adapter
     strategy:
       activeDeadlineSeconds: 21600
       resources: {}
@@ -54,7 +54,7 @@ objects:
         containers:
         - env:
           - name: JAEGER_SERVICE_NAME
-            value: ia-search
+            value: ia-search-web-adapter
           envFrom:
           - secretRef:
               name: aspnet-env
@@ -72,7 +72,7 @@ objects:
               name: splunk-config
           image: ''
           imagePullPolicy: IfNotPresent
-          name: ia-search
+          name: ia-search-web-adapter
           ports:
           - containerPort: 8080
             protocol: TCP
@@ -96,9 +96,9 @@ objects:
     - imageChangeParams:
         automatic: true
         containerNames:
-        - ia-search
+        - ia-search-web-adapter
         from:
           kind: ImageStreamTag
-          name: ia-search:${TAG}
+          name: ia-search-web-adapter:${TAG}
           namespace: ${namespacePrefix}-tools
       type: ImageChange

@@ -28,11 +28,11 @@ objects:
   kind: Route
   metadata:
     labels:
-      app: ia-search
+      app: ia-search-web-adapter
       template: meta-service
-    name: ia-search
+    name: ia-search-web-adapter
   spec:
-    host: ia-search-${namespacePrefix}-${TAG}.pathfinder.bcgov
+    host: ia-search-web-adapter-${namespacePrefix}-${TAG}.pathfinder.bcgov
     port:
       targetPort: web
     tls:

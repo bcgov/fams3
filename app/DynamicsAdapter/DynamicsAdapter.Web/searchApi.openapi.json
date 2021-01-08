@@ -1002,13 +1002,6 @@
             "$ref": "#/definitions/Phone"
           }
         },
-        "emails": {
-          "type": "array",
-          "description": "the emails of the company",
-          "items": {
-            "$ref": "#/definitions/Email"
-          }
-        },
         "address": {
           "description": "The address of the employer",
           "allOf": [
@@ -1024,28 +1017,34 @@
         "dbaName": {
           "type": "string",
           "description": "The Employer DBA name"
+        },
+        "employerContacts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/EmployerContact"
+          }
         }
       }
     },
-    "Email": {
-      "allOf": [
-        {
-          "$ref": "#/definitions/PersonalInfo"
+    "EmployerContact": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
         },
-        {
-          "type": "object",
-          "properties": {
-            "type": {
-              "type": "string",
-              "description": "the type of email"
-            },
-            "emailAddress": {
-              "type": "string",
-              "description": "the social media account address"
-            }
-          }
+        "name": {
+          "type": "string"
+        },
+        "phone": {
+          "$ref": "#/definitions/Phone"
+        },
+        "fax": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
         }
-      ]
+      }
     },
     "BankInfo": {
       "allOf": [
@@ -1477,6 +1476,26 @@
             },
             "propertyAddress": {
               "$ref": "#/definitions/Address"
+            }
+          }
+        }
+      ]
+    },
+    "Email": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/PersonalInfo"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "description": "the type of email"
+            },
+            "emailAddress": {
+              "type": "string",
+              "description": "the social media account address"
             }
           }
         }

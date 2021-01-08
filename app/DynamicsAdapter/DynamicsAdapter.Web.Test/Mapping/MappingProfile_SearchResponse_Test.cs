@@ -309,9 +309,9 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 DBAName = "dbaName",
                 PrimaryPhoneNumber = "primaryPhone",
                 PrimaryPhoneExtension = "primaryExt",
+                PrimaryContactEmail = "test@primaryContact.com",
                 PrimaryFax = "primaryFax",
                 Email="test@test.com",
-                PrimaryContactEmail="test@primaryContact.com",
                 Website = "www.website.com",
                 AddressLine1 = "employmentAddress1",
                 AddressLine2 = "employmentAddress2",
@@ -361,7 +361,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual("Extraprovincial Non-Share Corporation", e.SelfEmployComType);
             Assert.AreEqual("05 - Long Term Care", e.IncomeAssistanceClass);
             Assert.AreEqual(5, e.Employer.Phones.Count);
-            Assert.AreEqual(2, e.Employer.Emails.Count);
+            Assert.AreEqual(2, e.Employer.EmployerContacts.Count);
             Assert.AreEqual("test@test.com", e.Email);
             Assert.AreEqual(new DateTimeOffset(new DateTime(2002, 1, 1)), e.ReferenceDates.ElementAt(0).Value);
             Assert.AreEqual("Effective Date", e.ReferenceDates.ElementAt(0).Key);

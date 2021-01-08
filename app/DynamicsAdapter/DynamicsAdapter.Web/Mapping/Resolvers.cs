@@ -163,18 +163,30 @@ namespace DynamicsAdapter.Web.Mapping
         public ICollection<Phone> Resolve(SSG_Employment source, Employer destination, ICollection<Phone> destMember, ResolutionContext context)
         {
             List<Phone> phones = new List<Phone>();
-            List<Email> emails = new List<Email>();
+            List<EmployerContact> contacts = new List<EmployerContact>();
+
             if (!string.IsNullOrEmpty(source?.PrimaryPhoneNumber))
-                phones.Add(new Phone { PhoneNumber = source.PrimaryPhoneNumber, Extension = source.PrimaryPhoneExtension, Type = "primaryPhone" });
+            {
+                Phone phone = new Phone { PhoneNumber = source.PrimaryPhoneNumber, Extension = source.PrimaryPhoneExtension, Type = "primaryPhone" };
+                phones.Add(phone);
+            }
 
             if (!string.IsNullOrEmpty(source?.PrimaryFax))
                 phones.Add(new Phone { PhoneNumber = source.PrimaryFax, Type = "primaryFax" });
 
-            if (!string.IsNullOrEmpty(source?.PrimaryContactPhone))
-                phones.Add(new Phone { PhoneNumber = source.PrimaryContactPhone, Extension = source.PrimaryContactPhoneExt, Type = "primaryContactPhone" });
-
-            if (!string.IsNullOrEmpty(source?.PrimaryContactEmail))
-                emails.Add(new Email { EmailAddress = source.PrimaryContactEmail, Type = "primaryEmail" });
+            Phone primaryContactPhone = null;
+            if (!string.IsNullOrEmpty(source?.PrimaryContactPhone)) {
+                primaryContactPhone = new Phone { PhoneNumber = source.PrimaryContactPhone, Extension = source.PrimaryContactPhoneExt, Type = "primaryContactPhone" };
+                phones.Add(primaryContactPhone); 
+            }
+            EmployerContact primaryContact = null;
+            if (!string.IsNullOrEmpty(source?.PrimaryContactEmail)|| primaryContactPhone!=null) {
+                primaryContact = new EmployerContact();
+                primaryContact.Email = source.PrimaryContactEmail;
+                primaryContact.Phone = primaryContactPhone;
+                primaryContact.Type = "Primary";
+                contacts.Add(primaryContact);
+            }
 
             if (source.SSG_EmploymentContacts != null)
             {
@@ -198,21 +210,34 @@ namespace DynamicsAdapter.Web.Mapping
                             ContactName = contact.ContactName,
                             PhoneNumber = contact.FaxNumber,
                             Description = contact.Description,
-                            Type = contact.PhoneType == null ? "Fax" : Enumeration.GetAll<TelephoneNumberType>().SingleOrDefault(m => m.Value == contact.PhoneType.Value)?.Name
+                            Type = contact.PhoneType == null ? "Fax" : Enumeration.GetAll<TelephoneNumberType>().FirstOrDefault(m => m.Value == contact.PhoneType.Value)?.Name
                         });
                     }
-                    if (!string.IsNullOrEmpty(contact.Email))
+                    if (!string.IsNullOrEmpty(contact.Email)
+                        || !string.IsNullOrEmpty(contact.PhoneNumber)
+                        || !string.IsNullOrEmpty(contact.ContactName)
+                        || !string.IsNullOrEmpty(contact.FaxNumber))
                     {
-                        emails.Add(new Email
+                        contacts.Add(new EmployerContact
                         {
-                            EmailAddress = contact.Email,
-                            Type = "contactEmail"
+                            Email = contact.Email,
+                            Phone = new Phone
+                            {
+                                ContactName = contact.ContactName,
+                                PhoneNumber = contact.PhoneNumber,
+                                Extension = contact.PhoneExtension,
+                                Description = contact.Description,
+                                Type = contact.PhoneType == null ? null : Enumeration.GetAll<TelephoneNumberType>().SingleOrDefault(m => m.Value == contact.PhoneType.Value)?.Name
+                            },
+                            Name = contact.ContactName,
+                            Fax = contact.FaxNumber,
+                            Type = "additional"
                         });
                     }
                 }
             }
-            if (emails.Count > 0)
-                destination.Emails = emails;
+            if (contacts.Count > 0)
+                destination.EmployerContacts = contacts;
 
             return phones;
         }

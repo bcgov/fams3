@@ -21,9 +21,9 @@ objects:
     annotations:
       description: Exposes and load balances the application pods
     labels:
-      app: ia-search
+      app: ia-search-web-adapter
       template: meta-service
-    name: ia-search
+    name: ia-search-web-adapter
   spec:
     ports:
     - name: web
@@ -31,6 +31,6 @@ objects:
       protocol: TCP
       targetPort: 8080
     selector:
-      deploymentconfig: ia-search
+      deploymentconfig: ia-search-web-adapter
     sessionAffinity: None
     type: ClusterIP

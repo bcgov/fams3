@@ -49,7 +49,7 @@ objects:
       metadata:
         creationTimestamp: null
         labels:
-          io.kompose.service: ia-search
+          io.kompose.service: ia-search-web-adapter
       spec:
         containers:
         - env:

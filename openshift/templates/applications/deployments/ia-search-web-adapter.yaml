@@ -64,7 +64,7 @@ objects:
               name: ia-search-config
           - secretRef:
               name: ia-sftp-config
-            - secretRef:
+          - secretRef:
               name: ia-throttle-config
           - secretRef:
               name: jeager-config

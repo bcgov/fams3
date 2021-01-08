@@ -20,11 +20,6 @@ parameters:
   name: namespacePrefix
   required: true
   value:
-- description: Data partner service name.
-  displayName: Name of the data partner service
-  name: dataPartnerService
-  required: true
-  value:
 - description: Github trigger secret. A difficult to guess string encoded as part of the webhook URL. Not encrypted.
   displayName: GitHub Webhook Secret (Generated if empty)
   from: '[a-zA-Z0-9]{40}'

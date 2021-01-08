@@ -679,6 +679,59 @@ oc process -o=yaml \
   | oc apply -f - -n ${TOOLS_NAMESPACE}
 ```
 
+
+
+### IA Search Adapter Deployment Pipeline
+```shell script
+export NAMESPACE_PREFIX=
+export NAMESPACE_SUFFIX=
+export TARGET_NAMESPACE=${NAMESPACE_PREFIX}-${NAMESPACE_SUFFIX}
+export TOOLS_NAMESPACE=${NAMESPACE_PREFIX}-tools
+export APP_NAME="ia-search-web-adapter"
+export GIT_REPO="bcgov/fams3"
+export GIT_BRANCH="master"
+export GIT_URL="https://raw.githubusercontent.com/${GIT_REPO}/${GIT_BRANCH}"
+
+# Configuration evn/secrets
+oc process -o=yaml  \
+   -f ${GIT_URL}/openshift/templates/config/ia-search-config.yaml \
+    | oc apply -f - -n ${TARGET_NAMESPACE}
+
+oc process -o=yaml  \
+   -f ${GIT_URL}/openshift/templates/config/ia-sftp-config.yaml \
+    | oc apply -f - -n ${TARGET_NAMESPACE}
+
+oc process -o=yaml  \
+   -f ${GIT_URL}/openshift/templates/config/ia-throttle-config.yaml \
+    | oc apply -f - -n ${TARGET_NAMESPACE}
+
+oc process -o=yaml \
+  -f ${GIT_URL}/openshift/templates/config/aspnet-env.yaml \
+  -p ENVIRONMENT=  \
+  | oc apply -f - -n ${TARGET_NAMESPACE}
+
+
+
+# Image stream
+oc process -o=yaml \
+  -f ${GIT_URL}/openshift/templates/builds/images/generic.yaml \
+  -p namespacePrefix=${NAMESPACE_PREFIX}  \
+  -p appName=${APP_NAME}  \
+  | oc apply -f - -n ${TOOLS_NAMESPACE}
+
+# Build config
+oc process -o=yaml \
+  -f ${GIT_URL}/openshift/templates/builds/builds/ia-search-web-adapter.yaml \
+  -p namespacePrefix=${NAMESPACE_PREFIX}  \
+  | oc apply -f - -n ${TOOLS_NAMESPACE}
+
+# Pipeline
+oc process -o=yaml \
+  -f ${GIT_URL}/openshift/templates/builds/pipelines/ia-search-web-adapter.yaml \
+  -p namespacePrefix=${NAMESPACE_PREFIX}  \
+  | oc apply -f - -n ${TOOLS_NAMESPACE}
+```
+
 ### web/rest adapters Scans Pipeline
 ```shell script
 export NAMESPACE_PREFIX=

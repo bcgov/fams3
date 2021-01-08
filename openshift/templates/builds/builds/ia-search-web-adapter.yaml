@@ -20,11 +20,6 @@ parameters:
   name: namespacePrefix
   required: true
   value:
-- description: Data partner service name.
-  displayName: Name of the data partner service
-  name: dataPartnerService
-  required: true
-  value:
 objects:
 - apiVersion: build.openshift.io/v1
   kind: BuildConfig

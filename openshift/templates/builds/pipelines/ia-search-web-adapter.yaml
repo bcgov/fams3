@@ -204,7 +204,6 @@ objects:
                 sh "echo ${appName} Deployment Configuration not found in ${targetNamespace}, performing baseline template deploy"
                 // deploy generic deploymentconfig
                 sh "oc process -f ${deploymentConfigPath} \
-                  -p dataPartnerService=${dataPartnerService} \
                   -p namespacePrefix=${namespacePrefix} \
                   -p TAG=${version} | oc apply -f - -n ${targetNamespace}"
               }
@@ -214,8 +213,7 @@ objects:
               }else{
                 sh "echo ${appName} Service Configuration not found in ${targetNamespace}, performing baseline template deploy"
                 // deploy generic Service
-                sh "oc process -f ${serviceConfigPath} \
-                  -p dataPartnerService=${dataPartnerService} | oc apply -f - -n ${targetNamespace}"
+                sh "oc process -f ${serviceConfigPath} | oc apply -f - -n ${targetNamespace}"
               }
 
               if(routeExists){
@@ -224,7 +222,6 @@ objects:
                 sh "echo ${appName} Route Configuration not found in ${targetNamespace}, performing baseline template deploy"
                 // deploy generic Route
                 sh "oc process -f ${routeConfigPath} \
-                  -p dataPartnerService=${dataPartnerService} \
                   -p namespacePrefix=${namespacePrefix} \
                   -p TAG=${version} | oc apply -f - -n ${targetNamespace}"
               }

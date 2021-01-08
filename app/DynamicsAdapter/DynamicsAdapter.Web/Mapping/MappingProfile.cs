@@ -416,6 +416,7 @@ namespace DynamicsAdapter.Web.Mapping
                   .IncludeBase<PersonalInfo, DynamicsEntity>()
                   .ReverseMap()
                     .ForMember(dest => dest.ClaimAmount, opt => opt.MapFrom(src => src.ClaimAmount))
+                    .ForMember(dest => dest.AdjustorEmail, opt => opt.MapFrom(src => src.AdjusterEmail))
                     .ForMember(dest => dest.Adjustor, opt => opt.MapFrom(src =>
                         (string.IsNullOrEmpty(src.AdjusterFirstName) && string.IsNullOrEmpty(src.AdjusterLastName)) ? null : new Name { FirstName = src.AdjusterFirstName, LastName = src.AdjusterLastName }))
                     .ForMember(dest => dest.AdjustorPhone, opt => opt.MapFrom(src =>

@@ -21,6 +21,8 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         [Description("Adjustor Phone")]
         public Phone AdjustorPhone { get; set; }
 
+        public string AdjustorEmail { get; set; }
+
         [Description("Identifer involved in insurance claim")]
         public IEnumerable<PersonalIdentifier> Identifiers { get; set; }
 

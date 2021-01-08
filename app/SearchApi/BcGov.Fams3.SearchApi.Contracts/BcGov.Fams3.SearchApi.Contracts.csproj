@@ -6,11 +6,11 @@
     <Authors>PathFinder</Authors>
     <Company>BcGov</Company>
     <Description />
-    <PackageVersion>1.0.47.38</PackageVersion>
+    <PackageVersion>1.0.47.39</PackageVersion>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <AssemblyVersion>1.0.47.38</AssemblyVersion>
-    <FileVersion>1.0.47.38</FileVersion>
+    <AssemblyVersion>1.0.47.39</AssemblyVersion>
+    <FileVersion>1.0.47.39</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

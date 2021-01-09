@@ -5,6 +5,7 @@ using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.Agency;
 using Fams3Adapter.Dynamics.BankInfo;
 using Fams3Adapter.Dynamics.CompensationClaim;
+using Fams3Adapter.Dynamics.Email;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.InsuranceClaim;
@@ -20,6 +21,7 @@ using Fams3Adapter.Dynamics.RelatedPerson;
 using Fams3Adapter.Dynamics.SafetyConcern;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Fams3Adapter.Dynamics.SearchResponse;
+using Fams3Adapter.Dynamics.SocialMedia;
 using Fams3Adapter.Dynamics.Types;
 using Fams3Adapter.Dynamics.Vehicle;
 using NUnit.Framework;
@@ -119,6 +121,14 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 {
                      new SSG_Asset_RealEstateProperty{ AddressLine1="lin1" }
                 }.ToArray(),
+                SSG_Emails = new List<SSG_Email>
+                {
+                     new SSG_Email{  Email="email" }
+                }.ToArray(),
+                SSG_Electronicas = new List<SSG_Electronica>
+                {
+                     new SSG_Electronica{ SocialMediaAddress="addr" }
+                }.ToArray(),
             };
             Person person = _mapper.Map<Person>(response);
             Assert.AreEqual(1, person.Names.Count);
@@ -138,6 +148,8 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(1, person.RealEstateProperties.Count);
             Assert.AreEqual(1, person.ResponseNotes.Count);
             Assert.AreEqual(1, person.ResponsePersons.Count);
+            Assert.AreEqual(1, person.Emails.Count);
+            Assert.AreEqual(1, person.SocialMedias.Count);
         }
 
         [Test]
@@ -297,7 +309,9 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 DBAName = "dbaName",
                 PrimaryPhoneNumber = "primaryPhone",
                 PrimaryPhoneExtension = "primaryExt",
+                PrimaryContactEmail = "test@primaryContact.com",
                 PrimaryFax = "primaryFax",
+                Email="test@test.com",
                 Website = "www.website.com",
                 AddressLine1 = "employmentAddress1",
                 AddressLine2 = "employmentAddress2",
@@ -313,6 +327,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 SelfEmployPercentOfShare = 50,
                 IncomeAssistanceStatusOption = IncomeAssistanceStatusType.Closed.Value,
                 IncomeAssistanceDesc = "income assistance description",
+                IncomeAssistanceCls = IncomeAssistanceClassType.LongTermCare.Value,
                 ContactPerson = "contact person",
                 PrimaryContactPhone = "primaryContactPhoneNumber",
                 PrimaryContactPhoneExt = "primaryContactExt",
@@ -325,7 +340,8 @@ namespace DynamicsAdapter.Web.Test.Mapping
                         PhoneNumber="phone",
                         PhoneExtension="ext",
                         FaxNumber="faxNumber",
-                        PhoneType=TelephoneNumberType.Cell.Value
+                        PhoneType=TelephoneNumberType.Cell.Value,
+                        Email = "contactemail"
                     }
                 }.ToArray(),
                 Date1=new DateTime(2002,1,1),
@@ -343,7 +359,10 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual("province", e.Employer.Address.StateProvince);
             Assert.AreEqual("Not Employed", e.EmploymentStatus);
             Assert.AreEqual("Extraprovincial Non-Share Corporation", e.SelfEmployComType);
+            Assert.AreEqual("05 - Long Term Care", e.IncomeAssistanceClass);
             Assert.AreEqual(5, e.Employer.Phones.Count);
+            Assert.AreEqual(2, e.Employer.EmployerContacts.Count);
+            Assert.AreEqual("test@test.com", e.Email);
             Assert.AreEqual(new DateTimeOffset(new DateTime(2002, 1, 1)), e.ReferenceDates.ElementAt(0).Value);
             Assert.AreEqual("Effective Date", e.ReferenceDates.ElementAt(0).Key);
             Assert.AreEqual(new DateTimeOffset(new DateTime(2003, 1, 1)), e.ReferenceDates.ElementAt(1).Value);
@@ -591,6 +610,34 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(new DateTimeOffset(new DateTime(2015, 1, 1)), rp.DateOfDeath);
             Assert.AreEqual("u", rp.Gender);
             Assert.AreEqual("firstName", rp.FirstName);
+        }
+
+        [Test]
+        public void SSG_Email_should_map_to_Email_correctly()
+        {
+            SSG_Email e = new SSG_Email
+            {
+                Email = "test@test.com",
+                EmailType= 867670000
+            };
+
+            Email email = _mapper.Map<Email>(e);
+            Assert.AreEqual("test@test.com", email.EmailAddress);
+            Assert.AreEqual("Personal", email.Type);
+        }
+
+        [Test]
+        public void SSG_Electronica_should_map_to_SocialMedia_correctly()
+        {
+            SSG_Electronica e = new SSG_Electronica
+            {
+                SocialMediaAddress = "address",
+                SocialMediaAccountType = 867670001
+            };
+
+            SocialMedia s = _mapper.Map<SocialMedia>(e);
+            Assert.AreEqual("address", s.AccountAddress);
+            Assert.AreEqual("Twitter", s.Type);
         }
     }
 }

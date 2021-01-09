@@ -53,6 +53,8 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         public IEnumerable<SafetyConcern> SafetyConcerns { get; set; }
         public IEnumerable<Pension> Pensions { get; set; }
         public IEnumerable<RealEstateProperty> RealEstateProperties { get; set; }
+        public IEnumerable<Email> Emails { get; set; }
+        public IEnumerable<SocialMedia> SocialMedias { get; set; }
         public IEnumerable<ResponsePerson> ResponsePersons { get; set; }
 
         public JCAPerson JCAPerson { get; set; }

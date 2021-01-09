@@ -81,6 +81,12 @@ namespace Fams3Adapter.Dynamics.Address
         [JsonProperty("ssg_incarcerationstatus")]
         public string IncarcerationStatus { get; set; }
 
+        [JsonProperty("ssg_incarcerationoutreason")]
+        public string IncarcerationOutReason { get; set; }
+
+        [JsonProperty("ssg_probationstatus")]
+        public string ProbationStatus { get; set; }
+
         [UpdateIgnore]
         [JsonProperty("ssg_createdbyagency")]
         public bool IsCreatedByAgency { get; set; }

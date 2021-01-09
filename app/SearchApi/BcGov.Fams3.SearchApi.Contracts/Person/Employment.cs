@@ -17,6 +17,10 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         public string Occupation { get; set; }
         [Description("company website")]
         public string Website { get; set; }
+
+        [Description("company email")]
+        public string Email { get; set; }
+
         [Description("the employment type")]
         public string EmploymentType { get; set; }
 
@@ -28,5 +32,6 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         public string SelfEmployComRole { get; set; }
         public string SelfEmployPercentOfShare { get; set; }
         public string IncomeAssistanceDesc { get; set; }
+        public string IncomeAssistanceClass { get; set; }
     }
 }

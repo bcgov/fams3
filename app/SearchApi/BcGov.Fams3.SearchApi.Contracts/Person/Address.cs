@@ -35,5 +35,11 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
 
         [Description("The incareration status of this address")]
         public string IncarcerationStatus { get; set; }
+
+        [Description("The incareration out reason")]
+        public string IncarcerationOutReason { get; set; }
+
+        [Description("The probation Status")]
+        public string ProbationStatus { get; set; }
     }
 }

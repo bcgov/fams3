@@ -15,11 +15,12 @@ using Fams3Adapter.Dynamics.RealEstate;
 using Fams3Adapter.Dynamics.RelatedPerson;
 using Fams3Adapter.Dynamics.SafetyConcern;
 using Fams3Adapter.Dynamics.SearchRequest;
+using Fams3Adapter.Dynamics.Email;
 using Fams3Adapter.Dynamics.Vehicle;
+using Fams3Adapter.Dynamics.SocialMedia;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Text;
+
 
 namespace Fams3Adapter.Dynamics.SearchResponse
 {
@@ -58,11 +59,11 @@ namespace Fams3Adapter.Dynamics.SearchResponse
         [JsonProperty("ssg_ssg_searchrequestresponse_ssg_asset_worksafebcclaim_ResponseId")]
         public SSG_Asset_WorkSafeBcClaim[] SSG_Asset_WorkSafeBcClaims { get; set; }
 
-        //[JsonProperty("ssg_ssg_searchrequestresponse_ssg_electronica")]
-        //public SSG_Electronica[] SSG_Electronicas{ get; set; }
+        [JsonProperty("ssg_ssg_searchrequestresponse_ssg_electronica")]
+        public SSG_Electronica[] SSG_Electronicas { get; set; }
 
-        //[JsonProperty("ssg_ssg_searchrequestresponse_ssg_email")]
-        //public SSG_Email[] SSG_Emails{ get; set; }
+        [JsonProperty("ssg_ssg_searchrequestresponse_ssg_email")]
+        public SSG_Email[] SSG_Emails { get; set; }
 
         [JsonProperty("ssg_ssg_searchrequestresponse_ssg_employment")]
         public SSG_Employment[] SSG_Employments { get; set; }

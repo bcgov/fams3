@@ -21,5 +21,16 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
 
         [Description("The Employer DBA name")]
         public string DBAName { get; set; }
+
+        public IEnumerable<EmployerContact> EmployerContacts { get; set; }
+    }
+
+    public class EmployerContact
+    {
+        public string Email { get; set; }
+        public string Name { get; set; }
+        public Phone Phone { get; set; }
+        public string Fax { get; set; }
+        public string Type { get; set; }
     }
 }

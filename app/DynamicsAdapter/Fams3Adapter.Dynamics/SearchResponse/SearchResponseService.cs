@@ -68,9 +68,23 @@ namespace Fams3Adapter.Dynamics.SearchResponse
                 .Expand(x => x.SSG_SafetyConcernDetails)
                 .Expand(x => x.SSG_Asset_PensionDisablilitys)
                 .Expand(x => x.SSG_Asset_RealEstatePropertys)
+                .Expand(x => x.SSG_Emails)
+                .Expand(x => x.SSG_Electronicas)
                 .FindEntryAsync(cancellationToken);
            
-            
+            if(ssgSearchResponse.SSG_Asset_WorkSafeBcClaims != null)
+            {
+                    foreach(SSG_Asset_WorkSafeBcClaim claim in ssgSearchResponse.SSG_Asset_WorkSafeBcClaims)
+                    {
+                        SSG_Asset_WorkSafeBcClaim c = await _oDataClient.For<SSG_Asset_WorkSafeBcClaim>()
+                            .Key(claim.CompensationClaimId)
+                            .Expand(x => x.BankingInformation)
+                            .Expand(x => x.Employment)
+                            .FindEntryAsync(cancellationToken);
+                        claim.BankingInformation = c.BankingInformation;
+                        claim.Employment = c.Employment;
+                    }
+            }
 
             if (ssgSearchResponse.SSG_Addresses != null)
             {

@@ -56,6 +56,9 @@ namespace Fams3Adapter.Dynamics.InsuranceClaim
         [JsonProperty("ssg_adjusterphonenumberextension")]
         public string AdjusterPhoneNumberExt { get; set; }
 
+        [JsonProperty("ssg_adjusteremail")]
+        public string AdjusterEmail { get; set; }
+
         [JsonProperty("ssg_bcdlstatus")]
         public string BCDLStatus { get; set; }
 

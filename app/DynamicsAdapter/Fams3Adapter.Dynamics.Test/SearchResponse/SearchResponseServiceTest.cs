@@ -41,6 +41,8 @@ namespace Fams3Adapter.Dynamics.Test.SearchResponse
                 .Expand(x => x.SSG_SafetyConcernDetails)
                 .Expand(x => x.SSG_Asset_PensionDisablilitys)
                 .Expand(x => x.SSG_Asset_RealEstatePropertys)
+                .Expand(x => x.SSG_Emails)
+                .Expand(x => x.SSG_Electronicas)
                 .FindEntryAsync(It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult(new SSG_SearchRequestResponse()
             {
@@ -83,6 +85,8 @@ namespace Fams3Adapter.Dynamics.Test.SearchResponse
                  .Expand(x => x.SSG_SafetyConcernDetails)
                  .Expand(x => x.SSG_Asset_PensionDisablilitys)
                  .Expand(x => x.SSG_Asset_RealEstatePropertys)
+                 .Expand(x => x.SSG_Emails)
+                .Expand(x => x.SSG_Electronicas)
                  .FindEntryAsync(It.IsAny<CancellationToken>()))
              .Returns(Task.FromResult(new SSG_SearchRequestResponse()
              {

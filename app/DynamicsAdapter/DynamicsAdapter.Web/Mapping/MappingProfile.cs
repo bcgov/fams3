@@ -381,7 +381,10 @@ namespace DynamicsAdapter.Web.Mapping
                   .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
                   .IncludeBase<PersonalInfo, DynamicsEntity>()
                   .ReverseMap()
-                    .ForMember(dest => dest.ClaimAmount, opt => opt.MapFrom(src => src.ClaimAmount));
+                    .ForMember(dest => dest.ClaimAmount, opt => opt.MapFrom(src => src.ClaimAmount))
+                    .ForMember(dest => dest.Employer, opt => opt.MapFrom(src => src.Employment))
+                    .ForMember(dest => dest.BankInfo, opt => opt.MapFrom(src => src.BankingInformation))
+            ;
 
             CreateMap<Person, SafetyConcernEntity>()
                     .ForMember(dest => dest.Type, opt => opt.MapFrom<SafetyConcernTypeResolver>())

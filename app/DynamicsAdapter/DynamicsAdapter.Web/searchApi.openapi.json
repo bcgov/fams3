@@ -752,6 +752,10 @@
             "owner"
           ],
           "properties": {
+            "name": {
+              "type": "string",
+              "description": "The Address name"
+            },
             "type": {
               "type": "string",
               "description": "The type of address"

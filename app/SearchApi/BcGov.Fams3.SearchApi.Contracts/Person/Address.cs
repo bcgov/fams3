@@ -4,6 +4,9 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
 {
     public class Address : PersonalInfo
     {
+        [Description("The Address name")]
+        public string Name { get; set; }
+
         [Description("The type of address")]
         public string Type { get; set; }
 

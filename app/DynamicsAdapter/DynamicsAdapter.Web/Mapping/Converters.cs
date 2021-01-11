@@ -72,8 +72,8 @@ namespace DynamicsAdapter.Web.Mapping
     {
         public string Convert(int? sourceMember, ResolutionContext context)
         {
-            return sourceMember == null ? null :
-                (string)(AddressType.AddressTypeDictionary.FirstOrDefault(m => ((LocationType)m.Value).Value == (int)sourceMember).Key);
+            if (sourceMember == null) return null;
+            return LocationType.GetAll<LocationType>().FirstOrDefault(m => m.Value == sourceMember)?.Name;
         }
     }
 

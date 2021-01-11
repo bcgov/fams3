@@ -260,7 +260,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual("city", addr.City);
             Assert.AreEqual("canada", addr.CountryRegion);
             Assert.AreEqual("bc", addr.StateProvince);
-            Assert.AreEqual("business", addr.Type);
+            Assert.AreEqual("Business", addr.Type);
             Assert.AreEqual("incarceration", addr.IncarcerationStatus);
             Assert.AreEqual(1, addr.ReferenceDates.Count);
         }

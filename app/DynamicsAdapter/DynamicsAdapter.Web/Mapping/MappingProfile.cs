@@ -448,9 +448,10 @@ namespace DynamicsAdapter.Web.Mapping
             CreateMap<DynamicsEntity, PersonalInfo>()
                .ForMember(dest => dest.ReferenceDates, opt => opt.MapFrom<ReferenceDatesResolver>());
 
-
             CreateMap<SSG_SearchRequest, Agency>()
                    .ForMember(dest => dest.Agent, opt => opt.MapFrom(src => src))
+                   .ForMember(dest => dest.PersonSoughtInRequest_DateOfBirth, opt => opt.MapFrom(src => src.PersonSoughtDateOfBirth))
+                   .ForMember(dest => dest.PersonSoughtInRequest_Gender, opt => opt.ConvertUsing(new PersonGenderTypeConverter(), src => src.PersonSoughtGender))
                    .ForMember(dest => dest.RequestDate, opt => opt.MapFrom(src => src.RequestDate))
                    .ForMember(dest => dest.ReasonCode, opt => opt.ConvertUsing(new SearchReasonCodeConverter(), src => src.SearchReason))
                    .ForMember(dest => dest.Code, opt => opt.MapFrom(src => src.Agency.AgencyCode))

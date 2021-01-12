@@ -14,6 +14,7 @@ using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.RelatedPerson;
 using Fams3Adapter.Dynamics.ResultTransaction;
+using Fams3Adapter.Dynamics.SearchRequest;
 using Fams3Adapter.Dynamics.Vehicle;
 using Simple.OData.Client;
 using System;
@@ -72,6 +73,15 @@ namespace Fams3Adapter.Dynamics.SearchResponse
                 .Expand(x => x.SSG_Electronicas)
                 .FindEntryAsync(cancellationToken);
            
+            if(ssgSearchResponse.SSG_SearchRequests != null)
+            {
+                Guid id = ssgSearchResponse.SSG_SearchRequests[0].SearchRequestId;
+                ssgSearchResponse.SSG_SearchRequests[0] = await _oDataClient.For<SSG_SearchRequest>()
+                    .Key(id)
+                    .Expand(x => x.SearchReason)
+                    .FindEntryAsync(cancellationToken);
+            }
+
             if(ssgSearchResponse.SSG_Asset_WorkSafeBcClaims != null)
             {
                     foreach(SSG_Asset_WorkSafeBcClaim claim in ssgSearchResponse.SSG_Asset_WorkSafeBcClaims)

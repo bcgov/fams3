@@ -498,6 +498,7 @@ namespace DynamicsAdapter.Web.Mapping
                 .ForMember(dest => dest.OtherName, opt => opt.MapFrom(src => src.ThirdGivenName))
                 .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => src.DateOfBirth))
                 .ForMember(dest => dest.DateOfDeath, opt => opt.MapFrom(src => src.DateOfDeath))
+                .ForMember(dest => dest.DateDeathConfirmed, opt => opt.MapFrom(src => src.DateOfDeathConfirmed))
                 .ForMember(dest => dest.Gender, opt => opt.ConvertUsing(new PersonGenderTypeConverter(), src => src.GenderOptionSet))
                 .ForMember(dest => dest.Complexion, opt => opt.MapFrom(src => src.Complexion))
                 .ForMember(dest => dest.EyeColour, opt => opt.MapFrom(src => src.EyeColor))

@@ -184,6 +184,7 @@ namespace DynamicsAdapter.Web.Mapping
                 primaryContact = new EmployerContact();
                 primaryContact.Email = source.PrimaryContactEmail;
                 primaryContact.Phone = primaryContactPhone;
+                primaryContact.Name = source.ContactPerson;
                 primaryContact.Type = "Primary";
                 contacts.Add(primaryContact);
             }

@@ -315,6 +315,7 @@ namespace DynamicsAdapter.Web.Mapping
                   .ForMember(dest => dest.Phones, opt => opt.MapFrom<EmployerPhoneResponseResolver>())                  
                   .ForMember(dest => dest.ContactPerson, opt => opt.MapFrom(src => src.ContactPerson))
                   .ForMember(dest => dest.ContactPersonTitle, opt => opt.MapFrom(src => src.ContactPersonTitle))
+                  .ForMember(dest => dest.ContactPersonEmail, opt => opt.MapFrom(src => src.PrimaryContactEmail))
                   .ForMember(dest => dest.Address, opt => opt.MapFrom<EmployerAddressResponseResolver>());
 
             CreateMap<SSG_Employment, Employment>()
@@ -326,7 +327,7 @@ namespace DynamicsAdapter.Web.Mapping
                     .ForMember(dest => dest.SelfEmployComRegistrationNo, opt => opt.MapFrom(src => src.SelfEmployComRegistrationNo))
                     .ForMember(dest => dest.SelfEmployComType, opt => opt.ConvertUsing(new SelfEmployComTypeResponseConverter(), src => src.SelfEmployComType))
                     .ForMember(dest => dest.Occupation, opt => opt.MapFrom(src => src.Occupation))
-                    .ForMember(dest => dest.SelfEmployComRole, opt => opt.ConvertUsing(new SelfEmployComRoleResponseConverter(), src => src.SelfEmployComType))
+                    .ForMember(dest => dest.SelfEmployComRole, opt => opt.ConvertUsing(new SelfEmployComRoleResponseConverter(), src => src.SelfEmployComRole))
                     .ForMember(dest => dest.SelfEmployPercentOfShare, opt => opt.MapFrom(src => src.SelfEmployPercentOfShare))
                     .ForMember(dest => dest.IncomeAssistanceStatus, opt => opt.ConvertUsing(new IncomeAssistanceStatusResponseConverter(), src => src.IncomeAssistanceStatusOption))
                     .ForMember(dest => dest.IncomeAssistanceDesc, opt => opt.MapFrom(src => src.IncomeAssistanceDesc))

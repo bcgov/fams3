@@ -137,6 +137,7 @@ namespace Fams3Adapter.Dynamics.SearchResponse
 
             if(ssgSearchResponse.SSG_Employments != null)
             {
+              
                 foreach (SSG_Employment e in ssgSearchResponse.SSG_Employments)
                 {
                     SSG_Employment expandedEmployment = await _oDataClient.For<SSG_Employment>()
@@ -148,6 +149,13 @@ namespace Fams3Adapter.Dynamics.SearchResponse
                     {
                         e.CountrySubdivisionText = expandedEmployment.CountrySubdivision.ProvinceCode;
                     }
+
+                    SSG_Employment temp = await _oDataClient.For<SSG_Employment>()
+                        .Key(e.EmploymentId)
+                        .Expand(x => x.SSG_EmploymentContacts)
+                        .FindEntryAsync(cancellationToken);
+                        if (temp.SSG_EmploymentContacts != null)
+                            e.SSG_EmploymentContacts = temp.SSG_EmploymentContacts;
                 }
             }
 

@@ -140,7 +140,7 @@ namespace Fams3Adapter.Dynamics.Employment
         [UpdateIgnore]
         public int? SelfEmployComType { get; set; }
 
-        [JsonProperty("selfemploymentcompanyrole")]
+        [JsonProperty("ssg_selfemploymentcompanyrole")]
         [UpdateIgnore]
         public int? SelfEmployComRole { get; set; }
 

@@ -85,6 +85,10 @@ namespace Fams3Adapter.Dynamics.Employment
         [DisplayName("Contact Name")]
         public string ContactPerson { get; set; }
 
+        [JsonProperty("ssg_primarycontacttitle")]
+        [DisplayName("Contact Name")]
+        public string ContactPersonTitle { get; set; }
+
         [JsonProperty("ssg_employerlegalname")]
         [DisplayName("Legal Name")]
         public string BusinessName { get; set; }

@@ -314,6 +314,7 @@ namespace DynamicsAdapter.Web.Mapping
                   .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.CouldNotLocate ? "Could Not Locate" : src.BusinessName))
                   .ForMember(dest => dest.Phones, opt => opt.MapFrom<EmployerPhoneResponseResolver>())                  
                   .ForMember(dest => dest.ContactPerson, opt => opt.MapFrom(src => src.ContactPerson))
+                  .ForMember(dest => dest.ContactPersonTitle, opt => opt.MapFrom(src => src.ContactPersonTitle))
                   .ForMember(dest => dest.Address, opt => opt.MapFrom<EmployerAddressResponseResolver>());
 
             CreateMap<SSG_Employment, Employment>()

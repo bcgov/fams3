@@ -85,6 +85,10 @@ namespace Fams3Adapter.Dynamics.Employment
         [DisplayName("Contact Name")]
         public string ContactPerson { get; set; }
 
+        [JsonProperty("ssg_primarycontacttitle")]
+        [DisplayName("Contact Name")]
+        public string ContactPersonTitle { get; set; }
+
         [JsonProperty("ssg_employerlegalname")]
         [DisplayName("Legal Name")]
         public string BusinessName { get; set; }
@@ -136,7 +140,7 @@ namespace Fams3Adapter.Dynamics.Employment
         [UpdateIgnore]
         public int? SelfEmployComType { get; set; }
 
-        [JsonProperty("selfemploymentcompanyrole")]
+        [JsonProperty("ssg_selfemploymentcompanyrole")]
         [UpdateIgnore]
         public int? SelfEmployComRole { get; set; }
 

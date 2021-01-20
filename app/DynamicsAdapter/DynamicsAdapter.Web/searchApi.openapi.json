@@ -1018,6 +1018,14 @@
           "type": "string",
           "description": "The full name  of the contact"
         },
+        "contactPersonTitle": {
+          "type": "string",
+          "description": "The title of the contact person"
+        },
+        "contactPersonEmail": {
+          "type": "string",
+          "description": "The email of the contact person"
+        },
         "dbaName": {
           "type": "string",
           "description": "The Employer DBA name"

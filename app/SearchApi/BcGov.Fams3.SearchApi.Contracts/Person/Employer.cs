@@ -19,6 +19,12 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         [Description("The full name  of the contact")]
         public string ContactPerson { get; set; }
 
+        [Description("The title of the contact person")]
+        public string ContactPersonTitle { get; set; }
+
+        [Description("The email of the contact person")]
+        public string ContactPersonEmail { get; set; }
+
         [Description("The Employer DBA name")]
         public string DBAName { get; set; }
 

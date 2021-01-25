@@ -116,13 +116,22 @@ namespace BcGov.Fams3.Redis
 
         public async Task<string> Get(string key)
         {
-
             if (string.IsNullOrEmpty(key)) throw new ArgumentNullException("Get : Key cannot be null");
 
-            string strData = await _stackRedisCacheClient.Db0.GetAsync<string>(key);
-
-            return strData;
-
+            for (int attempt = 0; attempt < 3; attempt++)
+            {
+                try
+                {
+                    string strData = await _stackRedisCacheClient.Db0.GetAsync<string>(key);
+                    return strData;
+                }
+                catch (Exception e)
+                {
+                    if (attempt == 2) throw e;
+                    Thread.Sleep(50);
+                }
+            }
+            return null;
         }
 
         public async Task Delete(string key)

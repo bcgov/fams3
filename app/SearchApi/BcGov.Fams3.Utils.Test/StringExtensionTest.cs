@@ -42,5 +42,22 @@ namespace BcGov.Fams3.Utils.Test
             string result = test.ToTitleCase();
             Assert.AreEqual(null, result);
         }
+
+
+        [Test]
+        public void string_ToSHA1String_successfuly()
+        {
+            string test = "";
+            string result = test.ToSHA1String();
+            Assert.AreEqual("2jmj7l5rSw0yVb/vlWAYkK/YBwk=", result);
+        }
+
+        [Test]
+        public void normalstring_ToSHA1String_successfuly()
+        {
+            string test = "lalala";
+            string result = test.ToSHA1String();
+            Assert.AreEqual("3y76Bg4zX5dijKOcn+9Uaas8uDc=", result);
+        }
     }
 }

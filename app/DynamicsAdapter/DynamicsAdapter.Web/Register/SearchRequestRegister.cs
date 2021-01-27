@@ -98,9 +98,22 @@ namespace DynamicsAdapter.Web.Register
 
         public async Task<SSG_SearchApiRequest> GetSearchApiRequest(string searchRequestKey)
         {
-            string data = await _cache.Get($"{Keys.REDIS_KEY_PREFIX}{searchRequestKey}");
-            if (String.IsNullOrEmpty(data)) return null;
-            return JsonConvert.DeserializeObject<SSG_SearchApiRequest>(data);
+            if (string.IsNullOrEmpty(searchRequestKey)) return null;
+            for (int i = 0; i < 3; i++)
+            {
+                try
+                {
+                    string data = await _cache.Get($"{Keys.REDIS_KEY_PREFIX}{searchRequestKey}");
+                    if (String.IsNullOrEmpty(data)) return null;
+                    return JsonConvert.DeserializeObject<SSG_SearchApiRequest>(data);
+                }
+                catch (Exception e)
+                {
+                    if (i >= 2) throw e;
+                    else Thread.Sleep(50);
+                }
+            }
+            return null;
         }
 
         public async Task<SSG_SearchApiRequest> GetSearchApiRequest(Guid guid)

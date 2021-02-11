@@ -30,7 +30,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             _sut = new SearchRequestService(_odataClientMock.Object, _duplicateServiceMock.Object);
         }
 
-        #region relatedperson testcases
+        #region email testcases
         [Test]
         public async Task with_non_duplicated_person_CreateEmail_should_return_new_SSG_Email()
         {

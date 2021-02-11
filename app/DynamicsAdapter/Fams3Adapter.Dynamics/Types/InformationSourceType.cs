@@ -17,6 +17,7 @@ namespace Fams3Adapter.Dynamics.Types
         public static InformationSourceType MSDPR = new InformationSourceType(867670023, "MSDPR");
         public static InformationSourceType WorkSafeBC = new InformationSourceType(867670032, "WORKSAFEBC");
         public static InformationSourceType JCA = new InformationSourceType(867670019, "JCA");
+        public static InformationSourceType HCIM = new InformationSourceType(867670016, "HCIM");
 
         protected InformationSourceType(int value, string name) : base(value, name)
         {

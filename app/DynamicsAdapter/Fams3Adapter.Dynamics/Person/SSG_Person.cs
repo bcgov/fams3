@@ -1,6 +1,7 @@
 ﻿using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.BankInfo;
 using Fams3Adapter.Dynamics.CompensationClaim;
+using Fams3Adapter.Dynamics.Email;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.InsuranceClaim;
@@ -152,6 +153,9 @@ namespace Fams3Adapter.Dynamics.Person
 
         [JsonProperty("ssg_ssg_person_ssg_safetyconcerndetail_PersonId")]
         public SSG_SafetyConcernDetail[] SSG_SafetyConcernDetails { get; set; }
+
+        [JsonProperty("ssg_ssg_person_ssg_email")]
+        public SSG_Email[] SSG_Emails { get; set; }
 
         public bool IsDuplicated { get; set; }
         public override string ToString()

@@ -22,46 +22,73 @@ namespace BcGov.ApiKey.Middleware
         public async Task InvokeAsync(HttpContext context)
         {
             var appSettings = context.RequestServices.GetRequiredService<IConfiguration>();
-            if (IsApiKeyRequired(context, appSettings))
+            if (IsSwaggerRequest(context))
             {
-                if (!context.Request.Headers.TryGetValue(HEADER_APIKEYNAME, out var extractedApiKey))
+                await _next(context);
+            }
+            else
+            {
+                if (IsTrustedHost(context, appSettings))
+                {
+                    if (!context.Request.Headers.TryGetValue(HEADER_APIKEYNAME, out var extractedApiKey))
+                    {
+                        context.Response.StatusCode = 401;
+                        await context.Response.WriteAsync("Api Key was not provided.");
+                        return;
+                    }
+
+                    var apiKey = appSettings.GetValue<string>(_configApiKeyName);
+
+                    if (!apiKey.Equals(extractedApiKey))
+                    {
+                        context.Response.StatusCode = 401;
+                        await context.Response.WriteAsync("Unauthorized client. ");
+                        return;
+                    }
+                    else
+                    {
+                        await _next(context);
+                    }
+                }
+                else
                 {
                     context.Response.StatusCode = 401;
-                    await context.Response.WriteAsync("Api Key was not provided.");
-                    return;
-                }              
-
-                var apiKey = appSettings.GetValue<string>(_configApiKeyName);
-
-                if (!apiKey.Equals(extractedApiKey))
-                {
-                    context.Response.StatusCode = 401;
-                    await context.Response.WriteAsync("Unauthorized client. ");
+                    await context.Response.WriteAsync("the request is not coming from trusted hosts.");
                     return;
                 }
             }
-            await _next(context);
         }
 
-        private bool IsApiKeyRequired(HttpContext context, IConfiguration configuration)
+        private bool IsTrustedHost(HttpContext context, IConfiguration configuration)
         {
             string trustedHosts = configuration.GetValue<string>(TRUSTED_HOST_KEYNAME);
             if (trustedHosts != null)
             {
-                if (trustedHosts == "*") return false;
+                if (trustedHosts == "*") return true;
                 else
                 {
                     string[] trustHosts = trustedHosts.ToString().Split(",");
                     if (trustHosts.Contains(context.Request.Host.Host))
                     {
+                        return true;
+                    }
+                    else
+                    {
                         return false;
                     }
                 }
             }
-            if (context.Request.Path != null)
-                return !context.Request.Path.Value.Contains("/swagger/");
-            return true;
+            return false;
+
         }
+
+        private bool IsSwaggerRequest(HttpContext context)
+        {
+            if (context.Request.Path != null)
+                return context.Request.Path.Value.Contains("/swagger/");
+            return false;
+        }
+
     }
 }
 

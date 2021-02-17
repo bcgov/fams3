@@ -98,8 +98,10 @@ namespace BcGov.ApiKey.Middleware.Test
         {
             IHeaderDictionary headers = new HeaderDictionary();
             headers.Add(ApiKeyMiddleware.HEADER_APIKEYNAME, "apiValidKey");
+
             var request = new Mock<HttpRequest>();
             request.SetupGet(r => r.Headers).Returns(headers);
+            request.SetupGet(r => r.Host).Returns(new HostString("host1", 9000));
 
 
             var httpContext = new Mock<HttpContext>();
@@ -109,7 +111,7 @@ namespace BcGov.ApiKey.Middleware.Test
         }
 
         [Test]
-        public async Task without_apiKey_not_in_trustedHosts_should_return_401()
+        public async Task not_in_trustedHosts_should_return_401()
         {
             HttpContext httpContext = GetNoKeyHttpContext();
             await _apiMw.InvokeAsync(httpContext);
@@ -117,13 +119,15 @@ namespace BcGov.ApiKey.Middleware.Test
             Assert.IsFalse(_isNextDelegateCalled);
         }
 
+
         [Test]
-        public async Task without_apiKey_but_in_trustedHosts_should_go_on()
+        public async Task without_apiKey_but_in_trustedHosts_should_return_401()
         {
             HttpContext httpContext = GetNoKeyHttpContext();
             _sectionTrustedHostMock.Setup(s => s.Value).Returns("host1,host2");
             await _apiMw.InvokeAsync(httpContext);
-            Assert.IsTrue(_isNextDelegateCalled);
+            Assert.AreEqual(401, httpContext.Response.StatusCode);
+            Assert.IsFalse(_isNextDelegateCalled);
         }
 
         [Test]
@@ -137,28 +141,31 @@ namespace BcGov.ApiKey.Middleware.Test
         }
 
         [Test]
-        public async Task with_wrong_apiKey_but_in_trustedHosts_should_go_on()
+        public async Task with_wrong_apiKey_but_in_trustedHosts_return_401()
         {
             HttpContext httpContext = GetWrongKeyHttpContext();
             _sectionTrustedHostMock.Setup(s => s.Value).Returns("host1,host2");
             await _apiMw.InvokeAsync(httpContext);
-            Assert.IsTrue(_isNextDelegateCalled);
+            Assert.AreEqual(401, httpContext.Response.StatusCode);
+            Assert.IsFalse(_isNextDelegateCalled);
         }
 
         [Test]
-        public async Task with_wrong_apiKey_but_star_trustedHosts_should_go_on()
+        public async Task with_wrong_apiKey_but_star_trustedHosts_should_return_401()
         {
             HttpContext httpContext = GetWrongKeyHttpContext();
             _sectionTrustedHostMock.Setup(s => s.Value).Returns("*");
             await _apiMw.InvokeAsync(httpContext);
-            Assert.IsTrue(_isNextDelegateCalled);
+            Assert.AreEqual(401, httpContext.Response.StatusCode);
+            Assert.IsFalse(_isNextDelegateCalled);
         }
 
 
         [Test]
-        public async Task with_correct_apiKey_should_goon()
+        public async Task with_correct_apiKey_and_trustedHosts_should_goon()
         {
             HttpContext httpContext = GetRightKeyHttpContext();
+            _sectionTrustedHostMock.Setup(s => s.Value).Returns("host1,host2");
             _sectionApiHeaderMock.Setup(s => s.Value).Returns("apiValidKey");
             await _apiMw.InvokeAsync(httpContext);
             Assert.IsTrue(_isNextDelegateCalled);

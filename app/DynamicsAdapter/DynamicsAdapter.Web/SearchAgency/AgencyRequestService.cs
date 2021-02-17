@@ -29,6 +29,7 @@ namespace DynamicsAdapter.Web.SearchAgency
         Task<SSG_SearchRequest> ProcessSearchRequestOrdered(SearchRequestOrdered searchRequestOrdered);
         Task<SSG_SearchRequest> ProcessCancelSearchRequest(SearchRequestOrdered cancelSearchRequest);
         Task<SSG_SearchRequest> ProcessUpdateSearchRequest(SearchRequestOrdered updateSearchRequest);
+        Task<SSG_SearchRequest> GetSSGSearchRequest();
     }
 
     public class AgencyRequestService : IAgencyRequestService
@@ -170,6 +171,11 @@ namespace DynamicsAdapter.Web.SearchAgency
 
 
 
+            return _uploadedSearchRequest;
+        }
+
+        public async Task<SSG_SearchRequest> GetSSGSearchRequest()
+        {
             return _uploadedSearchRequest;
         }
 

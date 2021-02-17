@@ -4,6 +4,7 @@ using Fams3Adapter.Dynamics.AssetOwner;
 using Fams3Adapter.Dynamics.BankInfo;
 using Fams3Adapter.Dynamics.CompensationClaim;
 using Fams3Adapter.Dynamics.Duplicate;
+using Fams3Adapter.Dynamics.Email;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.InsuranceClaim;
@@ -31,6 +32,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         Task<SSG_Identifier> CreateIdentifier(IdentifierEntity identifier, CancellationToken cancellationToken);
         Task<SSG_Address> CreateAddress(AddressEntity address, CancellationToken cancellationToken);
         Task<SSG_PhoneNumber> CreatePhoneNumber(PhoneNumberEntity phoneNumber, CancellationToken cancellationToken);
+        Task<SSG_Email> CreateEmail(EmailEntity email, CancellationToken cancellationToken);
         Task<SSG_SafetyConcernDetail> CreateSafetyConcern(SafetyConcernEntity safety, CancellationToken cancellationToken);
         Task<SSG_Aliase> CreateName(AliasEntity name, CancellationToken cancellationToken);
         Task<SSG_Identity> CreateRelatedPerson(RelatedPersonEntity name, CancellationToken cancellationToken);
@@ -121,6 +123,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                         .Expand(x => x.SSG_Identities)
                         .Expand(x => x.SSG_PhoneNumbers)
                         .Expand(x => x.SSG_SafetyConcernDetails)
+                        .Expand(x => x.SSG_Emails)
                         .Expand(x => x.SearchRequest)
                         .FindEntryAsync(cancellationToken);
                 duplicatedPerson.IsDuplicated = true;
@@ -137,6 +140,17 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                     return new SSG_PhoneNumber() { PhoneNumberId = duplicatedPhoneId };
             }
             return await this._oDataClient.For<SSG_PhoneNumber>().Set(phone).InsertEntryAsync(cancellationToken);
+        }
+
+        public async Task<SSG_Email> CreateEmail(EmailEntity email, CancellationToken cancellationToken)
+        {
+            if (email.Person.IsDuplicated)
+            {
+                Guid duplicatedEmailId = await _duplicateDetectService.Exists(email.Person, email);
+                if (duplicatedEmailId != Guid.Empty)
+                    return new SSG_Email() { EmailId = duplicatedEmailId };
+            }
+            return await this._oDataClient.For<SSG_Email>().Set(email).InsertEntryAsync(cancellationToken);
         }
 
         public async Task<SSG_SearchRequestResultTransaction> CreateTransaction(SSG_SearchRequestResultTransaction transaction, CancellationToken cancellationToken)

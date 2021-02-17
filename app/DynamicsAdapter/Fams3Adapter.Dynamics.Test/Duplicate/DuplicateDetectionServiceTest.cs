@@ -3,6 +3,7 @@ using Fams3Adapter.Dynamics.AssetOwner;
 using Fams3Adapter.Dynamics.BankInfo;
 using Fams3Adapter.Dynamics.CompensationClaim;
 using Fams3Adapter.Dynamics.Duplicate;
+using Fams3Adapter.Dynamics.Email;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.InsuranceClaim;
@@ -123,6 +124,11 @@ namespace Fams3Adapter.Dynamics.Test.Duplicate
                      {
                          EntityName = "ssg_notese",
                          DuplicateFields = "ssg_description"
+                     },
+                     new SSG_DuplicateDetectionConfig()
+                     {
+                         EntityName = "ssg_email",
+                         DuplicateFields = "ssg_email"
                      }
                 }));
 
@@ -732,6 +738,38 @@ namespace Fams3Adapter.Dynamics.Test.Duplicate
             NotesEntity entity = new NotesEntity() { Description = "description" };
             Guid guid = await _sut.Exists(request, entity);
             Assert.AreEqual(existedNotesID, guid);
+        }
+
+        [Test]
+        public async Task person_has_same_email_Exists_should_return_existed_entity_guid()
+        {
+            DuplicateDetectionService._configs = null;
+            Guid existedEmailId = Guid.NewGuid();
+            SSG_Person person = new SSG_Person()
+            {
+                SSG_Emails = new List<SSG_Email>() {
+                    new SSG_Email{Email="lala@test.com",  EmailId=existedEmailId}
+                }.ToArray()
+            };
+            EmailEntity entity = new EmailEntity() { Email = "lala@test.com" };
+            Guid guid = await _sut.Exists(person, entity);
+            Assert.AreEqual(existedEmailId, guid);
+        }
+
+        [Test]
+        public async Task person_does_not_contain_same_email_Exists_should_return_empty_guid()
+        {
+            DuplicateDetectionService._configs = null;
+            Guid existedEmailId = Guid.NewGuid();
+            SSG_Person person = new SSG_Person()
+            {
+                SSG_Emails = new List<SSG_Email>() {
+                    new SSG_Email{Email="lala@test.com", EmailId=existedEmailId}
+                }.ToArray()
+            };
+            EmailEntity entity = new EmailEntity() { Email = "11121" };
+            Guid guid = await _sut.Exists(person, entity);
+            Assert.AreEqual(Guid.Empty, guid);
         }
 
         [Test]

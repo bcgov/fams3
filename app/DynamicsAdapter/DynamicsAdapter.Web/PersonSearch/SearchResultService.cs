@@ -5,6 +5,7 @@ using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.AssetOwner;
 using Fams3Adapter.Dynamics.BankInfo;
 using Fams3Adapter.Dynamics.CompensationClaim;
+using Fams3Adapter.Dynamics.Email;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.InsuranceClaim;
@@ -108,6 +109,8 @@ namespace DynamicsAdapter.Web.PersonSearch
 
             await UploadInsuranceClaims();
 
+            await UploadEmails();
+
             return true;
         }
 
@@ -139,6 +142,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                         case "SSG_Asset_WorkSafeBcClaim": trans.CompensationClaim = (SSG_Asset_WorkSafeBcClaim)o; break;
                         case "SSG_Asset_ICBCClaim": trans.InsuranceClaim = (SSG_Asset_ICBCClaim)o; break;
                         case "SSG_SafetyConcernDetail": trans.SafetyConcern = (SSG_SafetyConcernDetail)o; break;
+                        case "SSG_Email": trans.Email = (SSG_Email)o; break;
                         default: return false;
                     }
                 }
@@ -521,6 +525,32 @@ namespace DynamicsAdapter.Web.PersonSearch
                             await _searchRequestService.CreateInvolvedParty(involvedParty, _cancellationToken);
                         }
                     }
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return false;
+            }
+        }
+
+        private async Task<bool> UploadEmails()
+        {
+            if (_foundPerson.Emails == null) return true;
+            try
+            {
+                _logger.LogDebug($"Attempting to create emails records for SearchRequest[{_searchRequest.SearchRequestId}]");
+
+                foreach (var e in _foundPerson.Emails)
+                {
+                    EmailEntity email = _mapper.Map<EmailEntity>(e);
+                    email.SearchRequest = _searchRequest;
+                    //email.SupplierTypeCode = _providerDynamicsID;
+                    email.Person = _returnedPerson;
+                    SSG_Email ssgEmail = await _searchRequestService.CreateEmail(email, _cancellationToken);
+                    await CreateResultTransaction(ssgEmail);
+
                 }
                 return true;
             }

@@ -376,6 +376,11 @@ namespace DynamicsAdapter.Web.Mapping
                   .IncludeBase<PersonalInfo, DynamicsEntity>()
                   .ReverseMap();
 
+            CreateMap<Email, EmailEntity>()
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.EmailAddress))
+                .IncludeBase<PersonalInfo, DynamicsEntity>()
+                ;
+
             CreateMap<CompensationClaim, CompensationClaimEntity>()
                   .ForMember(dest => dest.ClaimType, opt => opt.MapFrom(src => src.ClaimType))
                   .ForMember(dest => dest.ClaimantNumber, opt => opt.MapFrom(src => src.ClaimantNumber))

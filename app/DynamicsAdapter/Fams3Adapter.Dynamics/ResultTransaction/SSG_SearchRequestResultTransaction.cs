@@ -1,6 +1,7 @@
 ﻿using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.BankInfo;
 using Fams3Adapter.Dynamics.CompensationClaim;
+using Fams3Adapter.Dynamics.Email;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.InsuranceClaim;
@@ -21,6 +22,8 @@ namespace Fams3Adapter.Dynamics.ResultTransaction
         [JsonProperty("ssg_Address")]
         public virtual SSG_Address Address { get; set; }
 
+        [JsonProperty("ssg_EmailAddress")]
+        public virtual SSG_Email Email { get; set; }
 
         [JsonProperty("ssg_Alias")]
         public virtual SSG_Aliase Name { get; set; }

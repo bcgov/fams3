@@ -2,6 +2,7 @@
 using Fams3Adapter.Dynamics.AssetOwner;
 using Fams3Adapter.Dynamics.BankInfo;
 using Fams3Adapter.Dynamics.CompensationClaim;
+using Fams3Adapter.Dynamics.Email;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.InsuranceClaim;
@@ -57,7 +58,8 @@ namespace Fams3Adapter.Dynamics.Duplicate
             {"SimplePhoneNumberEntity","ssg_simplephonenumber" },
             {"InvolvedPartyEntity","ssg_involvedparty" },
             {"NotesEntity","ssg_notese" },
-            {"SafetyConcernEntity", "ssg_safetyconcerndetail" }
+            {"SafetyConcernEntity", "ssg_safetyconcerndetail" },
+            {"EmailEntity", "ssg_email" }
         };
 
         public DuplicateDetectionService(IODataClient oDataClient)
@@ -214,6 +216,12 @@ namespace Fams3Adapter.Dynamics.Duplicate
                     foreach (SSG_SafetyConcernDetail safety in ((SSG_Person)fatherObj).SSG_SafetyConcernDetails)
                     {
                         if (await Same(entity, safety)) return safety.SafetyConcernDetailId;
+                    };
+                    break;
+                case "EmailEntity":
+                    foreach (SSG_Email email in ((SSG_Person)fatherObj).SSG_Emails)
+                    {
+                        if (await Same(entity, email)) return email.EmailId;
                     };
                     break;
             }            

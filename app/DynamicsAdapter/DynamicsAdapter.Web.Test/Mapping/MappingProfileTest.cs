@@ -6,6 +6,7 @@ using Fams3Adapter.Dynamics.AssetOwner;
 using Fams3Adapter.Dynamics.BankInfo;
 using Fams3Adapter.Dynamics.CompensationClaim;
 using Fams3Adapter.Dynamics.DataProvider;
+using Fams3Adapter.Dynamics.Email;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.InsuranceClaim;
@@ -344,6 +345,29 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(new DateTime(2020, 9, 1), addr.Date2);
             Assert.AreEqual("description", addr.Description);
             Assert.AreEqual("notes", addr.Notes);
+        }
+
+        [Test]
+        public void Email_should_map_to_SSG_Email_correctly()
+        {
+            var e = new Email()
+            {
+                EmailAddress="test@test.com",
+
+                ReferenceDates = new List<ReferenceDate>(){
+                                new ReferenceDate(){ Index=0, Key="Start Date", Value=new DateTime(2019,9,1) },
+                                new ReferenceDate(){ Index=1, Key="End Date", Value=new DateTime(2020,9,1) }
+                            },
+                Description = "description",
+                Notes = "notes"
+            };
+            EmailEntity email = _mapper.Map<EmailEntity>(e);
+
+            Assert.AreEqual("test@test.com", email.Email);
+            Assert.AreEqual("Start Date", email.Date1Label);
+            Assert.AreEqual("End Date", email.Date2Label);
+            Assert.AreEqual(new DateTime(2019, 9, 1), email.Date1);
+            Assert.AreEqual(new DateTime(2020, 9, 1), email.Date2);
         }
 
         [Test]

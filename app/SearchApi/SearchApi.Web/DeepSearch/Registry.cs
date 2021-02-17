@@ -11,7 +11,8 @@ namespace SearchApi.Web.DeepSearch
             {"ICBC", new PersonalIdentifierType[]{ PersonalIdentifierType.PersonalHealthNumber, PersonalIdentifierType.BCDriverLicense } },
             {"BCHYDRO", new PersonalIdentifierType[]{PersonalIdentifierType.BCDriverLicense, PersonalIdentifierType.BCHydroBP } },
             {"MSDPR", new PersonalIdentifierType[]{PersonalIdentifierType.SocialInsuranceNumber } },
-            {"WORKSAFEBC",new PersonalIdentifierType[]{PersonalIdentifierType.PersonalHealthNumber, PersonalIdentifierType.SocialInsuranceNumber, PersonalIdentifierType.WorkSafeBCCCN } }
+            {"WORKSAFEBC",new PersonalIdentifierType[]{PersonalIdentifierType.PersonalHealthNumber, PersonalIdentifierType.SocialInsuranceNumber, PersonalIdentifierType.WorkSafeBCCCN } },
+            {"HCIM", new PersonalIdentifierType[]{PersonalIdentifierType.PersonalHealthNumber } }
         });
     }
 }

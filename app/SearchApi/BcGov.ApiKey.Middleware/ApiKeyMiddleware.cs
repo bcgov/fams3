@@ -68,14 +68,7 @@ namespace BcGov.ApiKey.Middleware
                 else
                 {
                     string[] trustHosts = trustedHosts.ToString().Split(",");
-                    if (trustHosts.Contains(context.Request.Host.Host))
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    return trustHosts.Contains(context.Request.Host.Host);                    
                 }
             }
             return false;

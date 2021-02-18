@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using DynamicsAdapter.Web.Mapping;
 using DynamicsAdapter.Web.SearchAgency.Models;
 using Fams3Adapter.Dynamics.Address;
@@ -466,6 +466,18 @@ namespace DynamicsAdapter.Web.Test.Mapping
         }
 
         [Test]
+        public void CouldNotLocate_SSG_BankInfo_should_map_to_BankInfo_correctly()
+        {
+            SSG_Asset_BankingInformation bank = new SSG_Asset_BankingInformation
+            {
+                CouldNotLocate=true
+            };
+
+            BankInfo bankInfo = _mapper.Map<BankInfo>(bank);
+            Assert.AreEqual(Constants.CouldNotLocate, bankInfo.BankName);
+        }
+
+        [Test]
         public void SSG_Identity_should_map_to_RelatedPerson_correctly()
         {
             SSG_Identity relatedPerson = new SSG_Identity
@@ -595,6 +607,17 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual("city", p.PropertyAddress.City);
         }
 
+        [Test]
+        public void CouldNotLocate_SSG_RealEstateProperty_should_map_to_RealEstateProperty_correctly()
+        {
+            SSG_Asset_RealEstateProperty property = new SSG_Asset_RealEstateProperty
+            {
+                 CouldNotLocate=true
+            };
+
+            RealEstateProperty p = _mapper.Map<RealEstateProperty>(property);
+            Assert.AreEqual(Constants.CouldNotLocate, p.LegalDescription);
+        }
 
         [Test]
         public void SSG_Person_should_map_to_ResponsePerson_correctly()

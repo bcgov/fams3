@@ -1,4 +1,4 @@
-﻿using Fams3Adapter.Dynamics.Person;
+using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Newtonsoft.Json;
 using System;
@@ -36,6 +36,9 @@ namespace Fams3Adapter.Dynamics.BankInfo
 
         [JsonProperty("ssg_branchnumber")]
         public string BranchNumber { get; set; }
+
+        [JsonProperty("ssg_couldnotlocate")]
+        public bool CouldNotLocate { get; set; }
     }
 
     public class SSG_Asset_BankingInformation : BankingInformationEntity

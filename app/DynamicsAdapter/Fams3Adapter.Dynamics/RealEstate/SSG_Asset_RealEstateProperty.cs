@@ -40,6 +40,9 @@ namespace Fams3Adapter.Dynamics.RealEstate
 
         [JsonProperty("ssg_propertypostalcode")]
         public string PostalCode { get; set; }
+
+        [JsonProperty("ssg_couldnotlocate")]
+        public bool CouldNotLocate { get; set; }
     }
 
     public class SSG_Asset_RealEstateProperty : RealEstateEntity

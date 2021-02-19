@@ -8,6 +8,7 @@ namespace SearchRequestAdaptor.Configuration
     public class SearchRequestAdaptorOptions
     {
         public List<WebHookNotification> WebHooks { get; set; } = new List<WebHookNotification>();
+        public string ApiKeyForDynadaptor { get; set; }
 
         public SearchRequestAdaptorOptions AddWebHook(string name, string uri)
         {

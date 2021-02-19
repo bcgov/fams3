@@ -78,6 +78,7 @@ namespace SearchApi.Web.Notifications
                     request.Method = HttpMethod.Post;
                     request.Headers.Accept.Add(
                         System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+                    request.Headers.Add("X-ApiKey", _searchApiOptions.ApiKeyForDynadaptor);
                     request.RequestUri = endpoint;
                     var response = await _httpClient.SendAsync(request, cancellationToken);
 

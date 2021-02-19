@@ -112,7 +112,7 @@ namespace SearchRequestAdaptor.Notifier
                         }
                         else
                         {
-                            throw new Exception("failed");
+                            throw new Exception($"Message Failed {response.StatusCode}, {response.Content.ReadAsStringAsync()}");
                         }
                     }
 

@@ -31,7 +31,7 @@ namespace DynamicsAdapter.Web.SearchAgency
         Task<SSG_SearchRequest> ProcessCancelSearchRequest(SearchRequestOrdered cancelSearchRequest);
         Task<SSG_SearchRequest> ProcessUpdateSearchRequest(SearchRequestOrdered updateSearchRequest);
         SSG_SearchRequest GetSSGSearchRequest();
-        Task DeleteSSGSearchRequest(SSG_SearchRequest searchRequest);
+        Task<bool> DeleteSSGSearchRequest(SSG_SearchRequest searchRequest);
     }
 
     public class AgencyRequestService : IAgencyRequestService
@@ -182,21 +182,27 @@ namespace DynamicsAdapter.Web.SearchAgency
             return _uploadedSearchRequest;
         }
 
-        public async Task DeleteSSGSearchRequest(SSG_SearchRequest request)
+        public async Task<bool> DeleteSSGSearchRequest(SSG_SearchRequest request)
         {
             await Policy.HandleResult<bool>(r => r == false)
                    .Or<Exception>()
                    .WaitAndRetryAsync(3,retryAttempt => TimeSpan.FromMinutes(1)) //retry 3 times and pause 1min between each call
                    .ExecuteAndCaptureAsync(()=>DeleteSearchRequest(request));
-            return;
+            return true;
         }
 
         private async Task<bool> DeleteSearchRequest(SSG_SearchRequest request)
         {
-            //if success
-            //return true
-            //else
-            return false;
+            try
+            {
+                await _searchRequestService.DeleteSearchRequest(request.FileId, _cancellationToken);
+            }catch(Exception)
+            {
+                _logger.LogInformation($"{request.FileId} File Deletion failed.");
+                return false;
+            }
+            _logger.LogInformation($"{request.FileId} File has been deleted successfully.");
+            return true;
         }
 
         private async Task<SSG_SearchRequest> VerifySearchRequest(SearchRequestOrdered searchRequestOrdered)

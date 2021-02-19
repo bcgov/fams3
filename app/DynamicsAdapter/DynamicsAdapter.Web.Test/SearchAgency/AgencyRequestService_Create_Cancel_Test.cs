@@ -312,6 +312,13 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
         }
 
         [Test]
+        public async Task DeleteSSGSearchRequest_should_succeed()
+        {
+            bool result = await _sut.DeleteSSGSearchRequest(new SSG_SearchRequest { FileId="002720"});
+            Assert.IsTrue(result);
+        }
+
+        [Test]
         public async Task normal_searchRequestOrdered_ProcessSearchRequestOrdered_should_succeed()
         {
             SSG_SearchRequest ssgSearchRequest = await _sut.ProcessSearchRequestOrdered(_searchRequstOrdered);

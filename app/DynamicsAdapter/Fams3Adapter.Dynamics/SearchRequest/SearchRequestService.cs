@@ -65,6 +65,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         Task<SSG_Country> GetEmploymentCountry(string countryText, CancellationToken cancellationToken);
         Task<SSG_CountrySubdivision> GetEmploymentSubdivision(string subDivisionText, CancellationToken cancellationToken);
         Task<bool> SubmitToQueue(Guid searchRequestId);
+        Task<bool> DeleteSearchRequest(string fileId, CancellationToken cancellationToken);
     }
 
     /// <summary>
@@ -428,6 +429,16 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                             { Keys.DYNAMICS_SEARCH_REQUEST_CANCEL_COMMENTS_FIELD, cancelComments }
                         })
                         .UpdateEntryAsync(cancellationToken);
+        }
+
+        public async Task<bool> DeleteSearchRequest(string fileId, CancellationToken cancellationToken)
+        {
+            await _oDataClient
+                        .For<SSG_SearchRequest>()
+                        .Key(fileId)
+                        .DeleteEntryAsync();
+
+            return true;
         }
 
         public async Task<SSG_SearchRequest> GetSearchRequest(string fileId, CancellationToken cancellationToken)

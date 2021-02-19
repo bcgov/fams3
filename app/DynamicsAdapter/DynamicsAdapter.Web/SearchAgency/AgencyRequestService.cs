@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using Fams3Adapter.Dynamics.Agency;
 using DynamicsAdapter.Web.SearchAgency.Exceptions;
 using Fams3Adapter.Dynamics.SafetyConcern;
+using Polly;
 
 namespace DynamicsAdapter.Web.SearchAgency
 {
@@ -29,7 +30,8 @@ namespace DynamicsAdapter.Web.SearchAgency
         Task<SSG_SearchRequest> ProcessSearchRequestOrdered(SearchRequestOrdered searchRequestOrdered);
         Task<SSG_SearchRequest> ProcessCancelSearchRequest(SearchRequestOrdered cancelSearchRequest);
         Task<SSG_SearchRequest> ProcessUpdateSearchRequest(SearchRequestOrdered updateSearchRequest);
-        Task<SSG_SearchRequest> GetSSGSearchRequest();
+        SSG_SearchRequest GetSSGSearchRequest();
+        Task DeleteSSGSearchRequest(SSG_SearchRequest searchRequest);
     }
 
     public class AgencyRequestService : IAgencyRequestService
@@ -64,6 +66,7 @@ namespace DynamicsAdapter.Web.SearchAgency
             searchRequestEntity.CreatedByApi = true;
             searchRequestEntity.SendNotificationOnCreation = true;
             _uploadedSearchRequest = await _searchRequestService.CreateSearchRequest(searchRequestEntity, cts.Token);
+            if (_uploadedSearchRequest == null) return null;
             _logger.LogInformation("Create Search Request successfully");
 
             PersonEntity personEntity = _mapper.Map<PersonEntity>(_personSought);
@@ -174,9 +177,26 @@ namespace DynamicsAdapter.Web.SearchAgency
             return _uploadedSearchRequest;
         }
 
-        public async Task<SSG_SearchRequest> GetSSGSearchRequest()
+        public SSG_SearchRequest GetSSGSearchRequest()
         {
             return _uploadedSearchRequest;
+        }
+
+        public async Task DeleteSSGSearchRequest(SSG_SearchRequest request)
+        {
+            await Policy.HandleResult<bool>(r => r == false)
+                   .Or<Exception>()
+                   .WaitAndRetryAsync(3,retryAttempt => TimeSpan.FromMinutes(1)) //retry 3 times and pause 1min between each call
+                   .ExecuteAndCaptureAsync(()=>DeleteSearchRequest(request));
+            return;
+        }
+
+        private async Task<bool> DeleteSearchRequest(SSG_SearchRequest request)
+        {
+            //if success
+            //return true
+            //else
+            return false;
         }
 
         private async Task<SSG_SearchRequest> VerifySearchRequest(SearchRequestOrdered searchRequestOrdered)

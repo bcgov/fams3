@@ -62,10 +62,10 @@ namespace DynamicsAdapter.Web.SearchAgency
                 }
                 catch (Exception ex)
                 {
-                    SSG_SearchRequest createdSR = await _agencyRequestService.GetSSGSearchRequest();
+                    SSG_SearchRequest createdSR = _agencyRequestService.GetSSGSearchRequest();
                     if( createdSR != null)
                     {
-                        //system cancel sr.
+                        await _agencyRequestService.DeleteSSGSearchRequest(createdSR);
                     }
                     _logger.LogError(ex.Message);
                     return StatusCode(StatusCodes.Status500InternalServerError, new { ReasonCode = "error", Message = "error" });

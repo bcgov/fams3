@@ -557,7 +557,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             try
             {
                 SSG_AgencyLocation officeLocation = null;
-                if (locationCode.Length > 5)
+                if (locationCode?.Length > 5)
                 {
                     //temp, as the sample files is not changed to code yet. so, if it is not code, run following code.
                     //We just currently use City as temp solution. expecting FMEP will provide office code later

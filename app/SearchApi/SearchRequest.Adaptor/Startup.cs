@@ -28,7 +28,6 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
 using GreenPipes;
-using BcGov.ApiKey.Middleware;
 
 namespace SearchRequestAdaptor
 {
@@ -59,14 +58,13 @@ namespace SearchRequestAdaptor
             this.ConfigureServiceBus(services);
             ConfigureOpenApi(services);
             ConfigureOpenTracing(services);
-            
+
 
         }
         public void ConfigureOpenApi(IServiceCollection services)
         {
             services.AddSwaggerDocument(config =>
             {
-                config.OperationProcessors.Add(new SwaggerApiKeyHeader());
                 // configure swagger properties
                 config.PostProcess = document =>
                 {
@@ -104,7 +102,7 @@ namespace SearchRequestAdaptor
                      MustRevalidate = true,
                      MaxAge = TimeSpan.FromSeconds(0),
                      Private = true,
-                     
+
 
                  };
                 context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
@@ -112,7 +110,6 @@ namespace SearchRequestAdaptor
                 await next();
             });
             app.UseRouting();
-            app.UseMiddleware<ApiKeyMiddleware>("RequestApi_ApiKey");
             app.UseOpenApi();
             app.UseEndpoints(endpoints =>
             {
@@ -213,8 +210,8 @@ namespace SearchRequestAdaptor
                                 provider.GetRequiredService<ISearchRequestNotifier<SearchRequestOrdered>>(),
                                 provider.GetRequiredService<ILogger<SearchRequestOrderedConsumer>>()));
 
-                    
-                    
+
+
                     });
                 }));
             });

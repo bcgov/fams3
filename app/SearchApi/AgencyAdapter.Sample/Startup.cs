@@ -12,14 +12,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OpenTracing;
 using OpenTracing.Util;
-using BcGov.Fams3.SearchApi.Core.Adapters.Configuration;
 using FluentValidation;
 using AgencyAdapter.Sample.SearchRequest;
-using MassTransit;
-using BcGov.Fams3.SearchApi.Core.Adapters.Middleware;
-using BcGov.Fams3.SearchApi.Contracts.SearchRequest;
-using BcGov.Fams3.SearchApi.Core.OpenTracing;
-using BcGov.Fams3.SearchApi.Core.MassTransit;
 
 namespace AgencyAdapter.Sample
 {
@@ -50,7 +44,7 @@ namespace AgencyAdapter.Sample
             this.ConfigureOpenTracing(services);
         }
 
-      
+
 
 
         private void ConfigureHealthChecks(IServiceCollection services)
@@ -90,9 +84,9 @@ namespace AgencyAdapter.Sample
 
                 }
                 catch (ArgumentException ex)
-{
-if (ex.Message == "Service name must not be null or empty")
-{
+                {
+                    if (ex.Message == "Service name must not be null or empty")
+                    {
                         tracer = new Tracer.Builder(serviceProvider.GetRequiredService<IHostEnvironment>().ApplicationName)
                             .WithSampler(new ConstSampler(false))
                             .Build();

@@ -298,7 +298,7 @@ namespace DynamicsAdapter.Web
 
             app.UseAuthorization();
 
-            app.UseMiddleware<ApiKeyMiddleware>("Dynadaptor_ApiKey");
+            app.UseMiddleware<ApiKeyMiddleware>("ApiKey");
 
             app.UseOpenApi();
 

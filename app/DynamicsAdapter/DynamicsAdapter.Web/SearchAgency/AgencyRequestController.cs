@@ -38,6 +38,7 @@ namespace DynamicsAdapter.Web.SearchAgency
         [OpenApiTag("Agency Search Request API")]
         public async Task<IActionResult> CreateSearchRequest(string requestId, [FromBody]SearchRequestOrdered searchRequestOrdered)
         {
+
             using (LogContext.PushProperty("RequestRef", $"{requestId}"))
             using (LogContext.PushProperty("AgencyCode", $"{searchRequestOrdered?.Person?.Agency?.Code}"))
             {

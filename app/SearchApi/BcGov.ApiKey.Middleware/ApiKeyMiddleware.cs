@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,10 +15,12 @@ namespace BcGov.ApiKey.Middleware
         public string _configApiKeyName = "_ApiKey";
         public static string HEADER_APIKEYNAME = "X-ApiKey"; 
         public static string TRUSTED_HOST_KEYNAME = "TrustedHosts";
-        public ApiKeyMiddleware(RequestDelegate next, string configApiKeyName)
+        public readonly ILogger<ApiKeyMiddleware> _logger;
+        public ApiKeyMiddleware(RequestDelegate next, string configApiKeyName, ILogger<ApiKeyMiddleware> logger)
         {
             _next = next;
             _configApiKeyName = configApiKeyName;
+            _logger = logger;
         }
         public async Task InvokeAsync(HttpContext context)
         {
@@ -41,6 +44,7 @@ namespace BcGov.ApiKey.Middleware
 
                     if (!apiKey.Equals(extractedApiKey))
                     {
+                        _logger.LogError($"Invalid key: {apiKey}");
                         context.Response.StatusCode = 401;
                         await context.Response.WriteAsync("Unauthorized client. ");
                         return;
@@ -68,6 +72,7 @@ namespace BcGov.ApiKey.Middleware
                 else
                 {
                     string[] trustHosts = trustedHosts.ToString().Split(",");
+                    _logger.LogError($"Invalid Host: {context.Request.Host.Host}");
                     return trustHosts.Contains(context.Request.Host.Host);                    
                 }
             }

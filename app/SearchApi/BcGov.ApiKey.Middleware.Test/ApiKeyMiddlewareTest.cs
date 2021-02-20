@@ -6,7 +6,7 @@ using System;
 using Microsoft.Extensions.Configuration;
 using System.Threading;
 using System.Text;
-using System.Net.Http;
+using Microsoft.Extensions.Logging;
 
 namespace BcGov.ApiKey.Middleware.Test
 {
@@ -16,6 +16,7 @@ namespace BcGov.ApiKey.Middleware.Test
         Mock<IConfiguration> _configMock = new Mock<IConfiguration>();
         Mock<IConfigurationSection> _sectionApiHeaderMock = new Mock<IConfigurationSection>();
         Mock<IConfigurationSection> _sectionTrustedHostMock = new Mock<IConfigurationSection>();
+        Mock<ILogger<ApiKeyMiddleware>> _loggerMock = new Mock<ILogger<ApiKeyMiddleware>>();
         ApiKeyMiddleware _apiMw;
         RequestDelegate _next;
         bool _isNextDelegateCalled = false;
@@ -32,7 +33,7 @@ namespace BcGov.ApiKey.Middleware.Test
                 .Returns(_sectionTrustedHostMock.Object);
 
             _next = (HttpContext hc) => { _isNextDelegateCalled = true; return Task.CompletedTask; };
-            _apiMw = new ApiKeyMiddleware(_next,"service_apiKey");
+            _apiMw = new ApiKeyMiddleware(_next,"service_apiKey", _loggerMock.Object);
             _isNextDelegateCalled = false;
         }
 
@@ -117,6 +118,7 @@ namespace BcGov.ApiKey.Middleware.Test
             await _apiMw.InvokeAsync(httpContext);
             Assert.AreEqual(401, httpContext.Response.StatusCode);
             Assert.IsFalse(_isNextDelegateCalled);
+            _loggerMock.VerifyLog(LogLevel.Error, "Invalid Host: host1");
         }
 
 

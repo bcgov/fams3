@@ -120,7 +120,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             .Returns(new SSG_SearchRequest{ FileId="111111"});
 
             _agencyRequestServiceMock.Setup(
-                x => x.DeleteSSGSearchRequest(It.IsAny<SSG_SearchRequest>()))
+                x => x.SystemCancelSSGSearchRequest(It.IsAny<SSG_SearchRequest>()))
                 .Returns(Task.FromResult<bool>(true));
 
             var result = await _sut.CreateSearchRequest("exceptionrequest", updateSearchRequestOrdered);

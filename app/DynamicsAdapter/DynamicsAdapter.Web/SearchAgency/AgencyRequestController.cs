@@ -38,6 +38,9 @@ namespace DynamicsAdapter.Web.SearchAgency
         [OpenApiTag("Agency Search Request API")]
         public async Task<IActionResult> CreateSearchRequest(string requestId, [FromBody]SearchRequestOrdered searchRequestOrdered)
         {
+            //await _agencyRequestService.SystemCancelSSGSearchRequest(new SSG_SearchRequest { SearchRequestId= Guid.Parse("618a2972-3d76-eb11-b823-00505683fbf4")});
+            //return StatusCode(StatusCodes.Status200OK);
+
             using (LogContext.PushProperty("RequestRef", $"{requestId}"))
             using (LogContext.PushProperty("AgencyCode", $"{searchRequestOrdered?.Person?.Agency?.Code}"))
             {
@@ -65,7 +68,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                     SSG_SearchRequest createdSR = _agencyRequestService.GetSSGSearchRequest();
                     if( createdSR != null)
                     {
-                        await _agencyRequestService.DeleteSSGSearchRequest(createdSR);
+                        await _agencyRequestService.SystemCancelSSGSearchRequest(createdSR);
                     }
                     _logger.LogError(ex.Message);
                     return StatusCode(StatusCodes.Status500InternalServerError, new { ReasonCode = "error", Message = "error" });

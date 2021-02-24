@@ -50,6 +50,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         Task<SSG_SearchRequestResultTransaction> CreateTransaction(SSG_SearchRequestResultTransaction transaction, CancellationToken cancellationToken);
         Task<SSG_SearchRequest> CreateSearchRequest(SearchRequestEntity searchRequest, CancellationToken cancellationToken);
         Task<SSG_SearchRequest> CancelSearchRequest(string fileId, string cancelComments, CancellationToken cancellationToken);
+        Task<SSG_SearchRequest> SystemCancelSearchRequest(SSG_SearchRequest searchRequest, CancellationToken cancellationToken);
         Task<SSG_SearchRequest> GetSearchRequest(string fileId, CancellationToken cancellationToken);
         Task<SSG_SearchRequestReason> GetSearchReason(string reasonCode, CancellationToken cancellationToken);
         Task<SSG_AgencyLocation> GetSearchAgencyLocation(string locationCode, string agencyCode, CancellationToken cancellationToken);
@@ -431,11 +432,25 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                         .UpdateEntryAsync(cancellationToken);
         }
 
+        public async Task<SSG_SearchRequest> SystemCancelSearchRequest(SSG_SearchRequest searchRequest, CancellationToken cancellationToken)
+        {
+            if (searchRequest == null) return null;
+            return await _oDataClient
+                        .For<SSG_SearchRequest>()
+                        .Key(searchRequest.SearchRequestId)
+                        .Set(new Entry {
+                            { Keys.DYNAMICS_STATE_CODE_FIELD, 1 },
+                            { Keys.DYNAMICS_STATUS_CODE_FIELD, SearchRequestStatusCode.SystemCancelled.Value },
+                            { Keys.DYNAMICS_SEARCH_REQUEST_CANCEL_COMMENTS_FIELD, "Incomplete Search Request" }
+                        })
+                        .UpdateEntryAsync(cancellationToken);
+        }
+
         public async Task<bool> DeleteSearchRequest(string fileId, CancellationToken cancellationToken)
         {
             await _oDataClient
                         .For<SSG_SearchRequest>()
-                        .Key(fileId)
+                        .Filter(m=>m.FileId==fileId)
                         .DeleteEntryAsync();
 
             return true;

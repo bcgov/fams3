@@ -31,7 +31,7 @@ namespace DynamicsAdapter.Web.SearchAgency
         Task<SSG_SearchRequest> ProcessCancelSearchRequest(SearchRequestOrdered cancelSearchRequest);
         Task<SSG_SearchRequest> ProcessUpdateSearchRequest(SearchRequestOrdered updateSearchRequest);
         SSG_SearchRequest GetSSGSearchRequest();
-        Task<bool> DeleteSSGSearchRequest(SSG_SearchRequest searchRequest);
+        Task<bool> SystemCancelSSGSearchRequest(SSG_SearchRequest searchRequest);
     }
 
     public class AgencyRequestService : IAgencyRequestService
@@ -182,26 +182,26 @@ namespace DynamicsAdapter.Web.SearchAgency
             return _uploadedSearchRequest;
         }
 
-        public async Task<bool> DeleteSSGSearchRequest(SSG_SearchRequest request)
+        public async Task<bool> SystemCancelSSGSearchRequest(SSG_SearchRequest request)
         {
             await Policy.HandleResult<bool>(r => r == false)
                    .Or<Exception>()
                    .WaitAndRetryAsync(3,retryAttempt => TimeSpan.FromMinutes(1)) //retry 3 times and pause 1min between each call
-                   .ExecuteAndCaptureAsync(()=>DeleteSearchRequest(request));
+                   .ExecuteAndCaptureAsync(()=> SystemCancelSearchRequest(request));
             return true;
         }
 
-        private async Task<bool> DeleteSearchRequest(SSG_SearchRequest request)
+        private async Task<bool> SystemCancelSearchRequest(SSG_SearchRequest request)
         {
             try
             {
-                await _searchRequestService.DeleteSearchRequest(request.FileId, _cancellationToken);
+                await _searchRequestService.SystemCancelSearchRequest(request, _cancellationToken);
             }catch(Exception)
             {
-                _logger.LogInformation($"{request.FileId} File Deletion failed.");
+                _logger.LogInformation($"{request.FileId} File System Cancel failed.");
                 return false;
             }
-            _logger.LogInformation($"{request.FileId} File has been deleted successfully.");
+            _logger.LogInformation($"{request.FileId} File has been cancelled successfully.");
             return true;
         }
 

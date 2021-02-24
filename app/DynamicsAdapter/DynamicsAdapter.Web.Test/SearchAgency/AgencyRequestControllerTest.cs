@@ -101,7 +101,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
         }
 
         [Test]
-        public async Task With_exception_throws_searchRequestOrdered_CreateSearchRequest_should_return_InternalServerError_delete_sr()
+        public async Task With_exception_throws_searchRequestOrdered_CreateSearchRequest_should_return_InternalServerError_systemCancel_sr()
         {
             string requestId = "exception";
             SearchRequestOrdered updateSearchRequestOrdered = new SearchRequestOrdered()
@@ -125,6 +125,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
 
             var result = await _sut.CreateSearchRequest("exceptionrequest", updateSearchRequestOrdered);
             _agencyRequestServiceMock.Verify(x => x.ProcessSearchRequestOrdered(It.IsAny<SearchRequestOrdered>()), Times.Once);
+            _agencyRequestServiceMock.Verify(x => x.SystemCancelSSGSearchRequest(It.Is<SSG_SearchRequest>(m=>m.FileId=="111111")), Times.Once);
             Assert.AreEqual(500, ((ObjectResult)result).StatusCode);
         }
 

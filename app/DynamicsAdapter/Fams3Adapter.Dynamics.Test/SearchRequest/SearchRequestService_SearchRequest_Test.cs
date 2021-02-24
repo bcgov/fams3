@@ -312,6 +312,58 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         }
 
         [Test]
+        public async Task systemcancel_correct_SearchRequest_should_success()
+        {
+            Guid searchRequestId = Guid.NewGuid();
+            _odataClientMock.Setup(x => x.For<SSG_SearchRequest>(null)
+                .Key(It.IsAny<Guid>())
+                .Set(new Dictionary<string, object>() {
+                    { Keys.DYNAMICS_STATE_CODE_FIELD, 1},
+                    { Keys.DYNAMICS_STATUS_CODE_FIELD, SearchRequestStatusCode.SystemCancelled.Value },
+                    { Keys.DYNAMICS_SEARCH_REQUEST_CANCEL_COMMENTS_FIELD, "Incomplete Search Request" }
+                })
+                .UpdateEntryAsync(It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult<SSG_SearchRequest>(new SSG_SearchRequest()
+                {
+                    StatusCode = SearchRequestStatusCode.SystemCancelled.Value
+                }));
+
+
+            var result = await _sut.SystemCancelSearchRequest(new SSG_SearchRequest { SearchRequestId=searchRequestId}, CancellationToken.None);
+
+            Assert.AreEqual(SearchRequestStatusCode.SystemCancelled.Value, result.StatusCode);
+        }
+
+        [Test]
+        public async Task systemCancel_non_exist_SearchRequest_should_return_null()
+        {
+            var result = await _sut.SystemCancelSearchRequest(null, CancellationToken.None);
+
+            Assert.AreEqual(null, result);
+        }
+
+        [Test]
+        public void exception_systemcancel_SearchRequest_should_throw_exception()
+        {
+            Guid searchRequestId = Guid.NewGuid();
+            _odataClientMock.Setup(x => x.For<SSG_SearchRequest>(null)
+                .Key(It.IsAny<Guid>())
+                .Set(new Dictionary<string, object>() {
+                                { Keys.DYNAMICS_STATE_CODE_FIELD, 1},
+                                { Keys.DYNAMICS_STATUS_CODE_FIELD, SearchRequestStatusCode.SystemCancelled.Value },
+                                { Keys.DYNAMICS_SEARCH_REQUEST_CANCEL_COMMENTS_FIELD, "Incomplete Search Request" }
+                })
+                .UpdateEntryAsync(It.IsAny<CancellationToken>()))
+                .Throws(WebRequestException.CreateFromStatusCode(
+                        System.Net.HttpStatusCode.NotFound,
+                        new WebRequestExceptionMessageSource(),
+                        ""
+                        ));
+
+            Assert.ThrowsAsync<WebRequestException>(async () => await _sut.SystemCancelSearchRequest(new SSG_SearchRequest { SearchRequestId=searchRequestId}, CancellationToken.None));
+        }
+
+        [Test]
         public async Task update_correct_SearchRequest_should_success()
         {
             _odataClientMock.Setup(x => x.For<SSG_SearchRequest>(null).Key(It.Is<Guid>(m => m == testId)).Set(It.IsAny<Dictionary<string, object>>())

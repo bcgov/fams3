@@ -195,10 +195,11 @@ namespace DynamicsAdapter.Web.SearchAgency
         {
             try
             {
-                await _searchRequestService.SystemCancelSearchRequest(request, _cancellationToken);
-            }catch(Exception)
+                SSG_SearchRequest sr = await _searchRequestService.SystemCancelSearchRequest(request, _cancellationToken);
+                if (sr.StatusCode != SearchRequestStatusCode.SystemCancelled.Value) return false;
+            }catch(Exception e)
             {
-                _logger.LogInformation($"{request.FileId} File System Cancel failed.");
+                _logger.LogInformation($"{request.FileId} File System Cancel failed."+e.Message);
                 return false;
             }
             _logger.LogInformation($"{request.FileId} File has been cancelled successfully.");

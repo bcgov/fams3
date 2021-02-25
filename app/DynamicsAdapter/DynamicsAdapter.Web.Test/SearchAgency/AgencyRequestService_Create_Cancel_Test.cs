@@ -322,7 +322,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
               {
                   StatusCode= SearchRequestStatusCode.SystemCancelled.Value
               }));
-            bool result = await _sut.SystemCancelSSGSearchRequest(new SSG_SearchRequest { SearchRequestId=Guid.NewGuid()});
+            bool result = await _sut.SystemCancelSSGSearchRequest(new SSG_SearchRequest { SearchRequestId= _systemCancelSuccessId });
             Assert.IsTrue(result);
             _searchRequestServiceMock.Verify(m => m.SystemCancelSearchRequest(It.Is<SSG_SearchRequest>(x => x.SearchRequestId == _systemCancelSuccessId), It.IsAny<CancellationToken>()), Times.Once);
         }

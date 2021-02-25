@@ -84,6 +84,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             Assert.IsInstanceOf(typeof(BadRequestObjectResult), result);
         }
 
+
         [Test]
         public async Task With_update_action_searchRequestOrdered_CreateSearchRequest_should_return_BadRequest()
         {
@@ -100,7 +101,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
         }
 
         [Test]
-        public async Task With_exception_throws_searchRequestOrdered_CreateSearchRequest_should_return_InternalServerError()
+        public async Task With_exception_throws_searchRequestOrdered_CreateSearchRequest_should_return_InternalServerError_systemCancel_sr()
         {
             string requestId = "exception";
             SearchRequestOrdered updateSearchRequestOrdered = new SearchRequestOrdered()
@@ -114,10 +115,21 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 x => x.ProcessSearchRequestOrdered(It.Is<SearchRequestOrdered>(x => x.RequestId == requestId)))
             .Throws(new Exception("exception throws"));
 
+            _agencyRequestServiceMock.Setup(
+                x => x.GetSSGSearchRequest())
+            .Returns(new SSG_SearchRequest{ FileId="111111"});
+
+            _agencyRequestServiceMock.Setup(
+                x => x.SystemCancelSSGSearchRequest(It.IsAny<SSG_SearchRequest>()))
+                .Returns(Task.FromResult<bool>(true));
+
             var result = await _sut.CreateSearchRequest("exceptionrequest", updateSearchRequestOrdered);
             _agencyRequestServiceMock.Verify(x => x.ProcessSearchRequestOrdered(It.IsAny<SearchRequestOrdered>()), Times.Once);
-            Assert.AreEqual(500, ((ObjectResult)result).StatusCode);
+            _agencyRequestServiceMock.Verify(x => x.SystemCancelSSGSearchRequest(It.Is<SSG_SearchRequest>(m=>m.FileId=="111111")), Times.Once);
+            Assert.AreEqual(504, ((ObjectResult)result).StatusCode);
         }
+
+
 
         [Test]
         public async Task With_valid_searchRequestOrdered_CancelSearchRequest_should_return_ok_with_correct_content()

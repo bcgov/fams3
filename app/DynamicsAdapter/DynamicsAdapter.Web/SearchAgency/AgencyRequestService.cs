@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using Fams3Adapter.Dynamics.Agency;
 using DynamicsAdapter.Web.SearchAgency.Exceptions;
 using Fams3Adapter.Dynamics.SafetyConcern;
+using Polly;
 
 namespace DynamicsAdapter.Web.SearchAgency
 {
@@ -29,6 +30,8 @@ namespace DynamicsAdapter.Web.SearchAgency
         Task<SSG_SearchRequest> ProcessSearchRequestOrdered(SearchRequestOrdered searchRequestOrdered);
         Task<SSG_SearchRequest> ProcessCancelSearchRequest(SearchRequestOrdered cancelSearchRequest);
         Task<SSG_SearchRequest> ProcessUpdateSearchRequest(SearchRequestOrdered updateSearchRequest);
+        SSG_SearchRequest GetSSGSearchRequest();
+        Task<bool> SystemCancelSSGSearchRequest(SSG_SearchRequest searchRequest);
     }
 
     public class AgencyRequestService : IAgencyRequestService
@@ -40,8 +43,6 @@ namespace DynamicsAdapter.Web.SearchAgency
         private SSG_Person _uploadedPerson;
         private SSG_SearchRequest _uploadedSearchRequest;
         private CancellationToken _cancellationToken;
-        private static int SEARCH_REQUEST_CANCELLED = 867670009;
-        private static int SEARCH_REQUEST_CLOSED = 2;
 
         public AgencyRequestService(ISearchRequestService searchRequestService, ILogger<AgencyRequestService> logger, IMapper mapper)
         {
@@ -63,6 +64,7 @@ namespace DynamicsAdapter.Web.SearchAgency
             searchRequestEntity.CreatedByApi = true;
             searchRequestEntity.SendNotificationOnCreation = true;
             _uploadedSearchRequest = await _searchRequestService.CreateSearchRequest(searchRequestEntity, cts.Token);
+            if (_uploadedSearchRequest == null) return null;
             _logger.LogInformation("Create Search Request successfully");
 
             PersonEntity personEntity = _mapper.Map<PersonEntity>(_personSought);
@@ -173,6 +175,35 @@ namespace DynamicsAdapter.Web.SearchAgency
             return _uploadedSearchRequest;
         }
 
+        public SSG_SearchRequest GetSSGSearchRequest()
+        {
+            return _uploadedSearchRequest;
+        }
+
+        public async Task<bool> SystemCancelSSGSearchRequest(SSG_SearchRequest request)
+        {
+            await Policy.HandleResult<bool>(r => r == false)
+                   .Or<Exception>()
+                   .WaitAndRetryAsync(3,retryAttempt => TimeSpan.FromMinutes(2)) //retry 3 times and pause 1min between each call
+                   .ExecuteAndCaptureAsync(()=> SystemCancelSearchRequest(request));
+            return true;
+        }
+
+        private async Task<bool> SystemCancelSearchRequest(SSG_SearchRequest request)
+        {
+            try
+            {
+                SSG_SearchRequest sr = await _searchRequestService.SystemCancelSearchRequest(request, _cancellationToken);
+                if (sr.StatusCode != SearchRequestStatusCode.SystemCancelled.Value) return false;
+            }catch(Exception e)
+            {
+                _logger.LogInformation($"{request.FileId} File System Cancel failed."+e.Message);
+                return false;
+            }
+            _logger.LogInformation($"{request.FileId} File has been cancelled successfully.");
+            return true;
+        }
+
         private async Task<SSG_SearchRequest> VerifySearchRequest(SearchRequestOrdered searchRequestOrdered)
         {
             //get existedSearchRequest
@@ -182,11 +213,11 @@ namespace DynamicsAdapter.Web.SearchAgency
                 _logger.LogInformation("the updating search request does not exist.");
                 return null;
             }
-            if (existedSearchRequest.StatusCode == SEARCH_REQUEST_CANCELLED)
+            if (existedSearchRequest.StatusCode == SearchRequestStatusCode.SearchRequestCancelled.Value)
             {
                 throw new AgencyRequestException("fileCancelled", new Exception($"File {searchRequestOrdered.SearchRequestKey} is cancelled."));
             }
-            if (existedSearchRequest.StatusCode == SEARCH_REQUEST_CLOSED)
+            if (existedSearchRequest.StatusCode == SearchRequestStatusCode.SearchRequestClosed.Value)
             {
                 throw new AgencyRequestException("fileClosed", new Exception($"File {searchRequestOrdered.SearchRequestKey} is closed."));
             }

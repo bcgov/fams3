@@ -50,6 +50,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         Task<SSG_SearchRequestResultTransaction> CreateTransaction(SSG_SearchRequestResultTransaction transaction, CancellationToken cancellationToken);
         Task<SSG_SearchRequest> CreateSearchRequest(SearchRequestEntity searchRequest, CancellationToken cancellationToken);
         Task<SSG_SearchRequest> CancelSearchRequest(string fileId, string cancelComments, CancellationToken cancellationToken);
+        Task<SSG_SearchRequest> SystemCancelSearchRequest(SSG_SearchRequest searchRequest, CancellationToken cancellationToken);
         Task<SSG_SearchRequest> GetSearchRequest(string fileId, CancellationToken cancellationToken);
         Task<SSG_SearchRequestReason> GetSearchReason(string reasonCode, CancellationToken cancellationToken);
         Task<SSG_AgencyLocation> GetSearchAgencyLocation(string locationCode, string agencyCode, CancellationToken cancellationToken);
@@ -65,6 +66,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         Task<SSG_Country> GetEmploymentCountry(string countryText, CancellationToken cancellationToken);
         Task<SSG_CountrySubdivision> GetEmploymentSubdivision(string subDivisionText, CancellationToken cancellationToken);
         Task<bool> SubmitToQueue(Guid searchRequestId);
+        Task<bool> DeleteSearchRequest(string fileId, CancellationToken cancellationToken);
     }
 
     /// <summary>
@@ -430,6 +432,30 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                         .UpdateEntryAsync(cancellationToken);
         }
 
+        public async Task<SSG_SearchRequest> SystemCancelSearchRequest(SSG_SearchRequest searchRequest, CancellationToken cancellationToken)
+        {
+            if (searchRequest == null) return null;
+            return await _oDataClient
+                        .For<SSG_SearchRequest>()
+                        .Key(searchRequest.SearchRequestId)
+                        .Set(new Entry {
+                            { Keys.DYNAMICS_STATE_CODE_FIELD, 1 },
+                            { Keys.DYNAMICS_STATUS_CODE_FIELD, SearchRequestStatusCode.SystemCancelled.Value },
+                            { Keys.DYNAMICS_SEARCH_REQUEST_CANCEL_COMMENTS_FIELD, "Incomplete Search Request" }
+                        })
+                        .UpdateEntryAsync(cancellationToken);
+        }
+
+        public async Task<bool> DeleteSearchRequest(string fileId, CancellationToken cancellationToken)
+        {
+            await _oDataClient
+                        .For<SSG_SearchRequest>()
+                        .Filter(m=>m.FileId==fileId)
+                        .DeleteEntryAsync();
+
+            return true;
+        }
+
         public async Task<SSG_SearchRequest> GetSearchRequest(string fileId, CancellationToken cancellationToken)
         {
             SSG_SearchRequest ssgSearchRequest = await _oDataClient
@@ -557,7 +583,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             try
             {
                 SSG_AgencyLocation officeLocation = null;
-                if (locationCode.Length > 5)
+                if (locationCode?.Length > 5)
                 {
                     //temp, as the sample files is not changed to code yet. so, if it is not code, run following code.
                     //We just currently use City as temp solution. expecting FMEP will provide office code later

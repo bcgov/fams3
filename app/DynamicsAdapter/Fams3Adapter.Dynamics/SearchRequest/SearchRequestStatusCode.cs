@@ -6,6 +6,12 @@ namespace Fams3Adapter.Dynamics.SearchRequest
     {
         public static SearchRequestStatusCode AgencyCancelled =
             new SearchRequestStatusCode(867670010, "Agency Cancelled");
+        public static SearchRequestStatusCode SystemCancelled =
+            new SearchRequestStatusCode(867670015, "System Cancelled");
+        public static SearchRequestStatusCode SearchRequestCancelled =
+            new SearchRequestStatusCode(867670009, "Search Request Cancelled");
+        public static SearchRequestStatusCode SearchRequestClosed =
+                    new SearchRequestStatusCode(2, "Search Request Closed");
 
         protected SearchRequestStatusCode(int value, string name) : base(value, name)
         {

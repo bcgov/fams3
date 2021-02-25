@@ -33,6 +33,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
 
         private SearchRequestOrdered _searchRequstOrdered;
         private Guid _validRequestId;
+        private Guid _systemCancelSuccessId;
         private IdentifierEntity _fakePersoneIdentifier;
         private AddressEntity _fakePersonAddress;
         private PhoneNumberEntity _fakePersonPhoneNumber;
@@ -307,8 +308,23 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
 
             _searchRequestServiceMock.Setup(x => x.SubmitToQueue(It.IsAny<Guid>()))
               .Returns(Task.FromResult<bool>(true));
+
+            _systemCancelSuccessId = Guid.NewGuid();
             _sut = new AgencyRequestService(_searchRequestServiceMock.Object, _loggerMock.Object, _mapper.Object);
 
+        }
+
+        [Test]
+        public async Task SystemCancelSSGSearchRequest_should_succeed()
+        {
+            _searchRequestServiceMock.Setup(x => x.SystemCancelSearchRequest(It.Is<SSG_SearchRequest>(x => x.SearchRequestId == _systemCancelSuccessId), It.IsAny<CancellationToken>()))
+              .Returns(Task.FromResult<SSG_SearchRequest>(new SSG_SearchRequest()
+              {
+                  StatusCode= SearchRequestStatusCode.SystemCancelled.Value
+              }));
+            bool result = await _sut.SystemCancelSSGSearchRequest(new SSG_SearchRequest { SearchRequestId= _systemCancelSuccessId });
+            Assert.IsTrue(result);
+            _searchRequestServiceMock.Verify(m => m.SystemCancelSearchRequest(It.Is<SSG_SearchRequest>(x => x.SearchRequestId == _systemCancelSuccessId), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Test]

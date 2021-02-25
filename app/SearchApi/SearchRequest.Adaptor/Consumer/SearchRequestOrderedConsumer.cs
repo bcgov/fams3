@@ -3,6 +3,7 @@ using BcGov.Fams3.SearchApi.Core.Configuration;
 using MassTransit;
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using SearchRequestAdaptor.Notifier;
 using Serilog.Context;
 using System.Threading;
@@ -14,9 +15,9 @@ namespace SearchRequestAdaptor.Consumer
     {
         private readonly ILogger<SearchRequestOrderedConsumer> _logger;
         private readonly ISearchRequestNotifier<SearchRequestOrdered> _searchRequestNotifier;
-        private readonly RetryConfiguration _retryConfig;
+        private readonly IOptions<RetryConfiguration>  _retryConfig;
 
-        public SearchRequestOrderedConsumer(ISearchRequestNotifier<SearchRequestOrdered> searchRequestNotifier, ILogger<SearchRequestOrderedConsumer> logger, RetryConfiguration retryConfig)
+        public SearchRequestOrderedConsumer(ISearchRequestNotifier<SearchRequestOrdered> searchRequestNotifier, ILogger<SearchRequestOrderedConsumer> logger, IOptions<RetryConfiguration> retryConfig)
         {
             _logger = logger;
             _searchRequestNotifier = searchRequestNotifier;
@@ -31,7 +32,7 @@ namespace SearchRequestAdaptor.Consumer
             {
                 _logger.LogInformation("get the searchRequestOrdered message.");
                 var cts = new CancellationTokenSource();
-                await _searchRequestNotifier.NotifySearchRequestEventAsync(context.Message.RequestId, context.Message, cts.Token, context.GetRetryAttempt(), _retryConfig.RetryTimes);
+                await _searchRequestNotifier.NotifySearchRequestEventAsync(context.Message.RequestId, context.Message, cts.Token, context.GetRetryAttempt(), _retryConfig.Value.RetryTimes);
             }
         }
 

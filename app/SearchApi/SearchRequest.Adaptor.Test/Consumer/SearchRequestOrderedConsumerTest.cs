@@ -1,6 +1,8 @@
 ﻿using BcGov.Fams3.SearchApi.Contracts.SearchRequest;
+using BcGov.Fams3.SearchApi.Core.Configuration;
 using MassTransit.Testing;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
 using NUnit.Framework;
 using SearchRequestAdaptor.Consumer;
@@ -17,6 +19,7 @@ namespace SearchRequest.Adaptor.Test.Consumer
         private InMemoryTestHarness _harness;
         private Mock<ILogger<SearchRequestOrderedConsumer>> _loggerMock;
         private Mock<ISearchRequestNotifier<SearchRequestOrdered>> _searchRequestNotifierMock;
+        private Mock<IOptions<RetryConfiguration>> _retryConfigMock;
 
 
         [OneTimeSetUp]
@@ -24,9 +27,11 @@ namespace SearchRequest.Adaptor.Test.Consumer
         {
             _loggerMock = new Mock<ILogger<SearchRequestOrderedConsumer>>();
             _searchRequestNotifierMock = new Mock<ISearchRequestNotifier<SearchRequestOrdered>>();
+            _retryConfigMock = new Mock<IOptions<RetryConfiguration>>();
+            _retryConfigMock.SetupGet(m => m.Value).Returns(new RetryConfiguration { RetryTimes=3});
             _harness = new InMemoryTestHarness();
            
-            _harness.Consumer(() => new SearchRequestOrderedConsumer(_searchRequestNotifierMock.Object, _loggerMock.Object));
+            _harness.Consumer(() => new SearchRequestOrderedConsumer(_searchRequestNotifierMock.Object, _loggerMock.Object,_retryConfigMock.Object));
 
             await _harness.Start();
 
@@ -48,7 +53,7 @@ namespace SearchRequest.Adaptor.Test.Consumer
         public void Should_send_the_initial_message_to_the_consumer()
         {
             Assert.IsTrue(_harness.Consumed.Select<SearchRequestOrdered>().Any());
-            _searchRequestNotifierMock.Verify(x => x.NotifySearchRequestEventAsync(It.Is<string>(x => x == "id"), It.IsAny<SearchRequestOrdered>(), It.IsAny<CancellationToken>()), Times.Once);
+            _searchRequestNotifierMock.Verify(x => x.NotifySearchRequestEventAsync(It.Is<string>(x => x == "id"), It.IsAny<SearchRequestOrdered>(), It.IsAny<CancellationToken>(),0,3), Times.Once);
         }
 
 

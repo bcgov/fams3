@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
 using GreenPipes;
+using Microsoft.Extensions.Options;
 
 namespace SearchRequestAdaptor
 {
@@ -177,13 +178,13 @@ namespace SearchRequestAdaptor
         /// <param name="services"></param>
         private void ConfigureServiceBus(IServiceCollection services)
         {
-
+           
             services.Configure<RabbitMqConfiguration>(Configuration.GetSection("RabbitMq"));
 
             var rabbitMqSettings = Configuration.GetSection("RabbitMq").Get<RabbitMqConfiguration>();
             var rabbitBaseUri = $"amqp://{rabbitMqSettings.Host}:{rabbitMqSettings.Port}";
+            services.AddOptions<RetryConfiguration>().Bind(Configuration.GetSection("RetryConfiguration")).ValidateDataAnnotations();
             var retryConfiguration = Configuration.GetSection("RetryConfiguration").Get<RetryConfiguration>();
-
             services.AddMassTransit(x =>
             {
                 // Add RabbitMq Service Bus
@@ -215,9 +216,7 @@ namespace SearchRequestAdaptor
                             new SearchRequestOrderedConsumer(
                                 provider.GetRequiredService<ISearchRequestNotifier<SearchRequestOrdered>>(),
                                 provider.GetRequiredService<ILogger<SearchRequestOrderedConsumer>>(),
-                                retryConfiguration));
-
-
+                                provider.GetRequiredService<IOptions<RetryConfiguration>>()));
 
                     });
                 }));

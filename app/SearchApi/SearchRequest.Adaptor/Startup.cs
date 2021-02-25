@@ -182,6 +182,7 @@ namespace SearchRequestAdaptor
 
             var rabbitMqSettings = Configuration.GetSection("RabbitMq").Get<RabbitMqConfiguration>();
             var rabbitBaseUri = $"amqp://{rabbitMqSettings.Host}:{rabbitMqSettings.Port}";
+            var retryConfiguration = Configuration.GetSection("RetryConfiguration").Get<RetryConfiguration>();
 
             services.AddMassTransit(x =>
             {
@@ -204,11 +205,17 @@ namespace SearchRequestAdaptor
                     {
 
                         e.UseRateLimit(1, TimeSpan.FromSeconds(5));
+                        e.UseMessageRetry(r=> {
+                            r.Ignore<ArgumentNullException>();
+                            r.Ignore<InvalidOperationException>();
+                            r.Interval(retryConfiguration.RetryTimes, TimeSpan.FromMinutes(retryConfiguration.RetryInterval));
+                        });
 
                         e.Consumer(() =>
                             new SearchRequestOrderedConsumer(
                                 provider.GetRequiredService<ISearchRequestNotifier<SearchRequestOrdered>>(),
-                                provider.GetRequiredService<ILogger<SearchRequestOrderedConsumer>>()));
+                                provider.GetRequiredService<ILogger<SearchRequestOrderedConsumer>>(),
+                                retryConfiguration));
 
 
 

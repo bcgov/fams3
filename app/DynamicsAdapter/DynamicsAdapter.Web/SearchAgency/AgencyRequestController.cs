@@ -71,7 +71,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                         await _agencyRequestService.SystemCancelSSGSearchRequest(createdSR);
                     }
                     _logger.LogError(ex.Message);
-                    return StatusCode(StatusCodes.Status500InternalServerError, new { ReasonCode = "error", Message = "error" });
+                    return StatusCode(StatusCodes.Status504GatewayTimeout, new { ReasonCode = "error", Message = "error" });
                 }
             }
         }

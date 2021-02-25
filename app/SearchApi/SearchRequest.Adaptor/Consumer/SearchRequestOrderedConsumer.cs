@@ -1,4 +1,5 @@
-﻿using BcGov.Fams3.SearchApi.Contracts.SearchRequest;
+using BcGov.Fams3.SearchApi.Contracts.SearchRequest;
+using BcGov.Fams3.SearchApi.Core.Configuration;
 using MassTransit;
 
 using Microsoft.Extensions.Logging;
@@ -13,11 +14,13 @@ namespace SearchRequestAdaptor.Consumer
     {
         private readonly ILogger<SearchRequestOrderedConsumer> _logger;
         private readonly ISearchRequestNotifier<SearchRequestOrdered> _searchRequestNotifier;
+        private readonly RetryConfiguration _retryConfig;
 
-        public SearchRequestOrderedConsumer(ISearchRequestNotifier<SearchRequestOrdered> searchRequestNotifier, ILogger<SearchRequestOrderedConsumer> logger)
+        public SearchRequestOrderedConsumer(ISearchRequestNotifier<SearchRequestOrdered> searchRequestNotifier, ILogger<SearchRequestOrderedConsumer> logger, RetryConfiguration retryConfig)
         {
             _logger = logger;
             _searchRequestNotifier = searchRequestNotifier;
+            _retryConfig = retryConfig;
 
         }
 
@@ -28,7 +31,7 @@ namespace SearchRequestAdaptor.Consumer
             {
                 _logger.LogInformation("get the searchRequestOrdered message.");
                 var cts = new CancellationTokenSource();
-                await _searchRequestNotifier.NotifySearchRequestEventAsync(context.Message.RequestId, context.Message, cts.Token);
+                await _searchRequestNotifier.NotifySearchRequestEventAsync(context.Message.RequestId, context.Message, cts.Token, context.GetRetryAttempt(), _retryConfig.RetryTimes);
             }
         }
 

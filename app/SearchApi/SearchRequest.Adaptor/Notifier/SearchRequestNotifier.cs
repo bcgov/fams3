@@ -1,4 +1,4 @@
-﻿using BcGov.Fams3.SearchApi.Contracts.Person;
+using BcGov.Fams3.SearchApi.Contracts.Person;
 using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 using BcGov.Fams3.SearchApi.Contracts.SearchRequest;
 using BcGov.Fams3.Utils.Url;
@@ -18,7 +18,7 @@ namespace SearchRequestAdaptor.Notifier
 {
     public interface ISearchRequestNotifier<T>
     {
-        Task NotifySearchRequestEventAsync(string requestId, T searchRequestOrdered, CancellationToken cancellationToken);
+        Task NotifySearchRequestEventAsync(string requestId, T searchRequestOrdered, CancellationToken cancellationToken, int retryTimes=0, int maxRetryTimes=0);
     }
 
     public class WebHookSearchRequestNotifier : ISearchRequestNotifier<SearchRequestOrdered>
@@ -39,7 +39,7 @@ namespace SearchRequestAdaptor.Notifier
         }
 
         public async Task NotifySearchRequestEventAsync(string requestId, SearchRequestOrdered searchRequestOrdered,
-           CancellationToken cancellationToken)
+           CancellationToken cancellationToken, int retryTimes=0, int maxRetryTimes=0)
         {
             var webHookName = "SearchRequest";
 
@@ -112,6 +112,7 @@ namespace SearchRequestAdaptor.Notifier
                         }
                         else
                         {
+                            _logger.LogError($"Message Failed { response.StatusCode}, {response.Content.ReadAsStringAsync()}");
                             throw new Exception($"Message Failed {response.StatusCode}, {response.Content.ReadAsStringAsync()}");
                         }
                     }
@@ -131,8 +132,13 @@ namespace SearchRequestAdaptor.Notifier
                 }
                 catch (Exception exception)
                 {
-                    await _searchRequestEventPublisher.PublishSearchRequestFailed(searchRequestOrdered, exception.Message);
-                    _logger.LogError($"The webHook {webHookName} notification failed for {eventName} for {webHook.Name} webHook. [{exception.Message}]");
+                    if (retryTimes >= maxRetryTimes)
+                    {
+                        await _searchRequestEventPublisher.PublishSearchRequestFailed(searchRequestOrdered, exception.Message);
+                        _logger.LogError($"The webHook {webHookName} notification failed for {eventName} for {webHook.Name} webHook. [{exception.Message}]");
+                        return;
+                    }
+                    throw exception;
                 }
             }
         }

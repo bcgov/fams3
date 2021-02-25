@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
 using GreenPipes;
+using Microsoft.Extensions.Options;
 
 namespace SearchRequestAdaptor
 {
@@ -177,12 +178,13 @@ namespace SearchRequestAdaptor
         /// <param name="services"></param>
         private void ConfigureServiceBus(IServiceCollection services)
         {
-
+           
             services.Configure<RabbitMqConfiguration>(Configuration.GetSection("RabbitMq"));
 
             var rabbitMqSettings = Configuration.GetSection("RabbitMq").Get<RabbitMqConfiguration>();
             var rabbitBaseUri = $"amqp://{rabbitMqSettings.Host}:{rabbitMqSettings.Port}";
-
+            services.AddOptions<RetryConfiguration>().Bind(Configuration.GetSection("RetryConfiguration")).ValidateDataAnnotations();
+            var retryConfiguration = Configuration.GetSection("RetryConfiguration").Get<RetryConfiguration>();
             services.AddMassTransit(x =>
             {
                 // Add RabbitMq Service Bus
@@ -204,13 +206,17 @@ namespace SearchRequestAdaptor
                     {
 
                         e.UseRateLimit(1, TimeSpan.FromSeconds(5));
+                        e.UseMessageRetry(r=> {
+                            r.Ignore<ArgumentNullException>();
+                            r.Ignore<InvalidOperationException>();
+                            r.Interval(retryConfiguration.RetryTimes, TimeSpan.FromMinutes(retryConfiguration.RetryInterval));
+                        });
 
                         e.Consumer(() =>
                             new SearchRequestOrderedConsumer(
                                 provider.GetRequiredService<ISearchRequestNotifier<SearchRequestOrdered>>(),
-                                provider.GetRequiredService<ILogger<SearchRequestOrderedConsumer>>()));
-
-
+                                provider.GetRequiredService<ILogger<SearchRequestOrderedConsumer>>(),
+                                provider.GetRequiredService<IOptions<RetryConfiguration>>()));
 
                     });
                 }));

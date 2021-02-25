@@ -178,7 +178,7 @@ namespace SearchRequest.Adaptor.Test.Notifier
 
 
         [Test]
-        public async Task NotifySearchRequestEventAsync_should_publish_rejected_if_http_return_non_success()
+        public async Task NotifySearchRequestEventAsync_should_publish_rejected_if_http_return_BadRequest()
         {
             _searchRequestOptionsMock.Setup(x => x.Value).Returns(
                  new SearchRequestAdaptorOptions().AddWebHook("test", "http://test.org"));
@@ -253,6 +253,36 @@ namespace SearchRequest.Adaptor.Test.Notifier
                 _fakeSearchRequestOrdered.RequestId,
                 null, CancellationToken.None));
 
+        }
+
+        [Test]
+        public void NotifySearchRequestEventAsync_should_not_publish_failed_if_http_throw_exception_and_not_reach_maxRetries()
+        {
+            _searchRequestOptionsMock.Setup(x => x.Value).Returns(
+                   new SearchRequestAdaptorOptions().AddWebHook("test", "http://test.org"));
+            _httpHandlerMock
+                .Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>()
+                ).Throws(new Exception("mock http throw exception"));
+
+            _sut = new WebHookSearchRequestNotifier(_httpClient, _searchRequestOptionsMock.Object, _loggerMock.Object, _searchRquestEventPublisherMock.Object);
+            Assert.ThrowsAsync<Exception>(()=> _sut.NotifySearchRequestEventAsync(
+                     _fakeSearchRequestOrdered.RequestId,
+                     _fakeSearchRequestOrdered, CancellationToken.None,0,3));
+
+            _httpHandlerMock.Protected().Verify(
+                    "SendAsync",
+                    Times.Exactly(1),
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>()
+                );
+
+            _searchRquestEventPublisherMock.Verify(
+                x => x.PublishSearchRequestFailed(
+                It.IsAny<SearchRequestEvent>(), It.IsAny<string>()), Times.Never);
         }
     }
 }

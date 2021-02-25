@@ -126,7 +126,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             var result = await _sut.CreateSearchRequest("exceptionrequest", updateSearchRequestOrdered);
             _agencyRequestServiceMock.Verify(x => x.ProcessSearchRequestOrdered(It.IsAny<SearchRequestOrdered>()), Times.Once);
             _agencyRequestServiceMock.Verify(x => x.SystemCancelSSGSearchRequest(It.Is<SSG_SearchRequest>(m=>m.FileId=="111111")), Times.Once);
-            Assert.AreEqual(500, ((ObjectResult)result).StatusCode);
+            Assert.AreEqual(504, ((ObjectResult)result).StatusCode);
         }
 
 

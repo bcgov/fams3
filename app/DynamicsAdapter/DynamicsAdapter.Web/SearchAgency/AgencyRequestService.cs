@@ -43,8 +43,6 @@ namespace DynamicsAdapter.Web.SearchAgency
         private SSG_Person _uploadedPerson;
         private SSG_SearchRequest _uploadedSearchRequest;
         private CancellationToken _cancellationToken;
-        private static int SEARCH_REQUEST_CANCELLED = 867670009;
-        private static int SEARCH_REQUEST_CLOSED = 2;
 
         public AgencyRequestService(ISearchRequestService searchRequestService, ILogger<AgencyRequestService> logger, IMapper mapper)
         {
@@ -186,7 +184,7 @@ namespace DynamicsAdapter.Web.SearchAgency
         {
             await Policy.HandleResult<bool>(r => r == false)
                    .Or<Exception>()
-                   .WaitAndRetryAsync(3,retryAttempt => TimeSpan.FromMinutes(1)) //retry 3 times and pause 1min between each call
+                   .WaitAndRetryAsync(3,retryAttempt => TimeSpan.FromMinutes(2)) //retry 3 times and pause 1min between each call
                    .ExecuteAndCaptureAsync(()=> SystemCancelSearchRequest(request));
             return true;
         }
@@ -215,11 +213,11 @@ namespace DynamicsAdapter.Web.SearchAgency
                 _logger.LogInformation("the updating search request does not exist.");
                 return null;
             }
-            if (existedSearchRequest.StatusCode == SEARCH_REQUEST_CANCELLED)
+            if (existedSearchRequest.StatusCode == SearchRequestStatusCode.SearchRequestCancelled.Value)
             {
                 throw new AgencyRequestException("fileCancelled", new Exception($"File {searchRequestOrdered.SearchRequestKey} is cancelled."));
             }
-            if (existedSearchRequest.StatusCode == SEARCH_REQUEST_CLOSED)
+            if (existedSearchRequest.StatusCode == SearchRequestStatusCode.SearchRequestClosed.Value)
             {
                 throw new AgencyRequestException("fileClosed", new Exception($"File {searchRequestOrdered.SearchRequestKey} is closed."));
             }

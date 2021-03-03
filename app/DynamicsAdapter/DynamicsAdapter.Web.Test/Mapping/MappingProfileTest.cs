@@ -936,6 +936,23 @@ namespace DynamicsAdapter.Web.Test.Mapping
         }
 
         [Test]
+        public void Name_Cornet_with_null_type_should_map_to_SSG_Name_correctly()
+        {
+            var name = new Name()
+            {
+                FirstName = "FirstName",
+                LastName = "LastName",
+                Type = null,
+                Owner = OwnerType.Applicant,
+                DateOfBirth = new DateTimeOffset(new DateTime(2000, 1, 4))
+            };
+            AliasEntity ssg_name = _mapper.Map<AliasEntity>(name);
+            Assert.AreEqual("FirstName", ssg_name.FirstName);
+            Assert.AreEqual(null, ssg_name.SupplierTypeCode);
+            Assert.AreEqual(PersonNameCategory.Other.Value, ssg_name.Type);
+        }
+
+        [Test]
         public void RelatedPerson_should_map_to_SSG_Identity_correctly()
         {
             var relatedPerson = new RelatedPerson()

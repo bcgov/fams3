@@ -226,7 +226,7 @@ namespace DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new NameCategoryConverter(), src => src.Type))
                  .ForMember(dest => dest.SupplierTypeCode, opt => opt.MapFrom(src => src.Type))
                  .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => $"{src.Notes} {src.Description}"))
-                 .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => src.DateOfBirth))
+                 .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => src.DateOfBirth == null ? (DateTime?)null : src.DateOfBirth.Value.DateTime))
                  .IncludeBase<PersonalInfo, DynamicsEntity>()
                  .ReverseMap()
                     .ForMember(dest => dest.Owner, opt => opt.Ignore());

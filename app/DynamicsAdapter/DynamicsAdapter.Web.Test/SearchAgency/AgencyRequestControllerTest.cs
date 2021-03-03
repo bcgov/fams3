@@ -1,4 +1,5 @@
-﻿using DynamicsAdapter.Web.SearchAgency;
+﻿using DynamicsAdapter.Web.Register;
+using DynamicsAdapter.Web.SearchAgency;
 using DynamicsAdapter.Web.SearchAgency.Models;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Microsoft.AspNetCore.Mvc;
@@ -15,14 +16,15 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
         private AgencyRequestController _sut;
         private Mock<ILogger<AgencyRequestController>> _loggerMock;
         private Mock<IAgencyRequestService> _agencyRequestServiceMock;
+        private Mock<ISearchRequestRegister> _register;
 
         [SetUp]
         public void Init()
         {
             _loggerMock = new Mock<ILogger<AgencyRequestController>>();
             _agencyRequestServiceMock = new Mock<IAgencyRequestService>();
-
-            _sut = new AgencyRequestController(_loggerMock.Object, _agencyRequestServiceMock.Object);
+            _register = new Mock<ISearchRequestRegister>();
+            _sut = new AgencyRequestController(_loggerMock.Object, _agencyRequestServiceMock.Object, _register.Object);
         }
 
         [Test]
@@ -389,5 +391,82 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             _agencyRequestServiceMock.Verify(x => x.ProcessUpdateSearchRequest(It.IsAny<SearchRequestOrdered>()), Times.Once);
             Assert.AreEqual(500, ((ObjectResult)result).StatusCode);
         }
+
+        [Test]
+        public async Task With_valid_acknowledge_NotificationAcknowledged_should_return_ok()
+        {
+            Acknowledgement ack = new Acknowledgement()
+            {
+                Action = RequestAction.NEW,
+                RequestId = "121212121212",
+                TimeStamp = DateTime.Now,
+                ProviderProfile=new Web.PersonSearch.Models.ProviderProfile { Name="providerProfile"},
+                NotificationType=BcGov.Fams3.SearchApi.Contracts.SearchRequest.NotificationType.RequestClosed,
+                SearchRequestKey="123344",
+                Status= BcGov.Fams3.SearchApi.Contracts.SearchRequest.NotificationStatusEnum.SUCCESS
+            };
+
+            _agencyRequestServiceMock.Setup(x => x.ProcessNotificationAcknowledgement(It.IsAny<Acknowledgement>(), It.IsAny<Guid>()))
+                .Returns(Task.FromResult(true));
+
+            _register.Setup(x => x.GetSearchResponseReady(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(Task.FromResult(new SearchResponseReady { ApiCallGuid=Guid.NewGuid()}));
+
+            _register.Setup(x => x.DeleteSearchResponseReady(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(Task.FromResult(true));
+
+            IActionResult result = await _sut.NotificationAcknowledged("normalReferenceID", ack);
+
+            _agencyRequestServiceMock.Verify(x => x.ProcessNotificationAcknowledgement(It.IsAny<Acknowledgement>(), It.IsAny<Guid>()), Times.Once);
+            Assert.IsInstanceOf(typeof(OkResult), result);
+        }
+
+        [Test]
+        public async Task With_fileId_empty_acknowledge_NotificationAcknowledged_should_return_badRequest()
+        {
+            Acknowledgement ack = new Acknowledgement()
+            {
+                RequestId = "121212121212",
+                TimeStamp = DateTime.Now,
+                ProviderProfile = new Web.PersonSearch.Models.ProviderProfile { Name = "providerProfile" },
+                NotificationType = BcGov.Fams3.SearchApi.Contracts.SearchRequest.NotificationType.RequestClosed,
+                SearchRequestKey = "",
+                Status = BcGov.Fams3.SearchApi.Contracts.SearchRequest.NotificationStatusEnum.SUCCESS
+            };
+
+            IActionResult result = await _sut.NotificationAcknowledged("normalReferenceID", ack);
+
+            _agencyRequestServiceMock.Verify(x => x.ProcessNotificationAcknowledgement(It.IsAny<Acknowledgement>(), It.IsAny<Guid>()), Times.Never);
+            Assert.AreEqual(400, ((StatusCodeResult)result).StatusCode);
+        }
+
+        [Test]
+        public async Task With_no_cached_response_acknowledge_NotificationAcknowledged_should_return_internalError()
+        {
+            Acknowledgement ack = new Acknowledgement()
+            {
+                RequestId = "notInCache",
+                TimeStamp = DateTime.Now,
+                ProviderProfile = new Web.PersonSearch.Models.ProviderProfile { Name = "providerProfile" },
+                NotificationType = BcGov.Fams3.SearchApi.Contracts.SearchRequest.NotificationType.RequestClosed,
+                SearchRequestKey = "123344",
+                Status = BcGov.Fams3.SearchApi.Contracts.SearchRequest.NotificationStatusEnum.SUCCESS
+            };
+
+            _agencyRequestServiceMock.Setup(x => x.ProcessNotificationAcknowledgement(It.IsAny<Acknowledgement>(), It.IsAny<Guid>()))
+                .Returns(Task.FromResult(true));
+
+            _register.Setup(x => x.GetSearchResponseReady(It.Is<string>(m=>m=="123344"), It.Is<string>(m=>m== "notInCache")))
+                .Returns(Task.FromResult((SearchResponseReady)null));
+
+            _register.Setup(x => x.DeleteSearchResponseReady(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(Task.FromResult(true));
+
+            IActionResult result = await _sut.NotificationAcknowledged("notInCache", ack);
+
+            _agencyRequestServiceMock.Verify(x => x.ProcessNotificationAcknowledgement(It.IsAny<Acknowledgement>(), It.IsAny<Guid>()), Times.Never);
+            Assert.AreEqual(500, ((StatusCodeResult)result).StatusCode);
+        }
+
     }
 }

@@ -214,8 +214,27 @@ namespace SearchRequestAdaptor
 
                         e.Consumer(() =>
                             new SearchRequestOrderedConsumer(
-                                provider.GetRequiredService<ISearchRequestNotifier<SearchRequestOrdered>>(),
+                                provider.GetRequiredService<ISearchRequestNotifier<SearchRequestEvent>>(),
                                 provider.GetRequiredService<ILogger<SearchRequestOrderedConsumer>>(),
+                                provider.GetRequiredService<IOptions<RetryConfiguration>>()));
+
+                    });
+
+                    // Configure NotificationAcknowledged Consumer 
+                    cfg.ReceiveEndpoint($"{nameof(NotificationAcknowledged)}_queue", e =>
+                    {
+
+                        e.UseRateLimit(1, TimeSpan.FromSeconds(5));
+                        e.UseMessageRetry(r => {
+                            r.Ignore<ArgumentNullException>();
+                            r.Ignore<InvalidOperationException>();
+                            r.Interval(retryConfiguration.RetryTimes, TimeSpan.FromMinutes(retryConfiguration.RetryInterval));
+                        });
+
+                        e.Consumer(() =>
+                            new NotificationAcknowledgedConsumer(
+                                provider.GetRequiredService<ISearchRequestNotifier<SearchRequestEvent>>(),
+                                provider.GetRequiredService<ILogger<NotificationAcknowledgedConsumer>>(),
                                 provider.GetRequiredService<IOptions<RetryConfiguration>>()));
 
                     });

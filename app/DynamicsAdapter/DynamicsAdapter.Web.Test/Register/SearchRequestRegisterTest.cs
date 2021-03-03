@@ -1,5 +1,6 @@
 ﻿using BcGov.Fams3.Redis;
 using DynamicsAdapter.Web.Register;
+using DynamicsAdapter.Web.SearchAgency.Models;
 using Fams3Adapter.Dynamics.DataProvider;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.SearchApiRequest;
@@ -395,6 +396,35 @@ namespace DynamicsAdapter.Web.Test.Register
         public async Task valid_fileId_seqNumber_request_will_be_removed_successfully()
         {
             bool result = await _sut.RemoveSearchApiRequest(_validSearchRequestKey);
+            Assert.AreEqual(true, result);
+        }
+
+        [Test]
+        public async Task valid_fileId_GetSearchResponseReady_will_return_successfully()
+        {
+            Guid apiGuid = Guid.NewGuid();
+            SearchResponseReady ready = new SearchResponseReady { ApiCallGuid = apiGuid };
+            _cacheServiceMock.Setup(x => x.Get(It.Is<string>(m => m == $"{Keys.REDIS_KEY_PREFIX}{Keys.REDIS_RESPONSE_KEY_PREFIX}fileId_referenceId")))
+            .Returns(Task.FromResult(JsonConvert.SerializeObject(ready)));
+            SearchResponseReady result = await _sut.GetSearchResponseReady("fileId", "referenceId");
+            Assert.AreEqual(apiGuid, result.ApiCallGuid);
+        }
+
+        [Test]
+        public async Task wrong_fileId_GetSearchResponseReady_will_return_null()
+        {
+            _cacheServiceMock.Setup(x => x.Get(It.Is<string>(m => m == $"{Keys.REDIS_KEY_PREFIX}{Keys.REDIS_RESPONSE_KEY_PREFIX}invalidFileId_referenceId")))
+            .Returns(Task.FromResult<string>(null));
+            SearchResponseReady result = await _sut.GetSearchResponseReady("invalidFileId", "referenceId");
+            Assert.AreEqual(null, result);
+        }
+
+        [Test]
+        public async Task valid_fileId_DeleteSearchResponseReady_will_return_true()
+        {
+            _cacheServiceMock.Setup(x => x.Delete(It.Is<string>(m => m == $"{Keys.REDIS_KEY_PREFIX}{Keys.REDIS_RESPONSE_KEY_PREFIX}deleteFileId_referenceId")))
+            .Returns(Task.FromResult<string>(null));
+            bool result = await _sut.DeleteSearchResponseReady("deleteFileId", "referenceId");
             Assert.AreEqual(true, result);
         }
     }

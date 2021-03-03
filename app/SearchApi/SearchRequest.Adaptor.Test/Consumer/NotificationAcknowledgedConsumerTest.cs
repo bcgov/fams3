@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace SearchRequest.Adaptor.Test.Consumer
 {
-    public class SearchRequestOrderedConsumerTest
+    public class NotificationAcknowledgedConsumerTest
     {
         private InMemoryTestHarness _harness;
         private Mock<ILogger<SearchRequestOrderedConsumer>> _loggerMock;

@@ -1,4 +1,5 @@
 ﻿using DynamicsAdapter.Web.PersonSearch.Models;
+using DynamicsAdapter.Web.Register;
 using DynamicsAdapter.Web.SearchAgency.Models;
 using DynamicsAdapter.Web.SearchAgency.Webhook;
 using Microsoft.AspNetCore.Http;
@@ -20,16 +21,19 @@ namespace DynamicsAdapter.Web.SearchAgency
         private readonly ILogger<AgencyResponseController> _logger;
         private readonly IAgencyResponseService _agencyResponseService;
         private readonly IAgencyNotificationWebhook<SearchRequestNotification> _agencyNotifier;
+        private readonly ISearchRequestRegister _register;
 
         public AgencyResponseController(
                  ILogger<AgencyResponseController> logger,
                  IAgencyResponseService agencyResponseService,
-                 IAgencyNotificationWebhook<SearchRequestNotification> agencyNotifier
+                 IAgencyNotificationWebhook<SearchRequestNotification> agencyNotifier,
+                 ISearchRequestRegister register
                  )
         {
             _logger = logger;
             _agencyResponseService = agencyResponseService;
             _agencyNotifier = agencyNotifier;
+            _register = register;
         }
 
         [HttpPost]
@@ -46,8 +50,6 @@ namespace DynamicsAdapter.Web.SearchAgency
             using (LogContext.PushProperty("AgencyCode", $"{searchResponseReady?.Agency}"))
             {
                 _logger.LogInformation("Get searchResponseReady");
-                _logger.LogDebug(JsonConvert.SerializeObject(searchResponseReady));
-
 
                 if (!ModelState.IsValid)
                     return BadRequest(ModelState);
@@ -62,6 +64,9 @@ namespace DynamicsAdapter.Web.SearchAgency
                         BuildSearchRequestNotification(searchResponseReady, p),
                         (new CancellationTokenSource()).Token
                         );
+
+                    await _register.RegisterResponseApiCall(searchResponseReady);
+
                     return Ok();
                 }
                 catch (Exception e)

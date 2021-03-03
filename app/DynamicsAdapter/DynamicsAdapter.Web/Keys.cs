@@ -13,6 +13,7 @@
         public static readonly string EVENT_INFORMATION_RECEIVED = "Information";
         public static readonly string REDIS_SECTION_SETTING_KEY = "Redis";
         public static readonly string REDIS_KEY_PREFIX = "dyna_";
+        public static readonly string REDIS_RESPONSE_KEY_PREFIX = "response_";
         public static readonly string DATA_PROVIDER_KEY = "ProviderList";
     }
 }

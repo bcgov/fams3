@@ -1,3 +1,4 @@
+using Fams3Adapter.Dynamics.APICall;
 using Fams3Adapter.Dynamics.Duplicate;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.ResultTransaction;
@@ -6,6 +7,7 @@ using Moq;
 using NUnit.Framework;
 using Simple.OData.Client;
 using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -75,6 +77,30 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             Assert.AreEqual(true, result);
         }
 
+        [Test]
+        public async Task UpdateApiCall_should_success()
+        {
+            odataClientMock.Setup(
+                x => x.For<SSG_APICall>(null).Key(It.IsAny<Guid>())
+                      .Set(It.IsAny<IDictionary<string,object>>())
+                      .UpdateEntryAsync(It.IsAny<CancellationToken>()))
+            .Returns(Task.FromResult(new SSG_APICall(){ }));
+            var result = await _sut.UpdateApiCall(Guid.NewGuid(), true, "", CancellationToken.None);
+            Assert.AreEqual(true, result);
+        }
 
+        [Test]
+        public void Invalid_UpdateApiCall_should_throw_exception()
+        {
+            Guid invalidGuid = Guid.NewGuid();
+            odataClientMock.Setup(
+                x => x.For<SSG_APICall>(null).Key(It.Is<Guid>(m=>m==invalidGuid))
+                      .Set(It.IsAny<IDictionary<string, object>>())
+                      .UpdateEntryAsync(It.IsAny<CancellationToken>()))
+                      .Throws(new Exception("invalid apiCall id"));
+            Assert.ThrowsAsync<Exception>(
+                async () => await _sut.UpdateApiCall(invalidGuid, true, "", CancellationToken.None)
+                );
+        }
     }
 }

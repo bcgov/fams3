@@ -11,13 +11,13 @@ using System.Threading.Tasks;
 
 namespace SearchRequestAdaptor.Consumer
 {
-    public class SearchRequestOrderedConsumer : IConsumer<SearchRequestOrdered>
+    public class NotificationAcknowledgedConsumer : IConsumer<NotificationAcknowledged>
     {
-        private readonly ILogger<SearchRequestOrderedConsumer> _logger;
+        private readonly ILogger<NotificationAcknowledgedConsumer> _logger;
         private readonly ISearchRequestNotifier<SearchRequestEvent> _searchRequestNotifier;
         private readonly IOptions<RetryConfiguration>  _retryConfig;
 
-        public SearchRequestOrderedConsumer(ISearchRequestNotifier<SearchRequestEvent> searchRequestNotifier, ILogger<SearchRequestOrderedConsumer> logger, IOptions<RetryConfiguration> retryConfig)
+        public NotificationAcknowledgedConsumer(ISearchRequestNotifier<SearchRequestEvent> searchRequestNotifier, ILogger<NotificationAcknowledgedConsumer> logger, IOptions<RetryConfiguration> retryConfig)
         {
             _logger = logger;
             _searchRequestNotifier = searchRequestNotifier;
@@ -25,10 +25,10 @@ namespace SearchRequestAdaptor.Consumer
 
         }
 
-        public async Task Consume(ConsumeContext<SearchRequestOrdered> context)
+        public async Task Consume(ConsumeContext<NotificationAcknowledged> context)
         {
-            using (LogContext.PushProperty("RequestRef", $"{context.Message?.Person?.Agency?.RequestId}"))
-            using (LogContext.PushProperty("AgencyCode", $"{context.Message?.Person?.Agency?.Code}"))
+            using (LogContext.PushProperty("RequestRef", $"{context.Message?.RequestId}"))
+            using (LogContext.PushProperty("AgencyCode", $"{context.Message?.ProviderProfile?.Name}"))
             {
                 _logger.LogInformation("get the searchRequestOrdered message.");
                 var cts = new CancellationTokenSource();

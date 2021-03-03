@@ -22,6 +22,8 @@ using Fams3Adapter.Dynamics.Agency;
 using DynamicsAdapter.Web.SearchAgency.Exceptions;
 using Fams3Adapter.Dynamics.SafetyConcern;
 using Polly;
+using ContractNotificationType = BcGov.Fams3.SearchApi.Contracts.SearchRequest.NotificationType;
+using ContractStatus = BcGov.Fams3.SearchApi.Contracts.SearchRequest.NotificationStatusEnum;
 
 namespace DynamicsAdapter.Web.SearchAgency
 {
@@ -32,6 +34,7 @@ namespace DynamicsAdapter.Web.SearchAgency
         Task<SSG_SearchRequest> ProcessUpdateSearchRequest(SearchRequestOrdered updateSearchRequest);
         SSG_SearchRequest GetSSGSearchRequest();
         Task<bool> SystemCancelSSGSearchRequest(SSG_SearchRequest searchRequest);
+        Task<bool> ProcessNotificationAcknowledgement(Acknowledgement ack, Guid ApiCallGuid);
     }
 
     public class AgencyRequestService : IAgencyRequestService
@@ -187,6 +190,31 @@ namespace DynamicsAdapter.Web.SearchAgency
                    .WaitAndRetryAsync(3,retryAttempt => TimeSpan.FromMinutes(2)) //retry 3 times and pause 1min between each call
                    .ExecuteAndCaptureAsync(()=> SystemCancelSearchRequest(request));
             return true;
+        }
+
+        public async Task<bool> ProcessNotificationAcknowledgement(Acknowledgement ack, Guid ApiCallGuid)
+        {
+            try
+            {
+                var cts = new CancellationTokenSource();               
+                bool success=false;
+                string notes = null;
+                if(ack.NotificationType== ContractNotificationType.RequestClosed)
+                {
+                    success = ack.Status == ContractStatus.SUCCESS;
+                    if(success)
+                        notes = $"{ack.ProviderProfile?.Name} received search response successfully.";
+                    else
+                        notes = $"{ack.ProviderProfile?.Name} did not receive search response successfully.";
+                    return await _searchRequestService.UpdateApiCall(ApiCallGuid, success, notes, cts.Token);
+                }
+                return false;
+            }
+            catch (Exception e)
+            {
+                _logger.LogInformation($"set apiCall {ApiCallGuid} failed" + e.Message);
+                return false;
+            }
         }
 
         private async Task<bool> SystemCancelSearchRequest(SSG_SearchRequest request)

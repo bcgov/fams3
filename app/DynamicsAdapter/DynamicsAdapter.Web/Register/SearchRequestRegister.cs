@@ -1,5 +1,6 @@
 ﻿using BcGov.Fams3.Redis;
 using DynamicsAdapter.Web.Mapping;
+using DynamicsAdapter.Web.SearchAgency.Models;
 using Fams3Adapter.Dynamics.DataProvider;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.SearchApiRequest;
@@ -30,8 +31,10 @@ namespace DynamicsAdapter.Web.Register
         Task<bool> RemoveSearchApiRequest(string searchRequestKey);
         Task<SSG_Identifier> GetMatchedSourceIdentifier(PersonalIdentifier identifer, string searchRequestKey);
         Task<SSG_Identifier> GetMatchedSourceIdentifier(PersonalIdentifier identifer, Guid searchApiRequestId);
-
         Task<bool> DataPartnerSearchIsComplete(string searchRequestKey);
+        Task<bool> RegisterResponseApiCall(SearchResponseReady ready);
+        Task<SearchResponseReady> GetSearchResponseReady(String fileId, string agencyFileId);
+        Task<bool> DeleteSearchResponseReady(String fileId, string agencyFileId);
     }
 
     public class SearchRequestRegister : ISearchRequestRegister
@@ -176,6 +179,30 @@ namespace DynamicsAdapter.Web.Register
             if (string.IsNullOrEmpty(data)) return true;
             IEnumerable<JToken> tokens = JObject.Parse(data).SelectTokens("$.DataPartners[?(@.Completed == false)]");
             return !tokens.Any();
+        }
+
+        public async Task<bool> RegisterResponseApiCall(SearchResponseReady ready)
+        {
+            await _cache.Save($"{Keys.REDIS_KEY_PREFIX}{Keys.REDIS_RESPONSE_KEY_PREFIX}{ready.FileId}_{ready.AgencyFileId}", ready);
+            return true;
+        }
+
+        public async Task<SearchResponseReady> GetSearchResponseReady(String fileId, string agencyFileId)
+        {
+            string responseReadyStr = await _cache.Get($"{Keys.REDIS_KEY_PREFIX}{Keys.REDIS_RESPONSE_KEY_PREFIX}{fileId}_{agencyFileId}");
+            try
+            {
+                return JsonConvert.DeserializeObject<SearchResponseReady>(responseReadyStr);
+            }catch(Exception)
+            {
+                return null;
+            }
+        }
+
+        public async Task<bool> DeleteSearchResponseReady(String fileId, string agencyFileId)
+        {
+            await _cache.Delete($"{Keys.REDIS_KEY_PREFIX}{Keys.REDIS_RESPONSE_KEY_PREFIX}{fileId}_{agencyFileId}");
+            return true;
         }
     }
 }

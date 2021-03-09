@@ -1,5 +1,6 @@
 using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.Agency;
+using Fams3Adapter.Dynamics.APICall;
 using Fams3Adapter.Dynamics.AssetOwner;
 using Fams3Adapter.Dynamics.BankInfo;
 using Fams3Adapter.Dynamics.CompensationClaim;
@@ -67,6 +68,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         Task<SSG_CountrySubdivision> GetEmploymentSubdivision(string subDivisionText, CancellationToken cancellationToken);
         Task<bool> SubmitToQueue(Guid searchRequestId);
         Task<bool> DeleteSearchRequest(string fileId, CancellationToken cancellationToken);
+        Task<bool> UpdateApiCall(Guid apiCallGuid, bool success, string notes, CancellationToken cancellationToken);
     }
 
     /// <summary>
@@ -627,6 +629,18 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         public async Task<bool> SubmitToQueue(Guid searchRequestId)
         {
             await _oDataClient.For<SSG_SearchRequest>().Key(searchRequestId).Action("ssg_SearchRequestSubmittoQueueActions").ExecuteAsSingleAsync();
+            return true;
+        }
+
+        public async Task<bool> UpdateApiCall(Guid apiCallGuid, bool success, string notes, CancellationToken cancellationToken)
+        {
+            IDictionary<string, object> updatedFields = new Dictionary<string, object>
+            {
+                { "statuscode", success ? APICallStatusCode.Completed.Value : APICallStatusCode.Failed.Value},
+                { "statecode", 1 },
+                { "ssg_notes", notes }
+            };
+            await _oDataClient.For<SSG_APICall>().Key(apiCallGuid).Set(updatedFields).UpdateEntryAsync(cancellationToken);
             return true;
         }
 

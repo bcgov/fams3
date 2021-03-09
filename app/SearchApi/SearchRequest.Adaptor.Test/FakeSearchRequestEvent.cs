@@ -40,4 +40,21 @@ namespace SearchRequest.Adaptor.Test
         public int QueuePosition { get; set; }
         public DateTime EstimatedCompletion { get; set; }
     }
+
+    public class FakeNotificationAcknowledged : NotificationAcknowledged
+    {
+        public string RequestId { get; set; }
+
+        public string SearchRequestKey { get; set; }
+
+        public Guid SearchRequestId { get; set; }
+
+        public DateTime TimeStamp { get; set; }
+
+        public ProviderProfile ProviderProfile { get; set; }
+
+        public RequestAction Action { get; set; }
+        public NotificationType NotificationType { get; set; }
+        public NotificationStatusEnum Status { get; set; }
+    }
 }

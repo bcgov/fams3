@@ -2,6 +2,7 @@ using BcGov.Fams3.SearchApi.Contracts.Person;
 using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 using BcGov.Fams3.SearchApi.Contracts.SearchRequest;
 using BcGov.Fams3.Utils.Url;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -18,10 +19,10 @@ namespace SearchRequestAdaptor.Notifier
 {
     public interface ISearchRequestNotifier<T>
     {
-        Task NotifySearchRequestEventAsync(string requestId, T searchRequestOrdered, CancellationToken cancellationToken, int retryTimes=0, int maxRetryTimes=0);
+        Task NotifySearchRequestEventAsync(string requestId, T searchRequestEvent, CancellationToken cancellationToken, int retryTimes=0, int maxRetryTimes=0);
     }
 
-    public class WebHookSearchRequestNotifier : ISearchRequestNotifier<SearchRequestOrdered>
+    public class WebHookSearchRequestNotifier : ISearchRequestNotifier<SearchRequestEvent>
     {
 
         private readonly HttpClient _httpClient;
@@ -38,8 +39,26 @@ namespace SearchRequestAdaptor.Notifier
             _searchRequestEventPublisher = searchRequestEventPublisher;
         }
 
-        public async Task NotifySearchRequestEventAsync(string requestId, SearchRequestOrdered searchRequestOrdered,
+        public async Task NotifySearchRequestEventAsync(string requestId, SearchRequestEvent searchRequestEvent,
            CancellationToken cancellationToken, int retryTimes=0, int maxRetryTimes=0)
+        {
+            if(searchRequestEvent is SearchRequestOrdered)
+            {
+                await NotifySearchRequestOrderedEvent(requestId, (SearchRequestOrdered)searchRequestEvent, cancellationToken, retryTimes, maxRetryTimes);
+            }
+            else
+            {
+                await NotifyNotificationAcknowledged(requestId, (NotificationAcknowledged)searchRequestEvent, cancellationToken);
+            }
+
+        }
+
+        private async Task NotifySearchRequestOrderedEvent(
+            string requestId, 
+            SearchRequestOrdered searchRequestOrdered,
+            CancellationToken cancellationToken,
+            int retryTimes,
+            int maxRetryTimes)
         {
             var webHookName = "SearchRequest";
 
@@ -138,6 +157,58 @@ namespace SearchRequestAdaptor.Notifier
                         _logger.LogError($"The webHook {webHookName} notification failed for {eventName} for {webHook.Name} webHook. [{exception.Message}]");
                         return;
                     }
+                    throw exception;
+                }
+            }
+        }
+
+        private async Task NotifyNotificationAcknowledged(string requestId, NotificationAcknowledged notificationAck,CancellationToken cancellationToken)
+        {
+            var webHookName = "SearchRequest";
+
+            if (notificationAck == null) throw new ArgumentNullException(nameof(NotificationAcknowledged));
+
+            foreach (var webHook in _searchRequestOptions.WebHooks)
+            {
+                if (!URLHelper.TryCreateUri(webHook.Uri, "NotificationAcknowledged", $"{requestId}", out var endpoint))
+                {
+                    _logger.LogError(
+                        $"The webHook {webHookName} notification uri is not established or is not an absolute Uri for {webHook.Name}. Set the WebHook.Uri value on SearchApi.WebHooks settings.");
+                    return;
+                }
+
+                using var request = new HttpRequestMessage();
+
+                try
+                {
+                    StringContent content = new StringContent(JsonConvert.SerializeObject(notificationAck));
+
+                    content.Headers.ContentType =
+                        System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
+                    request.Content = content;
+                    request.Method = HttpMethod.Post;
+                    request.Headers.Accept.Add(
+                        System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+                    request.Headers.Add("X-ApiKey", _searchRequestOptions.ApiKeyForDynadaptor);
+                    request.RequestUri = endpoint;
+                    var response = await _httpClient.SendAsync(request, cancellationToken);
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        _logger.LogError($"Message Failed { response.StatusCode}, {response.Content.ReadAsStringAsync()}");
+                        if (response.StatusCode != System.Net.HttpStatusCode.InternalServerError 
+                            && response.StatusCode != System.Net.HttpStatusCode.BadRequest)
+                        {
+                            throw new Exception($"Message Failed {response.StatusCode}, {response.Content.ReadAsStringAsync()}");
+                        }
+                    }
+
+                    _logger.LogInformation("get response successfully from webhook.");
+
+                }
+                catch (Exception exception)
+                {
+                    _logger.LogError($"NotifyNotificationAcknowledged {exception.Message}");
                     throw exception;
                 }
             }

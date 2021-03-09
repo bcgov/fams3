@@ -18,7 +18,8 @@ using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using ContractNotificationType = BcGov.Fams3.SearchApi.Contracts.SearchRequest.NotificationType;
+using ContractStatus = BcGov.Fams3.SearchApi.Contracts.SearchRequest.NotificationStatusEnum;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -437,6 +438,48 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             }));
 
             Assert.ThrowsAsync<AgencyRequestException>(async () => await _sut.ProcessCancelSearchRequest(_searchRequstOrdered));
+        }
+
+        [Test]
+        public async Task acknowledgement_ProcessNotificationAcknowledgement_should_success()
+        {
+            Guid guid = Guid.NewGuid();
+            _searchRequestServiceMock.Setup(x => x.UpdateApiCall(It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.FromResult<bool>(true));
+            Acknowledgement ack = new Acknowledgement {
+                NotificationType = ContractNotificationType.RequestClosed,
+                Status = ContractStatus.SUCCESS,
+            };
+            bool result = await _sut.ProcessNotificationAcknowledgement(ack, guid);
+            Assert.IsTrue(result);
+        }
+
+        [Test]
+        public async Task exception_thrown_acknowledgement_ProcessNotificationAcknowledgement_should_return_false()
+        {
+            Guid guid = Guid.NewGuid();
+            _searchRequestServiceMock.Setup(x => x.UpdateApiCall(It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .Throws(new Exception("fakeException"));
+            Acknowledgement ack = new Acknowledgement
+            {
+                NotificationType = ContractNotificationType.RequestClosed,
+                Status = ContractStatus.SUCCESS,
+            };
+            bool result = await _sut.ProcessNotificationAcknowledgement(ack, guid);
+            Assert.IsFalse(result);
+        }
+
+        [Test]
+        public async Task not_response_acknowledgement_ProcessNotificationAcknowledgement_should_return_false()
+        {
+            Guid guid = Guid.NewGuid();
+            Acknowledgement ack = new Acknowledgement
+            {
+                NotificationType = ContractNotificationType.RequestSaved,
+                Status = ContractStatus.SUCCESS,
+            };
+            bool result = await _sut.ProcessNotificationAcknowledgement(ack, guid);
+            Assert.IsFalse(result);
         }
     }
 }

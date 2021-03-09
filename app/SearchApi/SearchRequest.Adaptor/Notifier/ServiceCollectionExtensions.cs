@@ -7,7 +7,7 @@ namespace SearchRequestAdaptor.Notifier
     {
         public static void AddWebHooks(this IServiceCollection services)
         {
-            services.AddHttpClient<ISearchRequestNotifier<SearchRequestOrdered>, WebHookSearchRequestNotifier>();
+            services.AddHttpClient<ISearchRequestNotifier<SearchRequestEvent>, WebHookSearchRequestNotifier>();
         }
     }
 }

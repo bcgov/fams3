@@ -34,6 +34,7 @@ namespace SearchRequest.Adaptor.Test.Notifier
         private HttpClient _httpClient;
 
         private FakeSearchRequestOrdered _fakeSearchRequestOrdered;
+        private FakeNotificationAcknowledged _fakeNotificationAcknowledged;
 
 
         [SetUp]
@@ -71,6 +72,14 @@ namespace SearchRequest.Adaptor.Test.Notifier
             {
                 Action = BcGov.Fams3.SearchApi.Contracts.Person.RequestAction.NEW,
                 RequestId = "id"
+            };
+
+            _fakeNotificationAcknowledged = new FakeNotificationAcknowledged()
+            {
+                RequestId ="id",
+                SearchRequestKey="fileId",
+                NotificationType = NotificationType.RequestClosed,
+                Status = NotificationStatusEnum.SUCCESS
             };
 
             _searchRequestOptionsMock.Setup(x => x.Value).Returns(new SearchRequestAdaptorOptions().AddWebHook("test", "http://test:1234/"));
@@ -284,5 +293,32 @@ namespace SearchRequest.Adaptor.Test.Notifier
                 x => x.PublishSearchRequestFailed(
                 It.IsAny<SearchRequestEvent>(), It.IsAny<string>()), Times.Never);
         }
+
+        [Test]
+        public async Task NotifySearchRequestEventAsync_with_Ack_should_send_httpRequest_to_one_subscribers()
+        {
+            _sut = new WebHookSearchRequestNotifier(_httpClient, _searchRequestOptionsMock.Object, _loggerMock.Object, _searchRquestEventPublisherMock.Object);
+
+            await _sut.NotifySearchRequestEventAsync(
+                _fakeNotificationAcknowledged.RequestId,
+                _fakeNotificationAcknowledged, CancellationToken.None);
+
+            var expectedUri = new Uri("http://test:1234/NotificationAcknowledged/id");
+
+            _httpHandlerMock.Protected().Verify(
+                "SendAsync",
+                Times.Exactly(1),
+                ItExpr.Is<HttpRequestMessage>(req =>
+                        req.Method == HttpMethod.Post
+                        && req.RequestUri.AbsoluteUri == expectedUri.AbsoluteUri // to this uri
+                ),
+                ItExpr.IsAny<CancellationToken>()
+            );
+
+            _searchRquestEventPublisherMock.Verify(
+                x => x.PublishSearchRequestSaved(
+                It.IsAny<SearchRequestSavedEvent>()), Times.Never);
+        }
+
     }
 }

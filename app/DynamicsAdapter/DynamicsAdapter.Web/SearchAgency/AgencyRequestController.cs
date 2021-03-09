@@ -1,4 +1,5 @@
 using DynamicsAdapter.Web.PersonSearch.Models;
+using DynamicsAdapter.Web.Register;
 using DynamicsAdapter.Web.SearchAgency.Exceptions;
 using DynamicsAdapter.Web.SearchAgency.Models;
 using Fams3Adapter.Dynamics.SearchRequest;
@@ -18,14 +19,17 @@ namespace DynamicsAdapter.Web.SearchAgency
     {
         private readonly ILogger<AgencyRequestController> _logger;
         private readonly IAgencyRequestService _agencyRequestService;
+        private readonly ISearchRequestRegister _register;
 
         public AgencyRequestController(
                 ILogger<AgencyRequestController> logger,
-                IAgencyRequestService agencyRequestService
+                IAgencyRequestService agencyRequestService,
+                ISearchRequestRegister register
                 )
         {
             _logger = logger;
             _agencyRequestService = agencyRequestService;
+            _register = register;
         }
 
         [HttpPost]
@@ -38,9 +42,6 @@ namespace DynamicsAdapter.Web.SearchAgency
         [OpenApiTag("Agency Search Request API")]
         public async Task<IActionResult> CreateSearchRequest(string requestId, [FromBody]SearchRequestOrdered searchRequestOrdered)
         {
-            //await _agencyRequestService.SystemCancelSSGSearchRequest(new SSG_SearchRequest { SearchRequestId= Guid.Parse("618a2972-3d76-eb11-b823-00505683fbf4")});
-            //return StatusCode(StatusCodes.Status200OK);
-
             using (LogContext.PushProperty("RequestRef", $"{requestId}"))
             using (LogContext.PushProperty("AgencyCode", $"{searchRequestOrdered?.Person?.Agency?.Code}"))
             {
@@ -169,6 +170,50 @@ namespace DynamicsAdapter.Web.SearchAgency
             }
         }
 
+        [HttpPost]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Route("NotificationAcknowledged/{requestId}")]
+        [OpenApiTag("Agency Search Request API")]
+        public async Task<IActionResult> NotificationAcknowledged(string requestId, [FromBody]Acknowledgement ack)
+        {
+            using (LogContext.PushProperty("AgencyCode", $"{ack?.ProviderProfile.Name}"))
+            using (LogContext.PushProperty("SearchRequestKey", $"{ack?.SearchRequestKey}"))
+            {
+                if ((string.IsNullOrEmpty(ack?.RequestId) || string.IsNullOrEmpty(ack?.SearchRequestKey)) 
+                    && ack.NotificationType==BcGov.Fams3.SearchApi.Contracts.SearchRequest.NotificationType.RequestClosed)
+                    return StatusCode(StatusCodes.Status400BadRequest);
+
+                _logger.LogInformation("Get NotificationAcknowledged");
+               
+                try
+                {
+                    SearchResponseReady ready = await _register.GetSearchResponseReady(ack.SearchRequestKey, ack.RequestId);
+
+                    if (ready == null)
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError);
+                    }
+ 
+                    await _agencyRequestService.ProcessNotificationAcknowledgement(ack, ready.ApiCallGuid);
+                    await _register.DeleteSearchResponseReady(ack.SearchRequestKey, ack.RequestId);
+                }
+                catch (AgencyRequestException ex)
+                {
+                    _logger.LogError(ex.Message);
+                    return StatusCode(StatusCodes.Status500InternalServerError, new { ReasonCode = ex.Message, Message = ex.InnerException?.Message });
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex.Message);
+                    return StatusCode(StatusCodes.Status504GatewayTimeout, new { ReasonCode = "error", Message = "error" });
+                }
+                _logger.LogInformation("NotificationAcknowledged successfully");
+                return Ok();
+            }
+        }
         private SearchRequestSaved BuildSearchRequestSaved_Create(SSG_SearchRequest ssgSearchRequest, SearchRequestOrdered requestOrdered)
         {
             SearchRequestSaved saved =

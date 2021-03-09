@@ -1,4 +1,5 @@
-﻿using DynamicsAdapter.Web.SearchAgency;
+﻿using DynamicsAdapter.Web.Register;
+using DynamicsAdapter.Web.SearchAgency;
 using DynamicsAdapter.Web.SearchAgency.Models;
 using DynamicsAdapter.Web.SearchAgency.Webhook;
 using Fams3Adapter.Dynamics.SearchRequest;
@@ -19,6 +20,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
         private Mock<IAgencyResponseService> _agencyResponseServiceMock;
         private Mock<IAgencyNotificationWebhook<SearchRequestNotification>> _agencyWebhookMock;
         private SearchResponseReady _ready;
+        private Mock<ISearchRequestRegister> _register;
 
         [SetUp]
         public void Init()
@@ -26,6 +28,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             _loggerMock = new Mock<ILogger<AgencyResponseController>>();
             _agencyResponseServiceMock = new Mock<IAgencyResponseService>();
             _agencyWebhookMock = new Mock<IAgencyNotificationWebhook<SearchRequestNotification>>();
+            _register = new Mock<ISearchRequestRegister>();
 
             _ready = new SearchResponseReady()
             {
@@ -38,7 +41,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 ResponseGuid = Guid.NewGuid().ToString()
             };
 
-            _sut = new AgencyResponseController(_loggerMock.Object, _agencyResponseServiceMock.Object, _agencyWebhookMock.Object);
+            _sut = new AgencyResponseController(_loggerMock.Object, _agencyResponseServiceMock.Object, _agencyWebhookMock.Object,_register.Object);
         }
 
         [Test]
@@ -51,6 +54,8 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
 
             _agencyWebhookMock.Setup(x => x.SendNotificationAsync(It.IsAny<SearchRequestNotification>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
+
+            _register.Setup(x => x.RegisterResponseApiCall(It.IsAny<SearchResponseReady>())).Returns(Task.FromResult<bool>(true));
 
             var result = await _sut.ResponseReady(_ready);
 

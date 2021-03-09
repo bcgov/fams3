@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 
 namespace BcGov.Fams3.SearchApi.Contracts.Person
 {
@@ -33,5 +33,6 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         public string SelfEmployPercentOfShare { get; set; }
         public string IncomeAssistanceDesc { get; set; }
         public string IncomeAssistanceClass { get; set; }
+        public string GroupID { get; set; }
     }
 }

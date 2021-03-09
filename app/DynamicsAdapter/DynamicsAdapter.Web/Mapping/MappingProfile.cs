@@ -168,6 +168,7 @@ namespace DynamicsAdapter.Web.Mapping
               .ForMember(dest => dest.Occupation, opt => opt.MapFrom(src => src.Occupation))
               .ForMember(dest => dest.Notes, opt => opt.MapFrom<EmploymentEntityNotesResolver>())
               .ForMember(dest => dest.Website, opt => opt.MapFrom(src => src.Website))
+              .ForMember(dest => dest.GroupID, opt=> opt.MapFrom(src => src.GroupID))
               .ForMember(dest => dest.PostalCode, opt => opt.MapFrom(src => (src.Employer == null) ? string.Empty : (src.Employer.Address == null) ? string.Empty : src.Employer.Address.ZipPostalCode))
               .ForMember(dest => dest.City, opt => opt.MapFrom(src => (src.Employer == null) ? string.Empty : (src.Employer.Address == null) ? string.Empty : src.Employer.Address.City))
               .ForMember(dest => dest.IncomeAssistanceStatus, opt => opt.MapFrom(src => src.IncomeAssistanceStatus))

@@ -169,6 +169,9 @@ namespace Fams3Adapter.Dynamics.Employment
 
         [JsonProperty("ssg_couldnotlocate")]
         public bool CouldNotLocate { get; set; }
+
+        [JsonProperty("ssg_groupid")]
+        public string GroupID { get; set; }
     }
 
     public class SSG_Employment : EmploymentEntity

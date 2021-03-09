@@ -983,6 +983,9 @@
             },
             "incomeAssistanceClass": {
               "type": "string"
+            },
+            "groupID": {
+              "type": "string"
             }
           }
         }

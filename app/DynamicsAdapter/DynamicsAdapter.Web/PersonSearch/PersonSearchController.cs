@@ -65,19 +65,25 @@ namespace DynamicsAdapter.Web.PersonSearch
                 {
                     _logger.LogInformation("Received Person search completed event");
                     var cts = new CancellationTokenSource();
+                    SSG_SearchRequest searchRequest = null;
                     SSG_SearchApiRequest request = await _register.GetSearchApiRequest(key);
-                    //update completed event
-                    var searchApiEvent = _mapper.Map<SSG_SearchApiEvent>(personCompletedEvent);
-                    _logger.LogDebug($"Attempting to create a new event for SearchApiRequest");
-                    await _searchApiRequestService.AddEventAsync(request.SearchApiRequestId, searchApiEvent, cts.Token);
-                    _logger.LogInformation($"Successfully created completed event for SearchApiRequest");
-
-                    //upload search result to dynamic search api
-                    var searchRequestId = await _searchApiRequestService.GetLinkedSearchRequestIdAsync(request.SearchApiRequestId, cts.Token);
-                    SSG_SearchRequest searchRequest = new SSG_SearchRequest()
+                    if (request == null && personCompletedEvent?.ProviderProfile.Name == InformationSourceType.JCA.Name)
                     {
-                        SearchRequestId = searchRequestId
-                    };
+                        //this means the request is not generated in fams3, but result coming to fams3. Only JCA has this problem
+                        searchRequest = await ProcessFams2JCACompletedEvent(personCompletedEvent);
+                    }
+                    else
+                    {
+                        //update completed event
+                        var searchApiEvent = _mapper.Map<SSG_SearchApiEvent>(personCompletedEvent);
+                        _logger.LogDebug($"Attempting to create a new event for SearchApiRequest");
+                        await _searchApiRequestService.AddEventAsync(request.SearchApiRequestId, searchApiEvent, cts.Token);
+                        _logger.LogInformation($"Successfully created completed event for SearchApiRequest");
+
+                        //upload search result to dynamic search api
+                        var searchRequestId = await _searchApiRequestService.GetLinkedSearchRequestIdAsync(request.SearchApiRequestId, cts.Token);
+                        searchRequest = new SSG_SearchRequest { SearchRequestId = searchRequestId };
+                    }
 
                     if (personCompletedEvent?.MatchedPersons != null)
                     {
@@ -89,7 +95,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                         foreach (PersonFound p in personCompletedEvent.MatchedPersons)
                         {
                             SSG_Identifier sourceIdentifer = await _register.GetMatchedSourceIdentifier(p.SourcePersonalIdentifier, key);
-                            await _searchResultService.ProcessPersonFound(p, personCompletedEvent.ProviderProfile, searchRequest, request.SearchApiRequestId, cts.Token, sourceIdentifer);
+                            await _searchResultService.ProcessPersonFound(p, personCompletedEvent.ProviderProfile, searchRequest, request?.SearchApiRequestId, cts.Token, sourceIdentifer);
                         }
                     }
 
@@ -107,6 +113,7 @@ namespace DynamicsAdapter.Web.PersonSearch
 
         private async Task UpdateRetries(string providerProfileName, int noOfTry, CancellationTokenSource cts, SSG_SearchApiRequest request)
         {
+            if (request == null) return;
             var dataSearchApiDataProvider = await _dataPartnerService.GetSearchApiRequestDataProvider(request.SearchApiRequestId, providerProfileName, cts.Token);
            
             if (dataSearchApiDataProvider != null)
@@ -343,6 +350,28 @@ namespace DynamicsAdapter.Web.PersonSearch
 
                 return Ok();
             }
+        }
+
+        private async Task<SSG_SearchRequest> ProcessFams2JCACompletedEvent(PersonSearchCompleted completed)
+        {
+            //getFileID
+            string[] keys = completed.SearchRequestKey.Split("_");
+            string fileId = keys[0];
+           
+            //get searchRequest
+            SSG_SearchRequest request = await _searchResultService.GetSearchRequest(fileId, new CancellationTokenSource().Token);
+
+            //getPersonSought
+            foreach(PersonFound p in completed.MatchedPersons)
+            {
+                if(string.IsNullOrEmpty(p.FirstName) && string.IsNullOrEmpty(p.LastName) && string.IsNullOrEmpty(p.MiddleName))
+                {
+                    p.FirstName = request.JCAFirstName;
+                    p.LastName = request.JCALastName;
+                    p.MiddleName = request.JCAMiddleName;
+                }
+            }            
+            return request;
         }
     }
 }

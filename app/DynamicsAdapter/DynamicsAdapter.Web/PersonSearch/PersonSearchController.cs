@@ -95,7 +95,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                         foreach (PersonFound p in personCompletedEvent.MatchedPersons)
                         {
                             SSG_Identifier sourceIdentifer = await _register.GetMatchedSourceIdentifier(p.SourcePersonalIdentifier, key);
-                            await _searchResultService.ProcessPersonFound(p, personCompletedEvent.ProviderProfile, searchRequest, request.SearchApiRequestId, cts.Token, sourceIdentifer);
+                            await _searchResultService.ProcessPersonFound(p, personCompletedEvent.ProviderProfile, searchRequest, request?.SearchApiRequestId, cts.Token, sourceIdentifer);
                         }
                     }
 
@@ -113,6 +113,7 @@ namespace DynamicsAdapter.Web.PersonSearch
 
         private async Task UpdateRetries(string providerProfileName, int noOfTry, CancellationTokenSource cts, SSG_SearchApiRequest request)
         {
+            if (request == null) return;
             var dataSearchApiDataProvider = await _dataPartnerService.GetSearchApiRequestDataProvider(request.SearchApiRequestId, providerProfileName, cts.Token);
            
             if (dataSearchApiDataProvider != null)

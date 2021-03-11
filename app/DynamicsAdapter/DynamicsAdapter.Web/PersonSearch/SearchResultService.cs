@@ -34,7 +34,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             Person person, 
             ProviderProfile providerProfile, 
             SSG_SearchRequest searchRequest,
-            Guid searchApiRequestId,
+            Guid? searchApiRequestId,
             CancellationToken cancellationToken,
             SSG_Identifier sourceIdentifier=null);
 
@@ -72,7 +72,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             Person person, 
             ProviderProfile providerProfile, 
             SSG_SearchRequest searchRequest, 
-            Guid searchApiRequestId, 
+            Guid? searchApiRequestId, 
             CancellationToken cancellationToken, 
             SSG_Identifier sourceIdentifier = null)
         {
@@ -82,7 +82,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             _providerDynamicsID = providerProfile.DynamicsID();
             _searchRequest = searchRequest;
             _sourceIdentifier = sourceIdentifier;
-            _searchApiRequest = new SSG_SearchApiRequest() { SearchApiRequestId = searchApiRequestId };
+            _searchApiRequest = searchApiRequestId==null? null : new SSG_SearchApiRequest() { SearchApiRequestId = (Guid)searchApiRequestId };
             _cancellationToken = cancellationToken;
 
             _returnedPerson = await UploadPerson();

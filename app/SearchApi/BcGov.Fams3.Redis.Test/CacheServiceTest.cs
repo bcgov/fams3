@@ -138,6 +138,15 @@ namespace BcGov.Fams3.Redis.Test
         }
 
         [Test]
+        public async Task with_correct_data_and_key_gettring_in_cache_with_expiry_successfully()
+        {
+            await _sut.SaveString("data", "key", TimeSpan.FromSeconds(10));
+            var data = await _sut.GetString("key");
+            _distributedCacheMock.Verify(x => x.GetAsync("key", It.IsAny<CancellationToken>()), Times.AtLeastOnce());
+
+        }
+
+        [Test]
         public async Task with_correct_data_and_key_gettring_in_cache_successfully()
         {
           await   _sut.SaveString("data", "key");

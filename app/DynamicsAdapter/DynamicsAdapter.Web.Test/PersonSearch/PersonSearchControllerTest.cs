@@ -466,7 +466,8 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                     SearchRequestId = srId,
                     JCAFirstName="JCAFirstName",
                     JCALastName="JCALastName",
-                    JCADateOfBirth = new DateTime(1988, 1, 1)
+                    JCADateOfBirth = new DateTime(1988, 1, 1),
+                    JCAGender = 867670000
                 }));
             _searchResultServiceMock.Setup(x => x.ProcessPersonFound(It.Is<Person>(x => x.FirstName == "JCAFirstName"), It.IsAny<ProviderProfile>(), It.IsAny<SSG_SearchRequest>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>(), It.IsAny<SSG_Identifier>()))
                 .Returns(Task.FromResult<bool>(true));
@@ -481,7 +482,15 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 }
             };
             var result = await _sut.Completed(jcaFams2Key, completedEvent);
-            _searchResultServiceMock.Verify(x => x.ProcessPersonFound(It.Is<PersonFound>(x => x.FirstName == "JCAFirstName" && x.DateOfBirth == new DateTime(1988, 1, 1)), It.IsAny<ProviderProfile>(), It.IsAny<SSG_SearchRequest>(), It.IsAny<Guid?>(), It.IsAny<CancellationToken>(), It.IsAny<SSG_Identifier>()), Times.Exactly(2));
+            _searchResultServiceMock.Verify(
+                x => x.ProcessPersonFound(
+                    It.Is<PersonFound>(x => x.FirstName == "JCAFirstName" && x.DateOfBirth == new DateTime(1988, 1, 1) && x.Gender == "m"),
+                    It.IsAny<ProviderProfile>(),
+                    It.IsAny<SSG_SearchRequest>(),
+                    It.IsAny<Guid?>(),
+                    It.IsAny<CancellationToken>(),
+                    It.IsAny<SSG_Identifier>()),
+                Times.Exactly(2));
             Assert.IsInstanceOf(typeof(OkResult), result);
         }
     }

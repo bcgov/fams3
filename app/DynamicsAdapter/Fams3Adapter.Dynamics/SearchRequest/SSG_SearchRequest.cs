@@ -246,6 +246,9 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
         [JsonProperty("ssg_jcamiddlename")]
         public string JCAMiddleName { get; set; }
+
+        [JsonProperty("ssg_jcadateofbirth")]
+        public DateTime? JCADateOfBirth { get; set; }
     }
 
     public class SSG_SearchRequest : SearchRequestEntity, IUpdatableObject

@@ -370,6 +370,10 @@ namespace DynamicsAdapter.Web.PersonSearch
                     p.LastName = request.JCALastName;
                     p.MiddleName = request.JCAMiddleName;
                 }
+                if (p.DateOfBirth == null)
+                {
+                    p.DateOfBirth = request.JCADateOfBirth;
+                }
             }            
             return new SSG_SearchRequest { SearchRequestId=request.SearchRequestId};
         }

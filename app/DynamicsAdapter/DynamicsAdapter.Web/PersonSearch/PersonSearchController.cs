@@ -371,7 +371,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                     p.MiddleName = request.JCAMiddleName;
                 }
             }            
-            return request;
+            return new SSG_SearchRequest { SearchRequestId=request.SearchRequestId};
         }
     }
 }

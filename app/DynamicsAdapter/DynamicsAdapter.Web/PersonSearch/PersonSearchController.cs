@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using DynamicsAdapter.Web.Mapping;
 using DynamicsAdapter.Web.PersonSearch.Models;
 using DynamicsAdapter.Web.Register;
 using Fams3Adapter.Dynamics;
@@ -369,6 +370,14 @@ namespace DynamicsAdapter.Web.PersonSearch
                     p.FirstName = request.JCAFirstName;
                     p.LastName = request.JCALastName;
                     p.MiddleName = request.JCAMiddleName;
+                }
+                if (p.DateOfBirth == null)
+                {
+                    p.DateOfBirth = request.JCADateOfBirth;
+                }
+                if (string.IsNullOrEmpty(p.Gender))
+                {
+                    p.Gender = request.JCAGender == null ? null : GenderDictionary.GenderTypeDictionary.FirstOrDefault(m => m.Value == (int)request.JCAGender).Key;
                 }
             }            
             return new SSG_SearchRequest { SearchRequestId=request.SearchRequestId};

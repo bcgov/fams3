@@ -249,6 +249,9 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
         [JsonProperty("ssg_jcadateofbirth")]
         public DateTime? JCADateOfBirth { get; set; }
+
+        [JsonProperty("ssg_jcagender")]
+        public int? JCAGender { get; set; }
     }
 
     public class SSG_SearchRequest : SearchRequestEntity, IUpdatableObject

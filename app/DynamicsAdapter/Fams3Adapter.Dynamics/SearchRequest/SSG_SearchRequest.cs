@@ -237,6 +237,15 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
         [JsonProperty("ssg_durationrequestwasopen")]
         public int MinsOpen { get; set; }
+
+        [JsonProperty("ssg_jcafirstname")]
+        public string JCAFirstName { get; set; }
+
+        [JsonProperty("ssg_jcalastname")]
+        public string JCALastName { get; set; }
+
+        [JsonProperty("ssg_jcamiddlename")]
+        public string JCAMiddleName { get; set; }
     }
 
     public class SSG_SearchRequest : SearchRequestEntity, IUpdatableObject

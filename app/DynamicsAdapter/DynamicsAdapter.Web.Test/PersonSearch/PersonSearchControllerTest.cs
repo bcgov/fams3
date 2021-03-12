@@ -452,5 +452,37 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             var result = await _sut.Submitted(_exceptionSearchRequestKey, null);
             Assert.IsInstanceOf(typeof(BadRequestResult), result);
         }
+
+        [Test]
+        public async Task With_fams2_jca_complete_event_it_should_upload_result_normally()
+        {
+            string jcaFams2Key = "jcaFams2Key";
+            Guid srId = Guid.NewGuid();
+            _registerMock.Setup(x => x.GetSearchApiRequest(It.Is<string>(m => m == jcaFams2Key)))
+                .Returns(Task.FromResult<SSG_SearchApiRequest>(null));
+            _searchResultServiceMock.Setup(x => x.GetSearchRequest(It.Is<string>(m => m == "111111"),
+                It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult<SSG_SearchRequest>(new SSG_SearchRequest()
+                {
+                    SearchRequestId = srId,
+                    JCAFirstName = "JCAFirstName",
+                    JCALastName = "JCALastName"
+                }));
+            _searchResultServiceMock.Setup(x => x.ProcessPersonFound(It.Is<Person>(x => x.FirstName == "JCAFirstName"), It.IsAny<ProviderProfile>(), It.IsAny<SSG_SearchRequest>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>(), It.IsAny<SSG_Identifier>()))
+                .Returns(Task.FromResult<bool>(true));
+
+            PersonSearchCompleted completedEvent = new PersonSearchCompleted
+            {
+                SearchRequestKey = "111111_12345678",
+                ProviderProfile = new ProviderProfile { Name = "JCA" },
+                MatchedPersons = new List<PersonFound> {
+                    new PersonFound(){ },
+                    new PersonFound(){ }
+                }
+            };
+            var result = await _sut.Completed(jcaFams2Key, completedEvent);
+            _searchResultServiceMock.Verify(x => x.ProcessPersonFound(It.Is<PersonFound>(x => x.FirstName == "JCAFirstName"), It.IsAny<ProviderProfile>(), It.IsAny<SSG_SearchRequest>(), It.IsAny<Guid?>(), It.IsAny<CancellationToken>(), It.IsAny<SSG_Identifier>()), Times.Exactly(2));
+            Assert.IsInstanceOf(typeof(OkResult), result);
+        }
     }
 }

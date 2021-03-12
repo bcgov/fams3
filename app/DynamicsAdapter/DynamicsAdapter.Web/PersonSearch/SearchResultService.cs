@@ -33,9 +33,11 @@ namespace DynamicsAdapter.Web.PersonSearch
             Person person, 
             ProviderProfile providerProfile, 
             SSG_SearchRequest searchRequest,
-            Guid searchApiRequestId,
+            Guid? searchApiRequestId,
             CancellationToken cancellationToken,
             SSG_Identifier sourceIdentifier=null);
+
+        Task<SSG_SearchRequest> GetSearchRequest(string fileId, CancellationToken cancellationToken);
     }
 
     public class SearchResultService : ISearchResultService
@@ -69,7 +71,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             Person person, 
             ProviderProfile providerProfile, 
             SSG_SearchRequest searchRequest, 
-            Guid searchApiRequestId, 
+            Guid? searchApiRequestId, 
             CancellationToken cancellationToken, 
             SSG_Identifier sourceIdentifier = null)
         {
@@ -79,7 +81,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             _providerDynamicsID = providerProfile.DynamicsID();
             _searchRequest = searchRequest;
             _sourceIdentifier = sourceIdentifier;
-            _searchApiRequest = new SSG_SearchApiRequest() { SearchApiRequestId = searchApiRequestId };
+            _searchApiRequest = searchApiRequestId == null ? null : new SSG_SearchApiRequest() { SearchApiRequestId = (Guid)searchApiRequestId };
             _cancellationToken = cancellationToken;
 
             _returnedPerson = await UploadPerson();
@@ -109,6 +111,11 @@ namespace DynamicsAdapter.Web.PersonSearch
             await UploadInsuranceClaims();
 
             return true;
+        }
+
+        public async Task<SSG_SearchRequest> GetSearchRequest(string fileId, CancellationToken token)
+        {
+            return await _searchRequestService.GetSearchRequest(fileId, _cancellationToken);
         }
 
         private async Task<bool> CreateResultTransaction(DynamicsEntity o)

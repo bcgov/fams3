@@ -46,7 +46,7 @@ namespace BcGov.ApiKey.Middleware.Test
             if( pathContainSwagger )
                 request.SetupGet(r => r.Path).Returns(new PathString("/swagger/"));
             if(pathContainHealth)
-                request.SetupGet(r => r.Path).Returns(new PathString("/health"));
+                request.SetupGet(r => r.Path).Returns(new PathString("/Health"));
 
             string actual = null;
             var response = new Mock<HttpResponse>();

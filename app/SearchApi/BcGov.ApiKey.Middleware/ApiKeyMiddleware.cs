@@ -83,14 +83,14 @@ namespace BcGov.ApiKey.Middleware
         private bool IsSwaggerRequest(HttpContext context)
         {
             if (context.Request.Path != null)
-                return context.Request.Path.Value.Contains("/swagger/");
+                return context.Request.Path.Value.Contains("/swagger/", StringComparison.InvariantCultureIgnoreCase);
             return false;
         }
 
         private bool IsHealthRequest(HttpContext context)
         {
             if (context.Request.Path != null)
-                return context.Request.Path.Value.Contains("/health");
+                return context.Request.Path.Value.Contains("/health", StringComparison.InvariantCultureIgnoreCase);
             return false;
         }
     }

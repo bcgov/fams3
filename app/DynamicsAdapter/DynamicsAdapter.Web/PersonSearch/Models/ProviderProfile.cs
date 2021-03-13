@@ -14,7 +14,17 @@ namespace DynamicsAdapter.Web.PersonSearch.Models
     {
         public static int? DynamicsID(this ProviderProfile profile)
         {
-            return Enumeration.GetAll<InformationSourceType>().FirstOrDefault(m => m.Name.Equals(profile.Name, StringComparison.OrdinalIgnoreCase))?.Value;
+            if (string.Equals(profile.Name, "WorkSafeBC", StringComparison.InvariantCultureIgnoreCase))
+            {
+                return InformationSourceType.WorkSafeBC.Value;
+            }
+            else if (string.Equals(profile.Name, "HCIM", StringComparison.InvariantCultureIgnoreCase))
+            {
+                return InformationSourceType.HCIM.Value;
+            }
+            else {
+                return Enumeration.GetAll<InformationSourceType>().FirstOrDefault(m => m.Name.Equals(profile.Name, StringComparison.OrdinalIgnoreCase))?.Value;
+            }
         }
        
     }

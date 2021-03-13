@@ -37,7 +37,7 @@ namespace BcGov.ApiKey.Middleware.Test
             _isNextDelegateCalled = false;
         }
 
-        private HttpContext GetNoKeyHttpContext(bool pathContainSwagger = false)
+        private HttpContext GetNoKeyHttpContext(bool pathContainSwagger = false, bool pathContainHealth=false)
         {
             IHeaderDictionary headers = new HeaderDictionary();
             var request = new Mock<HttpRequest>();
@@ -45,6 +45,8 @@ namespace BcGov.ApiKey.Middleware.Test
             request.SetupGet(r => r.Host).Returns(new HostString("host1", 9000));
             if( pathContainSwagger )
                 request.SetupGet(r => r.Path).Returns(new PathString("/swagger/"));
+            if(pathContainHealth)
+                request.SetupGet(r => r.Path).Returns(new PathString("/health"));
 
             string actual = null;
             var response = new Mock<HttpResponse>();
@@ -178,6 +180,14 @@ namespace BcGov.ApiKey.Middleware.Test
         public async Task with_swagger_visit_should_go_on()
         {
             HttpContext httpContext = GetNoKeyHttpContext(true);
+            await _apiMw.InvokeAsync(httpContext);
+            Assert.IsTrue(_isNextDelegateCalled);
+        }
+
+        [Test]
+        public async Task with_health_visit_should_go_on()
+        {
+            HttpContext httpContext = GetNoKeyHttpContext(false, true);
             await _apiMw.InvokeAsync(httpContext);
             Assert.IsTrue(_isNextDelegateCalled);
         }

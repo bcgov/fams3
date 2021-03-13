@@ -90,7 +90,7 @@ namespace BcGov.ApiKey.Middleware
         private bool IsHealthRequest(HttpContext context)
         {
             if (context.Request.Path != null)
-                return context.Request.Path.Value.Contains("/health/");
+                return context.Request.Path.Value.Contains("/health");
             return false;
         }
     }

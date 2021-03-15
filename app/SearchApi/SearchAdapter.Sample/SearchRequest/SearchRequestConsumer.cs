@@ -55,7 +55,7 @@ namespace SearchAdapter.Sample.SearchRequest
                         throw new Exception("Exception from Sample Adapter, Your name is no exception");
 
                     }
-                    _logger.LogInformation(count.ToString());
+                    _logger.LogDebug(count.ToString());
                     await context.Publish(FakePersonBuilder.BuildFakePersonSearchCompleted(context.Message.SearchRequestId, context.Message.SearchRequestKey, context.Message.Person.FirstName, context.Message.Person.LastName, (DateTime)context.Message.Person.DateOfBirth, _profile));
 
 

@@ -57,7 +57,6 @@ namespace BcGov.Fams3.Redis
             await _distributedCache.SetStringAsync(key, data, new CancellationToken());
 
         }
-
         public async Task SaveString(string data, string key, TimeSpan expiry)
         {
             var options = new DistributedCacheEntryOptions();

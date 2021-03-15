@@ -63,12 +63,12 @@ namespace SearchApi.Web.Notifications
                             SearchRequestId = eventStatus.SearchRequestId,
                             TimeStamp = DateTime.Now
                         };
-                        _logger.LogInformation(JsonConvert.SerializeObject(finalizedSearch));
+                        _logger.LogDebug(JsonConvert.SerializeObject(finalizedSearch));
                         content = new StringContent(JsonConvert.SerializeObject(finalizedSearch));
                     }
                     else
                     {
-                        _logger.LogInformation(JsonConvert.SerializeObject(eventStatus));
+                        _logger.LogDebug(JsonConvert.SerializeObject(eventStatus));
                         content = new StringContent(JsonConvert.SerializeObject(eventStatus));
                     }
 

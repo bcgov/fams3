@@ -67,16 +67,6 @@ namespace BcGov.Fams3.Redis
 
         }
 
-        public async Task SaveString(string data, string key, TimeSpan expiry)
-        {
-            var options = new DistributedCacheEntryOptions();
-            options.SetAbsoluteExpiration(expiry);
-            if (string.IsNullOrEmpty(data)) throw new ArgumentNullException("SaveRequest : Data cannot be empty");
-            if (string.IsNullOrEmpty(key)) throw new ArgumentNullException("SaveRequest : Key cannot be null");
-            await _distributedCache.SetStringAsync(key, data, options, new CancellationToken());
-
-        }
-
         public async Task<string> GetString(string key)
         {
           

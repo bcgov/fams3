@@ -36,7 +36,7 @@ namespace SearchAdapter.Sample.SearchResult
         {
             _logger.LogInformation($"Successfully handling  search result");
 
-            _logger.LogInformation($"Successfully handling  search result [{context.Message.ReceivedPayload}]");
+            _logger.LogDebug($"Successfully handling  search result [{context.Message.ReceivedPayload}]");
 
             _logger.LogWarning("Sample Adapter, do not use in PRODUCTION.");
 

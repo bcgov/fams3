@@ -1,4 +1,4 @@
-﻿using BcGov.Fams3.Redis;
+using BcGov.Fams3.Redis;
 using BcGov.Fams3.SearchApi.Contracts.Person;
 using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 using Microsoft.Extensions.Logging;
@@ -160,7 +160,7 @@ namespace SearchApi.Web.DeepSearch
                     var newToBeUsedId = filteredExistingIdentifierForDataPartner.DetailedCompare(filteredNewFoundIdentifierForDataPartner);
 
                     _logger.LogInformation($"{newToBeUsedId.Count()} ids to be stored as new parameter for {waveitem.DataPartner}");
-                    _logger.LogInformation($"new to be used ID are: {JsonConvert.SerializeObject(newToBeUsedId)}");
+                    _logger.LogDebug($"new to be used ID are: {JsonConvert.SerializeObject(newToBeUsedId)}");
 
                     if (newToBeUsedId.Count() > 0)
                     {

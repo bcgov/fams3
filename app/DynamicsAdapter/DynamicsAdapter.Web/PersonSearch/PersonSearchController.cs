@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using DynamicsAdapter.Web.Mapping;
 using DynamicsAdapter.Web.PersonSearch.Models;
 using DynamicsAdapter.Web.Register;
@@ -151,10 +151,10 @@ namespace DynamicsAdapter.Web.PersonSearch
                 try
                 {
                     SSG_SearchApiRequest request = await _register.GetSearchApiRequest(key);
-                    _logger.LogInformation(JsonConvert.SerializeObject(personAcceptedEvent));
-                    _logger.LogInformation(JsonConvert.SerializeObject(request));
+                    _logger.LogDebug(JsonConvert.SerializeObject(personAcceptedEvent));
+                    _logger.LogDebug(JsonConvert.SerializeObject(request));
                     var searchApiEvent = _mapper.Map<SSG_SearchApiEvent>(personAcceptedEvent);
-                    _logger.LogInformation(JsonConvert.SerializeObject(searchApiEvent));
+                    _logger.LogDebug(JsonConvert.SerializeObject(searchApiEvent));
                     _logger.LogDebug($"Attempting to create a new event for SearchApiRequest");
                     await _searchApiRequestService.AddEventAsync(request.SearchApiRequestId, searchApiEvent, token.Token);
                     _logger.LogInformation($"Successfully created accepted event for SearchApiRequest");

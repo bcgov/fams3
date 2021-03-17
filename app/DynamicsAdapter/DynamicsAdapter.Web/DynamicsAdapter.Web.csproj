@@ -10,7 +10,7 @@
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="3.1.2" />
     <PackageReference Include="AutoMapper" Version="10.1.1" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.0" />
-    <PackageReference Include="BcGov.ApiKey.Middleware" Version="1.0.10" />
+    <PackageReference Include="BcGov.ApiKey.Middleware" Version="1.0.11" />
     <PackageReference Include="BcGov.Fams3.Redis" Version="1.0.7" />
     <PackageReference Include="BcGov.Fams3.SearchApi.Contracts" Version="1.0.47.45" />
     <PackageReference Include="BcGov.Fams3.SearchApi.Core" Version="1.0.47.45" />

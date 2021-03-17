@@ -42,6 +42,10 @@ namespace DynamicsAdapter.Web.Health
                 return HealthCheckResult.Unhealthy("Different Option Sets Exists in dynamics");
             }
 
+            if (!await CheckBankingOptionSet(cancellationToken))
+            {
+                return HealthCheckResult.Unhealthy("Different Option Sets Exists in Banking account type in dynamics");
+            }
 
             return HealthCheckResult.Healthy("All Status Reason Exists in dynamics.");
         }
@@ -54,6 +58,21 @@ namespace DynamicsAdapter.Web.Health
             foreach (SearchApiRequestStatusReason reason in Enumeration.GetAll<SearchApiRequestStatusReason>())
             {
                 if (!statusReasonListFromDynamics.Any(x => x.Value == reason.Value && string.Equals(x.Name, reason.Name, StringComparison.OrdinalIgnoreCase)))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private async Task<bool> CheckBankingOptionSet(CancellationToken cancellationToken)
+        {
+
+            var bankAccountTypesFromDynamics = await _optionSetService.GetAllBankAccountTypes(cancellationToken);
+
+            foreach (BankAccountType accountType in Enumeration.GetAll<BankAccountType>())
+            {
+                if (!bankAccountTypesFromDynamics.Any(x => x.Value == accountType.Value && string.Equals(x.Name, accountType.Name, StringComparison.OrdinalIgnoreCase)))
                 {
                     return false;
                 }
@@ -83,7 +102,6 @@ namespace DynamicsAdapter.Web.Health
                 "ssg_selfemploymentcompanytypes" => Enumeration.GetAll<SelfEmploymentCompanyType>(),
                 "ssg_selfemploymentroletypes" => Enumeration.GetAll<SelfEmploymentCompanyRoleType>(),
                 "ssg_famsincomeassistanceclasses" => Enumeration.GetAll<IncomeAssistanceClassType>(),
-                //"ssg_bankaccounttype" => Enumeration.GetAll<BankAccountType>(),
                 "ssg_datapartnerspeedtypes" => Enumeration.GetAll<AutoSearchSpeedType>(),
                 "ssg_safetyconcerntypes" => Enumeration.GetAll<SafetyConcernType>(),
                 _ => Enumeration.GetAll<TelephoneNumberType>()

@@ -12,5 +12,8 @@
             "EntityDefinitions(LogicalName='{0}')/Attributes(LogicalName='statuscode')/Microsoft.Dynamics.CRM.StatusAttributeMetadata?$select=LogicalName&$expand=OptionSet";
         public const string DUPLICATE_DETECTED_ERROR_CODE = "0x80040333";
 
+        public const string BANK_TYPE_OPTION_SET_URL_TEMPLATE =
+            "EntityDefinitions(LogicalName='ssg_asset_bankinginformation')/Attributes/Microsoft.Dynamics.CRM.PicklistAttributeMetadata?$select=LogicalName&$filter=LogicalName eq 'ssg_bankaccounttype'&$expand=OptionSet";
+
     }
 }

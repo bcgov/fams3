@@ -187,8 +187,9 @@ namespace DynamicsAdapter.Web.Mapping
                         "sibling" => PersonRelationType.Sibling.Value,
                         "cousin" => PersonRelationType.Cousin.Value,
                         "friend" => PersonRelationType.Friend.Value,
-                        "lalw" => PersonRelationType.MayLiveWith.Value,
-                        _ => (int?)null
+                        "lalw" => PersonRelationType.LastLiveWith.Value,
+                        "mlw" => PersonRelationType.MayLiveWith.Value,
+                        _ => PersonRelationType.Other.Value
                     };
         }
     }
@@ -286,6 +287,10 @@ namespace DynamicsAdapter.Web.Mapping
         public string Convert(int? sourceMember, ResolutionContext context)
         {
             if (sourceMember == null) return null;
+            if (sourceMember == PersonRelationType.LastLiveWith.Value)
+            {
+                return "LALW";
+            }
             return
                 Enumeration.GetAll<PersonRelationType>().SingleOrDefault(m => m.Value == sourceMember)?.Name;
 

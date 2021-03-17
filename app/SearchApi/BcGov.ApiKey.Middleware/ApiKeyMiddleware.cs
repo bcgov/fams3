@@ -25,7 +25,7 @@ namespace BcGov.ApiKey.Middleware
         public async Task InvokeAsync(HttpContext context)
         {
             var appSettings = context.RequestServices.GetRequiredService<IConfiguration>();
-            if (IsSwaggerRequest(context))
+            if (IsSwaggerRequest(context)||IsHealthRequest(context))
             {
                 await _next(context);
             }
@@ -83,10 +83,16 @@ namespace BcGov.ApiKey.Middleware
         private bool IsSwaggerRequest(HttpContext context)
         {
             if (context.Request.Path != null)
-                return context.Request.Path.Value.Contains("/swagger/");
+                return context.Request.Path.Value.Contains("/swagger/", StringComparison.InvariantCultureIgnoreCase);
             return false;
         }
 
+        private bool IsHealthRequest(HttpContext context)
+        {
+            if (context.Request.Path != null)
+                return context.Request.Path.Value.Contains("/health", StringComparison.InvariantCultureIgnoreCase);
+            return false;
+        }
     }
 }
 

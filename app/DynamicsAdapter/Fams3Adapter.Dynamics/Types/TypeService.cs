@@ -21,11 +21,11 @@ namespace Fams3Adapter.Dynamics.Types
             "ssg_payororreceiveroptions",
             "ssg_requestpriorities",
             "ssg_personcategorycodes",
-            "ssg_employmentstatus",
-            "ssg_selfemploymentcompanytype",
-            "ssg_selfemploymentcompanyrole",
+            "ssg_employmentstatuses",
+            "ssg_selfemploymentcompanytypes",
+            "ssg_selfemploymentroletypes",
             "ssg_famsincomeassistanceclasses",
-            "ssg_bankaccounttype",
+            //"ssg_bankaccounttype",
             "ssg_datapartnerspeedtypes",
             "ssg_safetyconcerntypes"
         };

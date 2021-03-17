@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -15,6 +15,7 @@ namespace Fams3Adapter.Dynamics.OptionSets
     {
         Task<IEnumerable<GenericOption>> GetAllStatusCode(string entityName, CancellationToken cancellationToken);
         Task<IEnumerable<GenericOption>> GetAllOptions(string optionSetName, CancellationToken cancellationToken);
+        Task<IEnumerable<GenericOption>> GetAllBankAccountTypes(CancellationToken cancellationToken);
     }
 
     public class OptionSetService : IOptionSetService
@@ -42,6 +43,14 @@ namespace Fams3Adapter.Dynamics.OptionSets
             var uri = new Uri(string.Format(Keys.GLOBAL_OPTIONS_SET_DEFINTION_URL_TEMPLATE, optionSetName.ToLower()), UriKind.RelativeOrAbsolute);
             var result = JsonConvert.DeserializeObject<OptionSet>(await GetAllOptions(uri, cancellationToken));
             return result?.Options == null ? new List<GenericOption>() : result.Options.Where(x => x.Label?.UserLocalizedLabel?.Label != null).Select(x => new GenericOption(x.Value, x.Label.UserLocalizedLabel.Label));
+        }
+
+        public async Task<IEnumerable<GenericOption>> GetAllBankAccountTypes(CancellationToken cancellationToken)
+        {
+            var uri = new Uri(Keys.BANK_TYPE_OPTION_SET_URL_TEMPLATE, UriKind.RelativeOrAbsolute);
+            var result = JsonConvert.DeserializeObject<BankAccountTypeOptionSet>(await GetAllOptions(uri, cancellationToken));
+
+            return result?.Value?[0].OptionSet?.Options == null ? new List<GenericOption>(): result?.Value?[0].OptionSet.Options == null ? new List<GenericOption>() : result.Value?[0].OptionSet.Options.Where(x => x.Label?.UserLocalizedLabel?.Label != null).Select(x => new GenericOption(x.Value, x.Label.UserLocalizedLabel.Label));
         }
 
         private async Task<string> GetAllOptions(Uri relativeUri, CancellationToken cancellationToken)

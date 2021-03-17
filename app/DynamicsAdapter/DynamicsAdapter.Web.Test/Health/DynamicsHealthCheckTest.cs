@@ -99,26 +99,26 @@ namespace DynamicsAdapter.Web.Test.Health
             _statusReasonServiceMock.Setup(x => x.GetAllOptions("ssg_personcategorycodes", CancellationToken.None))
                 .Returns(Task.FromResult(Enumeration.GetAll<RelatedPersonPersonType>().Select(x => new GenericOption(x.Value, x.Name))));
 
-            _statusReasonServiceMock.Setup(x => x.GetAllOptions("ssg_employmentstatus", CancellationToken.None))
+            _statusReasonServiceMock.Setup(x => x.GetAllOptions("ssg_employmentstatuses", CancellationToken.None))
     .Returns(Task.FromResult(Enumeration.GetAll<EmploymentStatusType>().Select(x => new GenericOption(x.Value, x.Name))));
 
-            _statusReasonServiceMock.Setup(x => x.GetAllOptions("ssg_selfemploymentcompanytype", CancellationToken.None))
+            _statusReasonServiceMock.Setup(x => x.GetAllOptions("ssg_selfemploymentcompanytypes", CancellationToken.None))
                 .Returns(Task.FromResult(Enumeration.GetAll<SelfEmploymentCompanyType>().Select(x => new GenericOption(x.Value, x.Name))));
 
-            _statusReasonServiceMock.Setup(x => x.GetAllOptions("ssg_selfemploymentcompanyrole", CancellationToken.None))
+            _statusReasonServiceMock.Setup(x => x.GetAllOptions("ssg_selfemploymentroletypes", CancellationToken.None))
                 .Returns(Task.FromResult(Enumeration.GetAll<SelfEmploymentCompanyRoleType>().Select(x => new GenericOption(x.Value, x.Name))));
 
             _statusReasonServiceMock.Setup(x => x.GetAllOptions("ssg_famsincomeassistanceclasses", CancellationToken.None))
     .Returns(Task.FromResult(Enumeration.GetAll<IncomeAssistanceClassType>().Select(x => new GenericOption(x.Value, x.Name))));
-
-            _statusReasonServiceMock.Setup(x => x.GetAllOptions("ssg_bankaccounttype", CancellationToken.None))
-    .Returns(Task.FromResult(Enumeration.GetAll<BankAccountType>().Select(x => new GenericOption(x.Value, x.Name))));
 
             _statusReasonServiceMock.Setup(x => x.GetAllOptions("ssg_datapartnerspeedtypes", CancellationToken.None))
 .Returns(Task.FromResult(Enumeration.GetAll<AutoSearchSpeedType>().Select(x => new GenericOption(x.Value, x.Name))));
 
             _statusReasonServiceMock.Setup(x => x.GetAllOptions("ssg_safetyconcerntypes", CancellationToken.None))
 .Returns(Task.FromResult(Enumeration.GetAll<SafetyConcernType>().Select(x => new GenericOption(x.Value, x.Name))));
+
+            _statusReasonServiceMock.Setup(x => x.GetAllBankAccountTypes(CancellationToken.None))
+.Returns(Task.FromResult(Enumeration.GetAll<BankAccountType>().Select(x => new GenericOption(x.Value, x.Name))));
 
             _sut = new DynamicsHealthCheck(_statusReasonServiceMock.Object, _statusReasonServiceLogger.Object);
 

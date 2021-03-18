@@ -56,7 +56,7 @@ namespace DynamicsAdapter.Web.Mapping
             { "other", LocationType.Other },
             { "blank", LocationType.Other },
             { "home", LocationType.Residence },
-            { "correctioncenter", LocationType.CorrectionalCentre},
+            { "correctionalcenter", LocationType.CorrectionalCentre},
             { "unknown", LocationType.Other }
         };
     }

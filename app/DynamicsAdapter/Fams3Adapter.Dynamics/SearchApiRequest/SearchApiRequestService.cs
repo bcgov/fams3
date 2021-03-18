@@ -99,6 +99,9 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
                 List<SSG_SearchapiRequestDataProvider> apiProviders = new List<SSG_SearchapiRequestDataProvider>();
                 foreach (SSG_SearchapiRequestDataProvider prov in searchApiRequest.DataProviders)
                 {
+                    //HCIM,
+                    //RAPID
+
                     var provider = providers.FirstOrDefault(x => x.AdaptorName == prov.AdaptorName);
                     if (provider != null)
                     {

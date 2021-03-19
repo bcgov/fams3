@@ -133,6 +133,8 @@ namespace DynamicsAdapter.Web.Mapping
                .ForMember(dest => dest.PersonSoughtHairColor, opt => opt.MapFrom(src => src.Person.HairColour))
                .ForMember(dest => dest.PersonSoughtFirstName, opt => opt.MapFrom(src => src.Person.FirstName))
                .ForMember(dest => dest.PersonSoughtLastName, opt => opt.MapFrom(src => src.Person.LastName))
+               .ForMember(dest => dest.PersonSoughtMiddleName, opt => opt.MapFrom(src => src.Person.MiddleName))
+               .ForMember(dest => dest.PersonSoughtThirdGiveName, opt => opt.MapFrom(src => src.Person.OtherName))
                .ForMember(dest => dest.PersonSoughtGender, opt => opt.ConvertUsing(new PersonGenderConverter(), src => src.Person.Gender))
                .ForMember(dest => dest.RequestPriority, opt => opt.ConvertUsing(new RequestPriorityConverter(), src => src.Person.Agency.RequestPriority))
                ;

@@ -53,6 +53,8 @@ namespace DynamicsAdapter.Web.Test.Mapping
                     },
                     FirstName = "personSoughtFirstName",
                     LastName = "personSoughtLastName",
+                    MiddleName = "middleName",
+                    OtherName ="otherName",
                     Gender = "M",
                     DateOfBirth = new DateTimeOffset(1995, 1, 1, 0, 0, 0, new TimeSpan(1, 0, 0)),
                     CautionFlag="flag",
@@ -123,6 +125,8 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(PersonSoughtType.P.Value, entity.PersonSoughtRole);
             Assert.AreEqual("personSoughtFirstName", entity.PersonSoughtFirstName);
             Assert.AreEqual("personSoughtLastName", entity.PersonSoughtLastName);
+            Assert.AreEqual("middleName", entity.PersonSoughtMiddleName);
+            Assert.AreEqual("otherName", entity.PersonSoughtThirdGiveName);
             Assert.AreEqual(GenderType.Male.Value, entity.PersonSoughtGender);
             Assert.AreEqual(new DateTime(1995, 1, 1), entity.PersonSoughtDateOfBirth);
             Assert.AreEqual("12222456", entity.PersonSoughtBCDL);

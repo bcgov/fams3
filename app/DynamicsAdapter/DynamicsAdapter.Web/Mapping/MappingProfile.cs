@@ -230,7 +230,7 @@ namespace DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => src.DateOfBirth == null ? (DateTime?)null : src.DateOfBirth.Value.DateTime))
                  .IncludeBase<PersonalInfo, DynamicsEntity>()
                  .ReverseMap()
-                    .ForMember(dest => dest.Owner, opt => opt.Ignore());
+                    .ForMember(dest => dest.Owner, opt => opt.Ignore()); ;
 
             CreateMap<RelatedPerson, RelatedPersonEntity>()
                  .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))

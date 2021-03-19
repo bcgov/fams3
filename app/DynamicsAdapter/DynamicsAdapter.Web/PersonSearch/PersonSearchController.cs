@@ -93,6 +93,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                         //{
                         //    await _searchResultService.ProcessPersonFound(p, personCompletedEvent.ProviderProfile, searchRequest, cts.Token);
                         //});
+                        _logger.LogDebug(JsonConvert.SerializeObject(personCompletedEvent.MatchedPersons));
                         foreach (PersonFound p in personCompletedEvent.MatchedPersons)
                         {
                             SSG_Identifier sourceIdentifer = await _register.GetMatchedSourceIdentifier(p.SourcePersonalIdentifier, key);

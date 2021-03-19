@@ -6,6 +6,7 @@ using Fams3Adapter.Dynamics.SearchRequest;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using NSwag.Annotations;
 using Serilog.Context;
 using System;
@@ -46,6 +47,7 @@ namespace DynamicsAdapter.Web.SearchAgency
             using (LogContext.PushProperty("AgencyCode", $"{searchRequestOrdered?.Person?.Agency?.Code}"))
             {
                 _logger.LogInformation("Get CreateSearchRequest");
+                _logger.LogDebug(JsonConvert.SerializeObject(searchRequestOrdered));
                 if (string.IsNullOrEmpty(requestId)) return BadRequest(new { Message = "requestId cannot be empty." });
                 if (searchRequestOrdered == null) return BadRequest(new { Message = "SearchRequestOrdered cannot be empty." });
                 if (searchRequestOrdered.Action != RequestAction.NEW) return BadRequest(new { Message = "CreateSearchRequest should only get NEW request." });

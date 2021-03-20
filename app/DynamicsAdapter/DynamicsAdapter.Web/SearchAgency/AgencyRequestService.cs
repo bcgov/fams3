@@ -730,7 +730,8 @@ namespace DynamicsAdapter.Web.SearchAgency
             }
             char lastChar = cleanPreviousNote.ToArray().Last(m => char.IsLetterOrDigit(m));
             int last = cleanPreviousNote.LastIndexOf(lastChar);
-            cleanPreviousNote = cleanPreviousNote.Substring(0, last+1);
+            if(last>=0)
+                cleanPreviousNote = cleanPreviousNote.Substring(0, last+1);
 
             string resultStr = currentNote;
             int updatePos = currentNote.IndexOf(cleanPreviousNote,StringComparison.InvariantCultureIgnoreCase);

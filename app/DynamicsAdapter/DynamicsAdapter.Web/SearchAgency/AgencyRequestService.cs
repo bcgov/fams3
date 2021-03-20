@@ -680,7 +680,8 @@ namespace DynamicsAdapter.Web.SearchAgency
             string previousNoteStr = existedSearchRequest.Notes;
             if(existedSearchRequest.SSG_Notes!=null && existedSearchRequest.SSG_Notes?.Length > 0)
             {
-                previousNoteStr = existedSearchRequest.SSG_Notes.Last<SSG_Notese>().Description;
+                previousNoteStr = 
+                    existedSearchRequest.SSG_Notes.Last(m=>m.InformationSource==InformationSourceType.Request.Value).Description;
             }
            
             NotesEntity note = new NotesEntity

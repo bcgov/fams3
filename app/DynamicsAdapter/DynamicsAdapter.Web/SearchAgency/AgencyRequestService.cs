@@ -678,7 +678,7 @@ namespace DynamicsAdapter.Web.SearchAgency
         private async Task<bool> UploadNotes(SearchRequestEntity newSearchRequestEntity, SSG_SearchRequest existedSearchRequest)
         {
             string previousNoteStr = existedSearchRequest.Notes;
-            if(existedSearchRequest.SSG_Notes.Length > 0)
+            if(existedSearchRequest.SSG_Notes!=null && existedSearchRequest.SSG_Notes?.Length > 0)
             {
                 previousNoteStr = existedSearchRequest.SSG_Notes.Last<SSG_Notese>().Description;
             }
@@ -709,6 +709,9 @@ namespace DynamicsAdapter.Web.SearchAgency
 
         public string UpdateCurrentNote(string currentNote, string previousNote)
         {
+            if (string.IsNullOrEmpty(previousNote) || string.IsNullOrEmpty(currentNote))
+                return currentNote;
+
             int personSoughtPos = previousNote.IndexOf($"{Environment.NewLine}Person Sought :");
             if (personSoughtPos > 0)
             {

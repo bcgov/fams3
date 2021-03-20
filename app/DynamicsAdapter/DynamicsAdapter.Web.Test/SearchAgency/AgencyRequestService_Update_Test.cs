@@ -1257,7 +1257,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
         }
 
         [Test]
-        public async Task updateCurrentNote_clean_append()
+        public void updateCurrentNote_clean_append()
         {
             string existingNotes = "Be careful of this.";
             string newNotes = "Be careful of this not that.";
@@ -1267,7 +1267,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
         }
 
         [Test]
-        public async Task updateCurrentNote_update_existing_append()
+        public void updateCurrentNote_update_existing_append()
         {
             string existingNotes = "Be careful of this**UPDATE 19Mar2021** not that.";
             string newNotes = "Be careful of this not that and stay away.";
@@ -1277,7 +1277,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
         }
 
         [Test]
-        public async Task updateCurrentNote_update_existing_newstring()
+        public void updateCurrentNote_update_existing_newstring()
         {
             string existingNotes = "Be careful of this**UPDATE 19Mar2021** not that.";
             string newNotes = "Please be careful of this not that and stay away.";
@@ -1286,7 +1286,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
         }
 
         [Test]
-        public async Task updateCurrentNote_update_notes_with_PersonSought()
+        public void updateCurrentNote_update_notes_with_PersonSought()
         {
             string existingNotes = $"Be careful of this not that.{Environment.NewLine}Person Sought : Weight";
             string newNotes = "Be careful of this not that and stay away.";

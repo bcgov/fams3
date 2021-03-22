@@ -1255,5 +1255,44 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(searchRequestOrdered);
             Assert.AreEqual(null, ssgSearchRequest);
         }
+
+        [Test]
+        public void updateCurrentNote_clean_append()
+        {
+            string existingNotes = "Be careful of this.";
+            string newNotes = "Be careful of this not that.";
+            string result = _sut.UpdateCurrentNote(newNotes, existingNotes);
+            string date = DateTime.Now.ToString("ddMMMyyyy");
+            Assert.AreEqual($"Be careful of this**UPDATE {date}** not that.", result);
+        }
+
+        [Test]
+        public void updateCurrentNote_update_existing_append()
+        {
+            string existingNotes = "Be careful of this**UPDATE 19Mar2021** not that.";
+            string newNotes = "Be careful of this not that and stay away.";
+            string result = _sut.UpdateCurrentNote(newNotes, existingNotes);
+            string date = DateTime.Now.ToString("ddMMMyyyy");
+            Assert.AreEqual($"Be careful of this not that**UPDATE {date}** and stay away.", result);
+        }
+
+        [Test]
+        public void updateCurrentNote_update_existing_newstring()
+        {
+            string existingNotes = "Be careful of this**UPDATE 19Mar2021** not that.";
+            string newNotes = "Please be careful of this not that and stay away.";
+            string result = _sut.UpdateCurrentNote(newNotes, existingNotes);
+            Assert.AreEqual("Please be careful of this not that and stay away.", result);
+        }
+
+        [Test]
+        public void updateCurrentNote_update_notes_with_PersonSought()
+        {
+            string existingNotes = $"Be careful of this not that.{Environment.NewLine}Person Sought : Weight";
+            string newNotes = "Be careful of this not that and stay away.";
+            string result = _sut.UpdateCurrentNote(newNotes, existingNotes);
+            string date = DateTime.Now.ToString("ddMMMyyyy");
+            Assert.AreEqual($"Be careful of this not that**UPDATE {date}** and stay away.", result);
+        }
     }
 }

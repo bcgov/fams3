@@ -138,7 +138,7 @@ namespace DynamicsAdapter.Web.SearchAgency
             if (!String.IsNullOrEmpty(newSearchRequest.Notes)
                 && !String.Equals(existedSearchRequest.Notes, newSearchRequest.Notes, StringComparison.InvariantCultureIgnoreCase))
             {
-                await UploadNotes(newSearchRequest);
+                await UploadNotes(newSearchRequest, existedSearchRequest);
             }
 
             //update PersonEntity
@@ -675,12 +675,19 @@ namespace DynamicsAdapter.Web.SearchAgency
             return true;
         }
 
-        private async Task<bool> UploadNotes(SearchRequestEntity newSearchRequestEntity)
+        private async Task<bool> UploadNotes(SearchRequestEntity newSearchRequestEntity, SSG_SearchRequest existedSearchRequest)
         {
+            string previousNoteStr = existedSearchRequest.Notes;
+            if(existedSearchRequest.SSG_Notes!=null && existedSearchRequest.SSG_Notes?.Length > 0)
+            {
+                previousNoteStr = 
+                    existedSearchRequest.SSG_Notes.Last(m=>m.InformationSource==InformationSourceType.Request.Value).Description;
+            }
+           
             NotesEntity note = new NotesEntity
             {
                 StatusCode = 1,
-                Description = newSearchRequestEntity.Notes,
+                Description = UpdateCurrentNote(newSearchRequestEntity.Notes, previousNoteStr),
                 InformationSource = InformationSourceType.Request.Value,
                 SearchRequest = _uploadedSearchRequest
             };
@@ -699,6 +706,42 @@ namespace DynamicsAdapter.Web.SearchAgency
         {
             await _searchRequestService.SubmitToQueue(_uploadedSearchRequest.SearchRequestId);
             return true;
+        }
+
+        public string UpdateCurrentNote(string currentNote, string previousNote)
+        {
+            if (string.IsNullOrEmpty(previousNote) || string.IsNullOrEmpty(currentNote))
+                return currentNote;
+
+            int personSoughtPos = previousNote.IndexOf($"{Environment.NewLine}Person Sought :");
+            if (personSoughtPos > 0)
+            {
+                previousNote = previousNote.Substring(0, personSoughtPos + 1);
+            }
+
+            int begin = previousNote.IndexOf("**UPDATE ");
+            int end = 0;
+            string cleanPreviousNote = previousNote;
+            if (begin > 0)
+            {
+                end = previousNote.IndexOf("**", begin+2);
+                if (end > begin) {
+                    cleanPreviousNote = previousNote.Substring(0, begin) + previousNote.Substring(end+2);
+                }
+            }
+            char lastChar = cleanPreviousNote.ToArray().Last(m => char.IsLetterOrDigit(m));
+            int last = cleanPreviousNote.LastIndexOf(lastChar);
+            if(last>=0)
+                cleanPreviousNote = cleanPreviousNote.Substring(0, last+1);
+
+            string resultStr = currentNote;
+            int updatePos = currentNote.IndexOf(cleanPreviousNote,StringComparison.InvariantCultureIgnoreCase);
+            if ( updatePos == 0)
+            {
+                string date = DateTime.Now.ToString("ddMMMyyy");
+                resultStr = currentNote.Insert(cleanPreviousNote.Length, $"**UPDATE {date}**");
+            }
+            return resultStr;
         }
 
     }

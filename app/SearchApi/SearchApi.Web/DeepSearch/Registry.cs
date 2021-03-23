@@ -12,9 +12,9 @@ namespace SearchApi.Web.DeepSearch
             {"BCHYDRO", new PersonalIdentifierType[]{PersonalIdentifierType.BCDriverLicense, PersonalIdentifierType.BCHydroBP } },
             {"MSDPR", new PersonalIdentifierType[]{PersonalIdentifierType.SocialInsuranceNumber } },
             {"WORKSAFEBC",new PersonalIdentifierType[]{PersonalIdentifierType.PersonalHealthNumber, PersonalIdentifierType.SocialInsuranceNumber, PersonalIdentifierType.WorkSafeBCCCN } },
-            {"HCIM", new PersonalIdentifierType[]{PersonalIdentifierType.PersonalHealthNumber } },
-            {"RAPIDR", new PersonalIdentifierType[]{PersonalIdentifierType.PersonalHealthNumber } },
-            {"RAPIDE", new PersonalIdentifierType[]{PersonalIdentifierType.PersonalHealthNumber } },
+            {"MH_HCIM", new PersonalIdentifierType[]{PersonalIdentifierType.PersonalHealthNumber } },
+            {"MH_RAPIDR", new PersonalIdentifierType[]{PersonalIdentifierType.PersonalHealthNumber } },
+            {"MH_RAPIDE", new PersonalIdentifierType[]{PersonalIdentifierType.PersonalHealthNumber } },
             {"CORNET", new PersonalIdentifierType[]{ PersonalIdentifierType.CorrectionsId, PersonalIdentifierType.PersonalHealthNumber, PersonalIdentifierType.BCDriverLicense } }
         });
     }

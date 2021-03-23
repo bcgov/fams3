@@ -199,12 +199,19 @@ namespace SearchApi.Web
                         e.Consumer(() =>
                             new PersonSearchAcceptedConsumer(provider.GetRequiredService<ISearchApiNotifier<PersonSearchAdapterEvent>>(), provider.GetRequiredService<ILogger<PersonSearchAcceptedConsumer>>()));
                     });
-                    // Configure Person Search Accepted Consumer 
+                    // Configure Person Search Completed Consumer 
                     cfg.ReceiveEndpoint( $"{nameof(PersonSearchCompleted)}_queue", e =>
                     {
                         e.UseRateLimit(1, TimeSpan.FromSeconds(5));
                         e.Consumer(() =>
                             new PersonSearchCompletedConsumer(provider.GetRequiredService<ISearchApiNotifier<PersonSearchAdapterEvent>>(), provider.GetRequiredService<ILogger<PersonSearchCompletedConsumer>>()));
+                    });
+                    // Configure Person Search Completed Consumer 
+                    cfg.ReceiveEndpoint($"{nameof(PersonSearchCompletedJCA)}_queue", e =>
+                    {
+                        e.UseRateLimit(1, TimeSpan.FromSeconds(5));
+                        e.Consumer(() =>
+                            new PersonSearchCompletedJCAConsumer(provider.GetRequiredService<ISearchApiNotifier<PersonSearchAdapterEvent>>(), provider.GetRequiredService<ILogger<PersonSearchCompletedJCAConsumer>>()));
                     });
 
                     // Configure Person Search Rejected Consumer 

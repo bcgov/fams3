@@ -2,15 +2,15 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <Version>1.0.47.46</Version>
+    <Version>1.0.47.48</Version>
     <Authors>PathFinder</Authors>
     <Company>BcGov</Company>
     <Description />
-    <PackageVersion>1.0.47.46</PackageVersion>
+    <PackageVersion>1.0.47.48</PackageVersion>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <AssemblyVersion>1.0.47.46</AssemblyVersion>
-    <FileVersion>1.0.47.46</FileVersion>
+    <AssemblyVersion>1.0.47.48</AssemblyVersion>
+    <FileVersion>1.0.47.48</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

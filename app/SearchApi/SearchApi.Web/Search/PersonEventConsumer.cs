@@ -75,6 +75,24 @@ namespace SearchApi.Web.Search
         }
 
     }
+    public class PersonSearchCompletedJCAConsumer : PersonEventConsumer, IConsumer<PersonSearchCompletedJCA>
+    {
+        private readonly ILogger<PersonSearchCompletedJCAConsumer> _logger;
+        private readonly ISearchApiNotifier<PersonSearchAdapterEvent> _searchApiNotifier;
+
+        public PersonSearchCompletedJCAConsumer(ISearchApiNotifier<PersonSearchAdapterEvent> searchApiNotifier, ILogger<PersonSearchCompletedJCAConsumer> logger) : base(searchApiNotifier, logger)
+        {
+            _searchApiNotifier = searchApiNotifier;
+            _logger = logger;
+
+        }
+
+        public async Task Consume(ConsumeContext<PersonSearchCompletedJCA> context)
+        {
+            await base.Consume(context, EventName.Completed);
+        }
+
+    }
 
     public class PersonSearchRejectedConsumer : PersonEventConsumer, IConsumer<PersonSearchRejected>
     {

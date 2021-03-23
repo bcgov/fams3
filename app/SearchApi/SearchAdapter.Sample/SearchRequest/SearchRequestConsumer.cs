@@ -56,8 +56,15 @@ namespace SearchAdapter.Sample.SearchRequest
 
                     }
                     _logger.LogDebug(count.ToString());
-                    await context.Publish(FakePersonBuilder.BuildFakePersonSearchCompleted(context.Message.SearchRequestId, context.Message.SearchRequestKey, context.Message.Person.FirstName, context.Message.Person.LastName, (DateTime)context.Message.Person.DateOfBirth, _profile));
+                    if (string.Equals(context.Message.Person.FirstName, "JCA", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        await context.Publish(FakePersonBuilder.BuildFakePersonSearchJCACompleted(context.Message.SearchRequestId, context.Message.SearchRequestKey, context.Message.Person.FirstName, context.Message.Person.LastName, (DateTime)context.Message.Person.DateOfBirth, _profile));
 
+                    }
+                    else
+                    {
+                        await context.Publish(FakePersonBuilder.BuildFakePersonSearchCompleted(context.Message.SearchRequestId, context.Message.SearchRequestKey, context.Message.Person.FirstName, context.Message.Person.LastName, (DateTime)context.Message.Person.DateOfBirth, _profile));
+                    }
 
                 }
             }

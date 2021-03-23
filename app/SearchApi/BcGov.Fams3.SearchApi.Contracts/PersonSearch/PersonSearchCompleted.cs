@@ -8,4 +8,5 @@ namespace BcGov.Fams3.SearchApi.Contracts.PersonSearch
         string Message { get; }
          SearchStatus Status { get; }
     }
+   
 }

@@ -140,6 +140,23 @@ namespace DynamicsAdapter.Web.Mapping
         }
     }
 
+    public class PhoneNumberResponseConverter : IValueConverter<string, string>
+    {
+        public string Convert(string sourceMember, ResolutionContext context)
+        {
+            if (string.IsNullOrEmpty(sourceMember)) return null;
+            string[] number = sourceMember.Split("|");
+            if(number != null && number.Length>1 && number[0].Trim().Equals(Constants.OutOfProvinceRJ, StringComparison.InvariantCultureIgnoreCase) )
+            {
+                return number[1].Trim();
+            }
+            else
+            {
+                return sourceMember;
+            }
+        }
+    }
+
     public class IncaceratedConverter : IValueConverter<string, int?>
     {
         public int? Convert(string sourceMember, ResolutionContext context)

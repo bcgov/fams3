@@ -382,6 +382,7 @@ namespace DynamicsAdapter.Web.Mapping
 
             CreateMap<Email, EmailEntity>()
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.EmailAddress))
+                .ForMember(dest => dest.EmailType, opt => opt.ConvertUsing(new EmailTypeConverter(), src => src.Type))
                 .IncludeBase<PersonalInfo, DynamicsEntity>()
                 ;
 

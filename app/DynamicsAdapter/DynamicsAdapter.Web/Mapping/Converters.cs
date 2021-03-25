@@ -131,6 +131,16 @@ namespace DynamicsAdapter.Web.Mapping
         }
     }
 
+    public class EmailTypeConverter : IValueConverter<string, int?>
+    {
+        public int? Convert(string sourceMember, ResolutionContext context)
+        {
+            if (sourceMember == null) return null;
+            EmailType type = Enumeration.GetAll<EmailType>().SingleOrDefault(m => m.Name.Equals(sourceMember, StringComparison.InvariantCultureIgnoreCase));
+            return type == null ? EmailType.Personal.Value : type.Value;
+        }
+    }
+
     public class PhoneTypeResponseConverter : IValueConverter<int?, string>
     {
         public string Convert(int? sourceMember, ResolutionContext context)

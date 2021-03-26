@@ -616,6 +616,10 @@ namespace DynamicsAdapter.Web.Test.Mapping
                         },
                         Addresses = null,
                         Phones = null,
+                        Emails=new Email[]
+                        {
+                            new Email()
+                        },
                         Names = new Name[]
                         {
                             new Name() {}
@@ -644,7 +648,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(new DateTime(2003, 3, 3), searchEvent.TimeStamp);
             Assert.AreEqual(Keys.EVENT_COMPLETED, searchEvent.EventType);
             Assert.AreEqual(Keys.SEARCH_API_EVENT_NAME, searchEvent.Name);
-            Assert.AreEqual("Auto search processing completed successfully. This is some message. 2 Matched Persons found.\nFor Matched Person 1 : 2 identifier(s) found.  2 addresses found. 2 phone number(s) found. 2 name(s) found. 1 employment(s) found. 0 related person(s) found. 1 bank info(s) found. 0 vehicle(s) found. 1 other asset(s) found. 0 compensation claim(s) found. 0 insurance claim(s) found.\nFor Matched Person 2 : 1 identifier(s) found.  0 addresses found. 0 phone number(s) found. 1 name(s) found. 0 employment(s) found. 1 related person(s) found. 0 bank info(s) found. 1 vehicle(s) found. 0 other asset(s) found. 1 compensation claim(s) found. 1 insurance claim(s) found.\n", searchEvent.Message);
+            Assert.AreEqual("Auto search processing completed successfully. This is some message. 2 Matched Persons found.\nFor Matched Person 1 : 2 identifier(s) found.  2 addresses found. 2 phone number(s) found. 0 email(s) found. 2 name(s) found. 1 employment(s) found. 0 related person(s) found. 1 bank info(s) found. 0 vehicle(s) found. 1 other asset(s) found. 0 compensation claim(s) found. 0 insurance claim(s) found.\nFor Matched Person 2 : 1 identifier(s) found.  0 addresses found. 0 phone number(s) found. 1 email(s) found. 1 name(s) found. 0 employment(s) found. 1 related person(s) found. 0 bank info(s) found. 1 vehicle(s) found. 0 other asset(s) found. 1 compensation claim(s) found. 1 insurance claim(s) found.\n", searchEvent.Message);
         }
 
         [Test]

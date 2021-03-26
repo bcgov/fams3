@@ -146,6 +146,7 @@ namespace DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.InformationSourceCode, opt => opt.MapFrom(src => src.InformationSourceCode))
                  .ForMember(dest => dest.SupplierTypeCode, opt => opt.MapFrom(src => src.Type))
                  .ForMember(dest => dest.CountrySubdivisionText, opt => opt.MapFrom(src => src.StateProvince))
+                 .ForMember(dest => dest.CountrySubdivisionTextOrigin, opt => opt.MapFrom(src => src.StateProvince))
                  .ForMember(dest => dest.CountryText, opt => opt.MapFrom(src => src.CountryRegion))
                  .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
                  .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
@@ -160,6 +161,7 @@ namespace DynamicsAdapter.Web.Mapping
                     .ForMember(dest => dest.AddressLine1, opt => opt.MapFrom(src => src.CouldNotLocate ? Constants.CouldNotLocate : src.AddressLine1))
                     .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => OwnerType.PersonSought))
                     .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+                    .ForMember(dest => dest.StateProvince, opt => opt.MapFrom(src => src.CountrySubdivisionText))
                     .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new AddressTypeResponseConverter(), src => src.Category));
 
             CreateMap<Employment, EmploymentEntity>()

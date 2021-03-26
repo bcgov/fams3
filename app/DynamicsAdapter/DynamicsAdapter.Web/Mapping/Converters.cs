@@ -405,6 +405,7 @@ namespace DynamicsAdapter.Web.Mapping
                 strbuilder.Append($"{(p.Identifiers == null ? 0 : p.Identifiers.Count)} identifier(s) found.  ");
                 strbuilder.Append($"{(p.Addresses == null ? 0 : p.Addresses.Count)} addresses found. ");
                 strbuilder.Append($"{(p.Phones == null ? 0 : p.Phones.Count)} phone number(s) found. ");
+                strbuilder.Append($"{(p.Emails == null ? 0 : p.Emails.Count)} email(s) found. ");
                 strbuilder.Append($"{(p.Names == null ? 0 : p.Names.Count)} name(s) found. ");
                 strbuilder.Append($"{(p.Employments == null ? 0 : p.Employments.Count)} employment(s) found. ");
                 strbuilder.Append($"{(p.RelatedPersons == null ? 0 : p.RelatedPersons.Count)} related person(s) found. ");

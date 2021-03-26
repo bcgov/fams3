@@ -1,6 +1,5 @@
 using AutoMapper;
 using DynamicsAdapter.Web.Mapping;
-using DynamicsAdapter.Web.SearchAgency.Models;
 using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.Agency;
 using Fams3Adapter.Dynamics.BankInfo;
@@ -297,6 +296,19 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual("123", phone.Extension);
             Assert.AreEqual("home", phone.Type);
             Assert.AreEqual("responseComments", phone.ResponseComments);
+        }
+
+        [Test]
+        public void outProvince_SSG_PhoneNumber_should_map_to_Person_Phone_correctly()
+        {
+            SSG_PhoneNumber phoneNumber = new SSG_PhoneNumber
+            {
+                PhoneNumber = "Out of Province RJ | 123456"
+            };
+
+            Phone phone = _mapper.Map<Phone>(phoneNumber);
+
+            Assert.AreEqual("123456", phone.PhoneNumber);
         }
 
         [Test]

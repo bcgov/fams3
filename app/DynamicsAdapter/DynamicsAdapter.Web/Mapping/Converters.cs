@@ -131,12 +131,39 @@ namespace DynamicsAdapter.Web.Mapping
         }
     }
 
+    public class EmailTypeConverter : IValueConverter<string, int?>
+    {
+        public int? Convert(string sourceMember, ResolutionContext context)
+        {
+            if (sourceMember == null) return null;
+            EmailType type = Enumeration.GetAll<EmailType>().SingleOrDefault(m => m.Name.Equals(sourceMember, StringComparison.InvariantCultureIgnoreCase));
+            return type == null ? EmailType.Personal.Value : type.Value;
+        }
+    }
+
     public class PhoneTypeResponseConverter : IValueConverter<int?, string>
     {
         public string Convert(int? sourceMember, ResolutionContext context)
         {
             return sourceMember == null ? null :
                 (string)(PhoneType.PhoneTypeDictionary.FirstOrDefault(m => m.Value == (int)sourceMember).Key);
+        }
+    }
+
+    public class PhoneNumberResponseConverter : IValueConverter<string, string>
+    {
+        public string Convert(string sourceMember, ResolutionContext context)
+        {
+            if (string.IsNullOrEmpty(sourceMember)) return null;
+            string[] number = sourceMember.Split("|");
+            if(number != null && number.Length>1 && number[0].Trim().Equals(Constants.OutOfProvinceRJ, StringComparison.InvariantCultureIgnoreCase) )
+            {
+                return number[1].Trim();
+            }
+            else
+            {
+                return sourceMember;
+            }
         }
     }
 

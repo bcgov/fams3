@@ -217,7 +217,7 @@ namespace DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.TelephoneNumberType, opt => opt.ConvertUsing(new PhoneTypeConverter(), src => src.Type))
                .IncludeBase<PersonalInfo, DynamicsEntity>()
                .ReverseMap()
-                    .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
+                    .ForMember(dest => dest.PhoneNumber, opt => opt.ConvertUsing(new PhoneNumberResponseConverter(), src => src.PhoneNumber))
                     .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => OwnerType.PersonSought))
                     .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new PhoneTypeResponseConverter(), src => src.TelephoneNumberType));
 
@@ -382,6 +382,7 @@ namespace DynamicsAdapter.Web.Mapping
 
             CreateMap<Email, EmailEntity>()
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.EmailAddress))
+                .ForMember(dest => dest.EmailType, opt => opt.ConvertUsing(new EmailTypeConverter(), src => src.Type))
                 .IncludeBase<PersonalInfo, DynamicsEntity>()
                 ;
 

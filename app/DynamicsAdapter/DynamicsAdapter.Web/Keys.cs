@@ -15,6 +15,7 @@
         public static readonly string REDIS_KEY_PREFIX = "dyna_";
         public static readonly string REDIS_RESPONSE_KEY_PREFIX = "response_";
         public static readonly string DATA_PROVIDER_KEY = "ProviderList";
+        public static int DELAY_MILLISEC_SAME_FOUNDPERSON = 0;
     }
 }
 

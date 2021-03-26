@@ -146,6 +146,7 @@ namespace DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.InformationSourceCode, opt => opt.MapFrom(src => src.InformationSourceCode))
                  .ForMember(dest => dest.SupplierTypeCode, opt => opt.MapFrom(src => src.Type))
                  .ForMember(dest => dest.CountrySubdivisionText, opt => opt.MapFrom(src => src.StateProvince))
+                 .ForMember(dest => dest.CountrySubdivisionTextOrigin, opt => opt.MapFrom(src => src.StateProvince))
                  .ForMember(dest => dest.CountryText, opt => opt.MapFrom(src => src.CountryRegion))
                  .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
                  .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))

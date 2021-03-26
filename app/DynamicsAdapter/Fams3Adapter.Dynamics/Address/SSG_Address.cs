@@ -41,6 +41,9 @@ namespace Fams3Adapter.Dynamics.Address
         [JsonProperty("ssg_countrysubdivisiontext")]
         [DisplayName("Province/State Text")]
         public string CountrySubdivisionText { get; set; }
+        
+        [JsonProperty("ssg_countrysubdivisiontext_origin")]
+        public string CountrySubdivisionTextOrigin { get; set; }
 
         [JsonProperty("ssg_locationcityname")]
         [DisplayName("City")]

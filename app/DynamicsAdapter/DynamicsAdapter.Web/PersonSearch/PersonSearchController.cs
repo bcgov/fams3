@@ -1,4 +1,5 @@
 using AutoMapper;
+using BcGov.Fams3.Utils.Object;
 using DynamicsAdapter.Web.Mapping;
 using DynamicsAdapter.Web.PersonSearch.Models;
 using DynamicsAdapter.Web.Register;
@@ -98,15 +99,17 @@ namespace DynamicsAdapter.Web.PersonSearch
                         foreach (PersonFound p in personCompletedEvent.MatchedPersons)
                         {
                             SSG_Identifier sourceIdentifer = await _register.GetMatchedSourceIdentifier(p.SourcePersonalIdentifier, key);
-                            if ( Keys.DELAY_MILLISEC_SAME_FOUNDPERSON > 0 && prePerson != null)
+                            PersonFound clonedPerson = p.Clone();
+                            if ( prePerson != null)
                             {
-                                if (prePerson.SamePersonFound(p))
+                                if (p.SamePersonFound(prePerson))
                                 {
-                                    Thread.Sleep(Keys.DELAY_MILLISEC_SAME_FOUNDPERSON);
+                                    //senario: dynamics does not linked all just uploaded properties to just uploaded person, so have to check here.
+                                    p.RemoveDuplicateProperties(prePerson);
                                 }
                             }
                             await _searchResultService.ProcessPersonFound(p, personCompletedEvent.ProviderProfile, searchRequest, request?.SearchApiRequestId, cts.Token, sourceIdentifer);
-                            prePerson = p;
+                            prePerson = clonedPerson;
                         }
                     }
 

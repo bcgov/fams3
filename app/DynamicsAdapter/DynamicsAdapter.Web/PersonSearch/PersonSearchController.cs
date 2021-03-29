@@ -100,7 +100,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                             SSG_Identifier sourceIdentifer = await _register.GetMatchedSourceIdentifier(p.SourcePersonalIdentifier, key);
                             if ( Keys.DELAY_MILLISEC_SAME_FOUNDPERSON > 0 && prePerson != null)
                             {
-                                if (prePerson.Equals(p))
+                                if (prePerson.SamePersonFound(p))
                                 {
                                     Thread.Sleep(Keys.DELAY_MILLISEC_SAME_FOUNDPERSON);
                                 }

@@ -6,41 +6,35 @@ namespace DynamicsAdapter.Web.PersonSearch.Models
     public class PersonFound : Person
     {
         public PersonalIdentifier SourcePersonalIdentifier { get; set; }
+    }
 
-        public override bool Equals(Object obj)
+    public static class PersonFoundExtensions
+    {
+        public static bool SamePersonFound(this PersonFound thisPerson, PersonFound comparePerson)
         {
-            //Check for null and compare run-time types.
-            if ((obj == null) || !this.GetType().Equals(obj.GetType()))
-            {
-                return false;
-            }
-            else
-            {
-                PersonFound p = (PersonFound)obj;
-                return
-                     string.Equals(FirstName, p.FirstName, StringComparison.InvariantCultureIgnoreCase)
-                  && string.Equals(LastName, p.LastName, StringComparison.InvariantCultureIgnoreCase)
-                  && string.Equals(MiddleName, p.MiddleName, StringComparison.InvariantCultureIgnoreCase)
-                  && string.Equals(OtherName, p.OtherName, StringComparison.InvariantCultureIgnoreCase)
-                  && DateOfBirth == p.DateOfBirth
-                  && DateOfDeath == p.DateOfDeath
-                  && AgeInYears == p.AgeInYears
-                  && Gender == p.Gender
-                  && Incacerated == p.Incacerated
-                  && Height == p.Height
-                  && HeightUnits == p.HeightUnits
-                  && Weight == p.Weight
-                  && WeightUnits == p.WeightUnits
-                  && HairColour == p.HairColour
-                  && EyeColour == p.EyeColour
-                  && Complexion == p.Complexion
-                  && DistinguishingFeatures == p.DistinguishingFeatures
-                  && WearGlasses == p.WearGlasses
-                  && SecurityKeyword == p.SecurityKeyword
-                  && CautionFlag == p.CautionFlag
-                  && CautionReason == p.CautionReason
-                  && CautionNotes == p.CautionNotes;
-            }
+            return
+                 string.Equals(thisPerson.FirstName, comparePerson.FirstName, StringComparison.InvariantCultureIgnoreCase)
+              && string.Equals(thisPerson.LastName, comparePerson.LastName, StringComparison.InvariantCultureIgnoreCase)
+              && string.Equals(thisPerson.MiddleName, comparePerson.MiddleName, StringComparison.InvariantCultureIgnoreCase)
+              && string.Equals(thisPerson.OtherName, comparePerson.OtherName, StringComparison.InvariantCultureIgnoreCase)
+              && thisPerson.DateOfBirth == comparePerson.DateOfBirth
+              && thisPerson.DateOfDeath == comparePerson.DateOfDeath
+              && thisPerson.AgeInYears == comparePerson.AgeInYears
+              && thisPerson.Gender == comparePerson.Gender
+              && thisPerson.Incacerated == comparePerson.Incacerated
+              && thisPerson.Height == comparePerson.Height
+              && thisPerson.HeightUnits == comparePerson.HeightUnits
+              && thisPerson.Weight == comparePerson.Weight
+              && thisPerson.WeightUnits == comparePerson.WeightUnits
+              && thisPerson.HairColour == comparePerson.HairColour
+              && thisPerson.EyeColour == comparePerson.EyeColour
+              && thisPerson.Complexion == comparePerson.Complexion
+              && thisPerson.DistinguishingFeatures == comparePerson.DistinguishingFeatures
+              && thisPerson.WearGlasses == comparePerson.WearGlasses
+              && thisPerson.SecurityKeyword == comparePerson.SecurityKeyword
+              && thisPerson.CautionFlag == comparePerson.CautionFlag
+              && thisPerson.CautionReason == comparePerson.CautionReason
+              && thisPerson.CautionNotes == comparePerson.CautionNotes;
         }
     }
 }

@@ -94,10 +94,19 @@ namespace DynamicsAdapter.Web.PersonSearch
                         //    await _searchResultService.ProcessPersonFound(p, personCompletedEvent.ProviderProfile, searchRequest, cts.Token);
                         //});
                         _logger.LogDebug(JsonConvert.SerializeObject(personCompletedEvent.MatchedPersons));
+                        PersonFound prePerson = null;
                         foreach (PersonFound p in personCompletedEvent.MatchedPersons)
                         {
                             SSG_Identifier sourceIdentifer = await _register.GetMatchedSourceIdentifier(p.SourcePersonalIdentifier, key);
+                            if ( Keys.DELAY_MILLISEC_SAME_FOUNDPERSON > 0 && prePerson != null)
+                            {
+                                if (prePerson.SamePersonFound(p))
+                                {
+                                    Thread.Sleep(Keys.DELAY_MILLISEC_SAME_FOUNDPERSON);
+                                }
+                            }
                             await _searchResultService.ProcessPersonFound(p, personCompletedEvent.ProviderProfile, searchRequest, request?.SearchApiRequestId, cts.Token, sourceIdentifer);
+                            prePerson = p;
                         }
                     }
 

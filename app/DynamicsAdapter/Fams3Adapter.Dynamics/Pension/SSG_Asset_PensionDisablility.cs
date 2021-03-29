@@ -12,17 +12,8 @@ namespace Fams3Adapter.Dynamics.Pension
         [JsonProperty("ssg_providerphone")]
         public string ProviderPhone { get; set; }
 
-        [JsonProperty("ssg_balanceamount_base")]
-        public double BalanceAmount_base { get; set; }
-
-        [JsonProperty("ssg_balanceamount")]
-        public double BalanceAmount { get; set; }
-
-        [JsonProperty("transactioncurrencyid")]
-        public string Currency { get; set; }
-
-        [JsonProperty("exchangerate")]
-        public double ExchangeRate { get; set; }
+        [JsonProperty("ssg_balanceamounttext")]
+        public string BalanceAmount { get; set; }
 
         [JsonProperty("ssg_provideraddressline1")]
         public string AddressLine1 { get; set; }

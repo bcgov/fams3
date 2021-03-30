@@ -88,11 +88,6 @@ namespace DynamicsAdapter.Web
             services.AddTransient<ISearchResultService, SearchResultService>();
             services.AddTransient<ISearchRequestRegister, SearchRequestRegister>();
 
-            Object obj = Configuration.GetValue(typeof(int), "DELAY_MILLISEC_SAME_FOUNDPERSON");
-            if (obj != null)
-            {
-                Keys.DELAY_MILLISEC_SAME_FOUNDPERSON = (int)obj;
-            }
         }
 
         private void ConfigureFluentValidation(IServiceCollection services)

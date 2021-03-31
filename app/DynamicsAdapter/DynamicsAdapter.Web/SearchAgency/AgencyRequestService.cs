@@ -680,25 +680,35 @@ namespace DynamicsAdapter.Web.SearchAgency
             string previousNoteStr = existedSearchRequest.Notes;
             if(existedSearchRequest.SSG_Notes!=null && existedSearchRequest.SSG_Notes?.Length > 0)
             {
-                previousNoteStr = 
-                    existedSearchRequest.SSG_Notes.Last(m=>m.InformationSource==InformationSourceType.Request.Value).Description;
+                try
+                {
+                    previousNoteStr =
+                        existedSearchRequest.SSG_Notes.Last(m => m.InformationSource == InformationSourceType.Request.Value).Description;
+                }catch(Exception e)
+                {
+                    _logger.LogInformation("notes does not contain notes from request. It is ok.");
+                }
             }
-           
-            NotesEntity note = new NotesEntity
-            {
-                StatusCode = 1,
-                Description = UpdateCurrentNote(newSearchRequestEntity.Notes, previousNoteStr),
-                InformationSource = InformationSourceType.Request.Value,
-                SearchRequest = _uploadedSearchRequest
-            };
-            SSG_Notese ssgNote = await _searchRequestService.CreateNotes(note, _cancellationToken);
 
-            if (ssgNote == null)
+            string newNotes = UpdateCurrentNote(newSearchRequestEntity.Notes, previousNoteStr);
+            if (newNotes != null)
             {
-                _logger.LogError("Create new notes failed.");
-                return false;
+                NotesEntity note = new NotesEntity
+                {
+                    StatusCode = 1,
+                    Description = UpdateCurrentNote(newSearchRequestEntity.Notes, previousNoteStr),
+                    InformationSource = InformationSourceType.Request.Value,
+                    SearchRequest = _uploadedSearchRequest
+                };
+                SSG_Notese ssgNote = await _searchRequestService.CreateNotes(note, _cancellationToken);
+
+                if (ssgNote == null)
+                {
+                    _logger.LogError("Create new notes failed.");
+                    return false;
+                }
+                _logger.LogInformation("Create new notes successfully.");
             }
-            _logger.LogInformation("Create new notes successfully.");
             return true;
         }
 
@@ -713,33 +723,43 @@ namespace DynamicsAdapter.Web.SearchAgency
             if (string.IsNullOrEmpty(previousNote) || string.IsNullOrEmpty(currentNote))
                 return currentNote;
 
-            int personSoughtPos = previousNote.IndexOf($"{Environment.NewLine}Person Sought :");
+            int personSoughtPos = previousNote.IndexOf($"Person Sought :");
             if (personSoughtPos > 0)
             {
-                previousNote = previousNote.Substring(0, personSoughtPos + 1);
+                previousNote = previousNote.Substring(0, personSoughtPos).Trim();
             }
-
             int begin = previousNote.IndexOf("**UPDATE ");
-            int end = 0;
             string cleanPreviousNote = previousNote;
             if (begin > 0)
             {
-                end = previousNote.IndexOf("**", begin+2);
+                int end = previousNote.IndexOf("**", begin+2);
                 if (end > begin) {
-                    cleanPreviousNote = previousNote.Substring(0, begin) + previousNote.Substring(end+2);
+                    cleanPreviousNote = (previousNote.Substring(0, begin) + previousNote.Substring(end+2)).Trim();
                 }
             }
-            char lastChar = cleanPreviousNote.ToArray().Last(m => char.IsLetterOrDigit(m));
-            int last = cleanPreviousNote.LastIndexOf(lastChar);
-            if(last>=0)
-                cleanPreviousNote = cleanPreviousNote.Substring(0, last+1);
+
+            
+            currentNote = currentNote.Trim();
+            string cleanCurrentNote = currentNote;
+            int personSoughtPosCurrentNote = currentNote.IndexOf($"Person Sought :");
+            if (personSoughtPosCurrentNote > 0)
+            {
+                cleanCurrentNote = currentNote.Substring(0, personSoughtPosCurrentNote).Trim();
+            }
 
             string resultStr = currentNote;
             int updatePos = currentNote.IndexOf(cleanPreviousNote,StringComparison.InvariantCultureIgnoreCase);
-            if ( updatePos == 0)
+            if ( updatePos == 0 && cleanCurrentNote.Length >= cleanPreviousNote.Length)
             {
-                string date = DateTime.Now.ToString("ddMMMyyy");
-                resultStr = currentNote.Insert(cleanPreviousNote.Length, $"**UPDATE {date}**");
+                if (cleanCurrentNote.Length == cleanPreviousNote.Length)
+                {
+                    resultStr = null;
+                }
+                else
+                {
+                    string date = DateTime.Now.ToString("ddMMMyyy");
+                    resultStr = currentNote.Insert(cleanPreviousNote.Length, $"**UPDATE {date}**");
+                }
             }
             return resultStr;
         }

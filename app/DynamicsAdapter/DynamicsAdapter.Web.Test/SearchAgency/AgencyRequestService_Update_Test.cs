@@ -1260,20 +1260,20 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
         public void updateCurrentNote_clean_append()
         {
             string existingNotes = "Be careful of this.";
-            string newNotes = "Be careful of this not that.";
+            string newNotes = "Be careful of this. not that.";
             string result = _sut.UpdateCurrentNote(newNotes, existingNotes);
             string date = DateTime.Now.ToString("ddMMMyyyy");
-            Assert.AreEqual($"Be careful of this**UPDATE {date}** not that.", result);
+            Assert.AreEqual($"Be careful of this.**UPDATE {date}** not that.", result);
         }
 
         [Test]
         public void updateCurrentNote_update_existing_append()
         {
-            string existingNotes = "Be careful of this**UPDATE 19Mar2021** not that.";
-            string newNotes = "Be careful of this not that and stay away.";
+            string existingNotes = "Be careful of this.**UPDATE 19Mar2021** not that.";
+            string newNotes = "Be careful of this. not that. and stay away.";
             string result = _sut.UpdateCurrentNote(newNotes, existingNotes);
             string date = DateTime.Now.ToString("ddMMMyyyy");
-            Assert.AreEqual($"Be careful of this not that**UPDATE {date}** and stay away.", result);
+            Assert.AreEqual($"Be careful of this. not that.**UPDATE {date}** and stay away.", result);
         }
 
         [Test]
@@ -1289,10 +1289,10 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
         public void updateCurrentNote_update_notes_with_PersonSought()
         {
             string existingNotes = $"Be careful of this not that.{Environment.NewLine}Person Sought : Weight";
-            string newNotes = "Be careful of this not that and stay away.";
+            string newNotes = "Be careful of this not that. and stay away.";
             string result = _sut.UpdateCurrentNote(newNotes, existingNotes);
             string date = DateTime.Now.ToString("ddMMMyyyy");
-            Assert.AreEqual($"Be careful of this not that**UPDATE {date}** and stay away.", result);
+            Assert.AreEqual($"Be careful of this not that.**UPDATE {date}** and stay away.", result);
         }
     }
 }

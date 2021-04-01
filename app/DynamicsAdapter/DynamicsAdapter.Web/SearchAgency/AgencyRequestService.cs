@@ -34,7 +34,7 @@ namespace DynamicsAdapter.Web.SearchAgency
         Task<SSG_SearchRequest> ProcessUpdateSearchRequest(SearchRequestOrdered updateSearchRequest);
         SSG_SearchRequest GetSSGSearchRequest();
         Task<bool> SystemCancelSSGSearchRequest(SSG_SearchRequest searchRequest);
-        Task<bool> ProcessNotificationAcknowledgement(Acknowledgement ack, Guid ApiCallGuid);
+        Task<bool> ProcessNotificationAcknowledgement(Acknowledgement ack, Guid ApiCallGuid, bool isAmendment);
     }
 
     public class AgencyRequestService : IAgencyRequestService
@@ -192,7 +192,7 @@ namespace DynamicsAdapter.Web.SearchAgency
             return true;
         }
 
-        public async Task<bool> ProcessNotificationAcknowledgement(Acknowledgement ack, Guid ApiCallGuid)
+        public async Task<bool> ProcessNotificationAcknowledgement(Acknowledgement ack, Guid ApiCallGuid, bool isAmendment)
         {
             try
             {
@@ -202,10 +202,11 @@ namespace DynamicsAdapter.Web.SearchAgency
                 if(ack.NotificationType== ContractNotificationType.RequestClosed)
                 {
                     success = ack.Status == ContractStatus.SUCCESS;
-                    if(success)
-                        notes = $"{ack.ProviderProfile?.Name} received search response successfully.";
+                    string name = isAmendment ? "amendment" : "search";
+                    if (success) 
+                        notes = $"{ack.ProviderProfile?.Name} received {name} response successfully.";
                     else
-                        notes = $"{ack.ProviderProfile?.Name} did not receive search response successfully.";
+                        notes = $"{ack.ProviderProfile?.Name} did not receive {name} response successfully.";
                     return await _searchRequestService.UpdateApiCall(ApiCallGuid, success, notes, cts.Token);
                 }
                 return false;

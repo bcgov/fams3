@@ -196,8 +196,10 @@ namespace DynamicsAdapter.Web.SearchAgency
                     {
                         return StatusCode(StatusCodes.Status500InternalServerError);
                     }
- 
-                    await _agencyRequestService.ProcessNotificationAcknowledgement(ack, ready.ApiCallGuid);
+
+                    bool isAmendment = false;
+                    if (ack.SearchRequestKey.Contains("-")) isAmendment = true;
+                    await _agencyRequestService.ProcessNotificationAcknowledgement(ack, ready.ApiCallGuid, isAmendment);
                     await _register.DeleteSearchResponseReady(ack.SearchRequestKey, ack.RequestId);
                 }
                 catch (AgencyRequestException ex)

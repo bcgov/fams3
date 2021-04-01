@@ -450,7 +450,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 NotificationType = ContractNotificationType.RequestClosed,
                 Status = ContractStatus.SUCCESS,
             };
-            bool result = await _sut.ProcessNotificationAcknowledgement(ack, guid);
+            bool result = await _sut.ProcessNotificationAcknowledgement(ack, guid,true);
             Assert.IsTrue(result);
         }
 
@@ -465,7 +465,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 NotificationType = ContractNotificationType.RequestClosed,
                 Status = ContractStatus.SUCCESS,
             };
-            bool result = await _sut.ProcessNotificationAcknowledgement(ack, guid);
+            bool result = await _sut.ProcessNotificationAcknowledgement(ack, guid,true);
             Assert.IsFalse(result);
         }
 
@@ -478,7 +478,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 NotificationType = ContractNotificationType.RequestSaved,
                 Status = ContractStatus.SUCCESS,
             };
-            bool result = await _sut.ProcessNotificationAcknowledgement(ack, guid);
+            bool result = await _sut.ProcessNotificationAcknowledgement(ack, guid, true);
             Assert.IsFalse(result);
         }
     }

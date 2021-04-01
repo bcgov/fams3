@@ -406,7 +406,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 Status= BcGov.Fams3.SearchApi.Contracts.SearchRequest.NotificationStatusEnum.SUCCESS
             };
 
-            _agencyRequestServiceMock.Setup(x => x.ProcessNotificationAcknowledgement(It.IsAny<Acknowledgement>(), It.IsAny<Guid>()))
+            _agencyRequestServiceMock.Setup(x => x.ProcessNotificationAcknowledgement(It.IsAny<Acknowledgement>(), It.IsAny<Guid>(), It.IsAny<bool>()))
                 .Returns(Task.FromResult(true));
 
             _register.Setup(x => x.GetSearchResponseReady(It.IsAny<string>(), It.IsAny<string>()))
@@ -417,7 +417,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
 
             IActionResult result = await _sut.NotificationAcknowledged("normalReferenceID", ack);
 
-            _agencyRequestServiceMock.Verify(x => x.ProcessNotificationAcknowledgement(It.IsAny<Acknowledgement>(), It.IsAny<Guid>()), Times.Once);
+            _agencyRequestServiceMock.Verify(x => x.ProcessNotificationAcknowledgement(It.IsAny<Acknowledgement>(), It.IsAny<Guid>(), It.IsAny<bool>()), Times.Once);
             Assert.IsInstanceOf(typeof(OkResult), result);
         }
 
@@ -436,7 +436,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
 
             IActionResult result = await _sut.NotificationAcknowledged("normalReferenceID", ack);
 
-            _agencyRequestServiceMock.Verify(x => x.ProcessNotificationAcknowledgement(It.IsAny<Acknowledgement>(), It.IsAny<Guid>()), Times.Never);
+            _agencyRequestServiceMock.Verify(x => x.ProcessNotificationAcknowledgement(It.IsAny<Acknowledgement>(), It.IsAny<Guid>(), It.IsAny<bool>()), Times.Never);
             Assert.AreEqual(400, ((StatusCodeResult)result).StatusCode);
         }
 
@@ -453,7 +453,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 Status = BcGov.Fams3.SearchApi.Contracts.SearchRequest.NotificationStatusEnum.SUCCESS
             };
 
-            _agencyRequestServiceMock.Setup(x => x.ProcessNotificationAcknowledgement(It.IsAny<Acknowledgement>(), It.IsAny<Guid>()))
+            _agencyRequestServiceMock.Setup(x => x.ProcessNotificationAcknowledgement(It.IsAny<Acknowledgement>(), It.IsAny<Guid>(), It.IsAny<bool>()))
                 .Returns(Task.FromResult(true));
 
             _register.Setup(x => x.GetSearchResponseReady(It.Is<string>(m=>m=="123344"), It.Is<string>(m=>m== "notInCache")))
@@ -464,7 +464,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
 
             IActionResult result = await _sut.NotificationAcknowledged("notInCache", ack);
 
-            _agencyRequestServiceMock.Verify(x => x.ProcessNotificationAcknowledgement(It.IsAny<Acknowledgement>(), It.IsAny<Guid>()), Times.Never);
+            _agencyRequestServiceMock.Verify(x => x.ProcessNotificationAcknowledgement(It.IsAny<Acknowledgement>(), It.IsAny<Guid>(), It.IsAny<bool>()), Times.Never);
             Assert.AreEqual(500, ((StatusCodeResult)result).StatusCode);
         }
 

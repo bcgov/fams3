@@ -685,7 +685,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                 {
                     previousNoteStr =
                         existedSearchRequest.SSG_Notes.Last(m => m.InformationSource == InformationSourceType.Request.Value).Description;
-                }catch(Exception e)
+                }catch(Exception)
                 {
                     _logger.LogInformation("notes does not contain notes from request. It is ok.");
                 }

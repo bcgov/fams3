@@ -516,11 +516,13 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         {
             string duplicateDetectHash = await _duplicateDetectService.GetDuplicateDetectHashData(newPerson);
             updatedFields.Add("ssg_duplicatedetectionhash", duplicateDetectHash);
+            updatedFields.Add(new KeyValuePair<string, object>("ssg_updatedbyagency", true));
             return await this._oDataClient.For<SSG_Person>().Key(personId).Set(updatedFields).UpdateEntryAsync(cancellationToken);
         }
 
         public async Task<SSG_Identity> UpdateRelatedPerson(Guid relatedPersonId, IDictionary<string, object> updatedFields, CancellationToken cancellationToken)
         {
+            updatedFields.Add(new KeyValuePair<string, object>("ssg_updatedbyagency", true));
             return await this._oDataClient.For<SSG_Identity>().Key(relatedPersonId).Set(updatedFields).UpdateEntryAsync(cancellationToken);
         }
 
@@ -537,6 +539,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
         public async Task<SSG_SafetyConcernDetail> UpdateSafetyConcern(Guid safetyId, IDictionary<string, object> updatedFields, CancellationToken cancellationToken)
         {
+            updatedFields.Add(new KeyValuePair<string, object>("ssg_updatedbyagency", true));
             return await this._oDataClient.For<SSG_SafetyConcernDetail>().Key(safetyId).Set(updatedFields).UpdateEntryAsync(cancellationToken);
         }
 

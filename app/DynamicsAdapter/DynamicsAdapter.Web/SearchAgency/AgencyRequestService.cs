@@ -705,7 +705,8 @@ namespace DynamicsAdapter.Web.SearchAgency
                     StatusCode = 1,
                     Description = UpdateCurrentNote(newSearchRequestEntity.Notes, previousNoteStr),
                     InformationSource = InformationSourceType.Request.Value,
-                    SearchRequest = _uploadedSearchRequest
+                    SearchRequest = _uploadedSearchRequest,
+                    UpdatedByApi=true
                 };
                 SSG_Notese ssgNote = await _searchRequestService.CreateNotes(note, _cancellationToken);
 

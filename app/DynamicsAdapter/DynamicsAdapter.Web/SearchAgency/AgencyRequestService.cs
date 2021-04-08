@@ -266,6 +266,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                 identifier.InformationSource = InformationSourceType.Request.Value;
                 identifier.Person = _uploadedPerson;
                 identifier.IsCreatedByAgency = true;
+                identifier.UpdatedByApi = inUpdateProcess;
                 if (inUpdateProcess)
                     identifier.UpdateDetails = "New Identifier";
                 SSG_Identifier newIdentifier = await _searchRequestService.CreateIdentifier(identifier, _cancellationToken);
@@ -284,6 +285,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                         identifier.InformationSource = InformationSourceType.Request.Value;
                         identifier.Person = _uploadedPerson;
                         identifier.IsCreatedByAgency = true;
+                        identifier.UpdatedByApi = inUpdateProcess;
                         if (inUpdateProcess)
                             identifier.UpdateDetails = "New Identifier";
                         SSG_Identifier newIdentifier = await _searchRequestService.CreateIdentifier(identifier, _cancellationToken);
@@ -307,6 +309,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                 addr.InformationSource = InformationSourceType.Request.Value;
                 addr.Person = _uploadedPerson;
                 addr.IsCreatedByAgency = true;
+                addr.UpdatedByApi = inUpdateProcess;
                 if (inUpdateProcess) addr.UpdateDetails = "New Address";
                 SSG_Address uploadedAddr = await _searchRequestService.CreateAddress(addr, _cancellationToken);
             }
@@ -324,6 +327,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                         addr.InformationSource = InformationSourceType.Request.Value;
                         addr.Person = _uploadedPerson;
                         addr.IsCreatedByAgency = true;
+
                         SSG_Address uploadedAddr = await _searchRequestService.CreateAddress(addr, _cancellationToken);
                     }
                 }
@@ -345,6 +349,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                 ph.InformationSource = InformationSourceType.Request.Value;
                 ph.Person = _uploadedPerson;
                 ph.IsCreatedByAgency = true;
+                ph.UpdatedByApi = inUpdateProcess;
                 if (inUpdateProcess)
                 {
                     ph.UpdateDetails = "Create Phone";
@@ -403,6 +408,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                 e.InformationSource = InformationSourceType.Request.Value;
                 e.Person = _uploadedPerson;
                 e.IsCreatedByAgency = true;
+                e.UpdatedByApi = inUpdateProcess;
                 if (inUpdateProcess) e.UpdateDetails = "New Employment";
                 SSG_Employment ssg_employment = await _searchRequestService.CreateEmployment(e, _cancellationToken);
 
@@ -434,6 +440,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                 n.SearchRequest = _uploadedSearchRequest;
                 n.InformationSource = InformationSourceType.Request.Value;
                 n.Person = _uploadedPerson;
+                n.UpdatedByApi = inUpdateProcess;
                 if (inUpdateProcess)
                 {
                     n.UpdateDetails = "Create New Related Person";
@@ -482,6 +489,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                 aliasEntity.InformationSource = InformationSourceType.Request.Value;
                 aliasEntity.Person = _uploadedPerson;
                 aliasEntity.IsCreatedByAgency = true;
+                aliasEntity.UpdatedByApi = inUpdateProcess;
                 if (inUpdateProcess)
                     aliasEntity.UpdateDetails = "New Alias";
                 await _searchRequestService.CreateName(aliasEntity, _cancellationToken);
@@ -527,7 +535,7 @@ namespace DynamicsAdapter.Web.SearchAgency
         private async Task<bool> UpdatePersonSought()
         {
             PersonEntity newPersonEntity = _mapper.Map<PersonEntity>(_personSought);
-
+            
             Dictionary<string, object> updatedFields = (Dictionary<string, object>)_uploadedPerson.Clone().GetUpdateEntries(newPersonEntity);
             if (updatedFields.Count > 0)
             {
@@ -547,6 +555,7 @@ namespace DynamicsAdapter.Web.SearchAgency
             else
             {
                 SafetyConcernEntity newSafeEntity = _mapper.Map<SafetyConcernEntity>(_personSought);
+                newSafeEntity.UpdatedByApi = true;
                 Dictionary<string, object> updatedFields = (Dictionary<string, object>)originalSafeEntity.Clone().GetUpdateEntries(newSafeEntity);
                 if (updatedFields.Count > 0)
                 {

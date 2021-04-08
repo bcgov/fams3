@@ -49,6 +49,8 @@ namespace Fams3Adapter.Dynamics.Identifier
 
         [JsonProperty("ssg_couldnotlocate")]
         public bool IsCouldNotLocate { get; set; }
+
+     
     }
 
     public class SSG_Identifier : IdentifierEntity

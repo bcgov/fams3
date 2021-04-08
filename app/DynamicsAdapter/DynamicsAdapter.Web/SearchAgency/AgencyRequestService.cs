@@ -110,10 +110,7 @@ namespace DynamicsAdapter.Web.SearchAgency
 
             //get existedPersonSought
             SSG_Person existedSoughtPerson = existedSearchRequest?.SSG_Persons?.FirstOrDefault(
-                    m => m.FirstName == existedSearchRequest.PersonSoughtFirstName
-                    && m.LastName == existedSearchRequest.PersonSoughtLastName
-                    && m.InformationSource == InformationSourceType.Request.Value
-                    && m.IsCreatedByAgency);
+                    m => m.IsPrimary == true);
             if (existedSoughtPerson == null)
             {
                 _logger.LogError("the updating personSought does not exist. something is wrong.");

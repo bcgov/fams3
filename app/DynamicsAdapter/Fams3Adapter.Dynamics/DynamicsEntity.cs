@@ -32,5 +32,10 @@ namespace Fams3Adapter.Dynamics
         public string ResponseComments { get; set; }
 
         public bool Existed { get; set; }
+
+        [JsonProperty("ssg_updatedbyagency")]
+        [UpdateIgnore]
+        [DefaultValue(false)]
+        public bool UpdatedByApi { get; set; }
     }
 }

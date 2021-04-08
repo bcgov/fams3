@@ -60,7 +60,8 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                                     FirstName = "firstName",
                                     LastName="lastName",
                                     InformationSource= InformationSourceType.Request.Value,
-                                    IsCreatedByAgency=true
+                                    IsCreatedByAgency=true,
+                                    IsPrimary=true
                                 }
                   }.ToArray()
               }));
@@ -99,7 +100,8 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                             FirstName = "firstName",
                             LastName="lastName",
                             InformationSource= InformationSourceType.Request.Value,
-                            IsCreatedByAgency=true
+                            IsCreatedByAgency=true,
+                            IsPrimary=true
                         }
                     }.ToArray()
                 }));
@@ -450,7 +452,8 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                             FirstName = "firstName",
                             LastName="lastName",
                             InformationSource= InformationSourceType.Request.Value,
-                            IsCreatedByAgency=true
+                            IsCreatedByAgency=true,
+                            IsPrimary=true,
                         }
                     }.ToArray()
                 }));
@@ -541,7 +544,8 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                             FirstName = "firstName",
                             LastName="lastName",
                             InformationSource= InformationSourceType.Request.Value,
-                            IsCreatedByAgency=true
+                            IsCreatedByAgency=true,
+                            IsPrimary=true
                         }
                     }.ToArray()
                 }));
@@ -724,7 +728,8 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                             AddressLine1 = "addressLine1", AddressLine2="line2", IsCreatedByAgency=true
                         }
                     }.ToArray(),
-                    IsCreatedByAgency = true
+                    IsCreatedByAgency = true,
+                    IsPrimary=true,
                 }));
 
             SearchRequestEntity newSearchRequest = new SearchRequestEntity { AgencyCode = "FMEP" };

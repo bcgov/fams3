@@ -18,7 +18,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchApiRequest
     public class SearchApiRequestServiceTest
     {
         private Mock<IODataClient> odataClientMock = new Mock<IODataClient>();
-
+    
         private Guid _testId;
         private Guid _testSRId;
 
@@ -37,6 +37,15 @@ namespace Fams3Adapter.Dynamics.Test.SearchApiRequest
                       new SSG_DataProvider()
                       {
                         AdaptorName = adaptorName,
+                        NumberOfDaysToRetry =retries,
+                        SearchSpeed = AutoSearchSpeedType.Fast.Value,
+                        TimeBetweenRetries = 60,
+                        NumberOfRetries = 3
+
+                      },
+                      new SSG_DataProvider()
+                      {
+                        AdaptorName = "BCHYDRO",
                         NumberOfDaysToRetry =retries,
                         SearchSpeed = AutoSearchSpeedType.Fast.Value,
                         TimeBetweenRetries = 60,
@@ -115,7 +124,8 @@ namespace Fams3Adapter.Dynamics.Test.SearchApiRequest
                     }.ToArray(),
                     DataProviders = new List<SSG_SearchapiRequestDataProvider>()
                     {
-                        new SSG_SearchapiRequestDataProvider(){AdaptorName="ICBC"}
+                        new SSG_SearchapiRequestDataProvider(){AdaptorName="ICBC"},
+                         new SSG_SearchapiRequestDataProvider(){AdaptorName="BCHYDRO"}
                     }.ToArray(),
                     SearchRequest = new SSG_SearchRequest() { SearchRequestId= _testSRId, FileId ="fileId"}
                 }));
@@ -160,20 +170,63 @@ namespace Fams3Adapter.Dynamics.Test.SearchApiRequest
         [Test]
         public void with_success_should_return_a_collection_of_search_request()
         {
-            var result = _sut.GetAllReadyForSearchAsync(CancellationToken.None, providersList.ToArray()).Result;
+            string availabelPartners = "ICBC:BCHYDRO";
+
+            var result = _sut.GetAllReadyForSearchAsync(CancellationToken.None, providersList.ToArray(), availabelPartners).Result;
             Assert.AreEqual(1, result.Count());
             Assert.AreEqual("personGivenName1", result.FirstOrDefault().PersonGivenName);
             Assert.AreEqual(2, result.FirstOrDefault().Identifiers.Count());
-            Assert.AreEqual(1, result.FirstOrDefault().DataProviders.Count());
+            Assert.AreEqual(2, result.FirstOrDefault().DataProviders.Count());
             Assert.AreEqual(60, result.FirstOrDefault().DataProviders[0].TimeBetweenRetries);
             Assert.AreEqual(3, result.FirstOrDefault().DataProviders[0].NumberOfRetries);
             Assert.AreEqual(false, result.FirstOrDefault().IsFailed);
         }
 
+        [Test]
+        public void with_success_should_return_a_collection_of_search_request_with_3()
+        {
+            string availabelPartners = "ICBC:BCHYDRO:MSDPR";
+
+            var result = _sut.GetAllReadyForSearchAsync(CancellationToken.None, providersList.ToArray(), availabelPartners).Result;
+            Assert.AreEqual(1, result.Count());
+            Assert.AreEqual("personGivenName1", result.FirstOrDefault().PersonGivenName);
+            Assert.AreEqual(2, result.FirstOrDefault().Identifiers.Count());
+            Assert.AreEqual(2, result.FirstOrDefault().DataProviders.Count());
+            Assert.AreEqual(60, result.FirstOrDefault().DataProviders[0].TimeBetweenRetries);
+            Assert.AreEqual(3, result.FirstOrDefault().DataProviders[0].NumberOfRetries);
+            Assert.AreEqual(false, result.FirstOrDefault().IsFailed);
+        }
+        [Test]
+        public void with_success_should_return_a_collection_of_search_request_with_empty()
+        {
+            string availabelPartners = "";
+
+            var result = _sut.GetAllReadyForSearchAsync(CancellationToken.None, providersList.ToArray(), availabelPartners).Result;
+            Assert.AreEqual(1, result.Count());
+            Assert.AreEqual("personGivenName1", result.FirstOrDefault().PersonGivenName);
+            Assert.AreEqual(2, result.FirstOrDefault().Identifiers.Count());
+            Assert.AreEqual(2, result.FirstOrDefault().DataProviders.Count());
+            Assert.AreEqual(60, result.FirstOrDefault().DataProviders[0].TimeBetweenRetries);
+            Assert.AreEqual(3, result.FirstOrDefault().DataProviders[0].NumberOfRetries);
+            Assert.AreEqual(false, result.FirstOrDefault().IsFailed);
+        }
 
         [Test]
         public void with_success_should_return_a_collection_of_failed_search_request()
         {
+
+            providersList = new List<SSG_DataProvider>()
+                  {
+                      new SSG_DataProvider()
+                      {
+                        AdaptorName = adaptorName,
+                        NumberOfDaysToRetry =retries,
+                        SearchSpeed = AutoSearchSpeedType.Fast.Value,
+                        TimeBetweenRetries = 60,
+                        NumberOfRetries = 3
+
+                      }
+                  };
             var result = _sut.GetAllValidFailedSearchRequest(CancellationToken.None, providersList.ToArray()).Result;
             Assert.AreEqual(1, result.Count());
             Assert.AreEqual("personGivenName1", result.FirstOrDefault().PersonGivenName);
@@ -186,7 +239,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchApiRequest
         public void with_success_should_return_a_collection_of_data_provider()
         {
             var result = _sut.GetDataProvidersList(CancellationToken.None).Result;
-            Assert.AreEqual(1, result.Count());
+            Assert.AreEqual(2, result.Count());
             Assert.AreEqual("ICBC", result.FirstOrDefault().AdaptorName);
             Assert.AreEqual(10, result.FirstOrDefault().NumberOfDaysToRetry);
             Assert.AreEqual(AutoSearchSpeedType.Fast.Value, result.FirstOrDefault().SearchSpeed);

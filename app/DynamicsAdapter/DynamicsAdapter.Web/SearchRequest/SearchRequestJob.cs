@@ -1,7 +1,9 @@
 using AutoMapper;
+using DynamicsAdapter.Web.Configuration;
 using DynamicsAdapter.Web.Register;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Quartz;
 using Serilog.Context;
 using System;
@@ -28,18 +30,21 @@ namespace DynamicsAdapter.Web.SearchRequest
 
         private readonly ISearchRequestRegister _register;
 
+        private readonly SearchApiConfiguration _searchApiConfiguration;
 
         public SearchRequestJob(ISearchApiClient searchApiClient,
             ISearchApiRequestService searchApiRequestService,
             ILogger<SearchRequestJob> logger,
             IMapper mapper,
-            ISearchRequestRegister register)
+            ISearchRequestRegister register,
+            IOptions<SearchApiConfiguration> searchApiConfigurationOptions)
         {
             _logger = logger;
             _searchApiRequestService = searchApiRequestService;
             _searchApiClient = searchApiClient;
             _mapper = mapper;
             _register = register;
+            _searchApiConfiguration = searchApiConfigurationOptions.Value;
         }
 
         public async Task Execute(IJobExecutionContext context)
@@ -116,7 +121,7 @@ namespace DynamicsAdapter.Web.SearchRequest
         {
             _logger.LogDebug("Attempting to get search request from dynamics");
            
-            var request = await _searchApiRequestService.GetAllReadyForSearchAsync(cancellationToken, await _register.GetDataProvidersList());
+            var request = await _searchApiRequestService.GetAllReadyForSearchAsync(cancellationToken, await _register.GetDataProvidersList(), _searchApiConfiguration.AvailableDataPartner );
 
             _logger.LogInformation("Successfully retrieved search requests from dynamics");
             return request.ToList();

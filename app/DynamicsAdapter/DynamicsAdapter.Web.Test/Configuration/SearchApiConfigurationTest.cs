@@ -11,11 +11,16 @@ namespace DynamicsAdapter.Web.Test.Configuration
         {
             var sut = new SearchApiConfiguration()
             {
-                BaseUrl = "http://localhost:5000"
+                BaseUrl = "http://localhost:5000",
+                AvailableDataPartner = "BCHYDRO:MSDPR:ICBC"
             };
 
             Assert.AreEqual("http://localhost:5000", sut.BaseUrl);
+            Assert.AreEqual(sut.AvailableDataPartner, "BCHYDRO:MSDPR:ICBC");
+            Assert.AreEqual(sut.AvailableDataPartner.Split(new char[] { ':' }).Length, 3);
         }
+
+       
 
     }
 }

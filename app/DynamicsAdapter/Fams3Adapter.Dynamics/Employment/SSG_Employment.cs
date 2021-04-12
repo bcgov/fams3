@@ -173,7 +173,7 @@ namespace Fams3Adapter.Dynamics.Employment
         [JsonProperty("ssg_groupid")]
         public string GroupID { get; set; }
 
-      
+
     }
 
     public class SSG_Employment : EmploymentEntity

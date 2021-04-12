@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
+using DynamicsAdapter.Web.Configuration;
 using DynamicsAdapter.Web.Register;
 using DynamicsAdapter.Web.SearchRequest;
 using Fams3Adapter.Dynamics.DataProvider;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
 using NUnit.Framework;
 using Quartz;
@@ -30,6 +32,9 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
         private Mock<ILogger<SearchRequestJob>> _loggerMock = new Mock<ILogger<SearchRequestJob>>();
         private Mock<IMapper> _mapperMock = new Mock<IMapper>();
         private Mock<IJobExecutionContext> _jobContext = new Mock<IJobExecutionContext>();
+        private Mock<IOptions<SearchApiConfiguration>> _searchApiOptionsMock = new Mock<IOptions<SearchApiConfiguration>>();
+        private SearchApiConfiguration _searchApiOptionReal;
+      
 
         [SetUp]
         public void Init()
@@ -46,6 +51,15 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
                 SearchRequestId = _validSearchRequestId,
                 SearchRequest = new SSG_SearchRequest() { FileId = "111111" }
             };
+
+         
+            _searchApiOptionReal = new SearchApiConfiguration
+            {
+                AvailableDataPartner = "MSDPR:ICBC,BCHYDRO",
+                BaseUrl = "http://base_url"
+            };
+            _searchApiOptionsMock.Setup(x => x.Value).Returns
+                (_searchApiOptionReal);
 
             SSG_SearchApiRequest ssgExceptionSearchApiRequest = new SSG_SearchApiRequest()
             {
@@ -112,7 +126,8 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
                 _searchApiRequestServiceMock.Object,
                 _loggerMock.Object,
                 _mapperMock.Object,
-                _searchApiRequestRegisterMock.Object
+                _searchApiRequestRegisterMock.Object,
+                _searchApiOptionsMock.Object
                 );
 
         }
@@ -121,7 +136,7 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
         public async Task valid_searchapiRequest_execute_run_successfully()
         {
 
-            _searchApiRequestServiceMock.Setup(x => x.GetAllReadyForSearchAsync(It.IsAny<CancellationToken>(), It.IsAny<SSG_DataProvider[]>()))
+            _searchApiRequestServiceMock.Setup(x => x.GetAllReadyForSearchAsync(It.IsAny<CancellationToken>(), It.IsAny<SSG_DataProvider[]>(), _searchApiOptionReal.AvailableDataPartner))
                 .Returns(Task.FromResult<IEnumerable<SSG_SearchApiRequest>>(_fakeSearchApiRequests));
 
 
@@ -149,7 +164,7 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
                     SearchRequest = new SSG_SearchRequest(){FileId="111111"}
                 }
             };
-            _searchApiRequestServiceMock.Setup(x => x.GetAllReadyForSearchAsync(It.IsAny<CancellationToken>(), It.IsAny<SSG_DataProvider[]>()))
+            _searchApiRequestServiceMock.Setup(x => x.GetAllReadyForSearchAsync(It.IsAny<CancellationToken>(), It.IsAny<SSG_DataProvider[]>(), _searchApiOptionReal.AvailableDataPartner))
             .Returns(Task.FromResult<IEnumerable<SSG_SearchApiRequest>>(noSearchRequestIDRequests));
 
             await _sut.Execute(_jobContext.Object);
@@ -175,7 +190,7 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
                     SearchRequest = new SSG_SearchRequest(){FileId="111111"}
                 }
             };
-            _searchApiRequestServiceMock.Setup(x => x.GetAllReadyForSearchAsync(It.IsAny<CancellationToken>(), It.IsAny<SSG_DataProvider[]>()))
+            _searchApiRequestServiceMock.Setup(x => x.GetAllReadyForSearchAsync(It.IsAny<CancellationToken>(), It.IsAny<SSG_DataProvider[]>(), _searchApiOptionReal.AvailableDataPartner))
             .Returns(Task.FromResult<IEnumerable<SSG_SearchApiRequest>>(exceptionSearchRequestIDRequests));
 
             _searchApiClientMock.Setup(
@@ -210,7 +225,7 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
                     SearchRequest = new SSG_SearchRequest(){FileId="111111"}
                 }
             };
-            _searchApiRequestServiceMock.Setup(x => x.GetAllReadyForSearchAsync(It.IsAny<CancellationToken>(), It.IsAny<SSG_DataProvider[]>()))
+            _searchApiRequestServiceMock.Setup(x => x.GetAllReadyForSearchAsync(It.IsAny<CancellationToken>(), It.IsAny<SSG_DataProvider[]>(), _searchApiOptionReal.AvailableDataPartner))
             .Returns(Task.FromResult<IEnumerable<SSG_SearchApiRequest>>(exceptionSearchRequestIDRequests));
 
             _searchApiClientMock.Setup(
@@ -243,7 +258,7 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
         [Test]
         public async Task register_throw_exception_should_be_caught()
         {
-            _searchApiRequestServiceMock.Setup(x => x.GetAllReadyForSearchAsync(It.IsAny<CancellationToken>(), It.IsAny<SSG_DataProvider[]>()))
+            _searchApiRequestServiceMock.Setup(x => x.GetAllReadyForSearchAsync(It.IsAny<CancellationToken>(), It.IsAny<SSG_DataProvider[]>(), _searchApiOptionReal.AvailableDataPartner))
                .Returns(Task.FromResult<IEnumerable<SSG_SearchApiRequest>>(_fakeSearchApiRequests));
 
             _searchApiRequestRegisterMock.Setup(
@@ -258,7 +273,7 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
         [Test]
         public async Task register_return_false_exception_should_be_caught()
         {
-            _searchApiRequestServiceMock.Setup(x => x.GetAllReadyForSearchAsync(It.IsAny<CancellationToken>(), It.IsAny<SSG_DataProvider[]>()))
+            _searchApiRequestServiceMock.Setup(x => x.GetAllReadyForSearchAsync(It.IsAny<CancellationToken>(), It.IsAny<SSG_DataProvider[]>(), _searchApiOptionReal.AvailableDataPartner))
                .Returns(Task.FromResult<IEnumerable<SSG_SearchApiRequest>>(_fakeSearchApiRequests));
 
             _searchApiRequestRegisterMock.Setup(

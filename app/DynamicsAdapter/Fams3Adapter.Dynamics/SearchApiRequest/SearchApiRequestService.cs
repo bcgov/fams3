@@ -17,7 +17,7 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
 
     public interface ISearchApiRequestService
     {
-        Task<IEnumerable<SSG_SearchApiRequest>> GetAllReadyForSearchAsync(CancellationToken cancellationToken, SSG_DataProvider[] dataProviders);
+        Task<IEnumerable<SSG_SearchApiRequest>> GetAllReadyForSearchAsync(CancellationToken cancellationToken, SSG_DataProvider[] dataProviders, string availableDataPartners);
 
         Task<IEnumerable<SSG_SearchApiRequest>> GetAllValidFailedSearchRequest(CancellationToken cancellationToken, SSG_DataProvider[] dataProviders);
 
@@ -45,6 +45,7 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
     {
 
         private readonly IODataClient _oDataClient;
+      //  private readonly SearchApiConfiguration _searchApiConfiguration;
       
         public SearchApiRequestService(IODataClient oDataClient)
         {
@@ -57,7 +58,9 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         public async Task<IEnumerable<SSG_SearchApiRequest>> GetAllReadyForSearchAsync(
-            CancellationToken cancellationToken, SSG_DataProvider[] dataProviders)
+            CancellationToken cancellationToken, 
+            SSG_DataProvider[] dataProviders,
+            string availableDataPartners)
         {
             List<SSG_DataProvider> providers = dataProviders.ToList();
             int readyForSearchCode = SearchApiRequestStatusReason.ReadyForSearch.Value;
@@ -86,28 +89,39 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
                     .Expand(x => x.SearchReason).FindEntryAsync(cancellationToken);
                 }
                 searchApiRequest.IsFailed = false;
-                UpdateProviderInfo(providers, searchApiRequest);
+                UpdateProviderInfo(providers, searchApiRequest, availableDataPartners);
                 results.Add(searchApiRequest);
             }
             return results;       
         }
 
-        private static void UpdateProviderInfo(List<SSG_DataProvider> providers, SSG_SearchApiRequest searchApiRequest)
+        private static void UpdateProviderInfo(List<SSG_DataProvider> providers, SSG_SearchApiRequest searchApiRequest, string availableDataPartners)
         {
             if (searchApiRequest.DataProviders != null)
             {
-                List<SSG_SearchapiRequestDataProvider> apiProviders = new List<SSG_SearchapiRequestDataProvider>();
+                List<string> dataPartner;
+                if (!string.IsNullOrEmpty(availableDataPartners))
+                    dataPartner = availableDataPartners.Split(new char[] { ':' }).ToList();
+                else
+                    dataPartner = providers.Select(x => x.AdaptorName).ToList();
+
+                List <SSG_SearchapiRequestDataProvider> apiProviders = new List<SSG_SearchapiRequestDataProvider>();
                 foreach (SSG_SearchapiRequestDataProvider prov in searchApiRequest.DataProviders)
                 {
 
-                    var provider = providers.FirstOrDefault(x => x.AdaptorName == prov.AdaptorName);
-                    if (provider != null)
+                    /// get a list of data partner in prod - appsettings
+                    /// if provider not in list, do not add to apiProviders
+                    if (dataPartner.Any(dataPartner => dataPartner == prov.AdaptorName))
                     {
-                        prov.NumberOfRetries = provider.NumberOfRetries;
-                        prov.TimeBetweenRetries = provider.TimeBetweenRetries;
-                        prov.SearchSpeed = provider.SearchSpeed;
+                        var provider = providers.FirstOrDefault(x => x.AdaptorName == prov.AdaptorName);
+                        if (provider != null)
+                        {
+                            prov.NumberOfRetries = provider.NumberOfRetries;
+                            prov.TimeBetweenRetries = provider.TimeBetweenRetries;
+                            prov.SearchSpeed = provider.SearchSpeed;
+                        }
+                        apiProviders.Add(prov);
                     }
-                    apiProviders.Add(prov);
                 }
                 searchApiRequest.DataProviders = apiProviders.ToArray();
             }

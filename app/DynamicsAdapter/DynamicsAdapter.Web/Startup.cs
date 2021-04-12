@@ -69,6 +69,7 @@ namespace DynamicsAdapter.Web
             services.AddControllers();
 
             services.AddOptions<AgencyNotificationOptions>().Bind(Configuration.GetSection(Keys.AGENCY_NOTIFICATION_WEB_HOOK_SETTING_KEY));
+            services.AddOptions<SearchApiConfiguration>().Bind(Configuration.GetSection("SearchApi"));
             services.AddHttpClient<IAgencyNotificationWebhook<SearchRequestNotification>, AgencyNotificationWebhook>();
 
             services.AddHealthChecks().AddCheck<DynamicsHealthCheck>("status_reason_health_check", failureStatus: HealthStatus.Degraded);

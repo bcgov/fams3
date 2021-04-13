@@ -36,7 +36,7 @@ objects:
       app: ${dataPartnerService}-rest-adapter
     name: ${dataPartnerService}-rest-adapter
   spec:
-    replicas: 2
+    replicas: 1
     revisionHistoryLimit: 10
     selector:
       io.kompose.service: ${dataPartnerService}-rest-adapter

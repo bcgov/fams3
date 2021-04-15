@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Template
+labels:
+  template: jca-file-adapter-config
+message: |-
+  jca data partner config template.
+metadata:
+  annotations:
+    description: |-
+      jca data partner config template.
+    tags: jca-file-adapter-config
+    template: jca-file-adapter-config
+  name: jca-file-adapter-config
+# Objects
+objects:
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    name: jca-file-adapter-config
+    label:
+      app: jca-file-adapter
+  stringData:
+    SFTP__CERTPATH: "set.certpath"
+    SFTP__PASSWORD: "set.password"
+    SFTP__PORT: "set.port"
+    SFTP__SERVER: "set.server"
+    SFTP__USERNAME: "set.username"
+    BATCHPROCESSCRON: "set.cron.expression"
+    DATAPARTNER__SFTP__ARCHIVEPATH: "set.archive.path"
+    DATAPARTNER__SFTP__CERTPATH: "set.certpath"
+    DATAPARTNER__SFTP__DOWNLOADPATH: "set.dowload.path"
+    DATAPARTNER__SFTP__PORT: "set.port"
+    DATAPARTNER__SFTP__SERVER: "set.server"
+    DATAPARTNER__SFTP__UPLOADPATH: "set.upload.path"
+    DATAPARTNER__SFTP__USERNAME: "set.username"
+    DATAPARTNER__STARTCYCLENUMBER: "set.cycle.number"
+    FILEWATCHERCRON: "set.cron.expression"
+    PROVIDERPROFILE__NAME: "set.provider.profile"

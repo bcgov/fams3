@@ -3,11 +3,11 @@ kind: Template
 labels:
   template: ia-search-config
 message: |-
-  SFTP config template.
+  search config template.
 metadata:
   annotations:
     description: |-
-      SFTP config template.
+      search config template.
     tags: ia-search-config
     template: ia-search-config
     template: ia-search-config
@@ -23,3 +23,7 @@ objects:
   stringData:
     IACONFIG__DOWNLOADPATH: "set.download.path"
     IACONFIG__UPLOADPATH: "set.upload.path"
+    DATAPARTNERRESTADAPTER__BASEURL: "set.rest.url"
+    SCHEDULER__RESUMECRON: "set.resume.cron"
+    SCHEDULER__STARTCRONFIRST: "set.start.first.cron"
+    SCHEDULER__STARTCRONSECOND: "set.start.second.cron"

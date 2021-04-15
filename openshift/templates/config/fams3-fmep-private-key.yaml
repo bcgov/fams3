@@ -1,16 +1,16 @@
 apiVersion: v1
 kind: Template
 labels:
-  template: fams3-fmep-private-key
+  template: fams3-jca-private-key
 message: |-
-  fams3-fmep-private-key template.
+  fams3-jca-private-key template.
 metadata:
   annotations:
     description: |-
-      fams3-fmep-private-key template.
-    tags: fams3-fmep-private-key
-    template: fams3-fmep-private-key
-  name: fams3-fmep-private-key
+      fams3-jca-private-key template.
+    tags: fams3-jca-private-key
+    template: fams3-jca-private-key
+  name: fams3-jca-private-key
 
 # Objects
 objects:
@@ -21,5 +21,5 @@ objects:
   metadata:
     labels:
       credential.sync.jenkins.openshift.io: 'true'
-    name: fams3-fmep-private-key
+    name: fams3-jca-private-key
   type: kubernetes.io/ssh-auth

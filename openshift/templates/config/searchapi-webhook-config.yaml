@@ -28,6 +28,7 @@ objects:
   stringData:
     SearchApi__WebHooks__0__Name: ${NAME}
     SearchApi__WebHooks__0__Uri: ${URL}
+    SearchApi__ApiKeyForDynadaptor: "set.api.key"
   kind: Secret
   metadata:
     name: searchapi-webhook-config

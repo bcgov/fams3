@@ -14,9 +14,6 @@ metadata:
 
 # Parameters
 parameters:
-- name: APP_NAME
-  required: true
-  value: "set.app.name"
 - name: PROFILE_NAME
   required: true
   value: "set.name"
@@ -31,4 +28,5 @@ objects:
       app: ${APP_NAME}
   stringData:
     PROVIDERPROFILE__NAME: ${PROFILE_NAME}
-
+    APIKEY: "set.api.key"
+    TRUSTEDHOSTS: "*"

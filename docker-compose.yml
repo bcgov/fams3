@@ -39,15 +39,18 @@ services:
       RABBITMQ__PASSWORD: guest
       JAEGER_SERVICE_NAME: search-api
       JAEGER_SAMPLER_TYPE: const
-      Redis__PASSWORD: ${REDIS__PASSWORD}
-      Redis__ConnectTimeout: 6000
-      Redis__ConnectRetry: 2
-      Redis__Hosts__0__Host: ${REDIS__HOST}
-      Redis__Hosts__0__Port: 6379
-      DeepSearch__MaxWaveCount: 4
+      REDIS__PASSWORD: ${REDIS__PASSWORD}
+      REDIS__CONNECTTIMEOUT: 6000
+      REDIS__CONNECTRETRY: 2
+      REDIS__HOSTS__0__HOST: ${REDIS__HOST}
+      REDIS__HOSTS__0__PORT: 6379
+      REDIS__ABORTONCONNECTFAIL: "false"
+      REDIS__SYNCTIMEOUT: 5000
+      REDIS__CONNECTTIMEOUT: 6000
+      DEEPSEARCH__MAXWAVECOUNT: 4
       JAEGER_ENDPOINT: http://jaeger-collector:14268/api/traces
-      SearchApi__WebHooks__0__Name: dynadapter
-      SearchApi__WebHooks__0__Uri: http://dynadapter/PersonSearch
+      SEARCHAPI__WEBHOOKS__0__NAME: dynadapter
+      SEARCHAPI__WEBHOOKS__0__URI: http://dynadapter/PersonSearch
       SPLUNK_COLLECTOR_URL: https://splunk:8088
       SPLUNK_TOKEN: ${SPLUNK_TOKEN}
     ports:
@@ -129,11 +132,14 @@ services:
       APIGATEWAY__BASEPATH: ${APIGATEWAY__BASEPATH}
       SPLUNK_COLLECTOR_URL: https://splunk:8088
       SPLUNK_TOKEN: ${SPLUNK_TOKEN}
-      Redis__PASSWORD: ${REDIS__PASSWORD}
-      Redis__ConnectTimeout: 6000
-      Redis__ConnectRetry: 2
-      Redis__Hosts__0__Host: ${REDIS__HOST}
-      Redis__Hosts__0__Port: 6379
+      REDIS__PASSWORD: ${REDIS__PASSWORD}
+      REDIS__CONNECTTIMEOUT: 6000
+      REDIS__CONNECTRETRY: 2
+      REDIS__HOSTS__0__HOST: ${REDIS__HOST}
+      REDIS__HOSTS__0__PORT: 6379
+      REDIS__ABORTONCONNECTFAIL: "false"
+      REDIS__SYNCTIMEOUT: 5000
+      REDIS__CONNECTTIMEOUT: 6000
     restart: always
     networks:
       - search-api-net

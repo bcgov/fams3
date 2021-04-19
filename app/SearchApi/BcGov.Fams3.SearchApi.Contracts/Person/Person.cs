@@ -58,6 +58,7 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         public IEnumerable<ResponsePerson> ResponsePersons { get; set; }
 
         public JCAPerson JCAPerson { get; set; }
+        public User FSOUser { get; set; }
     }
 
     public enum SoughtPersonType

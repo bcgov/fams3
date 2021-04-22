@@ -25,7 +25,7 @@ namespace BcGov.Fams3.Redis.DependencyInjection
 
             services.AddSingleton((provider) =>
             {
-                return provider.GetRequiredService<IRedisCacheClient>();
+                return provider.GetRequiredService<IRedisCacheClient>().GetDbFromConfiguration();
             });
 
         
@@ -38,10 +38,10 @@ namespace BcGov.Fams3.Redis.DependencyInjection
             services.AddDistributedRedisCache(options =>
             {
                 options.Configuration = $"{redisConfig.Hosts[0].Host}:{redisConfig.Hosts[0].Port},Password={redisConfig.Password}";
-                options.ConfigurationOptions.ConnectTimeout = redisConfig.ConnectTimeout;
-                options.ConfigurationOptions.AbortOnConnectFail = redisConfig.AbortOnConnectFail;
-                options.ConfigurationOptions.SyncTimeout = redisConfig.SyncTimeout;
-                options.ConfigurationOptions.ConnectRetry = 4;
+                //options.ConfigurationOptions.ConnectTimeout = redisConfig.ConnectTimeout;
+                //options.ConfigurationOptions.AbortOnConnectFail = redisConfig.AbortOnConnectFail;
+                //options.ConfigurationOptions.SyncTimeout = redisConfig.SyncTimeout;
+                //options.ConfigurationOptions.ConnectRetry = 4;
 
             });
             services.AddSingleton<ICacheService, CacheService>();

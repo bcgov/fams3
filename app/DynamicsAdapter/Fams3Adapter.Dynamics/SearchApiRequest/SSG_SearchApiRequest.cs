@@ -70,5 +70,10 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
         [JsonProperty("ssg_jcagender")]
         public int? JCAGender { get; set; }
 
+        [JsonProperty("ssg_triggeredby")]
+        public string TiggeredBy { get; set; }
+
+        [JsonProperty("ssg_triggeredinqueue")]
+        public bool TriggeredInQueue { get; set; }
     }
 }

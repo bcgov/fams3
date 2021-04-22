@@ -10,7 +10,7 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         public string FirstName { get; set; }
         [Description("User lastname")]
         public string LastName { get; set; }
-        public string FullName { get { return $"{FirstName} {LastName}"; } }
+        public string FullName { get; set; }
         public bool SystemTriggered { get; set; }
     }
 }

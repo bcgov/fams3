@@ -72,6 +72,7 @@ namespace DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.Identifiers, opt => opt.MapFrom(src => src.Identifiers))
                  .ForMember(dest => dest.Names, opt => opt.MapFrom<NamesResolver>())
                  .ForMember(dest => dest.Agency, opt => opt.MapFrom<AgencyResolver>())
+                 .ForMember(dest => dest.FsoUser, opt => opt.MapFrom<FsoUserResolver>())
                  .ForMember(dest => dest.JcaPerson, opt => opt.MapFrom(src => src))
                  .ForMember(dest => dest.IsPreScreenSearch, opt => opt.MapFrom(src => src.IsPrescreenSearch))
                  .ForMember(dest => dest.SearchRequestKey, opt => opt.MapFrom(src => src.SearchRequest == null ? "0" : $"{src.SearchRequest.FileId}_{src.SequenceNumber}"))

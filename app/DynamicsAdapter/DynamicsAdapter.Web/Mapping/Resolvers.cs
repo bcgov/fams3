@@ -158,6 +158,22 @@ namespace DynamicsAdapter.Web.Mapping
         }
     }
 
+    public class FsoUserResolver : IValueResolver<SSG_SearchApiRequest, PersonSearchRequest, User>
+    {
+        public User Resolve(SSG_SearchApiRequest source, PersonSearchRequest destination, User destMember, ResolutionContext context)
+        {
+            if( source.IsPrescreenSearch || source.TriggeredInQueue)
+            {
+                return new User { SystemTriggered = true };
+            }
+            else
+            {
+                return new User { SystemTriggered = false, FullName = source.TiggeredBy };
+            }
+
+        }
+    }
+
     public class EmployerPhoneResponseResolver : IValueResolver<SSG_Employment, Employer, ICollection<Phone>>
     {
         public ICollection<Phone> Resolve(SSG_Employment source, Employer destination, ICollection<Phone> destMember, ResolutionContext context)

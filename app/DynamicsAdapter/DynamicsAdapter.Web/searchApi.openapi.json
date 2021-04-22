@@ -343,6 +343,9 @@
             },
             "jcaPerson": {
               "$ref": "#/definitions/JCAPerson"
+            },
+            "fsoUser": {
+              "$ref": "#/definitions/User"
             }
           }
         }
@@ -1624,6 +1627,32 @@
         },
         "gender": {
           "type": "string"
+        }
+      }
+    },
+    "User": {
+      "type": "object",
+      "required": [
+        "systemTriggered"
+      ],
+      "properties": {
+        "email": {
+          "type": "string",
+          "description": "User Email"
+        },
+        "firstName": {
+          "type": "string",
+          "description": "User FirstName "
+        },
+        "lastName": {
+          "type": "string",
+          "description": "User lastname"
+        },
+        "fullName": {
+          "type": "string"
+        },
+        "systemTriggered": {
+          "type": "boolean"
         }
       }
     }

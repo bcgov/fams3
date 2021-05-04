@@ -9,6 +9,7 @@ namespace SearchApi.Web.Configuration
     {
         public List<WebHookNotification> WebHooks { get; set; } = new List<WebHookNotification>();
         public string ApiKeyForDynadaptor { get; set; }
+        public int Timeout { get; set; } = 10;
 
         public SearchApiOptions AddWebHook(string name, string uri)
         {

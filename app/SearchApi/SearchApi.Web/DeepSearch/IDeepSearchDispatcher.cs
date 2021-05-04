@@ -1,14 +1,10 @@
-﻿using BcGov.Fams3.Redis;
-using BcGov.Fams3.SearchApi.Contracts.Person;
-using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
+﻿using BcGov.Fams3.SearchApi.Contracts.Person;
 using Microsoft.Extensions.Logging;
 using SearchApi.Web.Controllers;
 using SearchApi.Web.DeepSearch.Schema;
 using SearchApi.Web.Messaging;
-using SearchApi.Web.Notifications;
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace SearchApi.Web.DeepSearch

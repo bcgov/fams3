@@ -80,6 +80,7 @@ namespace SearchApi.Web.Notifications
                         System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
                     request.Headers.Add("X-ApiKey", _searchApiOptions.ApiKeyForDynadaptor);
                     request.RequestUri = endpoint;
+                    _httpClient.Timeout = TimeSpan.FromMinutes(_searchApiOptions.Timeout);
                     var response = await _httpClient.SendAsync(request, cancellationToken);
 
                     if (!response.IsSuccessStatusCode)

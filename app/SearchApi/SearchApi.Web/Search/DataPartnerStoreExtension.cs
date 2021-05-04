@@ -19,53 +19,97 @@ namespace SearchApi.Web.Search
 
         }
 
-        public static SearchRequest UpdateDataPartner(this string json, string dataPartner)
+        public static SearchRequest UpdateDataPartner(this SearchRequest request, string dataPartner)
         {
-            var request = JsonConvert.DeserializeObject<SearchRequest>(json);
-            var partner = request.DataPartners.ToList().FirstOrDefault(x => x.Name == dataPartner);
-            if (partner == null) return request;
-            request.DataPartners.ToList().Remove(partner);
-            partner.Completed = true;
-            request.DataPartners.ToList().Add(partner);
+            var partner = request.DataPartners?.FirstOrDefault(x => x.Name == dataPartner);
+            if(partner != null)
+            {
+                partner.Completed = true;
+            }
             return request;
         }
-        public static SearchRequest ResetDataPartner(this string json, string dataPartner)
+        public static SearchRequest ResetDataPartner(this SearchRequest request, string dataPartner)
         {
-            var request = JsonConvert.DeserializeObject<SearchRequest>(json);
             var partner = request.DataPartners.ToList().FirstOrDefault(x => x.Name == dataPartner);
-
-            if (partner == null) return request;
-            request.DataPartners.ToList().Remove(partner);
-            partner.Completed = false;
-            request.DataPartners.ToList().Add(partner);
+            if(partner != null)
+                partner.Completed = false;
             return request;
         }
-        public static bool AllPartnerCompleted(this string json)
+        public static bool AllPartnerCompleted(this SearchRequest request)
         {
-            if (!string.IsNullOrEmpty(json))
-            {
-                var request = JsonConvert.DeserializeObject<SearchRequest>(json);
-                return !request.DataPartners.Any(x => x.Completed == false);
-            }
-            else return true; // we can't find request, possibly completed and already deleted from redis. requires refactor
-            
+
+            return !request.DataPartners.Any(x => x.Completed == false);
         }
 
-        public static bool AllFastSearchPartnerCompleted(this string json)
+        public static bool AllFastSearchPartnerCompleted(this SearchRequest request)
         {
-            if (!string.IsNullOrEmpty(json))
-            {
-                var request = JsonConvert.DeserializeObject<SearchRequest>(json);
-                return !request.DataPartners.Any(x => x.Completed == false && x.SearchSpeed == SearchSpeedType.Fast);
-            }
-            else return true; // we can't find request, possibly completed and already deleted from redis. requires refactor
+            return !request.DataPartners.Any(x => x.Completed == false && x.SearchSpeed == SearchSpeedType.Fast);
 
         }
 
         public static string DeepSearchKey(this string searchRequestKey, string datapartner)
         {
-             return string.Format(Keys.DEEP_SEARCH_REDIS_KEY_FORMAT, searchRequestKey, datapartner);
+            return string.Format(Keys.DEEP_SEARCH_REDIS_KEY_FORMAT, searchRequestKey, datapartner);
 
         }
     }
+
+    //public static class DataPartnerStoreExtension
+    //{
+    //    public static IEnumerable<DataPartner> GetDataPartnerSection(this string json)
+    //    {
+    //        JObject data = JObject.Parse(json);
+    //        return data.SelectToken(Keys.DATA_PARTNER_JSON_PATH).ToObject<IEnumerable<DataPartner>>();
+
+    //    }
+
+    //    public static SearchRequest UpdateDataPartner(this string json, string dataPartner)
+    //    {
+    //        var request = JsonConvert.DeserializeObject<SearchRequest>(json);
+    //        var partner = request.DataPartners.ToList().FirstOrDefault(x => x.Name == dataPartner);
+    //        if (partner == null) return request;
+    //        request.DataPartners.ToList().Remove(partner);
+    //        partner.Completed = true;
+    //        request.DataPartners.ToList().Add(partner);
+    //        return request;
+    //    }
+    //    public static SearchRequest ResetDataPartner(this string json, string dataPartner)
+    //    {
+    //        var request = JsonConvert.DeserializeObject<SearchRequest>(json);
+    //        var partner = request.DataPartners.ToList().FirstOrDefault(x => x.Name == dataPartner);
+
+    //        if (partner == null) return request;
+    //        request.DataPartners.ToList().Remove(partner);
+    //        partner.Completed = false;
+    //        request.DataPartners.ToList().Add(partner);
+    //        return request;
+    //    }
+    //    public static bool AllPartnerCompleted(this string json)
+    //    {
+    //        if (!string.IsNullOrEmpty(json))
+    //        {
+    //            var request = JsonConvert.DeserializeObject<SearchRequest>(json);
+    //            return !request.DataPartners.Any(x => x.Completed == false);
+    //        }
+    //        else return true; // we can't find request, possibly completed and already deleted from redis. requires refactor
+            
+    //    }
+
+    //    public static bool AllFastSearchPartnerCompleted(this string json)
+    //    {
+    //        if (!string.IsNullOrEmpty(json))
+    //        {
+    //            var request = JsonConvert.DeserializeObject<SearchRequest>(json);
+    //            return !request.DataPartners.Any(x => x.Completed == false && x.SearchSpeed == SearchSpeedType.Fast);
+    //        }
+    //        else return true; // we can't find request, possibly completed and already deleted from redis. requires refactor
+
+    //    }
+
+    //    public static string DeepSearchKey(this string searchRequestKey, string datapartner)
+    //    {
+    //         return string.Format(Keys.DEEP_SEARCH_REDIS_KEY_FORMAT, searchRequestKey, datapartner);
+
+    //    }
+    //}
 }

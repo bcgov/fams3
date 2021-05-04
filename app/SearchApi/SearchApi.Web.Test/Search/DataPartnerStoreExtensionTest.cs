@@ -26,60 +26,60 @@ namespace SearchApi.Web.Test.Search
             Assert.AreEqual(2, jsonData.GetDataPartnerSection().Count());
         }
 
-        [Test]
-        public void json_path_should_update_icbc()
-        {
-            var sr = jsonData.UpdateDataPartner("ICBC");
-            Assert.AreEqual(true, sr.DataPartners.ToList().Find(x => x.Name == "ICBC").Completed);
-            Assert.AreEqual(false, sr.DataPartners.ToList().Find(x => x.Name == "BCHydro").Completed);
-        }
+        //[Test]
+        //public void json_path_should_update_icbc()
+        //{
+        //    var sr = jsonData.UpdateDataPartner("ICBC");
+        //    Assert.AreEqual(true, sr.DataPartners.ToList().Find(x => x.Name == "ICBC").Completed);
+        //    Assert.AreEqual(false, sr.DataPartners.ToList().Find(x => x.Name == "BCHydro").Completed);
+        //}
 
-        [Test]
-        public void json_path_should_update_bchydro()
-        {
-            var sr = jsonData.UpdateDataPartner("BCHydro");
-            Assert.AreEqual(true, sr.DataPartners.ToList().Find(x => x.Name == "BCHydro").Completed);
-            Assert.AreEqual(false, sr.DataPartners.ToList().Find(x => x.Name == "ICBC").Completed);
-        }
+        //[Test]
+        //public void json_path_should_update_bchydro()
+        //{
+        //    var sr = jsonData.UpdateDataPartner("BCHydro");
+        //    Assert.AreEqual(true, sr.DataPartners.ToList().Find(x => x.Name == "BCHydro").Completed);
+        //    Assert.AreEqual(false, sr.DataPartners.ToList().Find(x => x.Name == "ICBC").Completed);
+        //}
 
-        [Test]
-        public void update_all_should_return_true_all_complete()
-        {
-            Assert.AreEqual(false, jsonData.AllFastSearchPartnerCompleted());
-            var sr = jsonData.UpdateDataPartner("BCHydro");
-            sr = JsonConvert.SerializeObject(sr).UpdateDataPartner("ICBC");
-            Assert.AreEqual(true, JsonConvert.SerializeObject(sr).AllPartnerCompleted());
+        //[Test]
+        //public void update_all_should_return_true_all_complete()
+        //{
+        //    Assert.AreEqual(false, jsonData.AllFastSearchPartnerCompleted());
+        //    var sr = jsonData.UpdateDataPartner("BCHydro");
+        //    sr = JsonConvert.SerializeObject(sr).UpdateDataPartner("ICBC");
+        //    Assert.AreEqual(true, JsonConvert.SerializeObject(sr).AllPartnerCompleted());
           
-        }
-        [Test]
-        public void update_all_should_return_true_all_completed_if_jca_false()
-        {
-            Assert.AreEqual(false, jsonDataJCA.AllPartnerCompleted());
-            var sr = jsonDataJCA.UpdateDataPartner("BCHydro");
-            sr = JsonConvert.SerializeObject(sr).UpdateDataPartner("ICBC");
+        //}
+        //[Test]
+        //public void update_all_should_return_true_all_completed_if_jca_false()
+        //{
+        //    Assert.AreEqual(false, jsonDataJCA.AllPartnerCompleted());
+        //    var sr = jsonDataJCA.UpdateDataPartner("BCHydro");
+        //    sr = JsonConvert.SerializeObject(sr).UpdateDataPartner("ICBC");
   
-            Assert.AreEqual(true, JsonConvert.SerializeObject(sr).AllFastSearchPartnerCompleted());
-            Assert.AreEqual(false, JsonConvert.SerializeObject(sr).AllPartnerCompleted());
+        //    Assert.AreEqual(true, JsonConvert.SerializeObject(sr).AllFastSearchPartnerCompleted());
+        //    Assert.AreEqual(false, JsonConvert.SerializeObject(sr).AllPartnerCompleted());
 
-        }
+        //}
 
-        [Test]
-        public void update_all_should_return_true_all_completed_even_if_jca_false()
-        {
-            Assert.AreEqual(false, jsonDataJCA.AllFastSearchPartnerCompleted());
-            var sr = jsonDataJCA.UpdateDataPartner("BCHydro");
-            sr = JsonConvert.SerializeObject(sr).UpdateDataPartner("ICBC");
+        //[Test]
+        //public void update_all_should_return_true_all_completed_even_if_jca_false()
+        //{
+        //    Assert.AreEqual(false, jsonDataJCA.AllFastSearchPartnerCompleted());
+        //    var sr = jsonDataJCA.UpdateDataPartner("BCHydro");
+        //    sr = JsonConvert.SerializeObject(sr).UpdateDataPartner("ICBC");
 
-            Assert.AreEqual(true, JsonConvert.SerializeObject(sr).AllFastSearchPartnerCompleted());
+        //    Assert.AreEqual(true, JsonConvert.SerializeObject(sr).AllFastSearchPartnerCompleted());
 
-        }
+        //}
 
-        [Test]
-        public void update_all_should_return_false_all_complete()
-        {
-            var sr = jsonData.UpdateDataPartner("BCHydro");
-            Assert.AreEqual(false, JsonConvert.SerializeObject(sr).AllPartnerCompleted());
-        }
+        //[Test]
+        //public void update_all_should_return_false_all_complete()
+        //{
+        //    var sr = jsonData.UpdateDataPartner("BCHydro");
+        //    Assert.AreEqual(false, JsonConvert.SerializeObject(sr).AllPartnerCompleted());
+        //}
         [Test]
         public void should_return_wave_search_key_format()
         {

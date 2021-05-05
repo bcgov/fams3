@@ -59,7 +59,7 @@ namespace SearchApi.Web.DeepSearch
             {
                 SearchRequest sr = await _cacheService.GetRequest(searchRequestKey);
                 if (sr != null)
-                    return !sr.AllFastSearchPartnerCompleted();
+                    return sr.AllFastSearchPartnerCompleted();
                 else
                     return true;
             }

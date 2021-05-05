@@ -27,9 +27,9 @@ namespace SearchApi.Web.Notifications
         {
             _httpClient = httpClient;
             _logger = logger;
-            _searchApiOptions = searchApiOptions.Value;
-     
+            _searchApiOptions = searchApiOptions.Value;     
             _deepSearchService = deepSearchService;
+            _httpClient.Timeout = TimeSpan.FromMinutes(_searchApiOptions.Timeout);
         }
 
         public async Task NotifyEventAsync(string searchRequestKey, PersonSearchAdapterEvent eventStatus, string eventName,
@@ -80,7 +80,6 @@ namespace SearchApi.Web.Notifications
                         System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
                     request.Headers.Add("X-ApiKey", _searchApiOptions.ApiKeyForDynadaptor);
                     request.RequestUri = endpoint;
-                    _httpClient.Timeout = TimeSpan.FromMinutes(_searchApiOptions.Timeout);
                     var response = await _httpClient.SendAsync(request, cancellationToken);
 
                     if (!response.IsSuccessStatusCode)

@@ -41,6 +41,7 @@ namespace SearchRequest.Adaptor.Notifier
             using (LogContext.PushProperty("AgencyCode", $"{notification?.Agency}"))
             using (LogContext.PushProperty("SearchRequestKey", $"{notification?.FileId}"))
             {
+                _logger.Log(LogLevel.Information, $"receive {notification.Acvitity} notification");
                 if (notification == null)
                 {
                     _logger.Log(LogLevel.Error, $"Notification request cannot be null");

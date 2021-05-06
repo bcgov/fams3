@@ -216,6 +216,8 @@ namespace DynamicsAdapter.Web.Mapping
                         "friend" => PersonRelationType.Friend.Value,
                         "lalw" => PersonRelationType.LastLiveWith.Value,
                         "mlw" => PersonRelationType.MayLiveWith.Value,
+                        "dependent" => PersonRelationType.Child.Value,
+                        "subscriber" => PersonRelationType.AccountHolder.Value,
                         _ => PersonRelationType.Other.Value
                     };
         }

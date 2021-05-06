@@ -14,6 +14,7 @@ namespace Fams3Adapter.Dynamics.Types
         public static PersonRelationType LastLiveWith = new PersonRelationType(867670008, "Last Live With");
         public static PersonRelationType MayLiveWith = new PersonRelationType(867670009, "May Live With");
         public static PersonRelationType Other = new PersonRelationType(867670007, "Other");
+        public static PersonRelationType AccountHolder = new PersonRelationType(867670011, "AccountHolder");
         protected PersonRelationType(int value, string name) : base(value, name)
         {
 

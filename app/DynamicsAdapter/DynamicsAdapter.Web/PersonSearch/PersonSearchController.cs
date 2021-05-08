@@ -65,6 +65,11 @@ namespace DynamicsAdapter.Web.PersonSearch
                 using (LogContext.PushProperty("SearchRequestKey", personCompletedEvent?.SearchRequestKey))
                 using (LogContext.PushProperty("DataPartner", personCompletedEvent?.ProviderProfile.Name))
                 {
+                    //JCA completed event needs to deal differently.
+                    if (personCompletedEvent.ProviderProfile.Name == InformationSourceType.JCA.Name)
+                    {
+                        return await ProcessJCACompletedEvent(key, personCompletedEvent);
+                    }
                     _logger.LogInformation("Received Person search completed event");
                     var cts = new CancellationTokenSource();
                     SSG_SearchRequest searchRequest = null;
@@ -91,10 +96,9 @@ namespace DynamicsAdapter.Web.PersonSearch
                         await _searchApiRequestService.AddEventAsync(request.SearchApiRequestId, searchApiEvent, cts.Token);
                         _logger.LogInformation($"Successfully created completed event for SearchApiRequest");
 
-                        //upload search result to dynamic search api
-                        var searchRequestId = await _searchApiRequestService.GetLinkedSearchRequestIdAsync(request.SearchApiRequestId, cts.Token);
-                        searchRequest = new SSG_SearchRequest { SearchRequestId = searchRequestId };
-                    }
+                    //upload search result to dynamic search api
+                    var searchRequestId = await _searchApiRequestService.GetLinkedSearchRequestIdAsync(request.SearchApiRequestId, cts.Token);
+                    searchRequest = new SSG_SearchRequest { SearchRequestId = searchRequestId };
 
                     if (personCompletedEvent?.MatchedPersons != null)
                     {
@@ -128,6 +132,58 @@ namespace DynamicsAdapter.Web.PersonSearch
 
             }
             catch(Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest();
+            }
+        }
+
+        private async Task<IActionResult> ProcessJCACompletedEvent(string key, [FromBody] PersonSearchCompleted personCompletedEvent)
+        {
+            try
+            {
+                _logger.LogInformation("Received Person search completed event");
+                var cts = new CancellationTokenSource();
+                SSG_SearchRequest searchRequest = null;
+                SSG_SearchApiRequest request = await _register.GetSearchApiRequest(key);
+                if (request == null && personCompletedEvent?.ProviderProfile.Name == InformationSourceType.JCA.Name)
+                {
+                    //this means the request is not generated in fams3, but result coming to fams3. Only JCA has this problem
+                    searchRequest = await ProcessFams2JCACompletedEvent(personCompletedEvent);
+                }
+                else
+                {
+                    //upload search result to dynamic search api
+                    var searchRequestId = await _searchApiRequestService.GetLinkedSearchRequestIdAsync(request.SearchApiRequestId, cts.Token);
+                    searchRequest = new SSG_SearchRequest { SearchRequestId = searchRequestId };
+                }
+
+                if (personCompletedEvent?.MatchedPersons != null)
+                {
+                    _logger.LogDebug(JsonConvert.SerializeObject(personCompletedEvent.MatchedPersons));
+                    PersonFound prePerson = null;
+                    foreach (PersonFound p in personCompletedEvent.MatchedPersons)
+                    {
+                        SSG_Identifier sourceIdentifer = await _register.GetMatchedSourceIdentifier(p.SourcePersonalIdentifier, key);
+                        PersonFound clonedPerson = p.Clone();
+                        if (prePerson != null)
+                        {
+                            if (p.SamePersonFound(prePerson))
+                            {
+                                //senario: dynamics does not linked all just uploaded properties to just uploaded person, so have to check here.
+                                p.RemoveDuplicateProperties(prePerson);
+                            }
+                        }
+                        await _searchResultService.ProcessPersonFound(p, personCompletedEvent.ProviderProfile, searchRequest, request?.SearchApiRequestId, cts.Token, sourceIdentifer);
+                        prePerson = clonedPerson;
+                    }
+                }
+
+                await UpdateRetries(personCompletedEvent?.ProviderProfile.Name, 0, cts, request);
+                return Ok();
+
+            }
+            catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
                 return BadRequest();

@@ -38,7 +38,7 @@ objects:
       resources: {}
       runPolicy: Serial
       source:
-        contextDir: 3.1
+        contextDir: "3.1"
         git:
           ref: master
           uri: "https://github.com/redhat-developer/dotnet-jenkins-slave.git"

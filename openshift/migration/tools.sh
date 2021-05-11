@@ -7,7 +7,7 @@ set -o nounset    # Exit when access undeclared
 set -o pipefail   # Return last non-zero command
 # set -o xtrace   # Tracing
 
-
+script_path=$(dirname "${BASH_SOURCE[0]}")
 parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
 
 # ===================================================================================================
@@ -20,40 +20,56 @@ export GIT_REPO="bcgov/fams3"
 export GIT_BRANCH="ocp4"
 export GIT_URL="https://raw.githubusercontent.com/${GIT_REPO}/${GIT_BRANCH}"
 
+# Export env vars
+export $(grep -v '^#' ${script_path}/.env | xargs)
+
+
+export SEARCHAPI_URL="https://search-api-${NAMESPACE_PREFIX}-dev.apps.silver.devops.gov.bc.ca/swagger/v1/swagger.json"
+export DYNADAPTER_URL="https://dynadapter-${NAMESPACE_PREFIX}-dev.apps.silver.devops.gov.bc.ca/swagger/v1/swagger.json"
+
 # ===================================================================================================
 # Internal
 # ---------------------------------------------------------------------------------------------------
 
+begin() {
+   printf "Processing ${1}-----------------------------------------\n" 
+}
 
+finish() {
+  printf "Done\n"
+}
 
 # ===================================================================================================
 # Jenkins
 # ---------------------------------------------------------------------------------------------------
 process_jenkins() {
   ## dotnet slave
+  begin jenkins-slave-dotnet
   oc process -o=yaml \
     -f ../templates/jenkins-slave-dotnet.yaml \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
 
   ## dotnet sonarqube slave
+  begin jenkins-slave-sonarqube-dotnet.yaml
   oc process -o=yaml \
     -f ../templates/jenkins-slave-sonarqube-dotnet.yaml \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
 
   ## zap slave
+  begin jenkins-slave-zap.yaml
   oc process -o=yaml \
     -f ../templates/jenkins-slave-zap.yaml \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
 
   ## selenium-maven slave
+  begin jenkins-slave-selenium-maven.yaml
   oc process -o=yaml \
     -f ../templates/jenkins-slave-selenium-maven.yaml \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
-
 }
 
 
@@ -63,6 +79,7 @@ process_jenkins() {
 
 process_sonarqube(){
 
+  begin "sonarqube-postgresql"
   oc process -o=yaml \
     -f ../templates/sonarqube-postgresql.yaml \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
@@ -84,11 +101,13 @@ process_sonarqube(){
 process_selenium(){
   export SELENIUM_GIT_URL="https://raw.githubusercontent.com/akroon3r/selenium-openshift-templates/master"
 
+  begin selenium-hub
   oc process -o=yaml \
     -f ${SELENIUM_GIT_URL}/selenium-hub.yaml \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
 
   ## Selenium Chrome Node
+  begin selenium-node-chrome
   oc process -o=yaml \
     -f ${SELENIUM_GIT_URL}/selenium-node-chrome.yaml \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
@@ -101,32 +120,36 @@ process_selenium(){
 # ---------------------------------------------------------------------------------------------------
 
 process_searchapi(){
-  ## Image stream
+  # Image stream
+  begin build/generic
   oc process -o=yaml \
-    -f ${GIT_URL}/openshift/templates/builds/images/generic.yaml \
+    -f ../templates/builds/images/generic.yaml \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     -p appName="search-api"  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
 
   ## Build config
+  begin build/search-api
   oc process -o=yaml \
-    -f ${GIT_URL}/openshift/templates/builds/builds/search-api.yaml \
+    -f ../templates/builds/builds/search-api.yaml \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
 
   ## Pipeline
+  begin pipeline/search-api
   oc process -o=yaml \
-    -f ${GIT_URL}/openshift/templates/builds/pipelines/search-api.yaml \
+    -f ../templates/builds/pipelines/search-api.yaml \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
 
 
   ## Scans Pipeline
+  begin pipeline/search-api-scans
   oc process -o=yaml \
-    -f ${GIT_URL}/openshift/templates/builds/pipelines/search-api-scans.yaml \
+    -f ../templates/builds/pipelines/search-api-scans.yaml \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
-    -p apiDefinition=  \
-    -p sonartoken=  \
+    -p apiDefinition=${SEARCHAPI_URL}  \
+    -p sonartoken=${SONAR_TOKEN} \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
 }
 
@@ -135,30 +158,34 @@ process_searchapi(){
 # ---------------------------------------------------------------------------------------------------
 process_dynadapter(){
   ## Image stream
+  begin build/generic
   oc process -o=yaml \
-    -f ${GIT_URL}/openshift/templates/builds/images/generic.yaml \
+    -f ../templates/builds/images/generic.yaml \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     -p appName="dynadapter"  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
 
   ## Build config
+  begin build/dynadapter
   oc process -o=yaml \
-    -f ${GIT_URL}/openshift/templates/builds/builds/dynadapter.yaml \
+    -f ../templates/builds/builds/dynadapter.yaml \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
 
   ## Pipeline
+  begin pipeline/dynadapter
   oc process -o=yaml \
-    -f ${GIT_URL}/openshift/templates/builds/pipelines/dynadapter.yaml \
+    -f ../templates/builds/pipelines/dynadapter.yaml \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
 
   ## Scans
+  begin pipeline/dynadapter-scans
   oc process -o=yaml \
-    -f ${GIT_URL}/openshift/templates/builds/pipelines/dynadapter-scans.yaml \
+    -f ../templates/builds/pipelines/dynadapter-scans.yaml \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
-    -p apiDefinition=  \
-    -p sonartoken=  \
+    -p apiDefinition=${DYNADAPTER_URL}  \
+    -p sonartoken=${SONAR_TOKEN}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
 }
 
@@ -167,21 +194,24 @@ process_dynadapter(){
 # ---------------------------------------------------------------------------------------------------
 process_requestapi(){
   # Image stream
+  begin builds/generic
   oc process -o=yaml \
-    -f ${GIT_URL}/openshift/templates/builds/images/generic.yaml \
+    -f ../templates/builds/images/generic.yaml \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     -p appName="request-api"  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
 
   ## Build config
+  begin build/request-api
   oc process -o=yaml \
-    -f ${GIT_URL}/openshift/templates/builds/builds/request-api.yaml \
+    -f ../templates/builds/builds/request-api.yaml \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
 
   ## Pipeline
+  begin pipeline/request-api
   oc process -o=yaml \
-    -f ${GIT_URL}/openshift/templates/builds/pipelines/request-api.yaml \
+    -f ../templates/builds/pipelines/request-api.yaml \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
 }
@@ -190,45 +220,188 @@ process_requestapi(){
 # ===================================================================================================
 # Web/Rest Adapter
 # ---------------------------------------------------------------------------------------------------
-process_webrestadapter(){
+_process_rest(){
   if [ -z "$1" ]; then 
     exit
   fi
   DATAPARTNERSERVICE=$1
-  # Configuration evn/secrets
-  ## Create secrets synchronized with Jenkins
-  ## Option 1:
-  ### Pass base64 value of private key.
-  ### config.properties is taken from private-repo://test-automation/fams3-frontend-automation/src/main/java/com/fams3/qa/config/config.properties
-  oc process -o=yaml \
-    -f ${GIT_URL}/openshift/templates/config/selenium-maven-config.yaml \
-    -p file=$(cat config.properties | base64 | tr -d '\n')  \
-    | oc apply -f - -n ${TOOLS_NAMESPACE}
-
-  ## Option 2:
-  # oc create secret generic selenium-maven-config --from-file=filename=config.properties -n ${TOOLS_NAMESPACE}
-  # oc label secret selenium-maven-config credential.sync.jenkins.openshift.io=true -n ${TOOLS_NAMESPACE}
-
   # Image stream
   oc process -o=yaml \
-    -f ${GIT_URL}/openshift/templates/builds/images/rest-adapter.yaml \
+    -f ../templates/builds/images/rest-adapter.yaml \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     -p dataPartnerService=${DATAPARTNERSERVICE}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
 
   # Build config
   oc process -o=yaml \
-    -f ${GIT_URL}/openshift/templates/builds/builds/rest-adapter.yaml \
+    -f ../templates/builds/builds/rest-adapter.yaml \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     -p dataPartnerService=${DATAPARTNERSERVICE}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
 
   # Pipeline
   oc process -o=yaml \
-    -f ${GIT_URL}/openshift/templates/builds/pipelines/rest-adapter.yaml \
+    -f ../templates/builds/pipelines/rest-adapter.yaml \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     -p dataPartnerService=${DATAPARTNERSERVICE}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
+}
+
+_process_web(){
+  if [ -z "$1" ]; then 
+    exit
+  fi
+  DATAPARTNERSERVICE=$1
+  # Image stream
+  oc process -o=yaml \
+    -f ../templates/builds/images/web-adapter.yaml \
+    -p namespacePrefix=${NAMESPACE_PREFIX}  \
+    -p dataPartnerService=${DATAPARTNERSERVICE}  \
+    | oc apply -f - -n ${TOOLS_NAMESPACE}
+
+  # Build config
+  oc process -o=yaml \
+    -f ../templates/builds/builds/web-adapter.yaml \
+    -p namespacePrefix=${NAMESPACE_PREFIX}  \
+    -p dataPartnerService=${DATAPARTNERSERVICE}  \
+    | oc apply -f - -n ${TOOLS_NAMESPACE}
+
+  # Pipeline
+  oc process -o=yaml \
+    -f ../templates/builds/pipelines/web-adapter.yaml \
+    -p namespacePrefix=${NAMESPACE_PREFIX}  \
+    -p dataPartnerService=${DATAPARTNERSERVICE}  \
+    | oc apply -f - -n ${TOOLS_NAMESPACE}
+}
+
+_process_fams_inbound(){
+  if [ -z "$1" ]; then 
+    exit
+  fi
+  DATAPARTNERSERVICE=$1
+  # Image stream
+  oc process -o=yaml \
+    -f ../templates/builds/images/rest-inbound-adapter.yaml \
+    -p namespacePrefix=${NAMESPACE_PREFIX}  \
+    -p dataPartnerService=${DATAPARTNERSERVICE}  \
+    | oc apply -f - -n ${TOOLS_NAMESPACE}
+
+  # Build config
+  oc process -o=yaml \
+    -f ../templates/builds/builds/fams-request-inbound-adapter.yaml \
+    -p namespacePrefix=${NAMESPACE_PREFIX}  \
+    -p dataPartnerService=${DATAPARTNERSERVICE}  \
+    | oc apply -f - -n ${TOOLS_NAMESPACE}
+
+  # Pipeline
+  oc process -o=yaml \
+    -f ../templates/builds/pipelines/rest-inbound-adapter.yaml \
+    -p namespacePrefix=${NAMESPACE_PREFIX}  \
+    -p dataPartnerService=${DATAPARTNERSERVICE}  \
+    | oc apply -f - -n ${TOOLS_NAMESPACE}
+}
+
+_process_rest_inbound(){
+  if [ -z "$1" ]; then 
+    exit
+  fi
+  DATAPARTNERSERVICE=$1
+  # Image stream
+  oc process -o=yaml \
+    -f ../templates/builds/images/rest-inbound-adapter.yaml \
+    -p namespacePrefix=${NAMESPACE_PREFIX}  \
+    -p dataPartnerService=${DATAPARTNERSERVICE}  \
+    | oc apply -f - -n ${TOOLS_NAMESPACE}
+
+  # Build config
+  oc process -o=yaml \
+    -f ../templates/builds/builds/fams-request-inbound-adapter.yaml \
+    -p namespacePrefix=${NAMESPACE_PREFIX}  \
+    -p dataPartnerService=${DATAPARTNERSERVICE}  \
+    | oc apply -f - -n ${TOOLS_NAMESPACE}
+
+  # Pipeline
+  oc process -o=yaml \
+    -f ../templates/builds/pipelines/rest-inbound-adapter.yaml \
+    -p namespacePrefix=${NAMESPACE_PREFIX}  \
+    -p dataPartnerService=${DATAPARTNERSERVICE}  \
+    | oc apply -f - -n ${TOOLS_NAMESPACE}
+}
+
+_process_file(){
+  if [ -z "$1" ]; then 
+    exit
+  fi
+  DATAPARTNERSERVICE=$1
+  # Image stream
+  oc process -o=yaml \
+    -f ../templates/builds/images/file-adapter.yaml \
+    -p namespacePrefix=${NAMESPACE_PREFIX}  \
+    -p dataPartnerService=${DATAPARTNERSERVICE}  \
+    | oc apply -f - -n ${TOOLS_NAMESPACE}
+
+  # Build config
+  oc process -o=yaml \
+    -f ../templates/builds/builds/file-adapter.yaml \
+    -p namespacePrefix=${NAMESPACE_PREFIX}  \
+    -p dataPartnerService=${DATAPARTNERSERVICE}  \
+    | oc apply -f - -n ${TOOLS_NAMESPACE}
+
+  # Pipeline
+  oc process -o=yaml \
+    -f ../templates/builds/pipelines/file-adapter.yaml \
+    -p namespacePrefix=${NAMESPACE_PREFIX}  \
+    -p dataPartnerService=${DATAPARTNERSERVICE}  \
+    | oc apply -f - -n ${TOOLS_NAMESPACE}
+}
+
+_process_ia_search(){
+  # Image stream
+  oc process -o=yaml \
+    -f ../templates/builds/images/generic.yaml \
+    -p namespacePrefix=${NAMESPACE_PREFIX}  \
+    -p appName=${APP_NAME}  \
+    | oc apply -f - -n ${TOOLS_NAMESPACE}
+
+  # Build config
+  oc process -o=yaml \
+    -f ../templates/builds/builds/ia-search-web-adapter.yaml \
+    -p namespacePrefix=${NAMESPACE_PREFIX}  \
+    | oc apply -f - -n ${TOOLS_NAMESPACE}
+
+  # Pipeline
+  oc process -o=yaml \
+    -f ../templates/builds/pipelines/ia-search-web-adapter.yaml \
+    -p namespacePrefix=${NAMESPACE_PREFIX}  \
+    | oc apply -f - -n ${TOOLS_NAMESPACE}
+}
+
+process_adapters(){
+  _process_rest bchydro
+  _process_web bchydro
+  _process_sonarscan bchydro
+  
+  _process_web cornet
+
+  _process_rest_inbound fmep
+
+  _process_rest icbc
+  _process_web icbc
+  
+  _process_rest mhsd
+  _process_web mhsd
+
+  _process_rest moh-demo
+  _process_web moh-demo
+  _process_rest moh-emp
+  _process_web moh-emp
+  _process_web moh-rp
+  _process_rest moh-rp
+
+  _process_web wsbc
+  _process_rest_inbound wsbc
+  _process_file jca
+  _process_ia_search
 }
 
 
@@ -244,21 +417,21 @@ process_inboundadapter(){
 
   # Image stream
   oc process -o=yaml \
-    -f ${GIT_URL}/openshift/templates/builds/images/rest-inbound-adapter.yaml \
+    -f ../templates/builds/images/rest-inbound-adapter.yaml \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     -p dataPartnerService=${DATAPARTNERSERVICE}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
 
   # Build config
   oc process -o=yaml \
-    -f ${GIT_URL}/openshift/templates/builds/builds/fams-request-inbound-adapter.yaml \
+    -f ../templates/builds/builds/fams-request-inbound-adapter.yaml \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     -p dataPartnerService=${DATAPARTNERSERVICE}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
 
   # Pipeline
   oc process -o=yaml \
-    -f ${GIT_URL}/openshift/templates/builds/pipelines/rest-inbound-adapter.yaml \
+    -f ../templates/builds/pipelines/rest-inbound-adapter.yaml \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     -p dataPartnerService=${DATAPARTNERSERVICE}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
@@ -279,7 +452,7 @@ process_inboundadapter2(){
   cat config.properties | base64 | tr -d '\n'
   ### Copy the output and pass as argument for file
   oc process -o=yaml \
-    -f ${GIT_URL}/openshift/templates/config/selenium-maven-config.yaml \
+    -f ../templates/config/selenium-maven-config.yaml \
     -p file=  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
 
@@ -289,21 +462,21 @@ process_inboundadapter2(){
 
   # Image stream
   oc process -o=yaml \
-    -f ${GIT_URL}/openshift/templates/builds/images/rest-inbound-adapter.yaml \
+    -f ../templates/builds/images/rest-inbound-adapter.yaml \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     -p dataPartnerService=${DATAPARTNERSERVICE}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
 
   # Build config
   oc process -o=yaml \
-    -f ${GIT_URL}/openshift/templates/builds/builds/rest-inbound-adapter.yaml \
+    -f ../templates/builds/builds/rest-inbound-adapter.yaml \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     -p dataPartnerService=${DATAPARTNERSERVICE}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
 
   # Pipeline
   oc process -o=yaml \
-    -f ${GIT_URL}/openshift/templates/builds/pipelines/rest-inbound-adapter.yaml \
+    -f ../templates/builds/pipelines/rest-inbound-adapter.yaml \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     -p dataPartnerService=${DATAPARTNERSERVICE}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
@@ -313,7 +486,7 @@ process_inboundadapter2(){
 # Web adapter
 # ---------------------------------------------------------------------------------------------------
 
-process_webadapter(){
+process_web(){
   if [ -z "$1" ]; then 
     exit
   fi
@@ -322,21 +495,21 @@ process_webadapter(){
   export DATAPARTNERSERVICE=
   # Image stream
   oc process -o=yaml \
-    -f ${GIT_URL}/openshift/templates/builds/images/web-adapter.yaml \
+    -f ../templates/builds/images/web-adapter.yaml \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     -p dataPartnerService=${DATAPARTNERSERVICE}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
 
   # Build config
   oc process -o=yaml \
-    -f ${GIT_URL}/openshift/templates/builds/builds/web-adapter.yaml \
+    -f ../templates/builds/builds/web-adapter.yaml \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     -p dataPartnerService=${DATAPARTNERSERVICE}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
 
   # Pipeline
   oc process -o=yaml \
-    -f ${GIT_URL}/openshift/templates/builds/pipelines/web-adapter.yaml \
+    -f ../templates/builds/pipelines/web-adapter.yaml \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     -p dataPartnerService=${DATAPARTNERSERVICE}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
@@ -353,21 +526,21 @@ process_fileadapter(){
   DATAPARTNERSERVICE=$1
   # Image stream
   oc process -o=yaml \
-    -f ${GIT_URL}/openshift/templates/builds/images/file-adapter.yaml \
+    -f ../templates/builds/images/file-adapter.yaml \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     -p dataPartnerService=${DATAPARTNERSERVICE}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
 
   # Build config
   oc process -o=yaml \
-    -f ${GIT_URL}/openshift/templates/builds/builds/file-adapter.yaml \
+    -f ../templates/builds/builds/file-adapter.yaml \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     -p dataPartnerService=${DATAPARTNERSERVICE}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
 
   # Pipeline
   oc process -o=yaml \
-    -f ${GIT_URL}/openshift/templates/builds/pipelines/file-adapter.yaml \
+    -f ../templates/builds/pipelines/file-adapter.yaml \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     -p dataPartnerService=${DATAPARTNERSERVICE}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
@@ -382,20 +555,20 @@ process_iasearchadapter(){
 
   # Image stream
   oc process -o=yaml \
-    -f ${GIT_URL}/openshift/templates/builds/images/generic.yaml \
+    -f ../templates/builds/images/generic.yaml \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     -p appName=${APP_NAME}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
 
   # Build config
   oc process -o=yaml \
-    -f ${GIT_URL}/openshift/templates/builds/builds/ia-search-web-adapter.yaml \
+    -f ../templates/builds/builds/ia-search-web-adapter.yaml \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
 
   # Pipeline
   oc process -o=yaml \
-    -f ${GIT_URL}/openshift/templates/builds/pipelines/ia-search-web-adapter.yaml \
+    -f ../templates/builds/pipelines/ia-search-web-adapter.yaml \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
 }
@@ -414,7 +587,7 @@ process_unknown(){
   cat id_rsa | base64 | tr -d '\n'
   ### Copy the output and pass as argument for gitSshPrivateKey
   # oc process -o=yaml \
-  #   -f ${GIT_URL}/openshift/templates/config/fams3-github-key.yaml \
+  #   -f ../templates/config/fams3-github-key.yaml \
   #   -p gitSshPrivateKey=  \
   #   | oc apply -f - -n ${TOOLS_NAMESPACE}
 
@@ -424,7 +597,7 @@ process_unknown(){
 
   # Pipeline
   oc process -o=yaml \
-    -f ${GIT_URL}/openshift/templates/builds/pipelines/web-rest-adapters-scans.yaml \
+    -f ../templates/builds/pipelines/web-rest-adapters-scans.yaml \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     -p apiDefinition=  \
     -p sonartoken=  \
@@ -445,19 +618,25 @@ process_unknown(){
 #   Entry point for the program, handling basic option parsing and dispatching.
 
 _main() {
-  printf "Beginning tools build for %s" $NAMESPACE_PREFIX
-#   process_jenkins()
-#   process_sonarqube()
-#   process_selenium()
-#   process_searchapi()
-#   process_requestapi()
-#   process_inboundadapter()
-#   process_inboundadapter2()
-#   process_webadapter()
-#   process_fileadapter()
-#   process_iasearchadapter()
-#   process_unknown()
-# }
+  printf "Beginning tools build for %s\n" ${NAMESPACE_PREFIX}
+#   process_jenkins           # Processed
+#   process_sonarqube         # Processed
+#   process_selenium          # Processed
+#   process_searchapi         # Processed
+#   process_dynadapter        # Processed
+#   process_requestapi         # Processed
+
+    process_adapters
+
+
+
+#   process_inboundadapter
+#   process_inboundadapter2
+#   process_web
+#   process_fileadapter
+#   process_iasearchadapter
+#   process_unknown
+}
 
 # Call `_main` after everything has been defined.
 _main "$@"

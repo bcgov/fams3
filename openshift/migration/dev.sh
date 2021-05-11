@@ -30,7 +30,7 @@ oc process -o=yaml \
 # ---------------------------------------------------------------------------------------------------
 
 oc process -o=yaml \
-  -f ${GIT_URL}/openshift/templates/rabbitmq.dc.yaml \
+  -f ../templates/rabbitmq.dc.yaml \
   | oc apply -f - ${TARGET_NAMESPACE}
 
 # ===================================================================================================
@@ -39,7 +39,7 @@ oc process -o=yaml \
 
 # All-in-one template
 oc process -o=yaml \
-  -f ${GIT_URL}/openshift/templates/jaeger-aio.dc.yaml \
+  -f ../templates/jaeger-aio.dc.yaml \
   | oc apply -f - ${TARGET_NAMESPACE}
 
 
@@ -49,14 +49,14 @@ oc process -o=yaml \
 
 # for dev and test
 oc process -o=yaml \
-  -f ${GIT_URL}/openshift/templates/redis/redis-persistent-commander.dc.yaml \
+  -f ../templates/redis/redis-persistent-commander.dc.yaml \
   -p namespacePrefix=${NAMESPACE_PREFIX} \
   -p TAG=${NAMESPACE_SUFFIX}  \
   | oc apply -f -
 
 # for prod
 oc process -o=yaml \
-  -f ${GIT_URL}/openshift/templates/redis/redis-persistent.dc.yaml \
+  -f ../templates/redis/redis-persistent.dc.yaml \
   -p namespacePrefix=${NAMESPACE_PREFIX} \
   -p TAG=${NAMESPACE_SUFFIX}  \
   | oc apply -f -
@@ -67,7 +67,7 @@ oc process -o=yaml \
 
 # Configuration evn/secrets
 oc process -o=yaml \
-  -f ${GIT_URL}/openshift/templates/config/rabbit-mq-configuration.yaml \
+  -f ../templates/config/rabbit-mq-configuration.yaml \
   -p HOST=  \
   -p PORT=  \
   -p USERNAME=  \
@@ -75,30 +75,30 @@ oc process -o=yaml \
   | oc apply -f - -n ${TARGET_NAMESPACE}
 
 oc process -o=yaml \
-  -f ${GIT_URL}/openshift/templates/config/aspnet-env.yaml \
+  -f ../templates/config/aspnet-env.yaml \
   -p ENVIRONMENT=  \
   | oc apply -f - -n ${TARGET_NAMESPACE}
 
 oc process -o=yaml \
-  -f ${GIT_URL}/openshift/templates/config/jeager-config.yaml \
+  -f ../templates/config/jeager-config.yaml \
   -p URL=  \
   -p TYPE=  \
   | oc apply -f - -n ${TARGET_NAMESPACE}
 
 oc process -o=yaml \
-  -f ${GIT_URL}/openshift/templates/config/searchapi-webhook-config.yaml \
+  -f ../templates/config/searchapi-webhook-config.yaml \
   -p NAME=  \
   -p URL=  \
   | oc apply -f - -n ${TARGET_NAMESPACE}
 
 oc process -o=yaml \
-  -f ${GIT_URL}/openshift/templates/config/redis-connection.yaml \
+  -f ../templates/config/redis-connection.yaml \
   -p HOST=  \
   -p PORT=  \
   | oc apply -f - -n ${TARGET_NAMESPACE}
 
 oc process -o=yaml \
-  -f ${GIT_URL}/openshift/templates/config/splunk-config.yaml \
+  -f ../templates/config/splunk-config.yaml \
   -p URL=  \
   -p TOKEN=  \
   | oc apply -f - -n ${TARGET_NAMESPACE}
@@ -108,18 +108,18 @@ oc process -o=yaml \
 # ---------------------------------------------------------------------------------------------------
 # Configuration evn/secrets
 oc process -o=yaml \
-  -f ${GIT_URL}/openshift/templates/config/aspnet-env.yaml \
+  -f ../templates/config/aspnet-env.yaml \
   -p ENVIRONMENT=  \
   | oc apply -f - -n ${TARGET_NAMESPACE}
 
 oc process -o=yaml \
-  -f ${GIT_URL}/openshift/templates/config/dynadapter-config.yaml \
+  -f ../templates/config/dynadapter-config.yaml \
   -p CRON=  \
   -p URL=  \
   | oc apply -f - -n ${TARGET_NAMESPACE}
 
 oc process -o=yaml \
-  -f ${GIT_URL}/openshift/templates/config/dynamics-oauth-credentials.yaml \
+  -f ../templates/config/dynamics-oauth-credentials.yaml \
   -p APIGATEWAY=  \
   -p CLIENTID=  \
   -p OAUTHURL=  \
@@ -130,13 +130,13 @@ oc process -o=yaml \
   | oc apply -f - -n ${TARGET_NAMESPACE}
 
 oc process -o=yaml \
-  -f ${GIT_URL}/openshift/templates/config/jeager-config.yaml \
+  -f ../templates/config/jeager-config.yaml \
   -p URL=  \
   -p TYPE=  \
   | oc apply -f - -n ${TARGET_NAMESPACE}
 
 oc process -o=yaml \
-  -f ${GIT_URL}/openshift/templates/config/splunk-config.yaml \
+  -f ../templates/config/splunk-config.yaml \
   -p URL=  \
   -p TOKEN=  \
   | oc apply -f - -n ${TARGET_NAMESPACE}
@@ -146,7 +146,7 @@ oc process -o=yaml \
 # RequestAPI
 # ---------------------------------------------------------------------------------------------------
 oc process -o=yaml \
-  -f ${GIT_URL}/openshift/templates/config/requestapi-webhook-config.yaml \
+  -f ../templates/config/requestapi-webhook-config.yaml \
   -p NAME=  \
   -p URL=  \
   | oc apply -f - -n ${TARGET_NAMESPACE}
@@ -157,12 +157,12 @@ oc process -o=yaml \
 export DATAPARTNERSERVICE=
 
 oc process -o=yaml \
-  -f ${GIT_URL}/openshift/templates/config/aspnet-env.yaml \
+  -f ../templates/config/aspnet-env.yaml \
   -p ENVIRONMENT=  \
   | oc apply -f - -n ${TARGET_NAMESPACE}
 
 oc process -o=yaml \
-  -f ${GIT_URL}/openshift/templates/config/rest-config.yaml \
+  -f ../templates/config/rest-config.yaml \
   -p APP_NAME=  \
   -p URL=  \
   -p CODE=  \
@@ -171,7 +171,7 @@ oc process -o=yaml \
   | oc apply -f - -n ${TARGET_NAMESPACE}
 
 oc process -o=yaml \
-  -f ${GIT_URL}/openshift/templates/config/jeager-config.yaml \
+  -f ../templates/config/jeager-config.yaml \
   -p URL=  \
   -p TYPE=  \
   | oc apply -f - -n ${TARGET_NAMESPACE}
@@ -184,24 +184,24 @@ export DATAPARTNERSERVICE=
 
 
 oc process -o=yaml \
-  -f ${GIT_URL}/openshift/templates/config/aspnet-env.yaml \
+  -f ../templates/config/aspnet-env.yaml \
   -p ENVIRONMENT=  \
   | oc apply -f - -n ${TARGET_NAMESPACE}
 
 
 oc process -o=yaml \
-  -f ${GIT_URL}/openshift/templates/config/aspnet-env.yaml \
+  -f ../templates/config/aspnet-env.yaml \
   -p ENVIRONMENT=  \
   | oc apply -f - -n ${TARGET_NAMESPACE}
 
 oc process -o=yaml \
-  -f ${GIT_URL}/openshift/templates/config/rest-inbound-config.yaml \
+  -f ../templates/config/rest-inbound-config.yaml \
   -p APP_NAME=  \
   -p PROFILE_NAME=  \
   | oc apply -f - -n ${TARGET_NAMESPACE}
 
 oc process -o=yaml \
-  -f ${GIT_URL}/openshift/templates/config/jeager-config.yaml \
+  -f ../templates/config/jeager-config.yaml \
   -p URL=  \
   -p TYPE=  \
   | oc apply -f - -n ${TARGET_NAMESPACE}
@@ -214,18 +214,18 @@ oc process -o=yaml \
 export DATAPARTNERSERVICE=
 
 oc process -o=yaml \
-  -f ${GIT_URL}/openshift/templates/config/aspnet-env.yaml \
+  -f ../templates/config/aspnet-env.yaml \
   -p ENVIRONMENT=  \
   | oc apply -f - -n ${TARGET_NAMESPACE}
 
 oc process -o=yaml \
-  -f ${GIT_URL}/openshift/templates/config/rest-inbound-config.yaml \
+  -f ../templates/config/rest-inbound-config.yaml \
   -p APP_NAME=  \
   -p PROFILE_NAME=  \
   | oc apply -f - -n ${TARGET_NAMESPACE}
 
 oc process -o=yaml \
-  -f ${GIT_URL}/openshift/templates/config/jeager-config.yaml \
+  -f ../templates/config/jeager-config.yaml \
   -p URL=  \
   -p TYPE=  \
   | oc apply -f - -n ${TARGET_NAMESPACE}
@@ -237,7 +237,7 @@ oc process -o=yaml \
 export DATAPARTNERSERVICE=
 # Image stream
 oc process -o=yaml \
-  -f ${GIT_URL}/openshift/templates/config/rabbit-mq-configuration.yaml \
+  -f ../templates/config/rabbit-mq-configuration.yaml \
   -p HOST=  \
   -p PORT=  \
   -p USERNAME=  \
@@ -245,25 +245,25 @@ oc process -o=yaml \
   | oc apply -f - -n ${TARGET_NAMESPACE}
 
 oc process -o=yaml \
-  -f ${GIT_URL}/openshift/templates/config/aspnet-env.yaml \
+  -f ../templates/config/aspnet-env.yaml \
   -p ENVIRONMENT=  \
   | oc apply -f - -n ${TARGET_NAMESPACE}
 
 oc process -o=yaml \
-  -f ${GIT_URL}/openshift/templates/config/web-adapter-config.yaml \
+  -f ../templates/config/web-adapter-config.yaml \
   -p APP_NAME=  \
   -p URL=  \
   -p PROFILE_NAME=  \
   | oc apply -f - -n ${TARGET_NAMESPACE}
 
 oc process -o=yaml \
-  -f ${GIT_URL}/openshift/templates/config/jeager-config.yaml \
+  -f ../templates/config/jeager-config.yaml \
   -p URL=  \
   -p TYPE=  \
   | oc apply -f - -n ${TARGET_NAMESPACE}
 
 oc process -o=yaml \
-  -f ${GIT_URL}/openshift/templates/config/splunk-config.yaml \
+  -f ../templates/config/splunk-config.yaml \
   -p URL=  \
   -p TOKEN=  \
   | oc apply -f - -n ${TARGET_NAMESPACE}
@@ -275,7 +275,7 @@ oc process -o=yaml \
 export DATAPARTNERSERVICE=
 
 oc process -o=yaml \
-  -f ${GIT_URL}/openshift/templates/config/rabbit-mq-configuration.yaml \
+  -f ../templates/config/rabbit-mq-configuration.yaml \
   -p HOST=  \
   -p PORT=  \
   -p USERNAME=  \
@@ -283,25 +283,25 @@ oc process -o=yaml \
   | oc apply -f - -n ${TARGET_NAMESPACE}
 
 oc process -o=yaml \
-  -f ${GIT_URL}/openshift/templates/config/aspnet-env.yaml \
+  -f ../templates/config/aspnet-env.yaml \
   -p ENVIRONMENT=  \
   | oc apply -f - -n ${TARGET_NAMESPACE}
 
 oc process -o=yaml \
-  -f ${GIT_URL}/openshift/templates/config/file-adapter-config.yaml \
+  -f ../templates/config/file-adapter-config.yaml \
   -p APP_NAME=  \
   -p URL=  \
   -p PROFILE_NAME=  \
   | oc apply -f - -n ${TARGET_NAMESPACE}
 
 oc process -o=yaml \
-  -f ${GIT_URL}/openshift/templates/config/jeager-config.yaml \
+  -f ../templates/config/jeager-config.yaml \
   -p URL=  \
   -p TYPE=  \
   | oc apply -f - -n ${TARGET_NAMESPACE}
 
 oc process -o=yaml \
-  -f ${GIT_URL}/openshift/templates/config/splunk-config.yaml \
+  -f ../templates/config/splunk-config.yaml \
   -p URL=  \
   -p TOKEN=  \
   | oc apply -f - -n ${TARGET_NAMESPACE}
@@ -313,18 +313,18 @@ export APP_NAME="ia-search-web-adapter"
 
 # Configuration evn/secrets
 oc process -o=yaml  \
-   -f ${GIT_URL}/openshift/templates/config/ia-search-config.yaml \
+   -f ../templates/config/ia-search-config.yaml \
     | oc apply -f - -n ${TARGET_NAMESPACE}
 
 oc process -o=yaml  \
-   -f ${GIT_URL}/openshift/templates/config/ia-sftp-config.yaml \
+   -f ../templates/config/ia-sftp-config.yaml \
     | oc apply -f - -n ${TARGET_NAMESPACE}
 
 oc process -o=yaml  \
-   -f ${GIT_URL}/openshift/templates/config/ia-throttle-config.yaml \
+   -f ../templates/config/ia-throttle-config.yaml \
     | oc apply -f - -n ${TARGET_NAMESPACE}
 
 oc process -o=yaml \
-  -f ${GIT_URL}/openshift/templates/config/aspnet-env.yaml \
+  -f ../templates/config/aspnet-env.yaml \
   -p ENVIRONMENT=  \
   | oc apply -f - -n ${TARGET_NAMESPACE}

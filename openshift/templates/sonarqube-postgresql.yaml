@@ -301,7 +301,6 @@ objects:
             from:
               kind: ImageStreamTag
               name: "postgresql:9.5"
-              namespace: openshift
           type: ImageChange
         - type: ConfigChange
   - apiVersion: v1

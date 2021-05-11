@@ -22,7 +22,7 @@ namespace SearchApi.Web.Search
         public static SearchRequest UpdateDataPartner(this SearchRequest request, string dataPartner)
         {
             var partner = request.DataPartners?.FirstOrDefault(x => x.Name == dataPartner);
-            if(partner != null)
+            if(partner != null && partner.SearchSpeed!=SearchSpeedType.Slow)
             {
                 partner.Completed = true;
             }

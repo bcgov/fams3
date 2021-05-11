@@ -140,54 +140,50 @@ namespace DynamicsAdapter.Web.PersonSearch
 
         private async Task<IActionResult> ProcessJCACompletedEvent(string key, [FromBody] PersonSearchCompleted personCompletedEvent)
         {
-            try
-            {
-                _logger.LogInformation("Received Person search completed event");
-                var cts = new CancellationTokenSource();
-                SSG_SearchRequest searchRequest = null;
-                SSG_SearchApiRequest request = await _register.GetSearchApiRequest(key);
-                if (request == null && personCompletedEvent?.ProviderProfile.Name == InformationSourceType.JCA.Name)
-                {
-                    //this means the request is not generated in fams3, but result coming to fams3. Only JCA has this problem
-                    searchRequest = await ProcessFams2JCACompletedEvent(personCompletedEvent);
-                }
-                else
-                {
-                    //upload search result to dynamic search api
-                    var searchRequestId = await _searchApiRequestService.GetLinkedSearchRequestIdAsync(request.SearchApiRequestId, cts.Token);
-                    searchRequest = new SSG_SearchRequest { SearchRequestId = searchRequestId };
-                }
+            _logger.LogInformation("Received Person search completed event");
+            var cts = new CancellationTokenSource();
+            SSG_SearchRequest searchRequest = null;
+            SSG_SearchApiRequest request = await _register.GetSearchApiRequest(key);
 
-                if (personCompletedEvent?.MatchedPersons != null)
+            //update Result event
+            var searchApiEvent = _mapper.Map<SSG_SearchApiEvent>(personCompletedEvent);
+            searchApiEvent.EventType = Keys.EVENT_RESULT;
+            _logger.LogDebug($"Attempting to create a new event for SearchApiRequest");
+            await _searchApiRequestService.AddEventAsync(request.SearchApiRequestId, searchApiEvent, cts.Token);
+            _logger.LogInformation($"Successfully created result event for SearchApiRequest");
+
+            //upload search result to dynamic search api
+            var searchRequestId = await _searchApiRequestService.GetLinkedSearchRequestIdAsync(request.SearchApiRequestId, cts.Token);
+            searchRequest = new SSG_SearchRequest { SearchRequestId = searchRequestId };
+
+            if (personCompletedEvent?.MatchedPersons != null)
+            {
+                //try following code, but automapper throws exception.Cannot access a disposed object.Object name: 'IServiceProvider'.
+                //Parallel.ForEach<Person>(personCompletedEvent.MatchedPersons, async p =>
+                //{
+                //    await _searchResultService.ProcessPersonFound(p, personCompletedEvent.ProviderProfile, searchRequest, cts.Token);
+                //});
+                _logger.LogDebug(JsonConvert.SerializeObject(personCompletedEvent.MatchedPersons));
+                PersonFound prePerson = null;
+                foreach (PersonFound p in personCompletedEvent.MatchedPersons)
                 {
-                    _logger.LogDebug(JsonConvert.SerializeObject(personCompletedEvent.MatchedPersons));
-                    PersonFound prePerson = null;
-                    foreach (PersonFound p in personCompletedEvent.MatchedPersons)
+                    SSG_Identifier sourceIdentifer = await _register.GetMatchedSourceIdentifier(p.SourcePersonalIdentifier, key);
+                    PersonFound clonedPerson = p.Clone();
+                    if (prePerson != null)
                     {
-                        SSG_Identifier sourceIdentifer = await _register.GetMatchedSourceIdentifier(p.SourcePersonalIdentifier, key);
-                        PersonFound clonedPerson = p.Clone();
-                        if (prePerson != null)
+                        if (p.SamePersonFound(prePerson))
                         {
-                            if (p.SamePersonFound(prePerson))
-                            {
-                                //senario: dynamics does not linked all just uploaded properties to just uploaded person, so have to check here.
-                                p.RemoveDuplicateProperties(prePerson);
-                            }
+                            //senario: dynamics does not linked all just uploaded properties to just uploaded person, so have to check here.
+                            p.RemoveDuplicateProperties(prePerson);
                         }
-                        await _searchResultService.ProcessPersonFound(p, personCompletedEvent.ProviderProfile, searchRequest, request?.SearchApiRequestId, cts.Token, sourceIdentifer);
-                        prePerson = clonedPerson;
                     }
+                    await _searchResultService.ProcessPersonFound(p, personCompletedEvent.ProviderProfile, searchRequest, request?.SearchApiRequestId, cts.Token, sourceIdentifer);
+                    prePerson = clonedPerson;
                 }
-
-                await UpdateRetries(personCompletedEvent?.ProviderProfile.Name, 0, cts, request);
-                return Ok();
-
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                return BadRequest();
-            }
+
+            await UpdateRetries(personCompletedEvent?.ProviderProfile.Name, 0, cts, request);
+            return Ok();
         }
 
         private async Task UpdateRetries(string providerProfileName, int noOfTry, CancellationTokenSource cts, SSG_SearchApiRequest request)
@@ -311,7 +307,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                     _logger.LogDebug($"Attempting to create a new event for SearchApiRequest.");
                     await _searchApiRequestService.AddEventAsync(request.SearchApiRequestId, searchApiEvent, token.Token);
                   
-                    _logger.LogInformation($"Successfully created failed event for SearchApiRequest");
+                    _logger.LogInformation($"Successfully created InformationReceived event for SearchApiRequest");
                 }
                 catch (Exception ex)
                 {

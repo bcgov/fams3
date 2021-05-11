@@ -55,7 +55,7 @@ parameters:
   required: true
   value: "2Gi"
 
-apiVersion: v1
+apiVersion: template.openshift.io/v1
 kind: Template
 labels:
   template: jaeger-template-all-in-one

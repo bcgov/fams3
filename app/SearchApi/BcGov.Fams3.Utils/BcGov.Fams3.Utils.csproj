@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <Version>1.0.10</Version>
+    <Version>1.0.11</Version>
     <ApplicationIcon />
     <StartupObject />
   </PropertyGroup>

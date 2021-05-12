@@ -147,7 +147,14 @@ namespace DynamicsAdapter.Web.PersonSearch
 
             //update Result event
             var searchApiEvent = _mapper.Map<SSG_SearchApiEvent>(personCompletedEvent);
-            searchApiEvent.EventType = Keys.EVENT_RESULT;
+            if (personCompletedEvent.Message!=null && personCompletedEvent.Message.Contains("All traces received."))
+            {
+                searchApiEvent.EventType = Keys.EVENT_COMPLETED;
+            }
+            else
+            {
+                searchApiEvent.EventType = Keys.EVENT_RESULT;
+            }
             _logger.LogDebug($"Attempting to create a new event for SearchApiRequest");
             await _searchApiRequestService.AddEventAsync(request.SearchApiRequestId, searchApiEvent, cts.Token);
             _logger.LogInformation($"Successfully created result event for SearchApiRequest");

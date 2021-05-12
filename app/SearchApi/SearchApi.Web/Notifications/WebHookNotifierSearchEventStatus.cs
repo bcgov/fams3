@@ -106,7 +106,25 @@ namespace SearchApi.Web.Notifications
 
         private async Task ProcessEvents(string searchRequestKey, PersonSearchAdapterEvent eventStatus, string eventName)
         {
-            await _deepSearchService.UpdateDataPartner(searchRequestKey, eventStatus.ProviderProfile.Name, eventName);
+            if (eventStatus.ProviderProfile.SearchSpeedType == SearchSpeedType.Slow) //JCA is different
+            {
+                if (eventName.Equals(EventName.Rejected))
+                {
+                    await _deepSearchService.UpdateDataPartner(searchRequestKey, eventStatus.ProviderProfile.Name, eventName);
+                }
+                else if (eventName.Equals(EventName.Completed))
+                {
+                    PersonSearchCompletedJCA completed = (PersonSearchCompletedJCA)eventStatus;
+                    if(completed.Message != null && completed.Message.Contains("All traces received."))
+                    {
+                        await _deepSearchService.UpdateDataPartner(searchRequestKey, eventStatus.ProviderProfile.Name, eventName);
+                    }
+                }
+            }
+            else
+            {
+                await _deepSearchService.UpdateDataPartner(searchRequestKey, eventStatus.ProviderProfile.Name, eventName);
+            }
 
             if (EventName.Completed.Equals(eventName) && eventStatus.ProviderProfile.SearchSpeedType == SearchSpeedType.Fast)
                 await _deepSearchService.UpdateParameters(eventName, (PersonSearchCompleted)eventStatus, searchRequestKey);

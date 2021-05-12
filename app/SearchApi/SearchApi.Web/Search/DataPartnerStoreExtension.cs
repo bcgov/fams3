@@ -1,12 +1,8 @@
 ﻿using BcGov.Fams3.Redis.Model;
 using BcGov.Fams3.SearchApi.Contracts.Person;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace SearchApi.Web.Search
 {
@@ -22,7 +18,7 @@ namespace SearchApi.Web.Search
         public static SearchRequest UpdateDataPartner(this SearchRequest request, string dataPartner)
         {
             var partner = request.DataPartners?.FirstOrDefault(x => x.Name == dataPartner);
-            if(partner != null && partner.SearchSpeed!=SearchSpeedType.Slow)
+            if(partner != null)
             {
                 partner.Completed = true;
             }

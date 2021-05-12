@@ -1,5 +1,4 @@
 #!/bin/bash
-
 ## Setup openshift tools
 
 set -o errexit    # Exit when command fails
@@ -132,6 +131,7 @@ process_searchapi(){
   begin build/search-api
   oc process -o=yaml \
     -f ../templates/builds/builds/search-api.yaml \
+    -p gitRef=ocp4 \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
 
@@ -153,6 +153,7 @@ process_dynadapter(){
   begin build/dynadapter
   oc process -o=yaml \
     -f ../templates/builds/builds/dynadapter.yaml \
+    -p gitRef=ocp4 \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
 
@@ -174,6 +175,7 @@ process_requestapi(){
   begin build/request-api
   oc process -o=yaml \
     -f ../templates/builds/builds/request-api.yaml \
+    -p gitRef=ocp4 \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
 
@@ -198,6 +200,7 @@ _process_rest(){
   # Build config
   oc process -o=yaml \
     -f ../templates/builds/builds/rest-adapter.yaml \
+    -p gitRef=ocp4 \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     -p dataPartnerService=${DATAPARTNERSERVICE}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
@@ -219,6 +222,7 @@ _process_web(){
   # Build config
   oc process -o=yaml \
     -f ../templates/builds/builds/web-adapter.yaml \
+    -p gitRef=ocp4 \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     -p dataPartnerService=${DATAPARTNERSERVICE}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
@@ -240,6 +244,7 @@ _process_fams_inbound(){
   # Build config
   oc process -o=yaml \
     -f ../templates/builds/builds/fams-request-inbound-adapter.yaml \
+    -p gitRef=ocp4 \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     -p dataPartnerService=${DATAPARTNERSERVICE}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
@@ -261,6 +266,7 @@ _process_rest_inbound(){
   # Build config
   oc process -o=yaml \
     -f ../templates/builds/builds/fams-request-inbound-adapter.yaml \
+    -p gitRef=ocp4 \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     -p dataPartnerService=${DATAPARTNERSERVICE}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
@@ -282,6 +288,7 @@ _process_file(){
   # Build config
   oc process -o=yaml \
     -f ../templates/builds/builds/file-adapter.yaml \
+    -p gitRef=ocp4 \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     -p dataPartnerService=${DATAPARTNERSERVICE}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
@@ -300,6 +307,7 @@ _process_ia_search(){
   # Build config
   oc process -o=yaml \
     -f ../templates/builds/builds/ia-search-web-adapter.yaml \
+    -p gitRef=ocp4 \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
 
@@ -394,11 +402,11 @@ _main() {
 #   process_jenkins           # Processed
 #   process_sonarqube         # Processed
 #   process_selenium          # Processed
-#   process_searchapi         # Processed
-#   process_dynadapter        # Processed
-#   process_requestapi         # Processed
+  # process_searchapi         # Processed
+  # process_dynadapter        # Processed
+  # process_requestapi         # Processed
 
-  process_adapters
+  # process_adapters
   start_builds
   
 #   process_inboundadapter

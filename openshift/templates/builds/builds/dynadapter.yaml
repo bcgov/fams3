@@ -20,6 +20,10 @@ parameters:
   name: namespacePrefix
   required: true
   value:
+- description: Git ref
+  displayName: Git branch to build
+  name: gitRef
+  value: master
 objects:
 - apiVersion: build.openshift.io/v1
   kind: BuildConfig
@@ -50,7 +54,7 @@ objects:
     runPolicy: Serial
     source:
       git:
-        ref: master
+        ref: ${gitRef}
         uri: https://github.com/bcgov/fams3
       type: Git
     strategy:

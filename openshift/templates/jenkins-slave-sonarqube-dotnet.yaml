@@ -91,7 +91,7 @@ objects:
           <containers>
             <org.csanchez.jenkins.plugins.kubernetes.ContainerTemplate>
               <name>jnlp</name>
-              <image>docker-registry.default.svc:5000/${namespacePrefix}-tools/jenkins-slave-sonarqube-dotnet</image>
+              <image>image-registry.openshift-image-registry.svc:5000/${namespacePrefix}-tools/jenkins-slave-sonarqube-dotnet</image>
               <privileged>false</privileged>
               <alwaysPullImage>false</alwaysPullImage>
               <workingDir>/tmp</workingDir>

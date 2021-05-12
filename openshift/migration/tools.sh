@@ -135,22 +135,6 @@ process_searchapi(){
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
 
-  ## Pipeline
-  begin pipeline/search-api
-  oc process -o=yaml \
-    -f ../templates/builds/pipelines/search-api.yaml \
-    -p namespacePrefix=${NAMESPACE_PREFIX}  \
-    | oc apply -f - -n ${TOOLS_NAMESPACE}
-
-
-  ## Scans Pipeline
-  begin pipeline/search-api-scans
-  oc process -o=yaml \
-    -f ../templates/builds/pipelines/search-api-scans.yaml \
-    -p namespacePrefix=${NAMESPACE_PREFIX}  \
-    -p apiDefinition=${SEARCHAPI_URL}  \
-    -p sonartoken=${SONAR_TOKEN} \
-    | oc apply -f - -n ${TOOLS_NAMESPACE}
 }
 
 # ===================================================================================================
@@ -172,21 +156,6 @@ process_dynadapter(){
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
 
-  ## Pipeline
-  begin pipeline/dynadapter
-  oc process -o=yaml \
-    -f ../templates/builds/pipelines/dynadapter.yaml \
-    -p namespacePrefix=${NAMESPACE_PREFIX}  \
-    | oc apply -f - -n ${TOOLS_NAMESPACE}
-
-  ## Scans
-  begin pipeline/dynadapter-scans
-  oc process -o=yaml \
-    -f ../templates/builds/pipelines/dynadapter-scans.yaml \
-    -p namespacePrefix=${NAMESPACE_PREFIX}  \
-    -p apiDefinition=${DYNADAPTER_URL}  \
-    -p sonartoken=${SONAR_TOKEN}  \
-    | oc apply -f - -n ${TOOLS_NAMESPACE}
 }
 
 # ===================================================================================================
@@ -208,12 +177,6 @@ process_requestapi(){
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
 
-  ## Pipeline
-  begin pipeline/request-api
-  oc process -o=yaml \
-    -f ../templates/builds/pipelines/request-api.yaml \
-    -p namespacePrefix=${NAMESPACE_PREFIX}  \
-    | oc apply -f - -n ${TOOLS_NAMESPACE}
 }
 
 
@@ -239,12 +202,6 @@ _process_rest(){
     -p dataPartnerService=${DATAPARTNERSERVICE}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
 
-  # Pipeline
-  oc process -o=yaml \
-    -f ../templates/builds/pipelines/rest-adapter.yaml \
-    -p namespacePrefix=${NAMESPACE_PREFIX}  \
-    -p dataPartnerService=${DATAPARTNERSERVICE}  \
-    | oc apply -f - -n ${TOOLS_NAMESPACE}
 }
 
 _process_web(){
@@ -266,12 +223,6 @@ _process_web(){
     -p dataPartnerService=${DATAPARTNERSERVICE}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
 
-  # Pipeline
-  oc process -o=yaml \
-    -f ../templates/builds/pipelines/web-adapter.yaml \
-    -p namespacePrefix=${NAMESPACE_PREFIX}  \
-    -p dataPartnerService=${DATAPARTNERSERVICE}  \
-    | oc apply -f - -n ${TOOLS_NAMESPACE}
 }
 
 _process_fams_inbound(){
@@ -293,12 +244,6 @@ _process_fams_inbound(){
     -p dataPartnerService=${DATAPARTNERSERVICE}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
 
-  # Pipeline
-  oc process -o=yaml \
-    -f ../templates/builds/pipelines/rest-inbound-adapter.yaml \
-    -p namespacePrefix=${NAMESPACE_PREFIX}  \
-    -p dataPartnerService=${DATAPARTNERSERVICE}  \
-    | oc apply -f - -n ${TOOLS_NAMESPACE}
 }
 
 _process_rest_inbound(){
@@ -320,12 +265,6 @@ _process_rest_inbound(){
     -p dataPartnerService=${DATAPARTNERSERVICE}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
 
-  # Pipeline
-  oc process -o=yaml \
-    -f ../templates/builds/pipelines/rest-inbound-adapter.yaml \
-    -p namespacePrefix=${NAMESPACE_PREFIX}  \
-    -p dataPartnerService=${DATAPARTNERSERVICE}  \
-    | oc apply -f - -n ${TOOLS_NAMESPACE}
 }
 
 _process_file(){
@@ -347,15 +286,10 @@ _process_file(){
     -p dataPartnerService=${DATAPARTNERSERVICE}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
 
-  # Pipeline
-  oc process -o=yaml \
-    -f ../templates/builds/pipelines/file-adapter.yaml \
-    -p namespacePrefix=${NAMESPACE_PREFIX}  \
-    -p dataPartnerService=${DATAPARTNERSERVICE}  \
-    | oc apply -f - -n ${TOOLS_NAMESPACE}
 }
 
 _process_ia_search(){
+  APP_NAME="ia-search-web-adapter"
   # Image stream
   oc process -o=yaml \
     -f ../templates/builds/images/generic.yaml \
@@ -369,17 +303,12 @@ _process_ia_search(){
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
 
-  # Pipeline
-  oc process -o=yaml \
-    -f ../templates/builds/pipelines/ia-search-web-adapter.yaml \
-    -p namespacePrefix=${NAMESPACE_PREFIX}  \
-    | oc apply -f - -n ${TOOLS_NAMESPACE}
 }
 
 process_adapters(){
   _process_rest bchydro
   _process_web bchydro
-  _process_sonarscan bchydro
+  #_process_sonarscan bchydro
   
   _process_web cornet
 
@@ -401,209 +330,52 @@ process_adapters(){
   _process_web wsbc
   _process_rest_inbound wsbc
   _process_file jca
-  _process_ia_search
+  #_process_ia_search
 }
 
-
-
-# ===================================================================================================
-# FAMS Request Inbound adapter deployment pipeline
-# ---------------------------------------------------------------------------------------------------
-process_inboundadapter(){
+_start_build(){
   if [ -z "$1" ]; then 
     exit
   fi
-  DATAPARTNERSERVICE=$1
-
-  # Image stream
-  oc process -o=yaml \
-    -f ../templates/builds/images/rest-inbound-adapter.yaml \
-    -p namespacePrefix=${NAMESPACE_PREFIX}  \
-    -p dataPartnerService=${DATAPARTNERSERVICE}  \
-    | oc apply -f - -n ${TOOLS_NAMESPACE}
-
-  # Build config
-  oc process -o=yaml \
-    -f ../templates/builds/builds/fams-request-inbound-adapter.yaml \
-    -p namespacePrefix=${NAMESPACE_PREFIX}  \
-    -p dataPartnerService=${DATAPARTNERSERVICE}  \
-    | oc apply -f - -n ${TOOLS_NAMESPACE}
-
-  # Pipeline
-  oc process -o=yaml \
-    -f ../templates/builds/pipelines/rest-inbound-adapter.yaml \
-    -p namespacePrefix=${NAMESPACE_PREFIX}  \
-    -p dataPartnerService=${DATAPARTNERSERVICE}  \
-    | oc apply -f - -n ${TOOLS_NAMESPACE}
+  BUILD=$1
+  oc start-build $1 -n ${TOOLS_NAMESPACE}
 }
 
-# ===================================================================================================
-# Rest inbound adapter
-# ---------------------------------------------------------------------------------------------------
-process_inboundadapter2(){
-  if [ -z "$1" ]; then 
-    exit
-  fi
-  DATAPARTNERSERVICE=$1
+start_builds(){
+  buildConfigs=(
+    "bchydro-rest-adapter"
+    # "bchydro-web-adapter",
+    # "cornet-web-adapter",
+    # "dynadapter",
+    # "fmep-rest-inbound-adapter",
+    # "icbc-rest-adapter",
+    # "icbc-web-adapter",
+    # "jca-file-adapter",
+    # "jenkins-slave-dotnet",
+    # "jenkins-slave-selenium-maven",
+    # "jenkins-slave-sonarqube-dotnet",
+    # "jenkins-slave-zap",
+    # "mhsd-rest-adapter",
+    # "mhsd-web-adapter",
+    # "moh-demo-rest-adapter",
+    # "moh-demo-web-adapter",
+    # "moh-emp-rest-adapter",
+    # "moh-emp-web-adapter",
+    # "moh-rp-rest-adapter",
+    # "moh-rp-web-adapter",
+    # "request-api",
+    # "search-api",
+    # "selenium-node-chrome",
+    # "wsbc-rest-inbound-adapter",
+    # "wsbc-web-adapter"
+  )
+  for bc in ${buildConfigs[@]}; do 
+    _start_build $bc
+  done
 
-  ## Option 1:
-  ### Pass base64 value of private key.
-  ### config.properties is taken from private-repo://test-automation/fams3-frontend-automation/src/main/java/com/fams3/qa/config/config.properties
-  cat config.properties | base64 | tr -d '\n'
-  ### Copy the output and pass as argument for file
-  oc process -o=yaml \
-    -f ../templates/config/selenium-maven-config.yaml \
-    -p file=  \
-    | oc apply -f - -n ${TOOLS_NAMESPACE}
-
-  ## Option 2:
-  oc create secret generic selenium-maven-config --from-file=filename=config.properties
-  oc label secret selenium-maven-config credential.sync.jenkins.openshift.io=true
-
-  # Image stream
-  oc process -o=yaml \
-    -f ../templates/builds/images/rest-inbound-adapter.yaml \
-    -p namespacePrefix=${NAMESPACE_PREFIX}  \
-    -p dataPartnerService=${DATAPARTNERSERVICE}  \
-    | oc apply -f - -n ${TOOLS_NAMESPACE}
-
-  # Build config
-  oc process -o=yaml \
-    -f ../templates/builds/builds/rest-inbound-adapter.yaml \
-    -p namespacePrefix=${NAMESPACE_PREFIX}  \
-    -p dataPartnerService=${DATAPARTNERSERVICE}  \
-    | oc apply -f - -n ${TOOLS_NAMESPACE}
-
-  # Pipeline
-  oc process -o=yaml \
-    -f ../templates/builds/pipelines/rest-inbound-adapter.yaml \
-    -p namespacePrefix=${NAMESPACE_PREFIX}  \
-    -p dataPartnerService=${DATAPARTNERSERVICE}  \
-    | oc apply -f - -n ${TOOLS_NAMESPACE}
-}
-
-# ===================================================================================================
-# Web adapter
-# ---------------------------------------------------------------------------------------------------
-
-process_web(){
-  if [ -z "$1" ]; then 
-    exit
-  fi
-  DATAPARTNERSERVICE=$1
-
-  export DATAPARTNERSERVICE=
-  # Image stream
-  oc process -o=yaml \
-    -f ../templates/builds/images/web-adapter.yaml \
-    -p namespacePrefix=${NAMESPACE_PREFIX}  \
-    -p dataPartnerService=${DATAPARTNERSERVICE}  \
-    | oc apply -f - -n ${TOOLS_NAMESPACE}
-
-  # Build config
-  oc process -o=yaml \
-    -f ../templates/builds/builds/web-adapter.yaml \
-    -p namespacePrefix=${NAMESPACE_PREFIX}  \
-    -p dataPartnerService=${DATAPARTNERSERVICE}  \
-    | oc apply -f - -n ${TOOLS_NAMESPACE}
-
-  # Pipeline
-  oc process -o=yaml \
-    -f ../templates/builds/pipelines/web-adapter.yaml \
-    -p namespacePrefix=${NAMESPACE_PREFIX}  \
-    -p dataPartnerService=${DATAPARTNERSERVICE}  \
-    | oc apply -f - -n ${TOOLS_NAMESPACE}
-}
-
-# ===================================================================================================
-# File adapter
-# ---------------------------------------------------------------------------------------------------
-
-process_fileadapter(){
-  if [ -z "$1" ]; then 
-    exit
-  fi
-  DATAPARTNERSERVICE=$1
-  # Image stream
-  oc process -o=yaml \
-    -f ../templates/builds/images/file-adapter.yaml \
-    -p namespacePrefix=${NAMESPACE_PREFIX}  \
-    -p dataPartnerService=${DATAPARTNERSERVICE}  \
-    | oc apply -f - -n ${TOOLS_NAMESPACE}
-
-  # Build config
-  oc process -o=yaml \
-    -f ../templates/builds/builds/file-adapter.yaml \
-    -p namespacePrefix=${NAMESPACE_PREFIX}  \
-    -p dataPartnerService=${DATAPARTNERSERVICE}  \
-    | oc apply -f - -n ${TOOLS_NAMESPACE}
-
-  # Pipeline
-  oc process -o=yaml \
-    -f ../templates/builds/pipelines/file-adapter.yaml \
-    -p namespacePrefix=${NAMESPACE_PREFIX}  \
-    -p dataPartnerService=${DATAPARTNERSERVICE}  \
-    | oc apply -f - -n ${TOOLS_NAMESPACE}
 }
 
 
-# ===================================================================================================
-# FAMS Request Inbound adapter deployment pipeline
-# ---------------------------------------------------------------------------------------------------
-process_iasearchadapter(){
-  export APP_NAME="ia-search-web-adapter"
-
-  # Image stream
-  oc process -o=yaml \
-    -f ../templates/builds/images/generic.yaml \
-    -p namespacePrefix=${NAMESPACE_PREFIX}  \
-    -p appName=${APP_NAME}  \
-    | oc apply -f - -n ${TOOLS_NAMESPACE}
-
-  # Build config
-  oc process -o=yaml \
-    -f ../templates/builds/builds/ia-search-web-adapter.yaml \
-    -p namespacePrefix=${NAMESPACE_PREFIX}  \
-    | oc apply -f - -n ${TOOLS_NAMESPACE}
-
-  # Pipeline
-  oc process -o=yaml \
-    -f ../templates/builds/pipelines/ia-search-web-adapter.yaml \
-    -p namespacePrefix=${NAMESPACE_PREFIX}  \
-    | oc apply -f - -n ${TOOLS_NAMESPACE}
-}
-
-# ===================================================================================================
-# FAMS Request Inbound adapter deployment pipeline
-# ---------------------------------------------------------------------------------------------------
-
-process_unknown(){
-
-
-  # Configuration evn/secrets
-  ## Create secrets synchronized with Jenkins
-  ## Option 1:
-  ### Pass base64 value of private key.
-  cat id_rsa | base64 | tr -d '\n'
-  ### Copy the output and pass as argument for gitSshPrivateKey
-  # oc process -o=yaml \
-  #   -f ../templates/config/fams3-github-key.yaml \
-  #   -p gitSshPrivateKey=  \
-  #   | oc apply -f - -n ${TOOLS_NAMESPACE}
-
-  ## Option 2:
-  oc create secret generic fams3-github-key --from-file=ssh-privatekey=id_rsa --type=kubernetes.io/ssh-auth
-  oc label secret fams3-github-key credential.sync.jenkins.openshift.io=true
-
-  # Pipeline
-  oc process -o=yaml \
-    -f ../templates/builds/pipelines/web-rest-adapters-scans.yaml \
-    -p namespacePrefix=${NAMESPACE_PREFIX}  \
-    -p apiDefinition=  \
-    -p sonartoken=  \
-    -p PI=  \
-    | oc apply -f - -n ${TOOLS_NAMESPACE}
-}
 
 ###############################################################################
 # Main
@@ -626,10 +398,9 @@ _main() {
 #   process_dynadapter        # Processed
 #   process_requestapi         # Processed
 
-    process_adapters
-
-
-
+  process_adapters
+  start_builds
+  
 #   process_inboundadapter
 #   process_inboundadapter2
 #   process_web

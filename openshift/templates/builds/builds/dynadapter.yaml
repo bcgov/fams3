@@ -74,7 +74,7 @@ objects:
         - name: DOTNET_INCREMENTAL
           value: "true"
         - name: DOTNET_RESTORE_CONFIGFILE
-          value: src/NuGet.config
+          value: app/NuGet.config
         - name: NEXUS_REPO_USER
           valueFrom:
             secretKeyRef:

@@ -144,32 +144,34 @@ namespace DynamicsAdapter.Web.PersonSearch
             var cts = new CancellationTokenSource();
             SSG_SearchRequest searchRequest = null;
             SSG_SearchApiRequest request = await _register.GetSearchApiRequest(key);
-
-            //update Result event
-            var searchApiEvent = _mapper.Map<SSG_SearchApiEvent>(personCompletedEvent);
-            if (personCompletedEvent.Message!=null && personCompletedEvent.Message.Contains("All traces received."))
+            if (request == null && personCompletedEvent?.ProviderProfile.Name == InformationSourceType.JCA.Name)
             {
-                searchApiEvent.EventType = Keys.EVENT_COMPLETED;
+                //this means the request is not generated in fams3, but result coming to fams3. Only JCA has this problem
+                searchRequest = await ProcessFams2JCACompletedEvent(personCompletedEvent);
             }
             else
             {
-                searchApiEvent.EventType = Keys.EVENT_RESULT;
-            }
-            _logger.LogDebug($"Attempting to create a new event for SearchApiRequest");
-            await _searchApiRequestService.AddEventAsync(request.SearchApiRequestId, searchApiEvent, cts.Token);
-            _logger.LogInformation($"Successfully created result event for SearchApiRequest");
+                //update Result or Completed event
+                var searchApiEvent = _mapper.Map<SSG_SearchApiEvent>(personCompletedEvent);
+                if (personCompletedEvent.Message != null && personCompletedEvent.Message.Contains("All traces received."))
+                {
+                    searchApiEvent.EventType = Keys.EVENT_COMPLETED;
+                }
+                else
+                {
+                    searchApiEvent.EventType = Keys.EVENT_RESULT;
+                }
+                _logger.LogDebug($"Attempting to create a new event for SearchApiRequest");
+                await _searchApiRequestService.AddEventAsync(request.SearchApiRequestId, searchApiEvent, cts.Token);
+                _logger.LogInformation($"Successfully created result event for SearchApiRequest");
 
-            //upload search result to dynamic search api
-            var searchRequestId = await _searchApiRequestService.GetLinkedSearchRequestIdAsync(request.SearchApiRequestId, cts.Token);
-            searchRequest = new SSG_SearchRequest { SearchRequestId = searchRequestId };
+                //upload search result to dynamic search api
+                var searchRequestId = await _searchApiRequestService.GetLinkedSearchRequestIdAsync(request.SearchApiRequestId, cts.Token);
+                searchRequest = new SSG_SearchRequest { SearchRequestId = searchRequestId };
+            }
 
             if (personCompletedEvent?.MatchedPersons != null)
             {
-                //try following code, but automapper throws exception.Cannot access a disposed object.Object name: 'IServiceProvider'.
-                //Parallel.ForEach<Person>(personCompletedEvent.MatchedPersons, async p =>
-                //{
-                //    await _searchResultService.ProcessPersonFound(p, personCompletedEvent.ProviderProfile, searchRequest, cts.Token);
-                //});
                 _logger.LogDebug(JsonConvert.SerializeObject(personCompletedEvent.MatchedPersons));
                 PersonFound prePerson = null;
                 foreach (PersonFound p in personCompletedEvent.MatchedPersons)

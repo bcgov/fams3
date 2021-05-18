@@ -708,7 +708,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                 NotesEntity note = new NotesEntity
                 {
                     StatusCode = 1,
-                    Description = UpdateCurrentNote(newSearchRequestEntity.Notes, previousNoteStr),
+                    Description = newNotes,
                     InformationSource = InformationSourceType.Request.Value,
                     SearchRequest = _uploadedSearchRequest,
                     UpdatedByApi=true

@@ -177,6 +177,10 @@ namespace SearchApi.Web
             var rabbitMqSettings = Configuration.GetSection("RabbitMq").Get<RabbitMqConfiguration>();
             var rabbitBaseUri = $"amqp://{rabbitMqSettings.Host}:{rabbitMqSettings.Port}";
 
+            var queueRateLimit = Configuration.GetSection("QueueRateLimit").Get<QueueRateLimit>();
+            if (queueRateLimit == null)
+                queueRateLimit = new QueueRateLimit();
+
             services.AddMassTransit(x =>
             {
                 // Add RabbitMq Service Bus
@@ -196,20 +200,21 @@ namespace SearchApi.Web
                     // Configure Person Search Accepted Consumer 
                     cfg.ReceiveEndpoint( $"{nameof(PersonSearchAccepted)}_queue", e =>
                     {
+                        e.UseRateLimit(queueRateLimit.PersonSearchAccepted_RateLimit, TimeSpan.FromSeconds(queueRateLimit.PersonSearchAccepted_RateInterval));
                         e.Consumer(() =>
                             new PersonSearchAcceptedConsumer(provider.GetRequiredService<ISearchApiNotifier<PersonSearchAdapterEvent>>(), provider.GetRequiredService<ILogger<PersonSearchAcceptedConsumer>>()));
                     });
                     // Configure Person Search Completed Consumer 
                     cfg.ReceiveEndpoint( $"{nameof(PersonSearchCompleted)}_queue", e =>
                     {
-                        e.UseRateLimit(1, TimeSpan.FromSeconds(5));
+                        e.UseRateLimit(queueRateLimit.PersonSearchCompleted_RateLimit, TimeSpan.FromSeconds(queueRateLimit.PersonSearchCompleted_RateInterval));
                         e.Consumer(() =>
                             new PersonSearchCompletedConsumer(provider.GetRequiredService<ISearchApiNotifier<PersonSearchAdapterEvent>>(), provider.GetRequiredService<ILogger<PersonSearchCompletedConsumer>>()));
                     });
                     // Configure Person Search Completed Consumer 
                     cfg.ReceiveEndpoint($"{nameof(PersonSearchCompletedJCA)}_queue", e =>
                     {
-                        e.UseRateLimit(1, TimeSpan.FromSeconds(5));
+                        e.UseRateLimit(queueRateLimit.PersonSearchCompletedJCA_RateLimit, TimeSpan.FromSeconds(queueRateLimit.PersonSearchCompletedJCA_RateInterval));
                         e.Consumer(() =>
                             new PersonSearchCompletedJCAConsumer(provider.GetRequiredService<ISearchApiNotifier<PersonSearchAdapterEvent>>(), provider.GetRequiredService<ILogger<PersonSearchCompletedJCAConsumer>>()));
                     });
@@ -217,7 +222,7 @@ namespace SearchApi.Web
                     // Configure Person Search Rejected Consumer 
                     cfg.ReceiveEndpoint( $"{nameof(PersonSearchRejected)}_queue", e =>
                     {
-                       
+                        e.UseRateLimit(queueRateLimit.PersonSearchRejected_RateLimit, TimeSpan.FromSeconds(queueRateLimit.PersonSearchRejected_RateInterval));
                         e.Consumer(() =>
                             new PersonSearchRejectedConsumer(provider.GetRequiredService<ISearchApiNotifier<PersonSearchAdapterEvent>>(), provider.GetRequiredService<ILogger<PersonSearchRejectedConsumer>>()));
                     });
@@ -225,7 +230,7 @@ namespace SearchApi.Web
                     // Configure Person Search Failed Consumer 
                     cfg.ReceiveEndpoint( $"{nameof(PersonSearchFailed)}_queue", e =>
                     {
-                        e.UseRateLimit(1, TimeSpan.FromSeconds(1));
+                        e.UseRateLimit(queueRateLimit.PersonSearchFailed_RateLimit, TimeSpan.FromSeconds(queueRateLimit.PersonSearchFailed_RateInterval));
                         e.Consumer(() =>
                             new PersonSearchFailedConsumer(provider.GetRequiredService<ISearchApiNotifier<PersonSearchAdapterEvent>>(), provider.GetRequiredService<ILogger<PersonSearchFailedConsumer>>()));
                     });
@@ -233,6 +238,7 @@ namespace SearchApi.Web
                     // Configure Person Search Submitted Consumer 
                     cfg.ReceiveEndpoint($"{nameof(PersonSearchSubmitted)}_queue", e =>
                     {
+                        e.UseRateLimit(queueRateLimit.PersonSearchSubmitted_RateLimit, TimeSpan.FromSeconds(queueRateLimit.PersonSearchSubmitted_RateInterval));
                         e.Consumer(() =>
                             new PersonSearchSubmittedConsumer(provider.GetRequiredService<ISearchApiNotifier<PersonSearchAdapterEvent>>(), provider.GetRequiredService<ILogger<PersonSearchSubmittedConsumer>>()));
                     });
@@ -240,6 +246,7 @@ namespace SearchApi.Web
                     // Configure Person Search Information Consumer 
                     cfg.ReceiveEndpoint($"{nameof(PersonSearchInformation)}_queue", e =>
                     {
+                        e.UseRateLimit(queueRateLimit.PersonSearchInformation_RateLimit, TimeSpan.FromSeconds(queueRateLimit.PersonSearchInformation_RateInterval));
                         e.Consumer(() =>
                             new PersonSearchInformationConsumer(provider.GetRequiredService<ISearchApiNotifier<PersonSearchAdapterEvent>>(), provider.GetRequiredService<ILogger<PersonSearchInformationConsumer>>()));
                     });

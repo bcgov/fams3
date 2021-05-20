@@ -129,8 +129,13 @@ namespace SearchRequestAdaptor.Notifier
                                     });
                             return;
                         }
-                        else
+                        else if(response.StatusCode == System.Net.HttpStatusCode.GatewayTimeout)
                         {
+                            if (retryTimes >= maxRetryTimes)
+                            {
+                                _logger.LogError($"Gateway Timeout, already retry max retry times.");
+                                return;
+                            }
                             _logger.LogError($"Message Failed { response.StatusCode}, {response.Content.ReadAsStringAsync()}");
                             throw new Exception($"Message Failed {response.StatusCode}, {response.Content.ReadAsStringAsync()}");
                         }
@@ -157,7 +162,8 @@ namespace SearchRequestAdaptor.Notifier
                         _logger.LogError($"The webHook {webHookName} notification failed for {eventName} for {webHook.Name} webHook. [{exception.Message}]");
                         return;
                     }
-                    throw exception;
+                    return;
+                    //throw exception;
                 }
             }
         }

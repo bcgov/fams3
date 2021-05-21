@@ -81,7 +81,7 @@ objects:
               name: agency-outbound-api-sftphook-config
           - secretRef:
               name: agency-outbound-api-transfermode-config
-          - secretREf:
+          - secretRef:
               name: agency-outbound-api-webhook-config
           image: ''
           imagePullPolicy: IfNotPresent

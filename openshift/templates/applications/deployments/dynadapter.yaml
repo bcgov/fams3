@@ -55,6 +55,18 @@ objects:
         - env:
           - name: JAEGER_SERVICE_NAME
             value: dyanadapter
+          - name: ADP
+            required: true
+            value: "set.adp"
+          - name: FAILEDCRON
+            required: true
+            value: "set.cron for failure retry like '0/5 * * * * ?' "
+          - name: DYNADAPTORAPIKEY
+            required: true
+            value: "set.api.key"
+          - name: TRUSTEDHOSTS
+            required: true
+            value: "*"
           envFrom:
           - secretRef:
               name: aspnet-env
@@ -74,7 +86,7 @@ objects:
             protocol: TCP
           resources:
             limits:
-              cpu: "1"
+              cpu: 500m
               memory: 1Gi
             requests:
               cpu: 100m

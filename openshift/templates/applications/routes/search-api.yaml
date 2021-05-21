@@ -32,7 +32,7 @@ objects:
       template: meta-service
     name: search-api
   spec:
-    host: search-api-${namespacePrefix}-${TAG}.pathfinder.bcgov
+    host: search-api-${namespacePrefix}-${TAG}.apps.silver.devops.gov.bc.ca
     port:
       targetPort: web
     tls:

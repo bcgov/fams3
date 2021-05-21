@@ -70,6 +70,8 @@ objects:
               name: jeager-config
           - secretRef:
               name: splunk-config
+          - secretRef:
+              name: serilog-config
           image: ''
           imagePullPolicy: IfNotPresent
           name: ia-search-web-adapter
@@ -78,8 +80,8 @@ objects:
             protocol: TCP
           resources:
             limits:
-              cpu: "1"
-              memory: 1Gi
+              cpu: 150m
+              memory: 512Mi
             requests:
               cpu: 100m
               memory: 256Mi

@@ -31,7 +31,7 @@ objects:
       app: request-api
     name: request-api
   spec:
-    replicas: 2
+    replicas: 1
     revisionHistoryLimit: 10
     selector:
       io.kompose.service: request-api
@@ -66,6 +66,10 @@ objects:
               name: requestapi-webhook-config
           - secretRef:
               name: splunk-config
+          - secretRef:
+              name: serilog-config
+          - secretRef:
+              name: requestapi-config
           image: ''
           imagePullPolicy: IfNotPresent
           name: request-api
@@ -74,8 +78,8 @@ objects:
             protocol: TCP
           resources:
             limits:
-              cpu: 250m
-              memory: 1Gi
+              cpu: 150m
+              memory: 512Mi
             requests:
               cpu: 100m
               memory: 256Mi

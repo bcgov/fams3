@@ -62,16 +62,18 @@ parameters:
   displayName: Version of Redis Image
   name: REDIS_VERSION
   required: true
-  value: "latest"
+  value: 6.2.3
 - description: Version of Redis commander image to be used.
   displayName: Version of Redis commander Image
   name: REDIS_COMMANDER_VERSION
   required: true
-  value: "latest"
+  # Manual tag so as not to use 'latest'
+  value: "2021-05-18"
 - description: Version of oauth-proxy image to be used.
   displayName: Version of oauth-proxy Image
   name: OAUTH_PROXY_VERSION
   required: true
+  # Manual tag so as not to use 'latest'
   value: "latest"
 
 # Objects
@@ -99,7 +101,7 @@ objects:
       importPolicy: {}
       name: ${REDIS_VERSION}
       referencePolicy:
-        type: Source
+        type: Local
 ## redis commander image
 #- apiVersion: image.openshift.io/v1
 #  kind: ImageStream

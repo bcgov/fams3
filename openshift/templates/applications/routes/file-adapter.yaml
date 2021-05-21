@@ -38,7 +38,7 @@ objects:
       template: meta-service
     name: ${dataPartnerService}-file-adapter
   spec:
-    host: ${dataPartnerService}-file-adapter-${namespacePrefix}-${TAG}.pathfinder.bcgov
+    host: ${dataPartnerService}-file-adapter-${namespacePrefix}-${TAG}.apps.silver.devops.gov.bc.ca
     to:
       kind: Service
       name: ${dataPartnerService}-file-adapter

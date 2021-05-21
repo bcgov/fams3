@@ -71,7 +71,7 @@ metadata:
     name: jaeger-infra
     jaeger-infra: jaeger-template-all-in-one
 objects:
-- apiVersion: extensions/v1beta1
+- apiVersion: apps/v1
   kind: Deployment
   metadata:
     name: ${JAEGER_SERVICE_NAME}
@@ -79,12 +79,16 @@ objects:
       app: jaeger
       jaeger-infra: jaeger-deployment
   spec:
+    selector:
+      matchLabels:
+        app: jaeger
     replicas: 1
     strategy:
       type: Recreate
     template:
       metadata:
         labels:
+          name: jaeger
           app: jaeger
           jaeger-infra: jaeger-pod
         annotations:

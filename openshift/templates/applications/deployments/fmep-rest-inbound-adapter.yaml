@@ -1,7 +1,7 @@
 apiVersion: template.openshift.io/v1
 kind: Template
 labels:
-  template: rest-inbound-adapter-template
+  template: fmep-rest-inbound-adapter-template
 message: |-
   A Jenkins server must be instantiated in this project to manage
   the Pipeline BuildConfig created by this template. You will be able to log in to
@@ -24,7 +24,7 @@ parameters:
   displayName: Name of the data partner service
   name: dataPartnerService
   required: true
-  value:
+  value: fmep
 - name: TAG
   required: true
   value: dev
@@ -62,14 +62,9 @@ objects:
             value: ${dataPartnerService}-rest-inbound-adapter
           - name: DATA_PARTNER
             value: ${dataPartnerService}
-          - name: REDIS__PASSWORD
-            valueFrom:
-              secretKeyRef:
-                key: database-password
-                name: redis
           envFrom:
           - secretRef:
-              name: ${dataPartnerService}-rest-inbound-config
+              name: ${dataPartnerService}-inbound-config
           - secretRef:
               name: rabbit-mq-configuration
           - secretRef:
@@ -82,6 +77,12 @@ objects:
               name: serilog-config
           - secretRef:
               name: redis-connection
+          - secretRef:
+              name: agency-outbound-api-sftphook-config
+          - secretRef:
+              name: agency-outbound-api-transfermode-config
+          - secretREf:
+              name: agency-outbound-api-webhook-config
           image: ''
           imagePullPolicy: IfNotPresent
           name: ${dataPartnerService}-rest-inbound-adapter

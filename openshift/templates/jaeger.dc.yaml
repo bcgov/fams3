@@ -47,7 +47,7 @@ metadata:
     name: jaeger-infra
     jaeger-infra: template-production
 objects:
-- apiVersion: extensions/v1beta1
+- apiVersion: extensions/v1
   kind: Deployment
   metadata:
     name: ${JAEGER_SERVICE_NAME}-collector
@@ -144,7 +144,7 @@ objects:
     selector:
       jaeger-infra: collector-pod
     type: ClusterIP
-- apiVersion: extensions/v1beta1
+- apiVersion: extensions/v1
   kind: Deployment
   metadata:
     name: ${JAEGER_SERVICE_NAME}-query

@@ -31,7 +31,7 @@ objects:
       app: search-api
     name: search-api
   spec:
-    replicas: 2
+    replicas: 1
     revisionHistoryLimit: 10
     selector:
       io.kompose.service: search-api
@@ -60,6 +60,8 @@ objects:
               secretKeyRef:
                 key: database-password
                 name: redis
+          - name: DEEPSEARCH__MAXWAVECOUNT
+            value: "6"
           envFrom:
           - secretRef:
               name: rabbit-mq-configuration
@@ -73,6 +75,8 @@ objects:
               name: redis-connection
           - secretRef:
               name: splunk-config
+          - secretRef:
+              name: serilog-config
           image: ''
           imagePullPolicy: IfNotPresent
           name: search-api
@@ -81,8 +85,8 @@ objects:
             protocol: TCP
           resources:
             limits:
-              cpu: 250m
-              memory: 1Gi
+              cpu: 200m
+              memory: 512Mi
             requests:
               cpu: 100m
               memory: 256Mi

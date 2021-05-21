@@ -62,17 +62,19 @@ parameters:
   displayName: Version of Redis Image
   name: REDIS_VERSION
   required: true
-  value: "latest"
+  value: 6.2.3
 - description: Version of Redis commander image to be used.
   displayName: Version of Redis commander Image
   name: REDIS_COMMANDER_VERSION
   required: true
-  value: "latest"
+  # Manual tag so as not to use 'latest'
+  value: latest
 - description: Version of oauth-proxy image to be used.
   displayName: Version of oauth-proxy Image
   name: OAUTH_PROXY_VERSION
   required: true
-  value: "latest"
+  # Manual tag so as not to use 'latest'
+  value: latest
 
 # Objects
 objects:
@@ -99,7 +101,7 @@ objects:
       importPolicy: {}
       name: ${REDIS_VERSION}
       referencePolicy:
-        type: Source
+        type: Local
 # redis commander image
 - apiVersion: image.openshift.io/v1
   kind: ImageStream
@@ -121,7 +123,7 @@ objects:
       importPolicy: {}
       name: ${REDIS_COMMANDER_VERSION}
       referencePolicy:
-        type: Source
+        type: Local
 # oauth-proxy image
 - apiVersion: image.openshift.io/v1
   kind: ImageStream
@@ -143,7 +145,7 @@ objects:
       importPolicy: {}
       name: ${OAUTH_PROXY_VERSION}
       referencePolicy:
-        type: Source
+        type: Local
 
 # Service account for redis commander oauth-proxy service
 - apiVersion: v1
@@ -157,29 +159,29 @@ objects:
       serviceaccounts.openshift.io/oauth-redirectreference.primary: '{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"redis-commander-proxy"}}'
 
 # Secret
-- apiVersion: v1
-  kind: Secret
-  metadata:
-    labels:
-      app: redis
-    annotations:
-      template.openshift.io/expose-password: '{.data[''database-password'']}'
-    name: ${DATABASE_SERVICE_NAME}
-    namespace: ${namespacePrefix}-${TAG}
-  stringData:
-    database-password: ${REDIS_PASSWORD}
+# - apiVersion: v1
+#   kind: Secret
+#   metadata:
+#     labels:
+#       app: redis
+#     annotations:
+#       template.openshift.io/expose-password: '{.data[''database-password'']}'
+#     name: ${DATABASE_SERVICE_NAME}
+#     namespace: ${namespacePrefix}-${TAG}
+#   stringData:
+#     database-password: ${REDIS_PASSWORD}
 
-- apiVersion: v1
-  kind: Secret
-  metadata:
-    labels:
-      app: redis
-    annotations:
-      template.openshift.io/expose-password: '{.data[''cookie-secret'']}'
-    name: oauth-proxy
-    namespace: ${namespacePrefix}-${TAG}
-  stringData:
-    cookie-secret: ${COOKIE_SECRET}
+# - apiVersion: v1
+#   kind: Secret
+#   metadata:
+#     labels:
+#       app: redis
+#     annotations:
+#       template.openshift.io/expose-password: '{.data[''cookie-secret'']}'
+#     name: oauth-proxy
+#     namespace: ${namespacePrefix}-${TAG}
+#   stringData:
+#     cookie-secret: ${COOKIE_SECRET}
 
 # Service
 - apiVersion: v1
@@ -324,8 +326,13 @@ objects:
               port: 6379
             timeoutSeconds: 2
           resources:
-            limits:
-              memory: ${MEMORY_LIMIT}
+            resources:
+              limits:
+                cpu: 150m
+                memory: 512Mi
+              requests:
+                cpu: 100m
+                memory: 256Mi
           securityContext:
             capabilities: {}
             privileged: false
@@ -373,6 +380,13 @@ objects:
             tcpSocket:
               port: 8081
             timeoutSeconds: 2
+          resources:
+            limits:
+              cpu: 150m
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              memory: 256Mi
           securityContext:
             capabilities: {}
             privileged: false
@@ -403,6 +417,13 @@ objects:
           volumeMounts:
             - mountPath: /etc/tls/private
               name: proxy-tls
+          resources:
+            limits:
+              cpu: 150m
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              memory: 256Mi
           readinessProbe:
             failureThreshold: 3
             httpGet:
@@ -454,7 +475,7 @@ objects:
     - imageChangeParams:
         automatic: true
         containerNames:
-          - oauth-proxy
+          - oauth-proxy                                        
         from:
           kind: ImageStreamTag
           name: oauth-proxy:${OAUTH_PROXY_VERSION}

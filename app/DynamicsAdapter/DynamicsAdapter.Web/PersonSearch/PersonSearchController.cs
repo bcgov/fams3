@@ -70,10 +70,18 @@ namespace DynamicsAdapter.Web.PersonSearch
                     SSG_SearchRequest searchRequest = null;
                     SSG_SearchApiRequest request = await GetSearchApiRequest(key, cts.Token);
 
-                    if (request == null && personCompletedEvent?.ProviderProfile.Name == InformationSourceType.JCA.Name)
+                    if (request == null )
                     {
-                        //this means the request is not generated in fams3, but result coming to fams3. Only JCA has this problem
-                        searchRequest = await ProcessFams2JCACompletedEvent(personCompletedEvent);
+                        if(personCompletedEvent?.ProviderProfile.Name == InformationSourceType.JCA.Name) 
+                        {
+                            //this means the request is not generated in fams3, but result coming to fams3. Only JCA has this problem
+                            searchRequest = await ProcessFams2JCACompletedEvent(personCompletedEvent);
+                        }
+                        else
+                        {
+                            throw new Exception($"Cannot find SearchApiRequest for {key}");
+                        }
+
                     }
                     else
                     {
@@ -411,7 +419,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             if (request == null)
             {
                 _logger.LogError("Cannot find the searchApiRequest for {searchApiRequestKey} in Dynamics.", searchRequestKey);
-                throw new Exception("Invalid searchRequestKey");
+                return null;
             }
             _logger.LogInformation("find searchApiRequest in Dynamics.");
             return request;

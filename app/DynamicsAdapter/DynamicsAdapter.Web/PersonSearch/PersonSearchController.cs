@@ -68,7 +68,8 @@ namespace DynamicsAdapter.Web.PersonSearch
                     _logger.LogInformation("Received Person search completed event");
                     var cts = new CancellationTokenSource();
                     SSG_SearchRequest searchRequest = null;
-                    SSG_SearchApiRequest request = await _register.GetSearchApiRequest(key);
+                    SSG_SearchApiRequest request = await GetSearchApiRequest(key, cts.Token);
+
                     if (request == null && personCompletedEvent?.ProviderProfile.Name == InformationSourceType.JCA.Name)
                     {
                         //this means the request is not generated in fams3, but result coming to fams3. Only JCA has this problem
@@ -163,7 +164,7 @@ namespace DynamicsAdapter.Web.PersonSearch
 
                 try
                 {
-                    SSG_SearchApiRequest request = await _register.GetSearchApiRequest(key);
+                    SSG_SearchApiRequest request = await GetSearchApiRequest(key, token.Token);
                     _logger.LogDebug(JsonConvert.SerializeObject(personAcceptedEvent));
                     _logger.LogDebug(JsonConvert.SerializeObject(request));
                     var searchApiEvent = _mapper.Map<SSG_SearchApiEvent>(personAcceptedEvent);
@@ -202,7 +203,7 @@ namespace DynamicsAdapter.Web.PersonSearch
 
                 try
                 {
-                    SSG_SearchApiRequest request = await _register.GetSearchApiRequest(key);
+                    SSG_SearchApiRequest request = await GetSearchApiRequest(key, token.Token);
                     var searchApiEvent = _mapper.Map<SSG_SearchApiEvent>(personFailedEvent);
                     _logger.LogDebug($"Attempting to create a new event for SearchApiRequest.");
                     await _searchApiRequestService.AddEventAsync(request.SearchApiRequestId, searchApiEvent, token.Token);
@@ -241,7 +242,7 @@ namespace DynamicsAdapter.Web.PersonSearch
 
                 try
                 {
-                    SSG_SearchApiRequest request = await _register.GetSearchApiRequest(key);
+                    SSG_SearchApiRequest request = await GetSearchApiRequest(key, token.Token);
                     var searchApiEvent = _mapper.Map<SSG_SearchApiEvent>(personInformationEvent);
                     _logger.LogDebug($"Attempting to create a new event for SearchApiRequest.");
                     await _searchApiRequestService.AddEventAsync(request.SearchApiRequestId, searchApiEvent, token.Token);
@@ -275,7 +276,7 @@ namespace DynamicsAdapter.Web.PersonSearch
 
                 try
                 {
-                    SSG_SearchApiRequest request = await _register.GetSearchApiRequest(key);
+                    SSG_SearchApiRequest request = await GetSearchApiRequest(key, token.Token);
                     if (await _register.DataPartnerSearchIsComplete(key))
                     {
                         await _searchApiRequestService.MarkComplete(request.SearchApiRequestId, token.Token);
@@ -315,7 +316,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                 {
                     var searchApiEvent = _mapper.Map<SSG_SearchApiEvent>(personRejectedEvent);
                     _logger.LogDebug($"Attempting to create a new event for SearchApiRequest [{key}]");
-                    SSG_SearchApiRequest request = await _register.GetSearchApiRequest(key);
+                    SSG_SearchApiRequest request = await GetSearchApiRequest(key, token.Token);
                     await _searchApiRequestService.AddEventAsync(request.SearchApiRequestId, searchApiEvent, token.Token);
                     _logger.LogInformation($"Successfully created rejected event for SearchApiRequest [{key}]");
 
@@ -351,7 +352,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                 {
                     var searchApiEvent = _mapper.Map<SSG_SearchApiEvent>(personSearchSubmitted);
                     _logger.LogDebug($"Attempting to create a new event for SearchApiRequest [{key}]");
-                    SSG_SearchApiRequest request = await _register.GetSearchApiRequest(key);
+                    SSG_SearchApiRequest request = await GetSearchApiRequest(key, token.Token);
                     await _searchApiRequestService.AddEventAsync(request.SearchApiRequestId, searchApiEvent, token.Token);
                     _logger.LogInformation($"Successfully created submitted event for SearchApiRequest [{key}]");
 
@@ -394,6 +395,26 @@ namespace DynamicsAdapter.Web.PersonSearch
                 }
             }            
             return new SSG_SearchRequest { SearchRequestId=request.SearchRequestId};
+        }
+
+        private async Task<SSG_SearchApiRequest> GetSearchApiRequest(string searchRequestKey, CancellationToken token)
+        {
+            SSG_SearchApiRequest request = await _register.GetSearchApiRequest(searchRequestKey);
+            if (request != null)
+            {
+                _logger.LogInformation("find searchApiRequest in Redis.");
+                return request;
+            }
+
+            _logger.LogInformation("Not find searchApiRequest in Redis, get it from Dynamics.");
+            request = await _searchApiRequestService.GetSearchApiRequest(searchRequestKey, token);
+            if (request == null)
+            {
+                _logger.LogError("Cannot find the searchApiRequest for {searchApiRequestKey} in Dynamics.", searchRequestKey);
+                throw new Exception("Invalid searchRequestKey");
+            }
+            _logger.LogInformation("find searchApiRequest in Dynamics.");
+            return request;
         }
     }
 }

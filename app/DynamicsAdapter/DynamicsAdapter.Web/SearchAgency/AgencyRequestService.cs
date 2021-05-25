@@ -94,8 +94,7 @@ namespace DynamicsAdapter.Web.SearchAgency
         {
             var cts = new CancellationTokenSource();
             _cancellationToken = cts.Token;
-            SSG_SearchRequest existedSearchRequest = await VerifySearchRequest(searchRequestOrdered);
-            if (existedSearchRequest == null) return null;
+            await VerifySearchRequest(searchRequestOrdered);
             return await _searchRequestService.CancelSearchRequest(searchRequestOrdered.SearchRequestKey, searchRequestOrdered?.Person?.Agency?.Notes, _cancellationToken);
         }
 

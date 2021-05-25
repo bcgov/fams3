@@ -82,9 +82,6 @@ namespace SearchRequestAdaptor.Notifier
                 {
                     _logger.LogWarning(
                         $"The webHook {webHookName} notification uri is not established or is not an absolute Uri for {webHook.Name}. Set the WebHook.Uri value on SearchApi.WebHooks settings.");
-                    //await _searchRequestEventPublisher.PublishSearchRequestFailed(
-                    //   searchRequestOrdered, "notification uri is not established or is not an absolute Uri."
-                    //    );
                     throw new Exception($"The webHook {webHookName} notification uri is not established or is not an absolute Uri for {webHook.Name}.");
                 }
 

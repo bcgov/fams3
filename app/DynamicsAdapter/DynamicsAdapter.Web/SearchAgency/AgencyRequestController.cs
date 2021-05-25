@@ -69,7 +69,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                 catch (Exception ex)
                 {
                     SSG_SearchRequest createdSR = _agencyRequestService.GetSSGSearchRequest();
-                    if( createdSR != null)
+                    if (createdSR != null)
                     {
                         await _agencyRequestService.SystemCancelSSGSearchRequest(createdSR);
                     }
@@ -110,17 +110,20 @@ namespace DynamicsAdapter.Web.SearchAgency
                 {
                     updatedSearchRequest = await _agencyRequestService.ProcessUpdateSearchRequest(searchRequestOrdered);
                     if (updatedSearchRequest == null)
-                        return BadRequest(new { Message = $"FileId ( {searchRequestOrdered.SearchRequestKey} ) is invalid." });
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError, new { ReasonCode = "error", Message ="error" });
+                    }                
                 }
                 catch (AgencyRequestException ex)
                 {
                     _logger.LogError(ex.Message);
-                    return StatusCode(StatusCodes.Status500InternalServerError, new { ReasonCode = ex.Message, Message = ex.InnerException?.Message });
+                    return BadRequest(new { Message = $"FileId ( {searchRequestOrdered.SearchRequestKey} ) is invalid. {ex.Message}" });
+
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex.Message);
-                    return StatusCode(StatusCodes.Status500InternalServerError, new { ReasonCode = "error", Message = "error" });
+                    return StatusCode(StatusCodes.Status500InternalServerError, new { ReasonCode = "error", Message = ex.Message });
                 }
                 _logger.LogInformation("UpdateSearchRequest successfully");
                 return Ok(BuildSearchRequestSaved_Update(updatedSearchRequest, searchRequestOrdered));

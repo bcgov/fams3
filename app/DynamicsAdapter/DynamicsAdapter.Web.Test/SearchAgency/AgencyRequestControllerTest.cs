@@ -368,7 +368,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             var result = await _sut.UpdateSearchRequest("requestId", updateSearchRequestOrdered);
 
             _agencyRequestServiceMock.Verify(x => x.ProcessUpdateSearchRequest(It.IsAny<SearchRequestOrdered>()), Times.Once);
-            Assert.IsInstanceOf(typeof(BadRequestObjectResult), result);
+            Assert.AreEqual(500, ((ObjectResult)result).StatusCode);
         }
 
         [Test]

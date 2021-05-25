@@ -290,7 +290,7 @@ objects:
           name: ${DATABASE_SERVICE_NAME}
           app: redis
       spec:
-        serviceAccountName: redis-commander-proxy
+        # serviceAccountName: redis-commander-proxy
         containers:
         # redis
         - capabilities: {}

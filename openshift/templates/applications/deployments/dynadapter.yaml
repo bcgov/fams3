@@ -78,6 +78,14 @@ objects:
               name: jeager-config
           - secretRef:
               name: splunk-config
+          - secretRef:
+              name: redis-connection
+          - secretRef:
+              name: dynadapto-webhook-config
+          - secretRef:
+              name: dynadapter-apikey-config
+          - secretRef:
+              name: serilog-config
           image: ''
           imagePullPolicy: IfNotPresent
           name: dynadapter

@@ -337,9 +337,9 @@ process_adapters(){
 
   # _process_web wsbc
   # _process_rest_inbound wsbc
-  _process_rest wsbc
+  # _process_rest wsbc
   # _process_file jca
-  #_process_ia_search
+  _process_ia_search
 }
 
 _start_build(){
@@ -663,7 +663,7 @@ tag_images(){
   _tag_image dynadapter
   _tag_image search-api
   _tag_image request-api
-
+  _tag_image ia-search-web-adapter
   _tag_image fmep-rest-inbound-adapter
   _tag_image icbc-rest-adapter
   _tag_image icbc-web-adapter
@@ -708,37 +708,37 @@ _main() {
   # process_dynadapter        # Processed
   # process_requestapi        # Processed
 
-  # process_adapters
+  #process_adapters
   # start_builds
 
-  #deploy_selenium           # N/A?
-  # deploy_rabbitmq             # Dev
-  # deploy_jaeger               # Dev
+  # deploy_selenium           # N/A?
+  #deploy_rabbitmq             # Dev
+  #deploy_jaeger               # Dev
   # deploy_redis                # Dev
   # deploy_requestapi           # Dev
   # deploy_searchapi            # Dev
-  # deploy_dynadapter           # Dev
+   deploy_dynadapter           # Dev
 
-  # deploy_iasearchadapter
-  deploy_fmeprestinboundadapter
+  #deploy_iasearchadapter
+  #deploy_fmeprestinboundadapter
 
-  deploy_webadapter bchydro
-  deploy_restadapter bchydro
-  deploy_webadapter cornet
-  deploy_webadapter icbc
-  deploy_restadapter icbc
-  deploy_fileadapter jca
-  deploy_restadapter mhsd
-  deploy_webadapter mhsd
-  deploy_restadapter moh-demo
-  deploy_webadapter moh-demo
-  deploy_restadapter moh-emp
-  deploy_webadapter moh-emp
-  deploy_restadapter moh-rp
-  deploy_webadapter moh-rp
-  deploy_restadapter wsbc
-  deploy_webadapter wsbc
-  deploy_restinboundadapter wsbc
+  # deploy_webadapter bchydro
+  # deploy_restadapter bchydro
+  # deploy_webadapter cornet
+  # deploy_webadapter icbc
+  # deploy_restadapter icbc
+  # deploy_fileadapter jca
+  # deploy_restadapter mhsd
+  # deploy_webadapter mhsd
+  # deploy_restadapter moh-demo
+  # deploy_webadapter moh-demo
+  # deploy_restadapter moh-emp
+  # deploy_webadapter moh-emp
+  # deploy_restadapter moh-rp
+  # deploy_webadapter moh-rp
+  # deploy_restadapter wsbc
+  # deploy_webadapter wsbc
+  # deploy_restinboundadapter wsbc
 
   #tag_images 
 

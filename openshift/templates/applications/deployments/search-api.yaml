@@ -62,6 +62,18 @@ objects:
                 name: redis
           - name: DEEPSEARCH__MAXWAVECOUNT
             value: "6"
+          - name: QueueRateLimit__PersonSearchCompleted_RateInterval
+            value: '8'
+          - name: QueueRateLimit__PersonSearchAccepted_RateInterval
+            value: '1'
+          - name: QueueRateLimit__PersonSearchSubmitted_RateInterval
+            value: '1'
+          - name: QueueRateLimit__PersonSearchFailed_RateInterval
+            value: '1'
+          - name: QueueRateLimit__PersonSearchInformation_RateInterval
+            value: '1'
+          - name: QueueRateLimit__PersonSearchRejected_RateInterval
+            value: '1'
           envFrom:
           - secretRef:
               name: rabbit-mq-configuration

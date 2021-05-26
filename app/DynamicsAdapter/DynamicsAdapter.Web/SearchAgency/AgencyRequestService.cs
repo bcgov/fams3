@@ -238,7 +238,7 @@ namespace DynamicsAdapter.Web.SearchAgency
             SSG_SearchRequest existedSearchRequest = await _searchRequestService.GetSearchRequest(searchRequestOrdered.SearchRequestKey, _cancellationToken);
             if (existedSearchRequest == null)
             {
-                string error = "the updating search request does not exist.";
+                string error = "the search request does not exist.";
                 _logger.LogInformation(error);
                 throw new Exception(error);
             }

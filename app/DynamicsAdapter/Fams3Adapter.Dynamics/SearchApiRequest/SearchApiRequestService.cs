@@ -263,7 +263,7 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
                     .Filter(x => x.SequenceNumber == sequence)
                     .FindEntriesAsync(cancellationToken);
 
-                return searchApiRequests.FirstOrDefault();
+                return searchApiRequests?.FirstOrDefault();
             }
             
             return null;

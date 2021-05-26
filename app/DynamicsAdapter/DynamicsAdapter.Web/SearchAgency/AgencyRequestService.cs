@@ -94,7 +94,8 @@ namespace DynamicsAdapter.Web.SearchAgency
         {
             var cts = new CancellationTokenSource();
             _cancellationToken = cts.Token;
-            await VerifySearchRequest(searchRequestOrdered);
+            SSG_SearchRequest existedSearchRequest = await VerifySearchRequest(searchRequestOrdered);
+            if (existedSearchRequest == null) return null;
             return await _searchRequestService.CancelSearchRequest(searchRequestOrdered.SearchRequestKey, searchRequestOrdered?.Person?.Agency?.Notes, _cancellationToken);
         }
 
@@ -112,9 +113,8 @@ namespace DynamicsAdapter.Web.SearchAgency
                     m => m.IsPrimary == true);
             if (existedSoughtPerson == null)
             {
-                string error = "the updating personSought does not exist. something is wrong.";
-                _logger.LogError(error);
-                throw new Exception(error);
+                _logger.LogError("the updating personSought does not exist. something is wrong.");
+                return null;
             }
             existedSoughtPerson = await _searchRequestService.GetPerson(existedSoughtPerson.PersonId, _cancellationToken);
             existedSoughtPerson.IsDuplicated = true;
@@ -124,9 +124,8 @@ namespace DynamicsAdapter.Web.SearchAgency
             SearchRequestEntity newSearchRequest = _mapper.Map<SearchRequestEntity>(searchRequestOrdered);
             if (newSearchRequest == null)
             {
-                string error = "cannot do updating as newSearchRequest is null";
-                _logger.LogError(error);
-                throw new Exception(error);
+                _logger.LogError("cannot do updating as newSearchRequest is null");
+                return null;
             }
 
             //update searchRequestEntity
@@ -142,9 +141,8 @@ namespace DynamicsAdapter.Web.SearchAgency
             //update PersonEntity
             if (searchRequestOrdered.Person == null)
             {
-                string error = "the searchRequestOrdered does not contain Person. The request is wrong.";
-                _logger.LogError(error);
-                throw new Exception(error);
+                _logger.LogError("the searchRequestOrdered does not contain Person. The request is wrong.");
+                return null;
             }
             _personSought = searchRequestOrdered.Person;
 
@@ -238,9 +236,8 @@ namespace DynamicsAdapter.Web.SearchAgency
             SSG_SearchRequest existedSearchRequest = await _searchRequestService.GetSearchRequest(searchRequestOrdered.SearchRequestKey, _cancellationToken);
             if (existedSearchRequest == null)
             {
-                string error = "the search request does not exist.";
-                _logger.LogInformation(error);
-                throw new Exception(error);
+                _logger.LogInformation("the updating search request does not exist.");
+                return null;
             }
             if (existedSearchRequest.StatusCode == SearchRequestStatusCode.SearchRequestCancelled.Value)
             {

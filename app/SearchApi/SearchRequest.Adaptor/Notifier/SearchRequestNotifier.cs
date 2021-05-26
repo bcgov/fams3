@@ -34,7 +34,6 @@ namespace SearchRequestAdaptor.Notifier
         public WebHookSearchRequestNotifier(HttpClient httpClient, IOptions<SearchRequestAdaptorOptions> searchRequestOptions, ILogger<WebHookSearchRequestNotifier> logger, ISearchRequestEventPublisher searchRequestEventPublisher)
         {
             _httpClient = httpClient;
-            _httpClient.Timeout = TimeSpan.FromMinutes(3);
             _logger = logger;
             _searchRequestOptions = searchRequestOptions.Value;
             _searchRequestEventPublisher = searchRequestEventPublisher;
@@ -82,7 +81,10 @@ namespace SearchRequestAdaptor.Notifier
                 {
                     _logger.LogWarning(
                         $"The webHook {webHookName} notification uri is not established or is not an absolute Uri for {webHook.Name}. Set the WebHook.Uri value on SearchApi.WebHooks settings.");
-                    throw new Exception($"The webHook {webHookName} notification uri is not established or is not an absolute Uri for {webHook.Name}.");
+                    await _searchRequestEventPublisher.PublishSearchRequestFailed(
+                       searchRequestOrdered, "notification uri is not established or is not an absolute Uri."
+                        );
+                    return;
                 }
 
                 using var request = new HttpRequestMessage();
@@ -103,12 +105,19 @@ namespace SearchRequestAdaptor.Notifier
 
                     if (!response.IsSuccessStatusCode)
                     {
-                        if (response.StatusCode == System.Net.HttpStatusCode.InternalServerError || response.StatusCode==System.Net.HttpStatusCode.GatewayTimeout)
+                        if (response.StatusCode == System.Net.HttpStatusCode.InternalServerError)
                         {
                             string reason = await response.Content.ReadAsStringAsync();
+                            RejectReason reasonObj = JsonConvert.DeserializeObject<RejectReason>(reason);
                             _logger.LogError(
-                                $"The webHook {webHookName} notification has not executed status {eventName} successfully for {webHook.Name} webHook. The error code is {response.StatusCode.GetHashCode()}.Reason is {reason}.");
-                            throw(new Exception($"The webHook {webHookName} notification has not executed status {eventName} successfully for {webHook.Name} webHook. The error code is {response.StatusCode.GetHashCode()}."));
+                                $"The webHook {webHookName} notification has not executed status {eventName} successfully for {webHook.Name} webHook. The error code is {response.StatusCode.GetHashCode()}.");
+                            await _searchRequestEventPublisher.PublishSearchRequestRejected(
+                                    searchRequestOrdered,
+                                    new List<ValidationResult>()
+                                    {
+                                    new ValidationResultData(){ PropertyName=reasonObj.ReasonCode, ErrorMessage=reasonObj.Message }
+                                    });
+                            return;
                         }
                         else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
                         {
@@ -120,15 +129,23 @@ namespace SearchRequestAdaptor.Notifier
                                     });
                             return;
                         }
-
-                        throw new Exception($"Message Failed {response.StatusCode}, {response.Content.ReadAsStringAsync()}");
+                        else if(response.StatusCode == System.Net.HttpStatusCode.GatewayTimeout)
+                        {
+                            if (retryTimes >= maxRetryTimes)
+                            {
+                                _logger.LogError($"Gateway Timeout, already retry max retry times.");
+                                return;
+                            }
+                            _logger.LogError($"Message Failed { response.StatusCode}, {response.Content.ReadAsStringAsync()}");
+                            throw new Exception($"Message Failed {response.StatusCode}, {response.Content.ReadAsStringAsync()}");
+                        }
                     }
 
                     _logger.LogInformation("get response successfully from webhook.");
                     string responseContent = await response.Content.ReadAsStringAsync();
                     var saved = JsonConvert.DeserializeObject<SearchRequestSavedEvent>(responseContent);
 
-                    //for the new action will get Notification, only rejected are got published.
+                    //for the new action will get Notification, only failed or rejected are got published.
                     //for the update action, fmep needs notified and notification from dynamics.
                     if (saved.Action != RequestAction.NEW)
                     {
@@ -139,8 +156,14 @@ namespace SearchRequestAdaptor.Notifier
                 }
                 catch (Exception exception)
                 {
-                    _logger.LogError(exception.Message);
-                    throw exception;
+                    if (retryTimes >= maxRetryTimes)
+                    {
+                        await _searchRequestEventPublisher.PublishSearchRequestFailed(searchRequestOrdered, exception.Message);
+                        _logger.LogError($"The webHook {webHookName} notification failed for {eventName} for {webHook.Name} webHook. [{exception.Message}]");
+                        return;
+                    }
+                    return;
+                    //throw exception;
                 }
             }
         }

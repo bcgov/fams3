@@ -407,22 +407,29 @@ namespace DynamicsAdapter.Web.PersonSearch
 
         private async Task<SSG_SearchApiRequest> GetSearchApiRequest(string searchRequestKey, CancellationToken token)
         {
-            SSG_SearchApiRequest request = await _register.GetSearchApiRequest(searchRequestKey);
-            if (request != null)
+            try
             {
-                _logger.LogInformation("find searchApiRequest in Redis.");
-                return request;
-            }
+                SSG_SearchApiRequest request = await _register.GetSearchApiRequest(searchRequestKey);
+                if (request != null)
+                {
+                    _logger.LogInformation("find searchApiRequest in Redis.");
+                    return request;
+                }
 
-            _logger.LogInformation("Not find searchApiRequest in Redis, get it from Dynamics.");
-            request = await _searchApiRequestService.GetSearchApiRequest(searchRequestKey, token);
-            if (request == null)
+                _logger.LogInformation("Not find searchApiRequest in Redis, get it from Dynamics.");
+                request = await _searchApiRequestService.GetSearchApiRequest(searchRequestKey, token);
+                if (request == null)
+                {
+                    _logger.LogError("Cannot find the searchApiRequest for {searchApiRequestKey} in Dynamics.", searchRequestKey);
+                    return null;
+                }
+                _logger.LogInformation("find searchApiRequest in Dynamics.");
+                return request;
+            }catch(Exception ex)
             {
-                _logger.LogError("Cannot find the searchApiRequest for {searchApiRequestKey} in Dynamics.", searchRequestKey);
+                _logger.LogError(ex.Message);
                 return null;
             }
-            _logger.LogInformation("find searchApiRequest in Dynamics.");
-            return request;
         }
     }
 }

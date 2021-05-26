@@ -206,11 +206,11 @@ namespace SearchRequestAdaptor
                     {
 
                         e.UseRateLimit(1, TimeSpan.FromSeconds(5));
-                        //e.UseMessageRetry(r=> {
-                        //    r.Ignore<ArgumentNullException>();
-                        //    r.Ignore<InvalidOperationException>();
-                        //    r.Interval(retryConfiguration.RetryTimes, TimeSpan.FromMinutes(retryConfiguration.RetryInterval));
-                        //});
+                        e.UseMessageRetry(r=> {
+                            r.Ignore<ArgumentNullException>();
+                            r.Ignore<InvalidOperationException>();
+                            r.Interval(retryConfiguration.RetryTimes, TimeSpan.FromMinutes(retryConfiguration.RetryInterval));
+                        });
 
                         e.Consumer(() =>
                             new SearchRequestOrderedConsumer(
@@ -225,11 +225,11 @@ namespace SearchRequestAdaptor
                     {
 
                         e.UseRateLimit(1, TimeSpan.FromSeconds(5));
-                        //e.UseMessageRetry(r => {
-                        //    r.Ignore<ArgumentNullException>();
-                        //    r.Ignore<InvalidOperationException>();
-                        //    r.Interval(retryConfiguration.RetryTimes, TimeSpan.FromMinutes(retryConfiguration.RetryInterval));
-                        //});
+                        e.UseMessageRetry(r => {
+                            r.Ignore<ArgumentNullException>();
+                            r.Ignore<InvalidOperationException>();
+                            r.Interval(retryConfiguration.RetryTimes, TimeSpan.FromMinutes(retryConfiguration.RetryInterval));
+                        });
 
                         e.Consumer(() =>
                             new NotificationAcknowledgedConsumer(

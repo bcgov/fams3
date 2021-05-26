@@ -163,17 +163,26 @@ namespace SearchRequest.Adaptor.Test.Notifier
 
 
         [Test]
-        public async Task NotifySearchRequestEventAsync_should_throw_exception_if_invalid_url_setting()
+        public async Task NotifySearchRequestEventAsync_should_publish_failed_if_invalid_url_setting()
         {
             _searchRequestOptionsMock.Setup(x => x.Value).Returns(
                 new SearchRequestAdaptorOptions().AddWebHook("test", "invalidUrl"));
 
             _sut = new WebHookSearchRequestNotifier(_httpClient, _searchRequestOptionsMock.Object, _loggerMock.Object, _searchRquestEventPublisherMock.Object);
-            Assert.ThrowsAsync<Exception>(
-                async()=>
             await _sut.NotifySearchRequestEventAsync(
                     _fakeSearchRequestOrdered.RequestId,
-                    _fakeSearchRequestOrdered, CancellationToken.None));
+                    _fakeSearchRequestOrdered, CancellationToken.None);
+
+            _httpHandlerMock.Protected().Verify(
+                    "SendAsync",
+                    Times.Exactly(0),
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>()
+                );
+
+            _searchRquestEventPublisherMock.Verify(
+                x => x.PublishSearchRequestFailed(
+                It.IsAny<SearchRequestEvent>(), It.IsAny<string>()), Times.Once);
         }
 
 
@@ -215,7 +224,7 @@ namespace SearchRequest.Adaptor.Test.Notifier
         }
 
         [Test]
-        public async Task NotifySearchRequestEventAsync_should_throw_exception_if_http_throw_exception()
+        public async Task NotifySearchRequestEventAsync_should_publish_failed_if_http_throw_exception()
         {
             _searchRequestOptionsMock.Setup(x => x.Value).Returns(
                    new SearchRequestAdaptorOptions().AddWebHook("test", "http://test.org"));
@@ -228,11 +237,20 @@ namespace SearchRequest.Adaptor.Test.Notifier
                 ).Throws(new Exception("mock http throw exception"));
 
             _sut = new WebHookSearchRequestNotifier(_httpClient, _searchRequestOptionsMock.Object, _loggerMock.Object, _searchRquestEventPublisherMock.Object);
-            Assert.ThrowsAsync<Exception>(async()=>
             await _sut.NotifySearchRequestEventAsync(
                      _fakeSearchRequestOrdered.RequestId,
-                     _fakeSearchRequestOrdered, CancellationToken.None));
+                     _fakeSearchRequestOrdered, CancellationToken.None);
 
+            _httpHandlerMock.Protected().Verify(
+                    "SendAsync",
+                    Times.Exactly(1),
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>()
+                );
+
+            _searchRquestEventPublisherMock.Verify(
+                x => x.PublishSearchRequestFailed(
+                It.IsAny<SearchRequestEvent>(), It.IsAny<string>()), Times.Once);
         }
 
         [Test]
@@ -246,7 +264,37 @@ namespace SearchRequest.Adaptor.Test.Notifier
 
         }
 
- 
+        //no failed event, FMEP does not accept it.
+        //[Test]
+        //public void NotifySearchRequestEventAsync_should_not_publish_failed_if_http_throw_exception_and_not_reach_maxRetries()
+        //{
+        //    _searchRequestOptionsMock.Setup(x => x.Value).Returns(
+        //           new SearchRequestAdaptorOptions().AddWebHook("test", "http://test.org"));
+        //    _httpHandlerMock
+        //        .Protected()
+        //        .Setup<Task<HttpResponseMessage>>(
+        //            "SendAsync",
+        //            ItExpr.IsAny<HttpRequestMessage>(),
+        //            ItExpr.IsAny<CancellationToken>()
+        //        ).Throws(new Exception("mock http throw exception"));
+
+        //    _sut = new WebHookSearchRequestNotifier(_httpClient, _searchRequestOptionsMock.Object, _loggerMock.Object, _searchRquestEventPublisherMock.Object);
+        //    Assert.ThrowsAsync<Exception>(()=> _sut.NotifySearchRequestEventAsync(
+        //             _fakeSearchRequestOrdered.RequestId,
+        //             _fakeSearchRequestOrdered, CancellationToken.None,0,3));
+
+        //    _httpHandlerMock.Protected().Verify(
+        //            "SendAsync",
+        //            Times.Exactly(1),
+        //            ItExpr.IsAny<HttpRequestMessage>(),
+        //            ItExpr.IsAny<CancellationToken>()
+        //        );
+
+        //    _searchRquestEventPublisherMock.Verify(
+        //        x => x.PublishSearchRequestFailed(
+        //        It.IsAny<SearchRequestEvent>(), It.IsAny<string>()), Times.Never);
+        //}
+
         [Test]
         public async Task NotifySearchRequestEventAsync_with_Ack_should_send_httpRequest_to_one_subscribers()
         {

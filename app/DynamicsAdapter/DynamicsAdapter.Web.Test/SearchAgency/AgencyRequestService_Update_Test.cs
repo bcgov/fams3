@@ -1218,15 +1218,15 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
         }
 
         [Test]
-        public async Task wrong_fileId_searchRequestOrdered_ProcessUpdateSearchRequest_should_throw_exception()
+        public async Task wrong_fileId_searchRequestOrdered_ProcessUpdateSearchRequest_should_return_null()
         {
             Guid guid = Guid.NewGuid();
             _searchRequestServiceMock.Setup(x => x.GetSearchRequest(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<SSG_SearchRequest>(null));
             SearchRequestOrdered searchRequestOrdered = new SearchRequestOrdered();
-            Assert.ThrowsAsync<Exception>(async()=> await _sut.ProcessUpdateSearchRequest(searchRequestOrdered));
+            SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(searchRequestOrdered);
             _searchRequestServiceMock.Verify(m => m.CreateNotes(It.IsAny<NotesEntity>(), It.IsAny<CancellationToken>()), Times.Never);
-
+            Assert.AreEqual(null, ssgSearchRequest);
         }
 
         [Test]
@@ -1244,7 +1244,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
         }
 
         [Test]
-        public async Task null_searchRequestOrdered_ProcessUpdateSearchRequest_should_throw_exception()
+        public async Task null_searchRequestOrdered_ProcessUpdateSearchRequest_should_return_null()
         {
             _searchRequestServiceMock.Setup(x => x.GetPerson(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
                     .Returns(Task.FromResult<SSG_Person>(new SSG_Person()
@@ -1257,7 +1257,8 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
 
             Guid guid = Guid.NewGuid();
             SearchRequestOrdered searchRequestOrdered = new SearchRequestOrdered { Person = new Person { Agency = new Agency { Code = "FMEP" } } };
-            Assert.ThrowsAsync<Exception>(async () => await _sut.ProcessUpdateSearchRequest(searchRequestOrdered));
+            SSG_SearchRequest ssgSearchRequest = await _sut.ProcessUpdateSearchRequest(searchRequestOrdered);
+            Assert.AreEqual(null, ssgSearchRequest);
         }
 
         [Test]

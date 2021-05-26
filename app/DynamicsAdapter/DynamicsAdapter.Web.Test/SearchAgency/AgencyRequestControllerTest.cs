@@ -128,7 +128,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             var result = await _sut.CreateSearchRequest("exceptionrequest", updateSearchRequestOrdered);
             _agencyRequestServiceMock.Verify(x => x.ProcessSearchRequestOrdered(It.IsAny<SearchRequestOrdered>()), Times.Once);
             _agencyRequestServiceMock.Verify(x => x.SystemCancelSSGSearchRequest(It.Is<SSG_SearchRequest>(m=>m.FileId=="111111")), Times.Once);
-            Assert.AreEqual(504, ((ObjectResult)result).StatusCode);
+            Assert.AreEqual(500, ((ObjectResult)result).StatusCode);
         }
 
 
@@ -235,11 +235,11 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 SearchRequestKey = "notexist"
             };
             _agencyRequestServiceMock.Setup(x => x.ProcessCancelSearchRequest(It.IsAny<SearchRequestOrdered>()))
-                .Returns(Task.FromResult<SSG_SearchRequest>(null));
+                .ThrowsAsync(new Exception("search request does not exist."));
             var result = await _sut.CancelSearchRequest("requestId", updateSearchRequestOrdered);
 
             _agencyRequestServiceMock.Verify(x => x.ProcessSearchRequestOrdered(It.IsAny<SearchRequestOrdered>()), Times.Never);
-            Assert.IsInstanceOf(typeof(BadRequestObjectResult), result);
+            Assert.AreEqual(500, ((ObjectResult)result).StatusCode);
         }
 
         [Test]

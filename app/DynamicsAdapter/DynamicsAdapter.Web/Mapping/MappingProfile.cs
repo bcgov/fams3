@@ -118,7 +118,8 @@ namespace DynamicsAdapter.Web.Mapping
             CreateMap<PersonSearchStatus, SSG_SearchApiEvent>()
                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => Guid.NewGuid()))
                .ForMember(dest => dest.ProviderName, opt => opt.MapFrom(src => src.ProviderProfile.Name))
-               .ForMember(dest => dest.Name, opt => opt.MapFrom(src => Keys.SEARCH_API_EVENT_NAME));
+               //.ForMember(dest => dest.Name, opt => opt.MapFrom(src => Keys.SEARCH_API_EVENT_NAME));
+               .ForMember(dest => dest.Name, opt => opt.MapFrom<SearchApiEventNameResolver>());
 
 
             CreateMap<SearchRequestOrdered, SearchRequestEntity>()

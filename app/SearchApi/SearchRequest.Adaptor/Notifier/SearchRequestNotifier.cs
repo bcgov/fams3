@@ -112,11 +112,13 @@ namespace SearchRequestAdaptor.Notifier
                         }
                         else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
                         {
+                            string reason = await response.Content.ReadAsStringAsync();
+                            RejectReason reasonObj = JsonConvert.DeserializeObject<RejectReason>(reason);
                             await _searchRequestEventPublisher.PublishSearchRequestRejected(
                                     searchRequestOrdered,
                                     new List<ValidationResult>()
                                     {
-                                        new ValidationResultData(){ PropertyName="badRequest", ErrorMessage=await response.Content.ReadAsStringAsync() }
+                                        new ValidationResultData(){ PropertyName=reasonObj.ReasonCode, ErrorMessage=reasonObj.Message }
                                     });
                             return;
                         }

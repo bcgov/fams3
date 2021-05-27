@@ -121,7 +121,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                 catch (AgencyRequestException ex)
                 {
                     _logger.LogError(ex.Message);
-                    return BadRequest(new { Message = $"FileId ( {searchRequestOrdered.SearchRequestKey} ) is invalid. {ex.Message}" });
+                    return BadRequest(new { ReasonCode = $"{ex.Message}", Message = $"FileId ( {searchRequestOrdered.SearchRequestKey} ) is invalid. {ex.Message}" });
 
                 }
                 catch (Exception ex)

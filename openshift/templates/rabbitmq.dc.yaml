@@ -227,6 +227,7 @@ objects:
         resources:
           requests:
             storage: ${VOLUME_SIZE}
+        storageClassName: netapp-block-standard
 
 # - apiVersion: route.openshift.io/v1
 #   kind: Route

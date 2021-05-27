@@ -67,6 +67,11 @@ objects:
           - name: TRUSTEDHOSTS
             required: true
             value: "*"
+          - name: REDIS__PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: database-password
+                name: redis
           envFrom:
           - secretRef:
               name: aspnet-env

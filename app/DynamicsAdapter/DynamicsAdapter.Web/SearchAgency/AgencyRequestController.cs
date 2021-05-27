@@ -69,12 +69,16 @@ namespace DynamicsAdapter.Web.SearchAgency
                 catch (Exception ex)
                 {
                     SSG_SearchRequest createdSR = _agencyRequestService.GetSSGSearchRequest();
-                    if( createdSR != null)
+                    if (createdSR != null)
                     {
                         await _agencyRequestService.SystemCancelSSGSearchRequest(createdSR);
                     }
+                    if( ex is Simple.OData.Client.WebRequestException)
+                    {
+                        _logger.LogError(((Simple.OData.Client.WebRequestException)ex).Response);
+                    }
                     _logger.LogError(ex.Message);
-                    return StatusCode(StatusCodes.Status504GatewayTimeout, new { ReasonCode = ex.Message, Message = ex.InnerException?.Message });
+                    return StatusCode(StatusCodes.Status500InternalServerError, new { ReasonCode = ex.Message, Message = ex.InnerException?.Message });
                 }
             }
         }
@@ -110,17 +114,24 @@ namespace DynamicsAdapter.Web.SearchAgency
                 {
                     updatedSearchRequest = await _agencyRequestService.ProcessUpdateSearchRequest(searchRequestOrdered);
                     if (updatedSearchRequest == null)
-                        return BadRequest(new { Message = $"FileId ( {searchRequestOrdered.SearchRequestKey} ) is invalid." });
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError, new { ReasonCode = "error", Message ="error" });
+                    }                
                 }
                 catch (AgencyRequestException ex)
                 {
                     _logger.LogError(ex.Message);
-                    return StatusCode(StatusCodes.Status500InternalServerError, new { ReasonCode = ex.Message, Message = ex.InnerException?.Message });
+                    return BadRequest(new { Message = $"FileId ( {searchRequestOrdered.SearchRequestKey} ) is invalid. {ex.Message}" });
+
                 }
                 catch (Exception ex)
                 {
+                    if (ex is Simple.OData.Client.WebRequestException)
+                    {
+                        _logger.LogError(((Simple.OData.Client.WebRequestException)ex).Response);
+                    }
                     _logger.LogError(ex.Message);
-                    return StatusCode(StatusCodes.Status500InternalServerError, new { ReasonCode = "error", Message = "error" });
+                    return StatusCode(StatusCodes.Status500InternalServerError, new { ReasonCode = "error", Message = ex.Message });
                 }
                 _logger.LogInformation("UpdateSearchRequest successfully");
                 return Ok(BuildSearchRequestSaved_Update(updatedSearchRequest, searchRequestOrdered));
@@ -154,16 +165,18 @@ namespace DynamicsAdapter.Web.SearchAgency
                 try
                 {
                     cancelledSearchRequest = await _agencyRequestService.ProcessCancelSearchRequest(searchRequestOrdered);
-                    if (cancelledSearchRequest == null)
-                        return BadRequest(new { Message = $"FileId ( {searchRequestOrdered.SearchRequestKey} ) is invalid." });
                 }
                 catch (AgencyRequestException ex)
                 {
                     _logger.LogError(ex.Message);
-                    return StatusCode(StatusCodes.Status500InternalServerError, new { ReasonCode = ex.Message, Message = ex.InnerException?.Message });
+                    return BadRequest(new { Message = $"FileId ( {searchRequestOrdered.SearchRequestKey} ) is invalid. {ex.Message}" });
                 }
                 catch (Exception ex)
                 {
+                    if (ex is Simple.OData.Client.WebRequestException)
+                    {
+                        _logger.LogError(((Simple.OData.Client.WebRequestException)ex).Response);
+                    }
                     _logger.LogError(ex.Message);
                     return StatusCode(StatusCodes.Status500InternalServerError, new { ReasonCode = "error", Message = "error" });
                 }
@@ -211,6 +224,10 @@ namespace DynamicsAdapter.Web.SearchAgency
                 }
                 catch (Exception ex)
                 {
+                    if (ex is Simple.OData.Client.WebRequestException)
+                    {
+                        _logger.LogError(((Simple.OData.Client.WebRequestException)ex).Response);
+                    }
                     _logger.LogError(ex.Message);
                     return StatusCode(StatusCodes.Status504GatewayTimeout, new { ReasonCode = "error", Message = "error" });
                 }

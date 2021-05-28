@@ -193,7 +193,7 @@ namespace SearchRequest.Adaptor.Test.Notifier
                 .ReturnsAsync(new HttpResponseMessage()
                 {
                     StatusCode = HttpStatusCode.BadRequest,
-                    Content = new StringContent("bad request!"),
+                    Content = new StringContent(JsonConvert.SerializeObject(new { ReasonCode = "reason", Message = "msg" })),
                 })
                 .Verifiable();
 

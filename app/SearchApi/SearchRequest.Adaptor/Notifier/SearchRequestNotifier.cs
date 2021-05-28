@@ -112,11 +112,16 @@ namespace SearchRequestAdaptor.Notifier
                         }
                         else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
                         {
+                            string reason = await response.Content.ReadAsStringAsync();
+                            RejectReason reasonObj = JsonConvert.DeserializeObject<RejectReason>(reason);
+                            if (reasonObj.ReasonCode.Equals("error", StringComparison.InvariantCultureIgnoreCase))
+                                throw new Exception("should not get here. the request is wrong.");
+
                             await _searchRequestEventPublisher.PublishSearchRequestRejected(
                                     searchRequestOrdered,
                                     new List<ValidationResult>()
                                     {
-                                        new ValidationResultData(){ PropertyName="badRequest", ErrorMessage=await response.Content.ReadAsStringAsync() }
+                                        new ValidationResultData(){ PropertyName=reasonObj.ReasonCode, ErrorMessage=reasonObj.Message }
                                     });
                             return;
                         }

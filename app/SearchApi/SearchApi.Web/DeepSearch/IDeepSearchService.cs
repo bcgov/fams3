@@ -109,9 +109,11 @@ namespace SearchApi.Web.DeepSearch
                 {
                     _logger.LogInformation($"Updating data partner as completed for {dataPartner} for {eventName} event");
                     var searchRequest = await _cacheService.GetRequest(searchRequestKey);
+                    _logger.LogDebug($"old sr = {JsonConvert.SerializeObject(searchRequest)}");
                     if(searchRequest != null)
                         searchRequest.UpdateDataPartner(dataPartner);
-                    await _cacheService.SaveRequest(searchRequest);                  
+                    await _cacheService.SaveRequest(searchRequest);
+                    _logger.LogDebug($"new sr = {JsonConvert.SerializeObject(searchRequest)}");
                 }
             }
             catch (Exception exception)

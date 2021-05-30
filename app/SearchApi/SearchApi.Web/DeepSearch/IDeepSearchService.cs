@@ -38,7 +38,7 @@ namespace SearchApi.Web.DeepSearch
         private readonly ILogger<DeepSearchService> _logger;
         private readonly IDeepSearchDispatcher _deepSearchDispatcher;
         private readonly DeepSearchOptions _deepSearchOptions;
-        private readonly SemaphoreSlim mutex = new SemaphoreSlim(1);
+        private readonly SemaphoreSlim mutex = new SemaphoreSlim(1,1);
       
         public DeepSearchService(ICacheService cacheService, ILogger<DeepSearchService> logger, IOptions<DeepSearchOptions> deepSearchOptions, IDeepSearchDispatcher deepSearchDispatcher)
         {

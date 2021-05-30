@@ -38,6 +38,7 @@ namespace SearchApi.Web.DeepSearch
         private readonly ILogger<DeepSearchService> _logger;
         private readonly IDeepSearchDispatcher _deepSearchDispatcher;
         private readonly DeepSearchOptions _deepSearchOptions;
+        private readonly SemaphoreSlim mutex = new SemaphoreSlim(1);
       
         public DeepSearchService(ICacheService cacheService, ILogger<DeepSearchService> logger, IOptions<DeepSearchOptions> deepSearchOptions, IDeepSearchDispatcher deepSearchDispatcher)
         {
@@ -55,6 +56,7 @@ namespace SearchApi.Web.DeepSearch
 
         private async Task<bool> CurrentWaveIsCompleted(string searchRequestKey)
         {
+            await mutex.WaitAsync().ConfigureAwait(false);
             try
             {
                 SearchRequest sr = await _cacheService.GetRequest(searchRequestKey);
@@ -68,9 +70,16 @@ namespace SearchApi.Web.DeepSearch
                 _logger.LogError($"Check Data Partner Status Failed. [] for {searchRequestKey}. [{exception.Message}]");
                 return false;
             }
+            finally
+            {
+
+                mutex.Release();
+
+            }
         }
         private async Task<bool> AllSearchDataPartnerIsCompleted(string searchRequestKey)
         {
+            await mutex.WaitAsync().ConfigureAwait(false);
             try
             {
                 var request = await _cacheService.GetRequest(searchRequestKey);
@@ -84,9 +93,16 @@ namespace SearchApi.Web.DeepSearch
                 _logger.LogError($"Check Data Partner Status Failed. [] for {searchRequestKey}. [{exception.Message}]");
                 return false;
             }
+            finally
+            {
+
+                mutex.Release();
+
+            }
         }
         public async Task UpdateDataPartner(string searchRequestKey, string dataPartner, string eventName)
         {
+            await mutex.WaitAsync().ConfigureAwait(false);
             try
             {
                 if (eventName.Equals(EventName.Completed) || eventName.Equals(EventName.Rejected))
@@ -103,12 +119,20 @@ namespace SearchApi.Web.DeepSearch
                 _logger.LogError($"Update Data Partner Status Failed. [{eventName}] for {searchRequestKey}. [{exception.Message}]");
 
             }
+            finally
+            {
+
+                mutex.Release();
+
+            }
+
         }
 
        
 
         public  async Task DeleteFromCache(string searchRequestKey)
         {
+            await mutex.WaitAsync().ConfigureAwait(false);
             try
             {
                 var searchRequest = await _cacheService.GetRequest(searchRequestKey);
@@ -121,6 +145,12 @@ namespace SearchApi.Web.DeepSearch
             catch (Exception exception)
             {
                 _logger.LogError($"Delete search request failed. for {searchRequestKey}. [{exception.Message}]");
+            }
+            finally
+            {
+
+                mutex.Release();
+
             }
         }
 

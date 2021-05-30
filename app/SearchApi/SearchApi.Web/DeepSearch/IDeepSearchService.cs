@@ -56,7 +56,7 @@ namespace SearchApi.Web.DeepSearch
 
         private async Task<bool> CurrentWaveIsCompleted(string searchRequestKey)
         {
-            await mutex.WaitAsync().ConfigureAwait(false);
+            await mutex.WaitAsync();
             try
             {
                 SearchRequest sr = await _cacheService.GetRequest(searchRequestKey);

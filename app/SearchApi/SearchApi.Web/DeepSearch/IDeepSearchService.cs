@@ -79,7 +79,7 @@ namespace SearchApi.Web.DeepSearch
         }
         private async Task<bool> AllSearchDataPartnerIsCompleted(string searchRequestKey)
         {
-            await mutex.WaitAsync().ConfigureAwait(false);
+            await mutex.WaitAsync();
             try
             {
                 var request = await _cacheService.GetRequest(searchRequestKey);
@@ -102,7 +102,7 @@ namespace SearchApi.Web.DeepSearch
         }
         public async Task UpdateDataPartner(string searchRequestKey, string dataPartner, string eventName)
         {
-            await mutex.WaitAsync().ConfigureAwait(false);
+            await mutex.WaitAsync();
             try
             {
                 if (eventName.Equals(EventName.Completed) || eventName.Equals(EventName.Rejected))
@@ -132,7 +132,7 @@ namespace SearchApi.Web.DeepSearch
 
         public  async Task DeleteFromCache(string searchRequestKey)
         {
-            await mutex.WaitAsync().ConfigureAwait(false);
+            await mutex.WaitAsync();
             try
             {
                 var searchRequest = await _cacheService.GetRequest(searchRequestKey);

@@ -70,23 +70,18 @@ namespace DynamicsAdapter.Web.PersonSearch
                     {
                         return await ProcessJCACompletedEvent(key, personCompletedEvent);
                     }
+
                     _logger.LogInformation("Received Person search completed event");
                     var cts = new CancellationTokenSource();
                     SSG_SearchRequest searchRequest = null;
                     SSG_SearchApiRequest request = await GetSearchApiRequest(key, cts.Token);
 
-                    if (request == null )
+                    if (request == null)
                     {
-                        if(personCompletedEvent?.ProviderProfile.Name == InformationSourceType.JCA.Name) 
-                        {
-                            //this means the request is not generated in fams3, but result coming to fams3. Only JCA has this problem
-                            searchRequest = await ProcessFams2JCACompletedEvent(personCompletedEvent);
-                        }
-                        else
-                        {
-                            throw new Exception($"Cannot find SearchApiRequest for {key}");
-                        }
-
+                        string[] keys = key.Split("_");
+                        string fileId = keys[0];
+                        //get searchRequest
+                        searchRequest = await _searchResultService.GetSearchRequest(fileId, new CancellationTokenSource().Token);
                     }
                     else
                     {
@@ -96,9 +91,10 @@ namespace DynamicsAdapter.Web.PersonSearch
                         await _searchApiRequestService.AddEventAsync(request.SearchApiRequestId, searchApiEvent, cts.Token);
                         _logger.LogInformation($"Successfully created completed event for SearchApiRequest");
 
-                    //upload search result to dynamic search api
-                    var searchRequestId = await _searchApiRequestService.GetLinkedSearchRequestIdAsync(request.SearchApiRequestId, cts.Token);
-                    searchRequest = new SSG_SearchRequest { SearchRequestId = searchRequestId };
+                        //upload search result to dynamic search api
+                        var searchRequestId = await _searchApiRequestService.GetLinkedSearchRequestIdAsync(request.SearchApiRequestId, cts.Token);
+                        searchRequest = new SSG_SearchRequest { SearchRequestId = searchRequestId };
+                    }
 
                     if (personCompletedEvent?.MatchedPersons != null)
                     {
@@ -113,7 +109,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                         {
                             SSG_Identifier sourceIdentifer = await _register.GetMatchedSourceIdentifier(p.SourcePersonalIdentifier, key);
                             PersonFound clonedPerson = p.Clone();
-                            if ( prePerson != null)
+                            if (prePerson != null)
                             {
                                 if (p.SamePersonFound(prePerson))
                                 {
@@ -126,12 +122,12 @@ namespace DynamicsAdapter.Web.PersonSearch
                         }
                     }
 
-                    await UpdateRetries(personCompletedEvent?.ProviderProfile.Name,0, cts, request);
+                    await UpdateRetries(personCompletedEvent?.ProviderProfile.Name, 0, cts, request);
                     return Ok();
                 }
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
                 return BadRequest();
@@ -143,7 +139,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             _logger.LogInformation("Received Person search completed event");
             var cts = new CancellationTokenSource();
             SSG_SearchRequest searchRequest = null;
-            SSG_SearchApiRequest request = await _register.GetSearchApiRequest(key);
+            SSG_SearchApiRequest request = await GetSearchApiRequest(key, cts.Token);
             if (request == null && personCompletedEvent?.ProviderProfile.Name == InformationSourceType.JCA.Name)
             {
                 //this means the request is not generated in fams3, but result coming to fams3. Only JCA has this problem

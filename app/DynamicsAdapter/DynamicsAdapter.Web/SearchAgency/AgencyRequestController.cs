@@ -48,9 +48,9 @@ namespace DynamicsAdapter.Web.SearchAgency
             {
                 _logger.LogInformation("Get CreateSearchRequest");
                 _logger.LogDebug(JsonConvert.SerializeObject(searchRequestOrdered));
-                if (string.IsNullOrEmpty(requestId)) return BadRequest(new { Message = "requestId cannot be empty." });
-                if (searchRequestOrdered == null) return BadRequest(new { Message = "SearchRequestOrdered cannot be empty." });
-                if (searchRequestOrdered.Action != RequestAction.NEW) return BadRequest(new { Message = "CreateSearchRequest should only get NEW request." });
+                if (string.IsNullOrEmpty(requestId)) return BadRequest(new { ReasonCode = "error", Message = "requestId cannot be empty." });
+                if (searchRequestOrdered == null) return BadRequest(new { ReasonCode = "error", Message = "SearchRequestOrdered cannot be empty." });
+                if (searchRequestOrdered.Action != RequestAction.NEW) return BadRequest(new { ReasonCode = "error", Message = "CreateSearchRequest should only get NEW request." });
 
                 try
                 {
@@ -69,12 +69,16 @@ namespace DynamicsAdapter.Web.SearchAgency
                 catch (Exception ex)
                 {
                     SSG_SearchRequest createdSR = _agencyRequestService.GetSSGSearchRequest();
-                    if( createdSR != null)
+                    if (createdSR != null)
                     {
                         await _agencyRequestService.SystemCancelSSGSearchRequest(createdSR);
                     }
+                    if( ex is Simple.OData.Client.WebRequestException)
+                    {
+                        _logger.LogError(((Simple.OData.Client.WebRequestException)ex).Response);
+                    }
                     _logger.LogError(ex.Message);
-                    return StatusCode(StatusCodes.Status504GatewayTimeout, new { ReasonCode = ex.Message, Message = ex.InnerException?.Message });
+                    return StatusCode(StatusCodes.Status500InternalServerError, new { ReasonCode = ex.Message, Message = ex.InnerException?.Message });
                 }
             }
         }
@@ -94,33 +98,40 @@ namespace DynamicsAdapter.Web.SearchAgency
             {
                 _logger.LogInformation("Get UpdateSearchRequest");
                 if (string.IsNullOrEmpty(requestId))
-                    return BadRequest(new { Message = "requestId cannot be empty." });
+                    return BadRequest(new { ReasonCode = "error", Message = "requestId cannot be empty." });
 
                 if (searchRequestOrdered == null)
-                    return BadRequest(new { Message = "SearchRequestOrdered cannot be empty." });
+                    return BadRequest(new { ReasonCode = "error", Message = "SearchRequestOrdered cannot be empty." });
 
                 if (searchRequestOrdered.Action != RequestAction.UPDATE)
-                    return BadRequest(new { Message = "UpdateSearchRequest should only get Update request." });
+                    return BadRequest(new { ReasonCode = "error", Message = "UpdateSearchRequest should only get Update request." });
 
                 if (String.IsNullOrEmpty(searchRequestOrdered.SearchRequestKey))
-                    return BadRequest(new { Message = "FileId cannot be empty for updating request." });
+                    return BadRequest(new { ReasonCode = "error", Message = "FileId cannot be empty for updating request." });
 
                 SSG_SearchRequest updatedSearchRequest = null;
                 try
                 {
                     updatedSearchRequest = await _agencyRequestService.ProcessUpdateSearchRequest(searchRequestOrdered);
                     if (updatedSearchRequest == null)
-                        return BadRequest(new { Message = $"FileId ( {searchRequestOrdered.SearchRequestKey} ) is invalid." });
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError, new { ReasonCode = "error", Message ="error" });
+                    }                
                 }
                 catch (AgencyRequestException ex)
                 {
                     _logger.LogError(ex.Message);
-                    return StatusCode(StatusCodes.Status500InternalServerError, new { ReasonCode = ex.Message, Message = ex.InnerException?.Message });
+                    return BadRequest(new { ReasonCode = ex.Message, Message = $"FileId ( {searchRequestOrdered.SearchRequestKey} ) is invalid. {ex.Message}" });
+
                 }
                 catch (Exception ex)
                 {
+                    if (ex is Simple.OData.Client.WebRequestException)
+                    {
+                        _logger.LogError(((Simple.OData.Client.WebRequestException)ex).Response);
+                    }
                     _logger.LogError(ex.Message);
-                    return StatusCode(StatusCodes.Status500InternalServerError, new { ReasonCode = "error", Message = "error" });
+                    return StatusCode(StatusCodes.Status500InternalServerError, new { ReasonCode = "error", Message = ex.Message });
                 }
                 _logger.LogInformation("UpdateSearchRequest successfully");
                 return Ok(BuildSearchRequestSaved_Update(updatedSearchRequest, searchRequestOrdered));
@@ -142,28 +153,30 @@ namespace DynamicsAdapter.Web.SearchAgency
                 _logger.LogInformation("Get CancelSearchRequest");
 
                 if (searchRequestOrdered == null)
-                    return BadRequest(new { Message = "SearchRequestOrdered cannot be empty." });
+                    return BadRequest(new { ReasonCode = "error", Message = "SearchRequestOrdered cannot be empty." });
 
                 if (searchRequestOrdered.Action != RequestAction.CANCEL)
-                    return BadRequest(new { Message = "CancelSearchRequest should only get Cancel request." });
+                    return BadRequest(new { ReasonCode = "error", Message = "CancelSearchRequest should only get Cancel request." });
 
                 if (String.IsNullOrEmpty(searchRequestOrdered.SearchRequestKey))
-                    return BadRequest(new { Message = "FileId cannot be empty for cancelling request." });
+                    return BadRequest(new { ReasonCode = "error", Message = "FileId cannot be empty for cancelling request." });
 
                 SSG_SearchRequest cancelledSearchRequest;
                 try
                 {
                     cancelledSearchRequest = await _agencyRequestService.ProcessCancelSearchRequest(searchRequestOrdered);
-                    if (cancelledSearchRequest == null)
-                        return BadRequest(new { Message = $"FileId ( {searchRequestOrdered.SearchRequestKey} ) is invalid." });
                 }
                 catch (AgencyRequestException ex)
                 {
                     _logger.LogError(ex.Message);
-                    return StatusCode(StatusCodes.Status500InternalServerError, new { ReasonCode = ex.Message, Message = ex.InnerException?.Message });
+                    return BadRequest(new { ReasonCode = ex.Message, Message = $"FileId ( {searchRequestOrdered.SearchRequestKey} ) is invalid. {ex.Message}" });
                 }
                 catch (Exception ex)
                 {
+                    if (ex is Simple.OData.Client.WebRequestException)
+                    {
+                        _logger.LogError(((Simple.OData.Client.WebRequestException)ex).Response);
+                    }
                     _logger.LogError(ex.Message);
                     return StatusCode(StatusCodes.Status500InternalServerError, new { ReasonCode = "error", Message = "error" });
                 }
@@ -211,6 +224,10 @@ namespace DynamicsAdapter.Web.SearchAgency
                 }
                 catch (Exception ex)
                 {
+                    if (ex is Simple.OData.Client.WebRequestException)
+                    {
+                        _logger.LogError(((Simple.OData.Client.WebRequestException)ex).Response);
+                    }
                     _logger.LogError(ex.Message);
                     return StatusCode(StatusCodes.Status504GatewayTimeout, new { ReasonCode = "error", Message = "error" });
                 }

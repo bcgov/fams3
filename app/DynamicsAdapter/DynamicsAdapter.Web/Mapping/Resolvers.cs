@@ -1,4 +1,5 @@
 using AutoMapper;
+using DynamicsAdapter.Web.PersonSearch.Models;
 using Fams3Adapter.Dynamics;
 using Fams3Adapter.Dynamics.Employment;
 using Fams3Adapter.Dynamics.Identifier;
@@ -6,6 +7,7 @@ using Fams3Adapter.Dynamics.OptionSets.Models;
 using Fams3Adapter.Dynamics.Pension;
 using Fams3Adapter.Dynamics.RealEstate;
 using Fams3Adapter.Dynamics.SafetyConcern;
+using Fams3Adapter.Dynamics.SearchApiEvent;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using Fams3Adapter.Dynamics.SearchResponse;
 using Fams3Adapter.Dynamics.Types;
@@ -386,6 +388,16 @@ namespace DynamicsAdapter.Web.Mapping
             }
 
             return null;
+        }
+    }
+
+    public class SearchApiEventNameResolver : IValueResolver<PersonSearchStatus, SSG_SearchApiEvent, string>
+    {
+        public string Resolve(PersonSearchStatus source, SSG_SearchApiEvent destination, string destMember, ResolutionContext context)
+        {
+            string timeStampStr = source.TimeStamp.ToString("yyyy-MM-dd HH:mm");
+            destination.TimeStamp = source.TimeStamp;
+            return $"{timeStampStr} | {destination.EventType} | {source.ProviderProfile?.Name}";
         }
     }
 }

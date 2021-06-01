@@ -33,8 +33,8 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
             CancellationToken cancellationToken);
 
         Task<SSG_SearchApiRequest> MarkComplete(Guid searchApiRequestId, CancellationToken cancellationToken);
-        
 
+        Task<SSG_SearchApiRequest> GetSearchApiRequest(string searchRequestKey, CancellationToken cancellationToken);
 
     }
 
@@ -250,6 +250,23 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
             searchApiRequest.DataProviders = list.ToArray();
         }
 
-      
+
+        public async Task<SSG_SearchApiRequest> GetSearchApiRequest(string searchRequestKey, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrEmpty(searchRequestKey)) throw new ArgumentNullException(nameof(searchRequestKey));
+            string[] strs = searchRequestKey.Split("_");
+            if (strs.Length > 1)
+            {
+                string sequence = strs[1];
+                IEnumerable<SSG_SearchApiRequest> searchApiRequests = await _oDataClient.For<SSG_SearchApiRequest>()
+                    .Select(x => x.SearchApiRequestId)
+                    .Filter(x => x.SequenceNumber == sequence)
+                    .FindEntriesAsync(cancellationToken);
+
+                return searchApiRequests?.FirstOrDefault();
+            }
+            
+            return null;
+        }
     }
 }

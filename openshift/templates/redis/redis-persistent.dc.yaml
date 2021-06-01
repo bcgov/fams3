@@ -335,7 +335,7 @@ objects:
           terminationMessagePath: /dev/termination-log
           volumeMounts:
           - mountPath: /data
-            name: ${DATABASE_SERVICE_NAME}-data
+            name: ${DATABASE_SERVICE_NAME}-state
 #        # redis-commander
 #        - capabilities: {}
 #          env:
@@ -427,7 +427,7 @@ objects:
         dnsPolicy: ClusterFirst
         restartPolicy: Always
         volumes:
-        - name: ${DATABASE_SERVICE_NAME}-data
+        - name: ${DATABASE_SERVICE_NAME}-state
           persistentVolumeClaim:
             claimName: ${DATABASE_SERVICE_NAME}
 #        - name: proxy-tls

@@ -15,8 +15,8 @@ parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
 
 export NAMESPACE_PREFIX=dfb30e
 export TOOLS_NAMESPACE=${NAMESPACE_PREFIX}-tools
-export TARGET_NAMESPACE=${NAMESPACE_PREFIX}-dev
-export TAG=dev
+export TAG=test
+export TARGET_NAMESPACE=${NAMESPACE_PREFIX}-${TAG}
 export GIT_REPO="bcgov/fams3"
 export GIT_BRANCH="ocp4"
 export GIT_URL="https://raw.githubusercontent.com/${GIT_REPO}/${GIT_BRANCH}"
@@ -352,31 +352,31 @@ _start_build(){
 
 start_builds(){
   buildConfigs=(
-    #"bchydro-rest-adapter"
-    #"bchydro-web-adapter"
-    #"cornet-web-adapter"
-    #"dynadapter"
-    # "fmep-rest-inbound-adapter"
-    # "icbc-rest-adapter"
-    # "icbc-web-adapter"
-    # "jca-file-adapter"
-    # "jenkins-slave-dotnet"
-    # "jenkins-slave-selenium-maven"
-    #"jenkins-slave-sonarqube-dotnet"
-    #"jenkins-slave-zap"
-    # "mhsd-rest-adapter"
-    # "mhsd-web-adapter"
-    # "moh-demo-rest-adapter"
-    # "moh-demo-web-adapter"
-    # "moh-emp-rest-adapter"
-    # "moh-emp-web-adapter"
-    # "moh-rp-rest-adapter"
-    # "moh-rp-web-adapter"
-    # "request-api"
+    "bchydro-rest-adapter"
+    "bchydro-web-adapter"
+    "cornet-web-adapter"
+    "dynadapter"
+    "fmep-rest-inbound-adapter"
+    "icbc-rest-adapter"
+    "icbc-web-adapter"
+    "jca-file-adapter"
+    "mhsd-rest-adapter"
+    "mhsd-web-adapter"
+    "moh-demo-rest-adapter"
+    "moh-demo-web-adapter"
+    "moh-emp-rest-adapter"
+    "moh-emp-web-adapter"
+    "moh-rp-rest-adapter"
+    "moh-rp-web-adapter"
+    "request-api"
     "search-api"
     "selenium-node-chrome"
     "wsbc-rest-inbound-adapter"
     "wsbc-web-adapter"
+    # "jenkins-slave-dotnet"
+    # "jenkins-slave-selenium-maven"
+    # "jenkins-slave-sonarqube-dotnet"
+    # "jenkins-slave-zap"
   )
   for bc in ${buildConfigs[@]}; do 
     _start_build $bc
@@ -712,35 +712,35 @@ _main() {
   # start_builds
 
   # deploy_selenium           # N/A?
-  deploy_rabbitmq
-  # deploy_jaeger
+  # deploy_rabbitmq
+  deploy_jaeger
   deploy_redis
-  # deploy_requestapi
-  # deploy_searchapi
-  # deploy_dynadapter
+  deploy_requestapi
+  deploy_searchapi
+  deploy_dynadapter
 
-  # deploy_iasearchadapter
-  # deploy_fmeprestinboundadapter
+  deploy_iasearchadapter
+  deploy_fmeprestinboundadapter
 
-  # deploy_webadapter bchydro
-  # deploy_restadapter bchydro
-  # deploy_webadapter cornet
-  # deploy_webadapter icbc
-  # deploy_restadapter icbc
-  # deploy_fileadapter jca
-  # deploy_restadapter mhsd
-  # deploy_webadapter mhsd
-  # deploy_restadapter moh-demo
-  # deploy_webadapter moh-demo
-  # deploy_restadapter moh-emp
-  # deploy_webadapter moh-emp
-  # deploy_restadapter moh-rp
-  # deploy_webadapter moh-rp
-  # deploy_restadapter wsbc
-  # deploy_webadapter wsbc
-  # deploy_restinboundadapter wsbc
+  deploy_webadapter bchydro
+  deploy_restadapter bchydro
+  deploy_webadapter cornet
+  deploy_webadapter icbc
+  deploy_restadapter icbc
+  deploy_fileadapter jca
+  deploy_restadapter mhsd
+  deploy_webadapter mhsd
+  deploy_restadapter moh-demo
+  deploy_webadapter moh-demo
+  deploy_restadapter moh-emp
+  deploy_webadapter moh-emp
+  deploy_restadapter moh-rp
+  deploy_webadapter moh-rp
+  deploy_restadapter wsbc
+  deploy_webadapter wsbc
+  deploy_restinboundadapter wsbc
 
-  #tag_images 
+  # tag_images 
 
 }
 

@@ -259,7 +259,7 @@ objects:
   metadata:
     labels:
       app: redis
-    name: ${DATABASE_SERVICE_NAME}
+    name: ${DATABASE_SERVICE_NAME}-state
     namespace: ${namespacePrefix}-${TAG}
   spec:
     accessModes:
@@ -340,7 +340,7 @@ objects:
           terminationMessagePath: /dev/termination-log
           volumeMounts:
           - mountPath: /data
-            name: ${DATABASE_SERVICE_NAME}-data
+            name: ${DATABASE_SERVICE_NAME}-state
         # redis-commander
         - capabilities: {}
           env:
@@ -446,9 +446,9 @@ objects:
         dnsPolicy: ClusterFirst
         restartPolicy: Always
         volumes:
-        - name: ${DATABASE_SERVICE_NAME}-data
+        - name: ${DATABASE_SERVICE_NAME}-state
           persistentVolumeClaim:
-            claimName: ${DATABASE_SERVICE_NAME}
+            claimName: ${DATABASE_SERVICE_NAME}-state
         - name: proxy-tls
           secret:
             secretName: redis-commander-oauth-proxy-tls

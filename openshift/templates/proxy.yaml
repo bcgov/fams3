@@ -29,32 +29,76 @@ objects:
         app: ${NAME}
     data:
       Caddyfile: |
-        SOURCE-HOST:2015 {
-            reverse_proxy * https://DESTINATION-HOST {
+        http://fmep-rest-inbound-adapter-frjeow-${ENVIRONMENT}.pathfinder.bcgov:2015 {
+            reverse_proxy * https://fmep-rest-inbound-adapter-dfb30e-${ENVIRONMENT}.apps.silver.devops.gov.bc.ca {
                 header_up Host {http.reverse_proxy.upstream.hostport}
-                header_up Sec-WebSocket-Protocol {>Sec-WebSocket-Protocol}
                 header_up X-Real-IP {remote_host}
                 header_up X-Forwarded-For {remote_host}
-                header_up X-Forwarded-Proto {scheme}
-                #header_up Connection {>Connection}
-                #header_up Upgrade {>Upgrade}
                 flush_interval -1
             }
             respond /ehlo 200
             log {
-                # errors stdout
                 output stdout 
-                #format single_field common_log
                 level DEBUG
           }
         }
+        http://wsbc-rest-inbound-adapter-frjeow-${ENVIRONMENT}.pathfinder.bcgov:2015 {
+            reverse_proxy * https://wsbc-rest-inbound-adapter-dfb30e-${ENVIRONMENT}.apps.silver.devops.gov.bc.ca {
+                header_up Host {http.reverse_proxy.upstream.hostport}
+                header_up X-Real-IP {remote_host}
+                header_up X-Forwarded-For {remote_host}
+                flush_interval -1
+            }
+            respond /ehlo 200
+            log {
+                output stdout 
+                level DEBUG
+          }
+        }
+        http://ia-search-web-adapter-frjeow-${ENVIRONMENT}.pathfinder.bcgov:2015 {
+            reverse_proxy * https://ia-search-web-adapter-dfb30e-${ENVIRONMENT}.apps.silver.devops.gov.bc.ca {
+                header_up Host {http.reverse_proxy.upstream.hostport}
+                header_up X-Real-IP {remote_host}
+                header_up X-Forwarded-For {remote_host}
+                flush_interval -1
+            }
+            respond /ehlo 200
+            log {
+                output stdout 
+                level DEBUG
+          }
+        }
+        http://dynadapter-frjeow-${ENVIRONMENT}.pathfinder.bcgov:2015 {
+            reverse_proxy * https://dynadapter-dfb30e-${ENVIRONMENT}.apps.silver.devops.gov.bc.ca {
+                header_up Host {http.reverse_proxy.upstream.hostport}
+                header_up X-Real-IP {remote_host}
+                header_up X-Forwarded-For {remote_host}
+                flush_interval -1
+            }
+            respond /ehlo 200
+            log {
+                output stdout 
+                level DEBUG
+          }
+        }
+        http://request-api-frjeow-${ENVIRONMENT}:2015 {
+            reverse_proxy * https://request-api-dfb30e-${ENVIRONMENT}.apps.silver.devops.gov.bc.ca {
+                header_up Host {http.reverse_proxy.upstream.hostport}
+                header_up X-Real-IP {remote_host}
+                header_up X-Forwarded-For {remote_host}
+                flush_interval -1
+            }
+            respond /ehlo 200
+            log {
+                output stdout 
+                level DEBUG
+          }
+        }        
         :2015 {
             respond /ehlo 200
             
             log {
-              # errors stdout
               output stdout 
-              #format single_field common_log
               level DEBUG
           }
         }
@@ -159,24 +203,11 @@ parameters:
     name: NAME
     required: true
     value: fams3-proxy
-  # - name: DESTINATION_HOST_NAME
-  #   description: The destination address that is being proxied.
-  #   displayName: Redirect Destination
-  #   required: true
-  # - name: SOURCE_HOST_NAME
-  #   description: |
-  #     The route that will be redirected to the destination URL.
-  #   displayName: Front Door Route
-  #   required: true
   - name: REPLICA_COUNT
     description: The number of PROXY pods to start
     displayName: Replica Count
     value: "3"
-  # - name: PROXY_MIN_HPA
-  #   description: Min Number of PROXY pods for HPA
-  #   displayName: PROXY Min HPA
-  #   value: 3
-  # - name: PROXY_MAX_HPA
-  #   description: Max Number of PROXY pods for HPA
-  #   displayName: PROXY Max HPA
-  #   value: 9
+  - name: ENVIRONMENT
+    description: Environment to proxy
+    displayName: Environment
+    value: dev

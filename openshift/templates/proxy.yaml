@@ -81,7 +81,7 @@ objects:
                 level DEBUG
           }
         }
-        http://request-api-frjeow-${ENVIRONMENT}:2015 {
+        http://request-api-frjeow-${ENVIRONMENT}.pathfinder.gov.bc.ca:2015 {
             reverse_proxy * https://request-api-dfb30e-${ENVIRONMENT}.apps.silver.devops.gov.bc.ca {
                 header_up Host {http.reverse_proxy.upstream.hostport}
                 header_up X-Real-IP {remote_host}

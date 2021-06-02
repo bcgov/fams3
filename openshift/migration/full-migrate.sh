@@ -713,14 +713,14 @@ _main() {
 
   # deploy_selenium           # N/A?
   # deploy_rabbitmq
-  deploy_jaeger
-  deploy_redis
-  deploy_requestapi
-  deploy_searchapi
-  deploy_dynadapter
+  # deploy_jaeger
+  # deploy_redis
+  # deploy_requestapi
+  # deploy_searchapi
+  # deploy_dynadapter
 
   deploy_iasearchadapter
-  deploy_fmeprestinboundadapter
+  # deploy_fmeprestinboundadapter
 
   deploy_webadapter bchydro
   deploy_restadapter bchydro

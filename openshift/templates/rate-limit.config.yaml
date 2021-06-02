@@ -1,0 +1,27 @@
+apiVersion: v1
+data:
+  QueueRateLimit__PersonSearchAccepted_ConcurrencyLimit: MTA=
+  QueueRateLimit__PersonSearchAccepted_RateInterval: MQ==
+  QueueRateLimit__PersonSearchAccepted_RateLimit: MTAwMA==
+  QueueRateLimit__PersonSearchCompletedJCA_ConcurrencyLimit: MTA=
+  QueueRateLimit__PersonSearchCompletedJCA_RateInterval: MQ==
+  QueueRateLimit__PersonSearchCompletedJCA_RateLimit: MTAwMA==
+  QueueRateLimit__PersonSearchCompleted_ConcurrencyLimit: MTA=
+  QueueRateLimit__PersonSearchCompleted_RateInterval: MQ==
+  QueueRateLimit__PersonSearchCompleted_RateLimit: MTAwMA==
+  QueueRateLimit__PersonSearchFailed_ConcurrencyLimit: MTA=
+  QueueRateLimit__PersonSearchFailed_RateInterval: MQ==
+  QueueRateLimit__PersonSearchFailed_RateLimit: MTAwMA==
+  QueueRateLimit__PersonSearchInformation_ConcurrencyLimit: MTA=
+  QueueRateLimit__PersonSearchInformation_RateInterval: MQ==
+  QueueRateLimit__PersonSearchInformation_RateLimit: MTAwMA==
+  QueueRateLimit__PersonSearchRejected_ConcurrencyLimit: MTA=
+  QueueRateLimit__PersonSearchRejected_RateInterval: MQ==
+  QueueRateLimit__PersonSearchRejected_RateLimit: MTAwMA==
+  QueueRateLimit__PersonSearchSubmitted_ConcurrencyLimit: MTA=
+  QueueRateLimit__PersonSearchSubmitted_RateInterval: MQ==
+  QueueRateLimit__PersonSearchSubmitted_RateLimit: MTAwMA==
+kind: Secret
+metadata:
+  name: rate-limit
+type: Opaque

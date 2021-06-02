@@ -33,7 +33,7 @@ parameters:
   value: rabbitmq-discovery
 - name: VOLUME_SIZE
   description: "Size of the RabbitMQ data volume"
-  value: 1Gi
+  value: 5Gi
 
 objects:
 
@@ -172,8 +172,8 @@ objects:
               cpu: '1'
               memory: 2Gi
             requests:
-              cpu: 200m
-              memory: 256Mi
+              cpu: '1'
+              memory: 2Gi
           env:
           - name: RABBITMQ_DEFAULT_USER
             valueFrom:
@@ -227,7 +227,6 @@ objects:
         resources:
           requests:
             storage: ${VOLUME_SIZE}
-        storageClassName: netapp-block-standard
 
 # - apiVersion: route.openshift.io/v1
 #   kind: Route

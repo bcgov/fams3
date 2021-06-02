@@ -70,6 +70,8 @@ objects:
               name: serilog-config
           - secretRef:
               name: requestapi-config
+          - secretRef:
+              name: redis-connection
           image: ''
           imagePullPolicy: IfNotPresent
           name: request-api

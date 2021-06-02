@@ -77,6 +77,8 @@ objects:
               name: splunk-config
           - secretRef:
               name: serilog-config
+          - secretRef:
+              name: redis-connection
           image: ''
           imagePullPolicy: IfNotPresent
           name: ia-search-web-adapter

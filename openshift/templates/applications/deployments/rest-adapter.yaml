@@ -78,6 +78,8 @@ objects:
               name: splunk-config
           - secretRef:
               name: serilog-config
+          - secretRef:
+              name: redis-connection
           image: ''
           imagePullPolicy: IfNotPresent
           name: ${dataPartnerService}-rest-adapter

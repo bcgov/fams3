@@ -98,11 +98,20 @@ objects:
               memory: 256Mi
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
+          volumeMounts:
+            - mountPath: /app/.ssh/keys
+              name: fmep-ssh-key
+              readOnly: true
         dnsPolicy: ClusterFirst
         restartPolicy: Always
         schedulerName: default-scheduler
         securityContext: {}
         terminationGracePeriodSeconds: 30
+        volumes:
+        - name: fmep-ssh-key
+          secret:
+            defaultMode: 420
+            secretName: fams3-fmep-private-key
     test: false
     triggers:
     - type: ConfigChange

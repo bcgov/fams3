@@ -17,6 +17,7 @@ using Newtonsoft.Json;
 using NSwag.Annotations;
 using Serilog.Context;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -149,13 +150,17 @@ namespace DynamicsAdapter.Web.PersonSearch
             {
                 //update Result or Completed event
                 var searchApiEvent = _mapper.Map<SSG_SearchApiEvent>(personCompletedEvent);
+
                 if (personCompletedEvent.Message != null && personCompletedEvent.Message.Contains("All traces received."))
                 {
                     searchApiEvent.EventType = Keys.EVENT_COMPLETED;
                 }
                 else
                 {
-                    searchApiEvent.EventType = Keys.EVENT_RESULT;
+                    if (await BothFirstLastTraceReceived(request, cts.Token))
+                        searchApiEvent.EventType = Keys.EVENT_COMPLETED;
+                    else
+                        searchApiEvent.EventType = Keys.EVENT_RESULT;
                 }
                 _logger.LogDebug($"Attempting to create a new event for SearchApiRequest");
                 await _searchApiRequestService.AddEventAsync(request.SearchApiRequestId, searchApiEvent, cts.Token);
@@ -486,6 +491,26 @@ namespace DynamicsAdapter.Web.PersonSearch
             {
                 _logger.LogError(e.Message);
                 return null;
+            }
+        }
+
+        private async Task<bool> BothFirstLastTraceReceived(SSG_SearchApiRequest apiRequest, CancellationToken token)
+        {
+            try
+            {
+                IEnumerable<SSG_SearchApiEvent> events = await _searchApiRequestService.GetEventsAsync(apiRequest.SearchApiRequestId, token);
+                if(events != null)
+                {
+                    SSG_SearchApiEvent firstTrace = events.FirstOrDefault(m => m.EventType == Keys.EVENT_INFORMATION_RECEIVED && m.Message.StartsWith("50821"));
+                    SSG_SearchApiEvent lastTrace = events.FirstOrDefault(m => m.EventType == Keys.EVENT_INFORMATION_RECEIVED && m.Message.StartsWith("50823"));
+                    return firstTrace != null && lastTrace != null;
+                }
+                return false;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message);
+                return false;
             }
         }
     }

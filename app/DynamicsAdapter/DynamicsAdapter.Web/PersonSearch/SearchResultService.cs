@@ -186,7 +186,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                LogException(ex);
                 return false;
             }
         }
@@ -211,7 +211,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                LogException(ex);
                 return false;
             }
         }
@@ -236,7 +236,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                LogException(ex);
                 return false;
             }
         }
@@ -261,7 +261,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                LogException(ex);
                 return false;
             }
         }
@@ -284,7 +284,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                LogException(ex);
                 return false;
             }
         }
@@ -303,15 +303,16 @@ namespace DynamicsAdapter.Web.PersonSearch
                     e.Person = _returnedPerson;
                     SSG_Employment ssg_employment = await _searchRequestService.CreateEmployment(e, _cancellationToken);
 
-                    if (employment.Employer != null)
-                    {
-                        foreach (var phone in employment.Employer.Phones)
-                        {
-                            EmploymentContactEntity p = _mapper.Map<EmploymentContactEntity>(phone);
-                            p.Employment = ssg_employment;
-                            await _searchRequestService.CreateEmploymentContact(p, _cancellationToken);
-                        }
-                    }
+                    //FAMS3-3742-OpenShift to stop creating Employment Contact records
+                    //if (employment.Employer != null)
+                    //{
+                    //    foreach (var phone in employment.Employer.Phones)
+                    //    {
+                    //        EmploymentContactEntity p = _mapper.Map<EmploymentContactEntity>(phone);
+                    //        p.Employment = ssg_employment;
+                    //        await _searchRequestService.CreateEmploymentContact(p, _cancellationToken);
+                    //    }
+                    //}
 
                     await CreateResultTransaction(ssg_employment);
                 }
@@ -319,7 +320,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                LogException(ex);
                 return false;
             }
         }
@@ -344,7 +345,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                LogException(ex);
                 return false;
             }
         }
@@ -368,7 +369,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                LogException(ex);
                 return false;
             }
         }
@@ -403,7 +404,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                LogException(ex);
                 return false;
             }
         }
@@ -438,7 +439,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                LogException(ex);
                 return false;
             }
         }
@@ -466,16 +467,17 @@ namespace DynamicsAdapter.Web.PersonSearch
                         employmentEntity.InformationSource = _providerDynamicsID;
                         employmentEntity.Date1 = claim.ReferenceDates?.SingleOrDefault(m => m.Index == 0)?.Value.DateTime;
                         employmentEntity.Date1Label = claim.ReferenceDates?.SingleOrDefault(m => m.Index == 0)?.Key;
-                        List<EmploymentContactEntity> contacts = new List<EmploymentContactEntity>();
-                        if (claim.Employer.Phones != null)
-                        {
-                            foreach (var phone in claim.Employer.Phones)
-                            {
-                                EmploymentContactEntity p = _mapper.Map<EmploymentContactEntity>(phone);
-                                contacts.Add(p);
-                            }
-                        }
-                        employmentEntity.EmploymentContactEntities = contacts.ToArray();
+                        //FAMS3-3742: OpenShift to stop creating Employment Contact records
+                        //List<EmploymentContactEntity> contacts = new List<EmploymentContactEntity>();
+                        //if (claim.Employer.Phones != null)
+                        //{
+                        //    foreach (var phone in claim.Employer.Phones)
+                        //    {
+                        //        EmploymentContactEntity p = _mapper.Map<EmploymentContactEntity>(phone);
+                        //        contacts.Add(p);
+                        //    }
+                        //}
+                        //employmentEntity.EmploymentContactEntities = contacts.ToArray();
                     }
 
                     CompensationClaimEntity ssg_claim = _mapper.Map<CompensationClaimEntity>(claim);
@@ -492,7 +494,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                LogException(ex);
                 return false;
             }
         }
@@ -537,7 +539,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                LogException(ex);
                 return false;
             }
         }
@@ -563,10 +565,19 @@ namespace DynamicsAdapter.Web.PersonSearch
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                LogException(ex);
                 return false;
             }
         }
 
+        private void LogException(Exception ex)
+        {
+            _logger.LogError(ex.Message);
+            if (ex is Simple.OData.Client.WebRequestException)
+            {
+                _logger.LogError(((Simple.OData.Client.WebRequestException)ex).RequestUri?.AbsoluteUri);
+                _logger.LogError(((Simple.OData.Client.WebRequestException)ex).Response);
+            }
+        }
     }
 }

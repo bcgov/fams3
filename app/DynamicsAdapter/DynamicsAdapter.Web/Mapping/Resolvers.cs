@@ -300,6 +300,25 @@ namespace DynamicsAdapter.Web.Mapping
         }
     }
 
+    public class EmploymentEntityNotesFromEmployerResolver : IValueResolver<Employer, EmploymentEntity, string>
+    {
+        public string Resolve(Employer source, EmploymentEntity destination, string destMember, ResolutionContext context)
+        {
+            if (source == null || source.Phones == null || source.Phones.Count <= 2) return null;
+            int index = 0;
+            string notes = string.Empty;
+            foreach (Phone p in source.Phones)
+            {
+                if (index > 2)
+                {
+                    notes += $"{p.ContactName} {p.PhoneNumber} {p.Extension}\r\n";
+                }
+                index++;
+            }
+            return $"{notes}";
+        }
+    }
+
     public class ProviderAddressResponseResolver : IValueResolver<SSG_Asset_PensionDisablility, Pension, Address>
     {
         public Address Resolve(SSG_Asset_PensionDisablility source, Pension destination, Address destMember, ResolutionContext context)

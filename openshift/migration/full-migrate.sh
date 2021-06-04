@@ -204,7 +204,6 @@ _process_rest(){
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     -p dataPartnerService=${DATAPARTNERSERVICE}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
-
 }
 
 _process_web(){
@@ -222,50 +221,6 @@ _process_web(){
   # Build config
   oc process -o=yaml \
     -f ../templates/builds/builds/web-adapter.yaml \
-    -p gitRef=ocp4 \
-    -p namespacePrefix=${NAMESPACE_PREFIX}  \
-    -p dataPartnerService=${DATAPARTNERSERVICE}  \
-    | oc apply -f - -n ${TOOLS_NAMESPACE}
-
-}
-
-_process_fams_inbound(){
-  if [ -z "$1" ]; then 
-    exit
-  fi
-  DATAPARTNERSERVICE=$1
-  # Image stream
-  oc process -o=yaml \
-    -f ../templates/builds/images/rest-inbound-adapter.yaml \
-    -p namespacePrefix=${NAMESPACE_PREFIX}  \
-    -p dataPartnerService=${DATAPARTNERSERVICE}  \
-    | oc apply -f - -n ${TOOLS_NAMESPACE}
-
-  # Build config
-  oc process -o=yaml \
-    -f ../templates/builds/builds/fams-request-inbound-adapter.yaml \
-    -p gitRef=ocp4 \
-    -p namespacePrefix=${NAMESPACE_PREFIX}  \
-    -p dataPartnerService=${DATAPARTNERSERVICE}  \
-    | oc apply -f - -n ${TOOLS_NAMESPACE}
-
-}
-
-_process_rest_inbound(){
-  if [ -z "$1" ]; then 
-    exit
-  fi
-  DATAPARTNERSERVICE=$1
-  # Image stream
-  oc process -o=yaml \
-    -f ../templates/builds/images/rest-inbound-adapter.yaml \
-    -p namespacePrefix=${NAMESPACE_PREFIX}  \
-    -p dataPartnerService=${DATAPARTNERSERVICE}  \
-    | oc apply -f - -n ${TOOLS_NAMESPACE}
-
-  # Build config
-  oc process -o=yaml \
-    -f ../templates/builds/builds/fams-request-inbound-adapter.yaml \
     -p gitRef=ocp4 \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     -p dataPartnerService=${DATAPARTNERSERVICE}  \
@@ -313,6 +268,42 @@ _process_ia_search(){
 
 }
 
+_process_fmep_rest_inbound(){
+  DATAPARTNERSERVICE=fmep
+  # Image stream
+  oc process -o=yaml \
+    -f ../templates/builds/images/rest-inbound-adapter.yaml \
+    -p namespacePrefix=${NAMESPACE_PREFIX}  \
+    -p dataPartnerService=${DATAPARTNERSERVICE}  \
+    | oc apply -f - -n ${TOOLS_NAMESPACE}
+
+  # Build config
+  oc process -o=yaml \
+    -f ../templates/builds/builds/fams-request-inbound-adapter.yaml \
+    -p gitRef=ocp4 \
+    -p namespacePrefix=${NAMESPACE_PREFIX}  \
+    -p dataPartnerService=${DATAPARTNERSERVICE}  \
+    | oc apply -f - -n ${TOOLS_NAMESPACE}
+}
+
+_process_wsbc_rest_inbound(){
+  DATAPARTNERSERVICE=wsbc
+  # Image stream
+  oc process -o=yaml \
+    -f ../templates/builds/images/rest-inbound-adapter.yaml \
+    -p namespacePrefix=${NAMESPACE_PREFIX}  \
+    -p dataPartnerService=${DATAPARTNERSERVICE}  \
+    | oc apply -f - -n ${TOOLS_NAMESPACE}
+
+  # Build config
+  oc process -o=yaml \
+    -f ../templates/builds/builds/rest-inbound-adapter.yaml \
+    -p gitRef=ocp4 \
+    -p namespacePrefix=${NAMESPACE_PREFIX}  \
+    -p dataPartnerService=${DATAPARTNERSERVICE}  \
+    | oc apply -f - -n ${TOOLS_NAMESPACE}
+}
+
 process_adapters(){
   # _process_rest bchydro
   # _process_web bchydro
@@ -320,7 +311,8 @@ process_adapters(){
   
   # _process_web cornet
 
-  # _process_rest_inbound fmep
+  _process_fmep_rest_inbound
+  _process_wsbc_rest_inbound
 
   # _process_rest icbc
   # _process_web icbc
@@ -336,7 +328,6 @@ process_adapters(){
   # _process_rest moh-rp
 
   # _process_web wsbc
-  # _process_rest_inbound wsbc
   # _process_rest wsbc
   # _process_file jca
   _process_ia_search
@@ -352,27 +343,27 @@ _start_build(){
 
 start_builds(){
   buildConfigs=(
-    "bchydro-rest-adapter"
-    "bchydro-web-adapter"
-    "cornet-web-adapter"
-    "dynadapter"
+    # "bchydro-rest-adapter"
+    # "bchydro-web-adapter"
+    # "cornet-web-adapter"
+    # "dynadapter"
     "fmep-rest-inbound-adapter"
-    "icbc-rest-adapter"
-    "icbc-web-adapter"
-    "jca-file-adapter"
-    "mhsd-rest-adapter"
-    "mhsd-web-adapter"
-    "moh-demo-rest-adapter"
-    "moh-demo-web-adapter"
-    "moh-emp-rest-adapter"
-    "moh-emp-web-adapter"
-    "moh-rp-rest-adapter"
-    "moh-rp-web-adapter"
-    "request-api"
-    "search-api"
-    "selenium-node-chrome"
+    # "icbc-rest-adapter"
+    # "icbc-web-adapter"
+    # "jca-file-adapter"
+    # "mhsd-rest-adapter"
+    # "mhsd-web-adapter"
+    # "moh-demo-rest-adapter"
+    # "moh-demo-web-adapter"
+    # "moh-emp-rest-adapter"
+    # "moh-emp-web-adapter"
+    # "moh-rp-rest-adapter"
+    # "moh-rp-web-adapter"
+    # "request-api"
+    # "search-api"
+    # "selenium-node-chrome"
     "wsbc-rest-inbound-adapter"
-    "wsbc-web-adapter"
+    # "wsbc-web-adapter"
     # "jenkins-slave-dotnet"
     # "jenkins-slave-selenium-maven"
     # "jenkins-slave-sonarqube-dotnet"
@@ -708,8 +699,8 @@ _main() {
   # process_dynadapter  
   # process_requestapi
 
-  # process_adapters
-  # start_builds
+  process_adapters
+  start_builds
 
   # deploy_selenium           # N/A?
   # deploy_rabbitmq
@@ -720,7 +711,7 @@ _main() {
   # deploy_dynadapter
 
   deploy_iasearchadapter
-  # deploy_fmeprestinboundadapter
+  deploy_fmeprestinboundadapter
 
   deploy_webadapter bchydro
   deploy_restadapter bchydro
@@ -740,7 +731,7 @@ _main() {
   deploy_webadapter wsbc
   deploy_restinboundadapter wsbc
 
-  # tag_images 
+  tag_images 
 
 }
 

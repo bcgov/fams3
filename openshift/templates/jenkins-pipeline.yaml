@@ -1,0 +1,50 @@
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  labels:
+    application: fams3-pipeline
+    template: fams3-pipeline-template
+  name: fams3-pipeline
+spec:
+  failedBuildsHistoryLimit: 5
+  nodeSelector: {}
+  output: {}
+  postCommit: {}
+  resources: {}
+  runPolicy: Serial
+  source:
+    git:
+      ref: ocp4
+      uri: "https://github.com/bcgov/jag-file-submission"
+  strategy:
+    jenkinsPipelineStrategy:
+      env:
+        - name: APP_NAME
+          value: efiling-api
+        - name: LIFECYCLE_WEBHOOK
+        - name: GIT_SOURCE_URL
+          value: "https://github.com/bcgov/jag-file-submission"
+        - name: GIT_SOURCE_REF
+          value: master
+        - name: GIT_CONTEXT_DIR
+          value: src/backend
+        - name: CHECKOUT_SRC
+          value: "${gitCheckoutRequired}"
+        - name: TOOLS_NAMESPACE
+          value: dfb30e-tools
+        - name: DEV_NAMESPACE
+          value: dfb30e-dev
+        - name: TEST_NAMESPACE
+          value: dfb30e-test
+        - name: PROD_NAMESPACE
+          value: dfb30e-prod
+      jenkinsfilePath: openshift/.pipeline/Jenkinsfile.ocp4
+    type: JenkinsPipeline
+  successfulBuildsHistoryLimit: 5
+  triggers:
+    - type: ConfigChange
+    - github:
+        secret: "${GITHUB_WEBHOOK_SECRET}"
+      type: GitHub
+status:
+  lastVersion: 0

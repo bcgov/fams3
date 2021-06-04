@@ -1,0 +1,210 @@
+#!/usr/bin/env groovy
+
+//ENV Vars
+def NAMESPACE_PREFIX = "dfb30e"
+
+def TOOLS_NAMESPACE = "${NAMESPACE_PREFIX}-tools"
+def DEV_NAMESPACE = "${NAMESPACE_PREFIX}-dev"
+def TEST_NAMESPACE = "${NAMESPACE_PREFIX}-test"
+def PROD_NAMESPACE = "${NAMESPACE_PREFIX}-prod"
+
+def DOMAIN = "apps.silver.devops.gov.bc.ca"
+def SUBDOMAIN = "fams3"
+
+def GIT_URI = "https://github.com/bcgov/fams3.git"
+def GIT_REF = "ocp4"
+
+def PRIVATE_GIT_URI = "git@github.com:bcgov-c/fams3-openshift.git"
+def PRIVATE_GIT_REF = "ocp4"
+def PRIVATE_GIT_SECRET = "fams3-github-key"
+
+
+def StartBuildAndWait(selector, namespace) {
+ echo "Starting build for ${selector} to in ${namespace}..."
+ sh "oc start-build ${selector} -n ${namespace} --wait --follow"
+ echo "Build complete!"
+}
+
+def WaitForDeploy(selector, namespace) {
+ echo "Waiting for ${selector} to be deployed in ${namespace}..."
+ sh "oc wait dc/${selector} --for=condition=Available --timeout=300s -n ${namespace}"
+}
+
+
+// ===================================================================================================
+// Build: Generic ImageStream
+// ---------------------------------------------------------------------------------------------------
+def _ProcessGenericImage(appName){
+  sh "oc process -o=yaml \
+    -f ../templates/builds/images/generic.yaml \
+    -p namespacePrefix=${NAMESPACE_PREFIX}  \
+    -p appName=${appName}  \
+    | oc apply -f - -n ${TOOLS_NAMESPACE}"
+}
+
+// ===================================================================================================
+// Build: SearchAPI
+// ---------------------------------------------------------------------------------------------------
+
+def ProcessSearchAPI(){
+  // Image stream
+  _ProcessGenericImage("search-api")
+
+  // Build config
+  sh "oc process -o=yaml \
+    -f ../templates/builds/builds/search-api.yaml \
+    -p gitRef=ocp4 \
+    -p namespacePrefix=${NAMESPACE_PREFIX}  \
+    | oc apply -f - -n ${TOOLS_NAMESPACE}"
+}
+
+// ===================================================================================================
+// Build: DynAdapter
+// ---------------------------------------------------------------------------------------------------
+def ProcessDynadapter(){
+  // Image stream
+  sh "oc process -o=yaml \
+    -f ../templates/builds/images/generic.yaml \
+    -p namespacePrefix=${NAMESPACE_PREFIX}  \
+    -p appName=dynadapter  \
+    | oc apply -f - -n ${TOOLS_NAMESPACE}"
+
+  // Build config
+  sh "oc process -o=yaml \
+    -f ../templates/builds/builds/dynadapter.yaml \
+    -p gitRef=ocp4 \
+    -p namespacePrefix=${NAMESPACE_PREFIX}  \
+    | oc apply -f - -n ${TOOLS_NAMESPACE}"
+}
+
+// ===================================================================================================
+// Build: RequestAPI
+// ---------------------------------------------------------------------------------------------------
+def ProcessRequestAPI(){
+  // Image stream
+  sh "oc process -o=yaml \
+    -f ../templates/builds/images/generic.yaml \
+    -p namespacePrefix=${NAMESPACE_PREFIX}  \
+    -p appName=request-api \
+    | oc apply -f - -n ${TOOLS_NAMESPACE}"
+
+  // Build config
+  sh "oc process -o=yaml \
+    -f ../templates/builds/builds/request-api.yaml \
+    -p gitRef=ocp4 \
+    -p namespacePrefix=${NAMESPACE_PREFIX}  \
+    | oc apply -f - -n ${TOOLS_NAMESPACE}"
+}
+
+// ===================================================================================================
+// Build: Web/Rest Adapters
+// ---------------------------------------------------------------------------------------------------
+
+def ProcessAdapter(type, dataPartner){
+  // Image stream
+  sh "oc process -o=yaml \
+    -f ../templates/builds/images/${type}-adapter.yaml \
+    -p namespacePrefix=${NAMESPACE_PREFIX}  \
+    -p dataPartnerService=${dataPartner}  \
+    | oc apply -f - -n ${TOOLS_NAMESPACE}"
+
+  // Build config
+  sh "oc process -o=yaml \
+    -f ../templates/builds/builds/${type}-adapter.yaml \
+    -p gitRef=ocp4 \
+    -p namespacePrefix=${NAMESPACE_PREFIX}  \
+    -p dataPartnerService=${dataPartner}  \
+    | oc apply -f - -n ${TOOLS_NAMESPACE}"
+}
+
+// ===================================================================================================
+// Build: IA Search
+// ---------------------------------------------------------------------------------------------------
+
+def ProcessIASearch(){
+  appName="ia-search-web-adapter"
+  // Image stream
+  sh "oc process -o=yaml \
+    -f ../templates/builds/images/generic.yaml \
+    -p namespacePrefix=${NAMESPACE_PREFIX}  \
+    -p appName=${appName}  \
+    | oc apply -f - -n ${TOOLS_NAMESPACE}"
+
+  // Build config
+  sh "oc process -o=yaml \
+    -f ../templates/builds/builds/ia-search-web-adapter.yaml \
+    -p gitRef=ocp4 \
+    -p namespacePrefix=${NAMESPACE_PREFIX}  \
+    | oc apply -f - -n ${TOOLS_NAMESPACE}"
+}
+
+// ===================================================================================================
+// Build: FMEP Rest Inbound
+// ---------------------------------------------------------------------------------------------------
+
+def ProcessFMEPRestInbound(){
+  dataPartner="fmep"
+  # Image stream
+  sh "oc process -o=yaml \
+    -f ../templates/builds/images/rest-inbound-adapter.yaml \
+    -p namespacePrefix=${NAMESPACE_PREFIX}  \
+    -p dataPartnerService=${dataPartner}  \
+    | oc apply -f - -n ${TOOLS_NAMESPACE}"
+
+  # Build config
+  sh "oc process -o=yaml \
+    -f ../templates/builds/builds/fams-request-inbound-adapter.yaml \
+    -p gitRef=ocp4 \
+    -p namespacePrefix=${NAMESPACE_PREFIX}  \
+    -p dataPartnerService=${dataPartner}  \
+    | oc apply -f - -n ${TOOLS_NAMESPACE}"
+}
+
+// ===================================================================================================
+// Build: WSBC Rest Inbound
+// ---------------------------------------------------------------------------------------------------
+
+def ProcessWSBCRestInbound(){
+  dataPartner="wsbc"
+  // Image stream
+  sh "oc process -o=yaml \
+    -f ../templates/builds/images/rest-inbound-adapter.yaml \
+    -p namespacePrefix=${NAMESPACE_PREFIX}  \
+    -p dataPartnerService=${dataPartner}  \
+    | oc apply -f - -n ${TOOLS_NAMESPACE}"
+
+  // Build config
+  sh "oc process -o=yaml \
+    -f ../templates/builds/builds/rest-inbound-adapter.yaml \
+    -p gitRef=ocp4 \
+    -p namespacePrefix=${NAMESPACE_PREFIX}  \
+    -p dataPartnerService=${dataPartner}  \
+    | oc apply -f - -n ${TOOLS_NAMESPACE}"
+
+}
+
+
+// ===================================================================================================
+// PIPELINE
+// ---------------------------------------------------------------------------------------------------
+
+pipeline {
+ agent any
+ stages {
+
+  stage('Checkout') {
+   steps {
+    checkout scm
+   }
+  }
+
+  stage('Build') {
+   steps {
+    parallel(
+     'Search API': {
+       ProcessSearchAPI()
+     }
+    )
+   }
+ }
+}

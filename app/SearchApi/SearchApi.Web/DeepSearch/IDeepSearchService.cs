@@ -102,18 +102,14 @@ namespace SearchApi.Web.DeepSearch
         }
         public async Task UpdateDataPartner(string searchRequestKey, string dataPartner, string eventName)
         {
-            await mutex.WaitAsync();
+           // await mutex.WaitAsync();
             try
             {
                 if (eventName.Equals(EventName.Completed) || eventName.Equals(EventName.Rejected))
                 {
                     _logger.LogInformation($"Updating data partner as completed for {dataPartner} for {eventName} event");
-                    var searchRequest = await _cacheService.GetRequest(searchRequestKey);
-                    _logger.LogDebug($"old sr = {JsonConvert.SerializeObject(searchRequest)}");
-                    if(searchRequest != null)
-                        searchRequest.UpdateDataPartner(dataPartner);
-                    await _cacheService.SaveRequest(searchRequest);
-                    _logger.LogDebug($"new sr = {JsonConvert.SerializeObject(searchRequest)}");
+                    int tryCount = await _cacheService.UpdateDataPartnerCompleteStatus(searchRequestKey, dataPartner);
+                    _logger.LogInformation("Successfully update data partner status with {tries}",tryCount);
                 }
             }
             catch (Exception exception)
@@ -121,12 +117,12 @@ namespace SearchApi.Web.DeepSearch
                 _logger.LogError($"Update Data Partner Status Failed. [{eventName}] for {searchRequestKey}. [{exception.Message}]");
 
             }
-            finally
-            {
+            //finally
+            //{
 
-                mutex.Release();
+            //    mutex.Release();
 
-            }
+            //}
 
         }
 

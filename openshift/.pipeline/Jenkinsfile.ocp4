@@ -189,22 +189,25 @@ def ProcessWSBCRestInbound(){
 // ---------------------------------------------------------------------------------------------------
 
 pipeline {
- agent any
- stages {
+  agent any
+  stages {
 
-  stage('Checkout') {
-   steps {
-    checkout scm
-   }
+    stage('Checkout') {
+      steps {
+        checkout scm
+      }
+    }
+
+    stage('Build') {
+      steps {
+        parallel(
+          'Search API': {ProcessSearchAPI()},
+          'Request API': {ProcessRequestAPI()},
+          'Dynadapter': {ProcessDynadapter()},
+          'BCHydro REST Adapter': {ProcessAdapter("rest","bchydro")},
+          'BCHydro Web Adapter': {ProcessAdapter("web","bchydro")}
+        )
+      }
+    }
   }
-
-  stage('Build') {
-   steps {
-    parallel(
-     'Search API': {
-       ProcessSearchAPI()
-     }
-    )
-   }
- }
 }

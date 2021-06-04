@@ -3,10 +3,10 @@
 //ENV Vars
 def NAMESPACE_PREFIX = "dfb30e"
 
-def TOOLS_NAMESPACE = "${NAMESPACE_PREFIX}-tools"
-def DEV_NAMESPACE = "${NAMESPACE_PREFIX}-dev"
-def TEST_NAMESPACE = "${NAMESPACE_PREFIX}-test"
-def PROD_NAMESPACE = "${NAMESPACE_PREFIX}-prod"
+def TOOLS_NAMESPACE = "dfb30e-tools"
+def DEV_NAMESPACE = "dfb30e-dev"
+def TEST_NAMESPACE = "dfb30e-test"
+def PROD_NAMESPACE = "dfb30e-prod"
 
 def DOMAIN = "apps.silver.devops.gov.bc.ca"
 def SUBDOMAIN = "fams3"

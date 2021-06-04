@@ -144,14 +144,14 @@ def ProcessIASearch(){
 
 def ProcessFMEPRestInbound(){
   dataPartner="fmep"
-  # Image stream
+  // Image stream
   sh "oc process -o=yaml \
     -f ../templates/builds/images/rest-inbound-adapter.yaml \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     -p dataPartnerService=${dataPartner}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}"
 
-  # Build config
+  // Build config
   sh "oc process -o=yaml \
     -f ../templates/builds/builds/fams-request-inbound-adapter.yaml \
     -p gitRef=ocp4 \

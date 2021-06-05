@@ -30,6 +30,7 @@ using Microsoft.Net.Http.Headers;
 using GreenPipes;
 using Microsoft.Extensions.Options;
 
+
 namespace SearchRequestAdaptor
 {
     public class Startup
@@ -185,6 +186,11 @@ namespace SearchRequestAdaptor
             var rabbitBaseUri = $"amqp://{rabbitMqSettings.Host}:{rabbitMqSettings.Port}";
             services.AddOptions<RetryConfiguration>().Bind(Configuration.GetSection("RetryConfiguration")).ValidateDataAnnotations();
             var retryConfiguration = Configuration.GetSection("RetryConfiguration").Get<RetryConfiguration>();
+
+            var queueRateLimit = Configuration.GetSection("QueueRateLimit").Get<QueueRateLimit>();
+            if (queueRateLimit == null)
+                queueRateLimit = new QueueRateLimit();
+
             services.AddMassTransit(x =>
             {
                 // Add RabbitMq Service Bus
@@ -204,8 +210,8 @@ namespace SearchRequestAdaptor
                     // Configure Search Request Ordered Consumer 
                     cfg.ReceiveEndpoint($"{nameof(SearchRequestOrdered)}_queue", e =>
                     {
-
-                        e.UseRateLimit(1, TimeSpan.FromSeconds(5));
+                        e.UseConcurrencyLimit(queueRateLimit.SearchRequestOrdered_ConcurrencyLimit);
+                        e.UseRateLimit(queueRateLimit.SearchRequestOrdered_RateLimit, TimeSpan.FromSeconds(queueRateLimit.SearchRequestOrdered_RateInterval));
                         //e.UseMessageRetry(r=> {
                         //    r.Ignore<ArgumentNullException>();
                         //    r.Ignore<InvalidOperationException>();
@@ -223,8 +229,8 @@ namespace SearchRequestAdaptor
                     // Configure NotificationAcknowledged Consumer 
                     cfg.ReceiveEndpoint($"{nameof(NotificationAcknowledged)}_queue", e =>
                     {
-
-                        e.UseRateLimit(1, TimeSpan.FromSeconds(5));
+                        e.UseConcurrencyLimit(queueRateLimit.NotificationAcknowledged_ConcurrencyLimit);
+                        e.UseRateLimit(queueRateLimit.NotificationAcknowledged_RateLimit, TimeSpan.FromSeconds(queueRateLimit.NotificationAcknowledged_RateInterval));
                         //e.UseMessageRetry(r => {
                         //    r.Ignore<ArgumentNullException>();
                         //    r.Ignore<InvalidOperationException>();

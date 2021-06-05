@@ -587,9 +587,6 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             _mapper.Setup(m => m.Map<PersonEntity>(It.IsAny<Person>()))
                .Returns(new PersonEntity() { FirstName = "firstName", LastName = "lastName" });
 
-            _mapper.Setup(m => m.Map<EmploymentContactEntity>(It.IsAny<Phone>()))
-             .Returns(new EmploymentContactEntity { PhoneNumber = "11111111" });
-
             SearchRequestOrdered searchRequstOrdered = new SearchRequestOrdered()
             {
                 Action = RequestAction.UPDATE,
@@ -628,8 +625,6 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                  It.IsAny<CancellationToken>()), Times.Never);
             _searchRequestServiceMock.Verify(m => m.CreateEmployment(It.IsAny<EmploymentEntity>(),
                  It.IsAny<CancellationToken>()), Times.Once);
-            _searchRequestServiceMock.Verify(m => m.CreateEmploymentContact(It.IsAny<EmploymentContactEntity>()
-                , It.IsAny<CancellationToken>()), Times.Once);
 
             Assert.AreEqual(guid, ssgSearchRequest.SearchRequestId);
         }
@@ -706,8 +701,6 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                  It.IsAny<IDictionary<string, object>>(),
                  It.IsAny<CancellationToken>()), Times.Never);
             _searchRequestServiceMock.Verify(m => m.CreateEmployment(It.IsAny<EmploymentEntity>()
-                , It.IsAny<CancellationToken>()), Times.Once);
-            _searchRequestServiceMock.Verify(m => m.CreateEmploymentContact(It.IsAny<EmploymentContactEntity>()
                 , It.IsAny<CancellationToken>()), Times.Once);
 
             Assert.AreEqual(_validRequestGuid, ssgSearchRequest.SearchRequestId);

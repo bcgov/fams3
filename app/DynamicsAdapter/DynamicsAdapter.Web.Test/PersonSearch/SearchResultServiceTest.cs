@@ -531,9 +531,6 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
               .Verify(x => x.CreateEmployment(It.IsAny<EmploymentEntity>(), It.IsAny<CancellationToken>()), Times.Once);
 
             _searchRequestServiceMock
-                .Verify(x => x.CreateEmploymentContact(It.IsAny<EmploymentContactEntity>(), It.IsAny<CancellationToken>()), Times.Once);
-
-            _searchRequestServiceMock
                .Verify(x => x.CreateBankInfo(It.IsAny<BankingInformationEntity>(), It.IsAny<CancellationToken>()), Times.Once);
 
             _searchRequestServiceMock
@@ -589,9 +586,6 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
 
             _searchRequestServiceMock
               .Verify(x => x.CreateEmployment(It.IsAny<EmploymentEntity>(), It.IsAny<CancellationToken>()), Times.Once);
-
-            _searchRequestServiceMock
-                .Verify(x => x.CreateEmploymentContact(It.IsAny<EmploymentContactEntity>(), It.IsAny<CancellationToken>()), Times.Once);
 
             _searchRequestServiceMock
                .Verify(x => x.CreateBankInfo(It.IsAny<BankingInformationEntity>(), It.IsAny<CancellationToken>()), Times.Once);

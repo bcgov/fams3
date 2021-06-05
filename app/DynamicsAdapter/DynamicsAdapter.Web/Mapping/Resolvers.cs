@@ -15,6 +15,7 @@ using Fams3Adapter.Dynamics.Vehicle;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace DynamicsAdapter.Web.Mapping
 {
@@ -297,6 +298,20 @@ namespace DynamicsAdapter.Web.Mapping
                 index++;
             }
             return $"{notes}{source.Notes}";
+        }
+    }
+
+    public class EmploymentEntityNotesFromEmployerResolver : IValueResolver<Employer, EmploymentEntity, string>
+    {
+        public string Resolve(Employer source, EmploymentEntity destination, string destMember, ResolutionContext context)
+        {
+            if (source == null || source.Phones == null || source.Phones.Count <= 2) return null;
+            StringBuilder notes = new StringBuilder();
+            foreach (Phone p in source.Phones.Skip(2))
+            {
+                notes.Append( $"{p?.ContactName} {p?.PhoneNumber} {p?.Extension}\r\n");
+            }
+            return notes.ToString();
         }
     }
 

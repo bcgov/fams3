@@ -26,7 +26,7 @@ namespace SearchApi.Web.Search
         public async Task Consume(ConsumeContext<PersonSearchAdapterEvent> context, string eventName)
         {
             using (LogContext.PushProperty("SearchRequestKey",context.Message?.SearchRequestKey))
-            using (LogContext.PushProperty("DataPartner", context.Message.ProviderProfile.Name))
+            using (LogContext.PushProperty("DataPartner", context.Message?.ProviderProfile?.Name))
             {
                 var cts = new CancellationTokenSource();
                 _logger.LogInformation($"received new {eventName} event.");

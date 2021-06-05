@@ -572,11 +572,21 @@ namespace DynamicsAdapter.Web.PersonSearch
 
         private void LogException(Exception ex)
         {
-            _logger.LogError(ex.Message);
-            if (ex is Simple.OData.Client.WebRequestException)
+            var webRequestException = ex as Simple.OData.Client.WebRequestException;
+            if (webRequestException != null)
             {
-                _logger.LogError(((Simple.OData.Client.WebRequestException)ex).RequestUri?.AbsoluteUri);
-                _logger.LogError(((Simple.OData.Client.WebRequestException)ex).Response);
+                var properties = new Dictionary<string, object>();
+                properties.Add("AbsoluteUri", webRequestException.RequestUri?.AbsoluteUri);
+                properties.Add("Response", webRequestException.Response);
+                using (_logger.BeginScope(properties)) 
+                {
+                    _logger.LogError(ex.Message);
+                } ;
+                
+            }
+            else
+            {
+                _logger.LogError(ex.Message);
             }
         }
     }

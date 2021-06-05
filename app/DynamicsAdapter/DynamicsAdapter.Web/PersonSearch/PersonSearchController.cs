@@ -17,6 +17,7 @@ using Newtonsoft.Json;
 using NSwag.Annotations;
 using Serilog.Context;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -65,23 +66,23 @@ namespace DynamicsAdapter.Web.PersonSearch
                 using (LogContext.PushProperty("SearchRequestKey", personCompletedEvent?.SearchRequestKey))
                 using (LogContext.PushProperty("DataPartner", personCompletedEvent?.ProviderProfile.Name))
                 {
+                    //JCA completed event needs to deal differently.
+                    if (personCompletedEvent.ProviderProfile.Name == InformationSourceType.JCA.Name)
+                    {
+                        return await ProcessJCACompletedEvent(key, personCompletedEvent);
+                    }
+
                     _logger.LogInformation("Received Person search completed event");
                     var cts = new CancellationTokenSource();
                     SSG_SearchRequest searchRequest = null;
                     SSG_SearchApiRequest request = await GetSearchApiRequest(key, cts.Token);
 
-                    if (request == null )
+                    if (request == null)
                     {
-                        if(personCompletedEvent?.ProviderProfile.Name == InformationSourceType.JCA.Name) 
-                        {
-                            //this means the request is not generated in fams3, but result coming to fams3. Only JCA has this problem
-                            searchRequest = await ProcessFams2JCACompletedEvent(personCompletedEvent);
-                        }
-                        else
-                        {
-                            throw new Exception($"Cannot find SearchApiRequest for {key}");
-                        }
-
+                        string[] keys = key.Split("_");
+                        string fileId = keys[0];
+                        //get searchRequest
+                        searchRequest = await _searchResultService.GetSearchRequest(fileId, new CancellationTokenSource().Token);
                     }
                     else
                     {
@@ -109,7 +110,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                         {
                             SSG_Identifier sourceIdentifer = await _register.GetMatchedSourceIdentifier(p.SourcePersonalIdentifier, key);
                             PersonFound clonedPerson = p.Clone();
-                            if ( prePerson != null)
+                            if (prePerson != null)
                             {
                                 if (p.SamePersonFound(prePerson))
                                 {
@@ -122,16 +123,77 @@ namespace DynamicsAdapter.Web.PersonSearch
                         }
                     }
 
-                    await UpdateRetries(personCompletedEvent?.ProviderProfile.Name,0, cts, request);
+                    await UpdateRetries(personCompletedEvent?.ProviderProfile.Name, 0, cts, request);
                     return Ok();
                 }
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
                 return BadRequest();
             }
+        }
+
+        private async Task<IActionResult> ProcessJCACompletedEvent(string key, [FromBody] PersonSearchCompleted personCompletedEvent)
+        {
+            _logger.LogInformation("Received Person search completed event");
+            var cts = new CancellationTokenSource();
+            SSG_SearchRequest searchRequest = null;
+            SSG_SearchApiRequest request = await GetSearchApiRequest(key, cts.Token);
+            if (request == null && personCompletedEvent?.ProviderProfile.Name == InformationSourceType.JCA.Name)
+            {
+                //this means the request is not generated in fams3, but result coming to fams3. Only JCA has this problem
+                searchRequest = await ProcessFams2JCACompletedEvent(personCompletedEvent);
+            }
+            else
+            {
+                //update Result or Completed event
+                var searchApiEvent = _mapper.Map<SSG_SearchApiEvent>(personCompletedEvent);
+
+                if (personCompletedEvent.Message != null && personCompletedEvent.Message.Contains("All traces received."))
+                {
+                    searchApiEvent.EventType = Keys.EVENT_COMPLETED;
+                }
+                else
+                {
+                    if (await BothFirstLastTraceReceived(request, cts.Token))
+                        searchApiEvent.EventType = Keys.EVENT_COMPLETED;
+                    else
+                        searchApiEvent.EventType = Keys.EVENT_RESULT;
+                }
+                _logger.LogDebug($"Attempting to create a new event for SearchApiRequest");
+                await _searchApiRequestService.AddEventAsync(request.SearchApiRequestId, searchApiEvent, cts.Token);
+                _logger.LogInformation($"Successfully created result event for SearchApiRequest");
+
+                //upload search result to dynamic search api
+                var searchRequestId = await _searchApiRequestService.GetLinkedSearchRequestIdAsync(request.SearchApiRequestId, cts.Token);
+                searchRequest = new SSG_SearchRequest { SearchRequestId = searchRequestId };
+            }
+
+            if (personCompletedEvent?.MatchedPersons != null)
+            {
+                _logger.LogDebug(JsonConvert.SerializeObject(personCompletedEvent.MatchedPersons));
+                PersonFound prePerson = null;
+                foreach (PersonFound p in personCompletedEvent.MatchedPersons)
+                {
+                    SSG_Identifier sourceIdentifer = await _register.GetMatchedSourceIdentifier(p.SourcePersonalIdentifier, key);
+                    PersonFound clonedPerson = p.Clone();
+                    if (prePerson != null)
+                    {
+                        if (p.SamePersonFound(prePerson))
+                        {
+                            //senario: dynamics does not linked all just uploaded properties to just uploaded person, so have to check here.
+                            p.RemoveDuplicateProperties(prePerson);
+                        }
+                    }
+                    await _searchResultService.ProcessPersonFound(p, personCompletedEvent.ProviderProfile, searchRequest, request?.SearchApiRequestId, cts.Token, sourceIdentifer);
+                    prePerson = clonedPerson;
+                }
+            }
+
+            await UpdateRetries(personCompletedEvent?.ProviderProfile.Name, 0, cts, request);
+            return Ok();
         }
 
         private async Task UpdateRetries(string providerProfileName, int noOfTry, CancellationTokenSource cts, SSG_SearchApiRequest request)
@@ -255,7 +317,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                     _logger.LogDebug($"Attempting to create a new event for SearchApiRequest.");
                     await _searchApiRequestService.AddEventAsync(request.SearchApiRequestId, searchApiEvent, token.Token);
                   
-                    _logger.LogInformation($"Successfully created failed event for SearchApiRequest");
+                    _logger.LogInformation($"Successfully created InformationReceived event for SearchApiRequest");
                 }
                 catch (Exception ex)
                 {
@@ -429,6 +491,26 @@ namespace DynamicsAdapter.Web.PersonSearch
             {
                 _logger.LogError(e.Message);
                 return null;
+            }
+        }
+
+        private async Task<bool> BothFirstLastTraceReceived(SSG_SearchApiRequest apiRequest, CancellationToken token)
+        {
+            try
+            {
+                IEnumerable<SSG_SearchApiEvent> events = await _searchApiRequestService.GetEventsAsync(apiRequest.SearchApiRequestId, token);
+                if(events != null)
+                {
+                    SSG_SearchApiEvent firstTrace = events.FirstOrDefault(m => m.EventType == Keys.EVENT_INFORMATION_RECEIVED && m.Message.StartsWith("50821"));
+                    SSG_SearchApiEvent lastTrace = events.FirstOrDefault(m => m.EventType == Keys.EVENT_INFORMATION_RECEIVED && m.Message.StartsWith("50823"));
+                    return firstTrace != null && lastTrace != null;
+                }
+                return false;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message);
+                return false;
             }
         }
     }

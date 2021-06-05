@@ -150,8 +150,9 @@ namespace DynamicsAdapter.Web
                 .AddHttpMessageHandler<ApiGatewayHandler>();
 
             // Register Odata client
-            services.AddTransient<IODataClient>(provider =>
-             {
+            //services.AddTransient<IODataClient>(provider =>
+            services.AddSingleton<IODataClient>(provider =>
+            {
                  var settings = provider.GetRequiredService<ODataClientSettings>();
                  settings.IgnoreUnmappedProperties = true;
                  return new ODataClient(settings);

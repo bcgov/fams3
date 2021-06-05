@@ -30,7 +30,7 @@ namespace SearchRequestAdaptor.Consumer
             using (LogContext.PushProperty("RequestRef", $"{context.Message?.RequestId}"))
             using (LogContext.PushProperty("AgencyCode", $"{context.Message?.ProviderProfile?.Name}"))
             {
-                _logger.LogInformation("get the searchRequestOrdered message.");
+                _logger.LogInformation("get the NotificationAcknowledged message.");
                 var cts = new CancellationTokenSource();
                 await _searchRequestNotifier.NotifySearchRequestEventAsync(context.Message.RequestId, context.Message, cts.Token, context.GetRetryAttempt(), _retryConfig.Value.RetryTimes);
             }

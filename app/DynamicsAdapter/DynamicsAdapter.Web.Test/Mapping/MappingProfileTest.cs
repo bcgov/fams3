@@ -1012,6 +1012,38 @@ namespace DynamicsAdapter.Web.Test.Mapping
         }
 
         [Test]
+        public void RelatedPerson_Subscriber_should_map_to_SSG_Identity_AccountHolder_correctly()
+        {
+            var relatedPerson = new RelatedPerson()
+            {
+                Type = "Subscriber",
+            };
+            RelatedPersonEntity ssg_relatedPerson = _mapper.Map<RelatedPersonEntity>(relatedPerson);
+            Assert.AreEqual(867670011, ssg_relatedPerson.Type);
+            Assert.AreEqual(867670000, ssg_relatedPerson.PersonType);
+            Assert.AreEqual("Subscriber", ssg_relatedPerson.SupplierRelationType);
+            Assert.AreEqual(1, ssg_relatedPerson.StatusCode);
+            Assert.AreEqual(0, ssg_relatedPerson.StateCode);
+
+        }
+
+        [Test]
+        public void RelatedPerson_Dependent_should_map_to_SSG_Identity_AccountHolder_correctly()
+        {
+            var relatedPerson = new RelatedPerson()
+            {
+                Type = "Dependent",
+            };
+            RelatedPersonEntity ssg_relatedPerson = _mapper.Map<RelatedPersonEntity>(relatedPerson);
+            Assert.AreEqual(867670003, ssg_relatedPerson.Type);
+            Assert.AreEqual(867670000, ssg_relatedPerson.PersonType);
+            Assert.AreEqual("Dependent", ssg_relatedPerson.SupplierRelationType);
+            Assert.AreEqual(1, ssg_relatedPerson.StatusCode);
+            Assert.AreEqual(0, ssg_relatedPerson.StateCode);
+
+        }
+
+        [Test]
         public void BankInfo_should_map_to_BankingInformationEntity_correctly()
         {
             var bank = new BankInfo()

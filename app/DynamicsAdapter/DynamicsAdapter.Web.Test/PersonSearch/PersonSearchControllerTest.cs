@@ -278,6 +278,9 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _searchResultServiceMock.Setup(x => x.ProcessPersonFound(It.Is<Person>(x => x.FirstName == "TEST1"),It.IsAny<ProviderProfile>(), It.IsAny<SSG_SearchRequest>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>(), It.IsAny<SSG_Identifier>()))
                 .Returns(Task.FromResult<bool>(true));
 
+            _searchResultServiceMock.Setup(x => x.GetSearchRequest(It.Is<string>(x => x == "exception"), It.IsAny<CancellationToken>()))
+                .Throws(new Exception("random exception"));
+
             _searchApiRequestServiceMock.Setup(x => x.AddEventAsync(It.Is<Guid>(x => x == _testGuid),
                     It.IsAny<SSG_SearchApiEvent>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<SSG_SearchApiEvent>(new SSG_SearchApiEvent()

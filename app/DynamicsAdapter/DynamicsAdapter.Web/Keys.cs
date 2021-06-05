@@ -9,6 +9,7 @@
         public static readonly string EVENT_REJECTED = "Rejected";
         public static readonly string EVENT_COMPLETED = "Completed";
         public static readonly string EVENT_FAILED = "Failed";
+        public static readonly string EVENT_RESULT = "Result";
         public static readonly string EVENT_SUBMITTED = "Submitted";
         public static readonly string EVENT_INFORMATION_RECEIVED = "Information";
         public static readonly string REDIS_SECTION_SETTING_KEY = "Redis";

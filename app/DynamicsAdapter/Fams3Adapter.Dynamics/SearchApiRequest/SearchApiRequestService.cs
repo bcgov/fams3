@@ -23,6 +23,7 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
 
         Task<IEnumerable<SSG_DataProvider>> GetDataProvidersList(CancellationToken cancellationToken);
 
+        Task<IEnumerable<SSG_SearchApiEvent>> GetEventsAsync(Guid searchApiRequestId, CancellationToken cancellationToken);
 
         Task<Guid> GetLinkedSearchRequestIdAsync(Guid searchApiRequestId,
             CancellationToken cancellationToken);
@@ -173,6 +174,16 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
             searchApiEvent.SearchApiRequest = new SSG_SearchApiRequest() { SearchApiRequestId = searchApiRequestId};
 
             return await this._oDataClient.For<SSG_SearchApiEvent>().Set(searchApiEvent).InsertEntryAsync(cancellationToken);
+        }
+
+        public async Task<IEnumerable<SSG_SearchApiEvent>> GetEventsAsync(Guid searchApiRequestId, CancellationToken cancellationToken)
+        {
+            if (searchApiRequestId == default || searchApiRequestId == Guid.Empty) throw new ArgumentNullException(nameof(searchApiRequestId));
+            IEnumerable<SSG_SearchApiEvent> events = await this._oDataClient.For<SSG_SearchApiEvent>()
+                .Filter(m=>m.SearchApiRequest.SearchApiRequestId==searchApiRequestId)
+                .FindEntriesAsync(cancellationToken);
+
+            return events;
         }
 
         public async Task<SSG_SearchApiRequest> MarkComplete(Guid searchApiRequestId, CancellationToken cancellationToken)

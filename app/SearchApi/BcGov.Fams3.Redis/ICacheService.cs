@@ -2,9 +2,11 @@
 using BcGov.Fams3.Redis.Model;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
+using StackExchange.Redis;
 using StackExchange.Redis.Extensions.Core.Abstractions;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -25,6 +27,7 @@ namespace BcGov.Fams3.Redis
         Task Update(string key, dynamic data);
         Task<string> Get(string key);
         Task Delete(string key);
+        Task<int> UpdateDataPartnerCompleteStatus(string searchRequestkey,string dataPartner);
     }
 
     public class CacheService : ICacheService
@@ -140,6 +143,38 @@ namespace BcGov.Fams3.Redis
             if (string.IsNullOrEmpty(key)) throw new ArgumentNullException("Delete : Key cannot be null");
             await _distributedCache.RemoveAsync(key, new CancellationToken());
 
+        }
+
+        public async Task<int> UpdateDataPartnerCompleteStatus(string key, string dataPartner)
+        {
+            if (string.IsNullOrEmpty(key)) throw new ArgumentNullException("Save : Key cannot be null");
+            bool committed = false;
+            int tryCounts = 0;
+            int MAX_TRY_COUNT = 1000;
+            while (!committed && tryCounts<MAX_TRY_COUNT)
+            {
+                tryCounts++;
+                RedisValue oldValue = await _stackRedisCacheClient.Db0.Database.HashGetAsync(key, new RedisValue("data"));
+                var searchRequest=JsonConvert.DeserializeObject<SearchRequest>(oldValue.ToString());
+                if (searchRequest != null)
+                {
+                    var partner = searchRequest.DataPartners?.FirstOrDefault(x => x.Name == dataPartner);
+                    if (partner != null)
+                    {
+                        partner.Completed = true;
+                    }
+                }
+                var trans = _stackRedisCacheClient.Db0.Database.CreateTransaction();
+                trans.AddCondition(Condition.HashEqual(key, new RedisValue("data"), oldValue));
+                string newData = JsonConvert.SerializeObject(searchRequest);
+                var task = trans.HashSetAsync(key, new RedisValue("data"),new RedisValue(newData),When.Always, CommandFlags.None);
+                if (await trans.ExecuteAsync())
+                {
+                    var foo = await task;
+                    committed = true;
+                }
+            }
+            return tryCounts;
         }
     }
 }

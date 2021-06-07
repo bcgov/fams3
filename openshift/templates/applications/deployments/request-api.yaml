@@ -55,6 +55,12 @@ objects:
         - env:
           - name: JAEGER_SERVICE_NAME
             value: request-api
+          - name: QueueRateLimit__SearchRequestOrdered_RateLimit
+            value: "1000"
+          - name: QueueRateLimit__SearchRequestOrdered_RateInterval
+            value: "1"
+          - name: QueueRateLimit__SearchRequestOrdered_ConcurrencyLimit
+            value: "10"
           envFrom:
           - secretRef:
               name: rabbit-mq-configuration

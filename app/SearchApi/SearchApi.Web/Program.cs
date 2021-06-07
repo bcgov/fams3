@@ -44,6 +44,7 @@ namespace SearchApi.Web
                     loggerConfiguration
                         .ReadFrom.Configuration(hostingContext.Configuration)
                         .Enrich.WithPropertySearchRequestKey("SearchRequestKey")
+                        .Enrich.WithPropertyDataPartner("DataPartner")
                         .Enrich.FromLogContext();
 
                     string splunkCollectorUrl = hostingContext.Configuration["SPLUNK_COLLECTOR_URL"];

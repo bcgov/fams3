@@ -415,16 +415,17 @@ namespace DynamicsAdapter.Web.SearchAgency
                 if (inUpdateProcess) e.UpdateDetails = "New Employment";
                 SSG_Employment ssg_employment = await _searchRequestService.CreateEmployment(e, _cancellationToken);
 
-                if (employment.Employer != null)
-                {
-                    foreach (var phone in employment.Employer.Phones)
-                    {
-                        EmploymentContactEntity p = _mapper.Map<EmploymentContactEntity>(phone);
-                        p.Employment = ssg_employment;
-                        if (inUpdateProcess) e.UpdateDetails = "New EmploymentContact";
-                        await _searchRequestService.CreateEmploymentContact(p, _cancellationToken);
-                    }
-                }
+                //FAMS3-3742(OpenShift to stop creating Employment Contact records)
+                //if (employment.Employer != null)
+                //{
+                //    foreach (var phone in employment.Employer.Phones)
+                //    {
+                //        EmploymentContactEntity p = _mapper.Map<EmploymentContactEntity>(phone);
+                //        p.Employment = ssg_employment;
+                //        if (inUpdateProcess) e.UpdateDetails = "New EmploymentContact";
+                //        await _searchRequestService.CreateEmploymentContact(p, _cancellationToken);
+                //    }
+                //}
             }
 
             _logger.LogInformation("Create employment records for SearchRequest successfully");
@@ -597,6 +598,7 @@ namespace DynamicsAdapter.Web.SearchAgency
             return true;
         }
 
+        //this function is never been used.
         private async Task<bool> UpdateEmployment()
         {
             if (_personSought.Employments == null) return true;
@@ -706,7 +708,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                 NotesEntity note = new NotesEntity
                 {
                     StatusCode = 1,
-                    Description = UpdateCurrentNote(newSearchRequestEntity.Notes, previousNoteStr),
+                    Description = newNotes,
                     InformationSource = InformationSourceType.Request.Value,
                     SearchRequest = _uploadedSearchRequest,
                     UpdatedByApi=true

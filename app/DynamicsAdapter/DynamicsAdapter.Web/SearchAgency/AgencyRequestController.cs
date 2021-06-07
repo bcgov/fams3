@@ -75,6 +75,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                     }
                     if( ex is Simple.OData.Client.WebRequestException)
                     {
+                        _logger.LogError(((Simple.OData.Client.WebRequestException)ex).RequestUri?.AbsoluteUri);
                         _logger.LogError(((Simple.OData.Client.WebRequestException)ex).Response);
                     }
                     _logger.LogError(ex.Message);

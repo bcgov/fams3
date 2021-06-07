@@ -338,7 +338,6 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             _searchRequestServiceMock.Verify(m => m.CreateAddress(It.IsAny<AddressEntity>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
             _searchRequestServiceMock.Verify(m => m.CreatePhoneNumber(It.IsAny<PhoneNumberEntity>(), It.IsAny<CancellationToken>()), Times.Once);
             _searchRequestServiceMock.Verify(m => m.CreateEmployment(It.IsAny<EmploymentEntity>(), It.IsAny<CancellationToken>()), Times.Once);
-            _searchRequestServiceMock.Verify(m => m.CreateEmploymentContact(It.IsAny<EmploymentContactEntity>(), It.IsAny<CancellationToken>()), Times.Once);
             _searchRequestServiceMock.Verify(m => m.CreateRelatedPerson(It.IsAny<RelatedPersonEntity>(), It.IsAny<CancellationToken>()), Times.Once);
             _searchRequestServiceMock.Verify(m => m.CreateName(It.IsAny<AliasEntity>(), It.IsAny<CancellationToken>()), Times.Once);
             _searchRequestServiceMock.Verify(m => m.CreateSafetyConcern(It.IsAny<SafetyConcernEntity>(), It.IsAny<CancellationToken>()), Times.Once);

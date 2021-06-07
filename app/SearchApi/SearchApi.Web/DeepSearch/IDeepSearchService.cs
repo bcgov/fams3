@@ -1,4 +1,5 @@
 using BcGov.Fams3.Redis;
+using BcGov.Fams3.Redis.Model;
 using BcGov.Fams3.SearchApi.Contracts.Person;
 using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 using Microsoft.Extensions.Logging;
@@ -56,20 +57,26 @@ namespace SearchApi.Web.DeepSearch
         {
             try
             {
-                return JsonConvert.SerializeObject(await _cacheService.GetRequest(searchRequestKey)).AllFastSearchPartnerCompleted();
-
+                SearchRequest sr = await _cacheService.GetRequest(searchRequestKey);
+                if (sr != null)
+                    return sr.AllFastSearchPartnerCompleted();
+                else
+                    return true;
             }
             catch (Exception exception)
             {
                 _logger.LogError($"Check Data Partner Status Failed. [] for {searchRequestKey}. [{exception.Message}]");
                 return false;
-            }
+            }            
         }
         private async Task<bool> AllSearchDataPartnerIsCompleted(string searchRequestKey)
         {
             try
             {
-                return JsonConvert.SerializeObject(await _cacheService.GetRequest(searchRequestKey)).AllPartnerCompleted();
+                var request = await _cacheService.GetRequest(searchRequestKey);
+                if(request != null)
+                    return request.AllPartnerCompleted();
+                return true;
 
             }
             catch (Exception exception)
@@ -85,8 +92,8 @@ namespace SearchApi.Web.DeepSearch
                 if (eventName.Equals(EventName.Completed) || eventName.Equals(EventName.Rejected))
                 {
                     _logger.LogInformation($"Updating data partner as completed for {dataPartner} for {eventName} event");
-                    var searchRequest = JsonConvert.SerializeObject(await _cacheService.GetRequest(searchRequestKey)).UpdateDataPartner(dataPartner);
-                    await _cacheService.SaveRequest(searchRequest);                  
+                    int tryCount = await _cacheService.UpdateDataPartnerCompleteStatus(searchRequestKey, dataPartner);
+                    _logger.LogInformation("Successfully update data partner status with {tries}",tryCount);
                 }
             }
             catch (Exception exception)
@@ -102,8 +109,9 @@ namespace SearchApi.Web.DeepSearch
         {
             try
             {
-                if (JsonConvert.SerializeObject(await _cacheService.GetRequest(searchRequestKey)).AllPartnerCompleted())
-                await _cacheService.DeleteRequest(searchRequestKey);
+                var searchRequest = await _cacheService.GetRequest(searchRequestKey);
+                if (searchRequest != null && searchRequest.AllPartnerCompleted())
+                    await _cacheService.DeleteRequest(searchRequestKey);
                 IEnumerable<string> keys = await SearchDeepSearchKeys(searchRequestKey);
                 foreach (var key in keys)
                     await _cacheService.Delete(key);

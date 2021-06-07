@@ -314,6 +314,11 @@ namespace DynamicsAdapter.Web.Mapping
                   .ForMember(dest => dest.CountryText, opt => opt.MapFrom(src => (src.Address == null) ? string.Empty : src.Address.CountryRegion))
                   .ForMember(dest => dest.BusinessOwner, opt => opt.MapFrom(src => src.OwnerName))
                   .ForMember(dest => dest.ContactPerson, opt => opt.MapFrom(src => src.ContactPerson))
+                  .ForMember(dest => dest.Notes, opt => opt.MapFrom<EmploymentEntityNotesFromEmployerResolver>())
+                  .ForMember(dest => dest.PrimaryPhoneNumber, opt => opt.ConvertUsing(new PrimaryPhoneNumberConvertor(), src => src == null ? null : src.Phones))
+                  .ForMember(dest => dest.PrimaryPhoneExtension, opt => opt.ConvertUsing(new PrimaryPhoneExtConvertor(), src => src == null ? null : src.Phones))
+                  .ForMember(dest => dest.PrimaryContactPhone, opt => opt.ConvertUsing(new PrimaryContactPhoneNumberConvertor(), src => src == null ? null : src.Phones))
+                  .ForMember(dest => dest.PrimaryContactPhoneExt, opt => opt.ConvertUsing(new PrimaryContactPhoneExtConvertor(), src => src == null ? null : src.Phones))
                   .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => 0))
                   .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1));
 

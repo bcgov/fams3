@@ -133,7 +133,8 @@ namespace SearchApi.Web.Messaging
         {
             try
             {
-                var searchRequest = JsonConvert.SerializeObject(await _cacheService.GetRequest(searchRequestKey)).ResetDataPartner(dataPartner);
+                var searchRequest = await _cacheService.GetRequest(searchRequestKey);
+                if(searchRequest!=null) searchRequest.ResetDataPartner(dataPartner);
                 await _cacheService.SaveRequest(searchRequest);
             }
             catch (Exception exception)

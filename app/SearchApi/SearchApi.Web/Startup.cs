@@ -265,11 +265,12 @@ namespace SearchApi.Web
             services.AddHostedService<BusHostedService>();
             services.AddTransient<IDispatcher, Dispatcher>();
             services.AddTransient<IDeepSearchDispatcher, DeepSearchDispatcher>();
-            services.AddTransient<IDeepSearchService, DeepSearchService>();
-         
-         
-        
-            
+            //services.AddTransient<IDeepSearchService, DeepSearchService>();
+            services.AddSingleton<IDeepSearchService, DeepSearchService>();
+
+
+
+
         }
 
 

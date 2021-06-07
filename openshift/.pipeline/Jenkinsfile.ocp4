@@ -1,22 +1,21 @@
 #!/usr/bin/env groovy
 
 //ENV Vars
-def NAMESPACE_PREFIX = "dfb30e"
+NAMESPACE_PREFIX = "dfb30e"
+TOOLS_NAMESPACE = "dfb30e-tools"
+DEV_NAMESPACE = "dfb30e-dev"
+TEST_NAMESPACE = "dfb30e-test"
+PROD_NAMESPACE = "dfb30e-prod"
 
-def TOOLS_NAMESPACE = "dfb30e-tools"
-def DEV_NAMESPACE = "dfb30e-dev"
-def TEST_NAMESPACE = "dfb30e-test"
-def PROD_NAMESPACE = "dfb30e-prod"
+DOMAIN = "apps.silver.devops.gov.bc.ca"
+SUBDOMAIN = "fams3"
 
-def DOMAIN = "apps.silver.devops.gov.bc.ca"
-def SUBDOMAIN = "fams3"
+GIT_URI = "https://github.com/bcgov/fams3.git"
+GIT_REF = "ocp4"
 
-def GIT_URI = "https://github.com/bcgov/fams3.git"
-def GIT_REF = "ocp4"
-
-def PRIVATE_GIT_URI = "git@github.com:bcgov-c/fams3-openshift.git"
-def PRIVATE_GIT_REF = "ocp4"
-def PRIVATE_GIT_SECRET = "fams3-github-key"
+PRIVATE_GIT_URI = "git@github.com:bcgov-c/fams3-openshift.git"
+PRIVATE_GIT_REF = "ocp4"
+PRIVATE_GIT_SECRET = "fams3-github-key"
 
 
 def StartBuildAndWait(selector, namespace) {
@@ -191,12 +190,6 @@ def ProcessWSBCRestInbound(){
 pipeline {
   agent any
   stages {
-
-    stage('Checkout') {
-      steps {
-        checkout scm
-      }
-    }
 
     stage('Build') {
       steps {

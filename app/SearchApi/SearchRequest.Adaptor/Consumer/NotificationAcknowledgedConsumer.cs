@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SearchRequestAdaptor.Notifier;
 using Serilog.Context;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -30,9 +31,16 @@ namespace SearchRequestAdaptor.Consumer
             using (LogContext.PushProperty("RequestRef", $"{context.Message?.RequestId}"))
             using (LogContext.PushProperty("AgencyCode", $"{context.Message?.ProviderProfile?.Name}"))
             {
-                _logger.LogInformation("get the NotificationAcknowledged message.");
-                var cts = new CancellationTokenSource();
-                await _searchRequestNotifier.NotifySearchRequestEventAsync(context.Message.RequestId, context.Message, cts.Token, context.GetRetryAttempt(), _retryConfig.Value.RetryTimes);
+                try
+                {
+                    _logger.LogInformation("get the NotificationAcknowledged message.");
+                    var cts = new CancellationTokenSource();
+                    await _searchRequestNotifier.NotifySearchRequestEventAsync(context.Message.RequestId, context.Message, cts.Token, context.GetRetryAttempt(), _retryConfig.Value.RetryTimes);
+                }catch(Exception e)
+                {
+                    _logger.LogError("NotificationAcknowledged {requestRef} is put into error queue.", context.Message?.RequestId);
+                    throw e;
+                }
             }
         }
 

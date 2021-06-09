@@ -2,10 +2,10 @@ using BcGov.Fams3.SearchApi.Contracts.Person;
 using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 using BcGov.Fams3.SearchApi.Contracts.SearchRequest;
 using BcGov.Fams3.Utils.Url;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using SearchRequest.Adaptor.Publisher.Models;
 using SearchRequestAdaptor.Configuration;
 using SearchRequestAdaptor.Publisher;
 using SearchRequestAdaptor.Publisher.Models;
@@ -133,8 +133,27 @@ namespace SearchRequestAdaptor.Notifier
                     string responseContent = await response.Content.ReadAsStringAsync();
                     var saved = JsonConvert.DeserializeObject<SearchRequestSavedEvent>(responseContent);
 
-                    //for the new action will get Notification, only rejected are got published.
+                    //for the new action, we changed from Dynamics push the notification to here, openshift publish notification once sr is created.
                     //for the update action, fmep needs notified and notification from dynamics.
+                    if(saved.Action == RequestAction.NEW) 
+                    {
+                        _logger.LogInformation("create sr get success, publish accepted notification");
+                        var notifyEvent = new SearchRequestNotificationEvent
+                        {
+                            ProviderProfile = saved.ProviderProfile,
+                            NotificationType = NotificationType.RequestSaved,
+                            RequestId = saved.RequestId,
+                            SearchRequestKey = saved.SearchRequestKey, 
+                            QueuePosition = 120,
+                            Message = $"Activity RequestSaved occured. ",
+                            TimeStamp = DateTime.Now,
+                            EstimatedCompletion = DateTime.Now.AddMonths(3),
+                            FSOName = null,
+                            Person = null
+                        };
+                        await _searchRequestEventPublisher.PublishSearchRequestNotification(notifyEvent);
+                    }
+                    
                     if (saved.Action != RequestAction.NEW)
                     {
                         _logger.LogInformation(

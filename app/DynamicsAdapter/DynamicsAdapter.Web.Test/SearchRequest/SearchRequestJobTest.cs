@@ -210,7 +210,6 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
 
             _searchApiRequestServiceMock.Verify(x => x.MarkInProgress(It.Is<Guid>(m => m == _searchAsyncExceptionSearchRequestId), It.IsAny<CancellationToken>()), Times.Never);
 
-            _loggerMock.VerifyLog(LogLevel.Error, $"search Async throws random exception", Times.Once());
         }
 
         [Test]
@@ -252,7 +251,6 @@ namespace DynamicsAdapter.Web.Test.SearchRequest
 
             _searchApiRequestServiceMock.Verify(x => x.MarkInProgress(It.Is<Guid>(m => m == _exceptionSearchRequestId), It.IsAny<CancellationToken>()), Times.Once);
 
-            _loggerMock.VerifyLog(LogLevel.Error, $"mark in progress throws random exception", Times.Once());
         }
 
         [Test]

@@ -33,85 +33,7 @@ export DYNADAPTER_URL="https://dynadapter-${NAMESPACE_PREFIX}-dev.apps.silver.de
 # ---------------------------------------------------------------------------------------------------
 
 begin() {
-
    printf "Processing ${1}-----------------------------------------\n" 
-
-}
-
-# ===================================================================================================
-# Jenkins
-# ---------------------------------------------------------------------------------------------------
-process_jenkins() {
-  ## dotnet slave
-  begin jenkins-slave-dotnet
-  oc process -o=yaml \
-    -f ../templates/jenkins-slave-dotnet.yaml \
-    -p namespacePrefix=${NAMESPACE_PREFIX}  \
-    | oc apply -f - -n ${TOOLS_NAMESPACE}
-
-  ## dotnet sonarqube slave
-  begin jenkins-slave-sonarqube-dotnet.yaml
-  oc process -o=yaml \
-    -f ../templates/jenkins-slave-sonarqube-dotnet.yaml \
-    -p namespacePrefix=${NAMESPACE_PREFIX}  \
-    | oc apply -f - -n ${TOOLS_NAMESPACE}
-
-  ## zap slave
-  begin jenkins-slave-zap.yaml
-  oc process -o=yaml \
-    -f ../templates/jenkins-slave-zap.yaml \
-    -p namespacePrefix=${NAMESPACE_PREFIX}  \
-    | oc apply -f - -n ${TOOLS_NAMESPACE}
-
-  ## selenium-maven slave
-  begin jenkins-slave-selenium-maven.yaml
-  oc process -o=yaml \
-    -f ../templates/jenkins-slave-selenium-maven.yaml \
-    -p namespacePrefix=${NAMESPACE_PREFIX}  \
-    | oc apply -f - -n ${TOOLS_NAMESPACE}
-}
-
-
-# ===================================================================================================
-# Sonarqube
-# ---------------------------------------------------------------------------------------------------
-
-process_sonarqube(){
-
-  begin "sonarqube-postgresql"
-  oc process -o=yaml \
-    -f ../templates/sonarqube-postgresql.yaml \
-    | oc apply -f - -n ${TOOLS_NAMESPACE}
-
-# **NOTE:** Plugins are lost when permanent storage is mounted on plugins directory. To reinstall plugins:
-# cd /opt/sonarqube/extensions/plugins
-# ZAP
-# curl -sSL -o sonar-zap-plugin-1.2.0.jar https://github.com/Coveros/zap-sonar-plugin/releases/download/sonar-zap-plugin-1.2.0/sonar-zap-plugin-1.2.0.jar
-# Then add csharp plugin from marketplace in the UI and restart sonarqube
-}
-
-# ===================================================================================================
-# Selenium
-# ---------------------------------------------------------------------------------------------------
-
-# Using templates from https://github.com/akroon3r/selenium-openshift-templates
-## Selenium Hub
-
-process_selenium(){
-  export SELENIUM_GIT_URL="https://raw.githubusercontent.com/akroon3r/selenium-openshift-templates/master"
-
-  begin selenium-hub
-  oc process -o=yaml \
-    -f ${SELENIUM_GIT_URL}/selenium-hub.yaml \
-    | oc apply -f - -n ${TOOLS_NAMESPACE}
-
-  ## Selenium Chrome Node
-  begin selenium-node-chrome
-  oc process -o=yaml \
-    -f ${SELENIUM_GIT_URL}/selenium-node-chrome.yaml \
-    | oc apply -f - -n ${TOOLS_NAMESPACE}
-
-# **NOTE:** the node might have to be restarted if there are session timeout errors
 }
 
 # ===================================================================================================
@@ -364,22 +286,6 @@ start_builds(){
 ###############################################################################
 # Deploy
 ###############################################################################
-
-# ===================================================================================================
-# Selenium
-# ---------------------------------------------------------------------------------------------------
-
-# Static web server (for reports)
-# Need access to create service account and role binding in target namespace
-
-# deploy_selenium(){
-#   SELENIUM_GIT_URL="https://raw.githubusercontent.com/akroon3r/selenium-openshift-templates/master"
-
-#   oc process -o=yaml \
-#     -f ${SELENIUM_GIT_URL}/openshift/templates/static-web-server.dc.yaml \
-#     -p namespacePrefix=${NAMESPACE_PREFIX} \
-#     | oc apply -f - ${TARGET_NAMESPACE}
-# }
 
 # ===================================================================================================
 # RabbitMQ

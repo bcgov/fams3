@@ -172,13 +172,13 @@ namespace SearchApi.Web.Notifications
                 properties.Add("InnerExceptionMsg", httpRequestException.InnerException?.Message);
                 using (_logger.BeginScope(properties))
                 {
-                    _logger.LogError(ex.Message);
+                    _logger.LogError(ex, ex.Message);
                 };
 
             }
             else
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError(ex, ex.Message);
             }
         }
     }

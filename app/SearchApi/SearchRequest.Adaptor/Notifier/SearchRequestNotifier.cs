@@ -144,17 +144,39 @@ namespace SearchRequestAdaptor.Notifier
                             NotificationType = NotificationType.RequestSaved,
                             RequestId = saved.RequestId,
                             SearchRequestKey = saved.SearchRequestKey, 
-                            QueuePosition = 120,
+                            QueuePosition = saved.QueuePosition,
                             Message = $"Activity RequestSaved occured. ",
                             TimeStamp = DateTime.Now,
-                            EstimatedCompletion = DateTime.Now.AddMonths(3),
+                            EstimatedCompletion = saved.EstimatedCompletion,
                             FSOName = null,
                             Person = null
                         };
                         await _searchRequestEventPublisher.PublishSearchRequestNotification(notifyEvent);
                     }
-                    
-                    if (saved.Action != RequestAction.NEW)
+
+                    if (saved.Action == RequestAction.UPDATE)
+                    {                       
+                        _logger.LogInformation($"publish SearchRequestSaved");
+                        await _searchRequestEventPublisher.PublishSearchRequestSaved(saved);
+                        _logger.LogInformation("update sr get success, publish accepted notification");
+                        var notifyEvent = new SearchRequestNotificationEvent
+                        {
+                            ProviderProfile = saved.ProviderProfile,
+                            NotificationType = NotificationType.RequestSaved,
+                            RequestId = saved.RequestId,
+                            SearchRequestKey = saved.SearchRequestKey,
+                            QueuePosition = saved.QueuePosition,
+                            Message = $"Activity RequestSaved occured. ",
+                            TimeStamp = DateTime.Now,
+                            EstimatedCompletion = saved.EstimatedCompletion,
+                            FSOName = null,
+                            Person = null
+                        };
+
+                        await _searchRequestEventPublisher.PublishSearchRequestNotification(notifyEvent);
+                    }
+
+                    if (saved.Action == RequestAction.CANCEL)
                     {
                         _logger.LogInformation(
                             $"publish SearchRequestSaved");

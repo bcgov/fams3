@@ -69,6 +69,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         Task<bool> SubmitToQueue(Guid searchRequestId);
         Task<bool> DeleteSearchRequest(string fileId, CancellationToken cancellationToken);
         Task<bool> UpdateApiCall(Guid apiCallGuid, bool success, string notes, CancellationToken cancellationToken);
+        Task<SSG_SearchRequest> GetCurrentSearchRequest(Guid searchRequestId);
     }
 
     /// <summary>
@@ -432,6 +433,11 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                             { Keys.DYNAMICS_SEARCH_REQUEST_CANCEL_COMMENTS_FIELD, cancelComments }
                         })
                         .UpdateEntryAsync(cancellationToken);
+        }
+
+        public async Task<SSG_SearchRequest> GetCurrentSearchRequest(Guid searchRequestId)
+        {
+            return await _oDataClient.For<SSG_SearchRequest>().Key(searchRequestId).FindEntryAsync(CancellationToken.None);
         }
 
         public async Task<SSG_SearchRequest> SystemCancelSearchRequest(SSG_SearchRequest searchRequest, CancellationToken cancellationToken)

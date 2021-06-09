@@ -34,13 +34,12 @@ namespace SearchRequestAdaptor.Consumer
                 try
                 {
                     _logger.LogInformation("get the searchRequestOrdered message.");
-                    var cts = new CancellationTokenSource();
-                    await _searchRequestNotifier.NotifySearchRequestEventAsync(context.Message.RequestId, context.Message, cts.Token, context.GetRetryAttempt(), _retryConfig.Value.RetryTimes);
+                    await _searchRequestNotifier.NotifySearchRequestEventAsync(context.Message.RequestId, context.Message, CancellationToken.None, context.GetRetryAttempt(), _retryConfig.Value.RetryTimes);
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError("SearchRequestOrdered {requestRef} is put into error queue.", context.Message?.RequestId);
-                    throw e;
+                    _logger.LogError(e, "SearchRequestOrdered {requestRef} is put into error queue.", context.Message?.RequestId);
+                    throw;
                 }
             }
         }

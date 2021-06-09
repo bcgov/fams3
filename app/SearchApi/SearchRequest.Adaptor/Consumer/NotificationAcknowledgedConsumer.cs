@@ -38,8 +38,8 @@ namespace SearchRequestAdaptor.Consumer
                     await _searchRequestNotifier.NotifySearchRequestEventAsync(context.Message.RequestId, context.Message, cts.Token, context.GetRetryAttempt(), _retryConfig.Value.RetryTimes);
                 }catch(Exception e)
                 {
-                    _logger.LogError("NotificationAcknowledged {requestRef} is put into error queue.", context.Message?.RequestId);
-                    throw e;
+                    _logger.LogError(e,"NotificationAcknowledged {requestRef} is put into error queue.", context.Message?.RequestId);
+                    throw;
                 }
             }
         }

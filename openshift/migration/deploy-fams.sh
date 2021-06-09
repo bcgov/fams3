@@ -305,31 +305,22 @@ _process_wsbc_rest_inbound(){
 }
 
 process_adapters(){
-  # _process_rest bchydro
-  # _process_web bchydro
-  #_process_sonarscan bchydro
-  
-  # _process_web cornet
-
+  _process_rest bchydro
+  _process_web bchydro
+  _process_web cornet
   _process_fmep_rest_inbound
   _process_wsbc_rest_inbound
-
-  # _process_rest icbc
-  # _process_web icbc
-  
-  # _process_rest mhsd
-  # _process_web mhsd
-
-  # _process_rest moh-demo
-  # _process_web moh-demo
-  # _process_rest moh-emp
-  # _process_web moh-emp
-  # _process_web moh-rp
-  # _process_rest moh-rp
-
-  # _process_web wsbc
-  # _process_rest wsbc
-  # _process_file jca
+  _process_rest icbc
+  _process_web icbc
+  _process_rest mhsd
+  _process_web mhsd
+  _process_rest moh-emp
+  _process_web moh-emp
+  _process_web moh-rp
+  _process_rest moh-rp
+  _process_web wsbc
+  _process_rest wsbc
+  _process_file jca
   _process_ia_search
 }
 
@@ -343,31 +334,26 @@ _start_build(){
 
 start_builds(){
   buildConfigs=(
-    # "bchydro-rest-adapter"
-    # "bchydro-web-adapter"
-    # "cornet-web-adapter"
-    # "dynadapter"
+    "bchydro-rest-adapter"
+    "bchydro-web-adapter"
+    "cornet-web-adapter"
+    "dynadapter"
     "fmep-rest-inbound-adapter"
-    # "icbc-rest-adapter"
-    # "icbc-web-adapter"
-    # "jca-file-adapter"
-    # "mhsd-rest-adapter"
-    # "mhsd-web-adapter"
-    # "moh-demo-rest-adapter"
-    # "moh-demo-web-adapter"
-    # "moh-emp-rest-adapter"
-    # "moh-emp-web-adapter"
-    # "moh-rp-rest-adapter"
-    # "moh-rp-web-adapter"
-    # "request-api"
-    # "search-api"
-    # "selenium-node-chrome"
+    "icbc-rest-adapter"
+    "icbc-web-adapter"
+    "jca-file-adapter"
+    "mhsd-rest-adapter"
+    "mhsd-web-adapter"
+    "moh-emp-rest-adapter"
+    "moh-emp-web-adapter"
+    "moh-rp-rest-adapter"
+    "moh-rp-web-adapter"
+    "moh-demo-web-adapter"
+    "moh-demo-rest-adapter"
+    "request-api"
+    "search-api"
     "wsbc-rest-inbound-adapter"
-    # "wsbc-web-adapter"
-    # "jenkins-slave-dotnet"
-    # "jenkins-slave-selenium-maven"
-    # "jenkins-slave-sonarqube-dotnet"
-    # "jenkins-slave-zap"
+    "wsbc-web-adapter"
   )
   for bc in ${buildConfigs[@]}; do 
     _start_build $bc
@@ -692,23 +678,18 @@ tag_images(){
 
 _main() {
   printf "Beginning tools build for %s\n" ${NAMESPACE_PREFIX}
-  # process_jenkins
-  # process_sonarqube
-  # process_selenium        # N/A?
-  # process_searchapi 
-  # process_dynadapter  
-  # process_requestapi
-
+  process_searchapi 
+  process_dynadapter  
+  process_requestapi
   process_adapters
   start_builds
 
-  # deploy_selenium           # N/A?
-  # deploy_rabbitmq
-  # deploy_jaeger
-  # deploy_redis
-  # deploy_requestapi
-  # deploy_searchapi
-  # deploy_dynadapter
+  deploy_rabbitmq
+  deploy_jaeger
+  deploy_redis
+  deploy_requestapi
+  deploy_searchapi
+  deploy_dynadapter
 
   deploy_iasearchadapter
   deploy_fmeprestinboundadapter
@@ -721,12 +702,12 @@ _main() {
   deploy_fileadapter jca
   deploy_restadapter mhsd
   deploy_webadapter mhsd
-  deploy_restadapter moh-demo
-  deploy_webadapter moh-demo
   deploy_restadapter moh-emp
   deploy_webadapter moh-emp
   deploy_restadapter moh-rp
   deploy_webadapter moh-rp
+  deploy_restadapter moh-demo
+  deploy_webadapter moh-demo
   deploy_restadapter wsbc
   deploy_webadapter wsbc
   deploy_restinboundadapter wsbc

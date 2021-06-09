@@ -91,7 +91,7 @@ namespace DynamicsAdapter.Web.SearchRequest
                                         }
                                         catch (Exception ex)
                                         {
-                                            _logger.LogError(ex, ex.Message, null);
+                                            _logger.LogError(ex, "Send request to SearchApi failed", null);
                                             await _register.RemoveSearchApiRequest(request);
                                         }
                                    

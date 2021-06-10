@@ -52,14 +52,15 @@ namespace DynamicsAdapter.Web.SearchAgency
                 if (searchRequestOrdered == null) return BadRequest(new { ReasonCode = "error", Message = "SearchRequestOrdered cannot be empty." });
                 if (searchRequestOrdered.Action != RequestAction.NEW) return BadRequest(new { ReasonCode = "error", Message = "CreateSearchRequest should only get NEW request." });
 
+                SSG_SearchRequest createdSearchRequest = null;
                 try
                 {
-                    SSG_SearchRequest createdSearchRequest = await _agencyRequestService.ProcessSearchRequestOrdered(searchRequestOrdered);
+                    createdSearchRequest = await _agencyRequestService.ProcessSearchRequestOrdered(searchRequestOrdered);
                     if (createdSearchRequest == null)
                         return StatusCode(StatusCodes.Status500InternalServerError);
 
                     _logger.LogInformation("SearchRequest is created successfully.");
-                    return Ok(BuildSearchRequestSaved_Create(createdSearchRequest, searchRequestOrdered));
+
                 }
                 catch (AgencyRequestException ex)
                 {
@@ -81,6 +82,20 @@ namespace DynamicsAdapter.Web.SearchAgency
                     _logger.LogError(ex.Message);
                     return StatusCode(StatusCodes.Status500InternalServerError, new { ReasonCode = ex.Message, Message = ex.InnerException?.Message });
                 }
+
+                //try to submit to queue and then get EstimatedDate and positionInQueue
+                try
+                {
+                    await _agencyRequestService.SubmitSearchRequestToQueue(createdSearchRequest.SearchRequestId);
+                    createdSearchRequest = await _agencyRequestService.RefreshSearchRequest(createdSearchRequest.SearchRequestId);
+                }catch(Exception e)
+                {
+                    _logger.LogError(e, "submit to queue or get current search request failed.");
+                    //default value, in case there is error, we still can return accept event.
+                    createdSearchRequest.EstimatedCompletionDate = DateTime.UtcNow.AddMonths(3);
+                    createdSearchRequest.QueuePosition = 90;
+                }
+                return Ok(BuildSearchRequestSaved_Create(createdSearchRequest, searchRequestOrdered));
             }
         }
 
@@ -135,6 +150,19 @@ namespace DynamicsAdapter.Web.SearchAgency
                     return StatusCode(StatusCodes.Status500InternalServerError, new { ReasonCode = "error", Message = ex.Message });
                 }
                 _logger.LogInformation("UpdateSearchRequest successfully");
+
+                //try to get EstimatedDate and positionInQueue
+                try
+                {
+                    updatedSearchRequest = await _agencyRequestService.RefreshSearchRequest(updatedSearchRequest.SearchRequestId);
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, "get current search request failed.");
+                    //default value, in case there is error, we still can return accept event.
+                    updatedSearchRequest.EstimatedCompletionDate = DateTime.UtcNow.AddMonths(3);
+                    updatedSearchRequest.QueuePosition = 90;
+                }
                 return Ok(BuildSearchRequestSaved_Update(updatedSearchRequest, searchRequestOrdered));
             }
         }
@@ -236,6 +264,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                 return Ok();
             }
         }
+
         private SearchRequestSaved BuildSearchRequestSaved_Create(SSG_SearchRequest ssgSearchRequest, SearchRequestOrdered requestOrdered)
         {
             SearchRequestSaved saved =
@@ -246,8 +275,8 @@ namespace DynamicsAdapter.Web.SearchAgency
                     SearchRequestKey = ssgSearchRequest.FileId,
                     SearchRequestId = ssgSearchRequest.SearchRequestId,
                     TimeStamp = DateTime.Now,
-                    EstimatedCompletion = null,
-                    QueuePosition = null,
+                    EstimatedCompletion = ssgSearchRequest?.EstimatedCompletionDate,
+                    QueuePosition = ssgSearchRequest?.QueuePosition,
                     Message = $"The new Search Request reference: {requestOrdered.RequestId} has been submitted successfully.",
                     ProviderProfile = new ProviderProfile()
                     {
@@ -287,6 +316,8 @@ namespace DynamicsAdapter.Web.SearchAgency
                     SearchRequestKey = requestOrdered.SearchRequestKey,
                     SearchRequestId = ssgSearchRequest == null ? Guid.Empty : ssgSearchRequest.SearchRequestId,
                     TimeStamp = DateTime.Now,
+                    EstimatedCompletion = ssgSearchRequest?.EstimatedCompletionDate,
+                    QueuePosition = ssgSearchRequest?.QueuePosition,
                     ProviderProfile = new ProviderProfile()
                     {
                         Name = requestOrdered?.Person?.Agency?.Code

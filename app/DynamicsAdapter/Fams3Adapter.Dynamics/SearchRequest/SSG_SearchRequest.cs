@@ -252,6 +252,12 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
         [JsonProperty("ssg_jcagender")]
         public int? JCAGender { get; set; }
+
+        [JsonProperty("ssg_estimatedcompletiondate")]
+        public DateTime? EstimatedCompletionDate { get; set; }
+
+        [JsonProperty("ssg_queueposition")]
+        public int QueuePosition { get; set; }
     }
 
     public class SSG_SearchRequest : SearchRequestEntity, IUpdatableObject

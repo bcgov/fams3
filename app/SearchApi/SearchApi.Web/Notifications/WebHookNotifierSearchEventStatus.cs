@@ -36,74 +36,86 @@ namespace SearchApi.Web.Notifications
         public async Task NotifyEventAsync(string searchRequestKey, PersonSearchAdapterEvent eventStatus, string eventName,
            CancellationToken cancellationToken)
         {
-            var webHookName = "PersonSearch";
-            foreach (var webHook in _searchApiOptions.WebHooks)
+            try
             {
-                _logger.LogDebug(
-                   $"The webHook {webHookName} notification is attempting to send status {eventName} event for {webHook.Name} webhook.");
-
-                if (!URLHelper.TryCreateUri(webHook.Uri, eventName, $"{searchRequestKey}", out var endpoint))
+                var webHookName = "PersonSearch";
+                foreach (var webHook in _searchApiOptions.WebHooks)
                 {
-                    _logger.LogWarning(
-                        $"The webHook {webHookName} notification uri is not established or is not an absolute Uri for {webHook.Name}. Set the WebHook.Uri value on SearchApi.WebHooks settings.");
-                    return;
-                }
+                    _logger.LogDebug(
+                       $"The webHook {webHookName} notification is attempting to send status {eventName} event for {webHook.Name} webhook.");
 
-                using var request = new HttpRequestMessage();
-
-                try
-                {
-                    StringContent content;
-                    if (eventName == EventName.Finalized)
+                    if (!URLHelper.TryCreateUri(webHook.Uri, eventName, $"{searchRequestKey}", out var endpoint))
                     {
-                        _logger.LogInformation($"Initiating {eventName} event for {eventStatus.SearchRequestKey} for {eventStatus.ProviderProfile.Name}");
-                        PersonSearchEvent finalizedSearch = new PersonSearchFinalizedEvent()
+                        _logger.LogWarning(
+                            $"The webHook {webHookName} notification uri is not established or is not an absolute Uri for {webHook.Name}. Set the WebHook.Uri value on SearchApi.WebHooks settings.");
+                        throw new Exception("uri is not established.");
+                    }
+
+                    using var request = new HttpRequestMessage();
+
+                    try
+                    {
+                        StringContent content;
+                        if (eventName == EventName.Finalized)
                         {
-                            SearchRequestKey = eventStatus.SearchRequestKey,
-                            Message = "Search Request Finalized",
-                            SearchRequestId = eventStatus.SearchRequestId,
-                            TimeStamp = DateTime.Now
-                        };
-                        _logger.LogDebug(JsonConvert.SerializeObject(finalizedSearch));
-                        content = new StringContent(JsonConvert.SerializeObject(finalizedSearch));
+                            _logger.LogInformation($"Initiating {eventName} event for {eventStatus.SearchRequestKey} for {eventStatus.ProviderProfile.Name}");
+                            PersonSearchEvent finalizedSearch = new PersonSearchFinalizedEvent()
+                            {
+                                SearchRequestKey = eventStatus.SearchRequestKey,
+                                Message = "Search Request Finalized",
+                                SearchRequestId = eventStatus.SearchRequestId,
+                                TimeStamp = DateTime.Now
+                            };
+                            _logger.LogDebug(JsonConvert.SerializeObject(finalizedSearch));
+                            content = new StringContent(JsonConvert.SerializeObject(finalizedSearch));
+                        }
+                        else
+                        {
+                            _logger.LogDebug(JsonConvert.SerializeObject(eventStatus));
+                            content = new StringContent(JsonConvert.SerializeObject(eventStatus));
+                        }
+
+                        content.Headers.ContentType =
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
+                        request.Content = content;
+                        request.Method = HttpMethod.Post;
+                        request.Headers.Accept.Add(
+                            System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+                        request.Headers.Add("X-ApiKey", _searchApiOptions.ApiKeyForDynadaptor);
+                        request.RequestUri = endpoint;
+                        var response = await _httpClient.SendAsync(request, cancellationToken);
+
+                        if (!response.IsSuccessStatusCode)
+                        {
+                            _logger.LogError(
+                                $"The webHook {webHookName} notification has not executed status {eventName} successfully for {webHook.Name} webHook. The error code is {response.StatusCode.GetHashCode()}.");
+                            throw new Exception($"The webhook has not executed status {eventName} successfully, the error code is {response.StatusCode.GetHashCode()}");
+                        }
+
+                        _logger.LogInformation(
+                            $"The webHook {webHookName} notification has executed status {eventName} successfully for {webHook.Name} webHook.");
                     }
-                    else
+
+                    catch (Exception exception)
                     {
-                        _logger.LogDebug(JsonConvert.SerializeObject(eventStatus));
-                        content = new StringContent(JsonConvert.SerializeObject(eventStatus));
+                        _logger.LogError(exception, "The webHook {webHookName} notification failed for status {eventName}.", webHookName, eventName);
+                        throw;
+
                     }
-
-                    content.Headers.ContentType =
-                        System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
-                    request.Content = content;
-                    request.Method = HttpMethod.Post;
-                    request.Headers.Accept.Add(
-                        System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
-                    request.Headers.Add("X-ApiKey", _searchApiOptions.ApiKeyForDynadaptor);
-                    request.RequestUri = endpoint;
-                    var response = await _httpClient.SendAsync(request, cancellationToken);
-
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        _logger.LogError(
-                            $"The webHook {webHookName} notification has not executed status {eventName} successfully for {webHook.Name} webHook. The error code is {response.StatusCode.GetHashCode()}.");
-                        return;
-                    }
-                    _logger.LogInformation(
-                        $"The webHook {webHookName} notification has executed status {eventName} successfully for {webHook.Name} webHook.");
-                }
-
-                catch (Exception exception)
-                {
-                    _logger.LogError($"The webHook {webHookName} notification failed for status {eventName} for {webHook.Name} webHook.");
-                    LogException(exception);
-                    
                 }
             }
-            if (EventName.Finalized.Equals(eventName))
-                await _deepSearchService.DeleteFromCache(searchRequestKey);
-            else
-                await ProcessEvents(searchRequestKey, eventStatus, eventName);
+            catch (Exception)
+            {
+                _logger.LogError("The webhook {eventName} is failed and is put into error queue.", eventName);
+                throw;
+            }
+            finally
+            {
+                if (EventName.Finalized.Equals(eventName))
+                    await _deepSearchService.DeleteFromCache(searchRequestKey);
+                else
+                    await ProcessEvents(searchRequestKey, eventStatus, eventName);
+            }
 
         }
 

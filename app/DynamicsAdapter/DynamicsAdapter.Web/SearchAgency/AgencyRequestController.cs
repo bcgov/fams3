@@ -160,7 +160,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                 {
                     _logger.LogError(e, "get current search request failed.");
                     //default value, in case there is error, we still can return accept event.
-                    updatedSearchRequest.EstimatedCompletionDate = DateTime.Now.AddMonths(3);
+                    updatedSearchRequest.EstimatedCompletionDate = DateTime.UtcNow.AddMonths(3);
                     updatedSearchRequest.QueuePosition = 90;
                 }
                 return Ok(BuildSearchRequestSaved_Update(updatedSearchRequest, searchRequestOrdered));

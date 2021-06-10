@@ -126,7 +126,8 @@ namespace SearchRequestAdaptor.Notifier
                             return;
                         }
 
-                        throw new Exception($"Message Failed {response.StatusCode}, {response.Content.ReadAsStringAsync()}");
+                        var exContent = await response.Content.ReadAsStringAsync();
+                        throw new Exception($"Message Failed {response.StatusCode}, {exContent}");
                     }
 
                     _logger.LogInformation("get response successfully from webhook.");
@@ -185,8 +186,8 @@ namespace SearchRequestAdaptor.Notifier
                 }
                 catch (Exception exception)
                 {
-                    _logger.LogError(exception.Message);
-                    throw exception;
+                    _logger.LogError(exception, exception.Message);
+                    throw;
                 }
             }
         }

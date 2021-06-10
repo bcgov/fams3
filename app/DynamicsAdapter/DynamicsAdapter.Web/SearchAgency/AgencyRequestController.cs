@@ -63,7 +63,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                 }
                 catch (AgencyRequestException ex)
                 {
-                    _logger.LogError(ex.Message);
+                    _logger.LogInformation(ex.Message);
                     return StatusCode(StatusCodes.Status500InternalServerError, new { ReasonCode = ex.Message, Message = ex.InnerException?.Message });
                 }
                 catch (Exception ex)
@@ -121,7 +121,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                 }
                 catch (AgencyRequestException ex)
                 {
-                    _logger.LogError(ex.Message);
+                    _logger.LogInformation(ex.Message);
                     return BadRequest(new { ReasonCode = ex.Message, Message = $"FileId ( {searchRequestOrdered.SearchRequestKey} ) is invalid. {ex.Message}" });
 
                 }
@@ -169,7 +169,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                 }
                 catch (AgencyRequestException ex)
                 {
-                    _logger.LogError(ex.Message);
+                    _logger.LogInformation(ex.Message);
                     return BadRequest(new { ReasonCode = ex.Message, Message = $"FileId ( {searchRequestOrdered.SearchRequestKey} ) is invalid. {ex.Message}" });
                 }
                 catch (Exception ex)
@@ -220,7 +220,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                 }
                 catch (AgencyRequestException ex)
                 {
-                    _logger.LogError(ex.Message);
+                    _logger.LogInformation(ex.Message);
                     return StatusCode(StatusCodes.Status500InternalServerError, new { ReasonCode = ex.Message, Message = ex.InnerException?.Message });
                 }
                 catch (Exception ex)

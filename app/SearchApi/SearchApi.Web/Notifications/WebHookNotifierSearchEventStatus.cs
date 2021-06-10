@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 using SearchApi.Web.DeepSearch;
 using BcGov.Fams3.SearchApi.Contracts.Person;
+using System.Collections.Generic;
 
 namespace SearchApi.Web.Notifications
 {
@@ -94,7 +95,9 @@ namespace SearchApi.Web.Notifications
 
                 catch (Exception exception)
                 {
-                    _logger.LogError($"The webHook {webHookName} notification failed for status {eventName} for {webHook.Name} webHook. [{exception.Message}]");
+                    _logger.LogError($"The webHook {webHookName} notification failed for status {eventName} for {webHook.Name} webHook.");
+                    LogException(exception);
+                    
                 }
             }
             if (EventName.Finalized.Equals(eventName))
@@ -160,5 +163,23 @@ namespace SearchApi.Web.Notifications
             }
         }
 
+        private void LogException(Exception ex)
+        {
+            var httpRequestException = ex as HttpRequestException;
+            if (httpRequestException != null)
+            {
+                var properties = new Dictionary<string, object>();
+                properties.Add("InnerExceptionMsg", httpRequestException.InnerException?.Message);
+                using (_logger.BeginScope(properties))
+                {
+                    _logger.LogError(ex, ex.Message);
+                };
+
+            }
+            else
+            {
+                _logger.LogError(ex, ex.Message);
+            }
+        }
     }
 }

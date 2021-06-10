@@ -91,7 +91,7 @@ namespace DynamicsAdapter.Web.SearchRequest
                                         }
                                         catch (Exception ex)
                                         {
-                                            _logger.LogError(ex, ex.Message, null);
+                                            _logger.LogError(ex, "Send request to SearchApi failed");
                                             await _register.RemoveSearchApiRequest(request);
                                         }
                                    
@@ -104,7 +104,7 @@ namespace DynamicsAdapter.Web.SearchRequest
                             }
                             catch (Exception e)
                             {
-                                _logger.LogError(e, e.Message, null);
+                                _logger.LogError(e, e.Message);
                                 await _register.RemoveSearchApiRequest(ssgSearchRequest);
                             }
                         }

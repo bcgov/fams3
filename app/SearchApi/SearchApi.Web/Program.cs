@@ -41,10 +41,13 @@ namespace SearchApi.Web
             Host.CreateDefaultBuilder(args)
                 .UseSerilog((hostingContext, loggerConfiguration) =>
                 {
+                    string serviceName = hostingContext.Configuration["JAEGER_SERVICE_NAME"];
+
                     loggerConfiguration
                         .ReadFrom.Configuration(hostingContext.Configuration)
                         .Enrich.WithPropertySearchRequestKey("SearchRequestKey")
                         .Enrich.WithPropertyDataPartner("DataPartner")
+                        .Enrich.WithProperty("ServiceName",serviceName)
                         .Enrich.FromLogContext();
 
                     string splunkCollectorUrl = hostingContext.Configuration["SPLUNK_COLLECTOR_URL"];

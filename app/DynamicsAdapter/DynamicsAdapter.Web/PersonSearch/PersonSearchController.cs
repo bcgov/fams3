@@ -130,7 +130,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError(ex, "Completed event failed");
                 return BadRequest();
             }
         }
@@ -245,7 +245,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex.Message);
+                    _logger.LogError(ex, "Accepted event failed");
                     return BadRequest();
                 }
 
@@ -282,7 +282,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex.Message);
+                    _logger.LogError(ex, "Failed event failed");
                     return BadRequest();
                 }
                
@@ -321,7 +321,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex.Message);
+                    _logger.LogError(ex, "Information event failed");
                     return BadRequest();
                 }
 
@@ -357,7 +357,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex.Message);
+                    _logger.LogError(ex, "Finalized Event failed");
                     return BadRequest();
                 }
 
@@ -394,7 +394,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex.Message);
+                    _logger.LogError(ex, "Rejected Event failed");
                     return BadRequest();
                 }
 
@@ -429,7 +429,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex.Message);
+                    _logger.LogError(ex, "Submitted Event failed");
                     return BadRequest();
                 }
 
@@ -482,14 +482,14 @@ namespace DynamicsAdapter.Web.PersonSearch
                 request = await _searchApiRequestService.GetSearchApiRequest(searchRequestKey, token);
                 if (request == null)
                 {
-                    _logger.LogError("Cannot find the searchApiRequest for {searchApiRequestKey} in Dynamics.", searchRequestKey);
+                    _logger.LogError("Cannot find the searchApiRequest in Dynamics.");
                     return null;
                 }
                 _logger.LogInformation("find searchApiRequest in Dynamics.");
                 return request;
             }catch(Exception e)
             {
-                _logger.LogError(e.Message);
+                _logger.LogError(e, "Get SearchApiRequest failed");
                 return null;
             }
         }

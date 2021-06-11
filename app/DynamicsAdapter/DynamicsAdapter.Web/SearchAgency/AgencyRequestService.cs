@@ -36,6 +36,7 @@ namespace DynamicsAdapter.Web.SearchAgency
         Task<bool> SystemCancelSSGSearchRequest(SSG_SearchRequest searchRequest);
         Task<bool> ProcessNotificationAcknowledgement(Acknowledgement ack, Guid ApiCallGuid, bool isAmendment);
         Task<SSG_SearchRequest> RefreshSearchRequest(Guid searchRequestId);
+        Task SubmitSearchRequestToQueue(Guid searchRequestId);
     }
 
     public class AgencyRequestService : IAgencyRequestService
@@ -87,9 +88,18 @@ namespace DynamicsAdapter.Web.SearchAgency
             await UploadRelatedApplicant(_uploadedSearchRequest.ApplicantFirstName, _uploadedSearchRequest.ApplicantLastName);
             await UploadAliases();
             await UploadSafetyConcern();
-            await SubmitToQueue();
             return _uploadedSearchRequest;
         }
+        public async Task<SSG_SearchRequest> RefreshSearchRequest(Guid searchRequestId) 
+        {
+            return await _searchRequestService.GetCurrentSearchRequest(searchRequestId);
+        }
+
+        public async Task SubmitSearchRequestToQueue(Guid searchRequestId)
+        {
+            await SubmitToQueue(searchRequestId);
+        }
+
         public async Task<SSG_SearchRequest> RefreshSearchRequest(Guid searchRequestId) 
         {
             return await _searchRequestService.GetCurrentSearchRequest(searchRequestId);
@@ -730,9 +740,9 @@ namespace DynamicsAdapter.Web.SearchAgency
             return true;
         }
 
-        private async Task<bool> SubmitToQueue()
+        private async Task<bool> SubmitToQueue(Guid searchRequestId)
         {
-            await _searchRequestService.SubmitToQueue(_uploadedSearchRequest.SearchRequestId);
+            await _searchRequestService.SubmitToQueue(searchRequestId);
             return true;
         }
 

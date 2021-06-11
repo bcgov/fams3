@@ -45,12 +45,18 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 }
             };
 
+            SSG_SearchRequest tempSearchRequest = new SSG_SearchRequest()
+            {
+                FileId = "fileId",
+                SearchRequestId = Guid.NewGuid()
+            };
             _agencyRequestServiceMock.Setup(x => x.ProcessSearchRequestOrdered(It.IsAny<SearchRequestOrdered>()))
-                .Returns(Task.FromResult<SSG_SearchRequest>(new SSG_SearchRequest()
-                {
-                    FileId = "fileId",
-                    SearchRequestId = Guid.NewGuid()
-                }));
+                .Returns(Task.FromResult<SSG_SearchRequest>(tempSearchRequest));
+            _agencyRequestServiceMock.Setup(x => x.SubmitSearchRequestToQueue(It.IsAny<Guid>()))
+                .Returns(Task.CompletedTask);
+
+            _agencyRequestServiceMock.Setup(x => x.RefreshSearchRequest(It.IsAny<Guid>()))
+                .Returns(Task.FromResult<SSG_SearchRequest>(tempSearchRequest));
 
             var result = await _sut.CreateSearchRequest("normalsearchRequest", validSearchRequestOrdered);
 
@@ -282,12 +288,16 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 }
             };
 
+            SSG_SearchRequest tempSearchRequest = new SSG_SearchRequest()
+            {
+                FileId = "fileId",
+                SearchRequestId = Guid.NewGuid()
+            };
             _agencyRequestServiceMock.Setup(x => x.ProcessUpdateSearchRequest(It.IsAny<SearchRequestOrdered>()))
-                .Returns(Task.FromResult<SSG_SearchRequest>(new SSG_SearchRequest()
-                {
-                    FileId = "fileId",
-                    SearchRequestId = Guid.NewGuid()
-                }));
+                .Returns(Task.FromResult<SSG_SearchRequest>(tempSearchRequest));
+
+            _agencyRequestServiceMock.Setup(x => x.RefreshSearchRequest(It.IsAny<Guid>()))
+    .Returns(Task.FromResult<SSG_SearchRequest>(tempSearchRequest));
 
             var result = await _sut.UpdateSearchRequest("121212121212", validSearchRequestOrdered);
 

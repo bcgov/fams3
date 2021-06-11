@@ -21,6 +21,8 @@ using Fams3Adapter.Dynamics.Vehicle;
 using Simple.OData.Client;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -104,11 +106,13 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
         public async Task<SSG_Person> SavePerson(PersonEntity person, CancellationToken cancellationToken)
         {
-            person.DuplicateDetectHash = await _duplicateDetectService.GetDuplicateDetectHashData(person);
-            string hashData = person.DuplicateDetectHash;
-            var p = await this._oDataClient.For<SSG_Person>()
-                    .Filter(x => x.DuplicateDetectHash == hashData)
-                    .FindEntryAsync(cancellationToken);
+            var p = await FindDuplicatedPerson(person);
+            //person.DuplicateDetectHash = await _duplicateDetectService.GetDuplicateDetectHashData(person);
+            //string hashData = person.DuplicateDetectHash;
+            //var p = await this._oDataClient.For<SSG_Person>()
+            //        .Filter(x => x.DuplicateDetectHash == hashData)
+            //        .FindEntryAsync(cancellationToken)
+            //        ;
 
             if (p == null)
                 return await this._oDataClient.For<SSG_Person>().Set(person).InsertEntryAsync(cancellationToken);
@@ -659,5 +663,23 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             employment.CountrySubdivision = await GetEmploymentSubdivision(employment.CountrySubdivisionText, cancellationToken);
             return employment;
         }
-    }
+
+        private async Task<SSG_Person> FindDuplicatedPerson(PersonEntity newPerson)
+        {
+            newPerson.DuplicateDetectHash = await _duplicateDetectService.GetDuplicateDetectHashData(newPerson);
+            string hashData = newPerson.DuplicateDetectHash;
+            try
+            {
+                var existedPerson = await this._oDataClient.For<SSG_Person>()
+                    .Filter(x => x.DuplicateDetectHash == hashData)
+                    .FindEntryAsync(CancellationToken.None);
+                    
+                return existedPerson;
+            }
+            catch (WebRequestException e) when (e.Code== HttpStatusCode.NotFound)
+            {
+               return null;
+            }
+        }
+        }
 }

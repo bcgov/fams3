@@ -90,10 +90,6 @@ namespace DynamicsAdapter.Web.SearchAgency
             await UploadSafetyConcern();
             return _uploadedSearchRequest;
         }
-        public async Task<SSG_SearchRequest> RefreshSearchRequest(Guid searchRequestId) 
-        {
-            return await _searchRequestService.GetCurrentSearchRequest(searchRequestId);
-        }
 
         public async Task SubmitSearchRequestToQueue(Guid searchRequestId)
         {

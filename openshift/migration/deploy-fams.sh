@@ -15,7 +15,7 @@ parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
 
 export NAMESPACE_PREFIX=dfb30e
 export TOOLS_NAMESPACE=${NAMESPACE_PREFIX}-tools
-export TAG=test
+export TAG=dev
 export TARGET_NAMESPACE=${NAMESPACE_PREFIX}-${TAG}
 export GIT_REPO="bcgov/fams3"
 export GIT_BRANCH="ocp4"
@@ -590,7 +590,7 @@ _main() {
   process_adapters
   start_builds
 
-  deploy_rabbitmq
+  # deploy_rabbitmq     TODO: Clean for being able to do apply using oc apply
   deploy_jaeger
   deploy_redis
   deploy_requestapi

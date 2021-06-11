@@ -676,16 +676,9 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                     
                 return existedPerson;
             }
-            catch (WebRequestException e)
+            catch (WebRequestException e) when (e.Code== HttpStatusCode.NotFound)
             {
-                if(e.Code== HttpStatusCode.NotFound)
-                {
-                    return null;
-                }
-                throw;
-            }catch(Exception)
-            {
-                throw;
+               return null;
             }
         }
         }

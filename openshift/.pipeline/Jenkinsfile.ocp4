@@ -117,13 +117,15 @@ pipeline {
       }
     }
     stage('Deploy to Test?') {
-      script {
-            def IS_APPROVED = input(message: "Deploy to Test?", ok: "yes", parameters: [string(name: 'IS_APPROVED', defaultValue: 'yes', description: 'Deploy to Test?')])
-            if (IS_APPROVED != 'yes') {
-               currentBuild.result = "ABORTED"
-               error "User cancelled"
-            }
-        }
+      steps {
+        script {
+              def IS_APPROVED = input(message: "Deploy to Test?", ok: "yes", parameters: [string(name: 'IS_APPROVED', defaultValue: 'yes', description: 'Deploy to Test?')])
+              if (IS_APPROVED != 'yes') {
+                currentBuild.result = "ABORTED"
+                error "User cancelled"
+              }
+          }
+      }
     }
   }
 }

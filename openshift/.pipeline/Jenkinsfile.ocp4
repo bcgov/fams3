@@ -35,7 +35,7 @@ def WaitForDeploy(selector, namespace) {
 // ---------------------------------------------------------------------------------------------------
 def _ProcessGenericImage(appName){
   sh "oc process -o=yaml \
-    -f ../templates/builds/images/generic.yaml \
+    -f openshift/templates/builds/images/generic.yaml \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     -p appName=${appName}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}"
@@ -51,7 +51,7 @@ def ProcessSearchAPI(){
 
   // Build config
   sh "oc process -o=yaml \
-    -f ../templates/builds/builds/search-api.yaml \
+    -f openshift/templates/builds/builds/search-api.yaml \
     -p gitRef=ocp4 \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}"
@@ -63,14 +63,14 @@ def ProcessSearchAPI(){
 def ProcessDynadapter(){
   // Image stream
   sh "oc process -o=yaml \
-    -f ../templates/builds/images/generic.yaml \
+    -f openshift/templates/builds/images/generic.yaml \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     -p appName=dynadapter  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}"
 
   // Build config
   sh "oc process -o=yaml \
-    -f ../templates/builds/builds/dynadapter.yaml \
+    -f openshift/templates/builds/builds/dynadapter.yaml \
     -p gitRef=ocp4 \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}"
@@ -82,14 +82,14 @@ def ProcessDynadapter(){
 def ProcessRequestAPI(){
   // Image stream
   sh "oc process -o=yaml \
-    -f ../templates/builds/images/generic.yaml \
+    -f openshift/templates/builds/images/generic.yaml \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     -p appName=request-api \
     | oc apply -f - -n ${TOOLS_NAMESPACE}"
 
   // Build config
   sh "oc process -o=yaml \
-    -f ../templates/builds/builds/request-api.yaml \
+    -f openshift/templates/builds/builds/request-api.yaml \
     -p gitRef=ocp4 \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}"
@@ -102,14 +102,14 @@ def ProcessRequestAPI(){
 def ProcessAdapter(type, dataPartner){
   // Image stream
   sh "oc process -o=yaml \
-    -f ../templates/builds/images/${type}-adapter.yaml \
+    -f openshift/templates/builds/images/${type}-adapter.yaml \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     -p dataPartnerService=${dataPartner}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}"
 
   // Build config
   sh "oc process -o=yaml \
-    -f ../templates/builds/builds/${type}-adapter.yaml \
+    -f openshift/templates/builds/builds/${type}-adapter.yaml \
     -p gitRef=ocp4 \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     -p dataPartnerService=${dataPartner}  \
@@ -124,14 +124,14 @@ def ProcessIASearch(){
   appName="ia-search-web-adapter"
   // Image stream
   sh "oc process -o=yaml \
-    -f ../templates/builds/images/generic.yaml \
+    -f openshift/templates/builds/images/generic.yaml \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     -p appName=${appName}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}"
 
   // Build config
   sh "oc process -o=yaml \
-    -f ../templates/builds/builds/ia-search-web-adapter.yaml \
+    -f openshift/templates/builds/builds/ia-search-web-adapter.yaml \
     -p gitRef=ocp4 \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}"
@@ -145,14 +145,14 @@ def ProcessFMEPRestInbound(){
   dataPartner="fmep"
   // Image stream
   sh "oc process -o=yaml \
-    -f ../templates/builds/images/rest-inbound-adapter.yaml \
+    -f openshift/templates/builds/images/rest-inbound-adapter.yaml \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     -p dataPartnerService=${dataPartner}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}"
 
   // Build config
   sh "oc process -o=yaml \
-    -f ../templates/builds/builds/fams-request-inbound-adapter.yaml \
+    -f openshift/templates/builds/builds/fams-request-inbound-adapter.yaml \
     -p gitRef=ocp4 \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     -p dataPartnerService=${dataPartner}  \
@@ -167,14 +167,14 @@ def ProcessWSBCRestInbound(){
   dataPartner="wsbc"
   // Image stream
   sh "oc process -o=yaml \
-    -f ../templates/builds/images/rest-inbound-adapter.yaml \
+    -f openshift/templates/builds/images/rest-inbound-adapter.yaml \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     -p dataPartnerService=${dataPartner}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}"
 
   // Build config
   sh "oc process -o=yaml \
-    -f ../templates/builds/builds/rest-inbound-adapter.yaml \
+    -f openshift/templates/builds/builds/rest-inbound-adapter.yaml \
     -p gitRef=ocp4 \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     -p dataPartnerService=${dataPartner}  \

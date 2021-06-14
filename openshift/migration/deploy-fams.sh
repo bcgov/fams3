@@ -15,7 +15,7 @@ parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
 
 export NAMESPACE_PREFIX=dfb30e
 export TOOLS_NAMESPACE=${NAMESPACE_PREFIX}-tools
-export TAG=dev
+export TAG=test
 export TARGET_NAMESPACE=${NAMESPACE_PREFIX}-${TAG}
 export GIT_REPO="bcgov/fams3"
 export GIT_BRANCH="ocp4"
@@ -260,6 +260,7 @@ start_builds(){
     "bchydro-web-adapter"
     "cornet-web-adapter"
     "dynadapter"
+    "ia-search-web-adapter"
     "fmep-rest-inbound-adapter"
     "icbc-rest-adapter"
     "icbc-web-adapter"
@@ -584,11 +585,11 @@ tag_images(){
 
 _main() {
   printf "Beginning tools build for %s\n" ${NAMESPACE_PREFIX}
-  process_searchapi 
-  process_dynadapter  
-  process_requestapi
-  process_adapters
-  start_builds
+  # process_searchapi 
+  # process_dynadapter  
+  # process_requestapi
+  # process_adapters
+  # start_builds
 
   # deploy_rabbitmq     TODO: Clean for being able to do apply using oc apply
   deploy_jaeger
@@ -619,7 +620,6 @@ _main() {
   deploy_restinboundadapter wsbc
 
   tag_images 
-
 }
 
 # Call `_main` after everything has been defined.

@@ -221,7 +221,7 @@ pipeline {
         ProcessAdapter('file','jca')
       }
     }
-    stage('Build') {
+    stage('Build (Pt 1)') {
       steps {
         parallel(
           'Search API': {Build('search-api')},
@@ -230,6 +230,12 @@ pipeline {
           'FMEP Rest Inbound Adapter': {Build('fmep-rest-inbound-adapter')},
           'WSBC Rest Inbound Adapter': {Build('wsbc-rest-inbound-adapter')},
           'IA Search Adapter': {Build('ia-search-web-adapter')},
+        )
+      }
+    }
+    stage('Build (Pt 2)') {
+      steps {
+        parallel(
           'BCHydro Rest Adapter': {Build('bchydro-rest-adapter')},
           'BCHydro Web Adapter': {Build('bchydro-web-adapter')},
           'Cornet Web Adapter': {Build('cornet-web-adapter')},
@@ -237,6 +243,12 @@ pipeline {
           'ICBC Web Adapter': {Build('icbc-web-adapter')},
           'MHSD Rest Adapter': {Build('mhsd-rest-adapter')},
           'MHSD Web Adapter': {Build('mhsd-web-adapter')},
+        )
+      }
+    }
+    stage('Build (Pt 3)') {
+      steps {
+        parallel(
           'MOH Demographics Rest Adapter': {Build('moh-demo-rest-adapter')},
           'MOH Demographics Web Adapter': {Build('moh-demo-web-adapter')},
           'MOH EMP Rest Adapter': {Build('moh-emp-rest-adapter')},

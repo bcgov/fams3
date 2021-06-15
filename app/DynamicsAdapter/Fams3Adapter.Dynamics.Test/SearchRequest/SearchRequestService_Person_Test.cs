@@ -2,6 +2,7 @@ using Fams3Adapter.Dynamics.Duplicate;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.SearchRequest;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using Simple.OData.Client;
@@ -17,6 +18,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
     {
         private Mock<IODataClient> _odataClientMock;
         private Mock<IDuplicateDetectionService> _duplicateServiceMock;
+        private Mock<ILogger<SearchRequestService>> _loggerMock;
 
         private readonly Guid _testId = Guid.Parse("6AE89FE6-9909-EA11-B813-00505683FBF4");
         private readonly Guid _testPersonId = Guid.Parse("6AE89FE6-9909-EA11-1111-00505683FBF4");
@@ -27,7 +29,8 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         {
             _odataClientMock = new Mock<IODataClient>();
             _duplicateServiceMock = new Mock<IDuplicateDetectionService>();
-            _sut = new SearchRequestService(_odataClientMock.Object, _duplicateServiceMock.Object);
+            _loggerMock = new Mock<ILogger<SearchRequestService>>();
+            _sut = new SearchRequestService(_odataClientMock.Object, _duplicateServiceMock.Object, _loggerMock.Object);
         }
 
         #region person testcases

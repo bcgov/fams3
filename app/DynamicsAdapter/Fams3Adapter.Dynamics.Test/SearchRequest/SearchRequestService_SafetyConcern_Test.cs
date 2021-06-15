@@ -25,7 +25,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         public void SetUp()
         {
             _odataClientMock = new Mock<IODataClient>();
-            _sut = new SearchRequestService(_odataClientMock.Object, null);
+            _sut = new SearchRequestService(_odataClientMock.Object, null, null);
         }
 
         #region safetyconcern testcases

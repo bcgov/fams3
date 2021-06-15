@@ -3,19 +3,8 @@
 //ENV Vars
 NAMESPACE_PREFIX = "dfb30e"
 TOOLS_NAMESPACE = "dfb30e-tools"
-DEV_NAMESPACE = "dfb30e-dev"
-TEST_NAMESPACE = "dfb30e-test"
-PROD_NAMESPACE = "dfb30e-prod"
 
-DOMAIN = "apps.silver.devops.gov.bc.ca"
-SUBDOMAIN = "fams3"
-
-GIT_URI = "https://github.com/bcgov/fams3.git"
 GIT_REF = "ocp4"
-
-PRIVATE_GIT_URI = "git@github.com:bcgov-c/fams3-openshift.git"
-PRIVATE_GIT_REF = "ocp4"
-PRIVATE_GIT_SECRET = "fams3-github-key"
 
 // ===================================================================================================
 // PIPELINE
@@ -127,6 +116,74 @@ pipeline {
           }
       }
     }
+    stage('Test Deploy') {
+      steps {
+        parallel(
+          'Redis': {DeployRedis('test')},
+          'RequestAPI': {DeployRequestAPI('test')},
+          'SearchAPI': {DeploySearchAPI('test')},
+          'Dynadapter': {DeployDynadapter('test')},
+          'FMEP Rest Inbound Adapter': {DeployFMEPRestInbound('test')},
+          'WSBC Rest Inbound Adapter': {DeployWSBCRestInbound('test')},
+          'IA Search Adapter': {DeployIASearchAdapter('test')},
+          'BCHydro Rest Adapter': {DeployRestAdapter('bchydro','test')},
+          'BCHydro Web Adapter': {DeployWebAdapter('bchydro','test')},
+          'Cornet Web Adapter': {DeployWebAdapter('cornet','test')},
+          'ICBC Rest Adapter': {DeployRestAdapter('icbc','test')},
+          'ICBC Web Adapter': {DeployWebAdapter('icbc','test')},
+          'MHSD Rest Adapter': {DeployRestAdapter('mhsd','test')},
+          'MHSD Web Adapter': {DeployWebAdapter('mhsd','test')},
+          'MOH Demographics Rest Adapter': {DeployRestAdapter('moh-demo','test')},
+          'MOH Demographics Web Adapter': {DeployWebAdapter('moh-demo','test')},
+          'MOH EMP Rest Adapter': {DeployRestAdapter('moh-emp','test')},
+          'MOH EMP Web Adapter': {DeployWebAdapter('moh-emp','test')},
+          'MOH RP Rest Adapter': {DeployRestAdapter('moh-rp','test')},
+          'MOH RP Web Adapter': {DeployWebAdapter('moh-rp','test')},
+          'WSBC Web Adapter': {DeployWebAdapter('wsbc','test')},
+          'JCA File Adapter': {DeployFileAdapter('jca','test')}
+        )
+      }
+    }
+    stage('Deploy to Prod?') {
+      steps {
+        script {
+              def IS_APPROVED = input(message: "Deploy to Prod?", ok: "yes", parameters: [string(name: 'IS_APPROVED', defaultValue: 'yes', description: 'Deploy to Test?')])
+              if (IS_APPROVED != 'yes') {
+                currentBuild.result = "ABORTED"
+                error "User cancelled"
+              }
+          }
+      }
+    }
+    stage('Prod Deploy') {
+      steps {
+        parallel(
+          'Redis': {DeployRedis('prod')},
+          'RequestAPI': {DeployRequestAPI('prod')},
+          'SearchAPI': {DeploySearchAPI('prod')},
+          'Dynadapter': {DeployDynadapter('prod')},
+          'FMEP Rest Inbound Adapter': {DeployFMEPRestInbound('prod')},
+          'WSBC Rest Inbound Adapter': {DeployWSBCRestInbound('prod')},
+          'IA Search Adapter': {DeployIASearchAdapter('prod')},
+          'BCHydro Rest Adapter': {DeployRestAdapter('bchydro','prod')},
+          'BCHydro Web Adapter': {DeployWebAdapter('bchydro','prod')},
+          'Cornet Web Adapter': {DeployWebAdapter('cornet','prod')},
+          'ICBC Rest Adapter': {DeployRestAdapter('icbc','prod')},
+          'ICBC Web Adapter': {DeployWebAdapter('icbc','prod')},
+          'MHSD Rest Adapter': {DeployRestAdapter('mhsd','prod')},
+          'MHSD Web Adapter': {DeployWebAdapter('mhsd','prod')},
+          'MOH Demographics Rest Adapter': {DeployRestAdapter('moh-demo','prod')},
+          'MOH Demographics Web Adapter': {DeployWebAdapter('moh-demo','prod')},
+          'MOH EMP Rest Adapter': {DeployRestAdapter('moh-emp','prod')},
+          'MOH EMP Web Adapter': {DeployWebAdapter('moh-emp','prod')},
+          'MOH RP Rest Adapter': {DeployRestAdapter('moh-rp','prod')},
+          'MOH RP Web Adapter': {DeployWebAdapter('moh-rp','prod')},
+          'WSBC Web Adapter': {DeployWebAdapter('wsbc','prod')},
+          'JCA File Adapter': {DeployFileAdapter('jca','prod')}
+        )
+      }
+    }
+    
   }
 }
 
@@ -170,7 +227,7 @@ def ProcessSearchAPI(){
   // Build config
   sh "oc process -o=yaml \
     -f openshift/templates/builds/builds/search-api.yaml \
-    -p gitRef=ocp4 \
+    -p gitRef=${GIT_REF} \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}"
 }
@@ -184,7 +241,7 @@ def ProcessDynadapter(){
   // Build config
   sh "oc process -o=yaml \
     -f openshift/templates/builds/builds/dynadapter.yaml \
-    -p gitRef=ocp4 \
+    -p gitRef=${GIT_REF} \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}"
 }
@@ -197,7 +254,7 @@ def ProcessRequestAPI(){
   // Build config
   sh "oc process -o=yaml \
     -f openshift/templates/builds/builds/request-api.yaml \
-    -p gitRef=ocp4 \
+    -p gitRef=${GIT_REF} \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}"
 }
@@ -217,7 +274,7 @@ def ProcessAdapter(type, dataPartner){
   // Build config
   sh "oc process -o=yaml \
     -f openshift/templates/builds/builds/${type}-adapter.yaml \
-    -p gitRef=ocp4 \
+    -p gitRef=${GIT_REF} \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     -p dataPartnerService=${dataPartner}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}"
@@ -233,7 +290,7 @@ def ProcessIASearch(){
   // Build config
   sh "oc process -o=yaml \
     -f openshift/templates/builds/builds/ia-search-web-adapter.yaml \
-    -p gitRef=ocp4 \
+    -p gitRef=${GIT_REF} \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}"
 }
@@ -254,7 +311,7 @@ def ProcessFMEPRestInbound(){
   // Build config
   sh "oc process -o=yaml \
     -f openshift/templates/builds/builds/fams-request-inbound-adapter.yaml \
-    -p gitRef=ocp4 \
+    -p gitRef=${GIT_REF} \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     -p dataPartnerService=${dataPartner}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}"
@@ -276,7 +333,7 @@ def ProcessWSBCRestInbound(){
   // Build config
   sh "oc process -o=yaml \
     -f openshift/templates/builds/builds/rest-inbound-adapter.yaml \
-    -p gitRef=ocp4 \
+    -p gitRef=${GIT_REF} \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     -p dataPartnerService=${dataPartner}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}"

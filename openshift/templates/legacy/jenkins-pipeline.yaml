@@ -14,7 +14,7 @@ spec:
   runPolicy: Serial
   source:
     git:
-      ref: ocp4
+      ref: master
       uri: "https://github.com/bcgov/fams3"
   strategy:
     jenkinsPipelineStrategy:

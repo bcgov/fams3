@@ -4,7 +4,7 @@
 NAMESPACE_PREFIX = "dfb30e"
 TOOLS_NAMESPACE = "dfb30e-tools"
 
-GIT_REF = "ocp4"
+GIT_REF = "master"
 
 // ===================================================================================================
 // PIPELINE

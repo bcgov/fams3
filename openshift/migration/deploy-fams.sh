@@ -15,10 +15,10 @@ parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
 
 export NAMESPACE_PREFIX=dfb30e
 export TOOLS_NAMESPACE=${NAMESPACE_PREFIX}-tools
-export TAG=test
+export TAG=prod
 export TARGET_NAMESPACE=${NAMESPACE_PREFIX}-${TAG}
 export GIT_REPO="bcgov/fams3"
-export GIT_BRANCH="ocp4"
+export GIT_BRANCH="master"
 export GIT_URL="https://raw.githubusercontent.com/${GIT_REPO}/${GIT_BRANCH}"
 
 # Export env vars
@@ -53,7 +53,7 @@ process_searchapi(){
   begin build/search-api
   oc process -o=yaml \
     -f ../templates/builds/builds/search-api.yaml \
-    -p gitRef=ocp4 \
+    -p gitRef=${GIT_BRANCH} \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
 
@@ -75,7 +75,7 @@ process_dynadapter(){
   begin build/dynadapter
   oc process -o=yaml \
     -f ../templates/builds/builds/dynadapter.yaml \
-    -p gitRef=ocp4 \
+    -p gitRef=${GIT_BRANCH} \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
 
@@ -97,7 +97,7 @@ process_requestapi(){
   begin build/request-api
   oc process -o=yaml \
     -f ../templates/builds/builds/request-api.yaml \
-    -p gitRef=ocp4 \
+    -p gitRef=${GIT_BRANCH} \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
 
@@ -122,7 +122,7 @@ _process_rest(){
   # Build config
   oc process -o=yaml \
     -f ../templates/builds/builds/rest-adapter.yaml \
-    -p gitRef=ocp4 \
+    -p gitRef=${GIT_BRANCH} \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     -p dataPartnerService=${DATAPARTNERSERVICE}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
@@ -143,7 +143,7 @@ _process_web(){
   # Build config
   oc process -o=yaml \
     -f ../templates/builds/builds/web-adapter.yaml \
-    -p gitRef=ocp4 \
+    -p gitRef=${GIT_BRANCH} \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     -p dataPartnerService=${DATAPARTNERSERVICE}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
@@ -165,7 +165,7 @@ _process_file(){
   # Build config
   oc process -o=yaml \
     -f ../templates/builds/builds/file-adapter.yaml \
-    -p gitRef=ocp4 \
+    -p gitRef=${GIT_BRANCH} \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     -p dataPartnerService=${DATAPARTNERSERVICE}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
@@ -184,7 +184,7 @@ _process_ia_search(){
   # Build config
   oc process -o=yaml \
     -f ../templates/builds/builds/ia-search-web-adapter.yaml \
-    -p gitRef=ocp4 \
+    -p gitRef=${GIT_BRANCH} \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
 
@@ -202,7 +202,7 @@ _process_fmep_rest_inbound(){
   # Build config
   oc process -o=yaml \
     -f ../templates/builds/builds/fams-request-inbound-adapter.yaml \
-    -p gitRef=ocp4 \
+    -p gitRef=${GIT_BRANCH} \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     -p dataPartnerService=${DATAPARTNERSERVICE}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
@@ -220,7 +220,7 @@ _process_wsbc_rest_inbound(){
   # Build config
   oc process -o=yaml \
     -f ../templates/builds/builds/rest-inbound-adapter.yaml \
-    -p gitRef=ocp4 \
+    -p gitRef=${GIT_BRANCH} \
     -p namespacePrefix=${NAMESPACE_PREFIX}  \
     -p dataPartnerService=${DATAPARTNERSERVICE}  \
     | oc apply -f - -n ${TOOLS_NAMESPACE}
@@ -585,13 +585,12 @@ tag_images(){
 
 _main() {
   printf "Beginning tools build for %s\n" ${NAMESPACE_PREFIX}
-  # process_searchapi 
-  # process_dynadapter  
-  # process_requestapi
-  # process_adapters
-  # start_builds
+  process_searchapi 
+  process_dynadapter  
+  process_requestapi
+  process_adapters
+  start_builds
 
-  # deploy_rabbitmq     TODO: Clean for being able to do apply using oc apply
   deploy_jaeger
   deploy_redis
   deploy_requestapi

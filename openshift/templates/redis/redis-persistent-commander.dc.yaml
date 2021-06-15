@@ -402,7 +402,7 @@ objects:
           args:
             - --https-address=:8443
             - --provider=openshift
-            - --openshift-service-account=redis-commander-proxy
+            - --openshift-service-account=default
             - --upstream=http://localhost:8081
             - --tls-cert=/etc/tls/private/tls.crt
             - --tls-key=/etc/tls/private/tls.key

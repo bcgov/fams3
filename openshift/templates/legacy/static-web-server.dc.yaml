@@ -1,0 +1,463 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+labels:
+  template: static-web-server-template
+  app: static-web-server
+message: |-
+  Template to create static content web server. Used for servering reports.
+metadata:
+  annotations:
+    description: |-
+      Static content web server
+
+      NOTE: You must have persistent volumes available in your cluster to use this template.
+  name: static-web-server
+
+# Parameters
+parameters:
+- description: Maximum amount of memory the container can use.
+  displayName: Memory Limit
+  name: MEMORY_LIMIT
+  required: true
+  value: 256Mi
+- description: The OpenShift Namespace prefix.
+  displayName: Namespace Prefix (Prefix for each namespace ie prefix-tools, prefix-dev etc)
+  name: namespacePrefix
+  required: true
+  value:
+- name: TAG
+  description: The OpenShift environment suffix.
+  displayName: Environment suffix (suffix for each namespace ie tools, dev, test or prod)
+  required: true
+  value: tools
+- description: Cookie Secret string for oauth-proxy.
+  displayName: oauth-proxy cookie secret
+  from: '[a-zA-Z0-9]{16}'
+  generate: expression
+  name: COOKIE_SECRET
+- description: Volume space available for data, e.g. 512Mi, 2Gi.
+  displayName: Volume Capacity
+  name: VOLUME_CAPACITY
+  required: true
+  value: 1Gi
+- description: Version of nginx image to be used.
+  displayName: Version of nginx Image
+  name: NGINX_VERSION
+  required: true
+  value: "latest"
+- description: Version of oauth-proxy image to be used.
+  displayName: Version of oauth-proxy Image
+  name: OAUTH_PROXY_VERSION
+  required: true
+  value: "latest"
+- description: Version of jenkins-slave-base image to be used.
+  displayName: Version of jenkins-slave-base Image
+  name: JENKINS_SLAVE_BASE_VERSION
+  required: true
+  value: "latest"
+
+# Objects
+objects:
+
+# Image stream
+# nginx image
+- apiVersion: image.openshift.io/v1
+  kind: ImageStream
+  metadata:
+    labels:
+      app: static-web-server
+    name: nginx
+    namespace: ${namespacePrefix}-tools
+  spec:
+    tags:
+    - from:
+        kind: DockerImage
+        name: nginx:${NGINX_VERSION}
+      name: ${NGINX_VERSION}
+# oauth-proxy image
+- apiVersion: image.openshift.io/v1
+  kind: ImageStream
+  metadata:
+    labels:
+      app: static-web-server
+    name: oauth-proxy
+    namespace: ${namespacePrefix}-tools
+  spec:
+    tags:
+    - from:
+        kind: DockerImage
+        name: openshift/oauth-proxy:${OAUTH_PROXY_VERSION}
+      name: ${OAUTH_PROXY_VERSION}
+# jenkins slave image
+- apiVersion: image.openshift.io/v1
+  kind: ImageStream
+  metadata:
+    labels:
+      app: static-web-server
+    name: jenkins-slave-base
+    namespace: ${namespacePrefix}-tools
+  spec:
+    lookupPolicy:
+      local: false
+    tags:
+    - from:
+        kind: DockerImage
+        name: openshift/jenkins-slave-base-centos7:${JENKINS_SLAVE_BASE_VERSION}
+      name: ${JENKINS_SLAVE_BASE_VERSION}
+
+# Service account
+# static web server oauth-proxy service
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    name: static-web-server
+    namespace: ${namespacePrefix}-${TAG}
+    labels:
+      app: static-web-server
+    annotations:
+      serviceaccounts.openshift.io/oauth-redirectreference.primary: '{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"static-web-server"}}'
+
+# Secret
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    labels:
+      app: static-web-server
+    annotations:
+      template.openshift.io/expose-password: '{.data[''cookie-secret'']}'
+    name: static-web-server-oauth-proxy
+    namespace: ${namespacePrefix}-${TAG}
+  stringData:
+    cookie-secret: ${COOKIE_SECRET}
+
+# Service
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app: static-web-server
+    annotations:
+      # this will have the cluster generate a signed serving certificate/key pair into a secret in your namespace
+      # https://docs.openshift.com/container-platform/3.11/dev_guide/secrets.html
+      service.alpha.openshift.io/serving-cert-secret-name: static-web-server-oauth-proxy-tls
+    name: static-web-server
+    namespace: ${namespacePrefix}-${TAG}
+  spec:
+    ports:
+    - name: static-web-server
+      port: 443
+      targetPort: 8443
+    selector:
+      name: static-web-server
+    sessionAffinity: None
+    type: ClusterIP
+
+# Route
+- apiVersion: v1
+  kind: Route
+  metadata:
+    name: static-web-server
+    namespace: ${namespacePrefix}-${TAG}
+    labels:
+      app: static-web-server
+      template: static-web-server-template
+  spec:
+    port:
+      targetPort: static-web-server
+    to:
+      kind: Service
+      name: static-web-server
+    tls:
+      termination: Reencrypt
+
+# Persistent volume claim
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    labels:
+      app: static-web-server
+    name: static-web-server-data
+    namespace: ${namespacePrefix}-${TAG}
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: ${VOLUME_CAPACITY}
+
+# Config map
+## nginx config and index.html
+- apiVersion: v1
+  data:
+    default.conf: |-
+      server {
+          listen       8080;
+          server_name  localhost;
+
+          location /nginx-healthz {
+                      return 200 "Alive";
+          }
+      }
+    nginx.conf: |-
+
+      worker_processes  1;
+
+      error_log  /var/log/nginx/error.log warn;
+      pid        /tmp/nginx.pid;
+
+
+      events {
+          worker_connections  1024;
+      }
+
+
+      http {
+          proxy_temp_path /tmp/proxy_temp;
+          client_body_temp_path /tmp/client_temp;
+          fastcgi_temp_path /tmp/fastcgi_temp;
+          uwsgi_temp_path /tmp/uwsgi_temp;
+          scgi_temp_path /tmp/scgi_temp;
+
+          include       /etc/nginx/mime.types;
+          default_type  application/octet-stream;
+
+          log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                            '$status $body_bytes_sent "$http_referer" '
+                            '"$http_user_agent" "$http_x_forwarded_for"';
+
+          access_log  /var/log/nginx/access.log  main;
+
+          sendfile        on;
+          #tcp_nopush     on;
+
+          keepalive_timeout  65;
+
+          #gzip  on;
+
+          include /etc/nginx/conf.d/*.conf;
+      }
+    static.conf: |-
+      server {
+          listen       8088;
+          server_name  localhost;
+
+          location / {
+            root   /usr/share/nginx/html;
+            index  index.html index.htm;
+
+            autoindex on;
+            autoindex_exact_size off;
+            autoindex_format html;
+            autoindex_localtime on;
+
+            add_header Cache-Control "private, no-cache";
+          }
+      }
+    index.html: |-
+      <html>
+      <head><title>Static reports</title></head>
+      <body>
+      <h1>Static reports</h1><hr><pre>
+      <a href="reports/">reports/</a>                                          16-Jun-2020 10:54                   -
+      </pre><hr></body>
+      </html>
+  kind: ConfigMap
+  metadata:
+    labels:
+      app: static-web-server
+    name: static-web-server-config
+    namespace: ${namespacePrefix}-${TAG}
+## jenkins slave config
+- apiVersion: v1
+  data:
+    base: |-
+      <org.csanchez.jenkins.plugins.kubernetes.PodTemplate>
+        <inheritFrom></inheritFrom>
+        <name>base</name>
+        <instanceCap>2147483647</instanceCap>
+        <idleMinutes>0</idleMinutes>
+        <label>base</label>
+        <serviceAccount>jenkins</serviceAccount>
+        <nodeSelector></nodeSelector>
+        <volumes>
+          <org.csanchez.jenkins.plugins.kubernetes.volumes.PersistentVolumeClaim>
+            <mountPath>/var/www/html/reports</mountPath>
+            <claimName>static-web-server-data</claimName>
+            <readOnly>false</readOnly>
+          </org.csanchez.jenkins.plugins.kubernetes.volumes.PersistentVolumeClaim>
+        </volumes>
+        <containers>
+          <org.csanchez.jenkins.plugins.kubernetes.ContainerTemplate>
+            <name>jnlp</name>
+            <image>docker-registry.default.svc:5000/${namespacePrefix}-tools/jenkins-slave-base</image>
+            <privileged>false</privileged>
+            <alwaysPullImage>false</alwaysPullImage>
+            <workingDir>/tmp</workingDir>
+            <command></command>
+            <args>${computer.jnlpmac} ${computer.name}</args>
+            <ttyEnabled>false</ttyEnabled>
+            <resourceRequestCpu>1</resourceRequestCpu>
+            <resourceRequestMemory>512Mi</resourceRequestMemory>
+            <resourceLimitCpu>2</resourceLimitCpu>
+            <resourceLimitMemory>1Gi</resourceLimitMemory>
+            <envVars/>
+          </org.csanchez.jenkins.plugins.kubernetes.ContainerTemplate>
+        </containers>
+        <envVars/>
+        <annotations/>
+        <imagePullSecrets/>
+        <nodeProperties/>
+      </org.csanchez.jenkins.plugins.kubernetes.PodTemplate>
+  kind: ConfigMap
+  metadata:
+    labels:
+      role: jenkins-slave
+    name: jenkins-agent-base
+
+# Deployment config
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      template.alpha.openshift.io/wait-for-ready: "true"
+    name: static-web-server
+    namespace: ${namespacePrefix}-${TAG}
+    labels:
+      app: static-web-server
+  spec:
+    replicas: 1
+    selector:
+      name: static-web-server
+    strategy:
+      type: Recreate
+    template:
+      metadata:
+        labels:
+          name: static-web-server
+          app: static-web-server
+      spec:
+        serviceAccountName: static-web-server
+        containers:
+        # nginx
+        - image: ' '
+          imagePullPolicy: IfNotPresent
+          name: nginx
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /nginx-healthz
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: 8080
+            timeoutSeconds: 5
+          resources:
+            limits:
+              memory: ${MEMORY_LIMIT}
+          securityContext:
+            capabilities: {}
+            privileged: false
+          terminationMessagePath: /dev/termination-log
+          volumeMounts:
+            - mountPath: /etc/nginx/nginx.conf
+              name: static-web-server-config
+              subPath: nginx.conf
+            - mountPath: /etc/nginx/conf.d/static.conf
+              name: static-web-server-config
+              subPath: static.conf
+            - mountPath: /etc/nginx/conf.d/default.conf
+              name: static-web-server-config
+              subPath: default.conf
+            - mountPath: /usr/share/nginx/html/index.html
+              name: static-web-server-config
+              subPath: index.html
+            - mountPath: /usr/share/nginx/html/reports
+              name: static-web-server-data
+        # oauth-proxy
+        - name: oauth-proxy
+          image: ' '
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8443
+              name: public
+          # Set --pass-basic-auth to false to enable upstream basic auth to work
+          args:
+            - --https-address=:8443
+            - --provider=openshift
+            - --openshift-service-account=static-web-server
+            - --upstream=http://localhost:8088
+            - --tls-cert=/etc/tls/private/tls.crt
+            - --tls-key=/etc/tls/private/tls.key
+            - --cookie-secret=$(COOKIE_SECRET)
+            - --pass-basic-auth=false
+          env:
+            - name: COOKIE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  key: cookie-secret
+                  name: oauth-proxy
+          volumeMounts:
+            - mountPath: /etc/tls/private
+              name: proxy-tls
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /oauth/healthz
+              port: 8443
+              scheme: HTTPS
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: 8443
+            timeoutSeconds: 2
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        volumes:
+        - name: static-web-server-data
+          persistentVolumeClaim:
+            claimName: static-web-server-data
+        - name: proxy-tls
+          secret:
+            secretName: static-web-server-oauth-proxy-tls
+        - name: static-web-server-config
+          configMap:
+            name: static-web-server-config
+    triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+          - nginx
+        from:
+          kind: ImageStreamTag
+          name: nginx:${NGINX_VERSION}
+          namespace: ${namespacePrefix}-tools
+      type: ImageChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+          - oauth-proxy
+        from:
+          kind: ImageStreamTag
+          name: oauth-proxy:${OAUTH_PROXY_VERSION}
+          namespace: ${namespacePrefix}-tools
+      type: ImageChange
+    - type: ConfigChange

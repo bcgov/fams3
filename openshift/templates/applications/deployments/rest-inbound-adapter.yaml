@@ -1,4 +1,4 @@
-apiVersion: v1
+apiVersion: template.openshift.io/v1
 kind: Template
 labels:
   template: rest-inbound-adapter-template
@@ -36,7 +36,7 @@ objects:
       app: ${dataPartnerService}-rest-inbound-adapter
     name: ${dataPartnerService}-rest-inbound-adapter
   spec:
-    replicas: 2
+    replicas: 1
     revisionHistoryLimit: 10
     selector:
       io.kompose.service: ${dataPartnerService}-rest-inbound-adapter
@@ -62,6 +62,11 @@ objects:
             value: ${dataPartnerService}-rest-inbound-adapter
           - name: DATA_PARTNER
             value: ${dataPartnerService}
+          - name: REDIS__PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: database-password
+                name: redis
           envFrom:
           - secretRef:
               name: ${dataPartnerService}-rest-inbound-config
@@ -71,6 +76,12 @@ objects:
               name: jeager-config
           - secretRef:
               name: aspnet-env
+          - secretRef:
+              name: splunk-config
+          - secretRef:
+              name: serilog-config
+          - secretRef:
+              name: redis-connection
           image: ''
           imagePullPolicy: IfNotPresent
           name: ${dataPartnerService}-rest-inbound-adapter
@@ -79,8 +90,8 @@ objects:
             protocol: TCP
           resources:
             limits:
-              cpu: 250m
-              memory: 1Gi
+              cpu: 150m
+              memory: 512Mi
             requests:
               cpu: 100m
               memory: 256Mi

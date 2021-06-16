@@ -309,3 +309,4 @@ services.AddProvider(Configuration, (provider) => new SearchRequestConsumer(prov
                                   provider.GetRequiredService<ILogger<SearchRequestConsumer>>()));
 ```
 
+

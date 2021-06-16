@@ -1,4 +1,4 @@
-apiVersion: template.openshift.io/v1
+apiVersion: v1
 kind: Template
 labels:
   template: redis-persistent-template
@@ -62,18 +62,16 @@ parameters:
   displayName: Version of Redis Image
   name: REDIS_VERSION
   required: true
-  value: 6.2.3
+  value: "latest"
 - description: Version of Redis commander image to be used.
   displayName: Version of Redis commander Image
   name: REDIS_COMMANDER_VERSION
   required: true
-  # Manual tag so as not to use 'latest'
-  value: "2021-05-18"
+  value: "latest"
 - description: Version of oauth-proxy image to be used.
   displayName: Version of oauth-proxy Image
   name: OAUTH_PROXY_VERSION
   required: true
-  # Manual tag so as not to use 'latest'
   value: "latest"
 
 # Objects
@@ -101,7 +99,7 @@ objects:
       importPolicy: {}
       name: ${REDIS_VERSION}
       referencePolicy:
-        type: Local
+        type: Source
 ## redis commander image
 #- apiVersion: image.openshift.io/v1
 #  kind: ImageStream
@@ -267,7 +265,6 @@ objects:
     resources:
       requests:
         storage: ${VOLUME_CAPACITY}
-    storageClassName: netapp-block-standard
 
 # Deployment config
 - apiVersion: v1
@@ -291,7 +288,7 @@ objects:
           name: ${DATABASE_SERVICE_NAME}
           app: redis
       spec:
-        # serviceAccountName: redis-commander-proxy
+        serviceAccountName: redis-commander-proxy
         containers:
         # redis
         - capabilities: {}
@@ -328,18 +325,14 @@ objects:
             timeoutSeconds: 2
           resources:
             limits:
-              memory: 2Gi
-              cpu: '1'
-            requests:
-              memory: 2Gi
-              cpu: '1'
+              memory: ${MEMORY_LIMIT}
           securityContext:
             capabilities: {}
             privileged: false
           terminationMessagePath: /dev/termination-log
           volumeMounts:
-          - mountPath: /data
-            name: ${DATABASE_SERVICE_NAME}-state
+          - mountPath: /var/lib/redis/data
+            name: ${DATABASE_SERVICE_NAME}-data
 #        # redis-commander
 #        - capabilities: {}
 #          env:
@@ -431,7 +424,7 @@ objects:
         dnsPolicy: ClusterFirst
         restartPolicy: Always
         volumes:
-        - name: ${DATABASE_SERVICE_NAME}-state
+        - name: ${DATABASE_SERVICE_NAME}-data
           persistentVolumeClaim:
             claimName: ${DATABASE_SERVICE_NAME}
 #        - name: proxy-tls

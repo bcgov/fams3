@@ -1,4 +1,4 @@
-apiVersion: template.openshift.io/v1
+apiVersion: v1
 kind: Template
 metadata:
   name: rabbitmq-cluster
@@ -33,39 +33,45 @@ parameters:
   value: rabbitmq-discovery
 - name: VOLUME_SIZE
   description: "Size of the RabbitMQ data volume"
-  value: 5Gi
+  value: 1Gi
+- name: RABBIT_HOST
+  description: "Host URL For RabbitMQ Console"
+  value: "<subdomain>.pathfinder.bcgov"
 
 objects:
 
-# - apiVersion: v1
-#   kind: Secret
-#   stringData:
-#     username: ${RABBITMQ_USER}
-#     password: ${RABBITMQ_PASS}
-#     url: "amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@${CLUSTER_NAME}-balancer"
-#     cookie: ${ERLANG_COOKIE}
-#   metadata:
-#     name: ${CLUSTER_NAME}-secret
-#   type: Opaque
+- apiVersion: v1
+  kind: Secret
+  stringData:
+    username: ${RABBITMQ_USER}
+    password: ${RABBITMQ_PASS}
+    url: "amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@${CLUSTER_NAME}-balancer"
+    cookie: ${ERLANG_COOKIE}
+  metadata:
+    name: ${CLUSTER_NAME}-secret
+  type: Opaque
 
-# - apiVersion: v1
-#   kind: ConfigMap
-#   metadata:
-#     name: ${CLUSTER_NAME}-config
-#   data:
-#     rabbitmq.conf: |
-#      loopback_users.guest = false
-#
-#      ## Clustering
-#      cluster_formation.peer_discovery_backend = rabbit_peer_discovery_k8s
-#      cluster_formation.k8s.host = kubernetes.default.svc.cluster.local
-#      cluster_formation.k8s.address_type = hostname
-#      cluster_formation.k8s.hostname_suffix = .rabbitmq-cluster.dfb30e-test.svc.cluster.local
-#      cluster_formation.node_cleanup.interval = 10
-#      cluster_formation.node_cleanup.only_log_warning = true
-#      cluster_partition_handling = autoheal
-#      ## queue master locator
-#      queue_master_locator=min-masters
+- apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: ${CLUSTER_NAME}-config
+  data:
+    rabbitmq.conf: |
+        loopback_users.guest = false
+
+        ## Clustering
+        cluster_formation.peer_discovery_backend = rabbit_peer_discovery_k8s
+        cluster_formation.k8s.host = kubernetes.default.svc.cluster.local
+        cluster_formation.k8s.address_type = hostname
+        cluster_formation.k8s.hostname_suffix = .${CLUSTER_NAME}.${NAMESPACE}.svc.cluster.local
+        cluster_formation.node_cleanup.interval = 10
+        cluster_formation.node_cleanup.only_log_warning = true
+        cluster_partition_handling = autoheal
+        ## queue master locator
+        queue_master_locator=min-masters
+    enabled_plugins: |
+      [rabbitmq_management,rabbitmq_peer_discovery_k8s].
+
 # Load balancer
 - kind: Service
   apiVersion: v1
@@ -104,7 +110,7 @@ objects:
         port: 5672
         targetPort: 5672
 
-- apiVersion: apps/v1
+- apiVersion: apps/v1beta1
   kind: StatefulSet
   metadata:
     name: ${CLUSTER_NAME}
@@ -169,8 +175,8 @@ objects:
               cpu: '1'
               memory: 2Gi
             requests:
-              cpu: '1'
-              memory: 2Gi
+              cpu: 200m
+              memory: 256Mi
           env:
           - name: RABBITMQ_DEFAULT_USER
             valueFrom:
@@ -254,17 +260,17 @@ objects:
 
 # This service account is needed for rabbit_peer_discovery_k8s plugin to be able to discover
 # cluster nodes
-# - apiVersion: v1
-#   kind: ServiceAccount
-#   metadata:
-#     name: ${SERVICE_ACCOUNT}
-# - apiVersion: v1
-#   kind: RoleBinding
-#   metadata:
-#     name: ${SERVICE_ACCOUNT}-view
-#   roleRef:
-#     kind: Role
-#     name: view
-#   subjects:
-#   - kind: ServiceAccount
-#     name: ${SERVICE_ACCOUNT}
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    name: ${SERVICE_ACCOUNT}
+- apiVersion: v1
+  kind: RoleBinding
+  metadata:
+    name: ${SERVICE_ACCOUNT}-view
+  roleRef:
+    kind: Role
+    name: view
+  subjects:
+  - kind: ServiceAccount
+    name: ${SERVICE_ACCOUNT}

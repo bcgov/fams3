@@ -1,4 +1,4 @@
-apiVersion: template.openshift.io/v1
+apiVersion: v1
 kind: Template
 labels:
   template: request-api-template
@@ -31,7 +31,7 @@ objects:
       app: request-api
     name: request-api
   spec:
-    replicas: 1
+    replicas: 2
     revisionHistoryLimit: 10
     selector:
       io.kompose.service: request-api
@@ -55,12 +55,6 @@ objects:
         - env:
           - name: JAEGER_SERVICE_NAME
             value: request-api
-          - name: QueueRateLimit__SearchRequestOrdered_RateLimit
-            value: "1000"
-          - name: QueueRateLimit__SearchRequestOrdered_RateInterval
-            value: "1"
-          - name: QueueRateLimit__SearchRequestOrdered_ConcurrencyLimit
-            value: "10"
           envFrom:
           - secretRef:
               name: rabbit-mq-configuration
@@ -72,12 +66,6 @@ objects:
               name: requestapi-webhook-config
           - secretRef:
               name: splunk-config
-          - secretRef:
-              name: serilog-config
-          - secretRef:
-              name: requestapi-config
-          - secretRef:
-              name: redis-connection
           image: ''
           imagePullPolicy: IfNotPresent
           name: request-api
@@ -86,10 +74,10 @@ objects:
             protocol: TCP
           resources:
             limits:
-              cpu: 500m
+              cpu: 250m
               memory: 1Gi
             requests:
-              cpu: 250m
+              cpu: 100m
               memory: 256Mi
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File

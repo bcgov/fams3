@@ -3,7 +3,6 @@ FROM openshift/jenkins-slave-base-centos7
 USER root
 
 ARG SONARQUBE_SCANNER_VERSION=4.8.0
-ARG COVERLET_VERSION=1.7.2
 ARG DOT_NET_VERSION=3.1
 ENV HOME=/home/jenkins
 
@@ -22,7 +21,7 @@ WORKDIR /
 
 # Install SonarQube Scanner as the running user
 RUN dotnet tool install --global dotnet-sonarscanner --version ${SONARQUBE_SCANNER_VERSION}
-RUN dotnet tool install --global coverlet.console --version ${COVERLET_VERSION}
+RUN dotnet tool install --global coverlet.console
 ENV PATH="${PATH}:$HOME/.dotnet/tools"
 
 RUN chown -R 1000:0 /usr/local/bin && \

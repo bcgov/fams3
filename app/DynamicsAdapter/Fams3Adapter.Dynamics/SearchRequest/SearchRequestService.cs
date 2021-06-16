@@ -117,7 +117,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             {
                 return await this._oDataClient.For<SSG_Person>().Set(person).InsertEntryAsync(cancellationToken);
             }
-            catch (WebRequestException e) when (e.Code == HttpStatusCode.PreconditionFailed && WebRequestExceptionTranslator.GetErrorCode(e)==WebRequestExceptionTranslator.DUPLICATED_ERROR_CODE)
+            catch (WebRequestException e) when (e.IsDuplicateHashError())
             {
                 string hashData = person.DuplicateDetectHash;
                 var existedPerson = await this._oDataClient.For<SSG_Person>()
@@ -526,14 +526,6 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             return await this._oDataClient.For<SSG_SearchRequest>().Key(requestId).Set(updatedFields).UpdateEntryAsync(cancellationToken);
         }
 
-        public async Task<SSG_Person> UpdatePerson(Guid personId, IDictionary<string, object> updatedFields, PersonEntity newPerson, CancellationToken cancellationToken)
-        {
-            string duplicateDetectHash = await _duplicateDetectService.GetDuplicateDetectHashData(newPerson);
-            updatedFields.Add("ssg_duplicatedetectionhash", duplicateDetectHash);
-            updatedFields.Add(new KeyValuePair<string, object>("ssg_updatedbyagency", true));
-            return await this._oDataClient.For<SSG_Person>().Key(personId).Set(updatedFields).UpdateEntryAsync(cancellationToken);
-        }
-
         public async Task<SSG_Person> UpdatePerson(SSG_Person existedPerson, IDictionary<string, object> updatedFields, PersonEntity newPerson, CancellationToken cancellationToken)
         {
             string duplicateDetectHash = await _duplicateDetectService.GetDuplicateDetectHashData(newPerson);
@@ -546,7 +538,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             try
             {
                 return await this._oDataClient.For<SSG_Person>().Key(existedPerson.PersonId).Set(updatedFields).UpdateEntryAsync(cancellationToken);
-            }catch(WebRequestException e) when (e.Code==HttpStatusCode.PreconditionFailed)
+            }catch(WebRequestException e) when (e.IsDuplicateHashError())
             {
                 _logger.LogError(e, "Update Person failed with DuplicationHash [{hash}]", duplicateDetectHash);
                 return null;

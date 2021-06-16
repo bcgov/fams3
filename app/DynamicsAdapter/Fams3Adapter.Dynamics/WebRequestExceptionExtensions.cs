@@ -6,17 +6,24 @@ using System.Text;
 
 namespace Fams3Adapter.Dynamics
 {
-    public class WebRequestExceptionTranslator 
+    public static class WebRequestExceptionExtensions 
     {
         public static string DUPLICATED_ERROR_CODE = "0x80060892";
-        public static string GetErrorCode(WebRequestException webRequestException)
+
+        public static bool IsDuplicateHashError(this WebRequestException exception)
         {
-            if (webRequestException?.Response != null)
+            if(exception != null && exception.Code==System.Net.HttpStatusCode.PreconditionFailed)
             {
-                var rootObj = JsonConvert.DeserializeObject<RootObject>(webRequestException.Response);
-                return rootObj.Error.Code;
+                if (exception.Response != null)
+                {
+                    var rootObj = JsonConvert.DeserializeObject<RootObject>(exception.Response);
+                    if (rootObj.Error.Code == DUPLICATED_ERROR_CODE)
+                        return true;
+                    return false;
+                }
+                return false;
             }
-            return null;
+            return false;
         }
 
         class Innererror

@@ -179,13 +179,15 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         public async Task update_correct_Person_should_success()
         {
             Guid testId = Guid.NewGuid();
+            SSG_Person existedPerson = new SSG_Person()
+            {
+                PersonId = testId,
+                FirstName = "new"
+            };
+            
             _odataClientMock.Setup(x => x.For<SSG_Person>(null).Key(It.Is<Guid>(m => m == testId)).Set(It.IsAny<Dictionary<string, object>>())
                 .UpdateEntryAsync(It.IsAny<CancellationToken>()))
-                .Returns(Task.FromResult(new SSG_Person()
-                {
-                    PersonId = testId,
-                    FirstName = "new"
-                })
+                .Returns(Task.FromResult(existedPerson)
                 );
             IDictionary<string, object> updatedFields = new Dictionary<string, object> { { "ssg_firstname", "new" } };
             var person = new SSG_Person()
@@ -193,11 +195,12 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
                 PersonId = testId,
                 FirstName = "old"
             };
-            var result = await _sut.UpdatePerson(testId, updatedFields, person, CancellationToken.None);
+            var result = await _sut.UpdatePerson(existedPerson, updatedFields, person, CancellationToken.None);
 
             Assert.AreEqual("new", result.FirstName);
 
         }
+
         #endregion
 
 

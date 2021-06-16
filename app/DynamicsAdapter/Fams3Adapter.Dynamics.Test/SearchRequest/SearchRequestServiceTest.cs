@@ -3,6 +3,7 @@ using Fams3Adapter.Dynamics.Duplicate;
 using Fams3Adapter.Dynamics.Identifier;
 using Fams3Adapter.Dynamics.ResultTransaction;
 using Fams3Adapter.Dynamics.SearchRequest;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using Simple.OData.Client;
@@ -18,6 +19,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
     {
         private Mock<IODataClient> odataClientMock;
         private Mock<IDuplicateDetectionService> _duplicateServiceMock;
+        private Mock<ILogger<SearchRequestService>> _loggerMock;
         private SearchRequestService _sut;
 
         [SetUp]
@@ -25,6 +27,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         {
             odataClientMock = new Mock<IODataClient>();
             _duplicateServiceMock = new Mock<IDuplicateDetectionService>();
+            _loggerMock = new Mock<ILogger<SearchRequestService>>();
 
             odataClientMock.Setup(x => x.For<SSG_SearchRequestResultTransaction>(null).Set(It.IsAny<SSG_SearchRequestResultTransaction>())
             .InsertEntryAsync(It.IsAny<CancellationToken>()))
@@ -34,7 +37,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             })
             );
 
-            _sut = new SearchRequestService(odataClientMock.Object, _duplicateServiceMock.Object);
+            _sut = new SearchRequestService(odataClientMock.Object, _duplicateServiceMock.Object, _loggerMock.Object);
         }
 
         [Test]

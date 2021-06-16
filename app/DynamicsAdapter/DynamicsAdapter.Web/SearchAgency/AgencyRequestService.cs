@@ -550,11 +550,12 @@ namespace DynamicsAdapter.Web.SearchAgency
         private async Task<bool> UpdatePersonSought()
         {
             PersonEntity newPersonEntity = _mapper.Map<PersonEntity>(_personSought);
+            newPersonEntity.SearchRequest = _uploadedSearchRequest;
             
             Dictionary<string, object> updatedFields = (Dictionary<string, object>)_uploadedPerson.Clone().GetUpdateEntries(newPersonEntity);
             if (updatedFields.Count > 0)
             {
-                await _searchRequestService.UpdatePerson(_uploadedPerson.PersonId, updatedFields, newPersonEntity, _cancellationToken);
+                await _searchRequestService.UpdatePerson(_uploadedPerson, updatedFields, newPersonEntity, _cancellationToken);
                 _logger.LogInformation("Update Person successfully");
             }
             return true;

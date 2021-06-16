@@ -18,6 +18,7 @@ using Fams3Adapter.Dynamics.RelatedPerson;
 using Fams3Adapter.Dynamics.ResultTransaction;
 using Fams3Adapter.Dynamics.SafetyConcern;
 using Fams3Adapter.Dynamics.Vehicle;
+using Microsoft.Extensions.Logging;
 using Simple.OData.Client;
 using System;
 using System.Collections.Generic;
@@ -61,7 +62,8 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         Task<SSG_Employment> GetEmployment(Guid personId, CancellationToken cancellationToken);
         Task<SSG_Notese> CreateNotes(NotesEntity searchRequest, CancellationToken cancellationToken);
         Task<SSG_SearchRequest> UpdateSearchRequest(Guid requestId, IDictionary<string, object> updatedFields, CancellationToken cancellationToken);
-        Task<SSG_Person> UpdatePerson(Guid personId, IDictionary<string, object> updatedFields, PersonEntity newPerson, CancellationToken cancellationToken);
+        //Task<SSG_Person> UpdatePerson(Guid personId, IDictionary<string, object> updatedFields, PersonEntity newPerson, CancellationToken cancellationToken);
+        Task<SSG_Person> UpdatePerson(SSG_Person existedPerson, IDictionary<string, object> updatedFields, PersonEntity newPerson, CancellationToken cancellationToken);
         Task<SSG_Identity> UpdateRelatedPerson(Guid personId, IDictionary<string, object> updatedFields, CancellationToken cancellationToken);
         Task<SSG_SafetyConcernDetail> UpdateSafetyConcern(Guid safetyId, IDictionary<string, object> updatedFields, CancellationToken cancellationToken);
         Task<SSG_Employment> UpdateEmployment(Guid employmentId, IDictionary<string, object> updatedFields, CancellationToken cancellationToken);
@@ -81,11 +83,13 @@ namespace Fams3Adapter.Dynamics.SearchRequest
     {
         private readonly IODataClient _oDataClient;
         private readonly IDuplicateDetectionService _duplicateDetectService;
+        private readonly ILogger<SearchRequestService> _logger;
 
-        public SearchRequestService(IODataClient oDataClient, IDuplicateDetectionService duplicateDetectService)
+        public SearchRequestService(IODataClient oDataClient, IDuplicateDetectionService duplicateDetectService, ILogger<SearchRequestService> logger)
         {
             this._oDataClient = oDataClient;
             this._duplicateDetectService = duplicateDetectService;
+            this._logger = logger;
         }
 
         /// <summary>
@@ -106,38 +110,38 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
         public async Task<SSG_Person> SavePerson(PersonEntity person, CancellationToken cancellationToken)
         {
-            var p = await FindDuplicatedPerson(person);
-            //person.DuplicateDetectHash = await _duplicateDetectService.GetDuplicateDetectHashData(person);
-            //string hashData = person.DuplicateDetectHash;
-            //var p = await this._oDataClient.For<SSG_Person>()
-            //        .Filter(x => x.DuplicateDetectHash == hashData)
-            //        .FindEntryAsync(cancellationToken)
-            //        ;
+            //ssg_duplicatedetectionhash is set to be Unique in DB, so we can use this to detect duplicates.
+            person.DuplicateDetectHash = await _duplicateDetectService.GetDuplicateDetectHashData(person);
 
-            if (p == null)
-                return await this._oDataClient.For<SSG_Person>().Set(person).InsertEntryAsync(cancellationToken);
-            else
+            try
             {
-                var duplicatedPerson = await _oDataClient.For<SSG_Person>()
-                        .Key(p.PersonId)
-                        .Expand(x => x.SSG_Addresses)
-                        .Expand(x => x.SSG_Identifiers)
-                        .Expand(x => x.SSG_Aliases)
-                        .Expand(x => x.SSG_Asset_BankingInformations)
-                        .Expand(x => x.SSG_Asset_ICBCClaims)
-                        .Expand(x => x.SSG_Asset_Others)
-                        .Expand(x => x.SSG_Asset_Vehicles)
-                        .Expand(x => x.SSG_Asset_WorkSafeBcClaims)
-                        .Expand(x => x.SSG_Employments)
-                        .Expand(x => x.SSG_Identities)
-                        .Expand(x => x.SSG_PhoneNumbers)
-                        .Expand(x => x.SSG_SafetyConcernDetails)
-                        .Expand(x => x.SSG_Emails)
-                        .Expand(x => x.SearchRequest)
-                        .FindEntryAsync(cancellationToken);
-                duplicatedPerson.IsDuplicated = true;
-                return duplicatedPerson;
+                return await this._oDataClient.For<SSG_Person>().Set(person).InsertEntryAsync(cancellationToken);
             }
+            catch (WebRequestException e) when (e.IsDuplicateHashError())
+            {
+                string hashData = person.DuplicateDetectHash;
+                var existedPerson = await this._oDataClient.For<SSG_Person>()
+                    .Filter(x => x.DuplicateDetectHash == hashData)
+                    .Expand(x => x.SSG_Addresses)
+                    .Expand(x => x.SSG_Identifiers)
+                    .Expand(x => x.SSG_Aliases)
+                    .Expand(x => x.SSG_Asset_BankingInformations)
+                    .Expand(x => x.SSG_Asset_ICBCClaims)
+                    .Expand(x => x.SSG_Asset_Others)
+                    .Expand(x => x.SSG_Asset_Vehicles)
+                    .Expand(x => x.SSG_Asset_WorkSafeBcClaims)
+                    .Expand(x => x.SSG_Employments)
+                    .Expand(x => x.SSG_Identities)
+                    .Expand(x => x.SSG_PhoneNumbers)
+                    .Expand(x => x.SSG_SafetyConcernDetails)
+                    .Expand(x => x.SSG_Emails)
+                    .Expand(x => x.SearchRequest)
+                    .FindEntryAsync(CancellationToken.None);
+
+                existedPerson.IsDuplicated = true;
+                return existedPerson; 
+            }
+
         }
 
         public async Task<SSG_PhoneNumber> CreatePhoneNumber(PhoneNumberEntity phone, CancellationToken cancellationToken)
@@ -522,12 +526,23 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             return await this._oDataClient.For<SSG_SearchRequest>().Key(requestId).Set(updatedFields).UpdateEntryAsync(cancellationToken);
         }
 
-        public async Task<SSG_Person> UpdatePerson(Guid personId, IDictionary<string, object> updatedFields, PersonEntity newPerson, CancellationToken cancellationToken)
+        public async Task<SSG_Person> UpdatePerson(SSG_Person existedPerson, IDictionary<string, object> updatedFields, PersonEntity newPerson, CancellationToken cancellationToken)
         {
             string duplicateDetectHash = await _duplicateDetectService.GetDuplicateDetectHashData(newPerson);
-            updatedFields.Add("ssg_duplicatedetectionhash", duplicateDetectHash);
+            if (duplicateDetectHash != existedPerson.DuplicateDetectHash)
+            {
+                updatedFields.Add("ssg_duplicatedetectionhash", duplicateDetectHash);
+            }
+
             updatedFields.Add(new KeyValuePair<string, object>("ssg_updatedbyagency", true));
-            return await this._oDataClient.For<SSG_Person>().Key(personId).Set(updatedFields).UpdateEntryAsync(cancellationToken);
+            try
+            {
+                return await this._oDataClient.For<SSG_Person>().Key(existedPerson.PersonId).Set(updatedFields).UpdateEntryAsync(cancellationToken);
+            }catch(WebRequestException e) when (e.IsDuplicateHashError())
+            {
+                _logger.LogError(e, "Update Person failed with DuplicationHash [{hash}]", duplicateDetectHash);
+                return null;
+            }
         }
 
         public async Task<SSG_Identity> UpdateRelatedPerson(Guid relatedPersonId, IDictionary<string, object> updatedFields, CancellationToken cancellationToken)

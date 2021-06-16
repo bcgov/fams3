@@ -1,4 +1,4 @@
-apiVersion: template.openshift.io/v1
+apiVersion: v1
 kind: Template
 labels:
   template: request-api-template
@@ -32,7 +32,7 @@ objects:
       template: meta-service
     name: request-api
   spec:
-    host: request-api-${namespacePrefix}-${TAG}.apps.silver.devops.gov.bc.ca
+    host: request-api-${namespacePrefix}-${TAG}.pathfinder.bcgov
     port:
       targetPort: web
     tls:

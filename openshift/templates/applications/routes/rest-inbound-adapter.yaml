@@ -1,4 +1,4 @@
-apiVersion: template.openshift.io/v1
+apiVersion: v1
 kind: Template
 labels:
   template: rest-inbound-adapter-template
@@ -38,7 +38,7 @@ objects:
       template: meta-service
     name: ${dataPartnerService}-rest-inbound-adapter
   spec:
-    host: ${dataPartnerService}-rest-inbound-adapter-${namespacePrefix}-${TAG}.apps.silver.devops.gov.bc.ca
+    host: ${dataPartnerService}-rest-inbound-adapter-${namespacePrefix}-${TAG}.pathfinder.bcgov
     port:
       targetPort: web
     tls:

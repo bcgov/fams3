@@ -274,6 +274,7 @@ services:
 networks:
   search-api-net:
     driver: bridge
+
 volumes:
   data-rabbit:
   data-redis:

@@ -1,0 +1,34 @@
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  labels:
+    build: fams3-poc
+  name: fams3-poc
+  namespace: frjeow-tools
+spec:
+  failedBuildsHistoryLimit: 5
+  nodeSelector: {}
+  output: {}
+  postCommit: {}
+  resources: {}
+  runPolicy: Serial
+  source:
+    contextDir: openshift/.pipeline
+    git:
+      ref: feature/add-cicd
+      uri: 'https://github.com/SierraSystems/FAMS3-POC'
+    type: Git
+  strategy:
+    jenkinsPipelineStrategy:
+      jenkinsfilePath: Jenkinsfile
+    type: JenkinsPipeline
+  successfulBuildsHistoryLimit: 5
+  triggers:
+    - github:
+        secret: NqqIgFOUEC5J0m4v_o-m
+      type: GitHub
+    - generic:
+        secret: JTdq_DZ6RE7gd5glAQrY
+      type: Generic
+    - type: ConfigChange
+

@@ -26,7 +26,7 @@ parameters:
   displayName: Memory Limit
   name: MEMORY_LIMIT
   required: true
-  value: 512Mi
+  value: 2Gi
 - description: The OpenShift Namespace prefix.
   displayName: Namespace Prefix (Prefix for each namespace ie prefix-tools, prefix-dev etc)
   name: namespacePrefix
@@ -57,7 +57,7 @@ parameters:
   displayName: Volume Capacity
   name: VOLUME_CAPACITY
   required: true
-  value: 1Gi
+  value: 5Gi
 - description: Version of Redis image to be used.
   displayName: Version of Redis Image
   name: REDIS_VERSION

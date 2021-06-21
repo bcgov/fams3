@@ -46,7 +46,6 @@ services:
       REDIS__HOSTS__0__PORT: 6379
       REDIS__ABORTONCONNECTFAIL: "false"
       REDIS__SYNCTIMEOUT: 5000
-      REDIS__CONNECTTIMEOUT: 6000
       DEEPSEARCH__MAXWAVECOUNT: 4
       JAEGER_ENDPOINT: http://jaeger-collector:14268/api/traces
       SEARCHAPI__WEBHOOKS__0__NAME: dynadapter
@@ -139,7 +138,6 @@ services:
       REDIS__HOSTS__0__PORT: 6379
       REDIS__ABORTONCONNECTFAIL: "false"
       REDIS__SYNCTIMEOUT: 5000
-      REDIS__CONNECTTIMEOUT: 6000
     restart: always
     networks:
       - search-api-net

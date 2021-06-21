@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Template
+labels:
+  template: agency-outbound-api-transfermode-config 
+message: |-
+  transfer mode config template.
+metadata:
+  annotations:
+    description: |-
+      transfer mode config template.
+    tags: agency-outbound-api-transfermode-config 
+    template: agency-outbound-api-transfermode-config 
+  name: agency-outbound-api-transfermode-config 
+# Objects
+objects:
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    name: agency-outbound-api-transfermode-config 
+    label:
+      app: fmep-rest-inbound-adapter
+  stringData:
+    AGENCYAPI__TRANSFERMODES__0__AGENCY: "set.transfer.mode"
+    AGENCYAPI__TRANSFERMODES__0__MODE: "set.transfer.agency"

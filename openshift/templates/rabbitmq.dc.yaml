@@ -33,7 +33,7 @@ parameters:
   value: rabbitmq-discovery
 - name: VOLUME_SIZE
   description: "Size of the RabbitMQ data volume"
-  value: 1Gi
+  value: 5Gi
 - name: RABBIT_HOST
   description: "Host URL For RabbitMQ Console"
   value: "<subdomain>.pathfinder.bcgov"
@@ -172,11 +172,11 @@ objects:
                 command:  ['rabbitmqctl', 'shutdown']
           resources:
             limits:
-              cpu: '1'
+              cpu: '2'
               memory: 2Gi
             requests:
-              cpu: 200m
-              memory: 256Mi
+              cpu: '1'
+              memory: 1Gi
           env:
           - name: RABBITMQ_DEFAULT_USER
             valueFrom:

@@ -20,6 +20,18 @@ parameters:
 - name: URL
   required: true
   value: "set.url.com"
+- name: ADP
+  required: true
+  value: "set.adp"
+- name: FAILEDCRON
+  required: true
+  value: "set.cron for failure retry like '0/5 * * * * ?' "
+- name: DYNADAPTORAPIKEY
+  required: true
+  value: "set.api.key"
+- name: TRUSTEDHOSTS
+  required: true
+  value: "*"
 
 # Objects
 objects:
@@ -28,6 +40,10 @@ objects:
   stringData:
     SCHEDULER__CRON: ${CRON}
     SEARCHAPI__BASEURL: ${URL}
+    DYNADAPTOR_APIKEY: ${DYNADAPTORAPIKEY}
+    SCHEDULER__FAILED: ${FAILEDCRON}
+    SEARCHAPI__AVAILABLEDATAPARTNER: ${ADP}
+    TRUSTEDHOSTS: ${TRUSTEDHOSTS}
   kind: Secret
   metadata:
     name: dynadapter-config

@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Template
+labels:
+  template: agency-outbound-api-sftphook-config
+message: |-
+  agency outbound api webhook configuration template.
+metadata:
+  annotations:
+    description: |-
+      agency outbound api webhook configuration template.
+    tags: agency-outbound-api-sftphook-config
+    template: agency-outbound-api-sftphook-config
+  name: agency-outbound-api-sftphook-config
+
+# Objects
+objects:
+
+- apiVersion: v1
+  stringData:
+    AGENCYAPI__SFTPHOOKS__0__CERTPATH: "set.cert.path"
+    AGENCYAPI__SFTPHOOKS__0__ENDPOINTS__0__ACTION: "set.action"
+    AGENCYAPI__SFTPHOOKS__0__ENDPOINTS__0__DOWNLOADPATH: "set.path.download"
+    AGENCYAPI__SFTPHOOKS__0__ENDPOINTS__0__UPLOADPATH: "set.path.upload"
+    AGENCYAPI__SFTPHOOKS__0__ENDPOINTS__1__ACTION: "set.action"
+    AGENCYAPI__SFTPHOOKS__0__ENDPOINTS__1__DOWNLOADPATH: "set.path.download"
+    AGENCYAPI__SFTPHOOKS__0__ENDPOINTS__1__UPLOADPATH: "set.path.upload"
+    AGENCYAPI__SFTPHOOKS__0__NAME: "set.agency.name"
+    AGENCYAPI__SFTPHOOKS__0__PORT: "set.port"
+    AGENCYAPI__SFTPHOOKS__0__SERVER: "set.server"
+    AGENCYAPI__SFTPHOOKS__0__USERNAME: "set.username"
+  kind: Secret
+  metadata:
+    name: agency-outbound-api-sftphook-config

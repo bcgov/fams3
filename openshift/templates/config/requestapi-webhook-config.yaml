@@ -28,6 +28,10 @@ objects:
   stringData:
     SearchRequestAdaptor__WebHooks__0__Name: ${NAME}
     SearchRequestAdaptor__WebHooks__0__Uri: ${URL}
+    RETRYCONFIGURATION_CONCURRENCYLIMIT: 1
+    RETRYCONFIGURATION_RETRYINTERVAL: 3
+    RETRYCONFIGURATION_RETRYTIMES: 2
+    SearchRequestAdaptor__ApiKeyForDynadaptor: "set.api.key"
   kind: Secret
   metadata:
     name: requestapi-webhook-config

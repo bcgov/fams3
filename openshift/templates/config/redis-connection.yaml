@@ -30,6 +30,8 @@ objects:
     REDIS__CONNECTTIMEOUT: 6000
     REDIS__HOSTS__0__HOST: ${HOST}
     REDIS__HOSTS__0__PORT: ${PORT}
+    REDIS__ABORTONCONNECTFAIL: "false"
+    REDIS__SYNCTIMEOUT: 5000
   kind: Secret
   metadata:
     name: redis-connection

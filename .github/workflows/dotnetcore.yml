@@ -27,7 +27,6 @@ jobs:
           NEXUS_REPO_USER: ${{ secrets.nexus_repo_user }}
           NEXUS_REPO_PASSWORD: ${{ secrets.nexus_repo_password }}
           NEXUS_REPO_URL: ${{ secrets.nexus_repo_url }}
-          NEXUS_REPO_URI: ${{ secrets.nexus_repo_uri }}
         run: dotnet build --configuration Release --configfile ../NuGet.config
         working-directory: ./app/DynamicsAdapter
       - name: Test DynamicsAdapter

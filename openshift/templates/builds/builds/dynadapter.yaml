@@ -1,4 +1,4 @@
-apiVersion: v1
+apiVersion: template.openshift.io/v1
 kind: Template
 labels:
   template: dynadapter-template
@@ -20,6 +20,10 @@ parameters:
   name: namespacePrefix
   required: true
   value:
+- description: Git ref
+  displayName: Git branch to build
+  name: gitRef
+  value: master
 objects:
 - apiVersion: build.openshift.io/v1
   kind: BuildConfig
@@ -42,7 +46,7 @@ objects:
     postCommit: {}
     resources:
       limits:
-        cpu: "4"
+        cpu: "2"
         memory: 4Gi
       requests:
         cpu: "1"
@@ -50,7 +54,7 @@ objects:
     runPolicy: Serial
     source:
       git:
-        ref: master
+        ref: ${gitRef}
         uri: https://github.com/bcgov/fams3
       type: Git
     strategy:
@@ -70,7 +74,7 @@ objects:
         - name: DOTNET_INCREMENTAL
           value: "true"
         - name: DOTNET_RESTORE_CONFIGFILE
-          value: src/NuGet.config
+          value: app/NuGet.config
         - name: NEXUS_REPO_USER
           valueFrom:
             secretKeyRef:

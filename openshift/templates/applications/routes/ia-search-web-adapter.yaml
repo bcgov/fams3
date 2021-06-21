@@ -1,4 +1,4 @@
-apiVersion: v1
+apiVersion: template.openshift.io/v1
 kind: Template
 labels:
   template: ia-search-template
@@ -32,7 +32,7 @@ objects:
       template: meta-service
     name: ia-search-web-adapter
   spec:
-    host: ia-search-web-adapter-${namespacePrefix}-${TAG}.pathfinder.bcgov
+    host: ia-search-web-adapter-${namespacePrefix}-${TAG}.apps.silver.devops.gov.bc.ca
     port:
       targetPort: web
     tls:

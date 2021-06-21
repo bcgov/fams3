@@ -1,4 +1,4 @@
-apiVersion: v1
+apiVersion: template.openshift.io/v1
 kind: Template
 labels:
   template: dynadapter-template
@@ -55,6 +55,23 @@ objects:
         - env:
           - name: JAEGER_SERVICE_NAME
             value: dyanadapter
+          - name: ADP
+            required: true
+            value: "set.adp"
+          - name: FAILEDCRON
+            required: true
+            value: "set.cron for failure retry like '0/5 * * * * ?' "
+          - name: DYNADAPTORAPIKEY
+            required: true
+            value: "set.api.key"
+          - name: TRUSTEDHOSTS
+            required: true
+            value: "*"
+          - name: REDIS__PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: database-password
+                name: redis
           envFrom:
           - secretRef:
               name: aspnet-env
@@ -66,6 +83,14 @@ objects:
               name: jeager-config
           - secretRef:
               name: splunk-config
+          - secretRef:
+              name: redis-connection
+          - secretRef:
+              name: dynadapto-webhook-config
+          - secretRef:
+              name: dynadapter-apikey-config
+          - secretRef:
+              name: serilog-config
           image: ''
           imagePullPolicy: IfNotPresent
           name: dynadapter
@@ -74,11 +99,11 @@ objects:
             protocol: TCP
           resources:
             limits:
-              cpu: "1"
-              memory: 1Gi
+              cpu: '2'
+              memory: 4Gi
             requests:
-              cpu: 100m
-              memory: 256Mi
+              cpu: '1'
+              memory: 4Gi
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
         dnsPolicy: ClusterFirst

@@ -1,4 +1,4 @@
-apiVersion: v1
+apiVersion: template.openshift.io/v1
 kind: Template
 labels:
   template: web-adapter-template
@@ -62,6 +62,11 @@ objects:
             value: ${dataPartnerService}-web-adapter
           - name: DATA_PARTNER
             value: ${dataPartnerService}
+          - name: REDIS__PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: redis
+                key: database-password
           envFrom:
           - secretRef:
               name: ${dataPartnerService}-web-adapter-config
@@ -73,6 +78,10 @@ objects:
               name: jeager-config
           - secretRef:
               name: splunk-config
+          - secretRef:
+              name: serilog-config
+          - secretRef:
+              name: redis-connection
           image: ''
           imagePullPolicy: IfNotPresent
           name: ${dataPartnerService}-web-adapter
@@ -81,8 +90,8 @@ objects:
             protocol: TCP
           resources:
             limits:
-              cpu: 250m
-              memory: 1Gi
+              cpu: 150m
+              memory: 512Mi
             requests:
               cpu: 100m
               memory: 256Mi

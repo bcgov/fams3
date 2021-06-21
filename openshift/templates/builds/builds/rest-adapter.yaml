@@ -1,4 +1,4 @@
-apiVersion: v1
+apiVersion: template.openshift.io/v1
 kind: Template
 labels:
   template: rest-adapter-template
@@ -25,6 +25,10 @@ parameters:
   name: dataPartnerService
   required: true
   value:
+- description: Git ref
+  displayName: Git branch to build
+  name: gitRef
+  value: master
 objects:
 - apiVersion: build.openshift.io/v1
   kind: BuildConfig
@@ -47,7 +51,7 @@ objects:
     postCommit: {}
     resources:
       limits:
-        cpu: "4"
+        cpu: "2"
         memory: 4Gi
       requests:
         cpu: "1"
@@ -55,7 +59,7 @@ objects:
     runPolicy: Serial
     source:
       git:
-        ref: master
+        ref: ${gitRef}
         uri: git@github.com:bcgov-c/fams3-openshift.git
       sourceSecret:
         name: fams3-github-key

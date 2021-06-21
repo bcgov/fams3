@@ -199,6 +199,7 @@ objects:
                     withCredentials([usernamePassword(credentialsId: 'frjeow-tools-nexus-config', usernameVariable: 'NEXUS_REPO_USER', passwordVariable: 'NEXUS_REPO_PASSWORD')]) {
                       sh """
                       export NEXUS_REPO_URL=http://nexus:8081
+                      export NEXUS_REPO_URI=http://nexus:8081/repository/nuget-group/index.json
                       echo ${GIT_COMMIT}
                       cd ${APP_NAME}/app/DynamicsAdapter
                       dotnet restore --configfile ../NuGet.config

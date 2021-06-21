@@ -67,7 +67,7 @@ namespace BcGov.Fams3.SearchApi.Core.DependencyInjection
                         {
                             cfg.ReceiveEndpoint($"{nameof(PersonSearchOrdered)}_{providerConfiguration.Name}", e =>
                             {
-                                e.PrefetchCount = 1;
+                                e.PrefetchCount = retryConfiguration.PrefetchCount;
                                 e.UseConcurrencyLimit(retryConfiguration.ConcurrencyLimit);
                                 e.UseMessageRetry(r =>
                                 {
@@ -85,7 +85,7 @@ namespace BcGov.Fams3.SearchApi.Core.DependencyInjection
                         {
                             cfg.ReceiveEndpoint($"{nameof(PersonSearchReceived)}_{providerConfiguration.Name}", e =>
                             {
-                                e.PrefetchCount = 1;
+                                e.PrefetchCount = retryConfiguration.PrefetchCount;
                                 e.UseConcurrencyLimit(retryConfiguration.ConcurrencyLimit);
                                 e.UseMessageRetry(r =>
                                 {
@@ -98,7 +98,7 @@ namespace BcGov.Fams3.SearchApi.Core.DependencyInjection
 
                             cfg.ReceiveEndpoint($"{nameof(PersonSearchOrdered)}_{providerConfiguration.Name}", e =>
                             {
-                                e.PrefetchCount = 1;
+                                e.PrefetchCount = retryConfiguration.PrefetchCount;
                                 e.UseConcurrencyLimit(retryConfiguration.ConcurrencyLimit);
                                 e.UseMessageRetry(r =>
                                 {

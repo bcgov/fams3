@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -11,6 +11,8 @@ namespace BcGov.Fams3.SearchApi.Core.Configuration
             this.RetryTimes = 5;
             this.RetryInterval = 5;
             this.ConcurrencyLimit = 5;
+            //PrefetchCount is set to 1 as default. But it does not make sense. It should be bigger than ConcurrencyLimit.
+            this.PrefetchCount = 1; 
         }
 
 
@@ -28,5 +30,7 @@ namespace BcGov.Fams3.SearchApi.Core.Configuration
         /// Concurrency limit for consumer
         /// </summary>
         public int ConcurrencyLimit { get; set; }
+
+        public ushort PrefetchCount { get; set; }
     }
 }

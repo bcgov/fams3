@@ -86,6 +86,11 @@ objects:
             secretKeyRef:
               key: url
               name: nexus-config
+        - name: NEXUS_REPO_URI
+          valueFrom:
+            secretKeyRef:
+              key: uri
+              name: nexus-config
         - name: NEXUS_REPO_API_KEY
           valueFrom:
             secretKeyRef:

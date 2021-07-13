@@ -93,7 +93,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                     _logger.LogError(e, "submit to queue or get current search request failed.");
                     //default value, in case there is error, we still can return accept event.
                     createdSearchRequest.EstimatedCompletionDate = DateTime.UtcNow.AddMonths(3);
-                    createdSearchRequest.QueuePosition = 90;
+                    createdSearchRequest.QueuePosition = 9999;
                 }
                 return Ok(BuildSearchRequestSaved_Create(createdSearchRequest, searchRequestOrdered));
             }
@@ -161,7 +161,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                     _logger.LogError(e, "get current search request failed.");
                     //default value, in case there is error, we still can return accept event.
                     updatedSearchRequest.EstimatedCompletionDate = DateTime.UtcNow.AddMonths(3);
-                    updatedSearchRequest.QueuePosition = 90;
+                    updatedSearchRequest.QueuePosition = 9999;
                 }
                 return Ok(BuildSearchRequestSaved_Update(updatedSearchRequest, searchRequestOrdered));
             }

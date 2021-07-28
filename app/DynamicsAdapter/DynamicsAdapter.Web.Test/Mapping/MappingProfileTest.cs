@@ -1517,6 +1517,29 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(null, ssg_relatedPerson.Gender);
         }
 
+        [Test]
+        public void gender_X_RelatedPerson_should_map_to_SSG_Identity_correctly()
+        {
+            var relatedPerson = new RelatedPerson()
+            {
+                FirstName = "FirstName",
+                Gender = "x",
+            };
+            RelatedPersonEntity ssg_relatedPerson = _mapper.Map<RelatedPersonEntity>(relatedPerson);
+            Assert.AreEqual(GenderType.Other, ssg_relatedPerson.Gender);
+        }
+
+        [Test]
+        public void gender_I_RelatedPerson_should_map_to_SSG_Identity_correctly()
+        {
+            var relatedPerson = new RelatedPerson()
+            {
+                FirstName = "FirstName",
+                Gender = "I",
+            };
+            RelatedPersonEntity ssg_relatedPerson = _mapper.Map<RelatedPersonEntity>(relatedPerson);
+            Assert.AreEqual(GenderType.InformationUnavailable, ssg_relatedPerson.Gender);
+        }
 
         [Test]
         public void SSG_SearchapiRequestDataProvider_should_map_to_DataProvider_correctly()

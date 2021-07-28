@@ -229,7 +229,8 @@ namespace DynamicsAdapter.Web.Mapping
         {
             { "m", GenderType.Male.Value },
             { "f", GenderType.Female.Value },
-            { "u", GenderType.Other.Value }
+            { "i", GenderType.InformationUnavailable.Value },
+            { "x", GenderType.Other.Value }
         };
     }
 

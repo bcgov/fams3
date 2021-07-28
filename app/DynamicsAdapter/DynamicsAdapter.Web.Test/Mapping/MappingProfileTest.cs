@@ -1526,7 +1526,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 Gender = "x",
             };
             RelatedPersonEntity ssg_relatedPerson = _mapper.Map<RelatedPersonEntity>(relatedPerson);
-            Assert.AreEqual(GenderType.Other, ssg_relatedPerson.Gender);
+            Assert.AreEqual(GenderType.Other.Value, ssg_relatedPerson.Gender);
         }
 
         [Test]
@@ -1538,7 +1538,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 Gender = "I",
             };
             RelatedPersonEntity ssg_relatedPerson = _mapper.Map<RelatedPersonEntity>(relatedPerson);
-            Assert.AreEqual(GenderType.InformationUnavailable, ssg_relatedPerson.Gender);
+            Assert.AreEqual(GenderType.InformationUnavailable.Value, ssg_relatedPerson.Gender);
         }
 
         [Test]

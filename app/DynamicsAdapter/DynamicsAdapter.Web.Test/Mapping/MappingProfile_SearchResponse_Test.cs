@@ -638,7 +638,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
 
             ResponsePerson rp = _mapper.Map<ResponsePerson>(person);
             Assert.AreEqual(new DateTimeOffset(new DateTime(2015, 1, 1)), rp.DateOfDeath);
-            Assert.AreEqual("u", rp.Gender);
+            Assert.AreEqual("x", rp.Gender);
             Assert.AreEqual("firstName", rp.FirstName);
         }
 

@@ -12,6 +12,7 @@
         {
             Cron = "0/5 * * * * ?";
             Failed = "0 0 15 * * ?";
+            AutoClose = "0 0/10 * ? * * *"; //default, every 10 mins
         }
 
         /// <summary>
@@ -22,6 +23,7 @@
 
         public string Failed { get; set; }
 
+        public string AutoClose { get; set; }
 
     }
 }

@@ -74,6 +74,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         Task<bool> DeleteSearchRequest(string fileId, CancellationToken cancellationToken);
         Task<bool> UpdateApiCall(Guid apiCallGuid, bool success, string notes, CancellationToken cancellationToken);
         Task<SSG_SearchRequest> GetCurrentSearchRequest(Guid searchRequestId);
+        Task<IEnumerable<SSG_SearchRequest>> GetAutoCloseSearchRequestAsync(CancellationToken cancellationToken);
     }
 
     /// <summary>
@@ -670,6 +671,19 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             };
             await _oDataClient.For<SSG_APICall>().Key(apiCallGuid).Set(updatedFields).UpdateEntryAsync(cancellationToken);
             return true;
+        }
+
+        public async Task<IEnumerable<SSG_SearchRequest>> GetAutoCloseSearchRequestAsync(CancellationToken cancellationToken)
+        {
+            int noCPMatch = SearchRequestAutoCloseStatusCode.NoCPMatch.Value;
+            int cpMissingData = SearchRequestAutoCloseStatusCode.CPMissingData.Value;
+            int readyToClose = SearchRequestAutoCloseStatusCode.ReadyToClose.Value;
+            IEnumerable<SSG_SearchRequest> searchRequests = await _oDataClient.For<SSG_SearchRequest>()
+                .Filter(x => x.AutoCloseStatus == noCPMatch
+                || x.AutoCloseStatus == cpMissingData
+                || x.AutoCloseStatus == readyToClose)
+                .FindEntriesAsync(cancellationToken);
+            return searchRequests;
         }
 
         private async Task<EmploymentEntity> LinkEmploymentRef(EmploymentEntity employment, CancellationToken cancellationToken)

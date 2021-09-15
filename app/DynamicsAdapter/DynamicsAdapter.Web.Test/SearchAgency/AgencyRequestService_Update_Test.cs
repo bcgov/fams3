@@ -1211,7 +1211,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
         }
 
         [Test]
-        public async Task wrong_fileId_searchRequestOrdered_ProcessUpdateSearchRequest_should_throw_exception()
+        public void wrong_fileId_searchRequestOrdered_ProcessUpdateSearchRequest_should_throw_exception()
         {
             Guid guid = Guid.NewGuid();
             _searchRequestServiceMock.Setup(x => x.GetSearchRequest(It.IsAny<string>(), It.IsAny<CancellationToken>()))
@@ -1237,7 +1237,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
         }
 
         [Test]
-        public async Task null_searchRequestOrdered_ProcessUpdateSearchRequest_should_throw_exception()
+        public void null_searchRequestOrdered_ProcessUpdateSearchRequest_should_throw_exception()
         {
             _searchRequestServiceMock.Setup(x => x.GetPerson(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
                     .Returns(Task.FromResult<SSG_Person>(new SSG_Person()

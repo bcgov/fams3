@@ -75,7 +75,7 @@ To enable Person Search notification, configure the SearchApi WebHooks settings.
 With this configuration the searchApi will post Event to `http://localhost:5000/PersonSearch/{event}/{id}` where {id} is a global unique identifier for the search request . the content of the payload is  dependent on the event.
 
 ### Search Adapters Events
-
+Search Adapters Events
 
 #### Person Search Completed
 

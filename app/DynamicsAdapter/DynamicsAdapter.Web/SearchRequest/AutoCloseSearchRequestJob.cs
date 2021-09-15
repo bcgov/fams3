@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 namespace DynamicsAdapter.Web.SearchRequest
 {
     /// <summary>
-    /// The SearchRequestJob orchestrates dyanmics search request.
+    /// The AutoCloseSearchRequestJob orchestrates dyanmics auto-close search requests.
     /// </summary>
     [DisallowConcurrentExecution]
     public class AutoCloseSearchRequestJob : IJob
@@ -25,20 +25,21 @@ namespace DynamicsAdapter.Web.SearchRequest
 
         private readonly ISearchRequestService _searchRequestService;
 
-        private readonly IMapper _mapper;
+        //private readonly IMapper _mapper;
 
-        private readonly ISearchRequestRegister _register;
+        //private readonly ISearchRequestRegister _register;
 
-        public AutoCloseSearchRequestJob(ISearchApiClient searchApiClient,
+        public AutoCloseSearchRequestJob(
             ISearchRequestService searchRequestService,
-            ILogger<AutoCloseSearchRequestJob> logger,
-            IMapper mapper,
-            ISearchRequestRegister register)
+            ILogger<AutoCloseSearchRequestJob> logger
+            //IMapper mapper,
+            //ISearchRequestRegister register
+            )
         {
             _logger = logger;
             _searchRequestService = searchRequestService;
-            _mapper = mapper;
-            _register = register;
+            //_mapper = mapper;
+            //_register = register;
         }
 
         public async Task Execute(IJobExecutionContext context)

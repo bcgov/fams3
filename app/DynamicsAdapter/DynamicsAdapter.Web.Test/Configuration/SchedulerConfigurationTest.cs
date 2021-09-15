@@ -12,10 +12,12 @@ namespace DynamicsAdapter.Web.Test.Configuration
 
             var sut = new SchedulerConfiguration()
             {
-                Cron = "* * * * * *"
+                Cron = "* * * * * *",
+                AutoClose= "10/0 * * * * *"
             };
 
             Assert.AreEqual("* * * * * *", sut.Cron);
+            Assert.AreEqual("10/0 * * * * *", sut.AutoClose);
 
         }
 

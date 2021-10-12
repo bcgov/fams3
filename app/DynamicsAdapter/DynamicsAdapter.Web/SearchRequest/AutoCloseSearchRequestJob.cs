@@ -13,6 +13,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
+
+//DynamicsAdapter.Web.SearchAgency
+
 namespace DynamicsAdapter.Web.SearchRequest
 {
     /// <summary>
@@ -54,7 +57,30 @@ namespace DynamicsAdapter.Web.SearchRequest
                 
                 foreach (SSG_SearchRequest ssgSearchRequest in requestList)
                 {
+
                     //process each search request
+                    if (ssgSearchRequest.AutoCloseStatus == SearchRequestAutoCloseStatusCode.NoCPMatch.Value ||
+                        ssgSearchRequest.AutoCloseStatus == SearchRequestAutoCloseStatusCode.CPMissingData.Value)
+                    {
+                        await _searchRequestService.SearchRequestCreateCouldNotAutoCloseNote(ssgSearchRequest.SearchRequestId);
+                        _logger.LogInformation("Call the action ssg_SearchRequestCreateCouldNotAutoCloseNote successfully");
+                    }
+                    else
+                    {
+                        if (ssgSearchRequest.AutoCloseStatus == SearchRequestAutoCloseStatusCode.ReadyToClose.Value)
+                        {
+                            IDictionary<string, object> updatedFields = new Dictionary<string, object>
+                            {
+                                { "statuscode", SearchRequestStatusCode.SearchRequestAutoClosed.Value}//,
+                                //{ "statecode", 1 },
+                                //{ "ssg_notes", ssgSearchRequest.Notes }
+                            };
+
+                            await _searchRequestService.UpdateSearchRequest(ssgSearchRequest.SearchRequestId, updatedFields, cts.Token);
+                            _logger.LogInformation("UpdateSearchRequest successfully");
+                        }
+                    }
+                    
                 }
             }
             catch (Exception e)

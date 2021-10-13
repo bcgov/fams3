@@ -12,9 +12,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             new SearchRequestStatusCode(867670009, "Search Request Cancelled");
         public static SearchRequestStatusCode SearchRequestClosed =
                     new SearchRequestStatusCode(2, "Search Request Closed");
-        public static SearchRequestStatusCode SearchRequestAutoClosed =
-                    new SearchRequestStatusCode(867670016, "AutoClosed");
-        
+
         protected SearchRequestStatusCode(int value, string name) : base(value, name)
         {
         }

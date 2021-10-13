@@ -1,0 +1,7 @@
+diff a/app/SearchApi/NuGet.config b/app/SearchApi/NuGet.config	(rejected hunks)
+@@ -78,4 +78,5 @@
+             <owners>microsoft;aspnet;nuget</owners>
+         </repository>
+     </trustedSigners>
++	-->
+ </configuration>

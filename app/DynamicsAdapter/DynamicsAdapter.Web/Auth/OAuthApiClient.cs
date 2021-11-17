@@ -32,9 +32,17 @@ namespace DynamicsAdapter.Web.Auth
 
         public async Task<Token> GetRefreshToken(CancellationToken cancellationToken)
         {
-
+            if (_httpClient.DefaultRequestHeaders.Contains("client-request-id")){
+                _httpClient.DefaultRequestHeaders.Remove("client-request-id");
+            }
             _httpClient.DefaultRequestHeaders.Add("client-request-id", Guid.NewGuid().ToString());
+            if (_httpClient.DefaultRequestHeaders.Contains("return-client-request-id")){
+                _httpClient.DefaultRequestHeaders.Remove("return-client-request-id");
+            }
             _httpClient.DefaultRequestHeaders.Add("return-client-request-id", "true");
+            if (_httpClient.DefaultRequestHeaders.Contains("Accept")){
+                _httpClient.DefaultRequestHeaders.Remove("Accept");
+            }
             _httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
 
             var data = new Dictionary<string, string>

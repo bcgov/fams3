@@ -31,19 +31,19 @@ namespace DynamicsAdapter.Web.Auth
         }
 
         public async Task<Token> GetRefreshToken(CancellationToken cancellationToken)
-        {
+        {   //Always (re)add client request id
             if (_httpClient.DefaultRequestHeaders.Contains("client-request-id")){
                 _httpClient.DefaultRequestHeaders.Remove("client-request-id");
             }
             _httpClient.DefaultRequestHeaders.Add("client-request-id", Guid.NewGuid().ToString());
-            if (_httpClient.DefaultRequestHeaders.Contains("return-client-request-id")){
-                _httpClient.DefaultRequestHeaders.Remove("return-client-request-id");
+            //Only add if it doesnt exist since they are static
+            if (!_httpClient.DefaultRequestHeaders.Contains("return-client-request-id")){
+                _httpClient.DefaultRequestHeaders.Add("return-client-request-id", "true");
             }
-            _httpClient.DefaultRequestHeaders.Add("return-client-request-id", "true");
-            if (_httpClient.DefaultRequestHeaders.Contains("Accept")){
-                _httpClient.DefaultRequestHeaders.Remove("Accept");
+            if (!_httpClient.DefaultRequestHeaders.Contains("Accept")){
+                _httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
             }
-            _httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
+            
 
             var data = new Dictionary<string, string>
             {

@@ -13,8 +13,15 @@ namespace SearchApi.Web.DeepSearch
         {
             List<PersonalIdentifier> newIds = new List<PersonalIdentifier>();
             foreach (var item in list2)
-                if (!list1.Any(id => id.Value == item.Value && id.Type == item.Type))
-                    newIds.Add(item);
+                if (!list1.Any(id => id.Value == item.Value && id.Type == item.Type)){
+                    if(PersonalIdentifierType.CorrectionsId == item.Type){
+                        int n;
+                        if (int.TryParse(item.Value, out n)) {
+                            newIds.Add(item);
+                        }
+                    }
+                }
+                    
                 
 
           return  newIds.AsEnumerable();

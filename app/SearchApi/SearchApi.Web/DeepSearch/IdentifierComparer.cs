@@ -17,8 +17,11 @@ namespace SearchApi.Web.DeepSearch
                     if(PersonalIdentifierType.CorrectionsId == item.Type){
                         int n;
                         if (int.TryParse(item.Value, out n)) {
-                            newIds.Add(item);
+                            
                         }
+                    }
+                    else {
+                        newIds.Add(item);
                     }
                 }
                     

@@ -74,6 +74,7 @@ namespace DynamicsAdapter.Web.SearchRequest
                         }
                     }
                 }
+                _logger.LogInformation("Autoclose: Successfully Processed " + requestList.Count + " Records");
             }
             catch (Exception e)
             {

@@ -44,22 +44,21 @@ namespace DynamicsAdapter.Web.SearchRequest
 
         public async Task Execute(IJobExecutionContext context)
         {
-            _logger.LogInformation("autoclose checking sr status!");
-
+            _logger.LogInformation("Autoclose: Initiating job");
             var cts = new CancellationTokenSource();
-
             try
             {
+                _logger.LogInformation("Autoclose: Checking for Search Requests");
                 List<SSG_SearchRequest> requestList = await GetAutoCloseSearchRequestAsync(cts.Token);
-                
+                _logger.LogInformation("Autoclose: Successfully Retrieved "+ requestList.Count+" Records");
                 foreach (SSG_SearchRequest ssgSearchRequest in requestList)
                 {
-                    //process each search request
                     if (ssgSearchRequest.AutoCloseStatus == SearchRequestAutoCloseStatusCode.NoCPMatch.Value ||
                         ssgSearchRequest.AutoCloseStatus == SearchRequestAutoCloseStatusCode.CPMissingData.Value)
                     {
+                        _logger.LogInformation("Autoclose: Calling ssg_SearchRequestCreateCouldNotAutoCloseNote SearchRequestId=" + ssgSearchRequest.SearchRequestId + " AutoCloseStatus "+ssgSearchRequest.AutoCloseStatus+"");
                         await _searchRequestService.SearchRequestCreateCouldNotAutoCloseNote(ssgSearchRequest.SearchRequestId);
-                        _logger.LogInformation("Call the action ssg_SearchRequestCreateCouldNotAutoCloseNote successfully");
+                        _logger.LogInformation("Autoclose: ssg_SearchRequestCreateCouldNotAutoCloseNote successfully");
                     }
                     else
                     {
@@ -67,31 +66,25 @@ namespace DynamicsAdapter.Web.SearchRequest
                         {
                             IDictionary<string, object> updatedFields = new Dictionary<string, object>
                             {
-                                { "statuscode", SearchRequestStatusCode.SearchRequestAutoClosed.Value}//,
-                                //{ "statecode", 1 },
-                                //{ "ssg_notes", ssgSearchRequest.Notes }
+                                { "statuscode", SearchRequestStatusCode.SearchRequestAutoClosed.Value}
                             };
-
+                            _logger.LogInformation("Autoclose: Updating Search Status SearchRequestId=" + ssgSearchRequest.SearchRequestId + "");
                             await _searchRequestService.UpdateSearchRequest(ssgSearchRequest.SearchRequestId, updatedFields, cts.Token);
-                            _logger.LogInformation("UpdateSearchRequest successfully");
+                            _logger.LogInformation("Autoclose: Updated Search Request successfully");
                         }
                     }
-
                 }
             }
             catch (Exception e)
             {
+                _logger.LogInformation("Autoclose: Encountered Unexpected Exception");
                 _logger.LogError(e, e.Message, null);
             }
         }
 
         private async Task<List<SSG_SearchRequest>> GetAutoCloseSearchRequestAsync(CancellationToken cancellationToken)
         {
-            _logger.LogDebug("Attempting to get autoclose status for search request from dynamics");
-           
             var request = await _searchRequestService.GetAutoCloseSearchRequestAsync(cancellationToken);
-
-            _logger.LogInformation("Successfully retrieved autoclose status for search requests from dynamics");
             return request.ToList();
         }
 

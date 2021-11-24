@@ -48,31 +48,7 @@ namespace BcGov.Fams3.Redis
         {           
             if (searchRequest is null) throw new ArgumentNullException("SaveRequest : Search request cannot be null");
             if (string.IsNullOrEmpty(searchRequest.SearchRequestKey)) throw new ArgumentNullException("SaveRequest : Search request key cannot be null");
-            //await _distributedCache.SetStringAsync(searchRequest.SearchRequestKey, JsonConvert.SerializeObject(searchRequest), new CancellationToken());
-            
-            //FAMS3-3861: Error protection: add status tracking in Redis 
-            bool finished = false;
-            int tryCounts = 0;
-            int MAX_TRY_COUNT = 4;
-            while (!finished && tryCounts < MAX_TRY_COUNT)
-            {
-                tryCounts++;
-                try
-                {
-                    await _distributedCache.SetStringAsync(searchRequest.SearchRequestKey, JsonConvert.SerializeObject(searchRequest), new CancellationToken());
-                    finished = true;
-                }
-                catch (Exception ex)
-                {
-                    tryCounts++;
-                }
-            }
-
-            if (!finished)
-            {
-                await DeleteRequest(searchRequest.SearchRequestKey);
-                throw new ArgumentNullException("SaveRequest : request key cannot save in Redis");
-            }
+            await _distributedCache.SetStringAsync(searchRequest.SearchRequestKey, JsonConvert.SerializeObject(searchRequest), new CancellationToken());
 
 
         }

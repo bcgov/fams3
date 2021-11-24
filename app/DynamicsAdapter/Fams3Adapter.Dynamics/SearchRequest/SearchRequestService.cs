@@ -74,6 +74,8 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         Task<bool> DeleteSearchRequest(string fileId, CancellationToken cancellationToken);
         Task<bool> UpdateApiCall(Guid apiCallGuid, bool success, string notes, CancellationToken cancellationToken);
         Task<SSG_SearchRequest> GetCurrentSearchRequest(Guid searchRequestId);
+        Task<IEnumerable<SSG_SearchRequest>> GetAutoCloseSearchRequestAsync(CancellationToken cancellationToken);
+        Task<bool> SearchRequestCreateCouldNotAutoCloseNote(Guid searchRequestId);
     }
 
     /// <summary>
@@ -672,6 +674,19 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             return true;
         }
 
+        public async Task<IEnumerable<SSG_SearchRequest>> GetAutoCloseSearchRequestAsync(CancellationToken cancellationToken)
+        {
+            int noCPMatch = SearchRequestAutoCloseStatusCode.NoCPMatch.Value;
+            int cpMissingData = SearchRequestAutoCloseStatusCode.CPMissingData.Value;
+            int readyToClose = SearchRequestAutoCloseStatusCode.ReadyToClose.Value;
+            IEnumerable<SSG_SearchRequest> searchRequests = await _oDataClient.For<SSG_SearchRequest>()
+                .Filter(x => x.AutoCloseStatus == noCPMatch
+                || x.AutoCloseStatus == cpMissingData
+                || x.AutoCloseStatus == readyToClose)
+                .FindEntriesAsync(cancellationToken);
+            return searchRequests;
+        }
+
         private async Task<EmploymentEntity> LinkEmploymentRef(EmploymentEntity employment, CancellationToken cancellationToken)
         {
             employment.Country = await GetEmploymentCountry(employment.CountryText, cancellationToken);
@@ -696,5 +711,12 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                return null;
             }
         }
+
+        public async Task<bool> SearchRequestCreateCouldNotAutoCloseNote(Guid searchRequestId)
+        {
+            await _oDataClient.For<SSG_SearchRequest>().Key(searchRequestId).Action("ssg_SearchRequestCreateCouldNotAutoCloseNote").ExecuteAsSingleAsync();
+            return true;
         }
+
+    }
 }

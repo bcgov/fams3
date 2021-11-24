@@ -277,6 +277,9 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         [JsonProperty("ssg_ssg_searchrequest_ssg_notes_SearchRequest")]
         public SSG_Notese[] SSG_Notes { get; set; }
 
+        [JsonProperty("ssg_autoclosestatusreason")]
+        public int AutoCloseStatus { get; set; }
+
         public bool IsDuplicated { get; set; }
 
         public override string ToString()

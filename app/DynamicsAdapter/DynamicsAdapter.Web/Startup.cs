@@ -192,6 +192,11 @@ namespace DynamicsAdapter.Web
                 jobType: typeof(FailedSearchRequestJob),
                 cronExpression: schedulerConfiguration.Failed));
 
+            services.AddTransient<AutoCloseSearchRequestJob>();
+            services.AddSingleton(new JobSchedule(
+                jobType: typeof(AutoCloseSearchRequestJob),
+                cronExpression: schedulerConfiguration.AutoClose));
+
             //Registering the Quartz Hosted Service
             services.AddHostedService<QuartzHostedService>();
 

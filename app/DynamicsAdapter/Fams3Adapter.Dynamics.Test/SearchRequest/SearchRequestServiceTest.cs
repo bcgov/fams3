@@ -9,6 +9,7 @@ using NUnit.Framework;
 using Simple.OData.Client;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -104,6 +105,24 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             Assert.ThrowsAsync<Exception>(
                 async () => await _sut.UpdateApiCall(invalidGuid, true, "", CancellationToken.None)
                 );
+        }
+
+        [Test]
+        public async Task GetAutoCloseSearchRequest_should_success()
+        {
+            Guid invalidGuid = Guid.NewGuid();
+            odataClientMock.Setup(
+                x => x.For<SSG_SearchRequest>(null).Filter(It.IsAny<Expression<Func<SSG_SearchRequest, bool>>>())
+                      .FindEntriesAsync(It.IsAny<CancellationToken>()))
+                      .Returns(Task.FromResult<IEnumerable<SSG_SearchRequest>>(new List<SSG_SearchRequest>()
+                {
+                     new SSG_SearchRequest()
+                     {
+                         FileId = "1111"
+                     }
+                }));
+            var result = await _sut.GetAutoCloseSearchRequestAsync(CancellationToken.None);
+            Assert.AreEqual(1, result.Count());
         }
     }
 }

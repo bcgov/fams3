@@ -22,8 +22,8 @@ namespace SearchApi.Web.DeepSearch
                         PersonalIdentifierType.BCID == item.Type ||
                         PersonalIdentifierType.BCHydroBP == item.Type)
                     {
-                        int n;
-                        if (int.TryParse(item.Value, out n)) {
+                        long n;
+                        if (long.TryParse(item.Value, out n)) {
                             newIds.Add(item);
                         }
                     }

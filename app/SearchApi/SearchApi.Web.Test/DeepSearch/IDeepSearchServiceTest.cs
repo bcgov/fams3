@@ -280,7 +280,7 @@ namespace SearchApi.Web.Test.DeepSearch
 
             //_loggerMock.VerifyLog(LogLevel.Information, $"1 ids to be stored as new parameter for ICBC", Times.Once());
             _loggerMock.VerifyLog(LogLevel.Information, $"1 ids to be stored as new parameter for MSDPR", Times.Once());
-            _loggerMock.VerifyLog(LogLevel.Information, $"1 ids to be stored as new parameter for WORKSAFEBC", Times.Once());
+            _loggerMock.VerifyLog(LogLevel.Information, $"2 ids to be stored as new parameter for WORKSAFEBC", Times.Once());
             _loggerMock.VerifyLog(LogLevel.Information, $"0 ids to be stored as new parameter for BCHYDRO", Times.Once());
             _cacheServiceMock.Verify(x => x.Save(It.IsAny<string>(), It.IsAny<object>()), Times.Exactly(4));
             completedStatusCCN = new FakePersonSearchCompleted
@@ -315,7 +315,7 @@ namespace SearchApi.Web.Test.DeepSearch
             _loggerMock.VerifyLog(LogLevel.Information, $"0 returned Identifier matched the required types for WORKSAFEBC", Times.Once());
             _loggerMock.VerifyLog(LogLevel.Information, $"1 returned Identifier matched the required types for BCHYDRO", Times.Once());
 
-            _loggerMock.VerifyLog(LogLevel.Information, $"1 ids to be stored as new parameter for ICBC", Times.Once());
+            _loggerMock.VerifyLog(LogLevel.Information, $"1 ids to be stored as new parameter for ICBC", Times.Exactly(2));
             _loggerMock.VerifyLog(LogLevel.Information, $"0 ids to be stored as new parameter for MSDPR", Times.Once());
             _loggerMock.VerifyLog(LogLevel.Information, $"0 ids to be stored as new parameter for WORKSAFEBC", Times.Once());
             _loggerMock.VerifyLog(LogLevel.Information, $"1 ids to be stored as new parameter for BCHYDRO", Times.Once());

@@ -57,7 +57,15 @@ namespace DynamicsAdapter.Web.SearchRequest
                         ssgSearchRequest.AutoCloseStatus == SearchRequestAutoCloseStatusCode.CPMissingData.Value)
                     {
                         _logger.LogInformation("Autoclose: Calling ssg_SearchRequestCreateCouldNotAutoCloseNote SearchRequestId=" + ssgSearchRequest.SearchRequestId + " AutoCloseStatus "+ssgSearchRequest.AutoCloseStatus+"");
-                        await _searchRequestService.SearchRequestCreateCouldNotAutoCloseNote(ssgSearchRequest.SearchRequestId);
+                        try
+                        {
+                            await _searchRequestService.SearchRequestCreateCouldNotAutoCloseNote(ssgSearchRequest.SearchRequestId, cts.Token);
+                        }
+                        catch (Exception e)
+                        {
+                            _logger.LogInformation("Autoclose: Encountered Unexpected Exception");
+                            _logger.LogError(e, e.Message, null);
+                        }
                         _logger.LogInformation("Autoclose: ssg_SearchRequestCreateCouldNotAutoCloseNote successfully");
                     }
                     else
@@ -69,7 +77,16 @@ namespace DynamicsAdapter.Web.SearchRequest
                                 { "statuscode", SearchRequestStatusCode.SearchRequestAutoClosed.Value}
                             };
                             _logger.LogInformation("Autoclose: Updating Search Status SearchRequestId=" + ssgSearchRequest.SearchRequestId + "");
-                            await _searchRequestService.UpdateSearchRequest(ssgSearchRequest.SearchRequestId, updatedFields, cts.Token);
+                            try
+                            {
+                                await _searchRequestService.UpdateSearchRequest(ssgSearchRequest.SearchRequestId, updatedFields, cts.Token);
+
+                            }
+                            catch (Exception e)
+                            {
+                                _logger.LogInformation("Autoclose: Encountered Unexpected Exception");
+                                _logger.LogError(e, e.Message, null);
+                            }
                             _logger.LogInformation("Autoclose: Updated Search Request successfully");
                         }
                     }

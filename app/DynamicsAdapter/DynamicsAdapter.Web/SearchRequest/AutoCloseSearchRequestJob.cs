@@ -73,14 +73,10 @@ namespace DynamicsAdapter.Web.SearchRequest
                     {
                         if (ssgSearchRequest.AutoCloseStatus == SearchRequestAutoCloseStatusCode.ReadyToClose.Value)
                         {
-                            IDictionary<string, object> updatedFields = new Dictionary<string, object>
-                            {
-                                { "statuscode", SearchRequestStatusCode.SearchRequestAutoClosed.Value}
-                            };
                             _logger.LogInformation("Autoclose: Updating Search Status {SearchRequestId}",  ssgSearchRequest.SearchRequestId);
                             try
                             {
-                                await _searchRequestService.UpdateSearchRequest(ssgSearchRequest.SearchRequestId, updatedFields, cts.Token);
+                                await _searchRequestService.UpdateSearchRequestStatusAutoClosed(ssgSearchRequest.SearchRequestId, cts.Token);
                                 count++;
                             }
                             catch (Exception e)

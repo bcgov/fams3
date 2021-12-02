@@ -50,7 +50,8 @@ namespace DynamicsAdapter.Web.SearchRequest
             {
                 _logger.LogInformation("Autoclose: Checking for Search Requests");
                 List<SSG_SearchRequest> requestList = await GetAutoCloseSearchRequestAsync(cts.Token);
-                _logger.LogInformation("Autoclose: Successfully Retrieved {RecordsCount}",+ requestList.Count);
+                _logger.LogInformation("Autoclose: Successfully Retrieved {RecordsCount}", requestList.Count);
+                int count = 0;
                 foreach (SSG_SearchRequest ssgSearchRequest in requestList)
                 {
                     if (ssgSearchRequest.AutoCloseStatus == SearchRequestAutoCloseStatusCode.NoCPMatch.Value ||
@@ -59,7 +60,8 @@ namespace DynamicsAdapter.Web.SearchRequest
                         _logger.LogInformation("Autoclose: Calling ssg_SearchRequestCreateCouldNotAutoCloseNote {SearchRequestId} {AutoCloseStatus}",ssgSearchRequest.SearchRequestId, ssgSearchRequest.AutoCloseStatus);
                         try
                         {
-                            await _searchRequestService.SearchRequestCreateCouldNotAutoCloseNote(ssgSearchRequest.SearchRequestId, cts.Token);
+                            await _searchRequestService.SearchRequestCreateCouldNotAutoCloseNote(ssgSearchRequest.SearchRequestId);
+                            count++;
                         }
                         catch (Exception e)
                         {
@@ -79,6 +81,7 @@ namespace DynamicsAdapter.Web.SearchRequest
                             try
                             {
                                 await _searchRequestService.UpdateSearchRequest(ssgSearchRequest.SearchRequestId, updatedFields, cts.Token);
+                                count++;
                             }
                             catch (Exception e)
                             {
@@ -88,7 +91,7 @@ namespace DynamicsAdapter.Web.SearchRequest
                         }
                     }
                 }
-                _logger.LogInformation("Autoclose: Successfully Processed {SearchRequestCount} Records", requestList.Count);
+                _logger.LogInformation("Autoclose: Successfully Processed {SearchRequestCount} Records", count);
             }
             catch (Exception e)
             {

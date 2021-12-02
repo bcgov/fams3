@@ -50,7 +50,7 @@ namespace DynamicsAdapter.Web.SearchRequest
             {
                 _logger.LogInformation("Autoclose: Checking for Search Requests");
                 List<SSG_SearchRequest> requestList = await GetAutoCloseSearchRequestAsync(cts.Token);
-                _logger.LogInformation("Autoclose: Successfully Retrieved {RecordsCount}",+ requestList.Count);
+                _logger.LogInformation("Autoclose: Successfully Retrieved {RecordsCount}", requestList.Count);
                 int count = 0;
                 foreach (SSG_SearchRequest ssgSearchRequest in requestList)
                 {

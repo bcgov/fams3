@@ -680,10 +680,12 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             int noCPMatch = SearchRequestAutoCloseStatusCode.NoCPMatch.Value;
             int cpMissingData = SearchRequestAutoCloseStatusCode.CPMissingData.Value;
             int readyToClose = SearchRequestAutoCloseStatusCode.ReadyToClose.Value;
+            int autoclosed = SearchRequestStatusCode.SearchRequestAutoClosed.Value;
             IEnumerable<SSG_SearchRequest> searchRequests = await _oDataClient.For<SSG_SearchRequest>()
                 .Filter(x => x.AutoCloseStatus == noCPMatch
                 || x.AutoCloseStatus == cpMissingData
                 || x.AutoCloseStatus == readyToClose)
+                .Filter(x => x.StatusCode != autoclosed)
                 .FindEntriesAsync(cancellationToken);
             return searchRequests;
         }

@@ -112,7 +112,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         {
             Guid invalidGuid = Guid.NewGuid();
             odataClientMock.Setup(
-                x => x.For<SSG_SearchRequest>(null).Filter(It.IsAny<Expression<Func<SSG_SearchRequest, bool>>>())
+                x => x.For<SSG_SearchRequest>(null).Filter(It.IsAny<Expression<Func<SSG_SearchRequest, bool>>>()).Filter(It.IsAny<Expression<Func<SSG_SearchRequest, bool>>>())
                       .FindEntriesAsync(It.IsAny<CancellationToken>()))
                       .Returns(Task.FromResult<IEnumerable<SSG_SearchRequest>>(new List<SSG_SearchRequest>()
                 {

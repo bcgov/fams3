@@ -683,8 +683,8 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             IEnumerable<SSG_SearchRequest> searchRequests = await _oDataClient.For<SSG_SearchRequest>()
                 .Filter(x => x.AutoCloseStatus == noCPMatch
                 || x.AutoCloseStatus == cpMissingData
-                || x.AutoCloseStatus == readyToClose
-                && x.StatusCode != SearchRequestStatusCode.SearchRequestAutoClosed.Value)
+                || x.AutoCloseStatus == readyToClose)
+                .Filter(x => x.StatusCode != SearchRequestStatusCode.SearchRequestAutoClosed.Value)
                 .FindEntriesAsync(cancellationToken);
             return searchRequests;
         }

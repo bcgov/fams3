@@ -724,7 +724,10 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             return await _oDataClient
                 .For<SSG_SearchRequest>()
                 .Key(searchRequestId)
-                .Set(new Entry { { Keys.DYNAMICS_STATUS_CODE_FIELD, SearchRequestStatusCode.SearchRequestAutoClosed.Value } })
+                .Set(new Entry { 
+                    {Keys.DYNAMICS_STATE_CODE_FIELD, 1},
+                    {Keys.DYNAMICS_STATUS_CODE_FIELD, SearchRequestStatusCode.SearchRequestAutoClosed.Value} 
+                })
                 .UpdateEntryAsync(cancellationToken);
         }
 

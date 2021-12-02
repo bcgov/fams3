@@ -50,13 +50,13 @@ namespace DynamicsAdapter.Web.SearchRequest
             {
                 _logger.LogInformation("Autoclose: Checking for Search Requests");
                 List<SSG_SearchRequest> requestList = await GetAutoCloseSearchRequestAsync(cts.Token);
-                _logger.LogInformation("Autoclose: Successfully Retrieved "+ requestList.Count+" Records");
+                _logger.LogInformation("Autoclose: Successfully Retrieved {RecordsCount}",+ requestList.Count);
                 foreach (SSG_SearchRequest ssgSearchRequest in requestList)
                 {
                     if (ssgSearchRequest.AutoCloseStatus == SearchRequestAutoCloseStatusCode.NoCPMatch.Value ||
                         ssgSearchRequest.AutoCloseStatus == SearchRequestAutoCloseStatusCode.CPMissingData.Value)
                     {
-                        _logger.LogInformation("Autoclose: Calling ssg_SearchRequestCreateCouldNotAutoCloseNote SearchRequestId=" + ssgSearchRequest.SearchRequestId + " AutoCloseStatus " + ssgSearchRequest.AutoCloseStatus + "");
+                        _logger.LogInformation("Autoclose: Calling ssg_SearchRequestCreateCouldNotAutoCloseNote {SearchRequestId} {AutoCloseStatus}",ssgSearchRequest.SearchRequestId, ssgSearchRequest.AutoCloseStatus);
                         try
                         {
                             await _searchRequestService.SearchRequestCreateCouldNotAutoCloseNote(ssgSearchRequest.SearchRequestId, cts.Token);
@@ -75,7 +75,7 @@ namespace DynamicsAdapter.Web.SearchRequest
                             {
                                 { "statuscode", SearchRequestStatusCode.SearchRequestAutoClosed.Value}
                             };
-                            _logger.LogInformation("Autoclose: Updating Search Status SearchRequestId=",  ssgSearchRequest.SearchRequestId);
+                            _logger.LogInformation("Autoclose: Updating Search Status {SearchRequestId}",  ssgSearchRequest.SearchRequestId);
                             try
                             {
                                 await _searchRequestService.UpdateSearchRequest(ssgSearchRequest.SearchRequestId, updatedFields, cts.Token);

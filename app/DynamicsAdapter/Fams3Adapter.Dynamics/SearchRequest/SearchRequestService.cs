@@ -75,7 +75,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         Task<bool> UpdateApiCall(Guid apiCallGuid, bool success, string notes, CancellationToken cancellationToken);
         Task<SSG_SearchRequest> GetCurrentSearchRequest(Guid searchRequestId);
         Task<IEnumerable<SSG_SearchRequest>> GetAutoCloseSearchRequestAsync(CancellationToken cancellationToken);
-        Task<bool> SearchRequestCreateCouldNotAutoCloseNote(Guid searchRequestId);
+        Task<bool> SearchRequestCreateCouldNotAutoCloseNote(Guid searchRequestId, CancellationToken cancellationToken);
     }
 
     /// <summary>
@@ -712,9 +712,9 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             }
         }
 
-        public async Task<bool> SearchRequestCreateCouldNotAutoCloseNote(Guid searchRequestId)
+        public async Task<bool> SearchRequestCreateCouldNotAutoCloseNote(Guid searchRequestId, CancellationToken cancellationToken)
         {
-            await _oDataClient.For<SSG_SearchRequest>().Key(searchRequestId).Action("ssg_SearchRequestCreateCouldNotAutoCloseNote").ExecuteAsSingleAsync();
+            await _oDataClient.For<SSG_SearchRequest>().Key(searchRequestId).Action("ssg_SearchRequestCreateCouldNotAutoCloseNote").ExecuteAsSingleAsync(cancellationToken);
             return true;
         }
 

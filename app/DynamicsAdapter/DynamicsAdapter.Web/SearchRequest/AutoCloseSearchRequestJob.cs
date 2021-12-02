@@ -50,14 +50,21 @@ namespace DynamicsAdapter.Web.SearchRequest
             {
                 _logger.LogInformation("Autoclose: Checking for Search Requests");
                 List<SSG_SearchRequest> requestList = await GetAutoCloseSearchRequestAsync(cts.Token);
-                _logger.LogInformation("Autoclose: Successfully Retrieved "+ requestList.Count+" Records");
+                _logger.LogInformation("Autoclose: Successfully Retrieved {RecordsCount}",+ requestList.Count);
                 foreach (SSG_SearchRequest ssgSearchRequest in requestList)
                 {
                     if (ssgSearchRequest.AutoCloseStatus == SearchRequestAutoCloseStatusCode.NoCPMatch.Value ||
                         ssgSearchRequest.AutoCloseStatus == SearchRequestAutoCloseStatusCode.CPMissingData.Value)
                     {
-                        _logger.LogInformation("Autoclose: Calling ssg_SearchRequestCreateCouldNotAutoCloseNote SearchRequestId=" + ssgSearchRequest.SearchRequestId + " AutoCloseStatus "+ssgSearchRequest.AutoCloseStatus+"");
-                        await _searchRequestService.SearchRequestCreateCouldNotAutoCloseNote(ssgSearchRequest.SearchRequestId);
+                        _logger.LogInformation("Autoclose: Calling ssg_SearchRequestCreateCouldNotAutoCloseNote {SearchRequestId} {AutoCloseStatus}",ssgSearchRequest.SearchRequestId, ssgSearchRequest.AutoCloseStatus);
+                        try
+                        {
+                            await _searchRequestService.SearchRequestCreateCouldNotAutoCloseNote(ssgSearchRequest.SearchRequestId, cts.Token);
+                        }
+                        catch (Exception e)
+                        {
+                            _logger.LogError(e, "Autoclose: Encountered Unexpected Exception", null);
+                        }
                         _logger.LogInformation("Autoclose: ssg_SearchRequestCreateCouldNotAutoCloseNote successfully");
                     }
                     else
@@ -68,18 +75,24 @@ namespace DynamicsAdapter.Web.SearchRequest
                             {
                                 { "statuscode", SearchRequestStatusCode.SearchRequestAutoClosed.Value}
                             };
-                            _logger.LogInformation("Autoclose: Updating Search Status SearchRequestId=" + ssgSearchRequest.SearchRequestId + "");
-                            await _searchRequestService.UpdateSearchRequest(ssgSearchRequest.SearchRequestId, updatedFields, cts.Token);
+                            _logger.LogInformation("Autoclose: Updating Search Status {SearchRequestId}",  ssgSearchRequest.SearchRequestId);
+                            try
+                            {
+                                await _searchRequestService.UpdateSearchRequest(ssgSearchRequest.SearchRequestId, updatedFields, cts.Token);
+                            }
+                            catch (Exception e)
+                            {
+                                _logger.LogError(e, "Autoclose: Encountered Unexpected Exception", null);
+                            }
                             _logger.LogInformation("Autoclose: Updated Search Request successfully");
                         }
                     }
                 }
-                _logger.LogInformation("Autoclose: Successfully Processed " + requestList.Count + " Records");
+                _logger.LogInformation("Autoclose: Successfully Processed {SearchRequestCount} Records", requestList.Count);
             }
             catch (Exception e)
             {
-                _logger.LogInformation("Autoclose: Encountered Unexpected Exception");
-                _logger.LogError(e, e.Message, null);
+                _logger.LogError(e, "Autoclose: Encountered Unexpected Exception", null);
             }
         }
 

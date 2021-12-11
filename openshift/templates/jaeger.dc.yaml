@@ -212,7 +212,7 @@ objects:
       targetPort: 16686
     selector:
       jaeger-infra: query-pod
-    type: LoadBalancer
+    type: ClusterIP
 - apiVersion: v1
   kind: Route
   metadata:

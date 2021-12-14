@@ -73,7 +73,7 @@ objects:
     name: ${CLUSTER_NAME}-balancer
     labels:
       app: ${CLUSTER_NAME}
-      type: LoadBalancer
+      type: ClusterIP
   spec:
     type: ClusterIP
     ports:

@@ -10,7 +10,7 @@
     <PackageReference Include="Jaeger" Version="0.4.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.6" />
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="3.1.6" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="OpenTracing" Version="0.12.1" />
     <PackageReference Include="OpenTracing.Contrib.NetCore" Version="0.6.2" />
     <PackageReference Include="System.net.Security" Version="4.3.2" />

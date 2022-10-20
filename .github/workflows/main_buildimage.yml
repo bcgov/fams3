@@ -15,20 +15,15 @@ on:
             description: 'Target image tag to build and deploy'     
             required: true
             default: 'dev'
-        env:
-            description: 'Target Env'  
-            required: true
-            default: 'dev'
       
 jobs:
   build-push-image:
     name: build-push-image
     runs-on: ubuntu-latest
-    environment: ${{ github.event.inputs.env }}
+    environment: ${{ github.event.inputs.tag }}
     env: 
       app: ${{github.event.inputs.app}}
       tag: ${{github.event.inputs.tag}}
-      targetenv: ${{ github.event.inputs.env }}
 
     steps:
       - name: Checkout Code
@@ -53,7 +48,6 @@ jobs:
           echo "Release App: ${{ env.app }}"
           echo "Project Build Path: ${PROJECT_PATH}"
           echo "Release Tag: ${{ env.tag }}"
-          echo "Release Env: ${{ env.targetenv }}"
 
       - name: Login to OpenShift Container Repository
         uses: docker/login-action@v1

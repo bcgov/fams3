@@ -66,7 +66,17 @@ jobs:
           gitSha: ${{ env.gitsha }}
         run: |
           oc tag ${openshiftIImageRegistry}/${openshiftToolsNamespace}/${appName}:${imageSourceEnv} ${appName}:${imageTargetEnv}
-          oc tag ${openshiftIImageRegistry}/${openshiftToolsNamespace}/${appName}:${imageTargetEnv} ${appName}:${gitSha}
+      
+      - name: Backup Prod image for any future release rollbackups
+        if: ${{ github.event.inputs.imageTargetEnv == 'exptest' }}
+        env:
+          appName: ${{ github.event.inputs.app }}
+          imageTargetEnv: ${{ github.event.inputs.imageTargetEnv }}
+          openshiftToolsNamespace: ${{secrets.OPENSHIFT_TOOLS_NAMESPACE}}
+          openshiftIImageRegistry: ${{secrets.OPENSHIFT_INTERNAL_REPOSITORY}}
+          gitSha: ${{ env.gitsha }}
+        run: |
+          oc tag ${openshiftIImageRegistry}/${openshiftToolsNamespace}/${appName}:${imageTargetEnv} ${appName}:${imageTargetEnv}-${gitSha}
       
         #Login to Openshift using OC SA and Token of respective env. for Pod labelling
       - name: Authenticate OC Env Specific SA

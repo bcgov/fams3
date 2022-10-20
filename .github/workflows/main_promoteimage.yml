@@ -63,7 +63,6 @@ jobs:
           imageTargetEnv: ${{ github.event.inputs.imageTargetEnv }}
           openshiftToolsNamespace: ${{secrets.OPENSHIFT_TOOLS_NAMESPACE}}
           openshiftIImageRegistry: ${{secrets.OPENSHIFT_INTERNAL_REPOSITORY}}
-          gitSha: ${{ env.gitsha }}
         run: |
           oc tag ${openshiftIImageRegistry}/${openshiftToolsNamespace}/${appName}:${imageSourceEnv} ${appName}:${imageTargetEnv}
       

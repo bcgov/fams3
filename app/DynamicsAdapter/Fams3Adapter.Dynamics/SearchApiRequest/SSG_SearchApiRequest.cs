@@ -64,6 +64,9 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
         [JsonProperty("ssg_jcadateofbirth")]
         public DateTime? JCAPersonBirthDate { get; set; }
 
+        [JsonProperty("ssg_jcasocialinsurancenumber")]
+        public string JCASocialInsuranceNumber { get; set; }
+
         [JsonProperty("ssg_jcanotes")]
         public string JCANotes { get; set; }
 

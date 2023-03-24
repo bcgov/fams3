@@ -85,6 +85,7 @@ namespace DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.MotherMaidName, opt => opt.MapFrom(src => src.JCAMotherBirthSurname))
                  .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.JCANotes))
                  .ForMember(dest => dest.BirthDate, opt => opt.MapFrom(src => src.JCAPersonBirthDate))
+                 .ForMember(dest => dest.SocialInsuranceNumber, opt => opt.MapFrom(src => src.JCASocialInsuranceNumber))
                  .ForMember(dest => dest.Gender, opt => opt.ConvertUsing(new PersonGenderTypeConverter(), src => src.JCAGender));
 
             CreateMap<PersonSearchAccepted, SSG_SearchApiEvent>()

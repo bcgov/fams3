@@ -13,5 +13,6 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         public DateTime? BirthDate { get; set; }
         public string Notes { get; set; }
         public string Gender { get; set; }
+        public string SocialInsuranceNumber { get; set; }
     }
 }

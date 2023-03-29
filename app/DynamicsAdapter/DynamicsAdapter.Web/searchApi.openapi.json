@@ -1628,7 +1628,7 @@
         "gender": {
           "type": "string"
         },
-        "socialinsurancenumber": {
+        "socialInsuranceNumber": {
           "type": "string"
         },
       }

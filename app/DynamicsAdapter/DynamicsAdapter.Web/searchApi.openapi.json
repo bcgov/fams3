@@ -1627,7 +1627,10 @@
         },
         "gender": {
           "type": "string"
-        }
+        },
+        "socialinsurancenumber": {
+          "type": "string"
+        },
       }
     },
     "User": {

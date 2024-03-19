@@ -146,7 +146,6 @@ namespace DynamicsAdapter.Web.Mapping
         {
             return new Agency
             {
-                Code = source?.SearchRequest?.AgencyCode,
                 ReasonCode = source.SearchRequest?.SearchReason?.ReasonCode switch
                 {
                     "EnfPayAgr" => SearchReasonCode.EnfPayAgr,

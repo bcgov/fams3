@@ -93,7 +93,7 @@ namespace DynamicsAdapter.Web.PersonSearch
 
             await UploadAddresses();
 
-            //TODO await UploadTaxIncomeInformations();
+            await UploadTaxIncomeInformations();
 
             await UploadPhoneNumbers();
 

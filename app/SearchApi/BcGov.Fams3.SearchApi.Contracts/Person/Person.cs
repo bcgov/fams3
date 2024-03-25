@@ -46,6 +46,7 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         public IEnumerable<BankInfo> BankInfos { get; set; }
         public IEnumerable<Vehicle> Vehicles { get; set; }
         public IEnumerable<OtherAsset> OtherAssets { get; set; }
+        public IEnumerable<TaxIncomeInformation> TaxIncomeInformations { get; set; }
         public IEnumerable<CompensationClaim> CompensationClaims { get; set; }
         public IEnumerable<InsuranceClaim> InsuranceClaims { get; set; }
         public IEnumerable<ResponseNote> ResponseNotes { get; set; }

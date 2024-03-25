@@ -6,9 +6,9 @@
     "description": "For Search",
     "version": "V0.1"
   },
-  "host": "localhost:5050",
+  "host": "search-api-dfb30e-dev.apps.silver.devops.gov.bc.ca",
   "schemes": [
-    "http"
+    "https"
   ],
   "consumes": [
     "application/json-patch+json",
@@ -279,6 +279,12 @@
               "type": "array",
               "items": {
                 "$ref": "#/definitions/OtherAsset"
+              }
+            },
+            "taxIncomeInformations": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/TaxIncomeInformation"
               }
             },
             "compensationClaims": {
@@ -1217,6 +1223,50 @@
         }
       ]
     },
+    "TaxIncomeInformation": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/PersonalInfo"
+        },
+        {
+          "type": "object",
+          "required": [
+            "date"
+          ],
+          "properties": {
+            "taxYear": {
+              "type": "string",
+              "description": "Tax Year of Result"
+            },
+            "commissionIncomeT4Amount": {
+              "type": "string",
+              "description": "Commission Income T4 Amount"
+            },
+            "emergencyVolunteerExemptIncomeAmount": {
+              "type": "string",
+              "description": "Emergency Volunteer Exempt Income Amount"
+            },
+            "employmentIncomeT4Amount": {
+              "type": "string",
+              "description": "Employment Income T4 Amount"
+            },
+            "date": {
+              "type": "string",
+              "description": "Date",
+              "format": "date-time"
+            },
+            "jcaCode": {
+              "type": "string",
+              "description": "JCA Code"
+            },
+            "taxTraceStatusText": {
+              "type": "string",
+              "description": "Text for the Trace Status Code"
+            }
+          }
+        }
+      ]
+    },
     "CompensationClaim": {
       "allOf": [
         {
@@ -1631,6 +1681,21 @@
         "socialInsuranceNumber": {
           "type": "string"
         },
+        "submitterCode": {
+          "type": "string"
+        },
+        "reasonCode": {
+          "type": "string"
+        },
+        "sinInformation": {
+          "type": "string"
+        },
+        "taxIncomeInformation": {
+          "type": "string"
+        },
+        "tracingInformation": {
+          "type": "string"
+        }
       }
     },
     "User": {

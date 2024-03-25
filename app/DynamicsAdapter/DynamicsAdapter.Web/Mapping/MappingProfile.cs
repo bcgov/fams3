@@ -86,7 +86,12 @@ namespace DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.JCANotes))
                  .ForMember(dest => dest.BirthDate, opt => opt.MapFrom(src => src.JCAPersonBirthDate))
                  .ForMember(dest => dest.Gender, opt => opt.ConvertUsing(new PersonGenderTypeConverter(), src => src.JCAGender))
-                 .ForMember(dest => dest.SocialInsuranceNumber, opt => opt.MapFrom(src => src.JCASocialInsuranceNumber));
+                 .ForMember(dest => dest.SocialInsuranceNumber, opt => opt.MapFrom(src => src.JCASocialInsuranceNumber))
+                 .ForMember(dest => dest.SubmitterCode, opt => opt.MapFrom(src => src.JCASubmitterCode))
+                 .ForMember(dest => dest.ReasonCode, opt => opt.MapFrom(src => src.JCAReasonCode))
+                 .ForMember(dest => dest.SinInformation, opt => opt.MapFrom(src => src.JCASinInformation))
+                 .ForMember(dest => dest.TaxIncomeInformation, opt => opt.MapFrom(src => src.JCATaxIncomeInformation))
+                 .ForMember(dest => dest.TracingInformation, opt => opt.MapFrom(src => src.JCATracingInformation));
 
             CreateMap<PersonSearchAccepted, SSG_SearchApiEvent>()
               .ForMember(dest => dest.EventType, opt => opt.MapFrom(src => Keys.EVENT_ACCEPTED))
@@ -166,6 +171,16 @@ namespace DynamicsAdapter.Web.Mapping
                     .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
                     .ForMember(dest => dest.StateProvince, opt => opt.MapFrom(src => src.CountrySubdivisionText))
                     .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new AddressTypeResponseConverter(), src => src.Category));
+
+            CreateMap<TaxIncomeInformation, TaxIncomeInformationEntity>()
+                 .ForMember(dest => dest.TaxTraceStatusText, opt => opt.MapFrom(src => src.TaxTraceStatusText))
+                 .ForMember(dest => dest.TaxYear, opt => opt.MapFrom(src => src.TaxYear))
+                 .ForMember(dest => dest.CommissionIncomeT4Amount, opt => opt.MapFrom(src => src.CommissionIncomeT4Amount))
+                 .ForMember(dest => dest.EmergencyVolunteerExemptIncomeAmount, opt => opt.MapFrom(src => src.EmergencyVolunteerExemptIncomeAmount))
+                 .ForMember(dest => dest.EmploymentIncomeT4Amount, opt => opt.MapFrom(src => src.EmploymentIncomeT4Amount))
+                 .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.Date))
+                 .ForMember(dest => dest.JCACode, opt => opt.MapFrom(src => src.JcaCode))
+                 .ForMember(dest => dest.TaxTraceStatusText, opt => opt.MapFrom(src => src.TaxTraceStatusText));
 
             CreateMap<Employment, EmploymentEntity>()
               .ForMember(dest => dest.AddressLine1, opt => opt.MapFrom(src => (src.Employer == null) ? string.Empty : (src.Employer.Address == null) ? string.Empty : src.Employer.Address.AddressLine1))

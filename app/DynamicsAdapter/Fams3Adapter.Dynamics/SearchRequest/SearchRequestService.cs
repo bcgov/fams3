@@ -35,6 +35,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
     {
         Task<SSG_Identifier> CreateIdentifier(IdentifierEntity identifier, CancellationToken cancellationToken);
         Task<SSG_Address> CreateAddress(AddressEntity address, CancellationToken cancellationToken);
+        Task<SSG_Taxincomeinformation> CreateTaxIncomeInformation(TaxIncomeInformationEntity taxinfo, CancellationToken cancellationToken);
         Task<SSG_PhoneNumber> CreatePhoneNumber(PhoneNumberEntity phoneNumber, CancellationToken cancellationToken);
         Task<SSG_Email> CreateEmail(EmailEntity email, CancellationToken cancellationToken);
         Task<SSG_SafetyConcernDetail> CreateSafetyConcern(SafetyConcernEntity safety, CancellationToken cancellationToken);
@@ -196,6 +197,19 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             address.CountrySubdivision = subdivision;
 
             return await this._oDataClient.For<SSG_Address>().Set(address).InsertEntryAsync(cancellationToken);
+
+        }
+
+        public async Task<SSG_Taxincomeinformation> CreateTaxIncomeInformation(TaxIncomeInformationEntity taxinfo, CancellationToken cancellationToken)
+        {
+            if (taxinfo.Person.IsDuplicated)
+            {
+                Guid duplicatedTaxInfoId = await _duplicateDetectService.Exists(taxinfo.Person, taxinfo);
+                if (duplicatedTaxInfoId != Guid.Empty)
+                    return new SSG_Taxincomeinformation() { TaxincomeinformationId = duplicatedTaxInfoId };
+            }
+
+            return await this._oDataClient.For<SSG_Taxincomeinformation>().Set(taxinfo).InsertEntryAsync(cancellationToken);
 
         }
 

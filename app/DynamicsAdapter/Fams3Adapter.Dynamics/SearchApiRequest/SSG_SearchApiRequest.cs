@@ -73,6 +73,20 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
         [JsonProperty("ssg_jcasocialinsurancenumber")]
         public string JCASocialInsuranceNumber { get; set; }
 
+        [JsonProperty("ssg_jcasubmittercode")]
+        public string JCASubmitterCode { get; set; }
+
+        [JsonProperty("ssg_jcareasoncode")]
+        public string JCAReasonCode { get; set; }
+
+        [JsonProperty("ssg_jcasininformation")]
+        public string JCASinInformation { get; set; }
+
+        [JsonProperty("ssg_jcataxincomeinformation")]
+        public string JCATaxIncomeInformation { get; set; }
+
+        [JsonProperty("ssg_jcatracinginformation")]
+        public string JCATracingInformation { get; set; }
         [JsonProperty("ssg_triggeredby")]
         public string TiggeredBy { get; set; }
 

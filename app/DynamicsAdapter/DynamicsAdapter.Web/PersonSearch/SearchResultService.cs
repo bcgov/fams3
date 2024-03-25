@@ -93,6 +93,8 @@ namespace DynamicsAdapter.Web.PersonSearch
 
             await UploadAddresses();
 
+            await UploadTaxIncomeInformations();
+
             await UploadPhoneNumbers();
 
             await UploadNames( );
@@ -231,6 +233,31 @@ namespace DynamicsAdapter.Web.PersonSearch
                     addr.Person = _returnedPerson;
                     SSG_Address uploadedAddr = await _searchRequestService.CreateAddress(addr, _cancellationToken);
                     await CreateResultTransaction(uploadedAddr);
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LogException(ex);
+                return false;
+            }
+        }
+
+        private async Task<bool> UploadTaxIncomeInformations()
+        {
+            if (_foundPerson.TaxIncomeInformations == null) return true;
+            try
+            {
+                _logger.LogDebug($"Attempting to create found tax income information records for SearchRequest[{_searchRequest.SearchRequestId}]");
+
+                foreach (var taxinfo in _foundPerson.TaxIncomeInformations)
+                {
+                    TaxIncomeInformationEntity txin = _mapper.Map<TaxIncomeInformationEntity>(taxinfo);
+                    txin.SearchRequest = _searchRequest;
+                    txin.InformationSource = _providerDynamicsID;
+                    txin.Person = _returnedPerson;
+                    SSG_Taxincomeinformation uploadedTxin = await _searchRequestService.CreateTaxIncomeInformation(txin, _cancellationToken);
+                    await CreateResultTransaction(uploadedTxin);
                 }
                 return true;
             }

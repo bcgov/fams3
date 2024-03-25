@@ -14,5 +14,10 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         public string Notes { get; set; }
         public string Gender { get; set; }
         public string SocialInsuranceNumber { get; set; }
+        public string SubmitterCode { get; set; }
+        public string ReasonCode { get; set; }
+        public string SinInformation { get; set; }
+        public string TaxIncomeInformation { get; set; }
+        public string TracingInformation { get; set; }
     }
 }

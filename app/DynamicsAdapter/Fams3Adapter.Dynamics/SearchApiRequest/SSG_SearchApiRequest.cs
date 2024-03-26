@@ -86,7 +86,7 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
         public string JCATaxIncomeInformation { get; set; }
 
         [JsonProperty("ssg_jcatracinginformation")]
-        public string JCATracingInformation { get; set; }
+        public int? JCATracingInformation { get; set; }
         [JsonProperty("ssg_triggeredby")]
         public string TiggeredBy { get; set; }
 

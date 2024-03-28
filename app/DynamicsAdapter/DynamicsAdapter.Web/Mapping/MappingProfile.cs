@@ -178,7 +178,7 @@ namespace DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.CommissionIncomeT4Amount, opt => opt.MapFrom(src => src.CommissionIncomeT4Amount))
                  .ForMember(dest => dest.EmergencyVolunteerExemptIncomeAmount, opt => opt.MapFrom(src => src.EmergencyVolunteerExemptIncomeAmount))
                  .ForMember(dest => dest.EmploymentIncomeT4Amount, opt => opt.MapFrom(src => src.EmploymentIncomeT4Amount))
-                 .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.Date))
+                 .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.Date.DateTime))
                  .ForMember(dest => dest.JCACode, opt => opt.MapFrom(src => src.JcaCode))
                  .ForMember(dest => dest.TaxTraceStatusText, opt => opt.MapFrom(src => src.TaxTraceStatusText));
 

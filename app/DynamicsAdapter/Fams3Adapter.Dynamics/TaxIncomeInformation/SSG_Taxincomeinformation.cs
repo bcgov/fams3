@@ -51,7 +51,7 @@ namespace Fams3Adapter.Dynamics.Address
         public bool CouldNotLocate { get; set; }
     }
 
-    public class SSG_Taxincomeinformation : AddressEntity
+    public class SSG_Taxincomeinformation : TaxIncomeInformationEntity
     {
         [JsonProperty("ssg_taxincomeinformationid")]
         public Guid TaxincomeinformationId { get; set; }

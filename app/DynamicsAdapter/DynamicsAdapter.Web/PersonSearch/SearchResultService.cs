@@ -2,6 +2,7 @@ using AutoMapper;
 using DynamicsAdapter.Web.PersonSearch.Models;
 using Fams3Adapter.Dynamics;
 using Fams3Adapter.Dynamics.Address;
+using Fams3Adapter.Dynamics.TaxIncomeInformation;
 using Fams3Adapter.Dynamics.AssetOwner;
 using Fams3Adapter.Dynamics.BankInfo;
 using Fams3Adapter.Dynamics.CompensationClaim;

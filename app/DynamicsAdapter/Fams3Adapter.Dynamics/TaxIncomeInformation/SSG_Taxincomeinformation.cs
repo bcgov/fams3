@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 using System;
 using System.ComponentModel;
 
-namespace Fams3Adapter.Dynamics.Address
+namespace Fams3Adapter.Dynamics.TaxIncomeInformation
 {
     public class TaxIncomeInformationEntity : DynamicsEntity
     {

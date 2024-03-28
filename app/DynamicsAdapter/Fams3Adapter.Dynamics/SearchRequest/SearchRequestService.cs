@@ -1,4 +1,5 @@
 using Fams3Adapter.Dynamics.Address;
+using Fams3Adapter.Dynamics.TaxIncomeInformation;
 using Fams3Adapter.Dynamics.Agency;
 using Fams3Adapter.Dynamics.APICall;
 using Fams3Adapter.Dynamics.AssetOwner;

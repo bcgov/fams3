@@ -25,10 +25,6 @@ namespace Fams3Adapter.Dynamics.TaxIncomeInformation
         [Description("Employment Income T4 Amount")]
         public string EmploymentIncomeT4Amount { get; set; }
 
-        [JsonProperty("ssg_datadate")]
-        [Description("Date")]
-        public DateTime Date { get; set; }
-
         [JsonProperty("ssg_jcacode")]
         [Description("JCA Code")]
         public string JCACode { get; set; }

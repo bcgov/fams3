@@ -14,6 +14,7 @@ using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.RelatedPerson;
 using Fams3Adapter.Dynamics.SearchRequest;
+using Fams3Adapter.Dynamics.TaxIncomeInformation;
 using Fams3Adapter.Dynamics.Types;
 using Fams3Adapter.Dynamics.Vehicle;
 using Moq;
@@ -129,6 +130,11 @@ namespace Fams3Adapter.Dynamics.Test.Duplicate
                      {
                          EntityName = "ssg_email",
                          DuplicateFields = "ssg_email"
+                     },
+                     new SSG_DuplicateDetectionConfig()
+                     {
+                         EntityName = "ssg_taxincomeinformation",
+                         DuplicateFields = "ssg_taxyear|ssg_employmentincomet4amount"
                      }
                 }));
 
@@ -847,6 +853,53 @@ namespace Fams3Adapter.Dynamics.Test.Duplicate
             VehicleEntity entity = new VehicleEntity() { Vin = "vin", PlateNumber = "111" };
             bool b = await _sut.Same(entity, null);
             Assert.AreEqual(false, b);
+        }
+
+        [Test]
+        public async Task taxinfo_has_same_t4amount_should_return_existed_entity_guid()
+        {
+            DuplicateDetectionService._configs = null;
+            Guid existedTaxInfoId = Guid.NewGuid();
+            SSG_Person person = new SSG_Person()
+            {
+                SSG_Taxincomeinformations = new List<SSG_Taxincomeinformation>() {
+                    new SSG_Taxincomeinformation{TaxYear="2022", EmploymentIncomeT4Amount="100", TaxincomeinformationId=existedTaxInfoId}
+                }.ToArray()
+            };
+            TaxIncomeInformationEntity entity = new TaxIncomeInformationEntity() { TaxYear = "2022", EmploymentIncomeT4Amount = "100" };
+            Guid guid = await _sut.Exists(person, entity);
+            Assert.AreEqual(existedTaxInfoId, guid);
+        }
+
+        [Test]
+        public async Task taxinfo_does_not_contain_same_t4amount_should_return_empty_guid()
+        {
+            DuplicateDetectionService._configs = null;
+            Guid existedTaxInfoId = Guid.NewGuid();
+            SSG_Person person = new SSG_Person()
+            {
+                SSG_Taxincomeinformations = new List<SSG_Taxincomeinformation>() {
+                    new SSG_Taxincomeinformation{TaxYear="2022", EmploymentIncomeT4Amount="100", TaxincomeinformationId=existedTaxInfoId}
+                }.ToArray()
+            };
+            TaxIncomeInformationEntity entity = new TaxIncomeInformationEntity() { TaxYear = "2022", EmploymentIncomeT4Amount="200" };
+            Guid guid = await _sut.Exists(person, entity);
+            Assert.AreEqual(Guid.Empty, guid);
+        }
+
+        public async Task taxinfo_does_not_contain_same_taxyear_should_return_empty_guid()
+        {
+            DuplicateDetectionService._configs = null;
+            Guid existedTaxInfoId = Guid.NewGuid();
+            SSG_Person person = new SSG_Person()
+            {
+                SSG_Taxincomeinformations = new List<SSG_Taxincomeinformation>() {
+                    new SSG_Taxincomeinformation{TaxYear="2022", EmploymentIncomeT4Amount="100", TaxincomeinformationId=existedTaxInfoId}
+                }.ToArray()
+            };
+            TaxIncomeInformationEntity entity = new TaxIncomeInformationEntity() { TaxYear = "2023", EmploymentIncomeT4Amount = "100" };
+            Guid guid = await _sut.Exists(person, entity);
+            Assert.AreEqual(Guid.Empty, guid);
         }
     }
 

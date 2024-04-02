@@ -21,6 +21,7 @@ using Fams3Adapter.Dynamics.SafetyConcern;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Fams3Adapter.Dynamics.SearchResponse;
 using Fams3Adapter.Dynamics.SocialMedia;
+using Fams3Adapter.Dynamics.TaxIncomeInformation;
 using Fams3Adapter.Dynamics.Types;
 using Fams3Adapter.Dynamics.Vehicle;
 using NUnit.Framework;
@@ -127,6 +128,10 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 SSG_Electronicas = new List<SSG_Electronica>
                 {
                      new SSG_Electronica{ SocialMediaAddress="addr" }
+                }.ToArray(),
+                SSG_Taxincomeinformations = new List<SSG_Taxincomeinformation>
+                {
+                     new SSG_Taxincomeinformation{ TaxYear="2003" }
                 }.ToArray(),
             };
             Person person = _mapper.Map<Person>(response);

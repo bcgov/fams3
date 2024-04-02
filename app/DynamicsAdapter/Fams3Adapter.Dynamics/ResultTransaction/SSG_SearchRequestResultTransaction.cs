@@ -12,6 +12,7 @@ using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.RelatedPerson;
 using Fams3Adapter.Dynamics.SafetyConcern;
 using Fams3Adapter.Dynamics.SearchApiRequest;
+using Fams3Adapter.Dynamics.TaxIncomeInformation;
 using Fams3Adapter.Dynamics.Vehicle;
 using Newtonsoft.Json;
 
@@ -64,6 +65,9 @@ namespace Fams3Adapter.Dynamics.ResultTransaction
         [JsonProperty("ssg_SafetyConcernDetail")]
         public virtual SSG_SafetyConcernDetail SafetyConcern { get; set; }
 
+        [JsonProperty("ssg_taxincomeinformation")]
+        public virtual SSG_Taxincomeinformation Taxincomeinformation { get; set; }
+        
         [JsonProperty("ssg_SearchAPIRequest")]
         public virtual SSG_SearchApiRequest SearchApiRequest { get; set; }
 

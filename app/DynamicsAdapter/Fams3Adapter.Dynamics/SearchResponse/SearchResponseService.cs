@@ -71,6 +71,7 @@ namespace Fams3Adapter.Dynamics.SearchResponse
                 .Expand(x => x.SSG_Asset_RealEstatePropertys)
                 .Expand(x => x.SSG_Emails)
                 .Expand(x => x.SSG_Electronicas)
+                .Expand(x => x.SSG_Taxincomeinformations)
                 .FindEntryAsync(cancellationToken);
            
             if(ssgSearchResponse.SSG_SearchRequests != null)

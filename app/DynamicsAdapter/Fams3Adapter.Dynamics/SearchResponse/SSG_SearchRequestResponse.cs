@@ -20,7 +20,7 @@ using Fams3Adapter.Dynamics.Vehicle;
 using Fams3Adapter.Dynamics.SocialMedia;
 using Newtonsoft.Json;
 using System;
-
+using Fams3Adapter.Dynamics.TaxIncomeInformation;
 
 namespace Fams3Adapter.Dynamics.SearchResponse
 {
@@ -83,6 +83,9 @@ namespace Fams3Adapter.Dynamics.SearchResponse
         [JsonProperty("ssg_ssg_searchrequestresponse_ssg_phonenumber")]
         public SSG_PhoneNumber[] SSG_PhoneNumbers { get; set; }
 
+        [JsonProperty("ssg_ssg_searchrequestresponse_ssg_taxincomeinformation_Responseid")]
+        public SSG_Taxincomeinformation[] SSG_Taxincomeinformations { get; set; }
+        
         [JsonProperty("ssg_ssg_searchrequestresponse_ssg_safetyconcerndetail_ResponseId")]
         public SSG_SafetyConcernDetail[] SSG_SafetyConcernDetails { get; set; }
 

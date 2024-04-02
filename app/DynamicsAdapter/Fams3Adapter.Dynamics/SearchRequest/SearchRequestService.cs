@@ -203,7 +203,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
         public async Task<SSG_Taxincomeinformation> CreateTaxIncomeInformation(TaxIncomeInformationEntity taxinfo, CancellationToken cancellationToken)
         {
-            if (taxinfo.Person.IsDuplicated)
+            /*if (taxinfo.Person.IsDuplicated)
             {
                 _logger.LogDebug("Checking Tax Info Dupes");
                 Guid duplicatedTaxInfoId = await _duplicateDetectService.Exists(taxinfo.Person, taxinfo);
@@ -216,7 +216,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                 {
                     _logger.LogDebug("No Duplicate Tax Info Found");
                 }
-            }
+            }*/
 
             _logger.LogDebug("Inserting Tax Info to Dynamics ");
             _logger.LogDebug("ssg_taxyear: " + taxinfo.TaxYear);

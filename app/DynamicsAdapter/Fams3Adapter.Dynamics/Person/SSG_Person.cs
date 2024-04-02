@@ -11,6 +11,7 @@ using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.RelatedPerson;
 using Fams3Adapter.Dynamics.SafetyConcern;
 using Fams3Adapter.Dynamics.SearchRequest;
+using Fams3Adapter.Dynamics.TaxIncomeInformation;
 using Fams3Adapter.Dynamics.Update;
 using Fams3Adapter.Dynamics.Vehicle;
 using Newtonsoft.Json;
@@ -156,6 +157,9 @@ namespace Fams3Adapter.Dynamics.Person
 
         [JsonProperty("ssg_ssg_person_ssg_email")]
         public SSG_Email[] SSG_Emails { get; set; }
+
+        [JsonProperty("ssg_ssg_person_ssg_taxincomeinformation_Personid")]
+        public SSG_Taxincomeinformation[] SSG_Taxincomeinformations { get; set; }
 
         public bool IsDuplicated { get; set; }
         public override string ToString()

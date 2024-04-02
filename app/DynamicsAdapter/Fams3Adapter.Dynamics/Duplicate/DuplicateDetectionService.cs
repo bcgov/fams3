@@ -14,6 +14,7 @@ using Fams3Adapter.Dynamics.PhoneNumber;
 using Fams3Adapter.Dynamics.RelatedPerson;
 using Fams3Adapter.Dynamics.SafetyConcern;
 using Fams3Adapter.Dynamics.SearchRequest;
+using Fams3Adapter.Dynamics.TaxIncomeInformation;
 using Fams3Adapter.Dynamics.Vehicle;
 using Newtonsoft.Json;
 using Simple.OData.Client;
@@ -59,7 +60,8 @@ namespace Fams3Adapter.Dynamics.Duplicate
             {"InvolvedPartyEntity","ssg_involvedparty" },
             {"NotesEntity","ssg_notese" },
             {"SafetyConcernEntity", "ssg_safetyconcerndetail" },
-            {"EmailEntity", "ssg_email" }
+            {"EmailEntity", "ssg_email" },
+            {"TaxIncomeInformationEntity", "ssg_taxincomeinformation" }
         };
 
         public DuplicateDetectionService(IODataClient oDataClient)
@@ -222,6 +224,12 @@ namespace Fams3Adapter.Dynamics.Duplicate
                     foreach (SSG_Email email in ((SSG_Person)fatherObj).SSG_Emails)
                     {
                         if (await Same(entity, email)) return email.EmailId;
+                    };
+                    break;
+                case "TaxIncomeInformationEntity":
+                    foreach (SSG_Taxincomeinformation taxinfo in ((SSG_Person)fatherObj).SSG_Taxincomeinformations)
+                    {
+                        if (await Same(entity, taxinfo)) return taxinfo.TaxincomeinformationId;
                     };
                     break;
             }            

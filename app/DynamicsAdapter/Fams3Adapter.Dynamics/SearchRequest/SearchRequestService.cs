@@ -231,10 +231,20 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             _logger.LogDebug("ssg_Personid: " + taxinfo.Person);
             _logger.LogDebug("ssg_searchrequest: " + taxinfo.SearchRequest);
             _logger.LogDebug("ssg_datadate: " + taxinfo.Date1);
-            var result = await this._oDataClient.For<SSG_Taxincomeinformation>().Set(taxinfo).InsertEntryAsync(cancellationToken);
-            _logger.LogDebug("result: " + result.ToString());
-            _logger.LogDebug("Inserted result ssg_taxincomeinformationid: " + result.TaxincomeinformationId);
-            return result;
+            try
+            {
+                var result = await this._oDataClient.For<SSG_Taxincomeinformation>().Set(taxinfo).InsertEntryAsync(cancellationToken);
+                _logger.LogDebug("result: " + result.ToString());
+                _logger.LogDebug("Inserted result ssg_taxincomeinformationid: " + result.TaxincomeinformationId);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                _logger.LogError(ex.StackTrace);
+            }
+
+            return null;
 
         }
 

@@ -37,10 +37,10 @@ namespace Fams3Adapter.Dynamics.TaxIncomeInformation
         public int? InformationSource { get; set; }
         //example: bank.InformationSource = _providerDynamicsID;
 
-        [JsonProperty("ssg_SearchRequest")]
+        [JsonProperty("ssg_searchrequest")]
         public virtual SSG_SearchRequest SearchRequest { get; set; }
 
-        [JsonProperty("ssg_PersonId")]
+        [JsonProperty("ssg_Personid")]
         public virtual SSG_Person Person { get; set; }
 
         [JsonProperty("ssg_couldnotlocate")]

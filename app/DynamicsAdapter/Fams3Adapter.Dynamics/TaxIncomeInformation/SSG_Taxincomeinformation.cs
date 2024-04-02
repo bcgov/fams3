@@ -9,7 +9,7 @@ namespace Fams3Adapter.Dynamics.TaxIncomeInformation
 {
     public class TaxIncomeInformationEntity : DynamicsEntity
     {
-        [JsonProperty("ssg_name")]
+        [JsonProperty("ssg_taxyear")]
         [Description("Tax Year of Result")]
         public string TaxYear { get; set; }
 

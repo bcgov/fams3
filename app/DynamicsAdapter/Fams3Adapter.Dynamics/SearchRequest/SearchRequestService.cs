@@ -219,7 +219,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             }
 
             _logger.LogDebug("Inserting Tax Info to Dynamics ");
-            _logger.LogDebug("ssg_name: " + taxinfo.TaxYear);
+            _logger.LogDebug("ssg_taxyear: " + taxinfo.TaxYear);
             _logger.LogDebug("ssg_commissionincomet4amount: " + taxinfo.CommissionIncomeT4Amount);
             _logger.LogDebug("ssg_emergencyvolunteerexemptincomeamount: " + taxinfo.EmergencyVolunteerExemptIncomeAmount);
             _logger.LogDebug("ssg_employmentincomet4amount: " + taxinfo.EmploymentIncomeT4Amount);

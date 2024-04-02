@@ -129,10 +129,6 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 {
                      new SSG_Electronica{ SocialMediaAddress="addr" }
                 }.ToArray(),
-                SSG_Taxincomeinformations = new List<SSG_Taxincomeinformation>
-                {
-                     new SSG_Taxincomeinformation{ TaxYear="2003" }
-                }.ToArray(),
             };
             Person person = _mapper.Map<Person>(response);
             Assert.AreEqual(1, person.Names.Count);

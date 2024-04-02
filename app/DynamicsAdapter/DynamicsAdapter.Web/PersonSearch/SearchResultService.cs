@@ -254,9 +254,9 @@ namespace DynamicsAdapter.Web.PersonSearch
                 foreach (var taxinfo in _foundPerson.TaxIncomeInformations)
                 {
                     TaxIncomeInformationEntity txin = _mapper.Map<TaxIncomeInformationEntity>(taxinfo);
-                    txin.SearchRequest = _searchRequest;
-                    txin.InformationSource = _providerDynamicsID;
-                    txin.Person = _returnedPerson;
+                    //txin.SearchRequest = _searchRequest;
+                    //txin.InformationSource = _providerDynamicsID;
+                    //txin.Person = _returnedPerson;
                     SSG_Taxincomeinformation uploadedTxin = await _searchRequestService.CreateTaxIncomeInformation(txin, _cancellationToken);
                     await CreateResultTransaction(uploadedTxin);
                 }

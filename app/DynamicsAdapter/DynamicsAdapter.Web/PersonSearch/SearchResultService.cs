@@ -253,7 +253,7 @@ namespace DynamicsAdapter.Web.PersonSearch
 
                 foreach (var taxinfo in _foundPerson.TaxIncomeInformations)
                 {
-                    TaxIncomeInformationEntity txin = _mapper.Map<TaxIncomeInformationEntity>(taxinfo);
+                    TaxIncomeInformationEntity txin = new TaxIncomeInformationEntity();//_mapper.Map<TaxIncomeInformationEntity>(taxinfo);
                     txin.SearchRequest = _searchRequest;
                     txin.InformationSource = _providerDynamicsID;
                     txin.Person = _returnedPerson;

@@ -153,6 +153,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                         case "SSG_Asset_ICBCClaim": trans.InsuranceClaim = (SSG_Asset_ICBCClaim)o; break;
                         case "SSG_SafetyConcernDetail": trans.SafetyConcern = (SSG_SafetyConcernDetail)o; break;
                         case "SSG_Email": trans.Email = (SSG_Email)o; break;
+                        case "SSG_Taxincomeinformation": trans.Taxincomeinformation = (SSG_Taxincomeinformation)o; break;
                         default: return false;
                     }
                 }

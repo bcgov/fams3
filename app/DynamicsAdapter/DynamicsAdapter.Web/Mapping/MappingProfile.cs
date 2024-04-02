@@ -174,14 +174,14 @@ namespace DynamicsAdapter.Web.Mapping
                     .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new AddressTypeResponseConverter(), src => src.Category));
 
             CreateMap<TaxIncomeInformation, TaxIncomeInformationEntity>()
-                 .ForMember(dest => dest.TaxTraceStatusText, opt => opt.MapFrom(src => src.TaxTraceStatusText))
-                 .ForMember(dest => dest.TaxYear, opt => opt.MapFrom(src => src.TaxYear))
-                 .ForMember(dest => dest.CommissionIncomeT4Amount, opt => opt.MapFrom(src => src.CommissionIncomeT4Amount))
-                 .ForMember(dest => dest.EmergencyVolunteerExemptIncomeAmount, opt => opt.MapFrom(src => src.EmergencyVolunteerExemptIncomeAmount))
-                 .ForMember(dest => dest.EmploymentIncomeT4Amount, opt => opt.MapFrom(src => src.EmploymentIncomeT4Amount))
-                 .ForMember(dest => dest.Date1, opt => opt.MapFrom(src => src.Date.DateTime))
-                 .ForMember(dest => dest.JCACode, opt => opt.MapFrom(src => src.JcaCode))
-                 .ForMember(dest => dest.TaxTraceStatusText, opt => opt.MapFrom(src => src.TaxTraceStatusText));
+                 //.ForMember(dest => dest.TaxTraceStatusText, opt => opt.MapFrom(src => src.TaxTraceStatusText))
+                 .ForMember(dest => dest.TaxYear, opt => opt.MapFrom(src => src.TaxYear));
+                 //.ForMember(dest => dest.CommissionIncomeT4Amount, opt => opt.MapFrom(src => src.CommissionIncomeT4Amount))
+                 //.ForMember(dest => dest.EmergencyVolunteerExemptIncomeAmount, opt => opt.MapFrom(src => src.EmergencyVolunteerExemptIncomeAmount))
+                 //.ForMember(dest => dest.EmploymentIncomeT4Amount, opt => opt.MapFrom(src => src.EmploymentIncomeT4Amount))
+                 //.ForMember(dest => dest.Date1, opt => opt.MapFrom(src => src.Date.DateTime))
+                 //.ForMember(dest => dest.JCACode, opt => opt.MapFrom(src => src.JcaCode))
+                 //.ForMember(dest => dest.TaxTraceStatusText, opt => opt.MapFrom(src => src.TaxTraceStatusText));
 
             CreateMap<Employment, EmploymentEntity>()
               .ForMember(dest => dest.AddressLine1, opt => opt.MapFrom(src => (src.Employer == null) ? string.Empty : (src.Employer.Address == null) ? string.Empty : src.Employer.Address.AddressLine1))

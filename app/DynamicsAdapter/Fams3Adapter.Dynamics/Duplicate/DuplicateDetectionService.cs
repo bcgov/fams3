@@ -227,10 +227,13 @@ namespace Fams3Adapter.Dynamics.Duplicate
                     };
                     break;
                 case "TaxIncomeInformationEntity":
-                    foreach (SSG_Taxincomeinformation taxinfo in ((SSG_Person)fatherObj).SSG_Taxincomeinformations)
+                    if (((SSG_Person)fatherObj).SSG_Taxincomeinformations != null) 
                     {
-                        if (await Same(entity, taxinfo)) return taxinfo.TaxincomeinformationId;
-                    };
+                        foreach (SSG_Taxincomeinformation taxinfo in ((SSG_Person)fatherObj).SSG_Taxincomeinformations)
+                        {
+                            if (await Same(entity, taxinfo)) return taxinfo.TaxincomeinformationId;
+                        };
+                    }
                     break;
             }            
 

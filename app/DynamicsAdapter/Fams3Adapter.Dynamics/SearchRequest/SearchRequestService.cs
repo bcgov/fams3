@@ -141,6 +141,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                     .Expand(x => x.SSG_SafetyConcernDetails)
                     .Expand(x => x.SSG_Emails)
                     .Expand(x => x.SearchRequest)
+                    .Expand(x => x.SSG_Taxincomeinformations)
                     .FindEntryAsync(CancellationToken.None);
 
                 existedPerson.IsDuplicated = true;

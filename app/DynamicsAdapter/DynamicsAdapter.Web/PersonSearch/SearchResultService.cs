@@ -265,6 +265,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             }
             catch (Exception ex)
             {
+                _logger.LogError("Exception Occured while attempting to upload tax information.");
                 LogException(ex);
                 return false;
             }
@@ -609,13 +610,17 @@ namespace DynamicsAdapter.Web.PersonSearch
                 properties.Add("Response", webRequestException.Response);
                 using (_logger.BeginScope(properties)) 
                 {
+                    _logger.LogError(ex.ToString());
                     _logger.LogError(ex.Message);
+                    _logger.LogError(ex.StackTrace);
                 } ;
                 
             }
             else
             {
+                _logger.LogError(ex.ToString());
                 _logger.LogError(ex.Message);
+                _logger.LogError(ex.StackTrace);
             }
         }
     }

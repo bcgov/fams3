@@ -256,11 +256,12 @@ namespace DynamicsAdapter.Web.PersonSearch
                 {
                     //TaxIncomeInformationEntity txin = _mapper.Map<TaxIncomeInformationEntity>(taxinfo);
                     TaxIncomeInformationEntity txin = new TaxIncomeInformationEntity();
-                    txin.SearchRequest = _searchRequest;
+                    /*txin.SearchRequest = _searchRequest;
                     txin.InformationSource = _providerDynamicsID;
-                    txin.Person = _returnedPerson;
+                    txin.Person = _returnedPerson;*/
+                    taxinfo.TaxYear = "2004";
                     SSG_Taxincomeinformation uploadedTxin = await _searchRequestService.CreateTaxIncomeInformation(txin, _cancellationToken);
-                    await CreateResultTransaction(uploadedTxin);
+                    //await CreateResultTransaction(uploadedTxin);
                 }
                 return true;
             }

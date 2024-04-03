@@ -44,10 +44,11 @@ namespace Fams3Adapter.Dynamics.TaxIncomeInformation
         public virtual SSG_Person Person { get; set; }
     }
 
-    public class SSG_Taxincomeinformation : TaxIncomeInformationEntity
+    public class SSG_TaxIncomeInformation : TaxIncomeInformationEntity
     {
         [JsonProperty("ssg_taxincomeinformationid")]
         public Guid TaxincomeinformationId { get; set; }
 
     }
 }
+

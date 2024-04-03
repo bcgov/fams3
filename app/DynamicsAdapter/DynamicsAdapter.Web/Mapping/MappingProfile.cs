@@ -575,7 +575,7 @@ namespace DynamicsAdapter.Web.Mapping
                .ForMember(dest => dest.RealEstateProperties, opt => opt.MapFrom(src => src.SSG_Asset_RealEstatePropertys))
                .ForMember(dest => dest.Emails, opt => opt.MapFrom(src => src.SSG_Emails))
                .ForMember(dest => dest.SocialMedias, opt => opt.MapFrom(src => src.SSG_Electronicas))
-               .ForMember(dest => dest.TaxIncomeInformations, opt => opt.ConvertUsing(new TaxIncomeInformationConvertor(), src => src.SSG_Taxincomeinformations))
+               .ForMember(dest => dest.TaxIncomeInformations, opt => opt.ConvertUsing(new TaxIncomeInformationConvertor(), src => src.SSG_TaxIncomeInformations))
                .ForMember(dest => dest.ResponsePersons, opt => opt.MapFrom(src => src.SSG_Persons))
                .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new PersonSoughtRoleConverter(), src => src.SSG_SearchRequests[0].PersonSoughtRole))
                .ForMember(dest => dest.Agency, opt => opt.MapFrom(src => src.SSG_SearchRequests[0]))

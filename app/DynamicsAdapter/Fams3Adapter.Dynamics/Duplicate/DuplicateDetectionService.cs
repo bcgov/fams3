@@ -227,9 +227,9 @@ namespace Fams3Adapter.Dynamics.Duplicate
                     };
                     break;
                 case "TaxIncomeInformationEntity":
-                    if (((SSG_Person)fatherObj).SSG_Taxincomeinformations != null) 
+                    if (((SSG_Person)fatherObj).SSG_TaxIncomeInformations != null) 
                     {
-                        foreach (SSG_Taxincomeinformation taxinfo in ((SSG_Person)fatherObj).SSG_Taxincomeinformations)
+                        foreach (SSG_TaxIncomeInformation taxinfo in ((SSG_Person)fatherObj).SSG_TaxIncomeInformations)
                         {
                             if (await Same(entity, taxinfo)) return taxinfo.TaxincomeinformationId;
                         };

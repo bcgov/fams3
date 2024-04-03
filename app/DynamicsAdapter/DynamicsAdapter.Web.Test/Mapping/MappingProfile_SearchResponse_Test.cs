@@ -129,9 +129,9 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 {
                      new SSG_Electronica{ SocialMediaAddress="addr" }
                 }.ToArray(),
-                SSG_Taxincomeinformations = new List<SSG_Taxincomeinformation>
+                SSG_TaxIncomeInformations = new List<SSG_TaxIncomeInformation>
                 {
-                     new SSG_Taxincomeinformation{ EmploymentIncomeT4Amount ="1234" }
+                     new SSG_TaxIncomeInformation{ EmploymentIncomeT4Amount ="1234" }
                 }.ToArray(),
             };
             Person person = _mapper.Map<Person>(response);

@@ -7,6 +7,7 @@ using Fams3Adapter.Dynamics.OptionSets.Models;
 using System.Text;
 using Fams3Adapter.Dynamics.SearchRequest;
 using DynamicsAdapter.Web.PersonSearch.Models;
+using Fams3Adapter.Dynamics.TaxIncomeInformation;
 
 namespace DynamicsAdapter.Web.Mapping
 {
@@ -566,6 +567,32 @@ namespace DynamicsAdapter.Web.Mapping
             if(mins<=0) return null;
             TimeSpan timeSpan = new TimeSpan(0,mins,0);
             return timeSpan.Days+1;
+        }
+    }
+
+    public class TaxIncomeInformationConvertor : IValueConverter<SSG_Taxincomeinformation[], ICollection<TaxIncomeInformation>>
+    {
+        public ICollection<TaxIncomeInformation> Convert(SSG_Taxincomeinformation[] sourceMember, ResolutionContext context)
+        {
+            var toReturn = new List<TaxIncomeInformation>();
+            if(sourceMember != null)
+            {
+                foreach (SSG_Taxincomeinformation tax in sourceMember)
+                {
+                    TaxIncomeInformation taxIncomeInformation = new TaxIncomeInformation();
+                    taxIncomeInformation.TaxYear = tax.TaxYear;
+                    taxIncomeInformation.CommissionIncomeT4Amount = tax.CommissionIncomeT4Amount;
+                    taxIncomeInformation.EmergencyVolunteerExemptIncomeAmount = tax.EmergencyVolunteerExemptIncomeAmount;
+                    taxIncomeInformation.EmploymentIncomeT4Amount = tax.EmploymentIncomeT4Amount;
+                    taxIncomeInformation.JcaCode = tax.JCACode;
+                    taxIncomeInformation.TaxTraceStatusText = tax.TaxTraceStatusText;
+                    toReturn.Add(taxIncomeInformation);
+                }
+            }
+
+
+            return toReturn;
+
         }
     }
 }

@@ -42,9 +42,6 @@ namespace Fams3Adapter.Dynamics.TaxIncomeInformation
 
         [JsonProperty("ssg_Personid")]
         public virtual SSG_Person Person { get; set; }
-
-        [JsonProperty("ssg_couldnotlocate")]
-        public bool CouldNotLocate { get; set; }
     }
 
     public class SSG_Taxincomeinformation : TaxIncomeInformationEntity

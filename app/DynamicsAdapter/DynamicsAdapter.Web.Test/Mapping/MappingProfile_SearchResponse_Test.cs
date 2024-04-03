@@ -129,6 +129,10 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 {
                      new SSG_Electronica{ SocialMediaAddress="addr" }
                 }.ToArray(),
+                SSG_Taxincomeinformations = new List<SSG_Taxincomeinformation>
+                {
+                     new SSG_Taxincomeinformation{ EmploymentIncomeT4Amount ="1234" }
+                }.ToArray(),
             };
             Person person = _mapper.Map<Person>(response);
             Assert.AreEqual(1, person.Names.Count);
@@ -150,6 +154,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             Assert.AreEqual(1, person.ResponsePersons.Count);
             Assert.AreEqual(1, person.Emails.Count);
             Assert.AreEqual(1, person.SocialMedias.Count);
+            Assert.AreEqual(1, person.TaxIncomeInformations.Count);
         }
 
         [Test]

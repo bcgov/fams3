@@ -227,7 +227,6 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             _logger.LogDebug("ssg_jcacode: " + taxinfo.JCACode);
             _logger.LogDebug("ssg_notes: " + taxinfo.TaxTraceStatusText);
             _logger.LogDebug("ssg_suppliedby: " + taxinfo.InformationSource);
-            _logger.LogDebug("ssg_couldnotlocate: " + taxinfo.CouldNotLocate);
             _logger.LogDebug("ssg_Personid: " + taxinfo.Person);
             _logger.LogDebug("ssg_searchrequest: " + taxinfo.SearchRequest);
             _logger.LogDebug("ssg_datadate: " + taxinfo.Date1);
@@ -240,12 +239,18 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             }
             catch (Exception ex)
             {
+                _logger.LogError("Exception Occured while creating ssg_taxincomeinformation in Odata Client");
+                _logger.LogError(ex.ToString());
                 _logger.LogError(ex.Message);
                 _logger.LogError(ex.StackTrace);
+                if(ex.InnerException != null)
+                {
+                    _logger.LogError(ex.InnerException.ToString());
+                    _logger.LogError(ex.InnerException.Message);
+                    _logger.LogError(ex.InnerException.StackTrace);
+                }
+                throw ex;
             }
-
-            return null;
-
         }
 
         public async Task<SSG_Aliase> CreateName(AliasEntity name, CancellationToken cancellationToken)

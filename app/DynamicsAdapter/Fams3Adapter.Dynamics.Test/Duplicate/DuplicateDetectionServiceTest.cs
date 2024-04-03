@@ -862,8 +862,8 @@ namespace Fams3Adapter.Dynamics.Test.Duplicate
             Guid existedTaxInfoId = Guid.NewGuid();
             SSG_Person person = new SSG_Person()
             {
-                SSG_Taxincomeinformations = new List<SSG_Taxincomeinformation>() {
-                    new SSG_Taxincomeinformation{TaxYear="2022", EmploymentIncomeT4Amount="100", TaxincomeinformationId=existedTaxInfoId}
+                SSG_TaxIncomeInformations = new List<SSG_TaxIncomeInformation>() {
+                    new SSG_TaxIncomeInformation{TaxYear="2022", EmploymentIncomeT4Amount="100", TaxincomeinformationId=existedTaxInfoId}
                 }.ToArray()
             };
             TaxIncomeInformationEntity entity = new TaxIncomeInformationEntity() { TaxYear = "2022", EmploymentIncomeT4Amount = "100" };
@@ -878,8 +878,8 @@ namespace Fams3Adapter.Dynamics.Test.Duplicate
             Guid existedTaxInfoId = Guid.NewGuid();
             SSG_Person person = new SSG_Person()
             {
-                SSG_Taxincomeinformations = new List<SSG_Taxincomeinformation>() {
-                    new SSG_Taxincomeinformation{TaxYear="2022", EmploymentIncomeT4Amount="100", TaxincomeinformationId=existedTaxInfoId}
+                SSG_TaxIncomeInformations = new List<SSG_TaxIncomeInformation>() {
+                    new SSG_TaxIncomeInformation{TaxYear="2022", EmploymentIncomeT4Amount="100", TaxincomeinformationId=existedTaxInfoId}
                 }.ToArray()
             };
             TaxIncomeInformationEntity entity = new TaxIncomeInformationEntity() { TaxYear = "2022", EmploymentIncomeT4Amount="200" };
@@ -893,8 +893,8 @@ namespace Fams3Adapter.Dynamics.Test.Duplicate
             Guid existedTaxInfoId = Guid.NewGuid();
             SSG_Person person = new SSG_Person()
             {
-                SSG_Taxincomeinformations = new List<SSG_Taxincomeinformation>() {
-                    new SSG_Taxincomeinformation{TaxYear="2022", EmploymentIncomeT4Amount="100", TaxincomeinformationId=existedTaxInfoId}
+                SSG_TaxIncomeInformations = new List<SSG_TaxIncomeInformation>() {
+                    new SSG_TaxIncomeInformation{TaxYear="2022", EmploymentIncomeT4Amount="100", TaxincomeinformationId=existedTaxInfoId}
                 }.ToArray()
             };
             TaxIncomeInformationEntity entity = new TaxIncomeInformationEntity() { TaxYear = "2023", EmploymentIncomeT4Amount = "100" };

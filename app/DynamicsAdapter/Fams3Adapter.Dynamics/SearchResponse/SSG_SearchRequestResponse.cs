@@ -84,7 +84,7 @@ namespace Fams3Adapter.Dynamics.SearchResponse
         public SSG_PhoneNumber[] SSG_PhoneNumbers { get; set; }
 
         [JsonProperty("ssg_ssg_searchrequestresponse_ssg_taxincomeinformation_Responseid")]
-        public SSG_Taxincomeinformation[] SSG_Taxincomeinformations { get; set; }
+        public SSG_TaxIncomeInformation[] SSG_TaxIncomeInformations { get; set; }
         
         [JsonProperty("ssg_ssg_searchrequestresponse_ssg_safetyconcerndetail_ResponseId")]
         public SSG_SafetyConcernDetail[] SSG_SafetyConcernDetails { get; set; }

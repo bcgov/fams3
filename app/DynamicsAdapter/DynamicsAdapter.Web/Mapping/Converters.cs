@@ -570,14 +570,14 @@ namespace DynamicsAdapter.Web.Mapping
         }
     }
 
-    public class TaxIncomeInformationConvertor : IValueConverter<SSG_Taxincomeinformation[], ICollection<TaxIncomeInformation>>
+    public class TaxIncomeInformationConvertor : IValueConverter<SSG_TaxIncomeInformation[], ICollection<TaxIncomeInformation>>
     {
-        public ICollection<TaxIncomeInformation> Convert(SSG_Taxincomeinformation[] sourceMember, ResolutionContext context)
+        public ICollection<TaxIncomeInformation> Convert(SSG_TaxIncomeInformation[] sourceMember, ResolutionContext context)
         {
             var toReturn = new List<TaxIncomeInformation>();
             if(sourceMember != null)
             {
-                foreach (SSG_Taxincomeinformation tax in sourceMember)
+                foreach (SSG_TaxIncomeInformation tax in sourceMember)
                 {
                     TaxIncomeInformation taxIncomeInformation = new TaxIncomeInformation();
                     taxIncomeInformation.TaxYear = tax.TaxYear;

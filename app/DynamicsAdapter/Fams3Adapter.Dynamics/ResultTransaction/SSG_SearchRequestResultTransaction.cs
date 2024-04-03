@@ -66,7 +66,7 @@ namespace Fams3Adapter.Dynamics.ResultTransaction
         public virtual SSG_SafetyConcernDetail SafetyConcern { get; set; }
 
         [JsonProperty("ssg_taxincomeinformation")]
-        public virtual SSG_Taxincomeinformation Taxincomeinformation { get; set; }
+        public virtual SSG_TaxIncomeInformation Taxincomeinformation { get; set; }
         
         [JsonProperty("ssg_SearchAPIRequest")]
         public virtual SSG_SearchApiRequest SearchApiRequest { get; set; }

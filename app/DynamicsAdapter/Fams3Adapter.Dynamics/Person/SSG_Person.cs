@@ -159,7 +159,7 @@ namespace Fams3Adapter.Dynamics.Person
         public SSG_Email[] SSG_Emails { get; set; }
 
         [JsonProperty("ssg_ssg_person_ssg_taxincomeinformation_Personid")]
-        public SSG_Taxincomeinformation[] SSG_Taxincomeinformations { get; set; }
+        public SSG_TaxIncomeInformation[] SSG_TaxIncomeInformations { get; set; }
 
         public bool IsDuplicated { get; set; }
         public override string ToString()

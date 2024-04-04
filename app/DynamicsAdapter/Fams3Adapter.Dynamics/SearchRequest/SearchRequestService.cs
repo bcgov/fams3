@@ -197,9 +197,8 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                                          .Filter(x => x.Name == subdivisionName)
                                          .FindEntryAsync(cancellationToken);
             address.CountrySubdivision = subdivision;
-
+            var entries = this._oDataClient.For<SSG_Address>().FindEntriesAsync();
             return await this._oDataClient.For<SSG_Address>().Set(address).InsertEntryAsync(cancellationToken);
-
         }
 
         public async Task<SSG_TaxIncomeInformation> CreateTaxIncomeInformation(TaxIncomeInformationEntity taxinfo, CancellationToken cancellationToken)
@@ -230,27 +229,8 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             _logger.LogDebug("ssg_Personid: " + taxinfo.Person);
             _logger.LogDebug("ssg_searchrequest: " + taxinfo.SearchRequest);
             _logger.LogDebug("ssg_datadate: " + taxinfo.Date1);
-            try
-            {
-                var result = await this._oDataClient.For<SSG_TaxIncomeInformation>().Set(taxinfo).InsertEntryAsync(cancellationToken);
-                _logger.LogDebug("result: " + result.ToString());
-                _logger.LogDebug("Inserted result ssg_taxincomeinformationid: " + result.TaxincomeinformationId);
-                return result;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("Exception Occured while creating ssg_taxincomeinformation in Odata Client");
-                _logger.LogError(ex.ToString());
-                _logger.LogError(ex.Message);
-                _logger.LogError(ex.StackTrace);
-                if(ex.InnerException != null)
-                {
-                    _logger.LogError(ex.InnerException.ToString());
-                    _logger.LogError(ex.InnerException.Message);
-                    _logger.LogError(ex.InnerException.StackTrace);
-                }
-                throw ex;
-            }
+
+            return await this._oDataClient.For<SSG_TaxIncomeInformation>().Set(taxinfo).InsertEntryAsync(cancellationToken);
         }
 
         public async Task<SSG_Aliase> CreateName(AliasEntity name, CancellationToken cancellationToken)

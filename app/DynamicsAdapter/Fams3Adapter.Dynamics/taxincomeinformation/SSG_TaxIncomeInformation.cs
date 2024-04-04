@@ -37,6 +37,13 @@ namespace Fams3Adapter.Dynamics.TaxIncomeInformation
         public int? InformationSource { get; set; }
         //example: bank.InformationSource = _providerDynamicsID;
 
+        [UpdateIgnore]
+        [JsonProperty("ssg_createdbyagency")]
+        public bool IsCreatedByAgency { get; set; }
+
+        [JsonProperty("ssg_agencyupdatedescription")]
+        public string UpdateDetails { get; set; }
+
         [JsonProperty("ssg_searchrequest")]
         public virtual SSG_SearchRequest SearchRequest { get; set; }
 

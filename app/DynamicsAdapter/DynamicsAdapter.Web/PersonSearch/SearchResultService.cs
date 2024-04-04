@@ -259,7 +259,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                     txin.InformationSource = _providerDynamicsID;
                     txin.Person = _returnedPerson;
                     SSG_TaxIncomeInformation uploadedTxin = await _searchRequestService.CreateTaxIncomeInformation(txin, _cancellationToken);
-                    //await CreateResultTransaction(uploadedTxin);
+                    await CreateResultTransaction(uploadedTxin);
                 }
                 return true;
             }

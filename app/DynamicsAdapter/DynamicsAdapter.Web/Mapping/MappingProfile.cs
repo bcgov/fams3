@@ -180,7 +180,12 @@ namespace DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.EmergencyVolunteerExemptIncomeAmount, opt => opt.MapFrom(src => src.EmergencyVolunteerExemptIncomeAmount))
                  .ForMember(dest => dest.EmploymentIncomeT4Amount, opt => opt.MapFrom(src => src.EmploymentIncomeT4Amount))
                  .ForMember(dest => dest.Date1, opt => opt.MapFrom(src => src.Date.DateTime))
-                 .ForMember(dest => dest.JCACode, opt => opt.MapFrom(src => src.JcaCode));
+                 .ForMember(dest => dest.JCACode, opt => opt.MapFrom(src => src.JcaCode))
+                 .ForMember(dest => dest.Date2, opt => opt.MapFrom<Date2Resolver>())
+                 .ForMember(dest => dest.Date1Label, opt => opt.MapFrom<Date1LabelResolver>())
+                 .ForMember(dest => dest.Date2Label, opt => opt.MapFrom<Date2LabelResolver>())
+                 .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => 0))
+                 .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1));
 
             CreateMap<Employment, EmploymentEntity>()
               .ForMember(dest => dest.AddressLine1, opt => opt.MapFrom(src => (src.Employer == null) ? string.Empty : (src.Employer.Address == null) ? string.Empty : src.Employer.Address.AddressLine1))

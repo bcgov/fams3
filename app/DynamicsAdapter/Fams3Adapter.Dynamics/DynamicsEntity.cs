@@ -9,6 +9,7 @@ namespace Fams3Adapter.Dynamics
         [JsonProperty("statecode")]
         public int StateCode { get; set; }
 
+        //Status code CANNOT be 8 and mustbe set in mapping
         [JsonProperty("statuscode")]
         public int StatusCode { get; set; }
 

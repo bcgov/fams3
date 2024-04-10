@@ -265,7 +265,6 @@ namespace DynamicsAdapter.Web.PersonSearch
             }
             catch (Exception ex)
             {
-                _logger.LogError("Exception Occured while attempting to upload tax information.");
                 LogException(ex);
                 return false;
             }

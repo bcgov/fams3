@@ -205,31 +205,10 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         {
             if (taxinfo.Person.IsDuplicated)
             {
-                _logger.LogDebug("Checking Tax Info Dupes");
                 Guid duplicatedTaxInfoId = await _duplicateDetectService.Exists(taxinfo.Person, taxinfo);
                 if (duplicatedTaxInfoId != Guid.Empty)
-                {
-                    _logger.LogDebug("Returning Tax Info Dupe GUID "+duplicatedTaxInfoId);
                     return new SSG_TaxIncomeInformation() { TaxincomeinformationId = duplicatedTaxInfoId };
-                }
-                else
-                {
-                    _logger.LogDebug("No Duplicate Tax Info Found");
-                }
             }
-
-            _logger.LogDebug("Inserting Tax Info to Dynamics ");
-            _logger.LogDebug("ssg_taxyear: " + taxinfo.TaxYear);
-            _logger.LogDebug("ssg_commissionincomet4amount: " + taxinfo.CommissionIncomeT4Amount);
-            _logger.LogDebug("ssg_emergencyvolunteerexemptincomeamount: " + taxinfo.EmergencyVolunteerExemptIncomeAmount);
-            _logger.LogDebug("ssg_employmentincomet4amount: " + taxinfo.EmploymentIncomeT4Amount);
-            _logger.LogDebug("ssg_jcacode: " + taxinfo.JCACode);
-            _logger.LogDebug("ssg_notes: " + taxinfo.TaxTraceStatusText);
-            _logger.LogDebug("ssg_suppliedby: " + taxinfo.InformationSource);
-            _logger.LogDebug("ssg_Personid: " + taxinfo.Person);
-            _logger.LogDebug("ssg_searchrequest: " + taxinfo.SearchRequest);
-            _logger.LogDebug("ssg_datadate: " + taxinfo.Date1);
-
             return await this._oDataClient.For<SSG_TaxIncomeInformation>().Set(taxinfo).InsertEntryAsync(cancellationToken);
         }
 

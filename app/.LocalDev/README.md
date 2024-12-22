@@ -5,9 +5,10 @@ This script compiles and runs the FAMS3 applicatons locallty in .NET 3.1 contain
 #### Copy `.env.example` to .`env` & Fill in the required properties
 
 #### Start redis and rabbitmq containers
-- `./rabbitmq.sh <config file>` # (will need `rabbitmq.json` config file)
-- `podman run --replace --name redis -d -p 6379:6379 docker.io/redis:alpine`
+- `_run/rabbitmq/local.sh <config file>` # (will need `rabbitmq.json` config file)
+- `_run/redis/local.sh`
 - Verify rabbitMQ running:  `http://localhost:15672/` (guest/guest)
+- See the README files in each `run` directory for more information
 
 #### Execute `run.sh` for the desired app.
 - `./run.sh DynamicsAdapter/DynamicsAdapter.Web`

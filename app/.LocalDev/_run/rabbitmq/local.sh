@@ -33,5 +33,6 @@ done
 podman cp $1 rabbitmq:/tmp
 
 podman exec -it rabbitmq rabbitmqctl import_definitions /tmp/rabbitmq.json
+podman exec -it rabbitmq rabbitmq-plugins enable rabbitmq_shovel rabbitmq_shovel_management
 
 popd

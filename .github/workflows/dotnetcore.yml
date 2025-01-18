@@ -2,33 +2,32 @@ name: .NET Core
 
 on: [pull_request]
 
+env:
+  NEXUS_REPO_USER: ${{ secrets.NEXUS_REPO_USER }}
+  NEXUS_REPO_PASSWORD: ${{ secrets.NEXUS_REPO_PASSWORD }}
+  NEXUS_REPO_URL: ${{ secrets.NEXUS_REPO_URL }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment: dev
 
     steps:
-      - uses: actions/checkout@v1
+      - name: Checkout code
+        uses: actions/checkout@v1
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 3.1.101
+      - name: Install OpenSSL 1.0
+        run: wget http://security.ubuntu.com/ubuntu/pool/main/o/openssl1.0/libssl1.0.0_1.0.2n-1ubuntu5_amd64.deb && sudo dpkg -i libssl1.0.0_1.0.2n-1ubuntu5_amd64.deb
       - name: Build SearchApi
-        env:
-          NEXUS_REPO_USER: ${{ secrets.nexus_repo_user }}
-          NEXUS_REPO_PASSWORD: ${{ secrets.nexus_repo_password }}
-          NEXUS_REPO_URL: ${{ secrets.nexus_repo_url }}
-          NEXUS_REPO_URI: ${{ secrets.nexus_repo_uri }}
-        run: dotnet build --configuration Release --configfile ../NuGet.config
+        run: export DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1 && dotnet build --configuration Release --configfile ../NuGet.config
         working-directory: ./app/SearchApi
       - name: Test SearchApi
         run: dotnet test
         working-directory: ./app/SearchApi
       - name: Build DynamicsAdapter
-        env:
-          NEXUS_REPO_USER: ${{ secrets.nexus_repo_user }}
-          NEXUS_REPO_PASSWORD: ${{ secrets.nexus_repo_password }}
-          NEXUS_REPO_URL: ${{ secrets.nexus_repo_url }}
-          NEXUS_REPO_URI: ${{ secrets.nexus_repo_uri }}
         run: dotnet build --configuration Release --configfile ../NuGet.config
         working-directory: ./app/DynamicsAdapter
       - name: Test DynamicsAdapter

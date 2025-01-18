@@ -3,6 +3,7 @@
 This script compiles and runs the FAMS3 applicatons locallty in .NET 3.1 containers in DEBUG mode.
 
 #### Copy `.env.example` to .`env` & Fill in the required properties
+To get OAUTH values, view "dynamics-oauth-credentials" secrets in OpenShift e.g. https://console.apps.silver.devops.gov.bc.ca/k8s/ns/dfb30e-dev/secrets/dynamics-oauth-credentials
 
 #### Start redis and rabbitmq containers
 - `_run/rabbitmq/local.sh <config file>` # (will need `rabbitmq.json` config file)
@@ -22,3 +23,22 @@ http://localhost:5000/swagger
 #### Start VPNKit if connected to VPN
 This is needed because the GovBC VPN blocks even local network traffic between WSL and Windows.
 - `https://github.com/sakai135/wsl-vpnkit/`
+
+Extract vpnkit.tar.gz
+`#tar xvzf vpn/vpnkit.tar.gz`
+
+Run wsl-vpnkit
+`./start.sh`
+
+## DEBUGGING
+
+There are several possible combinations of ways to run and debug everything locally. It is recommend to use WSL and run the services you are not debugging as docker containers and then use VS IDE/Code using WSL profile for the target service.
+
+Run some of the following and omit the debugging target:
+
+```shell
+_run/rabbitmq/local.sh rabbitmq.json
+_run/redis/local.sh
+./run.sh SearchApi/SearchApi.Web
+./run.sh DynamicsAdapter/DynamicsAdapter.Web
+```

@@ -104,7 +104,7 @@ namespace SearchApi.Web.Notifications
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 _logger.LogError("The webhook {eventName} is failed and is put into error queue.", eventName);
                 throw;

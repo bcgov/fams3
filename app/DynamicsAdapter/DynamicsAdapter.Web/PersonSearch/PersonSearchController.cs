@@ -163,8 +163,8 @@ namespace DynamicsAdapter.Web.PersonSearch
                         searchApiEvent.EventType = Keys.EVENT_RESULT;
                 }
                 _logger.LogDebug($"Attempting to create a new event for SearchApiRequest");
-                await _searchApiRequestService.AddEventAsync(request.SearchApiRequestId, searchApiEvent, cts.Token);
-                _logger.LogInformation($"Successfully created result event for SearchApiRequest");
+                var searchApiEventResult = await _searchApiRequestService.AddEventAsync(request.SearchApiRequestId, searchApiEvent, cts.Token);
+                _logger.LogInformation($"Successfully created search api event {searchApiEventResult.Id} for SearchApiRequest.");
 
                 //upload search result to dynamic search api
                 var searchRequestId = await _searchApiRequestService.GetLinkedSearchRequestIdAsync(request.SearchApiRequestId, cts.Token);
@@ -315,9 +315,8 @@ namespace DynamicsAdapter.Web.PersonSearch
                     SSG_SearchApiRequest request = await GetSearchApiRequest(key, token.Token);
                     var searchApiEvent = _mapper.Map<SSG_SearchApiEvent>(personInformationEvent);
                     _logger.LogDebug($"Attempting to create a new event for SearchApiRequest.");
-                    await _searchApiRequestService.AddEventAsync(request.SearchApiRequestId, searchApiEvent, token.Token);
-                  
-                    _logger.LogInformation($"Successfully created InformationReceived event for SearchApiRequest");
+                    var searchApiEventResult = await _searchApiRequestService.AddEventAsync(request.SearchApiRequestId, searchApiEvent, token.Token);             
+                    _logger.LogInformation($"Successfully created search api event '{searchApiEvent.Id}' for SearchApiRequest.");
                 }
                 catch (Exception ex)
                 {

@@ -1,0 +1,20 @@
+{
+    // NOTE not completed yet, you will likely need to add build task and optionally get the VS IDE launchSettings part working
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "SearchApi.Web",
+            "type": "coreclr",
+            "request": "launch",
+            //"preLaunchTask": "build",
+            "program": "${workspaceFolder}/app/SearchApi/SearchApi.Web/bin/Debug/netcoreapp3.1/SearchApi.Web.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "stopAtEntry": false,
+            "console": "internalConsole",
+            "envFile": "${workspaceFolder}/app/.LocalDev/.env",
+            //"launchSettingsProfile": "SearchApi.Web",
+            //"launchSettingsFilePath": "${workspaceFolder}/app/SearchApi/SearchApi.Web/Properties/launchSettings.json"
+        }
+    ]
+}

@@ -20,6 +20,8 @@ Create a `.env` file from the `.env.template`
 
 Configure the necessary variables in `.env`
 
+The docker compose file is outdated, use the .LocalDev run scripts instead.
+
 ```shell
 docker-compose up
 ```
@@ -327,7 +329,7 @@ Edit your wsl configuration to use your user above as default
 > systemd=false  
 > 
 > [user]  
-> default=jburditt  
+> default=<USERNAME_FROM_WSL>
 
 Generate a SSH certificate for use with Github
 `ssh-keygen`
@@ -356,3 +358,23 @@ Now you can run redis and rabbitmq from the '_run' folder
 
 Install nvm
 `curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash`
+
+Install .NET Core 3.1
+- [Download the SDK](https://download.visualstudio.microsoft.com/download/pr/e89c4f00-5cbb-4810-897d-f5300165ee60/027ace0fdcfb834ae0a13469f0b1a4c8/dotnet-sdk-3.1.426-linux-x64.tar.gz)
+- Extract the SDK
+```shell
+mkdir -p $HOME/dotnet && tar zxf dotnet-sdk-3.1.426-linux-x64.tar.gz -C $HOME/dotnet
+export DOTNET_ROOT=$HOME/dotnet
+export PATH=$PATH:$HOME/dotnet
+```
+- Edit your profile e.g. ~/.bashrc
+```shell
+export DOTNET_ROOT=$HOME/dotnet
+export PATH=$PATH:$HOME/dotnet
+export DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
+```
+- Add libssl1.0
+```shell
+wget http://security.ubuntu.com/ubuntu/pool/main/o/openssl1.0/libssl1.0.0_1.0.2n-1ubuntu5_amd64.deb
+sudo dpkg -i libssl1.0.0_1.0.2n-1ubuntu5_amd64.deb
+```

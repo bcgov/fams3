@@ -42,7 +42,7 @@ FAMS-search-api is a dotnet core rest service to execute people search accross m
 
 ### Configuration
 
-Configure RabbiMq using the following ENV variables:
+Configure RabbitMq using the following ENV variables:
 
 | Property | Required | Description |
 | --- | --- | --- |
@@ -309,3 +309,50 @@ services.AddProvider(Configuration, (provider) => new SearchRequestConsumer(prov
                                   provider.GetRequiredService<ILogger<SearchRequestConsumer>>()));
 ```
 
+## Configure WSL on Windows
+
+It is recommended to use WSL with Windows Terminal. WSL2 should be installed by default, if not, install WSL2. To update WSL2, run following:
+`wsl --update`
+
+Check the update worked by running the following to list your WSL instances:
+`wsl -l -o`
+
+Install Ubuntu 24.04
+`wsl --install Ubuntu-24.04`
+Choose a username and password
+
+Edit your wsl configuration to use your user above as default 
+`code /etc/wsl.conf`
+> [boot]  
+> systemd=false  
+> 
+> [user]  
+> default=jburditt  
+
+Generate a SSH certificate for use with Github
+`ssh-keygen`
+Press <enter> 3 times to select default values
+ 
+To disable entering your password when using sudo
+`sudo visudo`
+And then edit the following line by adding "NOPASSWD:"
+`%sudo   ALL=(ALL:ALL) NOPASSWD:ALL`
+
+Run the following to install podman, the arguably superior option to docker 
+`sudo apt install podman`
+ 
+It will help to install bash completion, which will auto-complete commands on pressing TAB
+`sudo apt install bash-completion`
+ 
+To run redis, pull the following docker image
+`podman pull docker.io/redis:alpine`
+
+Now you can run redis and rabbitmq from the '_run' folder
+`redis/local.sh`
+`rabbitmq/local.sh rabbitmq.json`
+ 
+
+## HELPFUL LINKS AND COMMANDS
+
+Install nvm
+`curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash`

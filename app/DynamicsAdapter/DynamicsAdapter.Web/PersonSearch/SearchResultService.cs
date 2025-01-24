@@ -56,10 +56,10 @@ namespace DynamicsAdapter.Web.PersonSearch
         private Person _foundPerson;
         private CancellationToken _cancellationToken;
 
-        public SearchResultService(ISearchRequestService searchRequestService, ILogger<SearchResultService> logger, IMapper mapper)
+        public SearchResultService(ISearchRequestService searchRequestService, ILoggerFactory loggerFactory, IMapper mapper)
         {
             _searchRequestService = searchRequestService;
-            _logger = logger;
+            _logger = loggerFactory.CreateLogger<SearchResultService>();
             _mapper = mapper;
             _returnedPerson = null;
             _sourceIdentifier = null;
@@ -171,6 +171,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             ssg_person.InformationSource = _providerDynamicsID;
             SSG_Person returnedPerson = await _searchRequestService.SavePerson(ssg_person, _cancellationToken);
             await CreateResultTransaction(returnedPerson);
+            _logger.LogInformation($"Successfully created person {returnedPerson.PersonId}.");
             return returnedPerson;
         }
 
@@ -185,7 +186,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                 entity.Person = _returnedPerson;
                 SSG_SafetyConcernDetail safetyConcern = await _searchRequestService.CreateSafetyConcern(entity, _cancellationToken);
                 await CreateResultTransaction(safetyConcern);
-                _logger.LogInformation("Create Safety Concern records for SearchRequest successfully");
+                _logger.LogInformation($"Successfully created Safety Concern Detail {safetyConcern.SafetyConcernDetailId}.");
                 return true;
             }
             catch (Exception ex)
@@ -210,6 +211,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                     identifier.Person = _returnedPerson;
                     SSG_Identifier newIdentifier = await _searchRequestService.CreateIdentifier(identifier, _cancellationToken);
                     await CreateResultTransaction(newIdentifier);
+                    _logger.LogInformation($"Successfully created identifier {newIdentifier.IdentifierId}.");
                 }
                 return true;
             }
@@ -235,6 +237,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                     addr.Person = _returnedPerson;
                     SSG_Address uploadedAddr = await _searchRequestService.CreateAddress(addr, _cancellationToken);
                     await CreateResultTransaction(uploadedAddr);
+                    _logger.LogInformation($"Successfully created address {uploadedAddr.AddressId}.");
                 }
                 return true;
             }
@@ -260,6 +263,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                     txin.Person = _returnedPerson;
                     SSG_TaxIncomeInformation uploadedTxin = await _searchRequestService.CreateTaxIncomeInformation(txin, _cancellationToken);
                     await CreateResultTransaction(uploadedTxin);
+                    _logger.LogInformation($"Successfully created tax income information {uploadedTxin.TaxincomeinformationId}.");
                 }
                 return true;
             }
@@ -285,6 +289,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                     ph.Person = _returnedPerson;
                     SSG_PhoneNumber phoneNumber = await _searchRequestService.CreatePhoneNumber(ph, _cancellationToken);
                     await CreateResultTransaction(phoneNumber);
+                    _logger.LogInformation($"Successfully created phone number {phoneNumber.PhoneNumberId}.");
                 }
                 return true;
             }
@@ -308,6 +313,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                     n.Person = _returnedPerson;
                     SSG_Aliase alias = await _searchRequestService.CreateName(n, _cancellationToken);
                     await CreateResultTransaction(alias);
+                    _logger.LogInformation($"Successfully created alias {alias.AliasId}.");
                 }
                 return true;
             }
@@ -344,6 +350,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                     //}
 
                     await CreateResultTransaction(ssg_employment);
+                    _logger.LogInformation($"Successfully created employment {ssg_employment.EmploymentId}.");
                 }
                 return true;
             }
@@ -369,6 +376,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                     n.Person = _returnedPerson;
                     SSG_Identity relate = await _searchRequestService.CreateRelatedPerson(n, _cancellationToken);
                     await CreateResultTransaction(relate);
+                    _logger.LogInformation($"Successfully created related person (ssg_identity) '{relate.RelatedPersonId}'.");
                 }
                 return true;
             }
@@ -393,6 +401,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                     bank.Person = _returnedPerson;
                     SSG_Asset_BankingInformation ssgBank = await _searchRequestService.CreateBankInfo(bank, _cancellationToken);
                     await CreateResultTransaction(ssgBank);
+                    _logger.LogInformation($"Successfully created bank information {ssgBank.BankingInformationId}.");
                 }
                 return true;
             }
@@ -423,11 +432,12 @@ namespace DynamicsAdapter.Web.PersonSearch
                         {
                             AssetOwnerEntity assetOwner = _mapper.Map<AssetOwnerEntity>(owner);
                             assetOwner.Vehicle = ssgVehicle;
-                            await _searchRequestService.CreateAssetOwner(assetOwner, _cancellationToken);
+                            var assetOwnerResult = await _searchRequestService.CreateAssetOwner(assetOwner, _cancellationToken);
+                            _logger.LogInformation($"Successfully created asset owner {assetOwnerResult.AssetOwnerId} for vehicle.");
                         }
                     }
                     await CreateResultTransaction(ssgVehicle);
-
+                    _logger.LogInformation($"Successfully created vehicle {ssgVehicle.VehicleId}.");
                 }
                 return true;
             }
@@ -458,11 +468,13 @@ namespace DynamicsAdapter.Web.PersonSearch
                         {
                             AssetOwnerEntity assetOwner = _mapper.Map<AssetOwnerEntity>(owner);
                             assetOwner.OtherAsset = ssgOtherAsset;
-                            await _searchRequestService.CreateAssetOwner(assetOwner, _cancellationToken);
+                            var assetOwnerResult = await _searchRequestService.CreateAssetOwner(assetOwner, _cancellationToken);
+                            _logger.LogInformation($"Successfully created asset owner {assetOwnerResult.AssetOwnerId} for other asset.");
                         }
                     }
 
                     await CreateResultTransaction(ssgOtherAsset);
+                    _logger.LogInformation($"Successfully created other asset {ssgOtherAsset.AssetOtherId}.");
                 }
                 return true;
             }
@@ -518,6 +530,7 @@ namespace DynamicsAdapter.Web.PersonSearch
 
                     SSG_Asset_WorkSafeBcClaim ssg_Claim = await _searchRequestService.CreateCompensationClaim(ssg_claim, _cancellationToken);
                     await CreateResultTransaction(ssg_Claim);
+                    _logger.LogInformation($"Successfully created Worksafe BC claim {ssg_Claim.CompensationClaimId}.");
                 }
                 return true;
             }
@@ -543,6 +556,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                     icbcClaim.Person = _returnedPerson;
                     SSG_Asset_ICBCClaim ssg_claim = await _searchRequestService.CreateInsuranceClaim(icbcClaim, _cancellationToken);
                     await CreateResultTransaction(ssg_claim);
+                    _logger.LogInformation($"Successfully created ICBC claim {ssg_claim.ICBCClaimId}.");
 
                     if (claim.ClaimCentre != null && claim.ClaimCentre.ContactNumber!=null)
                     {
@@ -550,7 +564,8 @@ namespace DynamicsAdapter.Web.PersonSearch
                         {
                             SimplePhoneNumberEntity phoneForAsset = _mapper.Map<SimplePhoneNumberEntity>(phone);
                             phoneForAsset.SSG_Asset_ICBCClaim = ssg_claim;
-                            await _searchRequestService.CreateSimplePhoneNumber(phoneForAsset, _cancellationToken);
+                            var phoneForAssertResult = await _searchRequestService.CreateSimplePhoneNumber(phoneForAsset, _cancellationToken);
+                            _logger.LogInformation($"Successfully created simple phone number {phoneForAssertResult.SimplePhoneNumberId}.");
                         }
                     }
 
@@ -560,7 +575,8 @@ namespace DynamicsAdapter.Web.PersonSearch
                         {
                             InvolvedPartyEntity involvedParty = _mapper.Map<InvolvedPartyEntity>(party);
                             involvedParty.SSG_Asset_ICBCClaim = ssg_claim;
-                            await _searchRequestService.CreateInvolvedParty(involvedParty, _cancellationToken);
+                            var involvedPartyResult = await _searchRequestService.CreateInvolvedParty(involvedParty, _cancellationToken);
+                            _logger.LogInformation($"Successfully created involved party {involvedPartyResult.InvolvedPartyId}.");
                         }
                     }
                 }
@@ -588,7 +604,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                     email.Person = _returnedPerson;
                     SSG_Email ssgEmail = await _searchRequestService.CreateEmail(email, _cancellationToken);
                     await CreateResultTransaction(ssgEmail);
-
+                    _logger.LogInformation($"Successfully created email {ssgEmail.EmailId}.");
                 }
                 return true;
             }

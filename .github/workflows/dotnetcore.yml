@@ -18,7 +18,7 @@ jobs:
           NEXUS_REPO_PASSWORD: ${{ secrets.nexus_repo_password }}
           NEXUS_REPO_URL: ${{ secrets.nexus_repo_url }}
           NEXUS_REPO_URI: ${{ secrets.nexus_repo_uri }}
-        run: dotnet build --configuration Release --configfile ../NuGet.config
+        run: export DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1 && dotnet build --configuration Release --configfile ../NuGet.config
         working-directory: ./app/SearchApi
       - name: Test SearchApi
         run: dotnet test

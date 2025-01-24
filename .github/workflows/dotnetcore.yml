@@ -18,7 +18,7 @@ jobs:
           NEXUS_REPO_PASSWORD: ${{ secrets.nexus_repo_password }}
           NEXUS_REPO_URL: ${{ secrets.nexus_repo_url }}
           NEXUS_REPO_URI: ${{ secrets.nexus_repo_uri }}
-        run: export DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1 && wget http://security.ubuntu.com/ubuntu/pool/main/o/openssl1.0/libssl1.0.0_1.0.2n-1ubuntu5_amd64.deb && sudo dpkg -i libssl1.0.0_1.0.2n-1ubuntu5_amd64.deb && dotnet build --configuration Release --configfile ../NuGet.config
+        run: echo ${{ secrets.nexus_repo_user }} && export DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1 && wget http://security.ubuntu.com/ubuntu/pool/main/o/openssl1.0/libssl1.0.0_1.0.2n-1ubuntu5_amd64.deb && sudo dpkg -i libssl1.0.0_1.0.2n-1ubuntu5_amd64.deb && dotnet build --configuration Release --configfile ../NuGet.config
         working-directory: ./app/SearchApi
       - name: Test SearchApi
         run: dotnet test

@@ -12,7 +12,7 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 3.1.101
-      - name: Build SearchApi
+      - name: Build SearchApi TEST
         env:
           NEXUS_REPO_USER: ${{ secrets.nexus_repo_user }}
           NEXUS_REPO_PASSWORD: ${{ secrets.nexus_repo_password }}

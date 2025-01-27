@@ -2,26 +2,26 @@ name: Main - Build Image and Push to Openshift Registry for Dev Deployment
 on:
   workflow_dispatch:
     inputs:
-        app:
-          type: choice
-          description: Select a component Image to deploy
-          options:
+      app:
+        type: choice
+        description: Select a component Image to deploy
+        options:
           - -Select-
           - search-api
           - request-api
           - dynadapter
-          required: true
-        tag:
-            description: 'Target image tag to build and deploy'     
-            required: true
-            default: 'dev'
-      
+        required: true
+      tag:
+        description: "Target image tag to build and deploy"
+        required: true
+        default: "dev"
+
 jobs:
   build-push-image:
     name: build-push-image
     runs-on: ubuntu-latest
     environment: ${{ github.event.inputs.tag }}
-    env: 
+    env:
       app: ${{github.event.inputs.app}}
       tag: ${{github.event.inputs.tag}}
 
@@ -30,7 +30,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           path: .
-      
+
       - name: Fetch Project Path
         id: fetch_projectpath
         env:
@@ -48,6 +48,7 @@ jobs:
           echo "Release App: ${{ env.app }}"
           echo "Project Build Path: ${PROJECT_PATH}"
           echo "Release Tag: ${{ env.tag }}"
+          echo "NEXUS_REPO_USER: ${{ secrets.NEXUS_REPO_USER }}"
 
       - name: Login to OpenShift Container Repository
         uses: docker/login-action@v1
@@ -55,7 +56,7 @@ jobs:
           registry: ${{secrets.OPENSHIFT_EXTERNAL_REPOSITORY}}
           username: ${{secrets.OPENSHIFT_SA_USERNAME}}
           password: ${{secrets.OPENSHIFT_SA_PASSWORD}}
-      
+
       - name: Pull Builder Image from OpenShift Container Repository
         env:
           IMAGE: ${{secrets.OPENSHIFT_EXTERNAL_REPOSITORY}}/${{secrets.OPENSHIFT_TOOLS_NAMESPACE}}/dotnet31-rhel7:sdk-custom
@@ -65,21 +66,21 @@ jobs:
         id: build_image
         uses: redhat-actions/s2i-build@v2
         with:
-            path_context: ./app
-            builder_image:  ${{secrets.OPENSHIFT_EXTERNAL_REPOSITORY}}/${{secrets.OPENSHIFT_TOOLS_NAMESPACE}}/dotnet31-rhel7:sdk-custom
-            image: ${{ env.app}}
-            tags: ${{ env.tag }}
-            env_vars: |
-              DOTNET_STARTUP_PROJECT=${{ steps.fetch_projectpath.outputs.PATH }}
-              DOTNET_CONFIGURATION=Release
-              DOTNET_PACK=true
-              WORKDIR=/opt/app-root/src
-              DOTNET_INCREMENTAL=true
-              DOTNET_RESTORE_CONFIGFILE=./NuGet.config
-              NEXUS_REPO_USER=${{ secrets.NEXUS_REPO_USER }}
-              NEXUS_REPO_PASSWORD=${{ secrets.NEXUS_REPO_PASSWORD }}
-              NEXUS_REPO_URL=${{ secrets.NEXUS_URL }}
-      
+          path_context: ./app
+          builder_image: ${{secrets.OPENSHIFT_EXTERNAL_REPOSITORY}}/${{secrets.OPENSHIFT_TOOLS_NAMESPACE}}/dotnet31-rhel7:sdk-custom
+          image: ${{ env.app}}
+          tags: ${{ env.tag }}
+          env_vars: |
+            DOTNET_STARTUP_PROJECT=${{ steps.fetch_projectpath.outputs.PATH }}
+            DOTNET_CONFIGURATION=Release
+            DOTNET_PACK=true
+            WORKDIR=/opt/app-root/src
+            DOTNET_INCREMENTAL=true
+            DOTNET_RESTORE_CONFIGFILE=./NuGet.config
+            NEXUS_REPO_USER=${{ secrets.NEXUS_REPO_USER }}
+            NEXUS_REPO_PASSWORD=${{ secrets.NEXUS_REPO_PASSWORD }}
+            NEXUS_REPO_URL=${{ secrets.NEXUS_URL }}
+
       - name: Push Application Image to Openshift ImageStream & Deploy to Dev
         env:
           SOURCE_IMAGE: ${{ env.app}}:${{ env.tag }}

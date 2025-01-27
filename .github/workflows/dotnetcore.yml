@@ -3,7 +3,7 @@ name: .NET Core
 on: [pull_request]
 
 env:
-  NEXUS_REPO_USER: ${{ secrets.NEXUS_REPO_USER }}
+  NEXUS_REPO_USER: admin
   NEXUS_REPO_PASSWORD: ${{ secrets.NEXUS_REPO_PASSWORD }}
   NEXUS_REPO_URL: ${{ secrets.NEXUS_REPO_URL }}
 

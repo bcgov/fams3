@@ -34,10 +34,11 @@ Run wsl-vpnkit
 
 There are several possible combinations of ways to run and debug everything locally. It is recommend to use WSL and run the services you are not debugging as docker containers and then use VS IDE/Code using WSL profile for the target service.
 
-For example:
+Run some of the following and omit the debugging target:
+
 ```shell
 _run/rabbitmq/local.sh rabbitmq.json
 _run/redis/local.sh
 ./run.sh SearchApi/SearchApi.Web
 ./run.sh DynamicsAdapter/DynamicsAdapter.Web
-
+```

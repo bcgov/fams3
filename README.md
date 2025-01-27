@@ -329,7 +329,7 @@ Edit your wsl configuration to use your user above as default
 > systemd=false  
 > 
 > [user]  
-> default=jburditt  
+> default=<USERNAME_FROM_WSL>
 
 Generate a SSH certificate for use with Github
 `ssh-keygen`

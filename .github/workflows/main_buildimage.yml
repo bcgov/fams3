@@ -54,7 +54,7 @@ jobs:
             echo "No access to secrets"
             exit 1
           fi
-          echo "NEXUS_REPO_USER: "${{ secrets.NEXUS_REPO_USER }}"
+          echo "NEXUS_REPO_USER: ${{ secrets.NEXUS_REPO_USER }}"
       - name: Login to OpenShift Container Repository
         uses: docker/login-action@v1
         with:

@@ -19,9 +19,9 @@ jobs:
         with:
           dotnet-version: 3.1.101
       - name: Install OpenSSL 1.0
-        run: echo $NEXUS_REPO_USER && export DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1 && wget http://security.ubuntu.com/ubuntu/pool/main/o/openssl1.0/libssl1.0.0_1.0.2n-1ubuntu5_amd64.deb && sudo dpkg -i libssl1.0.0_1.0.2n-1ubuntu5_amd64.deb
+        run: echo $NEXUS_REPO_USER && wget http://security.ubuntu.com/ubuntu/pool/main/o/openssl1.0/libssl1.0.0_1.0.2n-1ubuntu5_amd64.deb && sudo dpkg -i libssl1.0.0_1.0.2n-1ubuntu5_amd64.deb
       - name: Build SearchApi
-        run: dotnet build --configuration Release --configfile ../NuGet.config
+        run: export DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1 && dotnet build --configuration Release --configfile ../NuGet.config
         working-directory: ./app/SearchApi
       - name: Test SearchApi
         run: dotnet test

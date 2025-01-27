@@ -3,7 +3,7 @@ name: .NET Core
 on: [pull_request]
 
 env:
-  NEXUS_REPO_USER: admin
+  NEXUS_REPO_USER: ${{ secrets.NEXUS_REPO_USER }}
   NEXUS_REPO_PASSWORD: ${{ secrets.NEXUS_REPO_PASSWORD }}
   NEXUS_REPO_URL: ${{ secrets.NEXUS_REPO_URL }}
 
@@ -13,26 +13,14 @@ jobs:
     environment: dev
 
     steps:
-      - name: Debug ENV
-        run: printenv
       - name: Checkout code
         uses: actions/checkout@v1
-        with:
-          ref: ${{  github.event.pull_request.head.sha }}
-      - name: Run tests
-        run: |
-          if [[ "x${{ secrets.NEXUS_REPO_USER }}" == "xval" ]]; then
-            echo "Access to secrets"
-          else
-            echo "No access to secrets"
-            exit 1
-          fi
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 3.1.101
       - name: Install OpenSSL 1.0
-        run: echo $NEXUS_REPO_USER && wget http://security.ubuntu.com/ubuntu/pool/main/o/openssl1.0/libssl1.0.0_1.0.2n-1ubuntu5_amd64.deb && sudo dpkg -i libssl1.0.0_1.0.2n-1ubuntu5_amd64.deb
+        run: wget http://security.ubuntu.com/ubuntu/pool/main/o/openssl1.0/libssl1.0.0_1.0.2n-1ubuntu5_amd64.deb && sudo dpkg -i libssl1.0.0_1.0.2n-1ubuntu5_amd64.deb
       - name: Build SearchApi
         run: export DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1 && dotnet build --configuration Release --configfile ../NuGet.config
         working-directory: ./app/SearchApi

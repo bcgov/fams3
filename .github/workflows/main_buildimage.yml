@@ -48,25 +48,24 @@ jobs:
           echo "Release App: ${{ env.app }}"
           echo "Project Build Path: ${PROJECT_PATH}"
           echo "Release Tag: ${{ env.tag }}"
-
-      # - name: Login to OpenShift Container Repository
-      #   uses: docker/login-action@v1
-      #   with:
-      #     registry: ${{secrets.OPENSHIFT_EXTERNAL_REPOSITORY}}
-      #     username: ${{secrets.OPENSHIFT_SA_USERNAME}}
-      #     password: ${{secrets.OPENSHIFT_SA_PASSWORD}}
+      - name: Login to OpenShift Container Repository
+        uses: docker/login-action@v1
+        with:
+          registry: ${{secrets.OPENSHIFT_EXTERNAL_REPOSITORY}}
+          username: ${{secrets.OPENSHIFT_SA_USERNAME}}
+          password: ${{secrets.OPENSHIFT_SA_PASSWORD}}
 
       - name: Pull Builder Image from OpenShift Container Repository
-        #env:
-        #  IMAGE: ${{secrets.OPENSHIFT_EXTERNAL_REPOSITORY}}/${{secrets.OPENSHIFT_TOOLS_NAMESPACE}}/dotnet31-rhel7:sdk-custom
-        run: docker pull bitnami/dotnet-sdk:3.1
+        env:
+          IMAGE: ${{secrets.OPENSHIFT_EXTERNAL_REPOSITORY}}/${{secrets.OPENSHIFT_TOOLS_NAMESPACE}}/dotnet31-rhel7:sdk-custom
+        run: docker pull ${IMAGE}
 
       - name: Build Application Image using S2I
         id: build_image
         uses: redhat-actions/s2i-build@v2
         with:
           path_context: ./app
-          builder_image: bitnami/dotnet-sdk:3.1
+          builder_image: ${{secrets.OPENSHIFT_EXTERNAL_REPOSITORY}}/${{secrets.OPENSHIFT_TOOLS_NAMESPACE}}/dotnet31-rhel7:sdk-custom
           image: ${{ env.app}}
           tags: ${{ env.tag }}
           env_vars: |

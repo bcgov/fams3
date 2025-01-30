@@ -59,14 +59,14 @@ jobs:
       - name: Pull Builder Image from OpenShift Container Repository
         #env:
         #  IMAGE: ${{secrets.OPENSHIFT_EXTERNAL_REPOSITORY}}/${{secrets.OPENSHIFT_TOOLS_NAMESPACE}}/dotnet31-rhel7:sdk-custom
-        run: docker pull angga1409/dotnet31-rhel7
+        run: docker pull bitnami/dotnet:3.1
 
       - name: Build Application Image using S2I
         id: build_image
         uses: redhat-actions/s2i-build@v2
         with:
           path_context: ./app
-          builder_image: angga1409/dotnet31-rhel7
+          builder_image: bitnami/dotnet:3.1
           image: ${{ env.app}}
           tags: ${{ env.tag }}
           env_vars: |

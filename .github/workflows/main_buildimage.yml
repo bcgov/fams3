@@ -56,16 +56,16 @@ jobs:
           password: ${{secrets.OPENSHIFT_SA_PASSWORD}}
 
       - name: Pull Builder Image from OpenShift Container Repository
-        env:
-          IMAGE: ${{secrets.OPENSHIFT_EXTERNAL_REPOSITORY}}/${{secrets.OPENSHIFT_TOOLS_NAMESPACE}}/dotnet31-rhel7:sdk-custom
-        run: docker pull ${IMAGE}
+        #env:
+        #  IMAGE: ${{secrets.OPENSHIFT_EXTERNAL_REPOSITORY}}/${{secrets.OPENSHIFT_TOOLS_NAMESPACE}}/dotnet31-rhel7:sdk-custom
+        run: docker pull angga1409/dotnet31-rhel7
 
       - name: Build Application Image using S2I
         id: build_image
         uses: redhat-actions/s2i-build@v2
         with:
           path_context: ./app
-          builder_image: ${{secrets.OPENSHIFT_EXTERNAL_REPOSITORY}}/${{secrets.OPENSHIFT_TOOLS_NAMESPACE}}/dotnet31-rhel7:sdk-custom
+          builder_image: angga1409/dotnet31-rhel7
           image: ${{ env.app}}
           tags: ${{ env.tag }}
           env_vars: |
@@ -79,10 +79,10 @@ jobs:
             NEXUS_REPO_PASSWORD=${{ secrets.NEXUS_REPO_PASSWORD }}
             NEXUS_REPO_URL=${{ secrets.NEXUS_REPO_URL }}
 
-      - name: Push Application Image to Openshift ImageStream & Deploy to Dev
-        env:
-          SOURCE_IMAGE: ${{ env.app}}:${{ env.tag }}
-          TARGET_IMAGE: ${{secrets.OPENSHIFT_EXTERNAL_REPOSITORY}}/${{secrets.OPENSHIFT_TOOLS_NAMESPACE}}/${{ env.app}}:${{ env.tag }}
-        run: |
-          docker tag ${SOURCE_IMAGE} ${TARGET_IMAGE}
-          docker push ${TARGET_IMAGE}
+      #- name: Push Application Image to Openshift ImageStream & Deploy to Dev
+      #  env:
+      #    SOURCE_IMAGE: ${{ env.app}}:${{ env.tag }}
+      #    TARGET_IMAGE: ${{secrets.OPENSHIFT_EXTERNAL_REPOSITORY}}/${{secrets.OPENSHIFT_TOOLS_NAMESPACE}}/${{ env.app}}:${{ env.tag }}
+      #  run: |
+      #    docker tag ${SOURCE_IMAGE} ${TARGET_IMAGE}
+      #    docker push ${TARGET_IMAGE}

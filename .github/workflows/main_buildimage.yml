@@ -48,6 +48,7 @@ jobs:
           echo "Release App: ${{ env.app }}"
           echo "Project Build Path: ${PROJECT_PATH}"
           echo "Release Tag: ${{ env.tag }}"
+
       - name: Login to OpenShift Container Repository
         uses: docker/login-action@v1
         with:
@@ -58,7 +59,12 @@ jobs:
       - name: Pull Builder Image from OpenShift Container Repository
         env:
           IMAGE: ${{secrets.OPENSHIFT_EXTERNAL_REPOSITORY}}/${{secrets.OPENSHIFT_TOOLS_NAMESPACE}}/dotnet31-rhel7:sdk-custom
-        run: docker pull ${IMAGE}
+        run: |
+          echo "${IMAGE}"
+          echo "TEST"
+          echo ${{ env.app }}
+          echo ${IMAGE}
+          docker pull ${IMAGE}
 
       - name: Build Application Image using S2I
         id: build_image

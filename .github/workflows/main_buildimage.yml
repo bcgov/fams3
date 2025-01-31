@@ -82,9 +82,9 @@ jobs:
             NEXUS_REPO_URL=${{ secrets.NEXUS_REPO_URL }}
 
       - name: Push Application Image to Openshift ImageStream & Deploy to Dev
-       env:
-         SOURCE_IMAGE: ${{ env.app}}:${{ env.tag }}
-         TARGET_IMAGE: ${{secrets.OPENSHIFT_EXTERNAL_REPOSITORY}}/${{secrets.OPENSHIFT_TOOLS_NAMESPACE}}/${{ env.app}}:${{ env.tag }}
-       run: |
-         docker tag ${SOURCE_IMAGE} ${TARGET_IMAGE}
-         docker push ${TARGET_IMAGE}
+        env:
+          SOURCE_IMAGE: ${{ env.app}}:${{ env.tag }}
+          TARGET_IMAGE: ${{secrets.OPENSHIFT_EXTERNAL_REPOSITORY}}/${{secrets.OPENSHIFT_TOOLS_NAMESPACE}}/${{ env.app}}:${{ env.tag }}
+        run: |
+          docker tag ${SOURCE_IMAGE} ${TARGET_IMAGE}
+          docker push ${TARGET_IMAGE}

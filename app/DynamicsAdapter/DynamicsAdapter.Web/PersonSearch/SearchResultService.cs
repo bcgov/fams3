@@ -256,6 +256,9 @@ namespace DynamicsAdapter.Web.PersonSearch
                 _logger.LogDebug($"Attempting to create found tax income information records for SearchRequest[{_searchRequest.SearchRequestId}]");
 
                 var taxCodes = await _searchRequestService.GetTaxCodes(cancellationToken);
+                // no valid tax codes in Dynamics, something went wrong
+                if (taxCodes == null || !taxCodes.Any())
+                    throw new Exception("No tax codes were found in Dynamics.");
 
                 foreach (var taxinfo in _foundPerson.TaxIncomeInformations)
                 {

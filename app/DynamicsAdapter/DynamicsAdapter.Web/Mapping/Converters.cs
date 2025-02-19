@@ -8,6 +8,7 @@ using System.Text;
 using Fams3Adapter.Dynamics.SearchRequest;
 using DynamicsAdapter.Web.PersonSearch.Models;
 using Fams3Adapter.Dynamics.TaxIncomeInformation;
+using Newtonsoft.Json;
 
 namespace DynamicsAdapter.Web.Mapping
 {
@@ -586,6 +587,7 @@ namespace DynamicsAdapter.Web.Mapping
                     taxIncomeInformation.EmploymentIncomeT4Amount = tax.EmploymentIncomeT4Amount;
                     taxIncomeInformation.JcaCode = tax.JCACode;
                     taxIncomeInformation.TaxTraceStatusText = tax.TaxTraceStatusText;
+                    taxIncomeInformation.TaxCode = JsonConvert.DeserializeObject<TaxCode>(tax.TaxCode);
                     toReturn.Add(taxIncomeInformation);
                 }
             }

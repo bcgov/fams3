@@ -49,6 +49,10 @@ namespace Fams3Adapter.Dynamics.TaxIncomeInformation
 
         [JsonProperty("ssg_Personid")]
         public virtual SSG_Person Person { get; set; }
+
+        [JsonProperty("fam_cracode")]
+        [Description("CRA Code")]
+        public string TaxCode { get; set; }
     }
 
     public class SSG_TaxIncomeInformation : TaxIncomeInformationEntity

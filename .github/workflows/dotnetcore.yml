@@ -30,6 +30,9 @@ jobs:
       - name: Test SearchApi
         run: dotnet test
         working-directory: ./app/SearchApi
+      - name: Clean DynamicsAdapter
+        run: dotnet clean --configuration Release
+        working-directory: ./app/DynamicsAdapter
       - name: Build DynamicsAdapter
         run: dotnet build --configuration Release --configfile ../NuGet.config
         working-directory: ./app/DynamicsAdapter

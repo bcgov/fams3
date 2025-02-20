@@ -48,7 +48,6 @@ jobs:
           echo "Release App: ${{ env.app }}"
           echo "Project Build Path: ${PROJECT_PATH}"
           echo "Release Tag: ${{ env.tag }}"
-
       - name: Login to OpenShift Container Repository
         uses: docker/login-action@v1
         with:

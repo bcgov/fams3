@@ -30,6 +30,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
     {
         private SearchResultService _sut;
         private Mock<ILogger<SearchResultService>> _loggerMock;
+        private Mock<ILoggerFactory> _loggerFactoryMock;
         private Mock<ISearchRequestService> _searchRequestServiceMock;
         private Person _fakePerson;
 
@@ -499,7 +500,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             {                
             }));
 
-            _sut = new SearchResultService(_searchRequestServiceMock.Object, _loggerMock.Object, _mapper.Object);
+            _sut = new SearchResultService(_searchRequestServiceMock.Object, _loggerFactoryMock.Object, _mapper.Object);
 
         }
 

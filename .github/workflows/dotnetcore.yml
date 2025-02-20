@@ -7,11 +7,6 @@ env:
   NEXUS_REPO_PASSWORD: ${{ secrets.NEXUS_REPO_PASSWORD }}
   NEXUS_REPO_URL: ${{ secrets.NEXUS_REPO_URL }}
 
-env:
-  NEXUS_REPO_USER: ${{ secrets.NEXUS_REPO_USER }}
-  NEXUS_REPO_PASSWORD: ${{ secrets.NEXUS_REPO_PASSWORD }}
-  NEXUS_REPO_URL: ${{ secrets.NEXUS_REPO_URL }}
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -24,6 +19,9 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 3.1.101
+      - name: Clean SearchApi
+        run: dotnet clean --configuration Release
+        working-directory: ./app/SearchApi
       - name: Install OpenSSL 1.0
         run: wget http://security.ubuntu.com/ubuntu/pool/main/o/openssl1.0/libssl1.0.0_1.0.2n-1ubuntu5_amd64.deb && sudo dpkg -i libssl1.0.0_1.0.2n-1ubuntu5_amd64.deb
       - name: Build SearchApi

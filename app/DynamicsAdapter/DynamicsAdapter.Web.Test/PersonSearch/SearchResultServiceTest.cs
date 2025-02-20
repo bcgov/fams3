@@ -500,8 +500,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             {                
             }));
 
-            // TODO this should be _loggerFactoryMock.Object
-            _sut = new SearchResultService(_searchRequestServiceMock.Object, _loggerMock.Object, _mapper.Object);
+            _sut = new SearchResultService(_searchRequestServiceMock.Object, _loggerFactoryMock.Object, _mapper.Object);
 
         }
 

@@ -94,7 +94,7 @@ namespace DynamicsAdapter.Web.PersonSearch
 
             await UploadAddresses();
 
-            await UploadTaxIncomeInformations();
+            await UploadTaxIncomeInformations(cancellationToken);
 
             await UploadPhoneNumbers();
 
@@ -248,22 +248,43 @@ namespace DynamicsAdapter.Web.PersonSearch
             }
         }
 
-        private async Task<bool> UploadTaxIncomeInformations()
+        private async Task<bool> UploadTaxIncomeInformations(CancellationToken cancellationToken)
         {
             if (_foundPerson.TaxIncomeInformations == null) return true;
             try
             {
                 _logger.LogDebug($"Attempting to create found tax income information records for SearchRequest[{_searchRequest.SearchRequestId}]");
 
+                var taxCodes = await _searchRequestService.GetTaxCodes(cancellationToken);
+                // no valid tax codes in Dynamics, something went wrong
+                if (taxCodes == null || !taxCodes.Any())
+                    throw new Exception("No tax codes were found in Dynamics.");
+
                 foreach (var taxinfo in _foundPerson.TaxIncomeInformations)
                 {
-                    TaxIncomeInformationEntity txin = _mapper.Map<TaxIncomeInformationEntity>(taxinfo);
-                    txin.SearchRequest = _searchRequest;
-                    txin.InformationSource = _providerDynamicsID;
-                    txin.Person = _returnedPerson;
-                    SSG_TaxIncomeInformation uploadedTxin = await _searchRequestService.CreateTaxIncomeInformation(txin, _cancellationToken);
-                    await CreateResultTransaction(uploadedTxin);
-                    _logger.LogInformation($"Successfully created tax income information {uploadedTxin.TaxincomeinformationId}.");
+                    // null guard clause
+                    if (taxinfo?.TaxCode?.Code == null)
+                        continue;
+
+                    // retrieve a list of valid tax codes
+                    if (taxCodes.Any(x => x.TaxCode == taxinfo.TaxCode.Code))
+                    {
+                        var txin = _mapper.Map<TaxIncomeInformationEntity>(taxinfo);
+                        txin.SearchRequest = _searchRequest;
+                        txin.InformationSource = _providerDynamicsID;
+                        txin.Person = _returnedPerson;
+                        var uploadedTxin = await _searchRequestService.CreateTaxIncomeInformation(txin, _cancellationToken);
+                        if (uploadedTxin != null)
+                        {
+                            await CreateResultTransaction(uploadedTxin);
+                            _logger.LogInformation($"Successfully created tax income information {uploadedTxin.TaxincomeinformationId}.");
+                        }
+                    }
+                    else
+                    {
+                        // invalid tax code, skip
+                        _logger.LogInformation($"Skipped create tax income information {taxinfo.TaxCode?.Code}.");
+                    }
                 }
                 return true;
             }

@@ -31,6 +31,7 @@ using Fams3Adapter.Dynamics.Types;
 using Fams3Adapter.Dynamics.Vehicle;
 using System;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace DynamicsAdapter.Web.Mapping
 {
@@ -185,7 +186,8 @@ namespace DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.Date1Label, opt => opt.MapFrom<Date1LabelResolver>())
                  .ForMember(dest => dest.Date2Label, opt => opt.MapFrom<Date2LabelResolver>())
                  .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => 0))
-                 .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1));
+                 .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1))
+                 .ForMember(dest => dest.TaxCode, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.TaxCode)));
 
             CreateMap<Employment, EmploymentEntity>()
               .ForMember(dest => dest.AddressLine1, opt => opt.MapFrom(src => (src.Employer == null) ? string.Empty : (src.Employer.Address == null) ? string.Empty : src.Employer.Address.AddressLine1))

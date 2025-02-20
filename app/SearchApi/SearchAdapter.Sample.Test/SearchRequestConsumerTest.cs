@@ -48,9 +48,11 @@ namespace SearchAdapter.Sample.Test
 
             _loggerMock = new Mock<ILogger<SearchRequestConsumer>>();
             _providerProfileMock = new Mock<IOptions<ProviderProfileOptions>>();
-            _retryConfigurationMock = new Mock<IOptions<RetryConfiguration>>();
-            _personSearchValidatorMock = new Mock<IValidator<Person>>();
 
+            _retryConfigurationMock = new Mock<IOptions<RetryConfiguration>>();
+            _retryConfigurationMock.Setup(x => x.Value).Returns(new RetryConfiguration() { RetryTimes = 3 });
+
+            _personSearchValidatorMock = new Mock<IValidator<Person>>();
             _personSearchValidatorMock.Setup(x => x.Validate(It.Is<Person>(person => !string.IsNullOrEmpty(person.FirstName))))
                 .Returns(new ValidationResult(Enumerable.Empty<ValidationFailure>()));
 

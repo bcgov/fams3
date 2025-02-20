@@ -500,7 +500,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             {                
             }));
 
-            _sut = new SearchResultService(_searchRequestServiceMock.Object, _loggerFactoryMock.Object, _mapper.Object);
+            _sut = new SearchResultService(_searchRequestServiceMock.Object, _loggerMock.Object, _mapper.Object);
 
         }
 

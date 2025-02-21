@@ -205,6 +205,17 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         public async Task<SSG_TaxIncomeInformation> CreateTaxIncomeInformation(TaxIncomeInformationEntity taxinfo, CancellationToken cancellationToken)
         {
             if (taxinfo.Person.IsDuplicated)
+            {
+                Guid duplicatedTaxInfoId = await _duplicateDetectService.Exists(taxinfo.Person, taxinfo);
+                if (duplicatedTaxInfoId != Guid.Empty)
+                    return new SSG_TaxIncomeInformation() { TaxincomeinformationId = duplicatedTaxInfoId };
+            }
+
+            return await this._oDataClient
+                .For<SSG_TaxIncomeInformation>()
+                .Set(taxinfo)
+                .InsertEntryAsync(cancellationToken);
+        }
 
         private IEnumerable<FAMS_TaxCode> _taxCodes { get; set; }
         public async Task<IEnumerable<FAMS_TaxCode>> GetTaxCodes(CancellationToken cancellationToken)

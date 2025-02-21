@@ -4,5 +4,4 @@ Update appsettings.json OAuth and ApiGateway settings with values from OpenShift
 
 ## RESOURCES
 
-Uploading private nuget package to Nexus
-https://wiki.justice.gov.bc.ca/wiki/spaces/FAMS3IMP/pages/98370042/Update+Private+Nuget+Package
+[Uploading private nuget package to Nexus](https://wiki.justice.gov.bc.ca/wiki/spaces/FAMS3IMP/pages/98370042/Update+Private+Nuget+Package)

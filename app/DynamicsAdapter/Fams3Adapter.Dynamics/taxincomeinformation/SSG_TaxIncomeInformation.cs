@@ -37,6 +37,9 @@ namespace Fams3Adapter.Dynamics.TaxIncomeInformation
         public int? InformationSource { get; set; }
         //example: bank.InformationSource = _providerDynamicsID;
 
+        [JsonProperty("ssg_suppliedbyuser")]
+        public int? SuppliedBy { get; set; }
+
         [UpdateIgnore]
         [JsonProperty("ssg_createdbyagency")]
         public bool IsCreatedByAgency { get; set; }
@@ -50,9 +53,15 @@ namespace Fams3Adapter.Dynamics.TaxIncomeInformation
         [JsonProperty("ssg_Personid")]
         public virtual SSG_Person Person { get; set; }
 
+        [JsonProperty("ssg_personname")]
+        public string FullName { get; set; }
+
         [JsonProperty("fam_cracode")]
         [Description("CRA Code")]
         public string TaxCode { get; set; }
+
+        [JsonProperty("ssg_description")]
+        public string Description { get; set; }
     }
 
     public class SSG_TaxIncomeInformation : TaxIncomeInformationEntity

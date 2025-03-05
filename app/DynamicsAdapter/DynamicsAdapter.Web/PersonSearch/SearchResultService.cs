@@ -79,7 +79,11 @@ namespace DynamicsAdapter.Web.PersonSearch
         {
             if (person == null) return true;
 
+            person.FirstName = person.TaxIncomeInformations.FirstOrDefault().FirstName ?? person.FirstName;
+            person.LastName = person.TaxIncomeInformations.FirstOrDefault().LastName ?? person.LastName;
+            person.BirthDate = person.TaxIncomeInformations.FirstOrDefault().BirthDate ?? person.BirthDate;
             _foundPerson = person;
+            
             _providerDynamicsID = providerProfile.DynamicsID();
             _searchRequest = searchRequest;
             _sourceIdentifier = sourceIdentifier;
@@ -273,6 +277,17 @@ namespace DynamicsAdapter.Web.PersonSearch
                         txin.SearchRequest = _searchRequest;
                         txin.InformationSource = _providerDynamicsID;
                         txin.Person = _returnedPerson;
+                    var firstName = taxinfo.FirstName ?? txin.Person.FirstName;
+                    var lastName = taxinfo.LastName ?? txin.Person.LastName;
+                    var birthDate = taxinfo.BirthDate.HasValue ? taxinfo.BirthDate.Value.DateTime : txin.Person.DateOfBirth;
+                    txin.Person.FirstName = firstName;
+                    txin.Person.LastName = lastName;
+                    txin.Person.DateOfBirth = birthDate;
+                    txin.FullName = $"{firstName} {lastName}";
+                    txin.Description = taxinfo.Description ?? taxinfo.TaxCode.Code;
+                    txin.SuppliedBy = 867670005;    // JCA
+                    txin.Date1 = DateTime.Now;
+
                         var uploadedTxin = await _searchRequestService.CreateTaxIncomeInformation(txin, _cancellationToken);
                         if (uploadedTxin != null)
                         {
@@ -280,12 +295,6 @@ namespace DynamicsAdapter.Web.PersonSearch
                             _logger.LogInformation($"Successfully created tax income information {uploadedTxin.TaxincomeinformationId}.");
                         }
                     }
-                    else
-                    {
-                        // invalid tax code, skip
-                        _logger.LogInformation($"Skipped create tax income information {taxinfo.TaxCode?.Code}.");
-                    }
-                }
                 return true;
             }
             catch (Exception ex)

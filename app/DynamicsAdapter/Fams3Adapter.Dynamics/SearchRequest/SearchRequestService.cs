@@ -121,7 +121,10 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
             try
             {
-                return await this._oDataClient.For<SSG_Person>().Set(person).InsertEntryAsync(cancellationToken);
+                return await this._oDataClient
+                    .For<SSG_Person>()
+                    .Set(person)
+                    .InsertEntryAsync(cancellationToken);
             }
             catch (WebRequestException e) when (e.IsDuplicateHashError())
             {

@@ -713,6 +713,19 @@
             "$ref": "#/definitions/ReferenceDate"
           }
         },
+        "firstName": {
+          "type": "string",
+          "description": "First Name"
+        },
+        "lastName": {
+          "type": "string",
+          "description": "Last Name"
+        },
+        "birthDate": {
+          "type": "string",
+          "description": "Birth Date",
+          "format": "date-time"
+        },
         "description": {
           "type": "string",
           "description": "The description of the information"
@@ -1223,6 +1236,19 @@
         }
       ]
     },
+    "TaxCode": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "description": "Tax Code"
+        },
+        "value": {
+          "type": "string",
+          "description": "Value"
+        }
+      }
+    },
     "TaxIncomeInformation": {
       "allOf": [
         {
@@ -1262,6 +1288,9 @@
             "taxTraceStatusText": {
               "type": "string",
               "description": "Text for the Trace Status Code"
+            },
+            "taxCode": {
+              "$ref": "#/definitions/TaxCode"
             }
           }
         }

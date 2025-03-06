@@ -353,6 +353,10 @@
             "fsoUser": {
               "$ref": "#/definitions/User"
             },
+            "suppliedBySystem": {
+              "type": "integer",
+              "format": "int32"
+            },
             "date1": {
               "type": "string",
               "format": "date-time"
@@ -1265,6 +1269,10 @@
           ],
           "properties": {
             "taxYear": {
+              "type": "string",
+              "description": "Tax Year"
+            },
+            "taxYearResult": {
               "type": "string",
               "description": "Tax Year of Result"
             },

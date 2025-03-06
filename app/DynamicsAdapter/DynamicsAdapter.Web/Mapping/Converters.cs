@@ -589,7 +589,7 @@ namespace DynamicsAdapter.Web.Mapping
                     taxIncomeInformation.JcaCode = tax.JCACode;
                     taxIncomeInformation.TaxTraceStatusText = tax.TaxTraceStatusText;
                     taxIncomeInformation.TaxCode = JsonConvert.DeserializeObject<TaxCode>(tax.TaxCode);
-                    var names = tax.FullName.Split(' ');
+                    var names = tax.FullName?.Split(' ');
                     if (names?.Length == 2)
                     {
                         taxIncomeInformation.FirstName = names[0];

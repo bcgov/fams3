@@ -39,10 +39,6 @@ namespace Fams3Adapter.Dynamics.TaxIncomeInformation
 
         [JsonProperty("ssg_suppliedby")]
         public int? InformationSource { get; set; }
-        //example: bank.InformationSource = _providerDynamicsID;
-
-        [JsonProperty("ssg_suppliedbyuser")]
-        public int? SuppliedBy { get; set; }
 
         [UpdateIgnore]
         [JsonProperty("ssg_createdbyagency")]

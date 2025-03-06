@@ -322,7 +322,7 @@ namespace DynamicsAdapter.Web.Mapping
                .ForMember(dest => dest.WearGlasses, opt => opt.MapFrom(src => src.WearGlasses))
                .ForMember(dest => dest.DistinguishingFeatures, opt => opt.MapFrom(src => src.DistinguishingFeatures))
                .ForMember(dest => dest.Date1, opt => opt.MapFrom(src => src.Date1 != null ? src.Date1.Value.DateTime : (DateTime?)null))
-               .ForMember(dest => dest.SuppliedBy, opt => opt.MapFrom(src => src.SuppliedBy));
+               .ForMember(dest => dest.SuppliedBySystem, opt => opt.MapFrom(src => src.SuppliedBySystem));
 
             CreateMap<BankInfo, BankingInformationEntity>()
                  .ForMember(dest => dest.AccountNumber, opt => opt.MapFrom(src => src.AccountNumber))

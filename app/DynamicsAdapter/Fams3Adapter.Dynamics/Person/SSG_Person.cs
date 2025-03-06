@@ -112,6 +112,9 @@ namespace Fams3Adapter.Dynamics.Person
         [JsonProperty("ssg_isprimary")]
         [UpdateIgnore]
         public bool IsPrimary { get; set; }
+
+        [JsonProperty("ssg_suppliedby")]
+        public int? SuppliedBySystem { get; set; }
     }
 
     public class SSG_Person : PersonEntity

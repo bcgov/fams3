@@ -9,9 +9,13 @@ namespace Fams3Adapter.Dynamics.TaxIncomeInformation
 {
     public class TaxIncomeInformationEntity : DynamicsEntity
     {
+        [JsonProperty("ssg_name")]
+        [Description("Tax Year")]
+        public string TaxYear { get; set; }
+
         [JsonProperty("ssg_taxyear")]
         [Description("Tax Year of Result")]
-        public string TaxYear { get; set; }
+        public string TaxYearResult { get; set; }
 
         [JsonProperty("ssg_commissionincomet4amount")]
         [Description("Commission Income T4 Amount")]
@@ -62,6 +66,10 @@ namespace Fams3Adapter.Dynamics.TaxIncomeInformation
 
         [JsonProperty("ssg_description")]
         public string Description { get; set; }
+
+        [JsonProperty("fams_taxamount")]
+        [Description("Tax Amount")]
+        public string TaxAmount { get; set; }
     }
 
     public class SSG_TaxIncomeInformation : TaxIncomeInformationEntity

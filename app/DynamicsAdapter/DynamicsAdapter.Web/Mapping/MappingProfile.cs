@@ -40,6 +40,11 @@ namespace DynamicsAdapter.Web.Mapping
     {
         public MappingProfile()
         {
+            CreateMap<DateTime?, DateTimeOffset?>()
+                .ForMember(dest => dest.Value, opt => opt.MapFrom(src => src.Value != null ? DateTimeOffset.Parse(src.Value.ToString()) : (DateTimeOffset?)null));
+            CreateMap<DateTimeOffset?, DateTime?>()
+                .ForMember(dest => dest.Value, opt => opt.MapFrom(src => src.Value != null ? src.Value.DateTime : (DateTimeOffset?)null));
+
             CreateMap<IdentifierEntity, PersonalIdentifier>()
                  .ForMember(dest => dest.Value, opt => opt.MapFrom(src => src.Identification))
                  .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
@@ -176,6 +181,7 @@ namespace DynamicsAdapter.Web.Mapping
 
             CreateMap<TaxIncomeInformation, TaxIncomeInformationEntity>()
                  .ForMember(dest => dest.TaxTraceStatusText, opt => opt.MapFrom(src => src.TaxTraceStatusText))
+                 .ForMember(dest => dest.TaxYearResult, opt => opt.MapFrom(src => src.TaxYearResult))
                  .ForMember(dest => dest.TaxYear, opt => opt.MapFrom(src => src.TaxYear))
                  .ForMember(dest => dest.CommissionIncomeT4Amount, opt => opt.MapFrom(src => src.CommissionIncomeT4Amount))
                  .ForMember(dest => dest.EmergencyVolunteerExemptIncomeAmount, opt => opt.MapFrom(src => src.EmergencyVolunteerExemptIncomeAmount))
@@ -187,7 +193,10 @@ namespace DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.Date2Label, opt => opt.MapFrom<Date2LabelResolver>())
                  .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => 0))
                  .ForMember(dest => dest.StatusCode, opt => opt.MapFrom(src => 1))
-                 .ForMember(dest => dest.TaxCode, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.TaxCode)));
+                 .ForMember(dest => dest.TaxCode, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.TaxCode)))
+                 .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => $"{src.FirstName} {src.LastName}"))
+                 .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description ?? src.TaxCode.Code))
+                 .ForMember(dest => dest.TaxAmount, opt => opt.MapFrom(src => src.TaxCode.Value));
 
             CreateMap<Employment, EmploymentEntity>()
               .ForMember(dest => dest.AddressLine1, opt => opt.MapFrom(src => (src.Employer == null) ? string.Empty : (src.Employer.Address == null) ? string.Empty : src.Employer.Address.AddressLine1))
@@ -311,7 +320,9 @@ namespace DynamicsAdapter.Web.Mapping
                .ForMember(dest => dest.Height, opt => opt.MapFrom(src => src.Height))
                .ForMember(dest => dest.Weight, opt => opt.MapFrom(src => src.Weight))
                .ForMember(dest => dest.WearGlasses, opt => opt.MapFrom(src => src.WearGlasses))
-               .ForMember(dest => dest.DistinguishingFeatures, opt => opt.MapFrom(src => src.DistinguishingFeatures));
+               .ForMember(dest => dest.DistinguishingFeatures, opt => opt.MapFrom(src => src.DistinguishingFeatures))
+               .ForMember(dest => dest.Date1, opt => opt.MapFrom(src => src.Date1 != null ? src.Date1.Value.DateTime : (DateTime?)null))
+               .ForMember(dest => dest.SuppliedBy, opt => opt.MapFrom(src => src.SuppliedBy));
 
             CreateMap<BankInfo, BankingInformationEntity>()
                  .ForMember(dest => dest.AccountNumber, opt => opt.MapFrom(src => src.AccountNumber))

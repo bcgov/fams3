@@ -82,6 +82,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             person.FirstName = person.TaxIncomeInformations.FirstOrDefault().FirstName ?? person.FirstName;
             person.LastName = person.TaxIncomeInformations.FirstOrDefault().LastName ?? person.LastName;
             person.BirthDate = person.TaxIncomeInformations.FirstOrDefault().BirthDate ?? person.BirthDate;
+            person.Date1 = DateTime.Now;
             _foundPerson = person;
             
             _providerDynamicsID = providerProfile.DynamicsID();
@@ -259,20 +260,12 @@ namespace DynamicsAdapter.Web.PersonSearch
             {
                 _logger.LogDebug($"Attempting to create found tax income information records for SearchRequest[{_searchRequest.SearchRequestId}]");
 
-                var taxCodes = await _searchRequestService.GetTaxCodes(cancellationToken);
-                // no valid tax codes in Dynamics, something went wrong
-                if (taxCodes == null || !taxCodes.Any())
-                    throw new Exception("No tax codes were found in Dynamics.");
-
                 foreach (var taxinfo in _foundPerson.TaxIncomeInformations)
                 {
                     // null guard clause
                     if (taxinfo?.TaxCode?.Code == null)
                         continue;
 
-                    // retrieve a list of valid tax codes
-                    if (taxCodes.Any(x => x.TaxCode == taxinfo.TaxCode.Code))
-                    {
                         var txin = _mapper.Map<TaxIncomeInformationEntity>(taxinfo);
                         txin.SearchRequest = _searchRequest;
                         txin.InformationSource = _providerDynamicsID;

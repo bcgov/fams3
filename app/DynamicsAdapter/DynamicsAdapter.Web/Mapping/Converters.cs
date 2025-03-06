@@ -582,12 +582,20 @@ namespace DynamicsAdapter.Web.Mapping
                 {
                     TaxIncomeInformation taxIncomeInformation = new TaxIncomeInformation();
                     taxIncomeInformation.TaxYear = tax.TaxYear;
+                    taxIncomeInformation.TaxYearResult = tax.TaxYearResult;
                     taxIncomeInformation.CommissionIncomeT4Amount = tax.CommissionIncomeT4Amount;
                     taxIncomeInformation.EmergencyVolunteerExemptIncomeAmount = tax.EmergencyVolunteerExemptIncomeAmount;
                     taxIncomeInformation.EmploymentIncomeT4Amount = tax.EmploymentIncomeT4Amount;
                     taxIncomeInformation.JcaCode = tax.JCACode;
                     taxIncomeInformation.TaxTraceStatusText = tax.TaxTraceStatusText;
                     taxIncomeInformation.TaxCode = JsonConvert.DeserializeObject<TaxCode>(tax.TaxCode);
+                    var names = tax.FullName.Split(' ');
+                    if (names?.Length == 2)
+                    {
+                        taxIncomeInformation.FirstName = names[0];
+                        taxIncomeInformation.LastName = names[1];
+                    }
+                    taxIncomeInformation.Description = tax.Description ?? tax.TaxCode;
                     toReturn.Add(taxIncomeInformation);
                 }
             }

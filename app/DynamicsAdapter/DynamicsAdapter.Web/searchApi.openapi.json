@@ -352,6 +352,10 @@
             },
             "fsoUser": {
               "$ref": "#/definitions/User"
+            },
+            "date1": {
+              "type": "string",
+              "format": "date-time"
             }
           }
         }

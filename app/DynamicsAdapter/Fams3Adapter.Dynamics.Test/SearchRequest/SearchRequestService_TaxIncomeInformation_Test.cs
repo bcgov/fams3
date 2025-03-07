@@ -39,18 +39,18 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
         {
 
 
-            _odataClientMock.Setup(x => x.For<SSG_TaxIncomeInformation>(null).Set(It.Is<TaxIncomeInformationEntity>(x => x.TaxYear == "1234"))
+            _odataClientMock.Setup(x => x.For<SSG_TaxIncomeInformation>(null).Set(It.Is<TaxIncomeInformationEntity>(x => x.TaxYearResult == "1234"))
                 .InsertEntryAsync(It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(new SSG_TaxIncomeInformation()
                 {
-                    TaxYear = "4321",
+                    TaxYearResult = "4321",
                     TaxincomeinformationId = _testTaxIncomeInformationId
                 })
                 );
 
             var taxinfo = new TaxIncomeInformationEntity()
             {
-                TaxYear = "1234",
+                TaxYearResult = "1234",
                 EmploymentIncomeT4Amount = "2222",
                 EmergencyVolunteerExemptIncomeAmount = "3333",
                 Person = new SSG_Person() { PersonId = _testId }
@@ -58,26 +58,26 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
 
             var result = await _sut.CreateTaxIncomeInformation(taxinfo, CancellationToken.None);
 
-            Assert.AreEqual("4321", result.TaxYear);
+            Assert.AreEqual("4321", result.TaxYearResult);
         }
 
         [Test]
         public async Task with_duplicated_person_not_contains_same_taxinfo_should_return_new_SSG_TaxIncomeInformation()
         {
-            _odataClientMock.Setup(x => x.For<SSG_TaxIncomeInformation>(null).Set(It.Is<TaxIncomeInformationEntity>(x => x.TaxYear == "1234"))
+            _odataClientMock.Setup(x => x.For<SSG_TaxIncomeInformation>(null).Set(It.Is<TaxIncomeInformationEntity>(x => x.TaxYearResult == "1234"))
                  .InsertEntryAsync(It.IsAny<CancellationToken>()))
                  .Returns(Task.FromResult(new SSG_TaxIncomeInformation()
                  {
-                     TaxYear = "7890",
+                     TaxYearResult = "7890",
                      TaxincomeinformationId = _testTaxIncomeInformationId
                  })
                  );
-            _duplicateServiceMock.Setup(x => x.Exists(It.Is<SSG_Person>(m => m.PersonId == _testId), It.Is<TaxIncomeInformationEntity>(m => m.TaxYear == "1234")))
+            _duplicateServiceMock.Setup(x => x.Exists(It.Is<SSG_Person>(m => m.PersonId == _testId), It.Is<TaxIncomeInformationEntity>(m => m.TaxYearResult == "1234")))
                 .Returns(Task.FromResult(Guid.Empty));
 
             var taxinfo = new TaxIncomeInformationEntity()
             {
-                TaxYear = "1234",
+                TaxYearResult = "1234",
                 Person = new SSG_Person()
                 {
                     PersonId = _testId,
@@ -90,19 +90,19 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
             };
             var result = await _sut.CreateTaxIncomeInformation(taxinfo, CancellationToken.None);
 
-            Assert.AreEqual("7890", result.TaxYear);
+            Assert.AreEqual("7890", result.TaxYearResult);
             Assert.AreEqual(_testTaxIncomeInformationId, result.TaxincomeinformationId);
         }
 
         [Test]
         public async Task with_duplicated_person_contains_same_taxinfo_should_return_original_taxinfo_guid()
         {
-            _duplicateServiceMock.Setup(x => x.Exists(It.Is<SSG_Person>(m => m.PersonId == _testId), It.Is<TaxIncomeInformationEntity>(m => m.TaxYear == "duplicated")))
+            _duplicateServiceMock.Setup(x => x.Exists(It.Is<SSG_Person>(m => m.PersonId == _testId), It.Is<TaxIncomeInformationEntity>(m => m.TaxYearResult == "duplicated")))
                 .Returns(Task.FromResult(_testTaxIncomeInformationId));
 
             var taxinfo = new TaxIncomeInformationEntity()
             {
-                TaxYear = "duplicated",
+                TaxYearResult = "duplicated",
                 Person = new SSG_Person()
                 {
                     PersonId = _testId,

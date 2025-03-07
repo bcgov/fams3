@@ -79,11 +79,27 @@ namespace DynamicsAdapter.Web.PersonSearch
         {
             if (person == null) return true;
 
+            if (person.TaxIncomeInformations != null && person.TaxIncomeInformations.Any())
+            {
+                var taxCodes = await _searchRequestService.GetTaxCodes(cancellationToken);
+                foreach (var taxIncomeInformation in person.TaxIncomeInformations)
+                {
+                    taxIncomeInformation.Description = taxCodes
+                        .FirstOrDefault(x => x.TaxCode == taxIncomeInformation.TaxCode.Code)?
+                        .Description;
+            }
+            person.FirstName = person.TaxIncomeInformations.FirstOrDefault().FirstName ?? person.FirstName;
+            person.LastName = person.TaxIncomeInformations.FirstOrDefault().LastName ?? person.LastName;
+            person.BirthDate = person.TaxIncomeInformations.FirstOrDefault().BirthDate ?? person.BirthDate;
+            }
+            person.SuppliedBySystem = Constants.JcaSystem;
+            person.Date1 = DateTime.Now;
             _foundPerson = person;
+            
             _providerDynamicsID = providerProfile.DynamicsID();
             _searchRequest = searchRequest;
             _sourceIdentifier = sourceIdentifier;
-            _searchApiRequest = searchApiRequestId==null? null : new SSG_SearchApiRequest() { SearchApiRequestId = (Guid)searchApiRequestId };
+            _searchApiRequest = searchApiRequestId == null ? null : new SSG_SearchApiRequest() { SearchApiRequestId = (Guid)searchApiRequestId };
             _cancellationToken = cancellationToken;
 
             _returnedPerson = await UploadPerson();
@@ -250,15 +266,12 @@ namespace DynamicsAdapter.Web.PersonSearch
 
         private async Task<bool> UploadTaxIncomeInformations(CancellationToken cancellationToken)
         {
-            if (_foundPerson.TaxIncomeInformations == null) return true;
+            if (_foundPerson.TaxIncomeInformations == null) 
+                return true;
+
             try
             {
                 _logger.LogDebug($"Attempting to create found tax income information records for SearchRequest[{_searchRequest.SearchRequestId}]");
-
-                var taxCodes = await _searchRequestService.GetTaxCodes(cancellationToken);
-                // no valid tax codes in Dynamics, something went wrong
-                if (taxCodes == null || !taxCodes.Any())
-                    throw new Exception("No tax codes were found in Dynamics.");
 
                 foreach (var taxinfo in _foundPerson.TaxIncomeInformations)
                 {
@@ -266,13 +279,21 @@ namespace DynamicsAdapter.Web.PersonSearch
                     if (taxinfo?.TaxCode?.Code == null)
                         continue;
 
-                    // retrieve a list of valid tax codes
-                    if (taxCodes.Any(x => x.TaxCode == taxinfo.TaxCode.Code))
-                    {
                         var txin = _mapper.Map<TaxIncomeInformationEntity>(taxinfo);
                         txin.SearchRequest = _searchRequest;
                         txin.InformationSource = _providerDynamicsID;
                         txin.Person = _returnedPerson;
+                    var firstName = taxinfo.FirstName ?? txin.Person.FirstName;
+                    var lastName = taxinfo.LastName ?? txin.Person.LastName;
+                    var birthDate = taxinfo.BirthDate.HasValue ? taxinfo.BirthDate.Value.DateTime : txin.Person.DateOfBirth;
+                    txin.Person.FirstName = firstName;
+                    txin.Person.LastName = lastName;
+                    txin.Person.DateOfBirth = birthDate;
+                    txin.FullName = $"{firstName} {lastName}";
+                    txin.Description = taxinfo.Description ?? taxinfo.TaxCode.Code;
+                    txin.InformationSource = Constants.JcaSystem;    // Option Set -> Information Sources (System Set) -> JCA
+                    txin.Date1 = DateTime.Now;
+
                         var uploadedTxin = await _searchRequestService.CreateTaxIncomeInformation(txin, _cancellationToken);
                         if (uploadedTxin != null)
                         {
@@ -280,12 +301,6 @@ namespace DynamicsAdapter.Web.PersonSearch
                             _logger.LogInformation($"Successfully created tax income information {uploadedTxin.TaxincomeinformationId}.");
                         }
                     }
-                    else
-                    {
-                        // invalid tax code, skip
-                        _logger.LogInformation($"Skipped create tax income information {taxinfo.TaxCode?.Code}.");
-                    }
-                }
                 return true;
             }
             catch (Exception ex)

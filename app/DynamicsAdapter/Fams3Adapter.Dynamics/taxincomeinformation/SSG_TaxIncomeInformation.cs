@@ -9,9 +9,13 @@ namespace Fams3Adapter.Dynamics.TaxIncomeInformation
 {
     public class TaxIncomeInformationEntity : DynamicsEntity
     {
+        [JsonProperty("ssg_name")]
+        [Description("Tax Year")]
+        public string TaxYear { get; set; }
+
         [JsonProperty("ssg_taxyear")]
         [Description("Tax Year of Result")]
-        public string TaxYear { get; set; }
+        public string TaxYearResult { get; set; }
 
         [JsonProperty("ssg_commissionincomet4amount")]
         [Description("Commission Income T4 Amount")]
@@ -35,7 +39,6 @@ namespace Fams3Adapter.Dynamics.TaxIncomeInformation
 
         [JsonProperty("ssg_suppliedby")]
         public int? InformationSource { get; set; }
-        //example: bank.InformationSource = _providerDynamicsID;
 
         [UpdateIgnore]
         [JsonProperty("ssg_createdbyagency")]
@@ -50,9 +53,19 @@ namespace Fams3Adapter.Dynamics.TaxIncomeInformation
         [JsonProperty("ssg_Personid")]
         public virtual SSG_Person Person { get; set; }
 
+        [JsonProperty("ssg_personname")]
+        public string FullName { get; set; }
+
         [JsonProperty("fam_cracode")]
         [Description("CRA Code")]
         public string TaxCode { get; set; }
+
+        [JsonProperty("ssg_description")]
+        public string Description { get; set; }
+
+        [JsonProperty("fams_taxamount")]
+        [Description("Tax Amount")]
+        public string TaxAmount { get; set; }
     }
 
     public class SSG_TaxIncomeInformation : TaxIncomeInformationEntity

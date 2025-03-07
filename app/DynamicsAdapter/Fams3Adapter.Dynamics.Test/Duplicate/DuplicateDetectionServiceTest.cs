@@ -863,10 +863,10 @@ namespace Fams3Adapter.Dynamics.Test.Duplicate
             SSG_Person person = new SSG_Person()
             {
                 SSG_TaxIncomeInformations = new List<SSG_TaxIncomeInformation>() {
-                    new SSG_TaxIncomeInformation{TaxYear="2022", EmploymentIncomeT4Amount="100", TaxincomeinformationId=existedTaxInfoId}
+                    new SSG_TaxIncomeInformation{TaxYearResult="2022", EmploymentIncomeT4Amount="100", TaxincomeinformationId=existedTaxInfoId}
                 }.ToArray()
             };
-            TaxIncomeInformationEntity entity = new TaxIncomeInformationEntity() { TaxYear = "2022", EmploymentIncomeT4Amount = "100" };
+            TaxIncomeInformationEntity entity = new TaxIncomeInformationEntity() { TaxYearResult = "2022", EmploymentIncomeT4Amount = "100" };
             Guid guid = await _sut.Exists(person, entity);
             Assert.AreEqual(existedTaxInfoId, guid);
         }
@@ -879,10 +879,10 @@ namespace Fams3Adapter.Dynamics.Test.Duplicate
             SSG_Person person = new SSG_Person()
             {
                 SSG_TaxIncomeInformations = new List<SSG_TaxIncomeInformation>() {
-                    new SSG_TaxIncomeInformation{TaxYear="2022", EmploymentIncomeT4Amount="100", TaxincomeinformationId=existedTaxInfoId}
+                    new SSG_TaxIncomeInformation{TaxYearResult="2022", EmploymentIncomeT4Amount="100", TaxincomeinformationId=existedTaxInfoId}
                 }.ToArray()
             };
-            TaxIncomeInformationEntity entity = new TaxIncomeInformationEntity() { TaxYear = "2022", EmploymentIncomeT4Amount="200" };
+            TaxIncomeInformationEntity entity = new TaxIncomeInformationEntity() { TaxYearResult = "2022", EmploymentIncomeT4Amount="200" };
             Guid guid = await _sut.Exists(person, entity);
             Assert.AreEqual(Guid.Empty, guid);
         }
@@ -894,10 +894,10 @@ namespace Fams3Adapter.Dynamics.Test.Duplicate
             SSG_Person person = new SSG_Person()
             {
                 SSG_TaxIncomeInformations = new List<SSG_TaxIncomeInformation>() {
-                    new SSG_TaxIncomeInformation{TaxYear="2022", EmploymentIncomeT4Amount="100", TaxincomeinformationId=existedTaxInfoId}
+                    new SSG_TaxIncomeInformation{TaxYearResult="2022", EmploymentIncomeT4Amount="100", TaxincomeinformationId=existedTaxInfoId}
                 }.ToArray()
             };
-            TaxIncomeInformationEntity entity = new TaxIncomeInformationEntity() { TaxYear = "2023", EmploymentIncomeT4Amount = "100" };
+            TaxIncomeInformationEntity entity = new TaxIncomeInformationEntity() { TaxYearResult = "2023", EmploymentIncomeT4Amount = "100" };
             Guid guid = await _sut.Exists(person, entity);
             Assert.AreEqual(Guid.Empty, guid);
         }

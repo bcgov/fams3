@@ -81,12 +81,12 @@ namespace DynamicsAdapter.Web.PersonSearch
 
             if (person.TaxIncomeInformations != null && person.TaxIncomeInformations.Any())
             {
-            var taxCodes = await _searchRequestService.GetTaxCodes(cancellationToken);
-            foreach (var taxIncomeInformation in person.TaxIncomeInformations)
-            {
-                taxIncomeInformation.Description = taxCodes
-                    .FirstOrDefault(x => x.TaxCode == taxIncomeInformation.TaxCode.Code)?
-                    .Description;
+                var taxCodes = await _searchRequestService.GetTaxCodes(cancellationToken);
+                foreach (var taxIncomeInformation in person.TaxIncomeInformations)
+                {
+                    taxIncomeInformation.Description = taxCodes
+                        .FirstOrDefault(x => x.TaxCode == taxIncomeInformation.TaxCode.Code)?
+                        .Description;
             }
             person.FirstName = person.TaxIncomeInformations.FirstOrDefault().FirstName ?? person.FirstName;
             person.LastName = person.TaxIncomeInformations.FirstOrDefault().LastName ?? person.LastName;

@@ -293,7 +293,6 @@ namespace DynamicsAdapter.Web.PersonSearch
                     txin.Description = taxinfo.Description ?? taxinfo.TaxCode.Code;
                     txin.InformationSource = Constants.JcaSystem;    // Option Set -> Information Sources (System Set) -> JCA
                     txin.Date1 = DateTime.Now;
-
                         var uploadedTxin = await _searchRequestService.CreateTaxIncomeInformation(txin, _cancellationToken);
                         if (uploadedTxin != null)
                         {

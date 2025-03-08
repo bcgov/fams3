@@ -12,9 +12,6 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         [Description("Last Name")]
         public string LastName { get; set; }
 
-        [Description("Birth Date")]
-        public DateTime BirthDate { get; set; }
-
         [Description("The related dates information of the personal info")]
         public IEnumerable<ReferenceDate> ReferenceDates { get; set; }
 

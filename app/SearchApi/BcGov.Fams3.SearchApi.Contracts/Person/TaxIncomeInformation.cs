@@ -31,6 +31,9 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         [Description("Tax Code")]
         public TaxCode TaxCode { get; set; }
 
+        [Description("Date of Birth")]
+        public DateTime DateOfBirth { get; set; }
+
         public TaxIncomeInformation Clone()
         {
             return (TaxIncomeInformation)MemberwiseClone();

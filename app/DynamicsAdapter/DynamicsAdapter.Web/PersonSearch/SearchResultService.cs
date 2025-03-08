@@ -87,10 +87,10 @@ namespace DynamicsAdapter.Web.PersonSearch
                     taxIncomeInformation.Description = taxCodes
                         .FirstOrDefault(x => x.TaxCode == taxIncomeInformation.TaxCode.Code)?
                         .Description;
-            }
-            person.FirstName = person.TaxIncomeInformations.FirstOrDefault().FirstName ?? person.FirstName;
-            person.LastName = person.TaxIncomeInformations.FirstOrDefault().LastName ?? person.LastName;
-            person.BirthDate = person.TaxIncomeInformations.FirstOrDefault().BirthDate ?? person.BirthDate;
+                }
+                person.FirstName = person.TaxIncomeInformations.FirstOrDefault().FirstName ?? person.FirstName;
+                person.LastName = person.TaxIncomeInformations.FirstOrDefault().LastName ?? person.LastName;
+                person.DateOfBirth = person.TaxIncomeInformations.FirstOrDefault().DateOfBirth ?? person.DateOfBirth;
             }
             person.SuppliedBySystem = Constants.JcaSystem;
             person.Date1 = DateTime.Now;
@@ -285,15 +285,14 @@ namespace DynamicsAdapter.Web.PersonSearch
                         txin.Person = _returnedPerson;
                     var firstName = taxinfo.FirstName ?? txin.Person.FirstName;
                     var lastName = taxinfo.LastName ?? txin.Person.LastName;
-                    var birthDate = taxinfo.BirthDate.HasValue ? taxinfo.BirthDate.Value.DateTime : txin.Person.DateOfBirth;
+                    var dateOfBirth = taxinfo.DateOfBirth.HasValue ? taxinfo.DateOfBirth.Value.DateTime : txin.Person.DateOfBirth;
                     txin.Person.FirstName = firstName;
                     txin.Person.LastName = lastName;
-                    txin.Person.DateOfBirth = birthDate;
+                    txin.Person.DateOfBirth = dateOfBirth;
                     txin.FullName = $"{firstName} {lastName}";
                     txin.Description = taxinfo.Description ?? taxinfo.TaxCode.Code;
                     txin.InformationSource = Constants.JcaSystem;    // Option Set -> Information Sources (System Set) -> JCA
                     txin.Date1 = DateTime.Now;
-
                         var uploadedTxin = await _searchRequestService.CreateTaxIncomeInformation(txin, _cancellationToken);
                         if (uploadedTxin != null)
                         {

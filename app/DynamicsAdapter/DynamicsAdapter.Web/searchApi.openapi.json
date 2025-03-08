@@ -729,11 +729,6 @@
           "type": "string",
           "description": "Last Name"
         },
-        "birthDate": {
-          "type": "string",
-          "description": "Birth Date",
-          "format": "date-time"
-        },
         "description": {
           "type": "string",
           "description": "The description of the information"
@@ -1303,6 +1298,10 @@
             },
             "taxCode": {
               "$ref": "#/definitions/TaxCode"
+            },
+            "dateOfBirth": {
+              "type": "string",
+              "format": "date-time"
             }
           }
         }

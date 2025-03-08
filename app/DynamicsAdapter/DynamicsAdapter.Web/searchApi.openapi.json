@@ -1298,6 +1298,10 @@
             },
             "taxCode": {
               "$ref": "#/definitions/TaxCode"
+            },
+            "dateOfBirth": {
+              "type": "string",
+              "format": "date-time"
             }
           }
         }

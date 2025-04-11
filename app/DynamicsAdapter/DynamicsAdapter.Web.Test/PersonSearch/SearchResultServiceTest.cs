@@ -17,6 +17,7 @@ using Fams3Adapter.Dynamics.ResultTransaction;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Fams3Adapter.Dynamics.Vehicle;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using NUnit.Framework;
 using System;
@@ -500,7 +501,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             {                
             }));
 
-            _sut = new SearchResultService(_searchRequestServiceMock.Object, _loggerFactoryMock.Object, _mapper.Object);
+            _sut = new SearchResultService(_searchRequestServiceMock.Object, new NullLoggerFactory(), _mapper.Object);
 
         }
 

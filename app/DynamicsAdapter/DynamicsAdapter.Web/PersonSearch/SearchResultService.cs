@@ -88,12 +88,12 @@ namespace DynamicsAdapter.Web.PersonSearch
                         .FirstOrDefault(x => x.TaxCode == taxIncomeInformation.TaxCode.Code)?
                         .Description;
                 }
-                person.FirstName = person.TaxIncomeInformations.FirstOrDefault().FirstName ?? person.FirstName;
-                person.LastName = person.TaxIncomeInformations.FirstOrDefault().LastName ?? person.LastName;
-                person.DateOfBirth = person.TaxIncomeInformations.FirstOrDefault().DateOfBirth ?? person.DateOfBirth;
+                person.FirstName = person.TaxIncomeInformations.FirstOrDefault().FirstName;// ?? person.FirstName;
+                person.LastName = person.TaxIncomeInformations.FirstOrDefault().LastName;// ?? person.LastName;
+                person.DateOfBirth = person.TaxIncomeInformations.FirstOrDefault().DateOfBirth;// ?? person.DateOfBirth;
+                person.Date1 = DateTime.Now;
             }
             person.SuppliedBySystem = Constants.JcaSystem;
-            person.Date1 = DateTime.Now;
             _foundPerson = person;
             
             _providerDynamicsID = providerProfile.DynamicsID();

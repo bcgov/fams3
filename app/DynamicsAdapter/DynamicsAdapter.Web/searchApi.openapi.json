@@ -729,6 +729,14 @@
           "type": "string",
           "description": "Last Name"
         },
+        "otherName": {
+          "type": "string",
+          "description": "Other Name"
+        },
+        "middleName": {
+          "type": "string",
+          "description": "Middle Name"
+        },
         "description": {
           "type": "string",
           "description": "The description of the information"

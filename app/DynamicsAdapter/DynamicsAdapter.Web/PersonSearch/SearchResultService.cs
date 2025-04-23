@@ -88,6 +88,8 @@ namespace DynamicsAdapter.Web.PersonSearch
                         .FirstOrDefault(x => x.TaxCode == taxIncomeInformation.TaxCode.Code)?
                         .Description;
                 }
+                person.MiddleName = person.TaxIncomeInformations.FirstOrDefault().MiddleName;
+                person.OtherName = person.TaxIncomeInformations.FirstOrDefault().OtherName;
                 person.FirstName = person.TaxIncomeInformations.FirstOrDefault().FirstName;// ?? person.FirstName;
                 person.LastName = person.TaxIncomeInformations.FirstOrDefault().LastName;// ?? person.LastName;
                 person.DateOfBirth = person.TaxIncomeInformations.FirstOrDefault().DateOfBirth;// ?? person.DateOfBirth;

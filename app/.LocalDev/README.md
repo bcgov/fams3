@@ -1,3 +1,15 @@
+# Quick Start
+
+Run Redis and RabbitMQ containers
+```
+_run/rabbitmq/local.sh rabbitmq.json
+_run/redis/local.sh
+```
+Run SearchApi, DynamicsAdapter, and SearchApi.Adapter from Windows VS IDE
+
+In theory, you can run on WSL or VS Code but it has been problematic. Start with Windows and VS IDE. Ignore WSL and VPN kit instructions until we have working steps to have a WSL environment setup.
+If you cannot get the environment variables to load, just manually set the variables for the Nuget.config files. You can get the secrets from dynadapter container on OpenShift and in a terminal run `set` and copy the NEXUS_REPO_* configuration.
+
 # Local Development Script
 
 This script compiles and runs the FAMS3 applicatons locallty in .NET 3.1 containers in DEBUG mode.

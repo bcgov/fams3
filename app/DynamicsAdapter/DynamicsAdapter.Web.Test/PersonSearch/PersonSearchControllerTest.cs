@@ -35,7 +35,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         private Mock<ILogger<PersonSearchController>> _loggerMock ;
         private Mock<ISearchResultService> _searchResultServiceMock;
         private Mock<ISearchApiRequestService> _searchApiRequestServiceMock;
-        private Mock<IDataPartnerService> _dataPartnerServiceMock; 
+        private Mock<IDataPartnerService> _dataPartnerServiceMock;
         private Mock<ISearchRequestRegister> _registerMock;
         private PersonSearchCompleted _fakePersonCompletedEvent;
         private PersonSearchAccepted _fakePersonAcceptedEvent;
@@ -236,6 +236,9 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             _mapper.Setup(m => m.Map<SSG_SearchApiEvent>(It.IsAny<PersonSearchSubmitted>()))
                                 .Returns(_fakeSearchApiEvent);
 
+            _mapper.Setup(m => m.Map<SSG_SearchApiEvent>(It.IsAny<PersonSearchInformation>()))
+                                .Returns(_fakeSearchApiEvent);
+
             _mapper.Setup(m => m.Map<IdentifierEntity>(It.IsAny<PersonalIdentifier>()))
                                .Returns(_fakePersoneIdentifier);
 
@@ -297,6 +300,14 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 .Returns(Task.FromResult(_fakeSearchApiRequest));
             _registerMock.Setup(x => x.GetSearchApiRequest(It.Is<string>(m => m == _searchRequestKeySearchNotComplete)))
                 .Returns(Task.FromResult(_fakeSearchApiRequest));
+
+            // Setup for the exception search request key
+            var exceptionSearchApiRequest = new SSG_SearchApiRequest()
+            {
+                SearchApiRequestId = _exceptionGuid
+            };
+            _registerMock.Setup(x => x.GetSearchApiRequest(It.Is<string>(m => m == _exceptionSearchRequestKey)))
+                .Returns(Task.FromResult(exceptionSearchApiRequest));
 
             _registerMock.Setup(x => x.DataPartnerSearchIsComplete(It.Is<string>(m => m == _searchRequestKey)))
             .Returns(Task.FromResult(true));
@@ -447,6 +458,13 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             Assert.IsInstanceOf(typeof(OkResult), result);
         }
 
+        [Test]
+        public async Task With_exception_information_event_it_should_return_badrequest()
+        {
+            var result = await _sut.InformationReceived(_exceptionSearchRequestKey, _fakePersonInformationEvent);
+            Assert.IsInstanceOf(typeof(BadRequestResult), result);
+        }
+
 
 
         [Test]
@@ -465,7 +483,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 .Returns(Task.FromResult<SSG_SearchApiRequest>(null));
             _searchResultServiceMock.Setup(x => x.GetSearchRequest(It.Is<string>(m => m == "111111"),
                 It.IsAny<CancellationToken>()))
-                .Returns(Task.FromResult<SSG_SearchRequest>(new SSG_SearchRequest() { 
+                .Returns(Task.FromResult<SSG_SearchRequest>(new SSG_SearchRequest() {
                     SearchRequestId = srId,
                     JCAFirstName="JCAFirstName",
                     JCALastName="JCALastName",

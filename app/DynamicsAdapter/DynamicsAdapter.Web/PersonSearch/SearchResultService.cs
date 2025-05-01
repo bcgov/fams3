@@ -57,9 +57,14 @@ namespace DynamicsAdapter.Web.PersonSearch
         private CancellationToken _cancellationToken;
 
         public SearchResultService(ISearchRequestService searchRequestService, ILoggerFactory loggerFactory, IMapper mapper)
+            : this(searchRequestService, loggerFactory.CreateLogger<SearchResultService>(), mapper)
+        {
+        }
+
+        public SearchResultService(ISearchRequestService searchRequestService, ILogger<SearchResultService> logger, IMapper mapper)
         {
             _searchRequestService = searchRequestService;
-            _logger = loggerFactory.CreateLogger<SearchResultService>();
+            _logger = logger;
             _mapper = mapper;
             _returnedPerson = null;
             _sourceIdentifier = null;
@@ -83,7 +88,7 @@ namespace DynamicsAdapter.Web.PersonSearch
 
             // STEP 1: Always process the person details
             _logger.LogInformation("Processing person details");
-            
+
             Person personDetailsClone = new Person
             {
                 FirstName = person.FirstName,
@@ -218,8 +223,17 @@ namespace DynamicsAdapter.Web.PersonSearch
             ssg_person.SearchRequest = _searchRequest;
             ssg_person.InformationSource = _providerDynamicsID;
             SSG_Person returnedPerson = await _searchRequestService.SavePerson(ssg_person, _cancellationToken);
-            await CreateResultTransaction(returnedPerson);
-            _logger.LogInformation($"Successfully created person {returnedPerson.PersonId}.");
+
+            if (returnedPerson != null)
+            {
+                await CreateResultTransaction(returnedPerson);
+                _logger.LogInformation($"Successfully created person {returnedPerson.PersonId}.");
+            }
+            else
+            {
+                _logger.LogWarning("SavePerson returned null.");
+            }
+
             return returnedPerson;
         }
 

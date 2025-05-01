@@ -371,7 +371,7 @@ namespace DynamicsAdapter.Web.Mapping
 
         }
     }
-    
+
 
     public class SocailMediaTypeResponseConverter : IValueConverter<int?, string>
     {
@@ -393,7 +393,7 @@ namespace DynamicsAdapter.Web.Mapping
                 return $"Auto search processing completed successfully. 0 Matched Persons found.";
             var matchedPersons = sourceMember.MatchedPersons;
 
-            
+
             if (!string.IsNullOrEmpty(sourceMember.Message))
                 strbuilder.Append($"Auto search processing completed successfully. {sourceMember.Message}. {matchedPersons.Count()} Matched Persons found.\n");
             else
@@ -403,8 +403,8 @@ namespace DynamicsAdapter.Web.Mapping
             int i = 1;
             foreach (PersonFound p in matchedPersons)
             {
-           
-               
+
+
                 strbuilder.Append($"For Matched Person {i} : ");
                 if (p.SourcePersonalIdentifier != null)
                     strbuilder.Append($" Source ID:- {p.SourcePersonalIdentifier.Type}/{p.SourcePersonalIdentifier.Value} - ");
@@ -588,14 +588,20 @@ namespace DynamicsAdapter.Web.Mapping
                     taxIncomeInformation.EmploymentIncomeT4Amount = tax.EmploymentIncomeT4Amount;
                     taxIncomeInformation.JcaCode = tax.JCACode;
                     taxIncomeInformation.TaxTraceStatusText = tax.TaxTraceStatusText;
-                    taxIncomeInformation.TaxCode = JsonConvert.DeserializeObject<TaxCode>(tax.TaxCode);
+
+                    // Handle null TaxCode
+                    if (!string.IsNullOrEmpty(tax.TaxCode))
+                    {
+                        taxIncomeInformation.TaxCode = JsonConvert.DeserializeObject<TaxCode>(tax.TaxCode);
+                    }
+
                     var names = tax.FullName?.Split(' ');
                     if (names?.Length == 2)
                     {
                         taxIncomeInformation.FirstName = names[0];
                         taxIncomeInformation.LastName = names[1];
                     }
-                    taxIncomeInformation.Description = tax.Description ?? tax.TaxCode;
+                    taxIncomeInformation.Description = tax.Description ?? tax.TaxCode ?? string.Empty;
                     toReturn.Add(taxIncomeInformation);
                 }
             }

@@ -179,7 +179,7 @@ namespace DynamicsAdapter.Web.PersonSearch
 
         private async Task<bool> CreateResultTransaction(DynamicsEntity o)
         {
-            if (_sourceIdentifier != null)
+            if (_sourceIdentifier != null && _searchRequest != null)
             {
                 SSG_SearchRequestResultTransaction trans = new SSG_SearchRequestResultTransaction()
                 {
@@ -218,6 +218,12 @@ namespace DynamicsAdapter.Web.PersonSearch
         }
         private async Task<SSG_Person> UploadPerson()
         {
+            if (_searchRequest == null)
+            {
+                _logger.LogWarning("SearchRequest is null. Cannot upload person.");
+                return null;
+            }
+
             _logger.LogDebug($"Attempting to create the found person record for SearchRequest[{_searchRequest.SearchRequestId}]");
             PersonEntity ssg_person = _mapper.Map<PersonEntity>(_foundPerson);
             ssg_person.SearchRequest = _searchRequest;

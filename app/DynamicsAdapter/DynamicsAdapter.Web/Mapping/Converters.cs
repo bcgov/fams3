@@ -601,7 +601,7 @@ namespace DynamicsAdapter.Web.Mapping
                         taxIncomeInformation.FirstName = names[0];
                         taxIncomeInformation.LastName = names[1];
                     }
-                    taxIncomeInformation.Description = tax.Description ?? tax.TaxCode ?? string.Empty;
+                    taxIncomeInformation.Description = tax.Description ?? (!string.IsNullOrEmpty(tax.TaxCode) ? tax.TaxCode : string.Empty);
                     toReturn.Add(taxIncomeInformation);
                 }
             }

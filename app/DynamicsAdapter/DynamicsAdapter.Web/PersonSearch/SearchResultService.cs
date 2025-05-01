@@ -32,8 +32,8 @@ namespace DynamicsAdapter.Web.PersonSearch
     public interface ISearchResultService
     {
         Task<bool> ProcessPersonFound(
-            Person person, 
-            ProviderProfile providerProfile, 
+            Person person,
+            ProviderProfile providerProfile,
             SSG_SearchRequest searchRequest,
             Guid? searchApiRequestId,
             CancellationToken cancellationToken,
@@ -57,9 +57,14 @@ namespace DynamicsAdapter.Web.PersonSearch
         private CancellationToken _cancellationToken;
 
         public SearchResultService(ISearchRequestService searchRequestService, ILoggerFactory loggerFactory, IMapper mapper)
+            : this(searchRequestService, loggerFactory.CreateLogger<SearchResultService>(), mapper)
+        {
+        }
+
+        public SearchResultService(ISearchRequestService searchRequestService, ILogger<SearchResultService> logger, IMapper mapper)
         {
             _searchRequestService = searchRequestService;
-            _logger = loggerFactory.CreateLogger<SearchResultService>();
+            _logger = logger;
             _mapper = mapper;
             _returnedPerson = null;
             _sourceIdentifier = null;
@@ -70,34 +75,48 @@ namespace DynamicsAdapter.Web.PersonSearch
         }
 
         public async Task<bool> ProcessPersonFound(
-            Person person, 
-            ProviderProfile providerProfile, 
-            SSG_SearchRequest searchRequest, 
-            Guid? searchApiRequestId, 
-            CancellationToken cancellationToken, 
+            Person person,
+            ProviderProfile providerProfile,
+            SSG_SearchRequest searchRequest,
+            Guid? searchApiRequestId,
+            CancellationToken cancellationToken,
             SSG_Identifier sourceIdentifier = null)
         {
             if (person == null) return true;
 
-            if (person.TaxIncomeInformations != null && person.TaxIncomeInformations.Any())
+            bool hasTaxInfo = person.TaxIncomeInformations != null && person.TaxIncomeInformations.Any();
+
+            // STEP 1: Always process the person details
+            _logger.LogInformation("Processing person details");
+
+            Person personDetailsClone = new Person
             {
-                var taxCodes = await _searchRequestService.GetTaxCodes(cancellationToken);
-                foreach (var taxIncomeInformation in person.TaxIncomeInformations)
-                {
-                    taxIncomeInformation.Description = taxCodes
-                        .FirstOrDefault(x => x.TaxCode == taxIncomeInformation.TaxCode.Code)?
-                        .Description;
-                }
-                person.MiddleName = person.TaxIncomeInformations.FirstOrDefault().MiddleName;
-                person.OtherName = person.TaxIncomeInformations.FirstOrDefault().OtherName;
-                person.FirstName = person.TaxIncomeInformations.FirstOrDefault().FirstName;// ?? person.FirstName;
-                person.LastName = person.TaxIncomeInformations.FirstOrDefault().LastName;// ?? person.LastName;
-                person.DateOfBirth = person.TaxIncomeInformations.FirstOrDefault().DateOfBirth;// ?? person.DateOfBirth;
-                person.Date1 = DateTime.Now;
-            }
-            person.SuppliedBySystem = Constants.JcaSystem;
-            _foundPerson = person;
-            
+                FirstName = person.FirstName,
+                LastName = person.LastName,
+                MiddleName = person.MiddleName,
+                OtherName = null,
+                DateOfBirth = person.DateOfBirth,
+                Gender = person.Gender,
+                Addresses = person.Addresses,
+                Phones = person.Phones,
+                Emails = person.Emails,
+                Employments = person.Employments,
+                Identifiers = person.Identifiers,
+                Names = person.Names,
+                RelatedPersons = person.RelatedPersons,
+                BankInfos = person.BankInfos,
+                Vehicles = person.Vehicles,
+                OtherAssets = person.OtherAssets,
+                CompensationClaims = person.CompensationClaims,
+                InsuranceClaims = person.InsuranceClaims,
+                CautionFlag = person.CautionFlag,
+                CautionReason = person.CautionReason,
+                CautionNotes = person.CautionNotes,
+                SuppliedBySystem = Constants.JcaSystem,
+            };
+
+            // Process and upload the person details
+            _foundPerson = personDetailsClone;
             _providerDynamicsID = providerProfile.DynamicsID();
             _searchRequest = searchRequest;
             _sourceIdentifier = sourceIdentifier;
@@ -105,34 +124,50 @@ namespace DynamicsAdapter.Web.PersonSearch
             _cancellationToken = cancellationToken;
 
             _returnedPerson = await UploadPerson();
-
             await UploadSafetyConcern();
-
-            await UploadIdentifiers( );
-
+            await UploadIdentifiers();
             await UploadAddresses();
-
-            await UploadTaxIncomeInformations(cancellationToken);
-
             await UploadPhoneNumbers();
-
-            await UploadNames( );
-
-            await UploadEmployment( );
-
+            await UploadNames();
+            await UploadEmployment();
             await UploadRelatedPersons();
-
             await UploadBankInfos();
-
             await UploadVehicles();
-
             await UploadOtherAssets();
-
             await UploadCompensationClaims();
-
             await UploadInsuranceClaims();
-
             await UploadEmails();
+
+            // STEP 2: If we have tax information, process it as a separate record
+            if (hasTaxInfo)
+            {
+                // Process tax codes
+                var taxCodes = await _searchRequestService.GetTaxCodes(cancellationToken);
+                foreach (var taxIncomeInformation in person.TaxIncomeInformations)
+                {
+                    taxIncomeInformation.Description = taxCodes
+                        .FirstOrDefault(x => x.TaxCode == taxIncomeInformation.TaxCode.Code)?
+                        .Description;
+                }
+
+                // Create a new person object for tax information
+                Person taxPerson = new Person
+                {
+                    MiddleName = person.TaxIncomeInformations.FirstOrDefault().MiddleName,
+                    OtherName = person.TaxIncomeInformations.FirstOrDefault().OtherName,
+                    FirstName = person.TaxIncomeInformations.FirstOrDefault().FirstName,
+                    LastName = person.TaxIncomeInformations.FirstOrDefault().LastName,
+                    DateOfBirth = person.TaxIncomeInformations.FirstOrDefault().DateOfBirth,
+                    Date1 = DateTime.Now,
+                    SuppliedBySystem = Constants.JcaSystem,
+                    TaxIncomeInformations = person.TaxIncomeInformations
+                };
+
+                // Process and upload the tax information
+                _foundPerson = taxPerson;
+                _returnedPerson = await UploadPerson();
+                await UploadTaxIncomeInformations(cancellationToken);
+            }
 
             return true;
         }
@@ -144,7 +179,7 @@ namespace DynamicsAdapter.Web.PersonSearch
 
         private async Task<bool> CreateResultTransaction(DynamicsEntity o)
         {
-            if (_sourceIdentifier != null)
+            if (_sourceIdentifier != null && _searchRequest != null)
             {
                 SSG_SearchRequestResultTransaction trans = new SSG_SearchRequestResultTransaction()
                 {
@@ -183,21 +218,36 @@ namespace DynamicsAdapter.Web.PersonSearch
         }
         private async Task<SSG_Person> UploadPerson()
         {
+            if (_searchRequest == null)
+            {
+                _logger.LogWarning("SearchRequest is null. Cannot upload person.");
+                return null;
+            }
+
             _logger.LogDebug($"Attempting to create the found person record for SearchRequest[{_searchRequest.SearchRequestId}]");
             PersonEntity ssg_person = _mapper.Map<PersonEntity>(_foundPerson);
             ssg_person.SearchRequest = _searchRequest;
             ssg_person.InformationSource = _providerDynamicsID;
             SSG_Person returnedPerson = await _searchRequestService.SavePerson(ssg_person, _cancellationToken);
-            await CreateResultTransaction(returnedPerson);
-            _logger.LogInformation($"Successfully created person {returnedPerson.PersonId}.");
+
+            if (returnedPerson != null)
+            {
+                await CreateResultTransaction(returnedPerson);
+                _logger.LogInformation($"Successfully created person {returnedPerson.PersonId}.");
+            }
+            else
+            {
+                _logger.LogWarning("SavePerson returned null.");
+            }
+
             return returnedPerson;
         }
 
         private async Task<bool> UploadSafetyConcern()
         {
             if (string.IsNullOrEmpty(_foundPerson.CautionFlag)) return false;
-            try 
-            { 
+            try
+            {
                 SafetyConcernEntity entity = _mapper.Map<SafetyConcernEntity>(_foundPerson);
                 entity.SearchRequest = _searchRequest;
                 entity.InformationSource = _providerDynamicsID;
@@ -268,7 +318,7 @@ namespace DynamicsAdapter.Web.PersonSearch
 
         private async Task<bool> UploadTaxIncomeInformations(CancellationToken cancellationToken)
         {
-            if (_foundPerson.TaxIncomeInformations == null) 
+            if (_foundPerson.TaxIncomeInformations == null)
                 return true;
 
             try
@@ -660,13 +710,13 @@ namespace DynamicsAdapter.Web.PersonSearch
                 var properties = new Dictionary<string, object>();
                 properties.Add("AbsoluteUri", webRequestException.RequestUri?.AbsoluteUri);
                 properties.Add("Response", webRequestException.Response);
-                using (_logger.BeginScope(properties)) 
+                using (_logger.BeginScope(properties))
                 {
                     _logger.LogError(ex.ToString());
                     _logger.LogError(ex.Message);
                     _logger.LogError(ex.StackTrace);
                 } ;
-                
+
             }
             else
             {
@@ -677,3 +727,4 @@ namespace DynamicsAdapter.Web.PersonSearch
         }
     }
 }
+

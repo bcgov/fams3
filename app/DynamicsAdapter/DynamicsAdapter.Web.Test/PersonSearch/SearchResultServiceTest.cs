@@ -398,7 +398,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
 
             _searchRequestServiceMock.Setup(x => x.CreateIdentifier(It.IsAny<IdentifierEntity>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<SSG_Identifier>(new SSG_Identifier()
-                {                    
+                {
                 }));
 
             _searchRequestServiceMock.Setup(x => x.CreateAddress(It.Is<AddressEntity>(x => x.SearchRequest.SearchRequestId == validRequestId), It.IsAny<CancellationToken>()))
@@ -498,10 +498,10 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
 
             _searchRequestServiceMock.Setup(x => x.CreateTransaction(It.IsAny<SSG_SearchRequestResultTransaction>(), It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult<SSG_SearchRequestResultTransaction>(new SSG_SearchRequestResultTransaction()
-            {                
+            {
             }));
 
-            _sut = new SearchResultService(_searchRequestServiceMock.Object, new NullLoggerFactory(), _mapper.Object);
+            _sut = new SearchResultService(_searchRequestServiceMock.Object, _loggerMock.Object, _mapper.Object);
 
         }
 

@@ -56,10 +56,6 @@ namespace DynamicsAdapter.Web.PersonSearch
         private Person _foundPerson;
         private CancellationToken _cancellationToken;
 
-        public SearchResultService(ISearchRequestService searchRequestService, ILoggerFactory loggerFactory, IMapper mapper)
-            : this(searchRequestService, loggerFactory.CreateLogger<SearchResultService>(), mapper)
-        {
-        }
 
         public SearchResultService(ISearchRequestService searchRequestService, ILogger<SearchResultService> logger, IMapper mapper)
         {

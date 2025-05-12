@@ -22,7 +22,7 @@ on:
         required: true
 jobs:
   oc-image-tagging:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     environment: ${{ github.event.inputs.imageTargetEnv }}
     steps:
       - name: Git Checkout

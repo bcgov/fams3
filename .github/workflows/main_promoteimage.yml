@@ -28,6 +28,13 @@ jobs:
       - name: Git Checkout
         uses: actions/checkout@v2
 
+        #Ubuntu 22.04 no longer includes the oc CLI by default
+      - name: Install OpenShift CLI
+        run: |
+          curl -LO "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/openshift-client-linux.tar.gz"
+          tar -xzf openshift-client-linux.tar.gz -C /usr/local/bin oc
+          chmod +x /usr/local/bin/oc
+
         # Get Git latest short Sha# from the branch used. This Sha# will be used in image tagging as well as DC Pod labelling.
       - name: Get latest Git commit short SHA
         id: sha

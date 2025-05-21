@@ -16,11 +16,11 @@
 
 ## RUN
 
+The docker compose file is outdated, use the app/.LocalDev run scripts instead. See app/.LocalDev/README.md for setup instructions to run a local environment.
+
 Create a `.env` file from the `.env.template`
 
 Configure the necessary variables in `.env`
-
-The docker compose file is outdated, use the .LocalDev run scripts instead.
 
 ```shell
 docker-compose up

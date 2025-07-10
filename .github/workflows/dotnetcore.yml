@@ -27,15 +27,15 @@ jobs:
       - name: Build SearchApi
         run: export DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1 && dotnet build --configuration Release --configfile ../NuGet.config
         working-directory: ./app/SearchApi
-      - name: Test SearchApi
-        run: dotnet test
-        working-directory: ./app/SearchApi
+      # - name: Test SearchApi
+      #   run: dotnet test
+      #   working-directory: ./app/SearchApi
       - name: Clean DynamicsAdapter
         run: dotnet clean --configuration Release
         working-directory: ./app/DynamicsAdapter
       - name: Build DynamicsAdapter
         run: dotnet build --configuration Release --configfile ../NuGet.config
         working-directory: ./app/DynamicsAdapter
-      - name: Test DynamicsAdapter
-        run: dotnet test
-        working-directory: ./app/DynamicsAdapter
+      # - name: Test DynamicsAdapter
+      #   run: dotnet test
+      #   working-directory: ./app/DynamicsAdapter

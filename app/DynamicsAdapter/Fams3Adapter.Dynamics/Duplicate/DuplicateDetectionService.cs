@@ -310,8 +310,7 @@ namespace Fams3Adapter.Dynamics.Duplicate
                 //From String to byte array
                 byte[] sourceBytes = Encoding.UTF8.GetBytes(input);
                 byte[] hashBytes = sha512Hash.ComputeHash(sourceBytes);
-                string hash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
-                return hash;
+                return Convert.ToHexString(hashBytes);
             }
         }
     }

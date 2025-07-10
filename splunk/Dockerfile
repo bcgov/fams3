@@ -1,14 +1,10 @@
-#############################################################################################
-###              Stage where Docker is building curl container to setup Splunk            ###
-#############################################################################################
-FROM alpine:3.12.0 as build
+FROM alpine:3.19.1
 
 RUN apk add --no-cache curl bash sed
 
-COPY . .
+COPY . /app
+WORKDIR /app
 
-# Remove non-unix newline character
 RUN sed -i 's/\r//g' init.sh
 
 ENTRYPOINT ["/bin/bash", "init.sh"]
-#############################################################################################

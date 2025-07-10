@@ -1,5 +1,7 @@
 #!/bin/bash
 
+cd "$(dirname "$0")"
+
 # Wait for splunk to startup
 while [ "${HEALTH_CHECK}" != "{\"text\":\"HEC is healthy\",\"code\":17}" ]
 do

@@ -92,8 +92,7 @@ namespace SearchApi.Web
 
             services
                 .AddHealthChecks()
-                .AddRabbitMQ(
-                    rabbitMQConnectionString: rabbitConnectionString);
+                .AddRabbitMQ(new Uri(rabbitConnectionString));
         }
 
         private void ConfigureRedis(IServiceCollection services)

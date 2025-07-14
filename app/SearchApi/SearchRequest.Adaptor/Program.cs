@@ -33,15 +33,6 @@ namespace SearchRequestAdaptor
                     namespaceMain,
                     RuntimeInformation.FrameworkDescription);
 
-                // Log Redis and RabbitMQ config from appsettings
-                Log.Debug(
-                    "\n  Configuration Values:\n\tRedis Host: {RedisHost}\n\tRedis Port: {RedisPort}\n\tRabbitMQ Host: {RabbitHost}\n\tRabbitMQ Port: {RabbitPort}",
-                    configuration["Redis:Hosts:0:Host"],
-                    configuration["Redis:Hosts:0:Port"],
-                    configuration["RabbitMq:Host"],
-                    configuration["RabbitMq:Port"]
-                );
-
                 // Log important environment variables
                 var envVars = Environment.GetEnvironmentVariables();
                 var sortedEnvVars = envVars.Cast<System.Collections.DictionaryEntry>()

@@ -239,7 +239,7 @@ namespace SearchRequestAdaptor.Notifier
                 catch (Exception exception)
                 {
                     _logger.LogError($"NotifyNotificationAcknowledged {exception.Message}");
-                    throw exception;
+                    throw;
                 }
             }
         }

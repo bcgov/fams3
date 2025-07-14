@@ -20,7 +20,7 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
     <PackageReference Include="Quartz" Version="3.14.0" />
     <PackageReference Include="Simple.OData.V4.Client" Version="5.26.0" />
-    <PackageReference Include="coverlet.collector" Version="3.3.1" />
+    <PackageReference Include="coverlet.collector" Version="6.0.4" />
   </ItemGroup>
 
   <ItemGroup>

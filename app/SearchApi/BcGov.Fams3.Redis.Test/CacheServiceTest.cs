@@ -11,6 +11,7 @@ using System.Text;
 using StackExchange.Redis.Extensions.Core.Abstractions;
 using System.Collections.Generic;
 using System.Linq;
+using StackExchange.Redis;
 
 namespace BcGov.Fams3.Redis.Test
 {
@@ -76,8 +77,26 @@ namespace BcGov.Fams3.Redis.Test
 
             _stackRedisCacheClientMock.Setup(x => x.Db0).Returns(_mockRedisDB.Object);
 
-            _mockRedisDB.Setup(x => x.AddAsync(It.IsAny<string>(), It.IsAny<object>(), default, default)).Returns(Task.FromResult(true));
-            _mockRedisDB.Setup(x => x.AddAsync(It.IsAny<string>(), It.IsAny<object>(),It.IsAny<TimeSpan>(), default, default)).Returns(Task.FromResult(true));
+            _mockRedisDB.Setup(x =>
+                x.AddAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<DateTimeOffset>(),
+                    It.IsAny<When>(),
+                    It.IsAny<CommandFlags>(),
+                    It.IsAny<HashSet<string>>()))
+                .ReturnsAsync(true);
+
+            _mockRedisDB.Setup(x =>
+                x.AddAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<object>(),
+                    It.IsAny<TimeSpan>(),
+                    It.IsAny<When>(),
+                    It.IsAny<CommandFlags>(),
+                    It.IsAny<HashSet<string>>()))
+                .ReturnsAsync(true);
+
             _mockRedisDB.Setup(x => x.ReplaceAsync(It.IsAny<string>(), It.IsAny<object>(), default, default)).Returns(Task.FromResult(true));
             _mockRedisDB.Setup(x => x.SearchKeysAsync(It.IsAny<string>())).Returns(Task.FromResult(new List<string> { "first","second"}.AsEnumerable()));
             _mockRedisDB.Setup(x => x.SearchKeysAsync("test")).Returns(Task.FromResult(new List<string> {  }.AsEnumerable()));
@@ -206,7 +225,14 @@ namespace BcGov.Fams3.Redis.Test
             string key = "key";
             string data = "data";
             _sut.Save(key, data);
-            _mockRedisDB.Verify(x => x.AddAsync(It.IsAny<string>(), It.IsAny<object>(), default, default), Times.AtLeastOnce());
+            _mockRedisDB.Verify(x =>
+                x.AddAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<object>(),
+                    It.IsAny<StackExchange.Redis.When>(),
+                    It.IsAny<StackExchange.Redis.CommandFlags>(),
+                    It.IsAny<HashSet<string>>()),
+                Times.AtLeastOnce());
         
         }
         [Test]
@@ -224,13 +250,16 @@ namespace BcGov.Fams3.Redis.Test
         {
             string key = "key";
             string data = "data";
-            _sut.Save(key, data, new TimeSpan(0,0,2));
-            _mockRedisDB.Verify(x => x.AddAsync(It.IsAny<string>(),
-            It.IsAny<object>(),
-            It.IsAny<TimeSpan>(),
-                default, default),
+            _sut.Save(key, data, new TimeSpan(0, 0, 2));
+            _mockRedisDB.Verify(x =>
+                x.AddAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<object>(),
+                    It.IsAny<TimeSpan>(),
+                    It.IsAny<When>(),
+                    It.IsAny<CommandFlags>(),
+                    It.IsAny<HashSet<string>>()),
                 Times.AtLeastOnce());
-
 
         }
 

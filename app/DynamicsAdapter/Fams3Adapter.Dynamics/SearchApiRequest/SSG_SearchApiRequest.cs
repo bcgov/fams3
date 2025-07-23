@@ -92,5 +92,17 @@ namespace Fams3Adapter.Dynamics.SearchApiRequest
 
         [JsonProperty("ssg_triggeredinqueue")]
         public bool TriggeredInQueue { get; set; }
+
+        [JsonProperty("fams_jcanoticeofassessment")]
+        public string JCANoticeOfAssessment { get; set; }
+
+        [JsonProperty("fams_jcanoticeofreassessment")]
+        public string JCANoticeOfReassessment { get; set; }
+
+        [JsonProperty("fams_jcafinancialotherincome")]
+        public string JCAFinancialOtherIncome { get; set; }
+
+        [JsonProperty("fams_jcaquarterlytracingupdates")]
+        public string JCAQuarterlyTracingUpdates{ get; set; }
     }
 }

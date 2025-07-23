@@ -98,7 +98,11 @@ namespace DynamicsAdapter.Web.Mapping
                  .ForMember(dest => dest.ReasonCode, opt => opt.MapFrom(src => src.JCAReasonCode))
                  .ForMember(dest => dest.SinInformation, opt => opt.MapFrom(src => src.JCASinInformation))
                  .ForMember(dest => dest.TaxIncomeInformation, opt => opt.MapFrom(src => src.JCATaxIncomeInformation))
-                 .ForMember(dest => dest.TracingInformation, opt => opt.MapFrom(src => src.JCATracingInformation.ToString()));
+                 .ForMember(dest => dest.TracingInformation, opt => opt.MapFrom(src => src.JCATracingInformation.ToString()))
+                 .ForMember(dest => dest.NoticeOfAssessment, opt => opt.MapFrom(src => src.JCANoticeOfAssessment))
+                 .ForMember(dest => dest.NoticeOfReassessment, opt => opt.MapFrom(src => src.JCANoticeOfReassessment))
+                 .ForMember(dest => dest.FinancialOtherIncome, opt => opt.MapFrom(src => src.JCAFinancialOtherIncome))
+                 .ForMember(dest => dest.QuarterlyTracingUpdates, opt => opt.MapFrom(src => src.JCAQuarterlyTracingUpdates));
 
             CreateMap<PersonSearchAccepted, SSG_SearchApiEvent>()
               .ForMember(dest => dest.EventType, opt => opt.MapFrom(src => Keys.EVENT_ACCEPTED))

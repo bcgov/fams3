@@ -19,5 +19,9 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         public string SinInformation { get; set; }
         public string TaxIncomeInformation { get; set; }
         public string TracingInformation { get; set; }
+        public string NoticeOfAssessment { get; set; }
+        public string NoticeOfReassessment { get; set; }
+        public string FinancialOtherIncome { get; set; }
+        public string QuarterlyTracingUpdates { get; set; }
     }
 }

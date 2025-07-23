@@ -1743,6 +1743,18 @@
         },
         "tracingInformation": {
           "type": "string"
+        },
+        "noticeOfAssessment": {
+          "type": "string"
+        },
+        "noticeOfReassessment": {
+          "type": "string"
+        },
+        "financialOtherIncome": {
+          "type": "string"
+        },
+        "quarterlyTracingUpdates": {
+          "type": "string"
         }
       }
     },

@@ -19,6 +19,8 @@
     <PackageReference Include="StackExchange.Redis.Extensions.Core" Version="7.2.1" />
     <PackageReference Include="StackExchange.Redis.Extensions.Newtonsoft" Version="7.2.1" />
     <PackageReference Include="StackExchange.Redis.Extensions.AspNetCore" Version="7.2.1" />
+    <!-- Explicitly exclude StrongName if it sneaks in -->
+    <PackageReference Include="StackExchange.Redis.StrongName" Version="1.2.6" ExcludeAssets="All" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,11 +28,5 @@
     <ProjectReference Include="..\BcGov.Fams3.SearchApi.Core\BcGov.Fams3.SearchApi.Core.csproj" />
   </ItemGroup>
 
-  <Target Name="ChangeAliasesOfStrongNameAssemblies" BeforeTargets="FindReferenceAssembliesForReferences;ResolveReferences">
-    <ItemGroup>
-      <ReferencePath Condition="'%(FileName)' == 'StackExchange.Redis.StrongName'">
-        <Aliases>signed</Aliases>
-      </ReferencePath>
-    </ItemGroup>
-  </Target>
+  <!-- Removed aliasing logic since it's no longer needed -->
 </Project>

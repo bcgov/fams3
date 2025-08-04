@@ -91,8 +91,7 @@ namespace SearchAdapter.Sample
 
             services
                 .AddHealthChecks()
-                .AddRabbitMQ(
-                    rabbitMQConnectionString: rabbitConnectionString);
+                .AddRabbitMQ(new Uri(rabbitConnectionString));
         }
 
 

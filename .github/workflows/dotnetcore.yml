@@ -20,7 +20,7 @@ jobs:
       - name: Setup .NET SDK Core
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: "8.0.410"
+          dotnet-version: 8.0.410
       - name: Install OpenSSL 1.0
         run: wget http://security.ubuntu.com/ubuntu/pool/main/o/openssl1.0/libssl1.0.0_1.0.2n-1ubuntu5_amd64.deb && sudo dpkg -i libssl1.0.0_1.0.2n-1ubuntu5_amd64.deb
       - name: Clean SearchApi

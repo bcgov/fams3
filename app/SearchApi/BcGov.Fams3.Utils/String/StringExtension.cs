@@ -33,7 +33,7 @@ namespace BcGov.Fams3.Utils.String
 
         public static string ToSHA1String(this string value)
         {
-            SHA1CryptoServiceProvider sha1Hasher = new SHA1CryptoServiceProvider();
+            using SHA1 sha1Hasher = SHA1.Create();
             byte[] hashedDataBytes = sha1Hasher.ComputeHash(Encoding.UTF8.GetBytes(value));
             return Convert.ToBase64String(hashedDataBytes);
         }

@@ -98,7 +98,7 @@ namespace DynamicsAdapter.Web
 
         public void ConfigureAutoMapper(IServiceCollection services)
         {
-            services.AddAutoMapper(System.Reflection.Assembly.GetExecutingAssembly());
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         }
         /// <summary>
         /// Configures the searchApi http client
@@ -204,7 +204,6 @@ namespace DynamicsAdapter.Web
 
         }
 
-
         /// <summary>
         /// Configure Open Api using NSwag
         /// https://github.com/RicoSuter/NSwag
@@ -297,8 +296,8 @@ namespace DynamicsAdapter.Web
                      MaxAge = TimeSpan.FromSeconds(0),
                      Private = true,
                  };
-                context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
-                context.Response.Headers.Add("Pragma", "no-cache");
+                context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
+                context.Response.Headers.Append("Pragma", "no-cache");
                 await next();
             });
 
@@ -306,7 +305,9 @@ namespace DynamicsAdapter.Web
 
             app.UseAuthorization();
 
-            app.UseMiddleware<ApiKeyMiddleware>("ApiKey");
+            app.UseWhen(
+                context => !context.Request.Path.StartsWithSegments("/swagger"),
+                appBuilder => appBuilder.UseMiddleware<ApiKeyMiddleware>("ApiKey"));
 
             app.UseOpenApi();
 

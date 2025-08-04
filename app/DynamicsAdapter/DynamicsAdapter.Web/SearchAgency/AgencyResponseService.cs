@@ -38,9 +38,9 @@ namespace DynamicsAdapter.Web.SearchAgency
             {
                 sr = await _searchResponseService.GetSearchResponse(Guid.Parse(searchResponseReady.ResponseGuid), cts.Token);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                throw;
             }
         
             if (sr == null) return null;

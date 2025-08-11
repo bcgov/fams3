@@ -1,6 +1,8 @@
 name: .NET Core
 
-on: [pull_request_target]
+on:
+  # pull_request_target:
+  workflow_dispatch:
 
 env:
   NEXUS_REPO_USER: ${{ secrets.NEXUS_REPO_USER }}
@@ -14,13 +16,16 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v1
-      - name: Setup .NET Core
-        uses: actions/setup-dotnet@v1
+        uses: actions/checkout@v4
+      - name: Setup .NET SDK Core
+        uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: 3.1.101
-      - name: Install OpenSSL 1.0
-        run: wget http://security.ubuntu.com/ubuntu/pool/main/o/openssl1.0/libssl1.0.0_1.0.2n-1ubuntu5_amd64.deb && sudo dpkg -i libssl1.0.0_1.0.2n-1ubuntu5_amd64.deb
+          dotnet-version: 8.0.410
+      - name: Install NSwag CLI
+        run: |
+          dotnet tool install --global NSwag.ConsoleCore --version 14.4.0
+          echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+          echo "NSwagPath=$HOME/.dotnet/tools/nswag" >> $GITHUB_ENV
       - name: Clean SearchApi
         run: dotnet clean --configuration Release
         working-directory: ./app/SearchApi

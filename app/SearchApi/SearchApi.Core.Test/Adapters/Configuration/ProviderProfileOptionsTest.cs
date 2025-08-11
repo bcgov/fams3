@@ -12,19 +12,22 @@ namespace SearchApi.Core.Test.Adapters.Configuration
         {
             var services = new ServiceCollection();
 
-            services.AddOptions<ProviderProfileOptions>().Configure(x => { }).ValidateDataAnnotations();
+            services
+                .AddOptions<ProviderProfileOptions>()
+                .Configure(x => { }) // Deliberately leaving properties unset
+                .ValidateDataAnnotations();
 
             var sp = services.BuildServiceProvider();
-            
-            
+
             var error = Assert.Throws<OptionsValidationException>(() =>
             {
                 var options = sp.GetRequiredService<IOptionsMonitor<ProviderProfileOptions>>().CurrentValue;
             });
 
-            Assert.AreEqual("DataAnnotation validation failed for members: 'Name' with the error: 'The Name field is required.'.", error.Message);
-
+            // Match modern error message
+            StringAssert.Contains("ProviderProfileOptions", error.Message);
+            StringAssert.Contains("members: 'Name'", error.Message);
+            StringAssert.Contains("The Name field is required.", error.Message);
         }
-
     }
 }

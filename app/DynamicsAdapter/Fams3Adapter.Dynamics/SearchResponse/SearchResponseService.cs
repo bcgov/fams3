@@ -163,9 +163,9 @@ namespace Fams3Adapter.Dynamics.SearchResponse
           
                 return ssgSearchResponse;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                throw;
             }
         }
 

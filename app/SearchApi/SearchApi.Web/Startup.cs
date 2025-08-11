@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using HealthChecks.UI.Client;
 using AutoMapper;
 using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
+using BcGov.Fams3.Redis;
 using Jaeger;
 using Jaeger.Samplers;
 using MassTransit;
@@ -13,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Caching.StackExchangeRedis;
 using NSwag;
 using OpenTracing;
 using OpenTracing.Util;
@@ -22,14 +24,16 @@ using BcGov.Fams3.SearchApi.Core.OpenTracing;
 using SearchApi.Web.Configuration;
 using SearchApi.Web.Notifications;
 using SearchApi.Web.Search;
-
 using SearchApi.Web.Messaging;
 using BcGov.Fams3.Redis.DependencyInjection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
 using SearchApi.Web.DeepSearch;
-using StackExchange.Redis.Extensions.Core.Configuration;
 using GreenPipes;
+using StackExchange.Redis.Extensions.Core.Configuration;
+using StackExchange.Redis.Extensions.Core.Extensions;
+using StackExchange.Redis.Extensions.Newtonsoft;
+using StackExchange.Redis.Extensions.AspNetCore;
 
 namespace SearchApi.Web
 {
@@ -59,8 +63,6 @@ namespace SearchApi.Web
 
             services.AddOptions<DeepSearchOptions>()
                 .Bind(Configuration.GetSection(Keys.DEEPSEARCH_SECTION_SETTING_KEY));
-      
-          services.AddCacheService(Configuration.GetSection(Keys.REDIS_SECTION_SETTING_KEY).Get<RedisConfiguration>());
 
             services.AddWebHooks();
 
@@ -73,12 +75,16 @@ namespace SearchApi.Web
             this.ConfigureServiceBus(services);
 
             this.ConfigureAutoMapper(services);
+
+            this.ConfigureRedis(services);
+            // Register your cache service here:
+            services.AddSingleton<BcGov.Fams3.Redis.ICacheService, CacheService>();
         }
         public void ConfigureAutoMapper(IServiceCollection services)
         {
-            services.AddAutoMapper(System.Reflection.Assembly.GetExecutingAssembly());
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         }
-            private void ConfigureHealthChecks(IServiceCollection services)
+        private void ConfigureHealthChecks(IServiceCollection services)
         {
 
             var rabbitMqSettings = Configuration.GetSection("RabbitMq").Get<RabbitMqConfiguration>();
@@ -86,8 +92,60 @@ namespace SearchApi.Web
 
             services
                 .AddHealthChecks()
-                .AddRabbitMQ(
-                    rabbitMQConnectionString: rabbitConnectionString);
+                .AddRabbitMQ(new Uri(rabbitConnectionString));
+        }
+
+        private void ConfigureRedis(IServiceCollection services)
+        {
+            var redisHost = Environment.GetEnvironmentVariable("REDIS__HOSTS__0__HOST") ?? "localhost";
+            var redisPort = int.Parse(Environment.GetEnvironmentVariable("REDIS__HOSTS__0__PORT") ?? "6379");
+            var redisPassword = Environment.GetEnvironmentVariable("REDIS__PASSWORD") ?? "";
+            var connectTimeoutStr = Environment.GetEnvironmentVariable("REDIS__CONNECTTIMEOUT") ?? "10000";
+            var connectRetryStr = Environment.GetEnvironmentVariable("REDIS__CONNECTRETRY") ?? "2";
+            var abortOnConnectFailStr = Environment.GetEnvironmentVariable("REDIS__ABORTONCONNECTFAIL") ?? "false";
+            var syncTimeoutStr = Environment.GetEnvironmentVariable("REDIS__SYNCTIMEOUT") ?? "5000";
+
+            // Parse numeric and boolean config values with fallbacks
+            var connectTimeout = int.TryParse(connectTimeoutStr, out var timeout) ? timeout : 10000;
+            var connectRetry = int.TryParse(connectRetryStr, out var retry) ? retry : 2;
+            var syncTimeout = int.TryParse(syncTimeoutStr, out var sync) ? sync : 5000;
+            var abortOnConnectFail = bool.TryParse(abortOnConnectFailStr, out var abort) && abort;
+
+            var redisConfig = new RedisConfiguration
+            {
+                Hosts = new[]
+                {
+                    new RedisHost
+                    {
+                        Host = redisHost,
+                        Port = redisPort
+                    }
+                },
+                Password = redisPassword,
+                ConnectTimeout = connectTimeout,
+                AbortOnConnectFail = abortOnConnectFail,
+                SyncTimeout = syncTimeout
+            };
+
+            // This is for the StackExchange.Redis.Extensions interfaces like IRedisCacheClient
+            services.AddStackExchangeRedisExtensions<NewtonsoftSerializer>(redisConfig);
+
+            // Build Redis connection string for Microsoft’s IDistributedCache integration.
+            // Includes host and port from RedisConfiguration, and appends password if provided.
+            var redisConnectionString = $"{redisHost}:{redisConfig.Hosts[0].Port}";
+            if (!string.IsNullOrEmpty(redisPassword))
+            {
+                redisConnectionString += $",password={redisPassword}";
+            }
+            // Append retry and timeout settings for Microsoft.Extensions.Caching.StackExchangeRedis
+            redisConnectionString += $",connectRetry={connectRetry},connectTimeout={connectTimeout},syncTimeout={syncTimeout}";
+
+            // Required for resolving IDistributedCache, used by CacheService alongside IRedisCacheClient.
+            // This registers Microsoft's Redis abstraction using StackExchange.Redis.
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = redisConnectionString;
+            });
         }
 
         /// <summary>
@@ -111,7 +169,7 @@ namespace SearchApi.Web
                 try
                 {
                     tracer = Jaeger.Configuration.FromEnv(serviceProvider.GetService<ILoggerFactory>()).GetTracer();
-                    
+
                 }
                 catch (ArgumentException ex)
                 {
@@ -155,14 +213,14 @@ namespace SearchApi.Web
                         new OpenApiTag() {
                             Name = "People API",
                             Description = "The FAMS People API"
-                        } 
+                        }
                     };
                 };
             });
 
         }
 
-      
+
 
         /// <summary>
         /// Configure MassTransit Service Bus
@@ -186,7 +244,7 @@ namespace SearchApi.Web
                 // Add RabbitMq Service Bus
                 x.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(cfg =>
                 {
-                    
+
                     var host = cfg.Host(new Uri(rabbitBaseUri), hostConfigurator =>
                     {
                         hostConfigurator.Username(rabbitMqSettings.Username);
@@ -198,7 +256,7 @@ namespace SearchApi.Web
 
 
                     // Configure Person Search Accepted Consumer 
-                    cfg.ReceiveEndpoint( $"{nameof(PersonSearchAccepted)}_queue", e =>
+                    cfg.ReceiveEndpoint($"{nameof(PersonSearchAccepted)}_queue", e =>
                     {
                         e.UseConcurrencyLimit(queueRateLimit.PersonSearchAccepted_ConcurrencyLimit);
                         e.UseRateLimit(queueRateLimit.PersonSearchAccepted_RateLimit, TimeSpan.FromSeconds(queueRateLimit.PersonSearchAccepted_RateInterval));
@@ -206,7 +264,7 @@ namespace SearchApi.Web
                             new PersonSearchAcceptedConsumer(provider.GetRequiredService<ISearchApiNotifier<PersonSearchAdapterEvent>>(), provider.GetRequiredService<ILogger<PersonSearchAcceptedConsumer>>()));
                     });
                     // Configure Person Search Completed Consumer 
-                    cfg.ReceiveEndpoint( $"{nameof(PersonSearchCompleted)}_queue", e =>
+                    cfg.ReceiveEndpoint($"{nameof(PersonSearchCompleted)}_queue", e =>
                     {
                         e.UseConcurrencyLimit(queueRateLimit.PersonSearchCompleted_ConcurrencyLimit);
                         e.UseRateLimit(queueRateLimit.PersonSearchCompleted_RateLimit, TimeSpan.FromSeconds(queueRateLimit.PersonSearchCompleted_RateInterval));
@@ -223,7 +281,7 @@ namespace SearchApi.Web
                     });
 
                     // Configure Person Search Rejected Consumer 
-                    cfg.ReceiveEndpoint( $"{nameof(PersonSearchRejected)}_queue", e =>
+                    cfg.ReceiveEndpoint($"{nameof(PersonSearchRejected)}_queue", e =>
                     {
                         e.UseConcurrencyLimit(queueRateLimit.PersonSearchRejected_ConcurrencyLimit);
                         e.UseRateLimit(queueRateLimit.PersonSearchRejected_RateLimit, TimeSpan.FromSeconds(queueRateLimit.PersonSearchRejected_RateInterval));
@@ -232,7 +290,7 @@ namespace SearchApi.Web
                     });
 
                     // Configure Person Search Failed Consumer 
-                    cfg.ReceiveEndpoint( $"{nameof(PersonSearchFailed)}_queue", e =>
+                    cfg.ReceiveEndpoint($"{nameof(PersonSearchFailed)}_queue", e =>
                     {
                         e.UseConcurrencyLimit(queueRateLimit.PersonSearchFailed_ConcurrencyLimit);
                         e.UseRateLimit(queueRateLimit.PersonSearchFailed_RateLimit, TimeSpan.FromSeconds(queueRateLimit.PersonSearchFailed_RateInterval));
@@ -283,33 +341,28 @@ namespace SearchApi.Web
                 app.UseSwaggerUi3();
             }
 
-         app.Use(async (context, next) =>
-            {
-                context.Response.GetTypedHeaders().CacheControl =
-                 new CacheControlHeaderValue()
-                 {
-                     NoStore = true,
-                     NoCache = true,
-                     MustRevalidate = true,
-                     MaxAge = TimeSpan.FromSeconds(0),
-                     Private = true,
-                     
+            app.Use(async (context, next) =>
+               {
+                   context.Response.GetTypedHeaders().CacheControl =
+                    new CacheControlHeaderValue()
+                    {
+                        NoStore = true,
+                        NoCache = true,
+                        MustRevalidate = true,
+                        MaxAge = TimeSpan.FromSeconds(0),
+                        Private = true,
 
-                 };
-                context.Response.Headers.Add("Pragma", "no-cache");
-                   context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
-                await next();
-            });
+
+                    };
+                   context.Response.Headers.Append("Pragma", "no-cache");
+                   context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
+                   await next();
+               });
             app.UseRouting();
 
             app.UseAuthorization();
 
             app.UseOpenApi();
-
-            app.Use(async (context, next) =>
-            {
-                await next();
-            });
 
             app.UseEndpoints(endpoints =>
             {

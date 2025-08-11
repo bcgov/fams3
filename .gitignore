@@ -354,3 +354,5 @@ app/SearchApi/SearchApi.Web.Test/app/SearchApi/coverage/opencover.opencover.xml
 app/SearchApi/SearchApi.Web.Test/opencover.opencover.xml
 
 app/SearchApi/SearchApi.Web.Test/SearchApi/coverage/opencover.opencover.xml
+
+podman*

@@ -107,8 +107,8 @@ namespace SearchRequestAdaptor
 
 
                  };
-                context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
-                context.Response.Headers.Add("Pragma", "no-cache");
+                context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
+                context.Response.Headers.Append("Pragma", "no-cache");
                 await next();
             });
             app.UseRouting();

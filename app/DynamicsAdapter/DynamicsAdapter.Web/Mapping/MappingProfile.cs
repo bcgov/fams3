@@ -41,9 +41,11 @@ namespace DynamicsAdapter.Web.Mapping
         public MappingProfile()
         {
             CreateMap<DateTime?, DateTimeOffset?>()
-                .ForMember(dest => dest.Value, opt => opt.MapFrom(src => src.Value != null ? DateTimeOffset.Parse(src.Value.ToString()) : (DateTimeOffset?)null));
+                .ForMember(dest => dest.Value, opt => opt.MapFrom(src => src.HasValue ? new DateTimeOffset(src.Value) : (DateTimeOffset?)null));
+
             CreateMap<DateTimeOffset?, DateTime?>()
-                .ForMember(dest => dest.Value, opt => opt.MapFrom(src => src.Value != null ? src.Value.DateTime : (DateTimeOffset?)null));
+                .ForMember(dest => dest.Value, opt => opt.MapFrom(src => src.HasValue ? (DateTime?)src.Value.DateTime : (DateTime?)null));
+
 
             CreateMap<IdentifierEntity, PersonalIdentifier>()
                  .ForMember(dest => dest.Value, opt => opt.MapFrom(src => src.Identification))

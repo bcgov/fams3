@@ -5,8 +5,8 @@ on:
   workflow_dispatch:
 
 env:
-  NEXUS_REPO_USER: ${{ secrets.NEXUS_REPO_USER }}
-  NEXUS_REPO_PASSWORD: ${{ secrets.NEXUS_REPO_PASSWORD }}
+  NEXUS_REPO_U: ${{ secrets.NEXUS_REPO_USER }}
+  NEXUS_REPO_P: ${{ secrets.NEXUS_REPO_PASSWORD }}
   NEXUS_REPO_URL: ${{ secrets.NEXUS_REPO_URL }}
 
 jobs:

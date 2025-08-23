@@ -1,0 +1,7 @@
+{
+  "ProjectMapping": {
+    "search-api": "SearchApi/SearchApi.Web",
+    "request-api": "SearchApi/SearchRequest.Adaptor",
+    "dynadapter": "DynamicsAdapter/DynamicsAdapter.Web"
+  }
+}

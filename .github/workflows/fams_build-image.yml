@@ -1,0 +1,112 @@
+name: FAMS3 - Build Image and Push to Openshift Registry for Dev Deployment
+on:
+  workflow_dispatch:
+    inputs:
+      app:
+        type: choice
+        description: Select a component Image to deploy
+        options:
+          - -Select-
+          - search-api
+          - request-api
+          - dynadapter
+        required: true
+      tag:
+        description: "Target image tag to build and deploy"
+        required: true
+        default: "dev"
+env:
+  REGISTRY: ${{ secrets.OPENSHIFT_EXTERNAL_REPOSITORY }}/${{ secrets.OPENSHIFT_TOOLS_NAMESPACE }}
+jobs:
+  build-push-image:
+    name: build-push-image
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.tag }}
+    env:
+      app: ${{github.event.inputs.app}}
+      tag: ${{github.event.inputs.tag}}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          path: .
+
+      - name: Check if secrets are set
+        run: |
+          if [[ -z "${{ secrets.OPENSHIFT_EXTERNAL_REPOSITORY }}" || -z "${{ secrets.OPENSHIFT_TOOLS_NAMESPACE }}" ]]; then
+            echo "❌ OPENSHIFT_EXTERNAL_REPOSITORY / OPENSHIFT_TOOLS_NAMESPACE secret is missing!"
+            exit 1
+          fi
+          if [[ -z "${{ secrets.REGISTRY_TOKEN }}" ]]; then
+            echo "❌ REGISTRY_TOKEN secret is missing!"
+            exit 1
+          fi
+
+      - name: Check if Nexus secrets are set
+        run: |
+          if [[ -z "${{ secrets.NEXUS_URL }}" || -z "${{ secrets.NEXUS_REPO_USER }}" || -z "${{ secrets.NEXUS_REPO_PASSWORD }}" ]]; then
+            echo "❌ Nexus secrets are missing!"
+            exit 1
+          fi
+
+      - name: Validate app input
+        run: |
+          if [ "${{ github.event.inputs.app }}" = "-Select-" ] || [ -z "${{ github.event.inputs.app }}" ]; then
+            echo "❌ Invalid app input: you must pick a valid app (not '-Select-')."
+            exit 1
+          fi
+
+      - name: Ensure jq is available
+        run: |
+          if ! command -v jq >/dev/null 2>&1; then
+            sudo apt-get update && sudo apt-get install -y jq
+          fi
+
+      - name: Fetch Project Info
+        id: fetch_projectinfo
+        env:
+            appname: ${{ env.app }}
+        run: |
+          fullpath=$(jq -r .ProjectMapping.\"${appname}\" ./gitops/projectfoldermapping.json)
+          if [ -z "$fullpath" ] || [ "$fullpath" = "null" ]; then
+            echo "❌ No mapping found for app: $appname"
+            exit 1
+          fi
+          parentfolder=$(dirname "$fullpath")
+          projectfolder=$(basename "$fullpath")
+          echo "parentfolder=$parentfolder" >> $GITHUB_OUTPUT
+          echo "projectfolder=$projectfolder" >> $GITHUB_OUTPUT
+
+      - name: Print Build Context
+        run: |
+          echo "Release Environment: Dev"
+          echo "🛠 Building app: ${{ env.app }}"
+          echo "📂 Parent folder: ${{ steps.fetch_projectinfo.outputs.parentfolder }}"
+          echo "📂 Project folder: ${{ steps.fetch_projectinfo.outputs.projectfolder }}"
+          echo "🏷 Image tag: ${{ env.tag }}"
+
+      - name: Login to OpenShift Registry with Token
+        run: |
+          echo "${{ secrets.REGISTRY_TOKEN }}" | docker login -u unused --password-stdin ${{ env.REGISTRY }}
+
+      - name: Set Image Names
+        id: image_names
+        run: |
+          echo "source_image=${{ env.app }}:${{ env.tag }}" >> $GITHUB_OUTPUT
+          echo "target_image=${{ env.REGISTRY }}/${{ env.app }}:${{ env.tag }}" >> $GITHUB_OUTPUT
+
+      - name: Build Application Image with Dockerfile
+        run: |
+          docker build \
+            --build-arg PROJECT_NAME="${{ steps.fetch_projectinfo.outputs.projectfolder }}" \
+            --build-arg NEXUS_REPO_URL="${{ secrets.NEXUS_URL }}" \
+            --build-arg NEXUS_REPO_U="${{ secrets.NEXUS_REPO_USER }}" \
+            --build-arg NEXUS_REPO_P="${{ secrets.NEXUS_REPO_PASSWORD }}" \
+            -t "${{ steps.image_names.outputs.source_image }}" \
+            "app/${{ steps.fetch_projectinfo.outputs.parentfolder }}"
+
+      # - name: Push Application Image to Openshift ImageStream & Deploy to Dev
+      #   run: |
+      #     docker tag ${{ steps.image_names.outputs.source_image }} ${{ steps.image_names.outputs.target_image }}
+      #     docker push ${{ steps.image_names.outputs.target_image }}

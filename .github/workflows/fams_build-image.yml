@@ -104,7 +104,7 @@ jobs:
             --build-arg NEXUS_REPO_U="${{ secrets.NEXUS_REPO_USER }}" \
             --build-arg NEXUS_REPO_P="${{ secrets.NEXUS_REPO_PASSWORD }}" \
             -t "${{ steps.image_names.outputs.source_image }}" \
-            "src/${{ steps.fetch_projectinfo.outputs.parentfolder }}"
+            "app/${{ steps.fetch_projectinfo.outputs.parentfolder }}"
 
       # - name: Push Application Image to Openshift ImageStream & Deploy to Dev
       #   run: |

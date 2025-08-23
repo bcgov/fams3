@@ -106,7 +106,7 @@ jobs:
             -t "${{ steps.image_names.outputs.source_image }}" \
             "app/${{ steps.fetch_projectinfo.outputs.parentfolder }}"
 
-      # - name: Push Application Image to Openshift ImageStream & Deploy to Dev
-      #   run: |
-      #     docker tag ${{ steps.image_names.outputs.source_image }} ${{ steps.image_names.outputs.target_image }}
-      #     docker push ${{ steps.image_names.outputs.target_image }}
+      - name: Push Application Image to Openshift ImageStream & Deploy to Dev
+        run: |
+          docker tag ${{ steps.image_names.outputs.source_image }} ${{ steps.image_names.outputs.target_image }}
+          docker push ${{ steps.image_names.outputs.target_image }}

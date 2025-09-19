@@ -212,6 +212,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             }
             return false;
         }
+
         private async Task<SSG_Person> UploadPerson()
         {
             if (_searchRequest == null)
@@ -220,16 +221,21 @@ namespace DynamicsAdapter.Web.PersonSearch
                 return null;
             }
 
-            _logger.LogDebug($"Attempting to create the found person record for SearchRequest[{_searchRequest.SearchRequestId}]");
+            _logger.LogDebug("Attempting to create the found person record for SearchRequest[{SearchRequestId}]", _searchRequest.SearchRequestId);
             PersonEntity ssg_person = _mapper.Map<PersonEntity>(_foundPerson);
             ssg_person.SearchRequest = _searchRequest;
             ssg_person.InformationSource = _providerDynamicsID;
+
+            _logger.LogDebug("Mapped SSG_Person entity: {@SsgPerson}", ssg_person);
+
             SSG_Person returnedPerson = await _searchRequestService.SavePerson(ssg_person, _cancellationToken);
+
+            _logger.LogDebug("Returned SSG_Person from SavePerson: {@ReturnedPerson}", returnedPerson);
 
             if (returnedPerson != null)
             {
                 await CreateResultTransaction(returnedPerson);
-                _logger.LogInformation($"Successfully created person {returnedPerson.PersonId}.");
+                _logger.LogInformation("Successfully created person {PersonId}.", returnedPerson.PersonId);
             }
             else
             {
@@ -316,6 +322,8 @@ namespace DynamicsAdapter.Web.PersonSearch
         {
             if (_foundPerson.TaxIncomeInformations == null)
                 return true;
+
+            _logger.LogDebug("FoundPerson object: {@FoundPerson}", _foundPerson);
 
             try
             {

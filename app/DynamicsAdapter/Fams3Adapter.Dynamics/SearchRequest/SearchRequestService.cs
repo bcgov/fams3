@@ -211,13 +211,30 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             {
                 Guid duplicatedTaxInfoId = await _duplicateDetectService.Exists(taxinfo.Person, taxinfo);
                 if (duplicatedTaxInfoId != Guid.Empty)
+                {
+                    _logger.LogDebug(
+                        "Duplicate TaxIncomeInformation detected. Using existing record with Id={DuplicatedId} for PersonId={PersonId}", 
+                        duplicatedTaxInfoId, 
+                        taxinfo.Person.PersonId);
+
                     return new SSG_TaxIncomeInformation() { TaxincomeinformationId = duplicatedTaxInfoId };
+                }
             }
 
-            return await this._oDataClient
+            _logger.LogDebug("Inserting new TaxIncomeInformation: {@TaxInfo}", taxinfo);
+
+            var insertedRecord = await this._oDataClient
                 .For<SSG_TaxIncomeInformation>()
                 .Set(taxinfo)
                 .InsertEntryAsync(cancellationToken);
+
+            _logger.LogInformation("Successfully inserted TaxIncomeInformation with Id={InsertedId} for PersonId={PersonId}", 
+                insertedRecord.TaxincomeinformationId, 
+                taxinfo.Person.PersonId);
+
+            _logger.LogDebug("Inserted record details: {@InsertedRecord}", insertedRecord);
+
+            return insertedRecord;
         }
 
         private IEnumerable<FAMS_TaxCode> _taxCodes { get; set; }

@@ -1,5 +1,6 @@
 using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.TaxIncomeInformation;
+using Fams3Adapter.Dynamics.FinancialOtherIncome;
 using Fams3Adapter.Dynamics.Agency;
 using Fams3Adapter.Dynamics.APICall;
 using Fams3Adapter.Dynamics.AssetOwner;
@@ -27,6 +28,7 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 using Entry = System.Collections.Generic.Dictionary<string, object>;
 
@@ -37,6 +39,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         Task<SSG_Identifier> CreateIdentifier(IdentifierEntity identifier, CancellationToken cancellationToken);
         Task<SSG_Address> CreateAddress(AddressEntity address, CancellationToken cancellationToken);
         Task<SSG_TaxIncomeInformation> CreateTaxIncomeInformation(TaxIncomeInformationEntity taxinfo, CancellationToken cancellationToken);
+        Task<FAMS_FinancialOtherIncome> CreateFinancialOtherIncome(FinancialOtherIncomeEntity finOtherIncome, CancellationToken cancellationToken);
         Task<SSG_PhoneNumber> CreatePhoneNumber(PhoneNumberEntity phoneNumber, CancellationToken cancellationToken);
         Task<SSG_Email> CreateEmail(EmailEntity email, CancellationToken cancellationToken);
         Task<SSG_SafetyConcernDetail> CreateSafetyConcern(SafetyConcernEntity safety, CancellationToken cancellationToken);
@@ -213,28 +216,106 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                 if (duplicatedTaxInfoId != Guid.Empty)
                 {
                     _logger.LogDebug(
-                        "Duplicate TaxIncomeInformation detected. Using existing record with Id={DuplicatedId} for PersonId={PersonId}", 
-                        duplicatedTaxInfoId, 
+                        "Duplicate TaxIncomeInformation detected. Using existing record with Id={DuplicatedId} for PersonId={PersonId}",
+                        duplicatedTaxInfoId,
                         taxinfo.Person.PersonId);
 
                     return new SSG_TaxIncomeInformation() { TaxincomeinformationId = duplicatedTaxInfoId };
                 }
             }
 
-            _logger.LogDebug("Inserting new TaxIncomeInformation: {@TaxInfo}", taxinfo);
+            SSG_TaxIncomeInformation insertedRecord = null;
+            try
+            {
+                insertedRecord = await this._oDataClient
+                    .For<SSG_TaxIncomeInformation>()
+                    .Set(taxinfo)
+                    .InsertEntryAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                LogDynamicsError(ex);
+                throw; // allow caller to see failure too
+            }
 
-            var insertedRecord = await this._oDataClient
-                .For<SSG_TaxIncomeInformation>()
-                .Set(taxinfo)
-                .InsertEntryAsync(cancellationToken);
-
-            _logger.LogInformation("Successfully inserted TaxIncomeInformation with Id={InsertedId} for PersonId={PersonId}", 
-                insertedRecord.TaxincomeinformationId, 
+            _logger.LogDebug("Successfully inserted TaxIncomeInformation with Id={InsertedId} for PersonId={PersonId}",
+                insertedRecord.TaxincomeinformationId,
                 taxinfo.Person.PersonId);
 
-            _logger.LogDebug("Inserted record details: {@InsertedRecord}", insertedRecord);
+            return insertedRecord;
+        }
+
+        public async Task<FAMS_FinancialOtherIncome> CreateFinancialOtherIncome(FinancialOtherIncomeEntity finOtherIncome, CancellationToken cancellationToken)
+        {
+            // Validate Person reference
+            if (finOtherIncome.Person == null || finOtherIncome.Person.PersonId == Guid.Empty)
+            {
+                throw new ArgumentException("FinancialOtherIncome must have a valid Person reference before insertion.");
+            }
+
+            // Validate SearchRequest reference
+            if (finOtherIncome.SearchRequest == null || finOtherIncome.SearchRequest.SearchRequestId == Guid.Empty)
+            {
+                throw new ArgumentException("FinancialOtherIncome must have a valid SearchRequest reference before insertion.");
+            }
+
+            // Check for duplicates
+            if (finOtherIncome.Person.IsDuplicated)
+            {
+                Guid duplicatedFinOtherIncomeId = await _duplicateDetectService.Exists(finOtherIncome.Person, finOtherIncome);
+                if (duplicatedFinOtherIncomeId != Guid.Empty)
+                {
+                    _logger.LogDebug(
+                        "Duplicate FinancialOtherIncomeId detected. Using existing record with Id={DuplicatedId} for PersonId={PersonId}",
+                        duplicatedFinOtherIncomeId,
+                        finOtherIncome.Person.PersonId);
+
+                    return new FAMS_FinancialOtherIncome() { FinancialOtherIncomeId = duplicatedFinOtherIncomeId };
+                }
+            }
+
+            FAMS_FinancialOtherIncome insertedRecord = null;
+            try
+            {
+                insertedRecord = await this._oDataClient
+                    .For<FAMS_FinancialOtherIncome>()
+                    .Set(finOtherIncome)
+                    .InsertEntryAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                LogDynamicsError(ex);
+                throw; // allow caller to see failure too
+            }
+
+            _logger.LogDebug("Successfully inserted FinancialOtherIncome with Id={InsertedId} for PersonId={PersonId}",
+                insertedRecord.FinancialOtherIncomeId,
+                finOtherIncome.Person.PersonId);
 
             return insertedRecord;
+        }
+        
+        private void LogDynamicsError(Exception ex)
+        {
+            _logger.LogError(ex, "❌ Dynamics insert failed");
+
+            var error = ex.InnerException;
+            while (error != null)
+            {
+                _logger.LogError("⛔ InnerException: {Message}", error.Message);
+                error = error.InnerException;
+            }
+
+            // Attempt to extract OData error JSON if present
+            if (ex is WebRequestException webEx && webEx.Response != null)
+            {
+                try
+                {
+                    var body = webEx.Response;
+                    _logger.LogError("📝 OData Response Content:\n{Response}", body);
+                }
+                catch { }
+            }
         }
 
         private IEnumerable<FAMS_TaxCode> _taxCodes { get; set; }

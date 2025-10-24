@@ -1310,6 +1310,10 @@
             "dateOfBirth": {
               "type": "string",
               "format": "date-time"
+            },
+            "form": {
+              "type": "string",
+              "description": "Tax Form"
             }
           }
         }

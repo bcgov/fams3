@@ -39,10 +39,8 @@ namespace BcGov.Fams3.Redis
         {
             _distributedCache = distributedCache;
             _stackRedisCacheClient = stackRedisCacheClient;
-
+            
         }
-
-
 
         public async Task SaveRequest(SearchRequest searchRequest)
         {           

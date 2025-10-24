@@ -3,6 +3,7 @@ using DynamicsAdapter.Web.PersonSearch.Models;
 using Fams3Adapter.Dynamics;
 using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.TaxIncomeInformation;
+using Fams3Adapter.Dynamics.FinancialOtherIncome;
 using Fams3Adapter.Dynamics.AssetOwner;
 using Fams3Adapter.Dynamics.BankInfo;
 using Fams3Adapter.Dynamics.CompensationClaim;
@@ -78,9 +79,10 @@ namespace DynamicsAdapter.Web.PersonSearch
             CancellationToken cancellationToken,
             SSG_Identifier sourceIdentifier = null)
         {
-            if (person == null) return true;
-
-            bool hasTaxInfo = person.TaxIncomeInformations != null && person.TaxIncomeInformations.Any();
+            if (person == null) {
+                _logger.LogDebug("Received null Person object for SearchRequest[{SearchRequestId}]", searchRequest?.SearchRequestId);
+                return true; 
+            }
 
             // STEP 1: Always process the person details
             _logger.LogInformation("Processing person details");
@@ -134,17 +136,16 @@ namespace DynamicsAdapter.Web.PersonSearch
             await UploadInsuranceClaims();
             await UploadEmails();
 
-            // STEP 2: If we have tax information, process it as a separate record
-            if (hasTaxInfo)
+            // STEP 2: If we have tax information, process it as a separate record -> Process and upload tax income information (T1 vs. non-T1)
+            if (person.TaxIncomeInformations != null && person.TaxIncomeInformations.Any())
             {
                 // Process tax codes
                 var taxCodes = await _searchRequestService.GetTaxCodes(cancellationToken);
-                foreach (var taxIncomeInformation in person.TaxIncomeInformations)
+                var mappedTaxCodes = taxCodes.Select(tc => new DynamicsAdapter.Web.TaxCode
                 {
-                    taxIncomeInformation.Description = taxCodes
-                        .FirstOrDefault(x => x.TaxCode == taxIncomeInformation.TaxCode.Code)?
-                        .Description;
-                }
+                    Code = tc.TaxCode,         // maps from fams_cracode
+                    Value = tc.Description     // maps from fams_description
+                });
 
                 // Create a new person object for tax information
                 Person taxPerson = new Person
@@ -162,7 +163,38 @@ namespace DynamicsAdapter.Web.PersonSearch
                 // Process and upload the tax information
                 _foundPerson = taxPerson;
                 _returnedPerson = await UploadPerson();
-                await UploadTaxIncomeInformations(cancellationToken);
+
+                var taxInfos = person.TaxIncomeInformations.ToList();
+                var taxIncomeEntities = _mapper.Map<List<TaxIncomeInformationEntity>>(taxInfos);
+
+                var t1TaxInfos = taxInfos
+                    .Where(t => string.Equals(t.Form, "T1", StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+
+                var nonT1TaxInfos = taxInfos
+                    .Where(t => !string.Equals(t.Form, "T1", StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+
+                TaxIncomeInformation canonicalT1 = t1TaxInfos.FirstOrDefault();
+
+                _logger.LogDebug(
+                    "T1 TaxIncomeInformation records ({Count}) for SearchRequest[{SearchRequestId}]",
+                    t1TaxInfos.Count,
+                    _searchRequest.SearchRequestId);
+
+                _logger.LogDebug(
+                    "Non-T1 TaxIncomeInformation records ({Count}) for SearchRequest[{SearchRequestId}]",
+                    nonT1TaxInfos.Count,
+                    _searchRequest.SearchRequestId);
+
+                if (t1TaxInfos.Any())
+                {
+                    await UploadTaxIncomeInformations(t1TaxInfos, mappedTaxCodes, cancellationToken);
+                }
+
+                if (nonT1TaxInfos.Any()) {
+                    await UploadFinancialOtherIncome(nonT1TaxInfos, canonicalT1, cancellationToken);
+                }
             }
 
             return true;
@@ -203,6 +235,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                         case "SSG_SafetyConcernDetail": trans.SafetyConcern = (SSG_SafetyConcernDetail)o; break;
                         case "SSG_Email": trans.Email = (SSG_Email)o; break;
                         case "SSG_Taxincomeinformation": trans.Taxincomeinformation = (SSG_TaxIncomeInformation)o; break;
+                        case "FAMS_FinancialOtherIncome": trans.FinancialOtherIncome = (FAMS_FinancialOtherIncome)o; break;
                         default: return false;
                     }
                 }
@@ -217,29 +250,25 @@ namespace DynamicsAdapter.Web.PersonSearch
         {
             if (_searchRequest == null)
             {
-                _logger.LogWarning("SearchRequest is null. Cannot upload person.");
+                _logger.LogDebug("SearchRequest is null. Cannot upload person.");
                 return null;
             }
 
-            _logger.LogDebug("Attempting to create the found person record for SearchRequest[{SearchRequestId}]", _searchRequest.SearchRequestId);
+            _logger.LogDebug("Attempting to create the found person record");
             PersonEntity ssg_person = _mapper.Map<PersonEntity>(_foundPerson);
             ssg_person.SearchRequest = _searchRequest;
             ssg_person.InformationSource = _providerDynamicsID;
 
-            _logger.LogDebug("Mapped SSG_Person entity: {@SsgPerson}", ssg_person);
-
             SSG_Person returnedPerson = await _searchRequestService.SavePerson(ssg_person, _cancellationToken);
-
-            _logger.LogDebug("Returned SSG_Person from SavePerson: {@ReturnedPerson}", returnedPerson);
 
             if (returnedPerson != null)
             {
                 await CreateResultTransaction(returnedPerson);
-                _logger.LogInformation("Successfully created person {PersonId}.", returnedPerson.PersonId);
+                _logger.LogDebug("Successfully created person.");
             }
             else
             {
-                _logger.LogWarning("SavePerson returned null.");
+                _logger.LogDebug("SavePerson returned null.");
             }
 
             return returnedPerson;
@@ -292,7 +321,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             }
         }
 
-        private async Task<bool> UploadAddresses( )
+        private async Task<bool> UploadAddresses()
         {
             if (_foundPerson.Addresses == null) return true;
             try
@@ -318,51 +347,154 @@ namespace DynamicsAdapter.Web.PersonSearch
             }
         }
 
-        private async Task<bool> UploadTaxIncomeInformations(CancellationToken cancellationToken)
+        private async Task UploadTaxIncomeInformations(
+            IEnumerable<TaxIncomeInformation> taxIncomeList,
+            IEnumerable<TaxCode> taxCodes,
+            CancellationToken cancellationToken)
         {
-            if (_foundPerson.TaxIncomeInformations == null)
-                return true;
-
-            _logger.LogDebug("FoundPerson object: {@FoundPerson}", _foundPerson);
-
-            try
+            if (taxIncomeList == null || !taxIncomeList.Any())
             {
-                _logger.LogDebug($"Attempting to create found tax income information records for SearchRequest[{_searchRequest.SearchRequestId}]");
+                _logger.LogDebug(
+                    "No TaxIncomeInformation records to upload for SearchRequest[{SearchRequestId}]",
+                    _searchRequest.SearchRequestId);
+                return;
+            }
 
-                foreach (var taxinfo in _foundPerson.TaxIncomeInformations)
+            _logger.LogDebug(
+                "Starting UploadTaxIncomeInformations for {Count} records for SearchRequest[{SearchRequestId}]",
+                taxIncomeList.Count(), _searchRequest.SearchRequestId);
+
+            foreach (var taxinfo in taxIncomeList)
+            {
+                if (taxinfo?.TaxCode?.Code == null)
                 {
-                    // null guard clause
-                    if (taxinfo?.TaxCode?.Code == null)
-                        continue;
+                    _logger.LogDebug(
+                        "Skipping TaxIncomeInformation with missing TaxCode.Code for SearchRequest[{SearchRequestId}]",
+                        _searchRequest.SearchRequestId);
+                    continue;
+                }
 
-                        var txin = _mapper.Map<TaxIncomeInformationEntity>(taxinfo);
-                        txin.SearchRequest = _searchRequest;
-                        txin.InformationSource = _providerDynamicsID;
-                        txin.Person = _returnedPerson;
+                try
+                {
+                    var txin = _mapper.Map<TaxIncomeInformationEntity>(taxinfo);
+                    txin.SearchRequest = _searchRequest;
+                    txin.InformationSource = _providerDynamicsID;
+                    txin.Person = _returnedPerson;
+
                     var firstName = taxinfo.FirstName ?? txin.Person.FirstName;
                     var lastName = taxinfo.LastName ?? txin.Person.LastName;
-                    var dateOfBirth = taxinfo.DateOfBirth.HasValue ? taxinfo.DateOfBirth.Value.DateTime : txin.Person.DateOfBirth;
+                    var dateOfBirth = taxinfo.DateOfBirth.HasValue ? taxinfo.DateOfBirth.Value.Date : txin.Person.DateOfBirth;
+
                     txin.Person.FirstName = firstName;
                     txin.Person.LastName = lastName;
                     txin.Person.DateOfBirth = dateOfBirth;
                     txin.FullName = $"{firstName} {lastName}";
-                    txin.Description = taxinfo.Description ?? taxinfo.TaxCode.Code;
-                    txin.InformationSource = Constants.JcaSystem;    // Option Set -> Information Sources (System Set) -> JCA
+
+                    var matchedCode = taxCodes.FirstOrDefault(tc => tc.Code == taxinfo.TaxCode?.Code);
+                    txin.Description = matchedCode?.Value ?? taxinfo.Description ?? taxinfo.TaxCode.Code;
+
+                    txin.InformationSource = Constants.JcaSystem;
                     txin.Date1 = DateTime.Now;
-                        var uploadedTxin = await _searchRequestService.CreateTaxIncomeInformation(txin, _cancellationToken);
-                        if (uploadedTxin != null)
-                        {
-                            await CreateResultTransaction(uploadedTxin);
-                            _logger.LogInformation($"Successfully created tax income information {uploadedTxin.TaxincomeinformationId}.");
-                        }
+
+                    var uploadedTxin = await _searchRequestService.CreateTaxIncomeInformation(txin, cancellationToken);
+                    if (uploadedTxin != null)
+                    {
+                        await CreateResultTransaction(uploadedTxin);
+                        _logger.LogDebug($"Successfully created tax income information {uploadedTxin.TaxincomeinformationId}.");
                     }
-                return true;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, $"Failed to persist TaxIncomeInformation for TaxYear {taxinfo?.TaxYear} and Form {taxinfo?.Form}");
+                }
             }
-            catch (Exception ex)
+            _logger.LogInformation(
+                "Completed UploadTaxIncomeInformations for SearchRequest[{SearchRequestId}]",
+                _searchRequest.SearchRequestId);
+        }
+
+        private async Task UploadFinancialOtherIncome(
+            IEnumerable<TaxIncomeInformation> finOtherIncomesList,
+            TaxIncomeInformation canonicalT1,
+            CancellationToken cancellationToken)
+        {
+            if (finOtherIncomesList == null || !finOtherIncomesList.Any())
             {
-                LogException(ex);
-                return false;
+                _logger.LogDebug(
+                    "No FinancialOtherIncome records to upload for SearchRequest[{SearchRequestId}]",
+                    _searchRequest.SearchRequestId);
+                return;
             }
+
+            _logger.LogDebug(
+                "Starting UploadFinancialOtherIncome for {Count} records for SearchRequest[{SearchRequestId}]",
+                finOtherIncomesList.Count(), _searchRequest.SearchRequestId);
+
+            foreach (var finIncome in finOtherIncomesList)
+            {
+                if (finIncome?.TaxCode?.Code == null)
+                {
+                    _logger.LogWarning(
+                        "Skipping FinancialOtherIncome with missing TaxCode.Code for SearchRequest[{SearchRequestId}]",
+                        _searchRequest.SearchRequestId);
+                    continue;
+                }
+
+                try
+                {
+                    var otherin = _mapper.Map<FinancialOtherIncomeEntity>(finIncome);
+                    otherin.SearchRequest = _searchRequest;
+                    otherin.Person = _returnedPerson;
+
+                    // Person identity fallbacks
+                    var firstName = string.IsNullOrWhiteSpace(finIncome.FirstName) ? _returnedPerson.FirstName : finIncome.FirstName;
+                    var lastName = string.IsNullOrWhiteSpace(finIncome.LastName) ? _returnedPerson.LastName : finIncome.LastName;
+                    var dateOfBirth = finIncome.DateOfBirth ?? _returnedPerson.DateOfBirth;
+                    if (otherin.Person != null)
+                    {
+                        otherin.Person.FirstName = firstName;
+                        otherin.Person.LastName = lastName;
+                        otherin.Person.DateOfBirth = dateOfBirth?.DateTime;
+                    }
+
+                    // Overwrite identity values from T1 if available
+                    if (canonicalT1 != null)
+                    {
+                        if (!string.IsNullOrWhiteSpace(canonicalT1.FirstName))
+                            otherin.Person.FirstName = canonicalT1.FirstName;
+
+                        if (!string.IsNullOrWhiteSpace(canonicalT1.LastName))
+                            otherin.Person.LastName = canonicalT1.LastName;
+
+                        if (canonicalT1.DateOfBirth.HasValue)
+                            otherin.Person.DateOfBirth = canonicalT1.DateOfBirth.Value.DateTime;
+                    }
+
+                    // Core data mapping
+                    otherin.Description = finIncome.Description ?? finIncome.TaxCode?.Code;
+                    otherin.TaxYear = finIncome.TaxYear;
+                    otherin.Form = finIncome.Form;
+                    otherin.Date = DateTime.Now; //income.Date.DateTime;
+                    otherin.InformationSource = Constants.JcaSystem;
+
+                    var uploadedOtherin = await _searchRequestService.CreateFinancialOtherIncome(otherin, cancellationToken);
+                    if (uploadedOtherin != null)
+                    {
+                        await CreateResultTransaction(uploadedOtherin);
+                        _logger.LogDebug(
+                            "Successfully created FinancialOtherIncome {Id} for SearchRequest[{SearchRequestId}]",
+                            uploadedOtherin.FinancialOtherIncomeId, _searchRequest.SearchRequestId);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, $"Failed to persist FinancialOtherIncome for TaxYear {finIncome?.TaxYear} and Form {finIncome?.Form}");
+                }
+            }
+
+            _logger.LogInformation(
+                "Completed UploadFinancialOtherIncome for SearchRequest[{SearchRequestId}]",
+                _searchRequest.SearchRequestId);
         }
 
         private async Task<bool> UploadPhoneNumbers()

@@ -16,9 +16,40 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Fams3Adapter.Dynamics.TaxIncomeInformation;
+using ContractTaxIncomeInformation = BcGov.Fams3.SearchApi.Contracts.Person.TaxIncomeInformation;
+
 
 namespace DynamicsAdapter.Web.Mapping
 {
+    public class ContractDateResolver : IValueResolver<ContractTaxIncomeInformation, TaxIncomeInformationEntity, DateTime?>
+    {
+        public DateTime? Resolve(
+            ContractTaxIncomeInformation source,
+            TaxIncomeInformationEntity destination,
+            DateTime? destMember,
+            ResolutionContext context)
+        {
+            var refDate = source.ReferenceDates?.SingleOrDefault(m => m.Index == 0);
+            return refDate?.Value;
+        }
+    }
+
+    public class ContractDateLabelResolver : IValueResolver<ContractTaxIncomeInformation, TaxIncomeInformationEntity, string>
+    {
+        public string Resolve(ContractTaxIncomeInformation source, TaxIncomeInformationEntity destination, string destMember, ResolutionContext context)
+        {
+            return source.ReferenceDates?.SingleOrDefault(m => m.Index == 0)?.Key;
+        }
+    }
+
+    public class ContractDateLabelResolver2 : IValueResolver<ContractTaxIncomeInformation, TaxIncomeInformationEntity, string>
+    {
+        public string Resolve(ContractTaxIncomeInformation source, TaxIncomeInformationEntity destination, string destMember, ResolutionContext context)
+        {
+            return source.ReferenceDates?.SingleOrDefault(m => m.Index == 1)?.Key;
+        }
+    }
 
     public class Date1Resolver : IValueResolver<PersonalInfo, DynamicsEntity, DateTime?>
     {
@@ -28,7 +59,6 @@ namespace DynamicsAdapter.Web.Mapping
         }
 
     }
-
 
     public class Date1LabelResolver : IValueResolver<PersonalInfo, DynamicsEntity, string>
     {

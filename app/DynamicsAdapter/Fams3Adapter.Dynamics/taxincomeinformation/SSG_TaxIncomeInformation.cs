@@ -66,6 +66,10 @@ namespace Fams3Adapter.Dynamics.TaxIncomeInformation
         [JsonProperty("fams_taxamount")]
         [Description("Tax Amount")]
         public string TaxAmount { get; set; }
+
+        [JsonProperty("fams_form")]
+        [Description("Tax Form")]
+        public string Form { get; set; }        
     }
 
     public class SSG_TaxIncomeInformation : TaxIncomeInformationEntity

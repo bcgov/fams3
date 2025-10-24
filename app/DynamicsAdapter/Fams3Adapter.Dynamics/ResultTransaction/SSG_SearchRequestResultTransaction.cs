@@ -13,6 +13,7 @@ using Fams3Adapter.Dynamics.RelatedPerson;
 using Fams3Adapter.Dynamics.SafetyConcern;
 using Fams3Adapter.Dynamics.SearchApiRequest;
 using Fams3Adapter.Dynamics.TaxIncomeInformation;
+using Fams3Adapter.Dynamics.FinancialOtherIncome;
 using Fams3Adapter.Dynamics.Vehicle;
 using Newtonsoft.Json;
 
@@ -79,5 +80,8 @@ namespace Fams3Adapter.Dynamics.ResultTransaction
 
         [JsonProperty("ssg_notes")]
         public string Notes { get; set; }
+
+        [JsonProperty("fams_financialotherincome")]
+        public virtual FAMS_FinancialOtherIncome FinancialOtherIncome { get; set; }
     }
 }

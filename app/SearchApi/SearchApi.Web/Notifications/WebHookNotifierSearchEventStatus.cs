@@ -39,6 +39,7 @@ namespace SearchApi.Web.Notifications
             try
             {
                 var webHookName = "PersonSearch";
+
                 foreach (var webHook in _searchApiOptions.WebHooks)
                 {
                     _logger.LogDebug(
@@ -50,6 +51,8 @@ namespace SearchApi.Web.Notifications
                             $"The webHook {webHookName} notification uri is not established or is not an absolute Uri for {webHook.Name}. Set the WebHook.Uri value on SearchApi.WebHooks settings.");
                         throw new Exception("uri is not established.");
                     }
+
+                    _logger.LogDebug("Resolved webhook endpoint for {WebHookName}: {Endpoint}", webHook.Name, endpoint);
 
                     using var request = new HttpRequestMessage();
 
@@ -66,12 +69,12 @@ namespace SearchApi.Web.Notifications
                                 SearchRequestId = eventStatus.SearchRequestId,
                                 TimeStamp = DateTime.Now
                             };
-                            _logger.LogDebug(JsonConvert.SerializeObject(finalizedSearch));
+                            _logger.LogDebug("Finalized search payload: {Payload}", JsonConvert.SerializeObject(finalizedSearch));
                             content = new StringContent(JsonConvert.SerializeObject(finalizedSearch));
                         }
                         else
                         {
-                            _logger.LogDebug(JsonConvert.SerializeObject(eventStatus));
+                            _logger.LogDebug("Event status search payload: {Payload}", JsonConvert.SerializeObject(eventStatus));
                             content = new StringContent(JsonConvert.SerializeObject(eventStatus));
                         }
 

@@ -8,6 +8,7 @@ using System.Text;
 using Fams3Adapter.Dynamics.SearchRequest;
 using DynamicsAdapter.Web.PersonSearch.Models;
 using Fams3Adapter.Dynamics.TaxIncomeInformation;
+using Fams3Adapter.Dynamics.FinancialOtherIncome;
 using Newtonsoft.Json;
 
 namespace DynamicsAdapter.Web.Mapping
@@ -576,7 +577,7 @@ namespace DynamicsAdapter.Web.Mapping
         public ICollection<TaxIncomeInformation> Convert(SSG_TaxIncomeInformation[] sourceMember, ResolutionContext context)
         {
             var toReturn = new List<TaxIncomeInformation>();
-            if(sourceMember != null)
+            if (sourceMember != null)
             {
                 foreach (SSG_TaxIncomeInformation tax in sourceMember)
                 {
@@ -605,10 +606,7 @@ namespace DynamicsAdapter.Web.Mapping
                     toReturn.Add(taxIncomeInformation);
                 }
             }
-
-
             return toReturn;
-
         }
     }
 }

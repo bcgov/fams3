@@ -173,7 +173,7 @@ namespace DynamicsAdapter.Web.PersonSearch
 
             if (personCompletedEvent?.MatchedPersons != null)
             {
-                _logger.LogDebug(JsonConvert.SerializeObject(personCompletedEvent.MatchedPersons));
+                _logger.LogDebug("Found MatchedPersons: [{MatchPersons}]", JsonConvert.SerializeObject(personCompletedEvent.MatchedPersons));
                 PersonFound prePerson = null;
                 foreach (PersonFound p in personCompletedEvent.MatchedPersons)
                 {
@@ -473,18 +473,18 @@ namespace DynamicsAdapter.Web.PersonSearch
                 SSG_SearchApiRequest request = await _register.GetSearchApiRequest(searchRequestKey);
                 if (request != null)
                 {
-                    _logger.LogInformation("find searchApiRequest in Redis.");
+                    _logger.LogInformation("Found searchApiRequest in Redis.");
                     return request;
                 }
 
-                _logger.LogInformation("Not find searchApiRequest in Redis, get it from Dynamics.");
+                _logger.LogInformation("Cannot find searchApiRequest in Redis, try to get it from Dynamics.");
                 request = await _searchApiRequestService.GetSearchApiRequest(searchRequestKey, token);
                 if (request == null)
                 {
                     _logger.LogError("Cannot find the searchApiRequest in Dynamics.");
                     return null;
                 }
-                _logger.LogInformation("find searchApiRequest in Dynamics.");
+                _logger.LogInformation("Found searchApiRequest in Dynamics.");
                 return request;
             }catch(Exception e)
             {

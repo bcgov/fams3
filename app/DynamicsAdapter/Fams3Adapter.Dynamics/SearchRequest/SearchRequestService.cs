@@ -114,7 +114,26 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                 if (duplicatedIdentifierId != Guid.Empty)
                     return new SSG_Identifier() { IdentifierId = duplicatedIdentifierId };
             }
-            return await this._oDataClient.For<SSG_Identifier>().Set(identifier).InsertEntryAsync(cancellationToken);
+
+            SSG_Identifier insertedIdentRecord = null;
+            try
+            {
+                insertedIdentRecord = await this._oDataClient
+                    .For<SSG_Identifier>()
+                    .Set(identifier)
+                    .InsertEntryAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                LogDynamicsError(ex);
+                throw; // rethrow so caller can react
+            }
+
+            _logger.LogDebug("Successfully inserted Identifier with Id={IdentifierId} for PersonId={PersonId}",
+                insertedIdentRecord.IdentifierId,
+                identifier.Person.PersonId);
+
+            return insertedIdentRecord;
         }
 
         public async Task<SSG_Person> SavePerson(PersonEntity person, CancellationToken cancellationToken)
@@ -152,9 +171,13 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                     .FindEntryAsync(CancellationToken.None);
 
                 existedPerson.IsDuplicated = true;
-                return existedPerson; 
+                return existedPerson;
             }
-
+            catch (Exception ex)
+            {
+                LogDynamicsError(ex);
+                throw;
+            }
         }
 
         public async Task<SSG_PhoneNumber> CreatePhoneNumber(PhoneNumberEntity phone, CancellationToken cancellationToken)
@@ -165,7 +188,26 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                 if (duplicatedPhoneId != Guid.Empty)
                     return new SSG_PhoneNumber() { PhoneNumberId = duplicatedPhoneId };
             }
-            return await this._oDataClient.For<SSG_PhoneNumber>().Set(phone).InsertEntryAsync(cancellationToken);
+
+            SSG_PhoneNumber insertedPhNumRecord = null;
+            try
+            {
+                insertedPhNumRecord = await this._oDataClient
+                    .For<SSG_PhoneNumber>()
+                    .Set(phone)
+                    .InsertEntryAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                LogDynamicsError(ex);
+                throw;
+            }
+
+            _logger.LogDebug("Successfully inserted PhoneNumber with Id={PhoneId} for PersonId={PersonId}",
+                insertedPhNumRecord.PhoneNumberId,
+                phone.Person.PersonId);
+
+            return insertedPhNumRecord;
         }
 
         public async Task<SSG_Email> CreateEmail(EmailEntity email, CancellationToken cancellationToken)
@@ -176,12 +218,48 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                 if (duplicatedEmailId != Guid.Empty)
                     return new SSG_Email() { EmailId = duplicatedEmailId };
             }
-            return await this._oDataClient.For<SSG_Email>().Set(email).InsertEntryAsync(cancellationToken);
+
+            SSG_Email insertedEmailRecord = null;
+            try
+            {
+                insertedEmailRecord = await this._oDataClient
+                    .For<SSG_Email>()
+                    .Set(email)
+                    .InsertEntryAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                LogDynamicsError(ex);
+                throw;
+            }
+
+            _logger.LogDebug("Successfully inserted Email with Id={EmailId} for PersonId={PersonId}",
+                insertedEmailRecord.EmailId,
+                email.Person.PersonId);
+
+            return insertedEmailRecord;
         }
 
-        public async Task<SSG_SearchRequestResultTransaction> CreateTransaction(SSG_SearchRequestResultTransaction transaction, CancellationToken cancellationToken)
+        public async Task<SSG_SearchRequestResultTransaction> CreateTransaction(
+            SSG_SearchRequestResultTransaction transaction,
+            CancellationToken cancellationToken)
         {
-            return await this._oDataClient.For<SSG_SearchRequestResultTransaction>().Set(transaction).InsertEntryAsync(cancellationToken);
+            SSG_SearchRequestResultTransaction txResult = null;
+
+            try
+            {
+                txResult = await this._oDataClient
+                    .For<SSG_SearchRequestResultTransaction>()
+                    .Set(transaction)
+                    .InsertEntryAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                LogDynamicsError(ex);
+                throw;
+            }
+
+            return txResult;
         }
 
         public async Task<SSG_Address> CreateAddress(AddressEntity address, CancellationToken cancellationToken)
@@ -190,22 +268,60 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             {
                 Guid duplicatedAddressId = await _duplicateDetectService.Exists(address.Person, address);
                 if (duplicatedAddressId != Guid.Empty)
+                {
+                    _logger.LogDebug(
+                        "Duplicate address detected. Using existing AddressId={DuplicatedId} for PersonId={PersonId}",
+                        duplicatedAddressId,
+                        address.Person.PersonId);
+
                     return new SSG_Address() { AddressId = duplicatedAddressId };
+                }
             }
 
             string countryName = address.CountryText;
             var country = await _oDataClient.For<SSG_Country>()
-                                         .Filter(x => x.Name == countryName)
-                                         .FindEntryAsync(cancellationToken);
+                                    .Filter(x => x.Name == countryName)
+                                    .FindEntryAsync(cancellationToken);
+            if (country == null)
+            {
+                _logger.LogDebug(
+                    "Country lookup failed for '{CountryName}'. Address insert may fail validation.",
+                    countryName);
+            }
             address.Country = country;
 
             string subdivisionName = address.CountrySubdivisionText;
             var subdivision = await _oDataClient.For<SSG_CountrySubdivision>()
-                                         .Filter(x => x.Name == subdivisionName)
-                                         .FindEntryAsync(cancellationToken);
+                                        .Filter(x => x.Name == subdivisionName)
+                                        .FindEntryAsync(cancellationToken);
+            if (subdivision == null)
+            {
+                _logger.LogDebug(
+                    "Subdivision lookup failed for '{SubdivisionName}'. Address insert may fail validation.",
+                    subdivisionName);
+            }
             address.CountrySubdivision = subdivision;
-            var entries = this._oDataClient.For<SSG_Address>().FindEntriesAsync();
-            return await this._oDataClient.For<SSG_Address>().Set(address).InsertEntryAsync(cancellationToken);
+
+            SSG_Address insertedAddress = null;
+            try
+            {
+                insertedAddress = await _oDataClient
+                    .For<SSG_Address>()
+                    .Set(address)
+                    .InsertEntryAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                LogDynamicsError(ex);
+                throw;
+            }
+
+            _logger.LogDebug(
+                "Successfully inserted Address with Id={InsertedId} for PersonId={PersonId}",
+                insertedAddress.AddressId,
+                address.Person.PersonId);
+
+            return insertedAddress;
         }
 
         public async Task<SSG_TaxIncomeInformation> CreateTaxIncomeInformation(TaxIncomeInformationEntity taxinfo, CancellationToken cancellationToken)
@@ -294,7 +410,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
             return insertedRecord;
         }
-        
+
         private void LogDynamicsError(Exception ex)
         {
             _logger.LogError(ex, "❌ Dynamics insert failed");
@@ -320,11 +436,11 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
         private IEnumerable<FAMS_TaxCode> _taxCodes { get; set; }
         public async Task<IEnumerable<FAMS_TaxCode>> GetTaxCodes(CancellationToken cancellationToken)
-            {
+        {
             if (_taxCodes == null)
                 _taxCodes = await _oDataClient.For<FAMS_TaxCode>().FindEntriesAsync(cancellationToken);
             return _taxCodes;
-            }
+        }
 
         public async Task<SSG_Aliase> CreateName(AliasEntity name, CancellationToken cancellationToken)
         {
@@ -334,7 +450,22 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                 if (duplicatedNameId != Guid.Empty)
                     return new SSG_Aliase() { AliasId = duplicatedNameId };
             }
-            return await this._oDataClient.For<SSG_Aliase>().Set(name).InsertEntryAsync(cancellationToken);
+
+            SSG_Aliase insertedAliaseRecord = null;
+            try
+            {
+                insertedAliaseRecord = await this._oDataClient
+                    .For<SSG_Aliase>()
+                    .Set(name)
+                    .InsertEntryAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                LogDynamicsError(ex);
+                throw;
+            }
+
+            return insertedAliaseRecord;
         }
 
         public async Task<SSG_Employment> CreateEmployment(EmploymentEntity employment, CancellationToken cancellationToken)
@@ -355,7 +486,21 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
             EmploymentEntity linkedEmploy = await LinkEmploymentRef(employment, cancellationToken);
 
-            return await this._oDataClient.For<SSG_Employment>().Set(linkedEmploy).InsertEntryAsync(cancellationToken);
+            SSG_Employment insertedEmploymentRecord = null;
+            try
+            {
+                insertedEmploymentRecord = await this._oDataClient
+                    .For<SSG_Employment>()
+                    .Set(linkedEmploy)
+                    .InsertEntryAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                LogDynamicsError(ex);
+                throw;
+            }
+
+            return insertedEmploymentRecord;
         }
 
         public async Task<SSG_EmploymentContact> CreateEmploymentContact(EmploymentContactEntity employmentContact, CancellationToken cancellationToken)
@@ -367,7 +512,21 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                     return new SSG_EmploymentContact() { EmploymentContactId = duplicatedContactId };
             }
 
-            return await this._oDataClient.For<SSG_EmploymentContact>().Set(employmentContact).InsertEntryAsync(cancellationToken);
+            SSG_EmploymentContact insertedEmplContactRecord = null;
+            try
+            {
+                insertedEmplContactRecord = await this._oDataClient
+                    .For<SSG_EmploymentContact>()
+                    .Set(employmentContact)
+                    .InsertEntryAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                LogDynamicsError(ex);
+                throw;
+            }
+
+            return insertedEmplContactRecord;
         }
 
         public async Task<SSG_Identity> CreateRelatedPerson(RelatedPersonEntity relatedPerson, CancellationToken cancellationToken)
@@ -378,7 +537,22 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                 if (duplicatedRelatedPersonId != Guid.Empty)
                     return new SSG_Identity() { RelatedPersonId = duplicatedRelatedPersonId };
             }
-            return await this._oDataClient.For<SSG_Identity>().Set(relatedPerson).InsertEntryAsync(cancellationToken);
+
+            SSG_Identity insertedRelatedPersonRecord = null;
+            try
+            {
+                insertedRelatedPersonRecord = await this._oDataClient
+                    .For<SSG_Identity>()
+                    .Set(relatedPerson)
+                    .InsertEntryAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                LogDynamicsError(ex);
+                throw;
+            }
+
+            return insertedRelatedPersonRecord;
         }
 
         public async Task<SSG_Asset_BankingInformation> CreateBankInfo(BankingInformationEntity bankInfo, CancellationToken cancellationToken)
@@ -389,7 +563,22 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                 if (duplicatedBankInfoId != Guid.Empty)
                     return new SSG_Asset_BankingInformation() { BankingInformationId = duplicatedBankInfoId };
             }
-            return await this._oDataClient.For<SSG_Asset_BankingInformation>().Set(bankInfo).InsertEntryAsync(cancellationToken);
+
+            SSG_Asset_BankingInformation insertedBankInfoRecord = null;
+            try
+            {
+                insertedBankInfoRecord = await this._oDataClient
+                    .For<SSG_Asset_BankingInformation>()
+                    .Set(bankInfo)
+                    .InsertEntryAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                LogDynamicsError(ex);
+                throw;
+            }
+
+            return insertedBankInfoRecord;
         }
 
         public async Task<SSG_Asset_Vehicle> CreateVehicle(VehicleEntity vehicle, CancellationToken cancellationToken)
@@ -399,15 +588,42 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                 Guid duplicatedVehicleId = await _duplicateDetectService.Exists(vehicle.Person, vehicle);
                 if (duplicatedVehicleId != Guid.Empty)
                 {
-                    var duplicatedVehicle = await _oDataClient.For<SSG_Asset_Vehicle>()
-                                .Key(duplicatedVehicleId)
-                                .Expand(x => x.SSG_AssetOwners)
-                                .FindEntryAsync(cancellationToken);
-                    duplicatedVehicle.IsDuplicated = true;
+                    SSG_Asset_Vehicle duplicatedVehicle = null;
+                    try
+                    {
+                        duplicatedVehicle = await _oDataClient
+                            .For<SSG_Asset_Vehicle>()
+                            .Key(duplicatedVehicleId)
+                            .Expand(x => x.SSG_AssetOwners)
+                            .FindEntryAsync(cancellationToken);
+
+                        duplicatedVehicle.IsDuplicated = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        LogDynamicsError(ex);
+                        throw;
+                    }
+
                     return duplicatedVehicle;
                 }
             }
-            return await this._oDataClient.For<SSG_Asset_Vehicle>().Set(vehicle).InsertEntryAsync(cancellationToken);
+
+            SSG_Asset_Vehicle insertedVehicleRecord = null;
+            try
+            {
+                insertedVehicleRecord = await _oDataClient
+                    .For<SSG_Asset_Vehicle>()
+                    .Set(vehicle)
+                    .InsertEntryAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                LogDynamicsError(ex);
+                throw;
+            }
+
+            return insertedVehicleRecord;
         }
 
         public async Task<SSG_AssetOwner> CreateAssetOwner(AssetOwnerEntity owner, CancellationToken cancellationToken)
@@ -418,7 +634,22 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                 if (duplicatedOwnerId != Guid.Empty)
                     return new SSG_AssetOwner() { AssetOwnerId = duplicatedOwnerId };
             }
-            return await this._oDataClient.For<SSG_AssetOwner>().Set(owner).InsertEntryAsync(cancellationToken);
+
+            SSG_AssetOwner insertedOwnerRecord = null;
+            try
+            {
+                insertedOwnerRecord = await _oDataClient
+                    .For<SSG_AssetOwner>()
+                    .Set(owner)
+                    .InsertEntryAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                LogDynamicsError(ex);
+                throw;
+            }
+
+            return insertedOwnerRecord;
         }
 
         public async Task<SSG_Asset_Other> CreateOtherAsset(AssetOtherEntity otherAsset, CancellationToken cancellationToken)
@@ -429,7 +660,22 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                 if (duplicatedOtherAssetId != Guid.Empty)
                     return new SSG_Asset_Other() { AssetOtherId = duplicatedOtherAssetId };
             }
-            return await this._oDataClient.For<SSG_Asset_Other>().Set(otherAsset).InsertEntryAsync(cancellationToken);
+
+            SSG_Asset_Other insertedOtherAssetRecord = null;
+            try
+            {
+                insertedOtherAssetRecord = await this._oDataClient
+                    .For<SSG_Asset_Other>()
+                    .Set(otherAsset)
+                    .InsertEntryAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                LogDynamicsError(ex);
+                throw;
+            }
+
+            return insertedOtherAssetRecord;
         }
 
         private async Task<SSG_Asset_WorkSafeBcClaim> GetDuplicatedCompensation(CompensationClaimEntity claim, CancellationToken cancellationToken)
@@ -439,11 +685,21 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                 Guid duplicatedCompensationId = await _duplicateDetectService.Exists(claim.Person, claim);
                 if (duplicatedCompensationId != Guid.Empty)
                 {
-                    var duplicatedClaim = await _oDataClient.For<SSG_Asset_WorkSafeBcClaim>()
-                                .Key(duplicatedCompensationId)
-                                .Expand(x => x.BankingInformation)
-                                .Expand(x => x.Employment)
-                                .FindEntryAsync(cancellationToken);
+                    SSG_Asset_WorkSafeBcClaim duplicatedClaim = null;
+                    try
+                    {
+                        duplicatedClaim = await _oDataClient.For<SSG_Asset_WorkSafeBcClaim>()
+                            .Key(duplicatedCompensationId)
+                            .Expand(x => x.BankingInformation)
+                            .Expand(x => x.Employment)
+                            .FindEntryAsync(cancellationToken);
+                    }
+                    catch (Exception ex)
+                    {
+                        LogDynamicsError(ex);
+                        throw;
+                    }
+
                     if (await _duplicateDetectService.Same(claim.BankInformationEntity, duplicatedClaim.BankingInformation))
                     {
                         if (await _duplicateDetectService.Same(claim.EmploymentEntity, duplicatedClaim.Employment))
@@ -451,12 +707,20 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                             duplicatedClaim.IsDuplicated = true;
                             if (duplicatedClaim.Employment != null)
                             {
-                                Guid duplicatedEmploymentId = duplicatedClaim.Employment.EmploymentId;
-                                duplicatedClaim.Employment = await _oDataClient.For<SSG_Employment>()
-                                    .Key(duplicatedEmploymentId)
-                                    .Expand(x => x.SSG_EmploymentContacts)
-                                    .FindEntryAsync(cancellationToken);
-                                duplicatedClaim.Employment.IsDuplicated = true;
+                                try
+                                {
+                                    Guid duplicatedEmploymentId = duplicatedClaim.Employment.EmploymentId;
+                                    duplicatedClaim.Employment = await _oDataClient.For<SSG_Employment>()
+                                        .Key(duplicatedEmploymentId)
+                                        .Expand(x => x.SSG_EmploymentContacts)
+                                        .FindEntryAsync(cancellationToken);
+                                    duplicatedClaim.Employment.IsDuplicated = true;
+                                }
+                                catch (Exception ex)
+                                {
+                                    LogDynamicsError(ex);
+                                    throw;
+                                }
                             }
                             return duplicatedClaim;
                         }
@@ -483,8 +747,15 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                 ssg_employment = claim.EmploymentEntity == null ? null : await CreateEmployment(claim.EmploymentEntity, cancellationToken);
                 claim.BankingInformation = ssg_bank;
                 claim.Employment = ssg_employment;
-                SSG_Asset_WorkSafeBcClaim ssg_Claim = await this._oDataClient.For<SSG_Asset_WorkSafeBcClaim>().Set(claim).InsertEntryAsync(cancellationToken);
-                returnedClaim = ssg_Claim;
+                try
+                {
+                    returnedClaim = await this._oDataClient.For<SSG_Asset_WorkSafeBcClaim>().Set(claim).InsertEntryAsync(cancellationToken);
+                }
+                catch (Exception ex)
+                {
+                    LogDynamicsError(ex);
+                    throw;
+                }
             }
 
             if (claim.EmploymentEntity != null && claim.EmploymentEntity.EmploymentContactEntities != null)
@@ -505,16 +776,36 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                 Guid duplicatedInsuranceId = await _duplicateDetectService.Exists(insurance.Person, insurance);
                 if (duplicatedInsuranceId != Guid.Empty)
                 {
-                    var duplicatedInsurance = await _oDataClient.For<SSG_Asset_ICBCClaim>()
-                                .Key(duplicatedInsuranceId)
-                                .Expand(x => x.SSG_InvolvedParties)
-                                .Expand(x => x.SSG_SimplePhoneNumbers)
-                                .FindEntryAsync(cancellationToken);
-                    duplicatedInsurance.IsDuplicated = true;
-                    return duplicatedInsurance;
+                    try
+                    {
+                        var duplicatedInsurance = await _oDataClient.For<SSG_Asset_ICBCClaim>()
+                            .Key(duplicatedInsuranceId)
+                            .Expand(x => x.SSG_InvolvedParties)
+                            .Expand(x => x.SSG_SimplePhoneNumbers)
+                            .FindEntryAsync(cancellationToken);
+
+                        duplicatedInsurance.IsDuplicated = true;
+                        return duplicatedInsurance;
+                    }
+                    catch (Exception ex)
+                    {
+                        LogDynamicsError(ex);
+                        throw;
+                    }
                 }
             }
-            return await this._oDataClient.For<SSG_Asset_ICBCClaim>().Set(insurance).InsertEntryAsync(cancellationToken);
+
+            try
+            {
+                return await this._oDataClient.For<SSG_Asset_ICBCClaim>()
+                    .Set(insurance)
+                    .InsertEntryAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                LogDynamicsError(ex);
+                throw;
+            }
         }
 
         public async Task<SSG_SimplePhoneNumber> CreateSimplePhoneNumber(SimplePhoneNumberEntity phone, CancellationToken cancellationToken)
@@ -525,7 +816,18 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                 if (duplicatedPhoneId != Guid.Empty)
                     return new SSG_SimplePhoneNumber() { SimplePhoneNumberId = duplicatedPhoneId };
             }
-            return await this._oDataClient.For<SSG_SimplePhoneNumber>().Set(phone).InsertEntryAsync(cancellationToken);
+
+            try
+            {
+                return await this._oDataClient.For<SSG_SimplePhoneNumber>()
+                    .Set(phone)
+                    .InsertEntryAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                LogDynamicsError(ex);
+                throw;
+            }
         }
 
         public async Task<SSG_InvolvedParty> CreateInvolvedParty(InvolvedPartyEntity involvedParty, CancellationToken cancellationToken)
@@ -536,13 +838,34 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                 if (duplicatedPartyId != Guid.Empty)
                     return new SSG_InvolvedParty() { InvolvedPartyId = duplicatedPartyId };
             }
-            return await this._oDataClient.For<SSG_InvolvedParty>().Set(involvedParty).InsertEntryAsync(cancellationToken);
+
+            try
+            {
+                return await this._oDataClient.For<SSG_InvolvedParty>()
+                    .Set(involvedParty)
+                    .InsertEntryAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                LogDynamicsError(ex);
+                throw;
+            }
         }
 
         public async Task<SSG_SearchRequest> CreateSearchRequest(SearchRequestEntity searchRequest, CancellationToken cancellationToken)
         {
             SearchRequestEntity linkedSearchRequest = await LinkSearchRequestRef(searchRequest, cancellationToken);
-            return await this._oDataClient.For<SSG_SearchRequest>().Set(linkedSearchRequest).InsertEntryAsync(cancellationToken);
+            try
+            {
+                return await this._oDataClient.For<SSG_SearchRequest>()
+                    .Set(linkedSearchRequest)
+                    .InsertEntryAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                LogDynamicsError(ex);
+                throw;
+            }
         }
 
         public async Task<SSG_SafetyConcernDetail> CreateSafetyConcern(SafetyConcernEntity safety, CancellationToken cancellationToken)
@@ -553,107 +876,258 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                 if (duplicatedSafetyId != Guid.Empty)
                     return new SSG_SafetyConcernDetail() { SafetyConcernDetailId = duplicatedSafetyId };
             }
-            return await this._oDataClient.For<SSG_SafetyConcernDetail>().Set(safety).InsertEntryAsync(cancellationToken);
-        }
 
+            try
+            {
+                return await this._oDataClient.For<SSG_SafetyConcernDetail>()
+                    .Set(safety)
+                    .InsertEntryAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                LogDynamicsError(ex);
+                throw;
+            }
+        }
 
         public async Task<SSG_SearchRequest> CancelSearchRequest(string fileId, string cancelComments, CancellationToken cancellationToken)
         {
-            SSG_SearchRequest searchRequest = await _oDataClient.For<SSG_SearchRequest>().Filter(x => x.FileId == fileId).FindEntryAsync(cancellationToken);
+            try
+            {
+                SSG_SearchRequest searchRequest = await _oDataClient
+                    .For<SSG_SearchRequest>()
+                    .Filter(x => x.FileId == fileId)
+                    .FindEntryAsync(cancellationToken);
 
-            if (searchRequest == null) return null;
+                if (searchRequest == null)
+                {
+                    return null;
+                }
 
-            return await _oDataClient
-                        .For<SSG_SearchRequest>()
-                        .Key(searchRequest.SearchRequestId)
-                        .Set(new Entry {
-                            { Keys.DYNAMICS_STATUS_CODE_FIELD, SearchRequestStatusCode.AgencyCancelled.Value },
-                            { Keys.DYNAMICS_SEARCH_REQUEST_CANCEL_COMMENTS_FIELD, cancelComments }
-                        })
-                        .UpdateEntryAsync(cancellationToken);
+                var updatedRequest = await _oDataClient
+                    .For<SSG_SearchRequest>()
+                    .Key(searchRequest.SearchRequestId)
+                    .Set(new Entry
+                    {
+                        { Keys.DYNAMICS_STATUS_CODE_FIELD, SearchRequestStatusCode.AgencyCancelled.Value },
+                        { Keys.DYNAMICS_SEARCH_REQUEST_CANCEL_COMMENTS_FIELD, cancelComments }
+                    })
+                    .UpdateEntryAsync(cancellationToken);
+
+                return updatedRequest;
+            }
+            catch (Exception ex)
+            {
+                LogDynamicsError(ex);
+                throw;
+            }
         }
 
         public async Task<SSG_SearchRequest> GetCurrentSearchRequest(Guid searchRequestId)
         {
-            return await _oDataClient.For<SSG_SearchRequest>().Key(searchRequestId).FindEntryAsync(CancellationToken.None);
+            try
+            {
+                var searchRequest = await _oDataClient
+                    .For<SSG_SearchRequest>()
+                    .Key(searchRequestId)
+                    .FindEntryAsync(CancellationToken.None);
+
+                if (searchRequest == null)
+                {
+                    _logger.LogDebug("No SearchRequest found with Id={SearchRequestId}", searchRequestId);
+                    return null;
+                }
+
+                return searchRequest;
+            }
+            catch (Exception ex)
+            {
+                LogDynamicsError(ex);
+                throw;
+            }
         }
 
         public async Task<SSG_SearchRequest> SystemCancelSearchRequest(SSG_SearchRequest searchRequest, CancellationToken cancellationToken)
         {
-            if (searchRequest == null) return null;
-            return await _oDataClient
-                        .For<SSG_SearchRequest>()
-                        .Key(searchRequest.SearchRequestId)
-                        .Set(new Entry {
-                            { Keys.DYNAMICS_STATE_CODE_FIELD, 1 },
-                            { Keys.DYNAMICS_STATUS_CODE_FIELD, SearchRequestStatusCode.SystemCancelled.Value },
-                            { Keys.DYNAMICS_SEARCH_REQUEST_CANCEL_COMMENTS_FIELD, "Incomplete Search Request" }
-                        })
-                        .UpdateEntryAsync(cancellationToken);
+            if (searchRequest == null)
+            {
+                _logger.LogDebug("SystemCancelSearchRequest called with null SearchRequest.");
+                return null;
+            }
+
+            try
+            {
+                var updatedRequest = await _oDataClient
+                    .For<SSG_SearchRequest>()
+                    .Key(searchRequest.SearchRequestId)
+                    .Set(new Entry
+                    {
+                        { Keys.DYNAMICS_STATE_CODE_FIELD, 1 },
+                        { Keys.DYNAMICS_STATUS_CODE_FIELD, SearchRequestStatusCode.SystemCancelled.Value },
+                        { Keys.DYNAMICS_SEARCH_REQUEST_CANCEL_COMMENTS_FIELD, "Incomplete Search Request" }
+                    })
+                    .UpdateEntryAsync(cancellationToken);
+
+                _logger.LogDebug("System-cancelled SearchRequest Id={SearchRequestId} successfully.", searchRequest.SearchRequestId);
+                return updatedRequest;
+            }
+            catch (Exception ex)
+            {
+                LogDynamicsError(ex);
+                throw;
+            }
         }
 
         public async Task<bool> DeleteSearchRequest(string fileId, CancellationToken cancellationToken)
         {
-            await _oDataClient
-                        .For<SSG_SearchRequest>()
-                        .Filter(m=>m.FileId==fileId)
-                        .DeleteEntryAsync();
+            if (string.IsNullOrWhiteSpace(fileId))
+            {
+                _logger.LogDebug("DeleteSearchRequest called with an empty or null fileId.");
+                return false;
+            }
 
-            return true;
+            try
+            {
+                _logger.LogDebug("Attempting to delete SearchRequest with FileId={FileId}", fileId);
+
+                await _oDataClient
+                    .For<SSG_SearchRequest>()
+                    .Filter(m => m.FileId == fileId)
+                    .DeleteEntryAsync(cancellationToken);
+
+                _logger.LogDebug("Successfully deleted SearchRequest with FileId={FileId}", fileId);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LogDynamicsError(ex);
+                _logger.LogError(ex, "Failed to delete SearchRequest with FileId={FileId}", fileId);
+                throw;
+            }
         }
 
         public async Task<SSG_SearchRequest> GetSearchRequest(string fileId, CancellationToken cancellationToken)
         {
-            SSG_SearchRequest ssgSearchRequest = await _oDataClient
-                .For<SSG_SearchRequest>()
-                .Select(x => x.SearchRequestId)
-                .Filter(x => x.FileId == fileId)
-                .FindEntryAsync(cancellationToken);
-            if (ssgSearchRequest == null) return null;
+            if (string.IsNullOrWhiteSpace(fileId))
+            {
+                _logger.LogDebug("GetSearchRequest called with an empty or null fileId.");
+                return null;
+            }
 
-            Guid key = ssgSearchRequest.SearchRequestId;
-            SSG_SearchRequest dataSearchRequest = await _oDataClient
-                .For<SSG_SearchRequest>()
-                .Key(key)
-                .Expand(x => x.Agency)
-                .Expand(x => x.SearchReason)
-                .Expand(x => x.AgencyLocation)
-                .Expand(x => x.SSG_Persons)
-                .Expand(x => x.SSG_Notes)
-                .FindEntryAsync(cancellationToken);
+            try
+            {
+                _logger.LogDebug("Retrieving SearchRequest with FileId={FileId}", fileId);
 
-            dataSearchRequest.AgencyCode = dataSearchRequest.Agency?.AgencyCode;
-            dataSearchRequest.AgencyOfficeLocationText = dataSearchRequest.AgencyLocation?.LocationCode;
-            dataSearchRequest.SearchReasonCode = dataSearchRequest.SearchReason?.ReasonCode;
-            return dataSearchRequest;
+                SSG_SearchRequest ssgSearchRequest = await _oDataClient
+                    .For<SSG_SearchRequest>()
+                    .Select(x => x.SearchRequestId)
+                    .Filter(x => x.FileId == fileId)
+                    .FindEntryAsync(cancellationToken);
+
+                if (ssgSearchRequest == null)
+                {
+                    _logger.LogDebug("No SearchRequest found for FileId={FileId}", fileId);
+                    return null;
+                }
+
+                Guid key = ssgSearchRequest.SearchRequestId;
+                SSG_SearchRequest dataSearchRequest = await _oDataClient
+                    .For<SSG_SearchRequest>()
+                    .Key(key)
+                    .Expand(x => x.Agency)
+                    .Expand(x => x.SearchReason)
+                    .Expand(x => x.AgencyLocation)
+                    .Expand(x => x.SSG_Persons)
+                    .Expand(x => x.SSG_Notes)
+                    .FindEntryAsync(cancellationToken);
+
+                if (dataSearchRequest != null)
+                {
+                    dataSearchRequest.AgencyCode = dataSearchRequest.Agency?.AgencyCode;
+                    dataSearchRequest.AgencyOfficeLocationText = dataSearchRequest.AgencyLocation?.LocationCode;
+                    dataSearchRequest.SearchReasonCode = dataSearchRequest.SearchReason?.ReasonCode;
+                }
+
+                _logger.LogDebug("Successfully retrieved SearchRequest with FileId={FileId}", fileId);
+                return dataSearchRequest;
+            }
+            catch (Exception ex)
+            {
+                LogDynamicsError(ex);
+                _logger.LogError(ex, "Error retrieving SearchRequest with FileId={FileId}", fileId);
+                throw;
+            }
         }
 
         public async Task<SSG_Person> GetPerson(Guid personId, CancellationToken cancellationToken)
         {
-            SSG_Person person = await _oDataClient
-                .For<SSG_Person>()
-                .Key(personId)
-                .Expand(x => x.SSG_Identities)
-                .Expand(x => x.SSG_PhoneNumbers)
-                .Expand(x => x.SSG_Identifiers)
-                .Expand(x => x.SSG_Employments)
-                .Expand(x => x.SSG_Addresses)
-                .Expand(x => x.SSG_Aliases)
-                .Expand(x => x.SSG_SafetyConcernDetails)
-                .FindEntryAsync(cancellationToken);
+            try
+            {
+                SSG_Person person = await _oDataClient
+                    .For<SSG_Person>()
+                    .Key(personId)
+                    .Expand(x => x.SSG_Identities)
+                    .Expand(x => x.SSG_PhoneNumbers)
+                    .Expand(x => x.SSG_Identifiers)
+                    .Expand(x => x.SSG_Employments)
+                    .Expand(x => x.SSG_Addresses)
+                    .Expand(x => x.SSG_Aliases)
+                    .Expand(x => x.SSG_SafetyConcernDetails)
+                    .FindEntryAsync(cancellationToken);
 
-            return person;
+                if (person == null)
+                {
+                    _logger.LogDebug("GetPerson, no person found with Id={PersonId}", personId);
+                }
+                return person;
+            }
+            catch (Exception ex)
+            {
+                LogDynamicsError(ex);
+                throw;
+            }
         }
 
         public async Task<SSG_Employment> GetEmployment(Guid employmentId, CancellationToken cancellationToken)
         {
-            return await this._oDataClient.For<SSG_Employment>().Key(employmentId).Expand(x => x.SSG_EmploymentContacts).FindEntryAsync(cancellationToken);
+            try
+            {
+                SSG_Employment employment = await _oDataClient
+                    .For<SSG_Employment>()
+                    .Key(employmentId)
+                    .Expand(x => x.SSG_EmploymentContacts)
+                    .FindEntryAsync(cancellationToken);
+
+                if (employment == null)
+                {
+                    _logger.LogDebug("GetEmployment, no employment found with Id={EmploymentId}", employmentId);
+                }
+
+                return employment;
+            }
+            catch (Exception ex)
+            {
+                LogDynamicsError(ex);
+                throw;
+            }
         }
 
         public async Task<SSG_SearchRequest> UpdateSearchRequest(Guid requestId, IDictionary<string, object> updatedFields, CancellationToken cancellationToken)
         {
             updatedFields.Add(new KeyValuePair<string, object>("ssg_updatedbyagency", true));
-            return await this._oDataClient.For<SSG_SearchRequest>().Key(requestId).Set(updatedFields).UpdateEntryAsync(cancellationToken);
+            try
+            {
+                return await this._oDataClient
+                    .For<SSG_SearchRequest>()
+                    .Key(requestId)
+                    .Set(updatedFields)
+                    .UpdateEntryAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                LogDynamicsError(ex);
+                throw;
+            }
         }
 
         public async Task<SSG_Person> UpdatePerson(SSG_Person existedPerson, IDictionary<string, object> updatedFields, PersonEntity newPerson, CancellationToken cancellationToken)
@@ -668,34 +1142,87 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             try
             {
                 return await this._oDataClient.For<SSG_Person>().Key(existedPerson.PersonId).Set(updatedFields).UpdateEntryAsync(cancellationToken);
-            }catch(WebRequestException e) when (e.IsDuplicateHashError())
+            }
+            catch (WebRequestException e) when (e.IsDuplicateHashError())
             {
                 _logger.LogError(e, "Update Person failed with DuplicationHash [{hash}]", duplicateDetectHash);
                 return null;
+            }
+            catch (Exception ex)
+            {
+                LogDynamicsError(ex);
+                throw;
             }
         }
 
         public async Task<SSG_Identity> UpdateRelatedPerson(Guid relatedPersonId, IDictionary<string, object> updatedFields, CancellationToken cancellationToken)
         {
             updatedFields.Add(new KeyValuePair<string, object>("ssg_updatedbyagency", true));
-            return await this._oDataClient.For<SSG_Identity>().Key(relatedPersonId).Set(updatedFields).UpdateEntryAsync(cancellationToken);
+            try
+            {
+                return await this._oDataClient
+                    .For<SSG_Identity>()
+                    .Key(relatedPersonId)
+                    .Set(updatedFields)
+                    .UpdateEntryAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                LogDynamicsError(ex);
+                throw;
+            }
         }
 
         public async Task<SSG_Employment> UpdateEmployment(Guid employmentId, IDictionary<string, object> updatedFields, CancellationToken cancellationToken)
         {
-            //EmploymentEntity linkedEmploy = await LinkEmploymentRef(newEmploy, cancellationToken);
-            return await this._oDataClient.For<SSG_Employment>().Key(employmentId).Set(updatedFields).UpdateEntryAsync(cancellationToken);
+            try
+            {
+                return await this._oDataClient
+                    .For<SSG_Employment>()
+                    .Key(employmentId)
+                    .Set(updatedFields)
+                    .UpdateEntryAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                LogDynamicsError(ex);
+                throw;
+            }
         }
 
         public async Task<SSG_Identifier> UpdateIdentifier(Guid identifierId, IDictionary<string, object> updatedFields, CancellationToken cancellationToken)
         {
-            return await this._oDataClient.For<SSG_Identifier>().Key(identifierId).Set(updatedFields).UpdateEntryAsync(cancellationToken);
+            try
+            {
+                return await this._oDataClient
+                    .For<SSG_Identifier>()
+                    .Key(identifierId)
+                    .Set(updatedFields)
+                    .UpdateEntryAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                LogDynamicsError(ex);
+                throw;
+            }
         }
 
         public async Task<SSG_SafetyConcernDetail> UpdateSafetyConcern(Guid safetyId, IDictionary<string, object> updatedFields, CancellationToken cancellationToken)
         {
             updatedFields.Add(new KeyValuePair<string, object>("ssg_updatedbyagency", true));
-            return await this._oDataClient.For<SSG_SafetyConcernDetail>().Key(safetyId).Set(updatedFields).UpdateEntryAsync(cancellationToken);
+            try
+            {
+                return await this._oDataClient
+                    .For<SSG_SafetyConcernDetail>()
+                    .Key(safetyId)
+                    .Set(updatedFields)
+                    .UpdateEntryAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                LogDynamicsError(ex);
+                throw;
+            }
         }
 
         public async Task<SSG_Notese> CreateNotes(NotesEntity note, CancellationToken cancellationToken)
@@ -706,16 +1233,37 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                 if (duplicatedNoteId != Guid.Empty)
                     return new SSG_Notese() { NotesId = duplicatedNoteId };
             }
-            return await this._oDataClient.For<SSG_Notese>().Set(note).InsertEntryAsync(cancellationToken);
+            try
+            {
+                return await this._oDataClient
+                    .For<SSG_Notese>()
+                    .Set(note)
+                    .InsertEntryAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                LogDynamicsError(ex);
+                throw;
+            }
         }
 
         private async Task<SearchRequestEntity> LinkSearchRequestRef(SearchRequestEntity searchRequest, CancellationToken cancellationToken)
         {
             //find agencyCode in ssg_agency entity
             string code = searchRequest.AgencyCode;
-            var agency = await _oDataClient.For<SSG_Agency>()
-                                         .Filter(x => x.AgencyCode == code)
-                                         .FindEntryAsync(cancellationToken);
+            SSG_Agency agency = null;
+            try
+            {
+                agency = await _oDataClient.For<SSG_Agency>()
+                                    .Filter(x => x.AgencyCode == code)
+                                    .FindEntryAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                LogDynamicsError(ex);
+                throw;
+            }
+
             searchRequest.Agency = agency;
 
             //find reasoncode 
@@ -732,10 +1280,17 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         public async Task<SSG_SearchRequestReason> GetSearchReason(string reasonCode, CancellationToken cancellationToken)
         {
             //find reasoncode 
-            var reason = await _oDataClient.For<SSG_SearchRequestReason>()
-                             .Filter(x => x.ReasonCode == reasonCode)
-                             .FindEntryAsync(cancellationToken);
-            return reason;
+            try
+            {
+                return await _oDataClient.For<SSG_SearchRequestReason>()
+                                .Filter(x => x.ReasonCode == reasonCode)
+                                .FindEntryAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                LogDynamicsError(ex);
+                throw;
+            }
         }
 
         public async Task<SSG_AgencyLocation> GetSearchAgencyLocation(string locationCode, string agencyCode, CancellationToken cancellationToken)
@@ -762,32 +1317,61 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
                 return officeLocation;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                LogDynamicsError(ex);
                 return null;
             }
         }
 
         public async Task<SSG_Country> GetEmploymentCountry(string countryText, CancellationToken cancellationToken)
         {
-            var country = await _oDataClient.For<SSG_Country>()
+            try
+            {
+                return await _oDataClient
+                                .For<SSG_Country>()
                                 .Filter(x => x.Name == countryText)
                                 .FindEntryAsync(cancellationToken);
-            return country;
+            }
+            catch (Exception ex)
+            {
+                LogDynamicsError(ex);
+                throw;
+            }
         }
 
         public async Task<SSG_CountrySubdivision> GetEmploymentSubdivision(string subDivisionText, CancellationToken cancellationToken)
         {
-            var subdivision = await _oDataClient.For<SSG_CountrySubdivision>()
-                                      .Filter(x => x.Name == subDivisionText)
-                                      .FindEntryAsync(cancellationToken);
-            return subdivision;
+            try
+            {
+                return await _oDataClient
+                                .For<SSG_CountrySubdivision>()
+                                .Filter(x => x.Name == subDivisionText)
+                                .FindEntryAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                LogDynamicsError(ex);
+                throw;
+            }
         }
 
         public async Task<bool> SubmitToQueue(Guid searchRequestId)
         {
-            await _oDataClient.For<SSG_SearchRequest>().Key(searchRequestId).Action("ssg_SearchRequestSubmittoQueueActions").ExecuteAsSingleAsync();
-            return true;
+            try
+            {
+                await _oDataClient
+                    .For<SSG_SearchRequest>()
+                    .Key(searchRequestId)
+                    .Action("ssg_SearchRequestSubmittoQueueActions")
+                    .ExecuteAsSingleAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LogDynamicsError(ex);
+                throw;
+            }
         }
 
         public async Task<bool> UpdateApiCall(Guid apiCallGuid, bool success, string notes, CancellationToken cancellationToken)
@@ -798,23 +1382,46 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                 { "statecode", 1 },
                 { "ssg_notes", notes }
             };
-            await _oDataClient.For<SSG_APICall>().Key(apiCallGuid).Set(updatedFields).UpdateEntryAsync(cancellationToken);
-            return true;
+
+            try
+            {
+                await _oDataClient
+                    .For<SSG_APICall>()
+                    .Key(apiCallGuid)
+                    .Set(updatedFields)
+                    .UpdateEntryAsync(cancellationToken);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LogDynamicsError(ex);
+                throw;
+            }
         }
 
         public async Task<IEnumerable<SSG_SearchRequest>> GetAutoCloseSearchRequestAsync(CancellationToken cancellationToken)
         {
-            int noCPMatch = SearchRequestAutoCloseStatusCode.NoCPMatch.Value;
-            int cpMissingData = SearchRequestAutoCloseStatusCode.CPMissingData.Value;
-            int readyToClose = SearchRequestAutoCloseStatusCode.ReadyToClose.Value;
-            int autoclosed = SearchRequestStatusCode.SearchRequestAutoClosed.Value;
-            IEnumerable<SSG_SearchRequest> searchRequests = await _oDataClient.For<SSG_SearchRequest>()
-                .Filter(x => x.AutoCloseStatus == noCPMatch
-                || x.AutoCloseStatus == cpMissingData
-                || x.AutoCloseStatus == readyToClose)
-                .Filter(x => x.StatusCode != autoclosed)
-                .FindEntriesAsync(cancellationToken);
-            return searchRequests;
+            try
+            {
+                int noCPMatch = SearchRequestAutoCloseStatusCode.NoCPMatch.Value;
+                int cpMissingData = SearchRequestAutoCloseStatusCode.CPMissingData.Value;
+                int readyToClose = SearchRequestAutoCloseStatusCode.ReadyToClose.Value;
+                int autoclosed = SearchRequestStatusCode.SearchRequestAutoClosed.Value;
+
+                IEnumerable<SSG_SearchRequest> searchRequests = await _oDataClient.For<SSG_SearchRequest>()
+                    .Filter(x => x.AutoCloseStatus == noCPMatch
+                            || x.AutoCloseStatus == cpMissingData
+                            || x.AutoCloseStatus == readyToClose)
+                    .Filter(x => x.StatusCode != autoclosed)
+                    .FindEntriesAsync(cancellationToken);
+
+                return searchRequests;
+            }
+            catch (Exception ex)
+            {
+                LogDynamicsError(ex);
+                throw;
+            }
         }
 
         private async Task<EmploymentEntity> LinkEmploymentRef(EmploymentEntity employment, CancellationToken cancellationToken)
@@ -833,32 +1440,59 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                 var existedPerson = await this._oDataClient.For<SSG_Person>()
                     .Filter(x => x.DuplicateDetectHash == hashData)
                     .FindEntryAsync(CancellationToken.None);
-                    
+
                 return existedPerson;
             }
-            catch (WebRequestException e) when (e.Code== HttpStatusCode.NotFound)
+            catch (WebRequestException e) when (e.Code == HttpStatusCode.NotFound)
             {
-               return null;
+                _logger.LogDebug("FindDuplicatedPerson, no duplicated person found for hash [{HashData}]", hashData);
+                return null;
+            }
+            catch (Exception ex)
+            {
+                LogDynamicsError(ex);
+                throw;
             }
         }
 
         public async Task<bool> SearchRequestCreateCouldNotAutoCloseNote(Guid searchRequestId)
         {
-            await _oDataClient.For<SSG_SearchRequest>().Key(searchRequestId).Action("ssg_SearchRequestCreateCouldNotAutoCloseNote").ExecuteAsSingleAsync();
-            return true;
+            try
+            {
+                await _oDataClient
+                    .For<SSG_SearchRequest>()
+                    .Key(searchRequestId)
+                    .Action("ssg_SearchRequestCreateCouldNotAutoCloseNote")
+                    .ExecuteAsSingleAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LogDynamicsError(ex);
+                throw;
+            }
         }
 
         public async Task<SSG_SearchRequest> UpdateSearchRequestStatusAutoClosed(Guid searchRequestId, CancellationToken cancellationToken)
         {
-            return await _oDataClient
-                .For<SSG_SearchRequest>()
-                .Key(searchRequestId)
-                .Set(new Entry { 
-                    {Keys.DYNAMICS_STATE_CODE_FIELD, 1},
-                    {Keys.DYNAMICS_STATUS_CODE_FIELD, SearchRequestStatusCode.SearchRequestAutoClosed.Value} 
-                })
-                .UpdateEntryAsync(cancellationToken);
+            try
+            {
+                return await _oDataClient
+                    .For<SSG_SearchRequest>()
+                    .Key(searchRequestId)
+                    .Set(new Entry
+                    {
+                        { Keys.DYNAMICS_STATE_CODE_FIELD, 1 },
+                        { Keys.DYNAMICS_STATUS_CODE_FIELD, SearchRequestStatusCode.SearchRequestAutoClosed.Value }
+                    })
+                    .UpdateEntryAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                LogDynamicsError(ex);
+                throw;
+            }
         }
-
     }
 }

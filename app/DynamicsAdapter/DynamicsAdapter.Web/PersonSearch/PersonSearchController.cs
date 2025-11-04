@@ -173,7 +173,7 @@ namespace DynamicsAdapter.Web.PersonSearch
 
             if (personCompletedEvent?.MatchedPersons != null)
             {
-                _logger.LogDebug("Found MatchedPersons: [{MatchPersons}]", JsonConvert.SerializeObject(personCompletedEvent.MatchedPersons));
+                _logger.LogDebug("Process Found MatchedPersons");
                 PersonFound prePerson = null;
                 foreach (PersonFound p in personCompletedEvent.MatchedPersons)
                 {

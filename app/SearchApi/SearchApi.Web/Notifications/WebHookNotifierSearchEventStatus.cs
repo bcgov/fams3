@@ -69,12 +69,16 @@ namespace SearchApi.Web.Notifications
                                 SearchRequestId = eventStatus.SearchRequestId,
                                 TimeStamp = DateTime.Now
                             };
-                            _logger.LogDebug("Finalized search payload: {Payload}", JsonConvert.SerializeObject(finalizedSearch));
                             content = new StringContent(JsonConvert.SerializeObject(finalizedSearch));
                         }
                         else
                         {
-                            _logger.LogDebug("Event status search payload: {Payload}", JsonConvert.SerializeObject(eventStatus));
+                            _logger.LogInformation(
+                                "Initiating {EventName} event for {SearchRequestKey} for {ProviderName}",
+                                eventName ?? "UnknownEvent",
+                                eventStatus?.SearchRequestKey ?? "N/A",
+                                eventStatus?.ProviderProfile?.Name ?? "UnknownProvider"
+                            );
                             content = new StringContent(JsonConvert.SerializeObject(eventStatus));
                         }
 

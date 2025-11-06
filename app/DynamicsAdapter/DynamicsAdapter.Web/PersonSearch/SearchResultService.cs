@@ -168,6 +168,19 @@ namespace DynamicsAdapter.Web.PersonSearch
                 // STEP 2a: Upload non-T1 first with fresh person shell
                 if (nonT1TaxInfos.Any())
                 {
+                    // Create a "person shell" for non-T1 records
+                    Person nonT1Person = new Person
+                    {
+                        FirstName = null,
+                        LastName = null,
+                        MiddleName = null,
+                        OtherName = null,
+                        DateOfBirth = null,
+                        SuppliedBySystem = Constants.JcaSystem
+                    };
+
+                    _foundPerson = nonT1Person;
+                    _returnedPerson = await UploadPerson(); // Persist in Dynamics
                     await UploadFinancialOtherIncome(nonT1TaxInfos, cancellationToken);
                 }
 
@@ -438,8 +451,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                 {
                     var otherin = _mapper.Map<FinancialOtherIncomeEntity>(finIncome);
                     otherin.SearchRequest = _searchRequest;
-                    // Use the deep-clone helper to create a safe person shell or this non-T1 record
-                    otherin.Person = ClonePersonShellSafe(_returnedPerson, null, _searchRequest);
+                    otherin.Person = ClonePersonShellSafe(_returnedPerson, finIncome, _searchRequest);
 
                     if (otherin.Person == null)
                     {
@@ -496,26 +508,30 @@ namespace DynamicsAdapter.Web.PersonSearch
 
             if (searchRequest == null)
             {
-                _logger.LogDebug("SearchRequest is null; cannot create FinancialOtherIncome person shell for PersonId {PersonId}", basePerson.PersonId);
+                _logger.LogDebug(
+                    "SearchRequest is null; cannot create FinancialOtherIncome person shell for PersonId {PersonId}",
+                    basePerson.PersonId);
             }
 
-            // If finIncome is provided, extract identity overrides; otherwise keep them null
+            // Safely extract identity overrides from TaxIncomeInformation
             string firstName = finIncome?.FirstName;
             string lastName = finIncome?.LastName;
             DateTime? dob = finIncome?.DateOfBirth?.DateTime;
 
-            // If empty, fallback to basePerson values only if finIncome is provided
-            if (finIncome != null)
-            {
-                if (string.IsNullOrWhiteSpace(firstName))
-                    firstName = null; // preserve null for Dynamics insert
+            // Apply basePerson fallback only if the fields are empty
+            if (string.IsNullOrWhiteSpace(firstName))
+                firstName = basePerson.FirstName;
 
-                if (string.IsNullOrWhiteSpace(lastName))
-                    lastName = null;
+            if (string.IsNullOrWhiteSpace(lastName))
+                lastName = basePerson.LastName;
 
-                if (!dob.HasValue)
-                    dob = null;
-            }
+            if (!dob.HasValue)
+                dob = basePerson.DateOfBirth;
+
+            // Log the final values that will be used
+            _logger.LogDebug(
+                "Creating person shell for PersonId {PersonId} with FirstName='{FirstName}', LastName='{LastName}', DOB={DOB}",
+                basePerson.PersonId, firstName, lastName, dob?.ToString("yyyy-MM-dd") ?? "null");
 
             return new SSG_Person
             {

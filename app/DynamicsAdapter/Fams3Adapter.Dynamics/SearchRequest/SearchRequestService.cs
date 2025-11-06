@@ -393,16 +393,6 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             FAMS_FinancialOtherIncome insertedRecord = null;
             try
             {
-                _logger.LogDebug(
-                    "Preparing to insert FinancialOtherIncome for PersonId={PersonId}, " +
-                    "Person.FirstName='{FirstName}', Person.LastName='{LastName}', Person.DOB={DOB}, " +
-                    "SearchRequestId={SearchRequestId}",
-                    finOtherIncome.Person?.PersonId,
-                    finOtherIncome.Person?.FirstName ?? "null",
-                    finOtherIncome.Person?.LastName ?? "null",
-                    finOtherIncome.Person?.DateOfBirth?.ToString("yyyy-MM-dd") ?? "null",
-                    finOtherIncome.SearchRequest?.SearchRequestId);
-                    
                 insertedRecord = await this._oDataClient
                     .For<FAMS_FinancialOtherIncome>()
                     .Set(finOtherIncome)

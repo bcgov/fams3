@@ -136,36 +136,10 @@ namespace DynamicsAdapter.Web.PersonSearch
             await UploadInsuranceClaims();
             await UploadEmails();
 
-            // STEP 2: If we have tax information, process it as a separate record -> Process and upload tax income information (T1 vs. non-T1)
+            // STEP 2: Process tax information if available
             if (person.TaxIncomeInformations != null && person.TaxIncomeInformations.Any())
             {
-                // Process tax codes
-                var taxCodes = await _searchRequestService.GetTaxCodes(cancellationToken);
-                var mappedTaxCodes = taxCodes.Select(tc => new DynamicsAdapter.Web.TaxCode
-                {
-                    Code = tc.TaxCode,         // maps from fams_cracode
-                    Value = tc.Description     // maps from fams_description
-                });
-
-                // Create a new person object for tax information
-                Person taxPerson = new Person
-                {
-                    MiddleName = person.TaxIncomeInformations.FirstOrDefault().MiddleName,
-                    OtherName = person.TaxIncomeInformations.FirstOrDefault().OtherName,
-                    FirstName = person.TaxIncomeInformations.FirstOrDefault().FirstName,
-                    LastName = person.TaxIncomeInformations.FirstOrDefault().LastName,
-                    DateOfBirth = person.TaxIncomeInformations.FirstOrDefault().DateOfBirth,
-                    Date1 = DateTime.Now,
-                    SuppliedBySystem = Constants.JcaSystem,
-                    TaxIncomeInformations = person.TaxIncomeInformations
-                };
-
-                // Process and upload the tax information
-                _foundPerson = taxPerson;
-                _returnedPerson = await UploadPerson();
-
                 var taxInfos = person.TaxIncomeInformations.ToList();
-                var taxIncomeEntities = _mapper.Map<List<TaxIncomeInformationEntity>>(taxInfos);
 
                 var t1TaxInfos = taxInfos
                     .Where(t => string.Equals(t.Form, "T1", StringComparison.OrdinalIgnoreCase))
@@ -175,28 +149,49 @@ namespace DynamicsAdapter.Web.PersonSearch
                     .Where(t => !string.Equals(t.Form, "T1", StringComparison.OrdinalIgnoreCase))
                     .ToList();
 
-                TaxIncomeInformation canonicalT1 = t1TaxInfos.FirstOrDefault();
-
                 _logger.LogDebug(
                     "T1 TaxIncomeInformation records ({Count}) for SearchRequest[{SearchRequestId}]",
-                    t1TaxInfos.Count,
-                    _searchRequest.SearchRequestId);
+                    t1TaxInfos.Count, _searchRequest.SearchRequestId);
 
                 _logger.LogDebug(
                     "Non-T1 TaxIncomeInformation records ({Count}) for SearchRequest[{SearchRequestId}]",
-                    nonT1TaxInfos.Count,
-                    _searchRequest.SearchRequestId);
+                    nonT1TaxInfos.Count, _searchRequest.SearchRequestId);
 
+                // Get tax codes for T1 mapping
+                var taxCodes = await _searchRequestService.GetTaxCodes(cancellationToken);
+                var mappedTaxCodes = taxCodes.Select(tc => new DynamicsAdapter.Web.TaxCode
+                {
+                    Code = tc.TaxCode,
+                    Value = tc.Description
+                });
+
+                // STEP 2a: Upload non-T1 first with fresh person shell
+                if (nonT1TaxInfos.Any())
+                {
+                    await UploadFinancialOtherIncome(nonT1TaxInfos, cancellationToken);
+                }
+
+                // STEP 2b: Upload T1 records afterward, reusing _returnedPerson from UploadPerson
                 if (t1TaxInfos.Any())
                 {
+                    Person taxPerson = new Person
+                    {
+                        MiddleName = t1TaxInfos.FirstOrDefault()?.MiddleName,
+                        OtherName = t1TaxInfos.FirstOrDefault()?.OtherName,
+                        FirstName = t1TaxInfos.FirstOrDefault()?.FirstName,
+                        LastName = t1TaxInfos.FirstOrDefault()?.LastName,
+                        DateOfBirth = t1TaxInfos.FirstOrDefault()?.DateOfBirth,
+                        Date1 = DateTime.Now,
+                        SuppliedBySystem = Constants.JcaSystem,
+                        TaxIncomeInformations = t1TaxInfos
+                    };
+
+                    _foundPerson = taxPerson;
+                    _returnedPerson = await UploadPerson();
+
                     await UploadTaxIncomeInformations(t1TaxInfos, mappedTaxCodes, cancellationToken);
                 }
-
-                if (nonT1TaxInfos.Any()) {
-                    await UploadFinancialOtherIncome(nonT1TaxInfos, canonicalT1, cancellationToken);
-                }
             }
-
             return true;
         }
 
@@ -415,7 +410,6 @@ namespace DynamicsAdapter.Web.PersonSearch
 
         private async Task UploadFinancialOtherIncome(
             IEnumerable<TaxIncomeInformation> finOtherIncomesList,
-            TaxIncomeInformation canonicalT1,
             CancellationToken cancellationToken)
         {
             if (finOtherIncomesList == null || !finOtherIncomesList.Any())
@@ -444,37 +438,21 @@ namespace DynamicsAdapter.Web.PersonSearch
                 {
                     var otherin = _mapper.Map<FinancialOtherIncomeEntity>(finIncome);
                     otherin.SearchRequest = _searchRequest;
-                    otherin.Person = _returnedPerson;
-
-                    // Person identity fallbacks
-                    var firstName = string.IsNullOrWhiteSpace(finIncome.FirstName) ? _returnedPerson.FirstName : finIncome.FirstName;
-                    var lastName = string.IsNullOrWhiteSpace(finIncome.LastName) ? _returnedPerson.LastName : finIncome.LastName;
-                    var dateOfBirth = finIncome.DateOfBirth ?? _returnedPerson.DateOfBirth;
-                    if (otherin.Person != null)
+                    // Create a clean SSG_Person shell for this non-T1 record
+                    otherin.Person = ClonePersonShellSafe(_returnedPerson, finIncome, _searchRequest);
+                    if (otherin.Person == null)
                     {
-                        otherin.Person.FirstName = firstName;
-                        otherin.Person.LastName = lastName;
-                        otherin.Person.DateOfBirth = dateOfBirth?.DateTime;
-                    }
-
-                    // Overwrite identity values from T1 if available
-                    if (canonicalT1 != null)
-                    {
-                        if (!string.IsNullOrWhiteSpace(canonicalT1.FirstName))
-                            otherin.Person.FirstName = canonicalT1.FirstName;
-
-                        if (!string.IsNullOrWhiteSpace(canonicalT1.LastName))
-                            otherin.Person.LastName = canonicalT1.LastName;
-
-                        if (canonicalT1.DateOfBirth.HasValue)
-                            otherin.Person.DateOfBirth = canonicalT1.DateOfBirth.Value.DateTime;
+                        _logger.LogWarning(
+                            "Skipping FinancialOtherIncome because the person shell could not be created for TaxYear {TaxYear} Form {Form}",
+                            finIncome?.TaxYear, finIncome?.Form);
+                        continue;
                     }
 
                     // Core data mapping
                     otherin.Description = finIncome.Description ?? finIncome.TaxCode?.Code;
                     otherin.TaxYear = finIncome.TaxYear;
                     otherin.Form = finIncome.Form;
-                    otherin.Date = DateTime.Now; //income.Date.DateTime;
+                    otherin.Date = DateTime.Now;
                     otherin.InformationSource = Constants.JcaSystem;
 
                     var uploadedOtherin = await _searchRequestService.CreateFinancialOtherIncome(otherin, cancellationToken);
@@ -495,6 +473,47 @@ namespace DynamicsAdapter.Web.PersonSearch
             _logger.LogInformation(
                 "Completed UploadFinancialOtherIncome for SearchRequest[{SearchRequestId}]",
                 _searchRequest.SearchRequestId);
+        }
+        
+        private SSG_Person ClonePersonShellSafe(
+            SSG_Person basePerson,
+            TaxIncomeInformation finIncome,
+            SSG_SearchRequest searchRequest)
+        {
+            if (basePerson == null)
+            {
+                _logger.LogDebug("Base person is null; cannot create FinancialOtherIncome person shell.");
+                return null;
+            }
+
+            if (searchRequest == null)
+            {
+                _logger.LogDebug("SearchRequest is null; cannot create FinancialOtherIncome person shell for PersonId {PersonId}", basePerson.PersonId);
+            }
+
+            // Safely extract identity overrides
+            string firstName = finIncome?.FirstName;
+            string lastName = finIncome?.LastName;
+            DateTime? dob = finIncome?.DateOfBirth?.DateTime;
+
+            if (string.IsNullOrWhiteSpace(firstName) && string.IsNullOrWhiteSpace(lastName) && !dob.HasValue)
+            {
+                _logger.LogDebug("Non-T1 record has empty FirstName/LastName/DOB, will preserve as null for PersonId {PersonId}", basePerson.PersonId);
+                firstName = null;
+                lastName = null;
+                dob = null;
+            }
+
+            // Return a new SSG_Person shell with overrides
+            return new SSG_Person
+            {
+                PersonId = basePerson.PersonId,
+                SearchRequest = searchRequest,
+                InformationSource = basePerson.InformationSource,
+                FirstName = firstName,
+                LastName = lastName,
+                DateOfBirth = dob
+            };
         }
 
         private async Task<bool> UploadPhoneNumbers()

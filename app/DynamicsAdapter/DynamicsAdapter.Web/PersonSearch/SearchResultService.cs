@@ -496,6 +496,19 @@ namespace DynamicsAdapter.Web.PersonSearch
             string lastName = finIncome?.LastName;
             DateTime? dob = finIncome?.DateOfBirth?.DateTime;
 
+            if (string.IsNullOrWhiteSpace(firstName))
+                firstName = basePerson.FirstName;
+
+            if (string.IsNullOrWhiteSpace(lastName))
+                lastName = basePerson.LastName;
+
+            if (!dob.HasValue)
+                dob = basePerson.DateOfBirth;
+
+            _logger.LogDebug(
+                "Creating person shell for PersonId {PersonId} with FirstName='{FirstName}', LastName='{LastName}', DOB={DOB}",
+                basePerson.PersonId, firstName, lastName, dob);
+
             // Return a new SSG_Person shell with overrides
             return new SSG_Person
             {

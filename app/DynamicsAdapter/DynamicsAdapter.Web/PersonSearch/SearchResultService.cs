@@ -496,14 +496,6 @@ namespace DynamicsAdapter.Web.PersonSearch
             string lastName = finIncome?.LastName;
             DateTime? dob = finIncome?.DateOfBirth?.DateTime;
 
-            if (string.IsNullOrWhiteSpace(firstName) && string.IsNullOrWhiteSpace(lastName) && !dob.HasValue)
-            {
-                _logger.LogDebug("Non-T1 record has empty FirstName/LastName/DOB, will preserve as null for PersonId {PersonId}", basePerson.PersonId);
-                firstName = null;
-                lastName = null;
-                dob = null;
-            }
-
             // Return a new SSG_Person shell with overrides
             return new SSG_Person
             {

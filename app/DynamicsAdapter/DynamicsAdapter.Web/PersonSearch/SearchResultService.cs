@@ -438,8 +438,9 @@ namespace DynamicsAdapter.Web.PersonSearch
                 {
                     var otherin = _mapper.Map<FinancialOtherIncomeEntity>(finIncome);
                     otherin.SearchRequest = _searchRequest;
-                    // Create a clean SSG_Person shell for this non-T1 record
+                    // Use the deep-clone helper to create a safe person shell or this non-T1 record
                     otherin.Person = ClonePersonShellSafe(_returnedPerson, finIncome, _searchRequest);
+
                     if (otherin.Person == null)
                     {
                         _logger.LogWarning(
@@ -447,6 +448,13 @@ namespace DynamicsAdapter.Web.PersonSearch
                             finIncome?.TaxYear, finIncome?.Form);
                         continue;
                     }
+
+                    _logger.LogDebug(
+                        "Prepared FinancialOtherIncome for insert: PersonId={PersonId}, FirstName='{FirstName}', LastName='{LastName}', DOB={DOB}",
+                        otherin.Person.PersonId,
+                        otherin.Person.FirstName,
+                        otherin.Person.LastName,
+                        otherin.Person.DateOfBirth);
 
                     // Core data mapping
                     otherin.Description = finIncome.Description ?? finIncome.TaxCode?.Code;
@@ -474,7 +482,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                 "Completed UploadFinancialOtherIncome for SearchRequest[{SearchRequestId}]",
                 _searchRequest.SearchRequestId);
         }
-        
+
         private SSG_Person ClonePersonShellSafe(
             SSG_Person basePerson,
             TaxIncomeInformation finIncome,
@@ -491,35 +499,219 @@ namespace DynamicsAdapter.Web.PersonSearch
                 _logger.LogDebug("SearchRequest is null; cannot create FinancialOtherIncome person shell for PersonId {PersonId}", basePerson.PersonId);
             }
 
-            // Safely extract identity overrides
-            string firstName = finIncome?.FirstName;
-            string lastName = finIncome?.LastName;
-            DateTime? dob = finIncome?.DateOfBirth?.DateTime;
+            // Deep clone basePerson via JSON
+            var clonedPerson = Newtonsoft.Json.JsonConvert
+                .DeserializeObject<SSG_Person>(
+                    Newtonsoft.Json.JsonConvert.SerializeObject(basePerson));
 
-            if (string.IsNullOrWhiteSpace(firstName))
-                firstName = basePerson.FirstName;
+            if (clonedPerson == null)
+            {
+                _logger.LogWarning("Failed to clone basePerson for PersonId {PersonId}", basePerson.PersonId);
+                return null;
+            }
 
-            if (string.IsNullOrWhiteSpace(lastName))
-                lastName = basePerson.LastName;
+            // Apply overrides from finIncome
+            clonedPerson.FirstName = string.IsNullOrWhiteSpace(finIncome?.FirstName)
+                ? null
+                : finIncome.FirstName;
 
-            if (!dob.HasValue)
-                dob = basePerson.DateOfBirth;
+            clonedPerson.LastName = string.IsNullOrWhiteSpace(finIncome?.LastName)
+                ? null
+                : finIncome.LastName;
+
+            clonedPerson.DateOfBirth = finIncome?.DateOfBirth?.DateTime;
+
+            // Attach the search request
+            clonedPerson.SearchRequest = searchRequest;
 
             _logger.LogDebug(
                 "Creating person shell for PersonId {PersonId} with FirstName='{FirstName}', LastName='{LastName}', DOB={DOB}",
-                basePerson.PersonId, firstName, lastName, dob);
+                clonedPerson.PersonId, clonedPerson.FirstName, clonedPerson.LastName, clonedPerson.DateOfBirth);
 
-            // Return a new SSG_Person shell with overrides
-            return new SSG_Person
-            {
-                PersonId = basePerson.PersonId,
-                SearchRequest = searchRequest,
-                InformationSource = basePerson.InformationSource,
-                FirstName = firstName,
-                LastName = lastName,
-                DateOfBirth = dob
-            };
+            return clonedPerson;
         }
+
+
+
+        // private async Task UploadFinancialOtherIncome(
+        //     IEnumerable<TaxIncomeInformation> finOtherIncomesList,
+        //     CancellationToken cancellationToken)
+        // {
+        //     if (finOtherIncomesList == null || !finOtherIncomesList.Any())
+        //     {
+        //         _logger.LogDebug(
+        //             "No FinancialOtherIncome records to upload for SearchRequest[{SearchRequestId}]",
+        //             _searchRequest.SearchRequestId);
+        //         return;
+        //     }
+
+        //     _logger.LogDebug(
+        //         "Starting UploadFinancialOtherIncome for {Count} records for SearchRequest[{SearchRequestId}]",
+        //         finOtherIncomesList.Count(), _searchRequest.SearchRequestId);
+
+        //     foreach (var finIncome in finOtherIncomesList)
+        //     {
+        //         if (finIncome?.TaxCode?.Code == null)
+        //         {
+        //             _logger.LogWarning(
+        //                 "Skipping FinancialOtherIncome with missing TaxCode.Code for SearchRequest[{SearchRequestId}]",
+        //                 _searchRequest.SearchRequestId);
+        //             continue;
+        //         }
+
+        //         try
+        //         {
+        //             var otherin = _mapper.Map<FinancialOtherIncomeEntity>(finIncome);
+        //             otherin.SearchRequest = _searchRequest;
+        //             // Create a clean SSG_Person shell for this non-T1 record
+        //             otherin.Person = ClonePersonShellSafe(_returnedPerson, finIncome, _searchRequest);
+        //             if (otherin.Person == null)
+        //             {
+        //                 _logger.LogWarning(
+        //                     "Skipping FinancialOtherIncome because the person shell could not be created for TaxYear {TaxYear} Form {Form}",
+        //                     finIncome?.TaxYear, finIncome?.Form);
+        //                 continue;
+        //             }
+
+        //             // Core data mapping
+        //             otherin.Description = finIncome.Description ?? finIncome.TaxCode?.Code;
+        //             otherin.TaxYear = finIncome.TaxYear;
+        //             otherin.Form = finIncome.Form;
+        //             otherin.Date = DateTime.Now;
+        //             otherin.InformationSource = Constants.JcaSystem;
+
+        //             var uploadedOtherin = await _searchRequestService.CreateFinancialOtherIncome(otherin, cancellationToken);
+        //             if (uploadedOtherin != null)
+        //             {
+        //                 await CreateResultTransaction(uploadedOtherin);
+        //                 _logger.LogDebug(
+        //                     "Successfully created FinancialOtherIncome {Id} for SearchRequest[{SearchRequestId}]",
+        //                     uploadedOtherin.FinancialOtherIncomeId, _searchRequest.SearchRequestId);
+        //             }
+        //         }
+        //         catch (Exception ex)
+        //         {
+        //             _logger.LogError(ex, $"Failed to persist FinancialOtherIncome for TaxYear {finIncome?.TaxYear} and Form {finIncome?.Form}");
+        //         }
+        //     }
+
+        //     _logger.LogInformation(
+        //         "Completed UploadFinancialOtherIncome for SearchRequest[{SearchRequestId}]",
+        //         _searchRequest.SearchRequestId);
+        // }
+        
+        // private SSG_Person ClonePersonShellSafe(
+        //     SSG_Person basePerson,
+        //     TaxIncomeInformation finIncome,
+        //     SSG_SearchRequest searchRequest)
+        // {
+        //     if (basePerson == null)
+        //     {
+        //         _logger.LogDebug("Base person is null; cannot create FinancialOtherIncome person shell.");
+        //         return null;
+        //     }
+
+        //     if (searchRequest == null)
+        //     {
+        //         _logger.LogDebug("SearchRequest is null; cannot create FinancialOtherIncome person shell for PersonId {PersonId}", basePerson.PersonId);
+        //     }
+
+        //     // Create a detached snapshot of the base person to avoid any tracked/remote hydration
+        //     var detachedBase = new SSG_Person
+        //     {
+        //         PersonId = basePerson.PersonId,
+        //         InformationSource = basePerson.InformationSource,
+        //         SearchRequest = searchRequest
+        //     };
+
+        //     // Safely extract identity overrides from finIncome
+        //     string firstName = finIncome?.FirstName;
+        //     string lastName = finIncome?.LastName;
+        //     DateTime? dob = finIncome?.DateOfBirth?.DateTime;
+
+        //     // If all identity fields are missing, explicitly preserve nulls
+        //     if (string.IsNullOrWhiteSpace(firstName) &&
+        //         string.IsNullOrWhiteSpace(lastName) &&
+        //         !dob.HasValue)
+        //     {
+        //         _logger.LogDebug(
+        //             "Non-T1 record has empty FirstName/LastName/DOB, preserving nulls for PersonId {PersonId}",
+        //             detachedBase.PersonId);
+        //         firstName = null;
+        //         lastName = null;
+        //         dob = null;
+        //     }
+
+        //     // Otherwise, use finIncome overrides or leave null
+        //     if (string.IsNullOrWhiteSpace(firstName)) firstName = null;
+        //     if (string.IsNullOrWhiteSpace(lastName)) lastName = null;
+        //     if (!dob.HasValue) dob = null;
+
+        //     var personShell = new SSG_Person
+        //     {
+        //         PersonId = detachedBase.PersonId,
+        //         SearchRequest = searchRequest,
+        //         InformationSource = detachedBase.InformationSource,
+        //         FirstName = firstName,
+        //         LastName = lastName,
+        //         DateOfBirth = dob
+        //     };
+
+        //     _logger.LogDebug(
+        //         "Creating person shell for PersonId {PersonId} with FirstName='{FirstName}', LastName='{LastName}', DOB={DOB}",
+        //         personShell.PersonId,
+        //         personShell.FirstName ?? "null",
+        //         personShell.LastName ?? "null",
+        //         personShell.DateOfBirth?.ToString("yyyy-MM-dd") ?? "null");
+
+        //     return personShell;
+        // }
+
+        // private SSG_Person ClonePersonShellSafe(
+        //     SSG_Person basePerson,
+        //     TaxIncomeInformation finIncome,
+        //     SSG_SearchRequest searchRequest)
+        // {
+        //     if (basePerson == null)
+        //     {
+        //         _logger.LogDebug("Base person is null; cannot create FinancialOtherIncome person shell.");
+        //         return null;
+        //     }
+
+        //     if (searchRequest == null)
+        //     {
+        //         _logger.LogDebug("SearchRequest is null; cannot create FinancialOtherIncome person shell for PersonId {PersonId}", basePerson.PersonId);
+        //     }
+
+        //     // Safely extract identity overrides
+        //     string firstName = finIncome?.FirstName;
+        //     string lastName = finIncome?.LastName;
+        //     DateTime? dob = finIncome?.DateOfBirth?.DateTime;
+
+        //     if (string.IsNullOrWhiteSpace(firstName))
+        //         firstName = basePerson.FirstName;
+
+        //     if (string.IsNullOrWhiteSpace(lastName))
+        //         lastName = basePerson.LastName;
+
+        //     if (!dob.HasValue)
+        //         dob = basePerson.DateOfBirth;
+
+        //     _logger.LogDebug(
+        //         "Creating person shell for PersonId {PersonId} with FirstName='{FirstName}', LastName='{LastName}', DOB={DOB}",
+        //         basePerson.PersonId, firstName, lastName, dob);
+
+        //     // Return a new SSG_Person shell with overrides
+        //     return new SSG_Person
+        //     {
+        //         PersonId = basePerson.PersonId,
+        //         SearchRequest = searchRequest,
+        //         InformationSource = basePerson.InformationSource,
+        //         FirstName = firstName,
+        //         LastName = lastName,
+        //         DateOfBirth = dob
+        //     };
+        // }
 
         private async Task<bool> UploadPhoneNumbers()
         {

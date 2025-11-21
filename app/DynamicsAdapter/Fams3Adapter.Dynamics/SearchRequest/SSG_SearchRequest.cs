@@ -127,6 +127,22 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         [DisplayName("Info Requested Date of Death")]
         public bool DateOfDeathRequested { get; set; }
 
+        [JsonProperty("ssg_inforequestedtaxincomeinformation")]
+        [DisplayName("Info Requested T1 tax info")]
+        public bool T1taxform { get; set; }
+
+        [JsonProperty("fams_inforequestednoticeofassessment")]
+        [DisplayName("Info Requested Notice of Assessment")]
+        public bool NoticeofAssessment { get; set; }
+
+        [JsonProperty("fams_inforequestednoticeofreassessment")]
+        [DisplayName("Info Requested Notice of Reassessment")]
+        public bool NoticeofReassessment { get; set; }
+
+        [JsonProperty("fams_inforequestedfinancialotherincome")]
+        [DisplayName("Info Requested Financial Other Income")]
+        public bool FinancialOtherIncome { get; set; }
+
         [JsonProperty("ssg_inforequesteddriverslicense")]
         [DisplayName("Info Requested Driver's License")]
         public bool DriverLicenseRequested { get; set; }

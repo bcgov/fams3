@@ -10,7 +10,11 @@ namespace DynamicsAdapter.Web.Mapping
     {
         public static SearchRequestEntity ConstructSearchRequestEntity(SearchRequestOrdered src)
         {
-            if (src?.Person?.Agency?.RequestId == null) throw new ArgumentNullException("SearchRequestOrdered.Person, Agency or RequestID are not allowed Null.");
+            if (src?.Person?.Agency?.RequestId == null)
+            {
+                throw new ArgumentNullException("SearchRequestOrdered.Person, Agency or RequestID are not allowed Null.");
+            }
+
             SearchRequestEntity entity = new SearchRequestEntity();
             #region agency part
             entity.AgentEmail = src.Person.Agency.Email;
@@ -25,12 +29,14 @@ namespace DynamicsAdapter.Web.Mapping
                 else
                     entity.AgentFax = agencyFax?.PhoneNumber + " -" + agencyFax?.Extension;
             }
+
             if (src.Person.Agency.Agent != null)
             {
                 Name agentName = src.Person.Agency.Agent;
                 entity.AgentFirstName = agentName.FirstName;
                 entity.AgentLastName = agentName.LastName;
             }
+
             if (src.Person.Agency.InformationRequested != null)
             {
                 foreach (InformationRequested info in src.Person.Agency.InformationRequested)
@@ -55,9 +61,14 @@ namespace DynamicsAdapter.Web.Mapping
                         case InformationRequested.DateOfDeath: entity.DateOfDeathRequested = true; break;
                         case InformationRequested.IA: entity.IAStatusRequested = true; break;
                         case InformationRequested.SafetyConcern: entity.SafetyConcernRequested = true; break;
+                        case InformationRequested.T1taxform: entity.T1taxform = true; break;
+                        case InformationRequested.NoticeofAssessment: entity.NoticeofAssessment = true; break;
+                        case InformationRequested.NoticeofReassessment: entity.NoticeofReassessment = true; break;
+                        case InformationRequested.FinancialOtherIncome: entity.FinancialOtherIncome = true; break;
                     };
                 }
             }
+
             if (src.Person?.Agency.RequestId != null)
             {
                 if (src.Person.Agency.RequestId.Length >= 30)
@@ -81,7 +92,6 @@ namespace DynamicsAdapter.Web.Mapping
             }
             #endregion
 
-
             if (src.Person.Addresses != null)
             {
                 Address applicantAddress = src.Person.Addresses.FirstOrDefault<Address>(m => m.Owner == OwnerType.Applicant);
@@ -104,6 +114,7 @@ namespace DynamicsAdapter.Web.Mapping
             {
                 entity.ApplicantPhoneNumber = src.Person.Phones.FirstOrDefault<Phone>(m => m.Owner == OwnerType.Applicant)?.PhoneNumber;
             }
+
             if (src.Person.Identifiers != null)
             {
                 entity.ApplicantSIN = src.Person.Identifiers.FirstOrDefault<PersonalIdentifier>(

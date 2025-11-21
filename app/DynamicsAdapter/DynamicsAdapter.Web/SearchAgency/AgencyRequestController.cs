@@ -43,58 +43,109 @@ namespace DynamicsAdapter.Web.SearchAgency
         [OpenApiTag("Agency Search Request API")]
         public async Task<IActionResult> CreateSearchRequest(string requestId, [FromBody]SearchRequestOrdered searchRequestOrdered)
         {
-            using (LogContext.PushProperty("RequestRef", $"{requestId}"))
-            using (LogContext.PushProperty("AgencyCode", $"{searchRequestOrdered?.Person?.Agency?.Code}"))
+            using (LogContext.PushProperty("RequestRef", requestId ?? "(null)"))
+            using (LogContext.PushProperty("AgencyCode", searchRequestOrdered?.Person?.Agency?.Code))
             {
-                _logger.LogInformation("Get CreateSearchRequest");
-                _logger.LogDebug(JsonConvert.SerializeObject(searchRequestOrdered));
-                if (string.IsNullOrEmpty(requestId)) return BadRequest(new { ReasonCode = "error", Message = "requestId cannot be empty." });
-                if (searchRequestOrdered == null) return BadRequest(new { ReasonCode = "error", Message = "SearchRequestOrdered cannot be empty." });
-                if (searchRequestOrdered.Action != RequestAction.NEW) return BadRequest(new { ReasonCode = "error", Message = "CreateSearchRequest should only get NEW request." });
+                _logger.LogInformation("➡️ Start CreateSearchRequest for RequestId: {RequestId}", requestId);
+
+                if (string.IsNullOrEmpty(requestId))
+                {
+                    _logger.LogWarning("❌ requestId is missing.");
+                    return BadRequest(new { ReasonCode = "error", Message = "requestId cannot be empty." });
+                }
+
+                if (searchRequestOrdered == null)
+                {
+                    _logger.LogWarning("❌ SearchRequestOrdered payload is missing.");
+                    return BadRequest(new { ReasonCode = "error", Message = "SearchRequestOrdered cannot be empty." });
+                }
+
+                if (searchRequestOrdered.Action != RequestAction.NEW)
+                {
+                    _logger.LogWarning(
+                        "❌ CreateSearchRequest should only receive NEW action, received: {Action}",
+                        searchRequestOrdered.Action);
+
+                    return BadRequest(new
+                    {
+                        ReasonCode = "error",
+                        Message = "CreateSearchRequest should only get NEW request."
+                    });
+                }
 
                 SSG_SearchRequest createdSearchRequest = null;
                 try
                 {
+                    _logger.LogDebug("Processing SearchRequestOrdered via AgencyRequestService...");
                     createdSearchRequest = await _agencyRequestService.ProcessSearchRequestOrdered(searchRequestOrdered);
+
                     if (createdSearchRequest == null)
+                    {
+                        _logger.LogError("❌ _agencyRequestService returned NULL for ProcessSearchRequestOrdered");
                         return StatusCode(StatusCodes.Status500InternalServerError);
+                    }
 
-                    _logger.LogInformation("SearchRequest is created successfully.");
-
+                    _logger.LogInformation(
+                        "SearchRequest created successfully. SearchRequestId: {SearchRequestId}",
+                        createdSearchRequest.SearchRequestId);
                 }
                 catch (AgencyRequestException ex)
                 {
-                    _logger.LogInformation(ex.Message);
+                    _logger.LogError(ex,
+                        "❌ AgencyRequestException while creating SearchRequest. Reason: {Reason}",
+                        ex.Message);
                     return StatusCode(StatusCodes.Status500InternalServerError, new { ReasonCode = ex.Message, Message = ex.InnerException?.Message });
                 }
                 catch (Exception ex)
                 {
+                    _logger.LogError(ex, "❌ Unexpected error while creating SearchRequest.");
+
                     SSG_SearchRequest createdSR = _agencyRequestService.GetSSGSearchRequest();
                     if (createdSR != null)
                     {
+                        _logger.LogWarning("Rolling back: cancelling partially created SSG_SearchRequest {SearchRequestId}", createdSR.SearchRequestId);
                         await _agencyRequestService.SystemCancelSSGSearchRequest(createdSR);
                     }
-                    if( ex is Simple.OData.Client.WebRequestException)
+
+                    if( ex is Simple.OData.Client.WebRequestException webEx)
                     {
-                        _logger.LogError(((Simple.OData.Client.WebRequestException)ex).RequestUri?.AbsoluteUri);
-                        _logger.LogError(((Simple.OData.Client.WebRequestException)ex).Response);
+                        _logger.LogError("OData RequestUri: {Uri}", webEx.RequestUri?.AbsoluteUri);
+                        _logger.LogError("OData Response: {Response}", webEx.Response);
                     }
-                    _logger.LogError(ex.Message);
+
                     return StatusCode(StatusCodes.Status500InternalServerError, new { ReasonCode = ex.Message, Message = ex.InnerException?.Message });
                 }
 
                 //try to submit to queue and then get EstimatedDate and positionInQueue
                 try
                 {
+                    _logger.LogDebug(
+                        "Submitting SearchRequest {SearchRequestId} to queue...",
+                        createdSearchRequest.SearchRequestId);
+                    
                     await _agencyRequestService.SubmitSearchRequestToQueue(createdSearchRequest.SearchRequestId);
                     createdSearchRequest = await _agencyRequestService.RefreshSearchRequest(createdSearchRequest.SearchRequestId);
-                }catch(Exception e)
+
+                    _logger.LogInformation(
+                        "SearchRequest submitted to queue successfully. SearchRequestId: {SearchRequestId}",
+                        createdSearchRequest.SearchRequestId);
+                }catch(Exception ex)
                 {
-                    _logger.LogError(e, "submit to queue or get current search request failed.");
+                    _logger.LogError(ex,
+                        "❌ Failed to submit SearchRequest {SearchRequestId} to queue.",
+                        createdSearchRequest.SearchRequestId);
                     //default value, in case there is error, we still can return accept event.
                     createdSearchRequest.EstimatedCompletionDate = DateTime.UtcNow.AddMonths(3);
                     createdSearchRequest.QueuePosition = 9999;
                 }
+
+                _logger.LogInformation(
+                    "Returning SearchRequestSaved event for RequestId {RequestId}",
+                    requestId);
+                _logger.LogDebug(
+                    "🏁 End CreateSearchRequest for RequestId: {RequestId}",
+                    requestId);
+                    
                 return Ok(BuildSearchRequestSaved_Create(createdSearchRequest, searchRequestOrdered));
             }
         }

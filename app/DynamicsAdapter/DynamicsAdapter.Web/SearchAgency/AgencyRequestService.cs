@@ -61,6 +61,14 @@ namespace DynamicsAdapter.Web.SearchAgency
 
         public async Task<SSG_SearchRequest> ProcessSearchRequestOrdered(SearchRequestOrdered searchRequestOrdered)
         {
+            _logger.LogDebug("➡️ Start ProcessSearchRequestOrdered for RequestId {RequestId}", searchRequestOrdered.RequestId);
+
+            if (searchRequestOrdered == null)
+            {
+                _logger.LogError("❌ SearchRequestOrdered cannot be null.");
+                throw new ArgumentNullException(nameof(searchRequestOrdered));
+            }
+
             _personSought = searchRequestOrdered.Person;
             var cts = new CancellationTokenSource();
             _cancellationToken = cts.Token;
@@ -68,9 +76,15 @@ namespace DynamicsAdapter.Web.SearchAgency
             SearchRequestEntity searchRequestEntity = _mapper.Map<SearchRequestEntity>(searchRequestOrdered);
             searchRequestEntity.CreatedByApi = true;
             searchRequestEntity.SendNotificationOnCreation = true;
+
             _uploadedSearchRequest = await _searchRequestService.CreateSearchRequest(searchRequestEntity, cts.Token);
-            if (_uploadedSearchRequest == null) return null;
-            _logger.LogInformation("Create Search Request successfully");
+            if (_uploadedSearchRequest == null)
+            {
+                _logger.LogWarning("⚠️ CreateSearchRequest returned null");
+                return null;
+            }
+
+            _logger.LogInformation("Created base Search Request successfully. FileId: {FileId}", _uploadedSearchRequest?.FileId);
 
             PersonEntity personEntity = _mapper.Map<PersonEntity>(_personSought);
             personEntity.SearchRequest = _uploadedSearchRequest;
@@ -78,7 +92,7 @@ namespace DynamicsAdapter.Web.SearchAgency
             personEntity.IsCreatedByAgency = true;
             personEntity.IsPrimary = true;
             _uploadedPerson = await _searchRequestService.SavePerson(personEntity, _cancellationToken);
-            _logger.LogInformation("Create Person successfully");
+            _logger.LogInformation("Created Person successfully");
 
             await UploadIdentifiers();
             await UploadAddresses();
@@ -88,6 +102,9 @@ namespace DynamicsAdapter.Web.SearchAgency
             await UploadRelatedApplicant(_uploadedSearchRequest.ApplicantFirstName, _uploadedSearchRequest.ApplicantLastName);
             await UploadAliases();
             await UploadSafetyConcern();
+
+            _logger.LogDebug("🏁 End ProcessSearchRequestOrdered for RequestId {RequestId}", searchRequestOrdered.RequestId);
+
             return _uploadedSearchRequest;
         }
 

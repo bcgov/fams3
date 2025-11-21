@@ -497,6 +497,9 @@
         "ChngPayAgr",
         "EnfPayAgND",
         "ChildAbduc",
+        "ApplReasCd1",
+        "ApplReasCd2",
+        "ApplReasCd3",
         "AstRecpAgy",
         "Unknown",
         "Other"
@@ -517,6 +520,9 @@
         "ChngPayAgr",
         "EnfPayAgND",
         "ChildAbduc",
+        "ApplReasCd1",
+        "ApplReasCd2",
+        "ApplReasCd3",
         "AstRecpAgy",
         "Unknown",
         "Other"
@@ -536,7 +542,11 @@
         "Carceration",
         "DateOfDeath",
         "IA",
-        "SafetyConcern"
+        "SafetyConcern",
+        "T1taxform",
+        "NoticeofAssessment",
+        "NoticeofReassessment",
+        "FinancialOtherIncome"
       ],
       "enum": [
         "Asset",
@@ -549,7 +559,11 @@
         "Carceration",
         "DateOfDeath",
         "IA",
-        "SafetyConcern"
+        "SafetyConcern",
+        "T1taxform",
+        "NoticeofAssessment",
+        "NoticeofReassessment",
+        "FinancialOtherIncome"
       ]
     },
     "Name": {

@@ -59,7 +59,7 @@ namespace SearchRequestAdaptor
                 var builder = Host.CreateDefaultBuilder(args)
                     .UseSerilog((hostingContext, loggerConfiguration) =>
                     {
-                        string serviceName = hostingContext.Configuration["JAEGER_SERVICE_NAME"];
+                        string serviceName = hostingContext.Configuration["JAEGER_SERVICE_NAME"] ?? "request-api";
 
                         loggerConfiguration
                             .ReadFrom.Configuration(hostingContext.Configuration)

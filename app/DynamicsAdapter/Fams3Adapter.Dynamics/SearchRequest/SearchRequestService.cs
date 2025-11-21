@@ -20,6 +20,7 @@ using Fams3Adapter.Dynamics.RelatedPerson;
 using Fams3Adapter.Dynamics.ResultTransaction;
 using Fams3Adapter.Dynamics.SafetyConcern;
 using Fams3Adapter.Dynamics.Vehicle;
+using Fams3Adapter.Dynamics.Error;
 using Microsoft.Extensions.Logging;
 using Simple.OData.Client;
 using System;
@@ -125,7 +126,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             }
             catch (Exception ex)
             {
-                LogDynamicsError(ex);
+                DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                 throw; // rethrow so caller can react
             }
 
@@ -175,7 +176,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             }
             catch (Exception ex)
             {
-                LogDynamicsError(ex);
+                DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                 throw;
             }
         }
@@ -199,7 +200,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             }
             catch (Exception ex)
             {
-                LogDynamicsError(ex);
+                DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                 throw;
             }
 
@@ -229,7 +230,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             }
             catch (Exception ex)
             {
-                LogDynamicsError(ex);
+                DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                 throw;
             }
 
@@ -255,7 +256,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             }
             catch (Exception ex)
             {
-                LogDynamicsError(ex);
+                DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                 throw;
             }
 
@@ -312,7 +313,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             }
             catch (Exception ex)
             {
-                LogDynamicsError(ex);
+                DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                 throw;
             }
 
@@ -350,7 +351,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             }
             catch (Exception ex)
             {
-                LogDynamicsError(ex);
+                DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                 throw; // allow caller to see failure too
             }
 
@@ -400,7 +401,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             }
             catch (Exception ex)
             {
-                LogDynamicsError(ex);
+                DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                 throw; // allow caller to see failure too
             }
 
@@ -409,29 +410,6 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                 finOtherIncome.Person.PersonId);
 
             return insertedRecord;
-        }
-
-        private void LogDynamicsError(Exception ex)
-        {
-            _logger.LogError(ex, "❌ Dynamics insert failed");
-
-            var error = ex.InnerException;
-            while (error != null)
-            {
-                _logger.LogError("⛔ InnerException: {Message}", error.Message);
-                error = error.InnerException;
-            }
-
-            // Attempt to extract OData error JSON if present
-            if (ex is WebRequestException webEx && webEx.Response != null)
-            {
-                try
-                {
-                    var body = webEx.Response;
-                    _logger.LogError("📝 OData Response Content:\n{Response}", body);
-                }
-                catch { }
-            }
         }
 
         private IEnumerable<FAMS_TaxCode> _taxCodes { get; set; }
@@ -461,7 +439,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             }
             catch (Exception ex)
             {
-                LogDynamicsError(ex);
+                DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                 throw;
             }
 
@@ -496,7 +474,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             }
             catch (Exception ex)
             {
-                LogDynamicsError(ex);
+                DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                 throw;
             }
 
@@ -522,7 +500,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             }
             catch (Exception ex)
             {
-                LogDynamicsError(ex);
+                DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                 throw;
             }
 
@@ -548,7 +526,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             }
             catch (Exception ex)
             {
-                LogDynamicsError(ex);
+                DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                 throw;
             }
 
@@ -574,7 +552,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             }
             catch (Exception ex)
             {
-                LogDynamicsError(ex);
+                DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                 throw;
             }
 
@@ -601,7 +579,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                     }
                     catch (Exception ex)
                     {
-                        LogDynamicsError(ex);
+                        DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                         throw;
                     }
 
@@ -619,7 +597,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             }
             catch (Exception ex)
             {
-                LogDynamicsError(ex);
+                DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                 throw;
             }
 
@@ -645,7 +623,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             }
             catch (Exception ex)
             {
-                LogDynamicsError(ex);
+                DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                 throw;
             }
 
@@ -671,7 +649,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             }
             catch (Exception ex)
             {
-                LogDynamicsError(ex);
+                DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                 throw;
             }
 
@@ -696,7 +674,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                     }
                     catch (Exception ex)
                     {
-                        LogDynamicsError(ex);
+                        DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                         throw;
                     }
 
@@ -718,7 +696,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                                 }
                                 catch (Exception ex)
                                 {
-                                    LogDynamicsError(ex);
+                                    DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                                     throw;
                                 }
                             }
@@ -753,7 +731,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                 }
                 catch (Exception ex)
                 {
-                    LogDynamicsError(ex);
+                    DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                     throw;
                 }
             }
@@ -789,7 +767,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                     }
                     catch (Exception ex)
                     {
-                        LogDynamicsError(ex);
+                        DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                         throw;
                     }
                 }
@@ -803,7 +781,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             }
             catch (Exception ex)
             {
-                LogDynamicsError(ex);
+                DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                 throw;
             }
         }
@@ -825,7 +803,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             }
             catch (Exception ex)
             {
-                LogDynamicsError(ex);
+                DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                 throw;
             }
         }
@@ -847,23 +825,33 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             }
             catch (Exception ex)
             {
-                LogDynamicsError(ex);
+                DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                 throw;
             }
         }
 
         public async Task<SSG_SearchRequest> CreateSearchRequest(SearchRequestEntity searchRequest, CancellationToken cancellationToken)
         {
+            _logger.LogDebug("➡️ Start base CreateSearchRequest");
+           
             SearchRequestEntity linkedSearchRequest = await LinkSearchRequestRef(searchRequest, cancellationToken);
+
             try
             {
-                return await this._oDataClient.For<SSG_SearchRequest>()
+                var result = await this._oDataClient.For<SSG_SearchRequest>()
                     .Set(linkedSearchRequest)
                     .InsertEntryAsync(cancellationToken);
+
+                _logger.LogInformation("🏁 End Dynamics base SearchRequest created successfully. SearchRequestId: {SearchRequestId}, FileId: {FileId}", 
+                    result?.SearchRequestId, 
+                    result?.FileId);
+
+                return result;
             }
             catch (Exception ex)
             {
-                LogDynamicsError(ex);
+                _logger.LogError(ex, "❌ Failed to create Dynamics SearchRequest.");
+                DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                 throw;
             }
         }
@@ -885,7 +873,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             }
             catch (Exception ex)
             {
-                LogDynamicsError(ex);
+                DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                 throw;
             }
         }
@@ -918,7 +906,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             }
             catch (Exception ex)
             {
-                LogDynamicsError(ex);
+                DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                 throw;
             }
         }
@@ -942,7 +930,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             }
             catch (Exception ex)
             {
-                LogDynamicsError(ex);
+                DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                 throw;
             }
         }
@@ -973,7 +961,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             }
             catch (Exception ex)
             {
-                LogDynamicsError(ex);
+                DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                 throw;
             }
         }
@@ -1000,7 +988,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             }
             catch (Exception ex)
             {
-                LogDynamicsError(ex);
+                DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                 _logger.LogError(ex, "Failed to delete SearchRequest with FileId={FileId}", fileId);
                 throw;
             }
@@ -1053,7 +1041,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             }
             catch (Exception ex)
             {
-                LogDynamicsError(ex);
+                DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                 _logger.LogError(ex, "Error retrieving SearchRequest with FileId={FileId}", fileId);
                 throw;
             }
@@ -1083,7 +1071,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             }
             catch (Exception ex)
             {
-                LogDynamicsError(ex);
+                DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                 throw;
             }
         }
@@ -1107,7 +1095,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             }
             catch (Exception ex)
             {
-                LogDynamicsError(ex);
+                DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                 throw;
             }
         }
@@ -1125,7 +1113,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             }
             catch (Exception ex)
             {
-                LogDynamicsError(ex);
+                DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                 throw;
             }
         }
@@ -1150,7 +1138,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             }
             catch (Exception ex)
             {
-                LogDynamicsError(ex);
+                DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                 throw;
             }
         }
@@ -1168,7 +1156,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             }
             catch (Exception ex)
             {
-                LogDynamicsError(ex);
+                DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                 throw;
             }
         }
@@ -1185,7 +1173,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             }
             catch (Exception ex)
             {
-                LogDynamicsError(ex);
+                DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                 throw;
             }
         }
@@ -1202,7 +1190,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             }
             catch (Exception ex)
             {
-                LogDynamicsError(ex);
+                DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                 throw;
             }
         }
@@ -1220,7 +1208,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             }
             catch (Exception ex)
             {
-                LogDynamicsError(ex);
+                DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                 throw;
             }
         }
@@ -1242,7 +1230,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             }
             catch (Exception ex)
             {
-                LogDynamicsError(ex);
+                DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                 throw;
             }
         }
@@ -1260,7 +1248,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             }
             catch (Exception ex)
             {
-                LogDynamicsError(ex);
+                DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                 throw;
             }
 
@@ -1280,15 +1268,46 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         public async Task<SSG_SearchRequestReason> GetSearchReason(string reasonCode, CancellationToken cancellationToken)
         {
             //find reasoncode 
+            if (string.IsNullOrEmpty(reasonCode))
+            {
+                throw new ArgumentNullException(nameof(reasonCode));
+            }
+
+            _logger.LogDebug(
+                "➡️ Start GetSearchReason for ReasonCode: {ReasonCode}",
+                reasonCode);
+
             try
             {
-                return await _oDataClient.For<SSG_SearchRequestReason>()
-                                .Filter(x => x.ReasonCode == reasonCode)
-                                .FindEntryAsync(cancellationToken);
+                SSG_SearchRequestReason result = await _oDataClient
+                    .For<SSG_SearchRequestReason>()
+                    .Filter(x => x.ReasonCode == reasonCode)
+                    .FindEntryAsync(cancellationToken);
+
+                if (result == null)
+                {
+                    _logger.LogWarning(
+                        "⚠️ No SearchRequestReason found for ReasonCode: {ReasonCode}",
+                        reasonCode);
+                }
+                else
+                {
+                    _logger.LogDebug(
+                        "Found SearchRequestReason for ReasonCode: {ReasonCode}: {@Result}",
+                        reasonCode,
+                        result);
+                }
+
+                _logger.LogDebug("🏁 End GetSearchReason for ReasonCode: {ReasonCode}", reasonCode);
+                return result;
             }
             catch (Exception ex)
             {
-                LogDynamicsError(ex);
+                 _logger.LogError(ex,
+                    "❌ Error while retrieving SearchRequestReason for ReasonCode {ReasonCode}",
+                    reasonCode);
+
+                DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                 throw;
             }
         }
@@ -1319,7 +1338,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             }
             catch (Exception ex)
             {
-                LogDynamicsError(ex);
+                DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                 return null;
             }
         }
@@ -1335,7 +1354,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             }
             catch (Exception ex)
             {
-                LogDynamicsError(ex);
+                DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                 throw;
             }
         }
@@ -1351,7 +1370,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             }
             catch (Exception ex)
             {
-                LogDynamicsError(ex);
+                DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                 throw;
             }
         }
@@ -1369,7 +1388,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             }
             catch (Exception ex)
             {
-                LogDynamicsError(ex);
+                DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                 throw;
             }
         }
@@ -1394,7 +1413,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             }
             catch (Exception ex)
             {
-                LogDynamicsError(ex);
+                DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                 throw;
             }
         }
@@ -1419,7 +1438,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             }
             catch (Exception ex)
             {
-                LogDynamicsError(ex);
+                DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                 throw;
             }
         }
@@ -1450,7 +1469,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             }
             catch (Exception ex)
             {
-                LogDynamicsError(ex);
+                DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                 throw;
             }
         }
@@ -1469,7 +1488,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             }
             catch (Exception ex)
             {
-                LogDynamicsError(ex);
+                DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                 throw;
             }
         }
@@ -1490,7 +1509,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             }
             catch (Exception ex)
             {
-                LogDynamicsError(ex);
+                DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                 throw;
             }
         }

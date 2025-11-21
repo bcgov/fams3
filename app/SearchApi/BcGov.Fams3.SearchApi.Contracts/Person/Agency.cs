@@ -88,6 +88,9 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         ChngPayAgr,
         EnfPayAgND,
         ChildAbduc,
+        ApplReasCd1,
+        ApplReasCd2,
+        ApplReasCd3,
         AstRecpAgy,
         Unknown,
         Other,
@@ -105,6 +108,10 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         Carceration,
         DateOfDeath,
         IA,
-        SafetyConcern
+        SafetyConcern,
+        T1taxform,
+        NoticeofAssessment,
+        NoticeofReassessment,
+        FinancialOtherIncome
     }
 }

@@ -61,9 +61,13 @@ namespace SearchRequestAdaptor.Notifier
             int retryTimes,
             int maxRetryTimes)
         {
-            var webHookName = "SearchRequest";
+            if (searchRequestOrdered == null)
+            {
+                throw new ArgumentNullException(nameof(searchRequestOrdered));
+            }
 
-            if (searchRequestOrdered == null) throw new ArgumentNullException(nameof(SearchRequestOrdered));
+            const string webHookName = "SearchRequest";
+            _logger.LogDebug("➡️ Start NotifySearchRequestOrderedEvent for RequestId: {RequestId} and WebHookName: {webHookName}", requestId, webHookName);
 
             string eventName = searchRequestOrdered.Action switch
             {
@@ -76,29 +80,29 @@ namespace SearchRequestAdaptor.Notifier
             foreach (var webHook in _searchRequestOptions.WebHooks)
             {
                 _logger.LogDebug(
-                   $"The webHook {webHookName} notification is attempting to send {eventName} for {webHook.Name} webhook.");
+                    $"The webHook {webHookName} notification is attempting to send {eventName} for {webHook.Name} webhook.");
 
                 if (!URLHelper.TryCreateUri(webHook.Uri, eventName, $"{requestId}", out var endpoint))
                 {
-                    _logger.LogWarning(
-                        $"The webHook {webHookName} notification uri is not established or is not an absolute Uri for {webHook.Name}. Set the WebHook.Uri value on SearchApi.WebHooks settings.");
+                    _logger.LogError(
+                        "❌ Invalid webhook URI. WebHookName: {WebHookName}, ConfigName: {Name}. Please verify SearchRequestAdaptor.WebHooks settings.",
+                        webHookName,
+                        webHook.Name);
                     throw new Exception($"The webHook {webHookName} notification uri is not established or is not an absolute Uri for {webHook.Name}.");
                 }
 
-                using var request = new HttpRequestMessage();
-
                 try
                 {
-                    StringContent content = new StringContent(JsonConvert.SerializeObject(searchRequestOrdered));
+                    using var request = new HttpRequestMessage(HttpMethod.Post, endpoint);
+                    var json = JsonConvert.SerializeObject(searchRequestOrdered);
 
-                    content.Headers.ContentType =
+                    request.Content = new StringContent(json);
+                    request.Content.Headers.ContentType =
                         System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
-                    request.Content = content;
-                    request.Method = HttpMethod.Post;
                     request.Headers.Accept.Add(
                         System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
                     request.Headers.Add("X-ApiKey", _searchRequestOptions.ApiKeyForDynadaptor);
-                    request.RequestUri = endpoint;
+
                     var response = await _httpClient.SendAsync(request, cancellationToken);
 
                     if (!response.IsSuccessStatusCode)
@@ -108,7 +112,7 @@ namespace SearchRequestAdaptor.Notifier
                             string reason = await response.Content.ReadAsStringAsync();
                             _logger.LogError(
                                 $"The webHook {webHookName} notification has not executed status {eventName} successfully for {webHook.Name} webHook. The error code is {response.StatusCode.GetHashCode()}.Reason is {reason}.");
-                            throw(new Exception($"The webHook {webHookName} notification has not executed status {eventName} successfully for {webHook.Name} webHook. The error code is {response.StatusCode.GetHashCode()}."));
+                            throw new Exception($"The webHook {webHookName} notification has not executed status {eventName} successfully for {webHook.Name} webHook. The error code is {response.StatusCode.GetHashCode()}.");
                         }
                         else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
                         {
@@ -186,62 +190,99 @@ namespace SearchRequestAdaptor.Notifier
                 }
                 catch (Exception exception)
                 {
-                    _logger.LogError(exception, exception.Message);
+                    _logger.LogError(exception, $"Webhook {webHook.Name} failed: {exception.Message}");
                     throw;
                 }
             }
+            _logger.LogDebug("🏁 End NotifySearchRequestOrderedEvent for RequestId: {RequestId}", requestId);
         }
 
-        private async Task NotifyNotificationAcknowledged(string requestId, NotificationAcknowledged notificationAck,CancellationToken cancellationToken)
+        private async Task NotifyNotificationAcknowledged(
+            string requestId,
+            NotificationAcknowledged notificationAck,
+            CancellationToken cancellationToken)
         {
-            var webHookName = "SearchRequest";
+            if (string.IsNullOrEmpty(requestId))
+            {
+                throw new ArgumentNullException(nameof(requestId));
+            }
 
-            if (notificationAck == null) throw new ArgumentNullException(nameof(NotificationAcknowledged));
+            if (notificationAck == null)
+            {
+                throw new ArgumentNullException(nameof(notificationAck));
+            }
+
+            const string webHookName = "SearchRequest";
+            _logger.LogDebug("➡️ Starting NotifyNotificationAcknowledged for RequestId: {RequestId} and WebHookName: {webHookName}", requestId, webHookName);
 
             foreach (var webHook in _searchRequestOptions.WebHooks)
             {
                 if (!URLHelper.TryCreateUri(webHook.Uri, "NotificationAcknowledged", $"{requestId}", out var endpoint))
                 {
                     _logger.LogError(
-                        $"The webHook {webHookName} notification uri is not established or is not an absolute Uri for {webHook.Name}. Set the WebHook.Uri value on SearchApi.WebHooks settings.");
+                    "❌ Invalid webhook URI for RequestId {RequestId}. WebHookName: {WebHookName}, ConfigName: {Name}. Please verify SearchRequestAdaptor.WebHooks settings.",
+                    requestId,
+                    webHookName,
+                    webHook.Name);
                     return;
                 }
 
-                using var request = new HttpRequestMessage();
+                using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, endpoint);
 
                 try
                 {
-                    StringContent content = new StringContent(JsonConvert.SerializeObject(notificationAck));
-
+                    string payload = JsonConvert.SerializeObject(notificationAck);
+                    StringContent content = new StringContent(payload);
                     content.Headers.ContentType =
                         System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
-                    request.Content = content;
-                    request.Method = HttpMethod.Post;
                     request.Headers.Accept.Add(
                         System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
                     request.Headers.Add("X-ApiKey", _searchRequestOptions.ApiKeyForDynadaptor);
-                    request.RequestUri = endpoint;
-                    var response = await _httpClient.SendAsync(request, cancellationToken);
+                    request.Content = content;
+
+                    _logger.LogDebug("Posting notification to webhook: {Endpoint}", endpoint);
+                    _logger.LogDebug(
+                        "📨 Posting WebHook notification for RequestId {RequestId} to {Endpoint}. PayloadSize={PayloadSize} bytes",
+                        requestId,
+                        endpoint,
+                        payload.Length);
+                    HttpResponseMessage response = await _httpClient.SendAsync(request, cancellationToken);
 
                     if (!response.IsSuccessStatusCode)
                     {
-                        _logger.LogError($"Message Failed { response.StatusCode}, {response.Content.ReadAsStringAsync()}");
+                        string errorBody = await response.Content.ReadAsStringAsync();
+                        _logger.LogError(
+                            "❌ Webhook call failed for RequestId {RequestId}. WebHookName {WebHookName}, Endpoint {Endpoint}. Status={StatusCode}, Response={Body}",
+                            requestId,
+                            webHookName,
+                            endpoint,
+                            response.StatusCode,
+                            errorBody);
+
                         if (response.StatusCode != System.Net.HttpStatusCode.InternalServerError 
                             && response.StatusCode != System.Net.HttpStatusCode.BadRequest)
                         {
-                            throw new Exception($"Message Failed {response.StatusCode}, {response.Content.ReadAsStringAsync()}");
+                            throw new Exception($"Message Failed {response.StatusCode}, {errorBody}");
                         }
                     }
-
-                    _logger.LogInformation("get response successfully from webhook.");
-
+                    else
+                    {
+                        _logger.LogInformation(
+                            "✅ Webhook acknowledged successfully for RequestId {RequestId}. Endpoint: {Endpoint}",
+                            requestId,
+                            endpoint);
+                    }
                 }
                 catch (Exception exception)
                 {
-                    _logger.LogError($"NotifyNotificationAcknowledged {exception.Message}");
+                    _logger.LogError(exception,
+                        "❌ NotifyNotificationAcknowledged failed for RequestId {RequestId}: {Message}",
+                        requestId,
+                        exception.Message);
                     throw;
                 }
             }
+            _logger.LogDebug("🏁 End NotifyNotificationAcknowledged for RequestId: {RequestId}", requestId);
         }
     }
 

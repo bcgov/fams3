@@ -180,6 +180,9 @@ namespace DynamicsAdapter.Web.Mapping
                 ReasonCode = source.SearchRequest?.SearchReason?.ReasonCode switch
                 {
                     "EnfPayAgr" => SearchReasonCode.EnfPayAgr,
+                    "ApplReasCd1" => SearchReasonCode.ApplReasCd1,
+                    "ApplReasCd2" => SearchReasonCode.ApplReasCd2,
+                    "ApplReasCd3" => SearchReasonCode.ApplReasCd3,
                     "ChngAccAgr" => SearchReasonCode.ChngAccAgr,
                     "ChngCustAg" => SearchReasonCode.ChngCustAg,
                     "AstRecpAgy" => SearchReasonCode.AstRecpAgy,

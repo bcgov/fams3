@@ -194,7 +194,8 @@ namespace DynamicsAdapter.Web.PersonSearch
                         FirstName = t1TaxInfos.FirstOrDefault()?.FirstName,
                         LastName = t1TaxInfos.FirstOrDefault()?.LastName,
                         DateOfBirth = t1TaxInfos.FirstOrDefault()?.DateOfBirth,
-                        Date1 = DateTime.Now,
+                        // Date1 = DateTime.Now,
+                        Date1 = GetPacificTimeNow(),    // Temporary code see jira ticket FAMS3-4305
                         SuppliedBySystem = Constants.JcaSystem,
                         TaxIncomeInformations = t1TaxInfos
                     };
@@ -207,6 +208,21 @@ namespace DynamicsAdapter.Web.PersonSearch
             }
             return true;
         }
+
+        // ***** Temporary method, made it private so it is not to be used outside of this class
+        // time should be stored in UTC and dynamics should be timezone aware when presenting the date/time in the UI
+        // see jira ticket FAMS3-4305
+        private static DateTime GetPacificTimeNow()
+        {
+            // get UTC date time
+            DateTime utcNow = DateTime.UtcNow;
+            // Use IANA ID for Linux containers
+            TimeZoneInfo pacificZone = TimeZoneInfo.FindSystemTimeZoneById("America/Vancouver");
+
+            // Convert UTC to Pacific Time
+            return TimeZoneInfo.ConvertTimeFromUtc(utcNow, pacificZone);
+        }
+
 
         public async Task<SSG_SearchRequest> GetSearchRequest(string fileId, CancellationToken token)
         {
@@ -402,7 +418,8 @@ namespace DynamicsAdapter.Web.PersonSearch
                     txin.Description = matchedCode?.Value ?? taxinfo.Description ?? taxinfo.TaxCode.Code;
 
                     txin.InformationSource = Constants.JcaSystem;
-                    txin.Date1 = DateTime.Now;
+                    // txin.Date1 = DateTime.Now;
+                    txin.Date1 = GetPacificTimeNow();    // Temporary code see jira ticket FAMS3-4305
 
                     var uploadedTxin = await _searchRequestService.CreateTaxIncomeInformation(txin, cancellationToken);
                     if (uploadedTxin != null)
@@ -465,7 +482,8 @@ namespace DynamicsAdapter.Web.PersonSearch
                     otherin.Description = finIncome.Description ?? finIncome.TaxCode?.Code;
                     otherin.TaxYear = finIncome.TaxYear;
                     otherin.Form = finIncome.Form;
-                    otherin.Date = DateTime.Now;
+                    // otherin.Date = DateTime.Now;
+                    otherin.Date = GetPacificTimeNow();    // Temporary code see jira ticket FAMS3-4305
                     otherin.InformationSource = Constants.JcaSystem;
 
                     var uploadedOtherin = await _searchRequestService.CreateFinancialOtherIncome(otherin, cancellationToken);

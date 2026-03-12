@@ -159,7 +159,7 @@ namespace DynamicsAdapter.Web.Mapping
         {
             if (string.IsNullOrEmpty(sourceMember)) return null;
             string[] number = sourceMember.Split("|");
-            if(number != null && number.Length>1 && number[0].Trim().Equals(Constants.OutOfProvinceRJ, StringComparison.InvariantCultureIgnoreCase) )
+            if (number != null && number.Length > 1 && number[0].Trim().Equals(Constants.OutOfProvinceRJ, StringComparison.InvariantCultureIgnoreCase))
             {
                 return number[1].Trim();
             }
@@ -452,7 +452,8 @@ namespace DynamicsAdapter.Web.Mapping
             if (phones.Where(m => string.Equals(m.Type, "Phone", StringComparison.InvariantCultureIgnoreCase)).Count() > 1)
             {
                 return phones.Where(m => string.Equals(m.Type, "Phone", StringComparison.InvariantCultureIgnoreCase)).ElementAt(1).PhoneNumber;
-            };
+            }
+            ;
             return null;
         }
     }
@@ -465,7 +466,8 @@ namespace DynamicsAdapter.Web.Mapping
             if (phones.Where(m => string.Equals(m.Type, "Phone", StringComparison.InvariantCultureIgnoreCase)).Count() > 1)
             {
                 return phones.Where(m => string.Equals(m.Type, "Phone", StringComparison.InvariantCultureIgnoreCase)).ElementAt(1).Extension;
-            };
+            }
+            ;
             return null;
         }
     }
@@ -474,8 +476,8 @@ namespace DynamicsAdapter.Web.Mapping
     {
         public int Convert(string sourceMember, ResolutionContext context)
         {
-            int ? source = Enumeration.GetAll<IncomeAssistanceStatusType>().FirstOrDefault(m => m.Name.Equals(sourceMember, StringComparison.OrdinalIgnoreCase))?.Value;
-            if( source==null || source== IncomeAssistanceStatusType.Unknown.Value)
+            int? source = Enumeration.GetAll<IncomeAssistanceStatusType>().FirstOrDefault(m => m.Name.Equals(sourceMember, StringComparison.OrdinalIgnoreCase))?.Value;
+            if (source == null || source == IncomeAssistanceStatusType.Unknown.Value)
                 return EmploymentRecordType.Employment.Value;
             else
                 return EmploymentRecordType.IncomeAssistance.Value;
@@ -566,9 +568,9 @@ namespace DynamicsAdapter.Web.Mapping
     {
         public int? Convert(int mins, ResolutionContext context)
         {
-            if(mins<=0) return null;
-            TimeSpan timeSpan = new TimeSpan(0,mins,0);
-            return timeSpan.Days+1;
+            if (mins <= 0) return null;
+            TimeSpan timeSpan = new TimeSpan(0, mins, 0);
+            return timeSpan.Days + 1;
         }
     }
 
@@ -583,12 +585,15 @@ namespace DynamicsAdapter.Web.Mapping
                 {
                     TaxIncomeInformation taxIncomeInformation = new TaxIncomeInformation();
                     taxIncomeInformation.TaxYear = tax.TaxYear;
-                    taxIncomeInformation.TaxYearResult = tax.TaxYearResult;
                     taxIncomeInformation.CommissionIncomeT4Amount = tax.CommissionIncomeT4Amount;
                     taxIncomeInformation.EmergencyVolunteerExemptIncomeAmount = tax.EmergencyVolunteerExemptIncomeAmount;
                     taxIncomeInformation.EmploymentIncomeT4Amount = tax.EmploymentIncomeT4Amount;
-                    taxIncomeInformation.JcaCode = tax.JCACode;
+                    taxIncomeInformation.JCACode = tax.JCACode;
                     taxIncomeInformation.TaxTraceStatusText = tax.TaxTraceStatusText;
+                    taxIncomeInformation.Form = tax.Form;
+                    taxIncomeInformation.TaxAmount = tax.TaxAmount;
+                    taxIncomeInformation.EffectiveDate = tax.EffectiveDate;
+                    taxIncomeInformation.Note = tax.Note;
 
                     // Handle null TaxCode
                     if (!string.IsNullOrEmpty(tax.TaxCode))

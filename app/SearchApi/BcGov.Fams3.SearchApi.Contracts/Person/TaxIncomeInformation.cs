@@ -46,6 +46,9 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         [Description("Note")]
         public string Note { get; set; }
 
+        [Description("Supplied By (information source)")]
+        public string SuppliedBy { get; set; }
+
         public TaxIncomeInformation Clone()
         {
             return (TaxIncomeInformation)MemberwiseClone();

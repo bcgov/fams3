@@ -608,6 +608,11 @@ namespace DynamicsAdapter.Web.Mapping
                         taxIncomeInformation.LastName = names[1];
                     }
                     taxIncomeInformation.Description = tax.Description ?? (!string.IsNullOrEmpty(tax.TaxCode) ? tax.TaxCode : string.Empty);
+                    if (tax.InformationSource.HasValue)
+                    {
+                        taxIncomeInformation.SuppliedBy = Enumeration.GetAll<InformationSourceType>()
+                            .FirstOrDefault(x => x.Value == tax.InformationSource.Value)?.Name;
+                    }
                     toReturn.Add(taxIncomeInformation);
                 }
             }

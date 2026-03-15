@@ -17,7 +17,7 @@ namespace Fams3Adapter.Dynamics.NoticeOfReassessment
         public string TaxAmount { get; set; }
 
         [JsonProperty("fams_description")]
-        [Description("Description")]
+        [Description("Description text")]
         public string Description { get; set; }
 
         [JsonProperty("fams_datadate")]
@@ -28,8 +28,8 @@ namespace Fams3Adapter.Dynamics.NoticeOfReassessment
         [Description("Supplied By")]
         public int? InformationSource { get; set; }
 
-        [JsonProperty("fams_notes")]
-        [Description("Trace Status Text")]
+        [JsonProperty("fams_notes")] // This is saved to Data Provider - Notes
+        [Description("Text for the Trace Status Code")]
         public string TaxTraceStatusText { get; set; }
 
         [JsonProperty("fams_jcacode")]

@@ -4,6 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <UserSecretsId>4d38e117-87aa-4567-8f1a-71ad54b0f5b5</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

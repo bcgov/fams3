@@ -12,6 +12,9 @@ using Fams3Adapter.Dynamics.Notes;
 using Fams3Adapter.Dynamics.OtherAsset;
 using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.PhoneNumber;
+using Fams3Adapter.Dynamics.FinancialOtherIncome;
+using Fams3Adapter.Dynamics.NoticeOfAssessment;
+using Fams3Adapter.Dynamics.NoticeOfReassessment;
 using Fams3Adapter.Dynamics.RelatedPerson;
 using Fams3Adapter.Dynamics.ResultTransaction;
 using Fams3Adapter.Dynamics.SearchRequest;
@@ -19,6 +22,7 @@ using Fams3Adapter.Dynamics.Vehicle;
 using Simple.OData.Client;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -73,19 +77,42 @@ namespace Fams3Adapter.Dynamics.SearchResponse
                 .Expand(x => x.SSG_Electronicas)
                 .Expand(x => x.SSG_TaxIncomeInformations)
                 .FindEntryAsync(cancellationToken);
-           
-            if(ssgSearchResponse.SSG_SearchRequests != null)
-            {
-                Guid id = ssgSearchResponse.SSG_SearchRequests[0].SearchRequestId;
-                ssgSearchResponse.SSG_SearchRequests[0] = await _oDataClient.For<SSG_SearchRequest>()
-                    .Key(id)
-                    .Expand(x => x.SearchReason)
-                    .FindEntryAsync(cancellationToken);
-            }
 
-            if(ssgSearchResponse.SSG_Asset_WorkSafeBcClaims != null)
-            {
-                    foreach(SSG_Asset_WorkSafeBcClaim claim in ssgSearchResponse.SSG_Asset_WorkSafeBcClaims)
+                if (ssgSearchResponse.SSG_SearchRequests != null)
+                {
+                    Guid id = ssgSearchResponse.SSG_SearchRequests[0].SearchRequestId;
+                    ssgSearchResponse.SSG_SearchRequests[0] = await _oDataClient.For<SSG_SearchRequest>()
+                        .Key(id)
+                        .Expand(x => x.SearchReason)
+                        .FindEntryAsync(cancellationToken);
+
+                    // Fetch NOA, NOR, and FinancialOtherIncome records stored in the separate FAMS_FinancialOtherIncome
+                    // Dynamics entity. These are non-T1 tax records split at write time in SearchResultService and have
+                    // no direct OData expand relationship to SSG_SearchRequestResponse.
+                    var finOtherIncomes = await _oDataClient
+                        .For<FAMS_FinancialOtherIncome>()
+                        .Filter(x => x.SearchRequestId == id)
+                        .FindEntriesAsync(cancellationToken);
+                    ssgSearchResponse.FAMS_FinancialOtherIncomes = finOtherIncomes?.ToArray();
+
+                    // Fetch Notice of Assessment records from fams_noticeofassessment entity.
+                    var noaRecords = await _oDataClient
+                        .For<FAMS_NoticeOfAssessment>()
+                        .Filter(x => x.SearchRequestId == id)
+                        .FindEntriesAsync(cancellationToken);
+                    ssgSearchResponse.FAMS_NoticeOfAssessments = noaRecords?.ToArray();
+
+                    // Fetch Notice of Reassessment records from fams_noticeofreassessment entity.
+                    var norRecords = await _oDataClient
+                        .For<FAMS_NoticeOfReassessment>()
+                        .Filter(x => x.SearchRequestId == id)
+                        .FindEntriesAsync(cancellationToken);
+                    ssgSearchResponse.FAMS_NoticeOfReassessments = norRecords?.ToArray();
+                }
+
+                if (ssgSearchResponse.SSG_Asset_WorkSafeBcClaims != null)
+                {
+                    foreach (SSG_Asset_WorkSafeBcClaim claim in ssgSearchResponse.SSG_Asset_WorkSafeBcClaims)
                     {
                         SSG_Asset_WorkSafeBcClaim c = await _oDataClient.For<SSG_Asset_WorkSafeBcClaim>()
                             .Key(claim.CompensationClaimId)
@@ -95,29 +122,29 @@ namespace Fams3Adapter.Dynamics.SearchResponse
                         claim.BankingInformation = c.BankingInformation;
                         claim.Employment = c.Employment;
                     }
-            }
-
-            if (ssgSearchResponse.SSG_Addresses != null)
-            {
-                foreach (SSG_Address address in ssgSearchResponse.SSG_Addresses)
-                {
-                    SSG_Address addr = await _oDataClient.For<SSG_Address>()
-                        .Key(address.AddressId)
-                        .Expand(x => x.CountrySubdivision)
-                        .FindEntryAsync(cancellationToken);
-
-                    if (addr.CountrySubdivision != null)
-                    {
-                        address.CountrySubdivisionText = addr.CountrySubdivision.ProvinceCode;
-                    }
-
                 }
-            }
 
-            if (ssgSearchResponse.SSG_Asset_ICBCClaims != null)
-            {
-                foreach (SSG_Asset_ICBCClaim claim in ssgSearchResponse.SSG_Asset_ICBCClaims)
+                if (ssgSearchResponse.SSG_Addresses != null)
                 {
+                    foreach (SSG_Address address in ssgSearchResponse.SSG_Addresses)
+                    {
+                        SSG_Address addr = await _oDataClient.For<SSG_Address>()
+                            .Key(address.AddressId)
+                            .Expand(x => x.CountrySubdivision)
+                            .FindEntryAsync(cancellationToken);
+
+                        if (addr.CountrySubdivision != null)
+                        {
+                            address.CountrySubdivisionText = addr.CountrySubdivision.ProvinceCode;
+                        }
+
+                    }
+                }
+
+                if (ssgSearchResponse.SSG_Asset_ICBCClaims != null)
+                {
+                    foreach (SSG_Asset_ICBCClaim claim in ssgSearchResponse.SSG_Asset_ICBCClaims)
+                    {
                         if (claim.CountrySubdivision != null)
                         {
                             SSG_Asset_ICBCClaim expandedClaim = await _oDataClient.For<SSG_Asset_ICBCClaim>()
@@ -133,34 +160,34 @@ namespace Fams3Adapter.Dynamics.SearchResponse
                             }
                         }
 
-                }
-            }
-
-            if(ssgSearchResponse.SSG_Employments != null)
-            {
-              
-                foreach (SSG_Employment e in ssgSearchResponse.SSG_Employments)
-                {
-                    SSG_Employment expandedEmployment = await _oDataClient.For<SSG_Employment>()
-                        .Key(e.EmploymentId)
-                        .Expand(x => x.CountrySubdivision)
-                        .FindEntryAsync(cancellationToken);
-
-                    if (expandedEmployment.CountrySubdivision != null)
-                    {
-                        e.CountrySubdivisionText = expandedEmployment.CountrySubdivision.ProvinceCode;
                     }
+                }
 
-                    SSG_Employment temp = await _oDataClient.For<SSG_Employment>()
-                        .Key(e.EmploymentId)
-                        .Expand(x => x.SSG_EmploymentContacts)
-                        .FindEntryAsync(cancellationToken);
+                if (ssgSearchResponse.SSG_Employments != null)
+                {
+
+                    foreach (SSG_Employment e in ssgSearchResponse.SSG_Employments)
+                    {
+                        SSG_Employment expandedEmployment = await _oDataClient.For<SSG_Employment>()
+                            .Key(e.EmploymentId)
+                            .Expand(x => x.CountrySubdivision)
+                            .FindEntryAsync(cancellationToken);
+
+                        if (expandedEmployment.CountrySubdivision != null)
+                        {
+                            e.CountrySubdivisionText = expandedEmployment.CountrySubdivision.ProvinceCode;
+                        }
+
+                        SSG_Employment temp = await _oDataClient.For<SSG_Employment>()
+                            .Key(e.EmploymentId)
+                            .Expand(x => x.SSG_EmploymentContacts)
+                            .FindEntryAsync(cancellationToken);
                         if (temp.SSG_EmploymentContacts != null)
                             e.SSG_EmploymentContacts = temp.SSG_EmploymentContacts;
+                    }
                 }
-            }
 
-          
+
                 return ssgSearchResponse;
             }
             catch (Exception)

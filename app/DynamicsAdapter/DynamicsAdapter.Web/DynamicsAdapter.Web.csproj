@@ -12,7 +12,7 @@
     <PackageReference Include="BcGov.ApiKey.Middleware" Version="1.1.0" />
     <PackageReference Include="BcGov.Fams3.Redis" Version="1.1.0" />
     <PackageReference Include="BcGov.Fams3.SearchApi.Core" Version="1.1.0" />
-    <PackageReference Include="BcGov.Fams3.SearchApi.Contracts" Version="1.1.2" />
+    <PackageReference Include="BcGov.Fams3.SearchApi.Contracts" Version="1.1.4" />
     <PackageReference Include="BcGov.Fams3.Utils" Version="1.1.0" />
     <PackageReference Include="FluentValidation" Version="9.3.0" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="9.3.0" />
@@ -46,7 +46,7 @@
       <ClientName>SearchApi</ClientName>
       <GeneratedSwaggerClientFile Condition="'$(GeneratedSwaggerClientFile)' == ''">$(IntermediateOutputPath)$(MSBuildProjectName).$(ClientName)Client.cs</GeneratedSwaggerClientFile>
       <NSwagCommand Condition="'$(NSwagPath)' != ''">$(NSwagPath)</NSwagCommand>
-      <NSwagCommand Condition="'$(NSwagCommand)' == ''">dotnet nswag</NSwagCommand>
+      <NSwagCommand Condition="'$(NSwagCommand)' == ''">nswag</NSwagCommand>
     </PropertyGroup>
 
     <Exec Command="$(NSwagCommand) run nswag.json /variables:InputSwagger=$(InputSwagger),ClientName=$(ClientName),ClientNamespace=$(RootNamespace),GeneratedSwaggerClientFile=$(GeneratedSwaggerClientFile)" />

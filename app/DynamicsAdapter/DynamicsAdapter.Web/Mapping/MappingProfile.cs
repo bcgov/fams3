@@ -5,6 +5,8 @@ using Fams3Adapter.Dynamics;
 using Fams3Adapter.Dynamics.Address;
 using Fams3Adapter.Dynamics.TaxIncomeInformation;
 using Fams3Adapter.Dynamics.FinancialOtherIncome;
+using Fams3Adapter.Dynamics.NoticeOfAssessment;
+using Fams3Adapter.Dynamics.NoticeOfReassessment;
 using Fams3Adapter.Dynamics.AssetOwner;
 using Fams3Adapter.Dynamics.BankInfo;
 using Fams3Adapter.Dynamics.CompensationClaim;
@@ -634,6 +636,28 @@ namespace DynamicsAdapter.Web.Mapping
                .ForMember(dest => dest.SocialMedias, opt => opt.MapFrom(src => src.SSG_Electronicas))
                .ForMember(dest => dest.TaxIncomeInformations, opt => opt.ConvertUsing(new TaxIncomeInformationConvertor(), src => src.SSG_TaxIncomeInformations))
                .ForMember(dest => dest.ResponsePersons, opt => opt.MapFrom(src => src.SSG_Persons))
+               .AfterMap((src, dest) =>
+               {
+                   var existing = dest.TaxIncomeInformations?.ToList() ?? new System.Collections.Generic.List<TaxIncomeInformation>();
+
+                   if (src.FAMS_FinancialOtherIncomes != null && src.FAMS_FinancialOtherIncomes.Length > 0)
+                   {
+                       existing.AddRange(new FinancialOtherIncomeConvertor().Convert(src.FAMS_FinancialOtherIncomes, null));
+                   }
+
+                   if (src.FAMS_NoticeOfAssessments != null && src.FAMS_NoticeOfAssessments.Length > 0)
+                   {
+                       existing.AddRange(new NoticeOfAssessmentConvertor().Convert(src.FAMS_NoticeOfAssessments, null));
+                   }
+
+                   if (src.FAMS_NoticeOfReassessments != null && src.FAMS_NoticeOfReassessments.Length > 0)
+                   {
+                       existing.AddRange(new NoticeOfReassessmentConvertor().Convert(src.FAMS_NoticeOfReassessments, null));
+                   }
+
+                   if (existing.Count > 0)
+                       dest.TaxIncomeInformations = existing;
+               })
                .ForMember(dest => dest.Type, opt => opt.ConvertUsing(new PersonSoughtRoleConverter(), src => src.SSG_SearchRequests[0].PersonSoughtRole))
                .ForMember(dest => dest.Agency, opt => opt.MapFrom(src => src.SSG_SearchRequests[0]))
                .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.SSG_SearchRequests[0].PersonSoughtFirstName))

@@ -47,7 +47,7 @@
       <ClientName>SearchApi</ClientName>
       <GeneratedSwaggerClientFile Condition="'$(GeneratedSwaggerClientFile)' == ''">$(IntermediateOutputPath)$(MSBuildProjectName).$(ClientName)Client.cs</GeneratedSwaggerClientFile>
       <NSwagCommand Condition="'$(NSwagPath)' != ''">$(NSwagPath)</NSwagCommand>
-      <NSwagCommand Condition="'$(NSwagCommand)' == ''">nswag</NSwagCommand>
+       <NSwagCommand Condition="'$(NSwagCommand)' == ''">dotnet nswag</NSwagCommand>
     </PropertyGroup>
 
     <Exec Command="$(NSwagCommand) run nswag.json /variables:InputSwagger=$(InputSwagger),ClientName=$(ClientName),ClientNamespace=$(RootNamespace),GeneratedSwaggerClientFile=$(GeneratedSwaggerClientFile)" />

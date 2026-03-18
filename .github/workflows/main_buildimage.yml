@@ -76,8 +76,8 @@ jobs:
             WORKDIR=/opt/app-root/src
             DOTNET_INCREMENTAL=true
             DOTNET_RESTORE_CONFIGFILE=./NuGet.config
-            NEXUS_REPO_USER=${{ secrets.NEXUS_REPO_USER }}
-            NEXUS_REPO_PASSWORD=${{ secrets.NEXUS_REPO_PASSWORD }}
+            NEXUS_REPO_U=${{ secrets.NEXUS_REPO_USER }}
+            NEXUS_REPO_P=${{ secrets.NEXUS_REPO_PASSWORD }}
             NEXUS_REPO_URL=${{ secrets.NEXUS_REPO_URL }}
 
       - name: Push Application Image to Openshift ImageStream & Deploy to Dev

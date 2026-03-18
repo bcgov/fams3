@@ -7,24 +7,13 @@
     "version": "V0.1"
   },
   "host": "search-api-dfb30e-dev.apps.silver.devops.gov.bc.ca",
-  "schemes": [
-    "https"
-  ],
-  "consumes": [
-    "application/json-patch+json",
-    "application/json",
-    "text/json",
-    "application/*+json"
-  ],
-  "produces": [
-    "application/json"
-  ],
+  "schemes": ["https"],
+  "consumes": ["application/json-patch+json", "application/json", "text/json", "application/*+json"],
+  "produces": ["application/json"],
   "paths": {
     "/People/search": {
       "post": {
-        "tags": [
-          "People API"
-        ],
+        "tags": ["People API"],
         "operationId": "People_Search",
         "parameters": [
           {
@@ -59,9 +48,7 @@
     "PersonSearchResponse": {
       "type": "object",
       "description": "Represents the acknowledgement that the search will be conducted",
-      "required": [
-        "id"
-      ],
+      "required": ["id"],
       "properties": {
         "id": {
           "type": "string",
@@ -78,9 +65,7 @@
         {
           "type": "object",
           "description": "Represents a set of information to execute a search on a person",
-          "required": [
-            "isPreScreenSearch"
-          ],
+          "required": ["isPreScreenSearch"],
           "properties": {
             "dataProviders": {
               "type": "array",
@@ -100,12 +85,7 @@
     },
     "DataProvider": {
       "type": "object",
-      "required": [
-        "completed",
-        "numberOfRetries",
-        "timeBetweenRetries",
-        "searchSpeedType"
-      ],
+      "required": ["completed", "numberOfRetries", "timeBetweenRetries", "searchSpeedType"],
       "properties": {
         "name": {
           "type": "string"
@@ -129,14 +109,8 @@
     "SearchSpeedType": {
       "type": "string",
       "description": "",
-      "x-enumNames": [
-        "Fast",
-        "Slow"
-      ],
-      "enum": [
-        "Fast",
-        "Slow"
-      ]
+      "x-enumNames": ["Fast", "Slow"],
+      "enum": ["Fast", "Slow"]
     },
     "Person": {
       "allOf": [
@@ -145,9 +119,7 @@
         },
         {
           "type": "object",
-          "required": [
-            "type"
-          ],
+          "required": ["type"],
           "properties": {
             "agency": {
               "$ref": "#/definitions/Agency"
@@ -367,11 +339,7 @@
     },
     "Agency": {
       "type": "object",
-      "required": [
-        "requestPriority",
-        "reasonCode",
-        "requestDate"
-      ],
+      "required": ["requestPriority", "reasonCode", "requestDate"],
       "properties": {
         "notes": {
           "type": "string",
@@ -467,16 +435,8 @@
     "RequestPriority": {
       "type": "string",
       "description": "",
-      "x-enumNames": [
-        "Urgent",
-        "Rush",
-        "Normal"
-      ],
-      "enum": [
-        "Urgent",
-        "Rush",
-        "Normal"
-      ]
+      "x-enumNames": ["Urgent", "Rush", "Normal"],
+      "enum": ["Urgent", "Rush", "Normal"]
     },
     "SearchReasonCode": {
       "type": "string",
@@ -504,67 +464,13 @@
         "Unknown",
         "Other"
       ],
-      "enum": [
-        "Blank",
-        "ObtCustAgr",
-        "EnfCustAgr",
-        "ChngCustAg",
-        "ObtAccAgr",
-        "EnfAccAgr",
-        "ChngAccAgr",
-        "ObtGuardAg",
-        "EnfGuardAg",
-        "ChgGuardAg",
-        "ObtPayAgr",
-        "EnfPayAgr",
-        "ChngPayAgr",
-        "EnfPayAgND",
-        "ChildAbduc",
-        "ApplReasCd1",
-        "ApplReasCd2",
-        "ApplReasCd3",
-        "AstRecpAgy",
-        "Unknown",
-        "Other"
-      ]
+      "enum": ["Blank", "ObtCustAgr", "EnfCustAgr", "ChngCustAg", "ObtAccAgr", "EnfAccAgr", "ChngAccAgr", "ObtGuardAg", "EnfGuardAg", "ChgGuardAg", "ObtPayAgr", "EnfPayAgr", "ChngPayAgr", "EnfPayAgND", "ChildAbduc", "ApplReasCd1", "ApplReasCd2", "ApplReasCd3", "AstRecpAgy", "Unknown", "Other"]
     },
     "InformationRequested": {
       "type": "string",
       "description": "",
-      "x-enumNames": [
-        "Asset",
-        "SIN",
-        "DL",
-        "Employment",
-        "Location",
-        "PHN",
-        "Phone",
-        "Carceration",
-        "DateOfDeath",
-        "IA",
-        "SafetyConcern",
-        "T1taxform",
-        "NoticeofAssessment",
-        "NoticeofReassessment",
-        "FinancialOtherIncome"
-      ],
-      "enum": [
-        "Asset",
-        "SIN",
-        "DL",
-        "Employment",
-        "Location",
-        "PHN",
-        "Phone",
-        "Carceration",
-        "DateOfDeath",
-        "IA",
-        "SafetyConcern",
-        "T1taxform",
-        "NoticeofAssessment",
-        "NoticeofReassessment",
-        "FinancialOtherIncome"
-      ]
+      "x-enumNames": ["Asset", "SIN", "DL", "Employment", "Location", "PHN", "Phone", "Carceration", "DateOfDeath", "IA", "SafetyConcern", "T1taxform", "NoticeofAssessment", "NoticeofReassessment", "FinancialOtherIncome"],
+      "enum": ["Asset", "SIN", "DL", "Employment", "Location", "PHN", "Phone", "Carceration", "DateOfDeath", "IA", "SafetyConcern", "T1taxform", "NoticeofAssessment", "NoticeofReassessment", "FinancialOtherIncome"]
     },
     "Name": {
       "allOf": [
@@ -573,9 +479,7 @@
         },
         {
           "type": "object",
-          "required": [
-            "owner"
-          ],
+          "required": ["owner"],
           "properties": {
             "firstName": {
               "type": "string",
@@ -635,18 +539,8 @@
     "OwnerType": {
       "type": "string",
       "description": "",
-      "x-enumNames": [
-        "Applicant",
-        "PersonSought",
-        "InvolvedPerson",
-        "NotApplicable"
-      ],
-      "enum": [
-        "Applicant",
-        "PersonSought",
-        "InvolvedPerson",
-        "NotApplicable"
-      ]
+      "x-enumNames": ["Applicant", "PersonSought", "InvolvedPerson", "NotApplicable"],
+      "enum": ["Applicant", "PersonSought", "InvolvedPerson", "NotApplicable"]
     },
     "PersonalIdentifier": {
       "allOf": [
@@ -655,10 +549,7 @@
         },
         {
           "type": "object",
-          "required": [
-            "type",
-            "owner"
-          ],
+          "required": ["type", "owner"],
           "properties": {
             "value": {
               "type": "string",
@@ -695,34 +586,8 @@
     "PersonalIdentifierType": {
       "type": "string",
       "description": "",
-      "x-enumNames": [
-        "BCDriverLicense",
-        "SocialInsuranceNumber",
-        "PersonalHealthNumber",
-        "BirthCertificate",
-        "CorrectionsId",
-        "NativeStatusCard",
-        "Passport",
-        "WorkSafeBCCCN",
-        "Other",
-        "BCID",
-        "BCHydroBP",
-        "OtherDriverLicense"
-      ],
-      "enum": [
-        "BCDriverLicense",
-        "SocialInsuranceNumber",
-        "PersonalHealthNumber",
-        "BirthCertificate",
-        "CorrectionsId",
-        "NativeStatusCard",
-        "Passport",
-        "WorkSafeBCCCN",
-        "Other",
-        "BCID",
-        "BCHydroBP",
-        "OtherDriverLicense"
-      ]
+      "x-enumNames": ["BCDriverLicense", "SocialInsuranceNumber", "PersonalHealthNumber", "BirthCertificate", "CorrectionsId", "NativeStatusCard", "Passport", "WorkSafeBCCCN", "Other", "BCID", "BCHydroBP", "OtherDriverLicense"],
+      "enum": ["BCDriverLicense", "SocialInsuranceNumber", "PersonalHealthNumber", "BirthCertificate", "CorrectionsId", "NativeStatusCard", "Passport", "WorkSafeBCCCN", "Other", "BCID", "BCHydroBP", "OtherDriverLicense"]
     },
     "PersonalInfo": {
       "type": "object",
@@ -767,10 +632,7 @@
     },
     "ReferenceDate": {
       "type": "object",
-      "required": [
-        "index",
-        "value"
-      ],
+      "required": ["index", "value"],
       "properties": {
         "index": {
           "type": "integer",
@@ -795,9 +657,7 @@
         },
         {
           "type": "object",
-          "required": [
-            "owner"
-          ],
+          "required": ["owner"],
           "properties": {
             "name": {
               "type": "string",
@@ -869,9 +729,7 @@
         },
         {
           "type": "object",
-          "required": [
-            "owner"
-          ],
+          "required": ["owner"],
           "properties": {
             "phoneNumber": {
               "type": "string",
@@ -904,14 +762,8 @@
     "SoughtPersonType": {
       "type": "string",
       "description": "",
-      "x-enumNames": [
-        "PAYOR",
-        "RECIPIENT"
-      ],
-      "enum": [
-        "PAYOR",
-        "RECIPIENT"
-      ]
+      "x-enumNames": ["PAYOR", "RECIPIENT"],
+      "enum": ["PAYOR", "RECIPIENT"]
     },
     "RelatedPerson": {
       "allOf": [
@@ -1281,9 +1133,7 @@
         },
         {
           "type": "object",
-          "required": [
-            "date"
-          ],
+          "required": ["date"],
           "properties": {
             "taxYear": {
               "type": "string",
@@ -1310,7 +1160,7 @@
               "description": "Date",
               "format": "date-time"
             },
-            "jcaCode": {
+            "jCACode": {
               "type": "string",
               "description": "JCA Code"
             },
@@ -1328,6 +1178,23 @@
             "form": {
               "type": "string",
               "description": "Tax Form"
+            },
+            "taxAmount": {
+              "type": "string",
+              "description": "Tax Amount"
+            },
+            "effectiveDate": {
+              "type": "string",
+              "format": "date-time",
+              "description": "Effective Date"
+            },
+            "note": {
+              "type": "string",
+              "description": "Note"
+            },
+            "suppliedBy": {
+              "type": "string",
+              "description": "Supplied By"
             }
           }
         }
@@ -1778,9 +1645,7 @@
     },
     "User": {
       "type": "object",
-      "required": [
-        "systemTriggered"
-      ],
+      "required": ["systemTriggered"],
       "properties": {
         "email": {
           "type": "string",

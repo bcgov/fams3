@@ -37,6 +37,18 @@ namespace BcGov.Fams3.SearchApi.Contracts.Person
         [Description("Tax Form")]
         public string Form { get; set; }
 
+        [Description("Tax Amount")]
+        public string TaxAmount { get; set; }
+
+        [Description("Effective Date")]
+        public DateTime? EffectiveDate { get; set; }
+
+        [Description("Note")]
+        public string Note { get; set; }
+
+        [Description("Supplied By (information source)")]
+        public string SuppliedBy { get; set; }
+
         public TaxIncomeInformation Clone()
         {
             return (TaxIncomeInformation)MemberwiseClone();

@@ -69,7 +69,15 @@ namespace Fams3Adapter.Dynamics.TaxIncomeInformation
 
         [JsonProperty("fams_form")]
         [Description("Tax Form")]
-        public string Form { get; set; }        
+        public string Form { get; set; }
+
+        [JsonProperty("fams_effectivedate")]
+        [Description("Effective Date")]
+        public DateTime? EffectiveDate { get; set; }
+
+        [JsonProperty("fams_note")]
+        [Description("Note")]
+        public string Note { get; set; }
     }
 
     public class SSG_TaxIncomeInformation : TaxIncomeInformationEntity

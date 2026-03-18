@@ -20,6 +20,9 @@ using Fams3Adapter.Dynamics.Vehicle;
 using Fams3Adapter.Dynamics.SocialMedia;
 using Newtonsoft.Json;
 using System;
+using Fams3Adapter.Dynamics.FinancialOtherIncome;
+using Fams3Adapter.Dynamics.NoticeOfAssessment;
+using Fams3Adapter.Dynamics.NoticeOfReassessment;
 using Fams3Adapter.Dynamics.TaxIncomeInformation;
 
 namespace Fams3Adapter.Dynamics.SearchResponse
@@ -85,7 +88,23 @@ namespace Fams3Adapter.Dynamics.SearchResponse
 
         [JsonProperty("ssg_ssg_searchrequestresponse_ssg_taxincomeinformation_Responseid")]
         public SSG_TaxIncomeInformation[] SSG_TaxIncomeInformations { get; set; }
-        
+
+        /// <summary>
+        /// Populated by SearchResponseService after fetching by SearchRequest ID.
+        /// Not from Dynamics OData expand — FAMS_FinancialOtherIncome has no direct link to SSG_SearchRequestResponse.
+        /// </summary>
+        public FAMS_FinancialOtherIncome[] FAMS_FinancialOtherIncomes { get; set; }
+
+        /// <summary>
+        /// Populated by SearchResponseService after fetching from fams_noticeofassessment by SearchRequest ID.
+        /// </summary>
+        public FAMS_NoticeOfAssessment[] FAMS_NoticeOfAssessments { get; set; }
+
+        /// <summary>
+        /// Populated by SearchResponseService after fetching from fams_noticeofreassessment by SearchRequest ID.
+        /// </summary>
+        public FAMS_NoticeOfReassessment[] FAMS_NoticeOfReassessments { get; set; }
+
         [JsonProperty("ssg_ssg_searchrequestresponse_ssg_safetyconcerndetail_ResponseId")]
         public SSG_SafetyConcernDetail[] SSG_SafetyConcernDetails { get; set; }
 

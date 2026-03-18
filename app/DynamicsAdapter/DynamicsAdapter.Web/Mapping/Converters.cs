@@ -9,6 +9,8 @@ using Fams3Adapter.Dynamics.SearchRequest;
 using DynamicsAdapter.Web.PersonSearch.Models;
 using Fams3Adapter.Dynamics.TaxIncomeInformation;
 using Fams3Adapter.Dynamics.FinancialOtherIncome;
+using Fams3Adapter.Dynamics.NoticeOfAssessment;
+using Fams3Adapter.Dynamics.NoticeOfReassessment;
 using Newtonsoft.Json;
 
 namespace DynamicsAdapter.Web.Mapping
@@ -159,7 +161,7 @@ namespace DynamicsAdapter.Web.Mapping
         {
             if (string.IsNullOrEmpty(sourceMember)) return null;
             string[] number = sourceMember.Split("|");
-            if(number != null && number.Length>1 && number[0].Trim().Equals(Constants.OutOfProvinceRJ, StringComparison.InvariantCultureIgnoreCase) )
+            if (number != null && number.Length > 1 && number[0].Trim().Equals(Constants.OutOfProvinceRJ, StringComparison.InvariantCultureIgnoreCase))
             {
                 return number[1].Trim();
             }
@@ -452,7 +454,8 @@ namespace DynamicsAdapter.Web.Mapping
             if (phones.Where(m => string.Equals(m.Type, "Phone", StringComparison.InvariantCultureIgnoreCase)).Count() > 1)
             {
                 return phones.Where(m => string.Equals(m.Type, "Phone", StringComparison.InvariantCultureIgnoreCase)).ElementAt(1).PhoneNumber;
-            };
+            }
+            ;
             return null;
         }
     }
@@ -465,7 +468,8 @@ namespace DynamicsAdapter.Web.Mapping
             if (phones.Where(m => string.Equals(m.Type, "Phone", StringComparison.InvariantCultureIgnoreCase)).Count() > 1)
             {
                 return phones.Where(m => string.Equals(m.Type, "Phone", StringComparison.InvariantCultureIgnoreCase)).ElementAt(1).Extension;
-            };
+            }
+            ;
             return null;
         }
     }
@@ -474,8 +478,8 @@ namespace DynamicsAdapter.Web.Mapping
     {
         public int Convert(string sourceMember, ResolutionContext context)
         {
-            int ? source = Enumeration.GetAll<IncomeAssistanceStatusType>().FirstOrDefault(m => m.Name.Equals(sourceMember, StringComparison.OrdinalIgnoreCase))?.Value;
-            if( source==null || source== IncomeAssistanceStatusType.Unknown.Value)
+            int? source = Enumeration.GetAll<IncomeAssistanceStatusType>().FirstOrDefault(m => m.Name.Equals(sourceMember, StringComparison.OrdinalIgnoreCase))?.Value;
+            if (source == null || source == IncomeAssistanceStatusType.Unknown.Value)
                 return EmploymentRecordType.Employment.Value;
             else
                 return EmploymentRecordType.IncomeAssistance.Value;
@@ -566,9 +570,99 @@ namespace DynamicsAdapter.Web.Mapping
     {
         public int? Convert(int mins, ResolutionContext context)
         {
-            if(mins<=0) return null;
-            TimeSpan timeSpan = new TimeSpan(0,mins,0);
-            return timeSpan.Days+1;
+            if (mins <= 0) return null;
+            TimeSpan timeSpan = new TimeSpan(0, mins, 0);
+            return timeSpan.Days + 1;
+        }
+    }
+
+    public class FinancialOtherIncomeConvertor : IValueConverter<FAMS_FinancialOtherIncome[], ICollection<TaxIncomeInformation>>
+    {
+        public ICollection<TaxIncomeInformation> Convert(FAMS_FinancialOtherIncome[] sourceMember, ResolutionContext context)
+        {
+            var toReturn = new List<TaxIncomeInformation>();
+            if (sourceMember != null)
+            {
+                foreach (var fin in sourceMember)
+                {
+                    var info = new TaxIncomeInformation();
+                    info.TaxYear = fin.TaxYear;
+                    info.Form = fin.Form;
+                    info.TaxTraceStatusText = fin.TaxTraceStatusText;
+                    info.JCACode = fin.JCACode;
+                    info.TaxAmount = fin.TaxAmount;
+                    info.Description = fin.Description;
+                    if (fin.Date.HasValue)
+                        info.Date = fin.Date.Value;
+                    if (fin.InformationSource.HasValue)
+                    {
+                        info.SuppliedBy = Enumeration.GetAll<InformationSourceType>()
+                            .FirstOrDefault(x => x.Value == fin.InformationSource.Value)?.Name;
+                    }
+                    toReturn.Add(info);
+                }
+            }
+            return toReturn;
+        }
+    }
+
+    public class NoticeOfAssessmentConvertor : IValueConverter<FAMS_NoticeOfAssessment[], ICollection<TaxIncomeInformation>>
+    {
+        public ICollection<TaxIncomeInformation> Convert(FAMS_NoticeOfAssessment[] sourceMember, ResolutionContext context)
+        {
+            var toReturn = new List<TaxIncomeInformation>();
+            if (sourceMember != null)
+            {
+                foreach (var noa in sourceMember)
+                {
+                    var info = new TaxIncomeInformation();
+                    info.TaxYear = noa.TaxYear;
+                    info.Form = "NOA";
+                    info.TaxTraceStatusText = noa.TaxTraceStatusText;
+                    info.JCACode = noa.JCACode;
+                    info.TaxAmount = noa.TaxAmount;
+                    info.Description = noa.Description;
+                    if (noa.Date.HasValue)
+                        info.Date = noa.Date.Value;
+                    if (noa.InformationSource.HasValue)
+                    {
+                        info.SuppliedBy = Enumeration.GetAll<InformationSourceType>()
+                            .FirstOrDefault(x => x.Value == noa.InformationSource.Value)?.Name;
+                    }
+                    toReturn.Add(info);
+                }
+            }
+            return toReturn;
+        }
+    }
+
+    public class NoticeOfReassessmentConvertor : IValueConverter<FAMS_NoticeOfReassessment[], ICollection<TaxIncomeInformation>>
+    {
+        public ICollection<TaxIncomeInformation> Convert(FAMS_NoticeOfReassessment[] sourceMember, ResolutionContext context)
+        {
+            var toReturn = new List<TaxIncomeInformation>();
+            if (sourceMember != null)
+            {
+                foreach (var nor in sourceMember)
+                {
+                    var info = new TaxIncomeInformation();
+                    info.TaxYear = nor.TaxYear;
+                    info.Form = "NOR";
+                    info.TaxTraceStatusText = nor.TaxTraceStatusText;
+                    info.JCACode = nor.JCACode;
+                    info.TaxAmount = nor.TaxAmount;
+                    info.Description = nor.Description;
+                    if (nor.Date.HasValue)
+                        info.Date = nor.Date.Value;
+                    if (nor.InformationSource.HasValue)
+                    {
+                        info.SuppliedBy = Enumeration.GetAll<InformationSourceType>()
+                            .FirstOrDefault(x => x.Value == nor.InformationSource.Value)?.Name;
+                    }
+                    toReturn.Add(info);
+                }
+            }
+            return toReturn;
         }
     }
 
@@ -583,12 +677,15 @@ namespace DynamicsAdapter.Web.Mapping
                 {
                     TaxIncomeInformation taxIncomeInformation = new TaxIncomeInformation();
                     taxIncomeInformation.TaxYear = tax.TaxYear;
-                    taxIncomeInformation.TaxYearResult = tax.TaxYearResult;
                     taxIncomeInformation.CommissionIncomeT4Amount = tax.CommissionIncomeT4Amount;
                     taxIncomeInformation.EmergencyVolunteerExemptIncomeAmount = tax.EmergencyVolunteerExemptIncomeAmount;
                     taxIncomeInformation.EmploymentIncomeT4Amount = tax.EmploymentIncomeT4Amount;
-                    taxIncomeInformation.JcaCode = tax.JCACode;
+                    taxIncomeInformation.JCACode = tax.JCACode;
                     taxIncomeInformation.TaxTraceStatusText = tax.TaxTraceStatusText;
+                    taxIncomeInformation.Form = tax.Form;
+                    taxIncomeInformation.TaxAmount = tax.TaxAmount;
+                    taxIncomeInformation.EffectiveDate = tax.EffectiveDate;
+                    taxIncomeInformation.Note = tax.Note;
 
                     // Handle null TaxCode
                     if (!string.IsNullOrEmpty(tax.TaxCode))
@@ -603,6 +700,11 @@ namespace DynamicsAdapter.Web.Mapping
                         taxIncomeInformation.LastName = names[1];
                     }
                     taxIncomeInformation.Description = tax.Description ?? (!string.IsNullOrEmpty(tax.TaxCode) ? tax.TaxCode : string.Empty);
+                    if (tax.InformationSource.HasValue)
+                    {
+                        taxIncomeInformation.SuppliedBy = Enumeration.GetAll<InformationSourceType>()
+                            .FirstOrDefault(x => x.Value == tax.InformationSource.Value)?.Name;
+                    }
                     toReturn.Add(taxIncomeInformation);
                 }
             }

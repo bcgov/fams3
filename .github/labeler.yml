@@ -1,15 +1,19 @@
-# Add 'Seach Api' to changes in search api
+# Add 'Search Api' to changes in search api
 'Search Api':
-  - app/SearchApi/**/*
+- changed-files:
+  - any-glob-to-any-file: 'app/SearchApi/**/*'
 
 # Add 'Dynamics Adapter' to changes in dynamics adapter
 'Dynamics Adapter':
-  - app/DynamicsAdapter/**/*
+- changed-files:
+  - any-glob-to-any-file: 'app/DynamicsAdapter/**/*'
 
 # Add 'DevOps' to changes in openshift folder
 'DevOps':
-  - openshift/**/*
+- changed-files:
+  - any-glob-to-any-file: 'openshift/**/*'
 
-  # Add 'Splunk' to changes in splunk folder
+# Add 'Splunk' to changes in splunk folder
 'Splunk':
-  - splunk/**/*
+- changed-files:
+  - any-glob-to-any-file: 'splunk/**/*'

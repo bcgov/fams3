@@ -1,45 +1,28 @@
-﻿using Fams3Adapter.Dynamics.Person;
 using Fams3Adapter.Dynamics.SearchRequest;
 using Fams3Adapter.Dynamics.Update;
 using Newtonsoft.Json;
 using System;
 using System.ComponentModel;
 
-namespace Fams3Adapter.Dynamics.FinancialOtherIncome
+namespace Fams3Adapter.Dynamics.NoticeOfReassessment
 {
-    public class FinancialOtherIncomeEntity : DynamicsEntity
+    public class NoticeOfReassessmentEntity : DynamicsEntity
     {
-        [JsonProperty("fams_couldnotlocate")]
-        [Description("Could Not Locate")]
-        public bool CouldNotLocate { get; set; }
-
-        [JsonProperty("fams_description")]
-        [Description("Description text")]
-        public string Description { get; set; }
+        [JsonProperty("fams_name")]
+        [Description("Tax Year")]
+        public string TaxYear { get; set; }
 
         [JsonProperty("fams_taxamount")]
         [Description("Tax Amount")]
         public string TaxAmount { get; set; }
 
-        [JsonProperty("fams_form")]
-        [Description("Tax Form")]
-        public string Form { get; set; }
-
-        [JsonProperty("fams_name")]
-        [Description("Tax Year")]
-        public string TaxYear { get; set; }
+        [JsonProperty("fams_description")]
+        [Description("Description text")]
+        public string Description { get; set; }
 
         [JsonProperty("fams_datadate")]
         [Description("Date")]
-        public System.DateTime? Date { get; set; }
-
-        [JsonProperty("fams_datadatelabel")]
-        [Description("Date Type")]
-        public string DateLabel { get; set; }
-
-        [JsonProperty("fams_personid")]
-        [Description("Person")]
-        public virtual SSG_Person Person { get; set; }
+        public DateTime? Date { get; set; }
 
         [JsonProperty("fams_suppliedby")]
         [Description("Supplied By")]
@@ -61,9 +44,9 @@ namespace Fams3Adapter.Dynamics.FinancialOtherIncome
         public Guid SearchRequestId { get; set; }
     }
 
-    public class FAMS_FinancialOtherIncome : FinancialOtherIncomeEntity
+    public class FAMS_NoticeOfReassessment : NoticeOfReassessmentEntity
     {
-        [JsonProperty("fams_financialotherincomeid")]
-        public Guid FinancialOtherIncomeId { get; set; }
+        [JsonProperty("fams_noticeofreassessmentid")]
+        public Guid NoticeOfReassessmentId { get; set; }
     }
 }

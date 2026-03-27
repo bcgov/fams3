@@ -6,6 +6,7 @@ using Fams3Adapter.Dynamics.Types;
 using Fams3Adapter.Dynamics.OptionSets.Models;
 using System.Text;
 using Fams3Adapter.Dynamics.SearchRequest;
+using Fams3Adapter.Dynamics.SearchResponse;
 using DynamicsAdapter.Web.PersonSearch.Models;
 using Fams3Adapter.Dynamics.TaxIncomeInformation;
 using Fams3Adapter.Dynamics.FinancialOtherIncome;
@@ -592,7 +593,7 @@ namespace DynamicsAdapter.Web.Mapping
                     info.JCACode = fin.JCACode;
                     info.TaxAmount = fin.TaxAmount;
                     info.Description = fin.Description;
-                    info.ResponseComments = fin.ResponseComments;
+                    info.ResponseComments = fin.FAMS_ResponseComments;
                     if (fin.Date.HasValue)
                         info.Date = fin.Date.Value;
                     if (fin.InformationSource.HasValue)
@@ -763,6 +764,19 @@ namespace DynamicsAdapter.Web.Mapping
             }
 
             return toReturn;
+        }
+    }
+
+    public class TaxIncomeInformationsCombinedResolver : IValueResolver<SSG_SearchRequestResponse, Person, ICollection<TaxIncomeInformation>>
+    {
+        public ICollection<TaxIncomeInformation> Resolve(SSG_SearchRequestResponse source, Person destination, ICollection<TaxIncomeInformation> destMember, ResolutionContext context)
+        {
+            var combined = new List<TaxIncomeInformation>();
+            combined.AddRange(new TaxIncomeInformationConvertor().Convert(source.SSG_TaxIncomeInformations, context));
+            combined.AddRange(new NOA_TaxIncomeInformationConvertor().Convert(source.SSG_NOA_TaxIncomeInformations, context));
+            combined.AddRange(new NOR_TaxIncomeInformationConvertor().Convert(source.SSG_NOR_TaxIncomeInformations, context));
+            combined.AddRange(new FinancialOtherIncomeConvertor().Convert(source.SSG_FOI_TaxIncomeInformations, context));
+            return combined;
         }
     }
 }

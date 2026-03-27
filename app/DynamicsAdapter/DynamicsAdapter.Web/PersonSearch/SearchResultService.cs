@@ -258,7 +258,9 @@ namespace DynamicsAdapter.Web.PersonSearch
                         case "SSG_Asset_ICBCClaim": trans.InsuranceClaim = (SSG_Asset_ICBCClaim)o; break;
                         case "SSG_SafetyConcernDetail": trans.SafetyConcern = (SSG_SafetyConcernDetail)o; break;
                         case "SSG_Email": trans.Email = (SSG_Email)o; break;
-                        case "SSG_Taxincomeinformation": trans.Taxincomeinformation = (SSG_TaxIncomeInformation)o; break;
+                        case "SSG_TaxIncomeInformation": trans.Taxincomeinformation = (TaxIncomeInformationEntity)o; break;
+                        case "FAMS_NOA_TaxIncomeInformation": trans.NOA_TaxIncomeInformation = (FAMS_NOA_TaxIncomeInformationEntity)o; break;
+                        case "FAMS_NOR_TaxIncomeInformation": trans.NOR_TaxIncomeInformation = (FAMS_NOR_TaxIncomeInformationEntity)o; break;
                         case "FAMS_FinancialOtherIncome": trans.FinancialOtherIncome = (FAMS_FinancialOtherIncome)o; break;
                         default: return false;
                     }

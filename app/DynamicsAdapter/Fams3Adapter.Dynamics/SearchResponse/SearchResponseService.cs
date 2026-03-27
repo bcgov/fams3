@@ -76,6 +76,9 @@ namespace Fams3Adapter.Dynamics.SearchResponse
                 .Expand(x => x.SSG_Emails)
                 .Expand(x => x.SSG_Electronicas)
                 .Expand(x => x.SSG_TaxIncomeInformations)
+                .Expand(x => x.SSG_NOA_TaxIncomeInformations)
+                .Expand(x => x.SSG_NOR_TaxIncomeInformations)
+                .Expand(x => x.SSG_FOI_TaxIncomeInformations)
                 .FindEntryAsync(cancellationToken);
 
                 if (ssgSearchResponse.SSG_SearchRequests != null)
@@ -85,29 +88,6 @@ namespace Fams3Adapter.Dynamics.SearchResponse
                         .Key(id)
                         .Expand(x => x.SearchReason)
                         .FindEntryAsync(cancellationToken);
-
-                    // Fetch NOA, NOR, and FinancialOtherIncome records stored in the separate FAMS_FinancialOtherIncome
-                    // Dynamics entity. These are non-T1 tax records split at write time in SearchResultService and have
-                    // no direct OData expand relationship to SSG_SearchRequestResponse.
-                    var finOtherIncomes = await _oDataClient
-                        .For<FAMS_FinancialOtherIncome>()
-                        .Filter(x => x.SearchRequestId == id)
-                        .FindEntriesAsync(cancellationToken);
-                    ssgSearchResponse.FAMS_FinancialOtherIncomes = finOtherIncomes?.ToArray();
-
-                    // Fetch Notice of Assessment records from fams_noticeofassessment entity.
-                    var noaRecords = await _oDataClient
-                        .For<FAMS_NoticeOfAssessment>()
-                        .Filter(x => x.SearchRequestId == id)
-                        .FindEntriesAsync(cancellationToken);
-                    ssgSearchResponse.FAMS_NoticeOfAssessments = noaRecords?.ToArray();
-
-                    // Fetch Notice of Reassessment records from fams_noticeofreassessment entity.
-                    var norRecords = await _oDataClient
-                        .For<FAMS_NoticeOfReassessment>()
-                        .Filter(x => x.SearchRequestId == id)
-                        .FindEntriesAsync(cancellationToken);
-                    ssgSearchResponse.FAMS_NoticeOfReassessments = norRecords?.ToArray();
                 }
 
                 if (ssgSearchResponse.SSG_Asset_WorkSafeBcClaims != null)

@@ -6,6 +6,7 @@ using Fams3Adapter.Dynamics.Types;
 using Fams3Adapter.Dynamics.OptionSets.Models;
 using System.Text;
 using Fams3Adapter.Dynamics.SearchRequest;
+using Fams3Adapter.Dynamics.SearchResponse;
 using DynamicsAdapter.Web.PersonSearch.Models;
 using Fams3Adapter.Dynamics.TaxIncomeInformation;
 using Fams3Adapter.Dynamics.FinancialOtherIncome;
@@ -592,6 +593,7 @@ namespace DynamicsAdapter.Web.Mapping
                     info.JCACode = fin.JCACode;
                     info.TaxAmount = fin.TaxAmount;
                     info.Description = fin.Description;
+                    info.ResponseComments = fin.FAMS_ResponseComments;
                     if (fin.Date.HasValue)
                         info.Date = fin.Date.Value;
                     if (fin.InformationSource.HasValue)
@@ -666,14 +668,14 @@ namespace DynamicsAdapter.Web.Mapping
         }
     }
 
-    public class TaxIncomeInformationConvertor : IValueConverter<SSG_TaxIncomeInformation[], ICollection<TaxIncomeInformation>>
+    public class TaxIncomeInformationConvertor : IValueConverter<TaxIncomeInformationEntity[], ICollection<TaxIncomeInformation>>
     {
-        public ICollection<TaxIncomeInformation> Convert(SSG_TaxIncomeInformation[] sourceMember, ResolutionContext context)
+        public ICollection<TaxIncomeInformation> Convert(TaxIncomeInformationEntity[] sourceMember, ResolutionContext context)
         {
             var toReturn = new List<TaxIncomeInformation>();
             if (sourceMember != null)
             {
-                foreach (SSG_TaxIncomeInformation tax in sourceMember)
+                foreach (TaxIncomeInformationEntity tax in sourceMember)
                 {
                     TaxIncomeInformation taxIncomeInformation = new TaxIncomeInformation();
                     taxIncomeInformation.TaxYear = tax.TaxYear;
@@ -686,6 +688,7 @@ namespace DynamicsAdapter.Web.Mapping
                     taxIncomeInformation.TaxAmount = tax.TaxAmount;
                     taxIncomeInformation.EffectiveDate = tax.EffectiveDate;
                     taxIncomeInformation.Note = tax.Note;
+                    taxIncomeInformation.ResponseComments = tax.ResponseComments;
 
                     // Handle null TaxCode
                     if (!string.IsNullOrEmpty(tax.TaxCode))
@@ -709,6 +712,71 @@ namespace DynamicsAdapter.Web.Mapping
                 }
             }
             return toReturn;
+        }
+    }
+
+    public class NOA_TaxIncomeInformationConvertor : IValueConverter<FAMS_NOA_TaxIncomeInformationEntity[], ICollection<TaxIncomeInformation>>
+    {
+        public ICollection<TaxIncomeInformation> Convert(FAMS_NOA_TaxIncomeInformationEntity[] sourceMember, ResolutionContext context)
+        {
+            var toReturn = new List<TaxIncomeInformation>();
+            if (sourceMember != null)
+            {
+                foreach (FAMS_NOA_TaxIncomeInformationEntity tax in sourceMember)
+                {
+                    TaxIncomeInformation taxIncomeInformation = new TaxIncomeInformation
+                    {
+                        TaxYear = tax.TaxYear,
+                        Form = tax.Form,
+                        TaxAmount = tax.TaxAmount,
+                        ResponseComments = tax.FAMS_ResponseComments,
+                        Description = tax.Description ?? string.Empty
+                    };
+
+                    toReturn.Add(taxIncomeInformation);
+                }
+            }
+
+            return toReturn;
+        }
+    }
+
+    public class NOR_TaxIncomeInformationConvertor : IValueConverter<FAMS_NOR_TaxIncomeInformationEntity[], ICollection<TaxIncomeInformation>>
+    {
+        public ICollection<TaxIncomeInformation> Convert(FAMS_NOR_TaxIncomeInformationEntity[] sourceMember, ResolutionContext context)
+        {
+            var toReturn = new List<TaxIncomeInformation>();
+            if (sourceMember != null)
+            {
+                foreach (FAMS_NOR_TaxIncomeInformationEntity tax in sourceMember)
+                {
+                    TaxIncomeInformation taxIncomeInformation = new TaxIncomeInformation
+                    {
+                        TaxYear = tax.TaxYear,
+                        Form = tax.Form,
+                        TaxAmount = tax.TaxAmount,
+                        ResponseComments = tax.FAMS_ResponseComments,
+                        Description = tax.Description ?? string.Empty
+                    };
+
+                    toReturn.Add(taxIncomeInformation);
+                }
+            }
+
+            return toReturn;
+        }
+    }
+
+    public class TaxIncomeInformationsCombinedResolver : IValueResolver<SSG_SearchRequestResponse, Person, ICollection<TaxIncomeInformation>>
+    {
+        public ICollection<TaxIncomeInformation> Resolve(SSG_SearchRequestResponse source, Person destination, ICollection<TaxIncomeInformation> destMember, ResolutionContext context)
+        {
+            var combined = new List<TaxIncomeInformation>();
+            combined.AddRange(new TaxIncomeInformationConvertor().Convert(source.SSG_TaxIncomeInformations, context));
+            combined.AddRange(new NOA_TaxIncomeInformationConvertor().Convert(source.SSG_NOA_TaxIncomeInformations, context));
+            combined.AddRange(new NOR_TaxIncomeInformationConvertor().Convert(source.SSG_NOR_TaxIncomeInformations, context));
+            combined.AddRange(new FinancialOtherIncomeConvertor().Convert(source.SSG_FOI_TaxIncomeInformations, context));
+            return combined;
         }
     }
 }

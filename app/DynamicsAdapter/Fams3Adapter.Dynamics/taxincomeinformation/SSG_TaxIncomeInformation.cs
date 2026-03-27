@@ -9,6 +9,9 @@ namespace Fams3Adapter.Dynamics.TaxIncomeInformation
 {
     public class TaxIncomeInformationEntity : DynamicsEntity
     {
+        [JsonProperty("ssg_taxincomeinformationid")]
+        public Guid TaxincomeinformationId { get; set; }
+
         [JsonProperty("ssg_name")]
         [Description("Tax Year")]
         public string TaxYear { get; set; }
@@ -80,11 +83,53 @@ namespace Fams3Adapter.Dynamics.TaxIncomeInformation
         public string Note { get; set; }
     }
 
-    public class SSG_TaxIncomeInformation : TaxIncomeInformationEntity
+    public class FAMS_NOA_TaxIncomeInformationEntity : DynamicsEntity
     {
-        [JsonProperty("ssg_taxincomeinformationid")]
-        public Guid TaxincomeinformationId { get; set; }
+        [JsonProperty("fams_noticeofassessmentid")]
+        public Guid NoticeOfAssessmentId { get; set; }
 
+        [JsonProperty("fams_name")]
+        [Description("Tax Year")]
+        public string TaxYear { get; set; }
+
+        [JsonProperty("fams_form")]
+        [Description("Tax Form")]
+        public string Form { get; set; }
+
+        [JsonProperty("fams_description")]
+        [Description("Description")]
+        public string Description { get; set; }
+
+        [JsonProperty("fams_taxamount")]
+        [Description("Tax Amount")]
+        public string TaxAmount { get; set; }
+
+        [JsonProperty("fams_responsecomment")]
+        public string FAMS_ResponseComments { get; set; }
+    }
+
+    public class FAMS_NOR_TaxIncomeInformationEntity : DynamicsEntity
+    {
+        [JsonProperty("fams_noticeofreassessmentid")]
+        public Guid NoticeOfReassessmentId { get; set; }
+
+        [JsonProperty("fams_name")]
+        [Description("Tax Year")]
+        public string TaxYear { get; set; }
+
+        [JsonProperty("fams_form")]
+        [Description("Tax Form")]
+        public string Form { get; set; }
+
+        [JsonProperty("fams_description")]
+        [Description("Description")]
+        public string Description { get; set; }
+
+        [JsonProperty("fams_taxamount")]
+        [Description("Tax Amount")]
+        public string TaxAmount { get; set; }
+
+        [JsonProperty("fams_responsecomment")]
+        public string FAMS_ResponseComments { get; set; }
     }
 }
-

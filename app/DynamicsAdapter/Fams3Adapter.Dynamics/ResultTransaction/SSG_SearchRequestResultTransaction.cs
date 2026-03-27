@@ -67,8 +67,17 @@ namespace Fams3Adapter.Dynamics.ResultTransaction
         public virtual SSG_SafetyConcernDetail SafetyConcern { get; set; }
 
         [JsonProperty("ssg_taxincomeinformation")]
-        public virtual SSG_TaxIncomeInformation Taxincomeinformation { get; set; }
-        
+        public virtual TaxIncomeInformationEntity Taxincomeinformation { get; set; }
+
+        [JsonProperty("fams_noticeofassessment")]
+        public virtual FAMS_NOA_TaxIncomeInformationEntity NOA_TaxIncomeInformation { get; set; }
+
+        [JsonProperty("fams_noticeofreassessment")]
+        public virtual FAMS_NOR_TaxIncomeInformationEntity NOR_TaxIncomeInformation { get; set; }
+
+        [JsonProperty("fams_financialotherincome")]
+        public virtual FinancialOtherIncomeEntity FinancialOtherIncome { get; set; }
+
         [JsonProperty("ssg_SearchAPIRequest")]
         public virtual SSG_SearchApiRequest SearchApiRequest { get; set; }
 
@@ -81,7 +90,6 @@ namespace Fams3Adapter.Dynamics.ResultTransaction
         [JsonProperty("ssg_notes")]
         public string Notes { get; set; }
 
-        [JsonProperty("fams_financialotherincome")]
-        public virtual FAMS_FinancialOtherIncome FinancialOtherIncome { get; set; }
+
     }
 }

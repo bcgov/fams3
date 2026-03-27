@@ -61,7 +61,10 @@ namespace Fams3Adapter.Dynamics.Duplicate
             {"NotesEntity","ssg_notese" },
             {"SafetyConcernEntity", "ssg_safetyconcerndetail" },
             {"EmailEntity", "ssg_email" },
-            {"TaxIncomeInformationEntity", "ssg_taxincomeinformation" }
+            {"TaxIncomeInformationEntity", "ssg_taxincomeinformation"},
+            {"TaxIncomeInformationEntity", "fams_noticeofassessment"},
+            {"TaxIncomeInformationEntity", "fams_noticeofreassessment"},
+            {"TaxIncomeInformationEntity", "fams_financialotherincome"}
         };
 
         public DuplicateDetectionService(IODataClient oDataClient)
@@ -227,9 +230,9 @@ namespace Fams3Adapter.Dynamics.Duplicate
                     };
                     break;
                 case "TaxIncomeInformationEntity":
-                    if (((SSG_Person)fatherObj).SSG_TaxIncomeInformations != null) 
+                    if (((SSG_Person)fatherObj).SSG_TaxIncomeInformations != null)
                     {
-                        foreach (SSG_TaxIncomeInformation taxinfo in ((SSG_Person)fatherObj).SSG_TaxIncomeInformations)
+                        foreach (TaxIncomeInformationEntity taxinfo in ((SSG_Person)fatherObj).SSG_TaxIncomeInformations)
                         {
                             if (await Same(entity, taxinfo)) return taxinfo.TaxincomeinformationId;
                         };
@@ -294,7 +297,7 @@ namespace Fams3Adapter.Dynamics.Duplicate
                 .FindEntriesAsync(cancellationToken);
 
             SSG_DuplicateDetectionConfig[] array = duplicateConfigs.ToArray();
-            for(int i=0; i<array.Count(); i++)
+            for (int i = 0; i < array.Count(); i++)
             {
                 array[i].DuplicateFieldList=array[i].DuplicateFields.Split("|");
             }

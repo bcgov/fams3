@@ -87,23 +87,16 @@ namespace Fams3Adapter.Dynamics.SearchResponse
         public SSG_PhoneNumber[] SSG_PhoneNumbers { get; set; }
 
         [JsonProperty("ssg_ssg_searchrequestresponse_ssg_taxincomeinformation_Responseid")]
-        public SSG_TaxIncomeInformation[] SSG_TaxIncomeInformations { get; set; }
+        public TaxIncomeInformationEntity[] SSG_TaxIncomeInformations { get; set; }
 
-        /// <summary>
-        /// Populated by SearchResponseService after fetching by SearchRequest ID.
-        /// Not from Dynamics OData expand — FAMS_FinancialOtherIncome has no direct link to SSG_SearchRequestResponse.
-        /// </summary>
-        public FAMS_FinancialOtherIncome[] FAMS_FinancialOtherIncomes { get; set; }
+        [JsonProperty("fams_ssg_searchrequestresponse_fams_noticeofassessment_ResponseId")]
+        public FAMS_NOA_TaxIncomeInformationEntity[] SSG_NOA_TaxIncomeInformations { get; set; }
 
-        /// <summary>
-        /// Populated by SearchResponseService after fetching from fams_noticeofassessment by SearchRequest ID.
-        /// </summary>
-        public FAMS_NoticeOfAssessment[] FAMS_NoticeOfAssessments { get; set; }
+        [JsonProperty("fams_ssg_searchrequestresponse_fams_noticeofreassessment_responseid")]
+        public FAMS_NOR_TaxIncomeInformationEntity[] SSG_NOR_TaxIncomeInformations { get; set; }
 
-        /// <summary>
-        /// Populated by SearchResponseService after fetching from fams_noticeofreassessment by SearchRequest ID.
-        /// </summary>
-        public FAMS_NoticeOfReassessment[] FAMS_NoticeOfReassessments { get; set; }
+        [JsonProperty("fams_ssg_searchrequestresponse_fams_financialotherincome_responseid")]
+        public FAMS_FinancialOtherIncome[] SSG_FOI_TaxIncomeInformations { get; set; }
 
         [JsonProperty("ssg_ssg_searchrequestresponse_ssg_safetyconcerndetail_ResponseId")]
         public SSG_SafetyConcernDetail[] SSG_SafetyConcernDetails { get; set; }

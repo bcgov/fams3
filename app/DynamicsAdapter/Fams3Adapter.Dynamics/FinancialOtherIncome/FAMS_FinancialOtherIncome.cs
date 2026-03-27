@@ -65,5 +65,8 @@ namespace Fams3Adapter.Dynamics.FinancialOtherIncome
     {
         [JsonProperty("fams_financialotherincomeid")]
         public Guid FinancialOtherIncomeId { get; set; }
-    }
+
+        [JsonProperty("fams_responsecomment")]
+        public string FAMS_ResponseComments { get; set; }
+    }    
 }

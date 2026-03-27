@@ -39,7 +39,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
     {
         Task<SSG_Identifier> CreateIdentifier(IdentifierEntity identifier, CancellationToken cancellationToken);
         Task<SSG_Address> CreateAddress(AddressEntity address, CancellationToken cancellationToken);
-        Task<SSG_TaxIncomeInformation> CreateTaxIncomeInformation(TaxIncomeInformationEntity taxinfo, CancellationToken cancellationToken);
+        Task<TaxIncomeInformationEntity> CreateTaxIncomeInformation(TaxIncomeInformationEntity taxinfo, CancellationToken cancellationToken);
         Task<FAMS_FinancialOtherIncome> CreateFinancialOtherIncome(FinancialOtherIncomeEntity finOtherIncome, CancellationToken cancellationToken);
         Task<SSG_PhoneNumber> CreatePhoneNumber(PhoneNumberEntity phoneNumber, CancellationToken cancellationToken);
         Task<SSG_Email> CreateEmail(EmailEntity email, CancellationToken cancellationToken);
@@ -325,7 +325,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             return insertedAddress;
         }
 
-        public async Task<SSG_TaxIncomeInformation> CreateTaxIncomeInformation(TaxIncomeInformationEntity taxinfo, CancellationToken cancellationToken)
+        public async Task<TaxIncomeInformationEntity> CreateTaxIncomeInformation(TaxIncomeInformationEntity taxinfo, CancellationToken cancellationToken)
         {
             if (taxinfo.Person.IsDuplicated)
             {
@@ -337,15 +337,15 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                         duplicatedTaxInfoId,
                         taxinfo.Person.PersonId);
 
-                    return new SSG_TaxIncomeInformation() { TaxincomeinformationId = duplicatedTaxInfoId };
+                    return new TaxIncomeInformationEntity() { TaxincomeinformationId = duplicatedTaxInfoId };
                 }
             }
 
-            SSG_TaxIncomeInformation insertedRecord = null;
+            TaxIncomeInformationEntity insertedRecord = null;
             try
             {
                 insertedRecord = await this._oDataClient
-                    .For<SSG_TaxIncomeInformation>()
+                    .For<TaxIncomeInformationEntity>()
                     .Set(taxinfo)
                     .InsertEntryAsync(cancellationToken);
             }

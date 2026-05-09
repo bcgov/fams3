@@ -9,9 +9,6 @@ namespace Fams3Adapter.Dynamics.TaxIncomeInformation
 {
     public class TaxIncomeInformationEntity : DynamicsEntity
     {
-        [JsonProperty("ssg_taxincomeinformationid")]
-        public Guid TaxincomeinformationId { get; set; }
-
         [JsonProperty("ssg_name")]
         [Description("Tax Year")]
         public string TaxYear { get; set; }
@@ -81,6 +78,12 @@ namespace Fams3Adapter.Dynamics.TaxIncomeInformation
         [JsonProperty("fams_note")]
         [Description("Note")]
         public string Note { get; set; }
+    }
+
+    public class SSG_TaxIncomeInformation : TaxIncomeInformationEntity
+    {
+        [JsonProperty("ssg_taxincomeinformationid")]
+        public Guid TaxincomeinformationId { get; set; }
     }
 
     public class FAMS_NOA_TaxIncomeInformationEntity : DynamicsEntity

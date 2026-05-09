@@ -39,7 +39,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
     {
         Task<SSG_Identifier> CreateIdentifier(IdentifierEntity identifier, CancellationToken cancellationToken);
         Task<SSG_Address> CreateAddress(AddressEntity address, CancellationToken cancellationToken);
-        Task<TaxIncomeInformationEntity> CreateTaxIncomeInformation(TaxIncomeInformationEntity taxinfo, CancellationToken cancellationToken);
+        Task<SSG_TaxIncomeInformation> CreateTaxIncomeInformation(TaxIncomeInformationEntity taxinfo, CancellationToken cancellationToken);
         Task<FAMS_FinancialOtherIncome> CreateFinancialOtherIncome(FinancialOtherIncomeEntity finOtherIncome, CancellationToken cancellationToken);
         Task<SSG_PhoneNumber> CreatePhoneNumber(PhoneNumberEntity phoneNumber, CancellationToken cancellationToken);
         Task<SSG_Email> CreateEmail(EmailEntity email, CancellationToken cancellationToken);
@@ -325,7 +325,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             return insertedAddress;
         }
 
-        public async Task<TaxIncomeInformationEntity> CreateTaxIncomeInformation(TaxIncomeInformationEntity taxinfo, CancellationToken cancellationToken)
+        public async Task<SSG_TaxIncomeInformation> CreateTaxIncomeInformation(TaxIncomeInformationEntity taxinfo, CancellationToken cancellationToken)
         {
             if (taxinfo.Person.IsDuplicated)
             {
@@ -337,15 +337,15 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                         duplicatedTaxInfoId,
                         taxinfo.Person.PersonId);
 
-                    return new TaxIncomeInformationEntity() { TaxincomeinformationId = duplicatedTaxInfoId };
+                    return new SSG_TaxIncomeInformation() { TaxincomeinformationId = duplicatedTaxInfoId };
                 }
             }
 
-            TaxIncomeInformationEntity insertedRecord = null;
+            SSG_TaxIncomeInformation insertedRecord = null;
             try
             {
                 insertedRecord = await this._oDataClient
-                    .For<TaxIncomeInformationEntity>()
+                    .For<SSG_TaxIncomeInformation>("ssg_taxincomeinformations")
                     .Set(taxinfo)
                     .InsertEntryAsync(cancellationToken);
             }
@@ -411,7 +411,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
             return insertedRecord;
         }
-
+    
         private IEnumerable<FAMS_TaxCode> _taxCodes { get; set; }
         public async Task<IEnumerable<FAMS_TaxCode>> GetTaxCodes(CancellationToken cancellationToken)
         {
@@ -833,7 +833,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
         public async Task<SSG_SearchRequest> CreateSearchRequest(SearchRequestEntity searchRequest, CancellationToken cancellationToken)
         {
             _logger.LogDebug("➡️ Start base CreateSearchRequest");
-           
+
             SearchRequestEntity linkedSearchRequest = await LinkSearchRequestRef(searchRequest, cancellationToken);
 
             try
@@ -842,8 +842,8 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                     .Set(linkedSearchRequest)
                     .InsertEntryAsync(cancellationToken);
 
-                _logger.LogInformation("🏁 End Dynamics base SearchRequest created successfully. SearchRequestId: {SearchRequestId}, FileId: {FileId}", 
-                    result?.SearchRequestId, 
+                _logger.LogInformation("🏁 End Dynamics base SearchRequest created successfully. SearchRequestId: {SearchRequestId}, FileId: {FileId}",
+                    result?.SearchRequestId,
                     result?.FileId);
 
                 return result;
@@ -1303,9 +1303,9 @@ namespace Fams3Adapter.Dynamics.SearchRequest
             }
             catch (Exception ex)
             {
-                 _logger.LogError(ex,
-                    "❌ Error while retrieving SearchRequestReason for ReasonCode {ReasonCode}",
-                    reasonCode);
+                _logger.LogError(ex,
+                   "❌ Error while retrieving SearchRequestReason for ReasonCode {ReasonCode}",
+                   reasonCode);
 
                 DynamicsApiErrorLogger.LogDynamicsError(ex, _logger);
                 throw;

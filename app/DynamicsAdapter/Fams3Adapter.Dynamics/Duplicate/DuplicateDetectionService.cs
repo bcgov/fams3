@@ -62,9 +62,9 @@ namespace Fams3Adapter.Dynamics.Duplicate
             {"SafetyConcernEntity", "ssg_safetyconcerndetail" },
             {"EmailEntity", "ssg_email" },
             {"TaxIncomeInformationEntity", "ssg_taxincomeinformation"},
-            {"TaxIncomeInformationEntity", "fams_noticeofassessment"},
-            {"TaxIncomeInformationEntity", "fams_noticeofreassessment"},
-            {"TaxIncomeInformationEntity", "fams_financialotherincome"}
+            {"NoticeOfAssessmentEntity", "fams_noticeofassessment"},
+            {"NoticeOfReassessmentEntity", "fams_noticeofreassessment"},
+            {"FinancialOtherIncomeEntity", "fams_financialotherincome"}
         };
 
         public DuplicateDetectionService(IODataClient oDataClient)
@@ -95,7 +95,7 @@ namespace Fams3Adapter.Dynamics.Duplicate
             SSG_DuplicateDetectionConfig config = _configs.FirstOrDefault(m => m.EntityName == name);
             if (config == null) return null;
 
-            IList<PropertyInfo> props = new List<PropertyInfo>(type.GetProperties());       
+            IList<PropertyInfo> props = new List<PropertyInfo>(type.GetProperties());
 
             return hashstring(GetConcateFieldsStr(config.DuplicateFieldList, props, entity));
         }
@@ -234,11 +234,11 @@ namespace Fams3Adapter.Dynamics.Duplicate
                     {
                         foreach (TaxIncomeInformationEntity taxinfo in ((SSG_Person)fatherObj).SSG_TaxIncomeInformations)
                         {
-                            if (await Same(entity, taxinfo)) return taxinfo.TaxincomeinformationId;
-                        };
+                            if (await Same(entity, taxinfo)) return (taxinfo as SSG_TaxIncomeInformation)?.TaxincomeinformationId ?? Guid.Empty;
+                        }
                     }
                     break;
-            }            
+            }
 
             return Guid.Empty;
         }
@@ -257,8 +257,8 @@ namespace Fams3Adapter.Dynamics.Duplicate
 
             Type type = entity.GetType();
             string ssgName;
-            if(!EntityNameMap.TryGetValue(type.Name, out ssgName)) return false;
-            if( !ssgName.Equals(ssg.GetType().Name,StringComparison.InvariantCultureIgnoreCase)) 
+            if (!EntityNameMap.TryGetValue(type.Name, out ssgName)) return false;
+            if (!ssgName.Equals(ssg.GetType().Name, StringComparison.InvariantCultureIgnoreCase))
                 return false;
 
             SSG_DuplicateDetectionConfig config = _configs.FirstOrDefault(m => m.EntityName.ToLower() == ssgName.ToLower());

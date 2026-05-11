@@ -862,7 +862,7 @@ namespace Fams3Adapter.Dynamics.Test.Duplicate
             Guid existedTaxInfoId = Guid.NewGuid();
             SSG_Person person = new SSG_Person()
             {
-                SSG_TaxIncomeInformations = new List<SSG_TaxIncomeInformation>() {
+                SSG_TaxIncomeInformations = new List<TaxIncomeInformationEntity>() {
                     new SSG_TaxIncomeInformation{TaxYearResult="2022", EmploymentIncomeT4Amount="100", TaxincomeinformationId=existedTaxInfoId}
                 }.ToArray()
             };
@@ -878,11 +878,11 @@ namespace Fams3Adapter.Dynamics.Test.Duplicate
             Guid existedTaxInfoId = Guid.NewGuid();
             SSG_Person person = new SSG_Person()
             {
-                SSG_TaxIncomeInformations = new List<SSG_TaxIncomeInformation>() {
+                SSG_TaxIncomeInformations = new List<TaxIncomeInformationEntity>() {
                     new SSG_TaxIncomeInformation{TaxYearResult="2022", EmploymentIncomeT4Amount="100", TaxincomeinformationId=existedTaxInfoId}
                 }.ToArray()
             };
-            TaxIncomeInformationEntity entity = new TaxIncomeInformationEntity() { TaxYearResult = "2022", EmploymentIncomeT4Amount="200" };
+            TaxIncomeInformationEntity entity = new TaxIncomeInformationEntity() { TaxYearResult = "2022", EmploymentIncomeT4Amount = "200" };
             Guid guid = await _sut.Exists(person, entity);
             Assert.AreEqual(Guid.Empty, guid);
         }
@@ -893,7 +893,7 @@ namespace Fams3Adapter.Dynamics.Test.Duplicate
             Guid existedTaxInfoId = Guid.NewGuid();
             SSG_Person person = new SSG_Person()
             {
-                SSG_TaxIncomeInformations = new List<SSG_TaxIncomeInformation>() {
+                SSG_TaxIncomeInformations = new List<TaxIncomeInformationEntity>() {
                     new SSG_TaxIncomeInformation{TaxYearResult="2022", EmploymentIncomeT4Amount="100", TaxincomeinformationId=existedTaxInfoId}
                 }.ToArray()
             };

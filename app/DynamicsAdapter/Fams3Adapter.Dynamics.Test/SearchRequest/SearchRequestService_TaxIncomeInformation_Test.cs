@@ -81,7 +81,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
                 Person = new SSG_Person()
                 {
                     PersonId = _testId,
-                    SSG_TaxIncomeInformations = new List<SSG_TaxIncomeInformation>()
+                    SSG_TaxIncomeInformations = new List<TaxIncomeInformationEntity>()
                     {
                         new SSG_TaxIncomeInformation(){ TaxincomeinformationId=_testTaxIncomeInformationId}
                     }.ToArray(),
@@ -106,7 +106,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
                 Person = new SSG_Person()
                 {
                     PersonId = _testId,
-                    SSG_TaxIncomeInformations = new List<SSG_TaxIncomeInformation>()
+                    SSG_TaxIncomeInformations = new List<TaxIncomeInformationEntity>()
                     {
                         new SSG_TaxIncomeInformation(){TaxincomeinformationId=_testTaxIncomeInformationId}
                     }.ToArray(),

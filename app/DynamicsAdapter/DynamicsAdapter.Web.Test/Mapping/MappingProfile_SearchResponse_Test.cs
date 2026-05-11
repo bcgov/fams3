@@ -11,6 +11,7 @@ using Fams3Adapter.Dynamics.InsuranceClaim;
 using Fams3Adapter.Dynamics.Investment;
 using Fams3Adapter.Dynamics.Name;
 using Fams3Adapter.Dynamics.Notes;
+using Fams3Adapter.Dynamics.NoticeOfReassessment;
 using Fams3Adapter.Dynamics.OtherAsset;
 using Fams3Adapter.Dynamics.Pension;
 using Fams3Adapter.Dynamics.Person;
@@ -24,6 +25,7 @@ using Fams3Adapter.Dynamics.SocialMedia;
 using Fams3Adapter.Dynamics.TaxIncomeInformation;
 using Fams3Adapter.Dynamics.Types;
 using Fams3Adapter.Dynamics.Vehicle;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -129,9 +131,9 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 {
                      new SSG_Electronica{ SocialMediaAddress="addr" }
                 }.ToArray(),
-                SSG_TaxIncomeInformations = new List<SSG_TaxIncomeInformation>
+                SSG_TaxIncomeInformations = new List<TaxIncomeInformationEntity>
                 {
-                     new SSG_TaxIncomeInformation{ EmploymentIncomeT4Amount ="1234" }
+                     new TaxIncomeInformationEntity{ EmploymentIncomeT4Amount ="1234" }
                 }.ToArray(),
             };
             Person person = _mapper.Map<Person>(response);
@@ -293,7 +295,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 PhoneExtension = "123",
                 TelephoneNumberType = TelephoneNumberType.Home.Value,
                 ResponseComments = "responseComments",
-                PhoneNumber="123456"
+                PhoneNumber = "123456"
             };
 
             Phone phone = _mapper.Map<Phone>(phoneNumber);
@@ -329,7 +331,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 PrimaryPhoneExtension = "primaryExt",
                 PrimaryContactEmail = "test@primaryContact.com",
                 PrimaryFax = "primaryFax",
-                Email="test@test.com",
+                Email = "test@test.com",
                 Website = "www.website.com",
                 AddressLine1 = "employmentAddress1",
                 AddressLine2 = "employmentAddress2",
@@ -362,10 +364,10 @@ namespace DynamicsAdapter.Web.Test.Mapping
                         Email = "contactemail"
                     }
                 }.ToArray(),
-                Date1=new DateTime(2002,1,1),
-                Date1Label="Effective Date",
-                Date2=new DateTime(2003,1,1),
-                Date2Label="End Date"
+                Date1 = new DateTime(2002, 1, 1),
+                Date1Label = "Effective Date",
+                Date2 = new DateTime(2003, 1, 1),
+                Date2Label = "End Date"
             };
 
             Employment e = _mapper.Map<Employment>(employment);
@@ -436,7 +438,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 AdjusterFirstName = "adjustfirstName",
                 AdjusterLastName = "adjustlastName",
                 AdjusterPhoneNumber = "phonenumber",
-                SupplierCountrySubdivisionCode="BC"
+                SupplierCountrySubdivisionCode = "BC"
             };
 
             InsuranceClaim claim = _mapper.Map<InsuranceClaim>(icbcClaim);
@@ -488,7 +490,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
         {
             SSG_Asset_BankingInformation bank = new SSG_Asset_BankingInformation
             {
-                CouldNotLocate=true
+                CouldNotLocate = true
             };
 
             BankInfo bankInfo = _mapper.Map<BankInfo>(bank);
@@ -625,7 +627,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
         {
             SSG_Asset_RealEstateProperty property = new SSG_Asset_RealEstateProperty
             {
-                 CouldNotLocate=true
+                CouldNotLocate = true
             };
 
             RealEstateProperty p = _mapper.Map<RealEstateProperty>(property);
@@ -654,7 +656,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
             SSG_Email e = new SSG_Email
             {
                 Email = "test@test.com",
-                EmailType= 867670000
+                EmailType = 867670000
             };
 
             Email email = _mapper.Map<Email>(e);

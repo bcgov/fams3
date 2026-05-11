@@ -42,7 +42,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchApiRequest
                     Id = _testId
                 }));
 
-            _sut = new SearchApiRequestService(odataClientMock.Object);
+            _sut = new SearchApiRequestService(odataClientMock.Object, null);
 
         }
 

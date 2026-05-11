@@ -162,7 +162,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchApiRequest
                  StatusCode = SearchApiRequestStatusReason.Complete.Value
              }));
 
-            _sut = new SearchApiRequestService(odataClientMock.Object);
+            _sut = new SearchApiRequestService(odataClientMock.Object, null);
 
         }
 

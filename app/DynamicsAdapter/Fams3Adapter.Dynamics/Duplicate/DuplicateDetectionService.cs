@@ -61,7 +61,10 @@ namespace Fams3Adapter.Dynamics.Duplicate
             {"NotesEntity","ssg_notese" },
             {"SafetyConcernEntity", "ssg_safetyconcerndetail" },
             {"EmailEntity", "ssg_email" },
-            {"TaxIncomeInformationEntity", "ssg_taxincomeinformation"}
+            {"TaxIncomeInformationEntity", "ssg_taxincomeinformation"},
+            {"NoticeOfAssessmentEntity", "fams_noticeofassessment"},
+            {"NoticeOfReassessmentEntity", "fams_noticeofreassessment"},
+            {"FinancialOtherIncomeEntity", "fams_financialotherincome"}
         };
 
         public DuplicateDetectionService(IODataClient oDataClient)
@@ -249,9 +252,8 @@ namespace Fams3Adapter.Dynamics.Duplicate
                     {
                         foreach (TaxIncomeInformationEntity taxinfo in ((SSG_Person)fatherObj).SSG_TaxIncomeInformations)
                         {
-                            if (await Same(entity, taxinfo)) return taxinfo.TaxincomeinformationId;
+                            if (await Same(entity, taxinfo)) return (taxinfo as SSG_TaxIncomeInformation)?.TaxincomeinformationId ?? Guid.Empty;
                         }
-                        ;
                     }
                     break;
             }

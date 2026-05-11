@@ -37,11 +37,7 @@ namespace Fams3Adapter.Dynamics.NoticeOfReassessment
         public string JCACode { get; set; }
 
         [JsonProperty("fams_searchrequest")]
-        public virtual SSG_SearchRequest SearchRequest { get; set; }
-
-        /// <summary>OData v4 lookup backing field — used for $filter queries without navigation property expansion.</summary>
-        [JsonProperty("_fams_searchrequest_value")]
-        public Guid SearchRequestId { get; set; }
+        public virtual SSG_SearchRequest SearchRequest { get; set; }        
     }
 
     public class FAMS_NoticeOfReassessment : NoticeOfReassessmentEntity

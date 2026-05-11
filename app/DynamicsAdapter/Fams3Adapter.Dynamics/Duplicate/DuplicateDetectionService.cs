@@ -125,109 +125,127 @@ namespace Fams3Adapter.Dynamics.Duplicate
                     foreach (SSG_Identifier identifier in ((SSG_Person)fatherObj).SSG_Identifiers)
                     {
                         if (await Same(entity, identifier)) return identifier.IdentifierId;
-                    };
+                    }
+                    ;
                     break;
                 case "PhoneNumberEntity":
                     foreach (SSG_PhoneNumber phone in ((SSG_Person)fatherObj).SSG_PhoneNumbers)
                     {
                         if (await Same(entity, phone)) return phone.PhoneNumberId;
-                    };
+                    }
+                    ;
                     break;
                 case "AddressEntity":
                     foreach (SSG_Address addr in ((SSG_Person)fatherObj).SSG_Addresses)
                     {
                         if (await Same(entity, addr)) return addr.AddressId;
-                    };
+                    }
+                    ;
                     break;
                 case "AliasEntity":
                     foreach (SSG_Aliase alias in ((SSG_Person)fatherObj).SSG_Aliases)
                     {
                         if (await Same(entity, alias)) return alias.AliasId;
-                    };
+                    }
+                    ;
                     break;
                 case "VehicleEntity":
                     foreach (SSG_Asset_Vehicle v in ((SSG_Person)fatherObj).SSG_Asset_Vehicles)
                     {
                         if (await Same(entity, v)) return v.VehicleId;
-                    };
+                    }
+                    ;
                     break;
                 case "AssetOwnerEntity":
                     foreach (SSG_AssetOwner owner in ((SSG_Asset_Vehicle)fatherObj).SSG_AssetOwners)
                     {
                         if (await Same(entity, owner)) return owner.AssetOwnerId;
-                    };
+                    }
+                    ;
                     break;
                 case "RelatedPersonEntity":
                     foreach (SSG_Identity relatedPerson in ((SSG_Person)fatherObj).SSG_Identities)
                     {
                         if (await Same(entity, relatedPerson)) return relatedPerson.RelatedPersonId;
-                    };
+                    }
+                    ;
                     break;
                 case "EmploymentEntity":
                     foreach (SSG_Employment employment in ((SSG_Person)fatherObj).SSG_Employments)
                     {
                         if (await Same(entity, employment)) return employment.EmploymentId;
-                    };
+                    }
+                    ;
                     break;
                 case "EmploymentContactEntity":
                     foreach (SSG_EmploymentContact contact in ((SSG_Employment)fatherObj).SSG_EmploymentContacts)
                     {
                         if (await Same(entity, contact)) return contact.EmploymentContactId;
-                    };
+                    }
+                    ;
                     break;
                 case "AssetOtherEntity":
                     foreach (SSG_Asset_Other other in ((SSG_Person)fatherObj).SSG_Asset_Others)
                     {
                         if (await Same(entity, other)) return other.AssetOtherId;
-                    };
+                    }
+                    ;
                     break;
                 case "BankingInformationEntity":
                     foreach (SSG_Asset_BankingInformation bankInfo in ((SSG_Person)fatherObj).SSG_Asset_BankingInformations)
                     {
                         if (await Same(entity, bankInfo)) return bankInfo.BankingInformationId;
-                    };
+                    }
+                    ;
                     break;
                 case "CompensationClaimEntity":
                     foreach (SSG_Asset_WorkSafeBcClaim claim in ((SSG_Person)fatherObj).SSG_Asset_WorkSafeBcClaims)
                     {
                         if (await Same(entity, claim)) return claim.CompensationClaimId;
-                    };
+                    }
+                    ;
                     break;
                 case "ICBCClaimEntity":
                     foreach (SSG_Asset_ICBCClaim insurance in ((SSG_Person)fatherObj).SSG_Asset_ICBCClaims)
                     {
                         if (await Same(entity, insurance)) return insurance.ICBCClaimId;
-                    };
+                    }
+                    ;
                     break;
                 case "SimplePhoneNumberEntity":
                     foreach (SSG_SimplePhoneNumber phone in ((SSG_Asset_ICBCClaim)fatherObj).SSG_SimplePhoneNumbers)
                     {
                         if (await Same(entity, phone)) return phone.SimplePhoneNumberId;
-                    };
+                    }
+                    ;
                     break;
                 case "InvolvedPartyEntity":
                     foreach (SSG_InvolvedParty party in ((SSG_Asset_ICBCClaim)fatherObj).SSG_InvolvedParties)
                     {
                         if (await Same(entity, party)) return party.InvolvedPartyId;
-                    };
+                    }
+                    ;
                     break;
                 case "NotesEntity":
                     foreach (SSG_Notese note in ((SSG_SearchRequest)fatherObj).SSG_Notes)
                     {
                         if (await Same(entity, note)) return note.NotesId;
-                    };
+                    }
+                    ;
                     break;
                 case "SafetyConcernEntity":
                     foreach (SSG_SafetyConcernDetail safety in ((SSG_Person)fatherObj).SSG_SafetyConcernDetails)
                     {
                         if (await Same(entity, safety)) return safety.SafetyConcernDetailId;
-                    };
+                    }
+                    ;
                     break;
                 case "EmailEntity":
                     foreach (SSG_Email email in ((SSG_Person)fatherObj).SSG_Emails)
                     {
                         if (await Same(entity, email)) return email.EmailId;
-                    };
+                    }
+                    ;
                     break;
                 case "TaxIncomeInformationEntity":
                     if (((SSG_Person)fatherObj).SSG_TaxIncomeInformations != null)
@@ -299,7 +317,7 @@ namespace Fams3Adapter.Dynamics.Duplicate
             SSG_DuplicateDetectionConfig[] array = duplicateConfigs.ToArray();
             for (int i = 0; i < array.Count(); i++)
             {
-                array[i].DuplicateFieldList=array[i].DuplicateFields.Split("|");
+                array[i].DuplicateFieldList = array[i].DuplicateFields.Split("|");
             }
 
             _configs = array.AsEnumerable<SSG_DuplicateDetectionConfig>();

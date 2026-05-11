@@ -1,4 +1,4 @@
-name: Main - Build Image and Push to Openshift Registry for Dev Deployment
+name: OLD S2I Build/Deploy DEV
 on:
   workflow_dispatch:
     inputs:

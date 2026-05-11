@@ -1,6 +1,6 @@
 # Used to trigger deployment to test and prod Openshift environnment by Image stream re-tagging and labelling pod
 
-name: Trigger deployment to test and prod Openshift environnment by Image stream re-tagging and labelling pod
+name: FAMS3-Deploy-Adapter to TEST/PROD
 
 on:
   workflow_dispatch:

@@ -1,4 +1,4 @@
-name: FAMS3 - Build Image and Push to Openshift Registry for Dev Deployment
+name: FAMS3-Build/Deploy Adapter to DEV
 on:
   workflow_dispatch:
     inputs:

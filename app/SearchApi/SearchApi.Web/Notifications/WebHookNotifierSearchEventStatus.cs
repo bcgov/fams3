@@ -47,7 +47,7 @@ namespace SearchApi.Web.Notifications
 
                     if (!URLHelper.TryCreateUri(webHook.Uri, eventName, $"{searchRequestKey}", out var endpoint))
                     {
-                        _logger.LogWarning(
+                        _logger.LogError(
                             $"The webHook {webHookName} notification uri is not established or is not an absolute Uri for {webHook.Name}. Set the WebHook.Uri value on SearchApi.WebHooks settings.");
                         throw new Exception("uri is not established.");
                     }

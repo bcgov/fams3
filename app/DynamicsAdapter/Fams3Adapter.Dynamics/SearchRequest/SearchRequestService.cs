@@ -285,7 +285,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                                     .FindEntryAsync(cancellationToken);
             if (country == null)
             {
-                _logger.LogDebug(
+                _logger.LogWarning(
                     "Country lookup failed for '{CountryName}'. Address insert may fail validation.",
                     countryName);
             }
@@ -297,7 +297,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
                                         .FindEntryAsync(cancellationToken);
             if (subdivision == null)
             {
-                _logger.LogDebug(
+                _logger.LogWarning(
                     "Subdivision lookup failed for '{SubdivisionName}'. Address insert may fail validation.",
                     subdivisionName);
             }
@@ -922,7 +922,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
                 if (searchRequest == null)
                 {
-                    _logger.LogDebug("No SearchRequest found with Id={SearchRequestId}", searchRequestId);
+                    _logger.LogWarning("No SearchRequest found with Id={SearchRequestId}", searchRequestId);
                     return null;
                 }
 
@@ -1014,7 +1014,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
                 if (ssgSearchRequest == null)
                 {
-                    _logger.LogDebug("No SearchRequest found for FileId={FileId}", fileId);
+                    _logger.LogWarning("No SearchRequest found for FileId={FileId}", fileId);
                     return null;
                 }
 
@@ -1065,7 +1065,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
                 if (person == null)
                 {
-                    _logger.LogDebug("GetPerson, no person found with Id={PersonId}", personId);
+                    _logger.LogWarning("GetPerson, no person found with Id={PersonId}", personId);
                 }
                 return person;
             }
@@ -1088,7 +1088,7 @@ namespace Fams3Adapter.Dynamics.SearchRequest
 
                 if (employment == null)
                 {
-                    _logger.LogDebug("GetEmployment, no employment found with Id={EmploymentId}", employmentId);
+                    _logger.LogWarning("GetEmployment, no employment found with Id={EmploymentId}", employmentId);
                 }
 
                 return employment;

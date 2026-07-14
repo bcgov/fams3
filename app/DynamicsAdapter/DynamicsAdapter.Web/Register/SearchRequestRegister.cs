@@ -65,7 +65,7 @@ namespace DynamicsAdapter.Web.Register
         {
             if (request == null)
             {
-                _logger.LogDebug("RegisterSearchApiRequest called with a null request.");
+                _logger.LogWarning("RegisterSearchApiRequest called with a null request.");
                 return false;
             }
 
@@ -87,7 +87,7 @@ namespace DynamicsAdapter.Web.Register
         {
             if (request == null)
             {
-                _logger.LogDebug("SearchForSearchRequestKeys called with a null request.");
+                _logger.LogWarning("SearchForSearchRequestKeys called with a null request.");
                 return false;
             }
 
@@ -181,12 +181,12 @@ namespace DynamicsAdapter.Web.Register
             SSG_SearchApiRequest searchApiReqeust = await GetSearchApiRequest(searchApiRequestId);
             if (searchApiReqeust == null)
             {
-                _logger.LogError("Cannot find the searchApiRequest in Redis Cache.");
+                _logger.LogWarning("Cannot find the searchApiRequest in Redis Cache.");
                 return null;
             }
             if (identifer == null)
             {
-                _logger.LogDebug("source identifier from personfound is null");
+                _logger.LogWarning("source identifier from personfound is null");
                 return null;
             }
 
@@ -205,12 +205,12 @@ namespace DynamicsAdapter.Web.Register
             
             if (searchApiRequest == null)
             {
-                _logger.LogError("Cannot find the searchApiRequest in Redis Cache.");
+                _logger.LogWarning("Cannot find the searchApiRequest in Redis Cache.");
                 return null;
             }
             if (identifer == null)
             {
-                _logger.LogDebug("source identifier from personfound is null");
+                _logger.LogWarning("source identifier from personfound is null");
                 return null;
             }
 
@@ -224,7 +224,7 @@ namespace DynamicsAdapter.Web.Register
         {
             if (guid == Guid.Empty)
             {
-                _logger.LogDebug("RemoveSearchApiRequest called with an empty Guid.");
+                _logger.LogWarning("RemoveSearchApiRequest called with an empty Guid.");
                 return false;
             }
 

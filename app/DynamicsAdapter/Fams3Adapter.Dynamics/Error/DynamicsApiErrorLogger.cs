@@ -6,14 +6,14 @@ namespace Fams3Adapter.Dynamics.Error
 {
     public static class DynamicsApiErrorLogger
     {
-        public static void LogDynamicsError(Exception ex, ILogger logger)
+        public static void LogDynamicsError(Exception ex, ILogger _logger)
         {
-            logger.LogError(ex, "❌ Dynamics operation failed");
+            _logger.LogError(ex, "❌ Dynamics operation failed");
 
             var inner = ex.InnerException;
             while (inner != null)
             {
-                logger.LogError("⛔ InnerException: {Message}", inner.Message);
+                _logger.LogError("⛔ InnerException: {Message}", inner.Message);
                 inner = inner.InnerException;
             }
 
@@ -21,7 +21,7 @@ namespace Fams3Adapter.Dynamics.Error
             {
                 try
                 {
-                    logger.LogError("📝 OData Response Content:\n{Response}", webEx.Response);
+                    _logger.LogError("📝 OData Response Content:\n{Response}", webEx.Response);
                 }
                 catch { }
             }

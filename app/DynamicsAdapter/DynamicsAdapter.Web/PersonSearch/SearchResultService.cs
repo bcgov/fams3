@@ -80,7 +80,7 @@ namespace DynamicsAdapter.Web.PersonSearch
             SSG_Identifier sourceIdentifier = null)
         {
             if (person == null) {
-                _logger.LogDebug("Received null Person object for SearchRequest[{SearchRequestId}]", searchRequest?.SearchRequestId);
+                _logger.LogWarning("Received null Person object for SearchRequest[{SearchRequestId}]", searchRequest?.SearchRequestId);
                 return true; 
             }
 

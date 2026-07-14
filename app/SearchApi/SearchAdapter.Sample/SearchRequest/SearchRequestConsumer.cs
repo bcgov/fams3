@@ -91,7 +91,10 @@ namespace SearchAdapter.Sample.SearchRequest
             }
             else
             {
-                _logger.LogInformation("PersonSearch does not have sufficient information for the adapter to proceed the search.");
+                _logger.LogWarning(
+                    "PersonSearch does not have sufficient information for the adapter to proceed the search: {Errors}",
+                    string.Join("; ", validation.Errors)
+                );
 
                 var rejectionEvent = new PersonSearchRejectedEvent(context.Message.SearchRequestId, context.Message.SearchRequestKey, _profile);
 

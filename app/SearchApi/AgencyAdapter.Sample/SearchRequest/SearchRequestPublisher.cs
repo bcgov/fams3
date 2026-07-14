@@ -49,18 +49,17 @@ namespace AgencyAdapter.Sample.SearchRequest
 
             if (validation.IsValid)
             {
-                _logger.LogDebug("Request is valid.");
+                _logger.LogDebug("Search request is valid.");
                 await Task.FromResult(0);
             }
             else
             {
-                _logger.LogDebug("Request failed.");
+                _logger.LogWarning("Search request is invalid: {Errors}", string.Join("; ", validation.Errors));
 
                 await Task.FromResult(0);
             }
 
             return validation.IsValid;
-
         }
     }
 }

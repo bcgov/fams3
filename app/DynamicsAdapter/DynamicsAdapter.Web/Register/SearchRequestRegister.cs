@@ -276,14 +276,38 @@ namespace DynamicsAdapter.Web.Register
             return true;
         }
 
+        /// <summary>
+        /// Checks if the data partner search is complete for the given search request key.
+        /// </summary>
+        /// <param name="searchRequestKey"></param>
+        /// <returns></returns>
         public async Task<bool> DataPartnerSearchIsComplete(string searchRequestKey)
         {
+            _logger.LogInformation($"DataPartnerSearchIsComplete - Fetching cached value for search key: {searchRequestKey}");
+
             string data = await _cache.GetString($"{searchRequestKey}");
 
-            _logger.LogDebug($"DataPartnerSearchIsComplete : {data}");
-            if (string.IsNullOrEmpty(data)) return true;
-            IEnumerable<JToken> tokens = JObject.Parse(data).SelectTokens("$.DataPartners[?(@.Completed == false)]");
-            return !tokens.Any();
+            _logger.LogDebug($"DataPartnerSearchIsComplete - Cached data: {data}");
+
+            if (string.IsNullOrEmpty(data))
+            {
+                _logger.LogWarning(
+                    $"DataPartnerSearchIsComplete - No data found in cache for searchRequestKey: {searchRequestKey}. Returning true."
+                );
+
+                return true;
+            }
+
+            // Find all DataPartners where Completed is false
+            IEnumerable<JToken> incompleteRecords = JObject.Parse(data).SelectTokens("$.DataPartners[?(@.Completed == false)]");
+            var incompleteCount = incompleteRecords.Count();
+
+            _logger.LogInformation(
+                $"DataPartnerSearchIsComplete - incompleteCount: {incompleteCount}. searchRequestKey: {searchRequestKey}."
+            );
+
+            // Return true if all DataPartners have Completed = true, otherwise return false
+            return incompleteCount == 0;
         }
 
         public async Task<bool> RegisterResponseApiCall(SearchResponseReady ready)

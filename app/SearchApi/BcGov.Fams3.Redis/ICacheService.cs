@@ -28,7 +28,7 @@ namespace BcGov.Fams3.Redis
         Task Update(string key, dynamic data);
         Task<string> Get(string key);
         Task Delete(string key);
-        Task<int> UpdateDataPartnerCompleteStatus(string searchRequestkey,string dataPartner);
+        Task UpdateDataPartnerCompleteStatus(string searchRequestkey,string dataPartner);
     }
 
     public class CacheService : ICacheService

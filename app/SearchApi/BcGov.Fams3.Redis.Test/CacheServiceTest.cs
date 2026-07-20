@@ -103,9 +103,8 @@ namespace BcGov.Fams3.Redis.Test
             _mockRedisDB.Setup(x => x.GetAsync<string>("key", default)).Returns(Task.FromResult("data"));
             //_stackRedisCacheClient.Db0.GetAsync<string>(key)
             _loggerMock = new Mock<ILogger<CacheService>>();
-         
-            _sut = new CacheService(_distributedCacheMock.Object, _stackRedisCacheClientMock.Object);
 
+            _sut = new CacheService(_distributedCacheMock.Object, _stackRedisCacheClientMock.Object, _loggerMock.Object);
         }
 
         [Test]

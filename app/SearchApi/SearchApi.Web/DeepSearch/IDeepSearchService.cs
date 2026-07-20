@@ -85,25 +85,30 @@ namespace SearchApi.Web.DeepSearch
                 return false;
             }
         }
+
+        /// <summary>
+        /// Updates the complete status of a data partner for a given search request key in Redis.
+        /// </summary>
+        /// <param name="searchRequestKey"></param>
+        /// <param name="dataPartner"></param>
+        /// <param name="eventName"></param>
+        /// <returns></returns>
         public async Task UpdateDataPartner(string searchRequestKey, string dataPartner, string eventName)
         {
             try
             {
                 if (eventName.Equals(EventName.Completed) || eventName.Equals(EventName.Rejected))
                 {
-                    _logger.LogInformation($"Updating data partner as completed for {dataPartner} for {eventName} event");
-                    int tryCount = await _cacheService.UpdateDataPartnerCompleteStatus(searchRequestKey, dataPartner);
-                    _logger.LogInformation("Successfully update data partner status with {tries}",tryCount);
+                    await _cacheService.UpdateDataPartnerCompleteStatus(searchRequestKey, dataPartner);
                 }
             }
             catch (Exception exception)
             {
-                _logger.LogError($"Update Data Partner Status Failed. [{eventName}] for {searchRequestKey}. [{exception.Message}]");
-
+                _logger.LogError(
+                    $"UpdateDataPartner - Update Data Partner Status Failed. [{eventName}] for {searchRequestKey}. [{exception.Message}]"
+                );
             }
         }
-
-       
 
         public  async Task DeleteFromCache(string searchRequestKey)
         {

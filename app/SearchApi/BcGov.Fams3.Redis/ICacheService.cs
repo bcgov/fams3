@@ -1,6 +1,7 @@
 ﻿
 using BcGov.Fams3.Redis.Model;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using StackExchange.Redis;
 using StackExchange.Redis.Extensions.Core.Abstractions;
@@ -34,12 +35,13 @@ namespace BcGov.Fams3.Redis
     {
         private readonly IDistributedCache _distributedCache;
         private readonly IRedisCacheClient _stackRedisCacheClient;
+        private readonly ILogger<CacheService> _logger;
 
-        public CacheService(IDistributedCache distributedCache, IRedisCacheClient stackRedisCacheClient)
+        public CacheService(IDistributedCache distributedCache, IRedisCacheClient stackRedisCacheClient, ILogger<CacheService> logger)
         {
             _distributedCache = distributedCache;
             _stackRedisCacheClient = stackRedisCacheClient;
-            
+            _logger = logger;
         }
 
         public async Task SaveRequest(SearchRequest searchRequest)
@@ -143,36 +145,94 @@ namespace BcGov.Fams3.Redis
 
         }
 
-        public async Task<int> UpdateDataPartnerCompleteStatus(string key, string dataPartner)
+        /// <summary>
+        /// Updates the complete status of a data partner for a given search request key in Redis. 
+        /// If the search request data is not found or cannot be deserialized, it will remove the cached entry. 
+        /// The method will retry up to a maximum number of attempts if there are concurrent updates to the same key.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="dataPartner"></param>
+        /// <returns></returns>
+        public async Task UpdateDataPartnerCompleteStatus(string key, string dataPartner)
         {
-            if (string.IsNullOrEmpty(key)) throw new ArgumentNullException("Save : Key cannot be null");
-            bool committed = false;
+            _logger.LogInformation(
+                $"UpdateDataPartnerCompleteStatus - Updating complete status for search request key: {key}. Data partner: {dataPartner}."
+            );
+
+            if (string.IsNullOrEmpty(key))
+            {
+                throw new ArgumentNullException("UpdateDataPartnerCompleteStatus - Key cannot be null");
+            }
+
             int tryCounts = 0;
             int MAX_TRY_COUNT = 1000;
-            while (!committed && tryCounts<MAX_TRY_COUNT)
+            while (tryCounts < MAX_TRY_COUNT)
             {
                 tryCounts++;
-                RedisValue oldValue = await _stackRedisCacheClient.Db0.Database.HashGetAsync(key, new RedisValue("data"));
-                var searchRequest=JsonConvert.DeserializeObject<SearchRequest>(oldValue.ToString());
-                if (searchRequest != null)
+
+                // Get the current search request data from Redis hash value
+                RedisValue currentCachedValue = await _stackRedisCacheClient.Db0.Database.HashGetAsync(key, new RedisValue("data"));
+                var searchRequest = currentCachedValue.IsNullOrEmpty
+                    ? null
+                    : JsonConvert.DeserializeObject<SearchRequest>(currentCachedValue.ToString());
+
+                if (searchRequest == null)
                 {
-                    var partner = searchRequest.DataPartners?.FirstOrDefault(x => x.Name == dataPartner);
-                    if (partner != null)
+                    _logger.LogInformation(
+                        $"UpdateDataPartnerCompleteStatus - The 'data' field for key: {key} is missing or could not be deserialized into a search request. Nothing to update."
+                    );
+
+                    // If the value of the deserialized 'data' field is null, then delete the field from Redis hash value.
+                    if (!currentCachedValue.IsNullOrEmpty)
                     {
-                        partner.Completed = true;
+                        _logger.LogWarning(
+                            "UpdateDataPartnerCompleteStatus - The 'data' field for key {Key} could not be deserialized (corrupt data). Removing the 'data' field from the cache entry.",
+                            key
+                        );
+
+                        var cleanupTransaction = _stackRedisCacheClient.Db0.Database.CreateTransaction();
+                        cleanupTransaction.AddCondition(Condition.HashEqual(key, new RedisValue("data"), currentCachedValue));
+                        var cleanupTask = cleanupTransaction.HashDeleteAsync(key, new RedisValue("data"));
+
+                        if (await cleanupTransaction.ExecuteAsync())
+                        {
+                            await cleanupTask;
+                        }
                     }
+
+                    // No non-null search request data found, therefore nothing to update, break out of the loop early
+                    break;
                 }
-                var trans = _stackRedisCacheClient.Db0.Database.CreateTransaction();
-                trans.AddCondition(Condition.HashEqual(key, new RedisValue("data"), oldValue));
-                string newData = JsonConvert.SerializeObject(searchRequest);
-                var task = trans.HashSetAsync(key, new RedisValue("data"),new RedisValue(newData),When.Always, CommandFlags.None);
-                if (await trans.ExecuteAsync())
+
+                var partner = searchRequest.DataPartners?.FirstOrDefault(item => item.Name == dataPartner);
+                if (partner != null)
                 {
-                    var foo = await task;
-                    committed = true;
+                    _logger.LogInformation(
+                        $"UpdateDataPartnerCompleteStatus - Search request found, updating the partner's completed status to true for key: {key}. Data partner: {dataPartner}."
+                    );
+                    // Search request found, update the partner's completed status to true
+                    partner.Completed = true;
+                }
+
+                // Update the search request in Redis
+                var updateTransaction = _stackRedisCacheClient.Db0.Database.CreateTransaction();
+                updateTransaction.AddCondition(Condition.HashEqual(key, new RedisValue("data"), currentCachedValue));
+                var updateTask = updateTransaction.HashSetAsync(
+                    key,
+                    new RedisValue("data"),
+                    new RedisValue(JsonConvert.SerializeObject(searchRequest)),
+                    When.Always,
+                    CommandFlags.None
+                );
+
+                if (await updateTransaction.ExecuteAsync())
+                {
+                    await updateTask;
+                    break;
                 }
             }
-            return tryCounts;
+
+            return;
         }
     }
 }

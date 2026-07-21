@@ -427,6 +427,122 @@ namespace DynamicsAdapter.Web.Test.Register
             bool result = await _sut.DeleteSearchResponseReady("deleteFileId", "referenceId");
             Assert.AreEqual(true, result);
         }
+
+        [Test]
+        public async Task no_cached_data_DataPartnerSearchIsComplete_returns_true()
+        {
+            string key = "missing-search-request-key";
+            _cacheServiceMock.Setup(x => x.GetString(key)).Returns(Task.FromResult<string>(null));
+
+            bool result = await _sut.DataPartnerSearchIsComplete(key);
+
+            Assert.AreEqual(true, result);
+        }
+
+        [Test]
+        public async Task empty_string_cached_data_DataPartnerSearchIsComplete_returns_true()
+        {
+            string key = "empty-search-request-key";
+            _cacheServiceMock.Setup(x => x.GetString(key)).Returns(Task.FromResult(string.Empty));
+
+            bool result = await _sut.DataPartnerSearchIsComplete(key);
+
+            Assert.AreEqual(true, result);
+        }
+
+        [Test]
+        public async Task literal_null_json_cached_data_DataPartnerSearchIsComplete_returns_true()
+        {
+            string key = "null-search-request-key";
+            _cacheServiceMock.Setup(x => x.GetString(key)).Returns(Task.FromResult("null"));
+
+            bool result = await _sut.DataPartnerSearchIsComplete(key);
+
+            Assert.AreEqual(true, result);
+        }
+
+        [Test]
+        public async Task non_object_json_cached_data_DataPartnerSearchIsComplete_returns_true()
+        {
+            string key = "array-search-request-key";
+            _cacheServiceMock.Setup(x => x.GetString(key)).Returns(Task.FromResult("[1,2,3]"));
+
+            bool result = await _sut.DataPartnerSearchIsComplete(key);
+
+            Assert.AreEqual(true, result);
+        }
+
+        [Test]
+        public async Task malformed_json_cached_data_DataPartnerSearchIsComplete_returns_true()
+        {
+            string key = "malformed-search-request-key";
+            _cacheServiceMock.Setup(x => x.GetString(key)).Returns(Task.FromResult("{not valid json"));
+
+            bool result = await _sut.DataPartnerSearchIsComplete(key);
+
+            Assert.AreEqual(true, result);
+        }
+
+        [Test]
+        public async Task object_json_missing_data_partners_property_DataPartnerSearchIsComplete_returns_true()
+        {
+            string key = "no-data-partners-property-key";
+            _cacheServiceMock.Setup(x => x.GetString(key)).Returns(Task.FromResult("{}"));
+
+            bool result = await _sut.DataPartnerSearchIsComplete(key);
+
+            Assert.AreEqual(true, result);
+        }
+
+        [Test]
+        public async Task object_json_with_empty_data_partners_array_DataPartnerSearchIsComplete_returns_true()
+        {
+            string key = "empty-data-partners-key";
+            var cachedData = new { DataPartners = new object[0] };
+            _cacheServiceMock.Setup(x => x.GetString(key)).Returns(Task.FromResult(JsonConvert.SerializeObject(cachedData)));
+
+            bool result = await _sut.DataPartnerSearchIsComplete(key);
+
+            Assert.AreEqual(true, result);
+        }
+
+        [Test]
+        public async Task all_data_partners_completed_DataPartnerSearchIsComplete_returns_true()
+        {
+            string key = "all-complete-search-request-key";
+            var cachedData = new
+            {
+                DataPartners = new[]
+                {
+                    new { Name = "ICBC", Completed = true },
+                    new { Name = "BCHydro", Completed = true }
+                }
+            };
+            _cacheServiceMock.Setup(x => x.GetString(key)).Returns(Task.FromResult(JsonConvert.SerializeObject(cachedData)));
+
+            bool result = await _sut.DataPartnerSearchIsComplete(key);
+
+            Assert.AreEqual(true, result);
+        }
+
+        [Test]
+        public async Task some_data_partners_incomplete_DataPartnerSearchIsComplete_returns_false()
+        {
+            string key = "some-incomplete-search-request-key";
+            var cachedData = new
+            {
+                DataPartners = new[]
+                {
+                    new { Name = "ICBC", Completed = true },
+                    new { Name = "BCHydro", Completed = false }
+                }
+            };
+            _cacheServiceMock.Setup(x => x.GetString(key)).Returns(Task.FromResult(JsonConvert.SerializeObject(cachedData)));
+
+            bool result = await _sut.DataPartnerSearchIsComplete(key);
+
+            Assert.AreEqual(false, result);
+        }
     }
 }
 

@@ -20,6 +20,8 @@ namespace BcGov.Fams3.Redis.Test
         private Mock<IDistributedCache> _distributedCacheMock;
         private Mock<IRedisCacheClient> _stackRedisCacheClientMock;
         private Mock<IRedisDatabase> _mockRedisDB;
+        private Mock<IDatabase> _mockDatabase;
+        private Mock<ITransaction> _mockTransaction;
         private Mock<ILogger<CacheService>> _loggerMock;
         private ICacheService _sut;
         private string _existedRequestKey;
@@ -102,6 +104,16 @@ namespace BcGov.Fams3.Redis.Test
             _mockRedisDB.Setup(x => x.SearchKeysAsync("test")).Returns(Task.FromResult(new List<string> {  }.AsEnumerable()));
             _mockRedisDB.Setup(x => x.GetAsync<string>("key", default)).Returns(Task.FromResult("data"));
             //_stackRedisCacheClient.Db0.GetAsync<string>(key)
+
+            _mockDatabase = new Mock<IDatabase>();
+            _mockRedisDB.Setup(x => x.Database).Returns(_mockDatabase.Object);
+
+            _mockTransaction = new Mock<ITransaction>();
+            _mockDatabase.Setup(x => x.CreateTransaction(It.IsAny<object>())).Returns(_mockTransaction.Object);
+            _mockTransaction.Setup(x => x.ExecuteAsync(It.IsAny<CommandFlags>())).ReturnsAsync(true);
+            _mockTransaction.Setup(x => x.HashSetAsync(It.IsAny<RedisKey>(), It.IsAny<RedisValue>(), It.IsAny<RedisValue>(), It.IsAny<When>(), It.IsAny<CommandFlags>())).ReturnsAsync(true);
+            _mockTransaction.Setup(x => x.HashDeleteAsync(It.IsAny<RedisKey>(), It.IsAny<RedisValue>(), It.IsAny<CommandFlags>())).ReturnsAsync(true);
+
             _loggerMock = new Mock<ILogger<CacheService>>();
 
             _sut = new CacheService(_distributedCacheMock.Object, _stackRedisCacheClientMock.Object, _loggerMock.Object);
@@ -322,6 +334,162 @@ namespace BcGov.Fams3.Redis.Test
         {
             Assert.ThrowsAsync<ArgumentNullException>(() => _sut.Delete(null));
 
+        }
+
+        [Test]
+        public void update_data_partner_complete_status_with_null_key_throws_exception()
+        {
+            Assert.ThrowsAsync<ArgumentNullException>(() => _sut.UpdateDataPartnerCompleteStatus(null, "ICBC"));
+        }
+
+        [Test]
+        public async Task update_data_partner_complete_status_with_missing_cache_entry_does_nothing()
+        {
+            string key = "missing-key";
+            _mockDatabase.Setup(x => x.HashGetAsync(key, "data", It.IsAny<CommandFlags>()))
+                .ReturnsAsync(RedisValue.Null);
+
+            await _sut.UpdateDataPartnerCompleteStatus(key, "ICBC");
+
+            _mockDatabase.Verify(x => x.HashGetAsync(key, "data", It.IsAny<CommandFlags>()), Times.Once);
+            _mockTransaction.Verify(x => x.HashSetAsync(It.IsAny<RedisKey>(), It.IsAny<RedisValue>(), It.IsAny<RedisValue>(), It.IsAny<When>(), It.IsAny<CommandFlags>()), Times.Never);
+            _mockTransaction.Verify(x => x.HashDeleteAsync(It.IsAny<RedisKey>(), It.IsAny<RedisValue>(), It.IsAny<CommandFlags>()), Times.Never);
+        }
+
+        [Test]
+        public async Task update_data_partner_complete_status_with_corrupt_data_removes_cache_field()
+        {
+            string key = "corrupt-key";
+            _mockDatabase.Setup(x => x.HashGetAsync(key, "data", It.IsAny<CommandFlags>()))
+                .ReturnsAsync(new RedisValue("null"));
+
+            await _sut.UpdateDataPartnerCompleteStatus(key, "ICBC");
+
+            _mockTransaction.Verify(x => x.HashDeleteAsync(key, "data", It.IsAny<CommandFlags>()), Times.Once);
+            _mockTransaction.Verify(x => x.HashSetAsync(It.IsAny<RedisKey>(), It.IsAny<RedisValue>(), It.IsAny<RedisValue>(), It.IsAny<When>(), It.IsAny<CommandFlags>()), Times.Never);
+        }
+
+        [Test]
+        public async Task update_data_partner_complete_status_with_matching_partner_marks_completed()
+        {
+            string key = "match-key";
+            var searchRequest = new SearchRequest
+            {
+                SearchRequestKey = key,
+                DataPartners = new List<DataPartner>
+                {
+                    new DataPartner { Name = "ICBC", Completed = false },
+                    new DataPartner { Name = "BCHydro", Completed = false }
+                }
+            };
+            _mockDatabase.Setup(x => x.HashGetAsync(key, "data", It.IsAny<CommandFlags>()))
+                .ReturnsAsync(new RedisValue(JsonConvert.SerializeObject(searchRequest)));
+
+            RedisValue capturedValue = RedisValue.Null;
+            _mockTransaction
+                .Setup(x => x.HashSetAsync(key, "data", It.IsAny<RedisValue>(), When.Always, CommandFlags.None))
+                .Callback<RedisKey, RedisValue, RedisValue, When, CommandFlags>((k, f, v, w, flags) => capturedValue = v)
+                .ReturnsAsync(true);
+
+            await _sut.UpdateDataPartnerCompleteStatus(key, "ICBC");
+
+            _mockTransaction.Verify(x => x.HashSetAsync(key, "data", It.IsAny<RedisValue>(), When.Always, CommandFlags.None), Times.Once);
+            var updated = JsonConvert.DeserializeObject<SearchRequest>(capturedValue.ToString());
+            Assert.IsTrue(updated.DataPartners.First(p => p.Name == "ICBC").Completed);
+            Assert.IsFalse(updated.DataPartners.First(p => p.Name == "BCHydro").Completed);
+        }
+
+        [Test]
+        public async Task update_data_partner_complete_status_with_unknown_partner_still_writes_back_data()
+        {
+            string key = "unknown-partner-key";
+            var searchRequest = new SearchRequest
+            {
+                SearchRequestKey = key,
+                DataPartners = new List<DataPartner>
+                {
+                    new DataPartner { Name = "ICBC", Completed = false }
+                }
+            };
+            _mockDatabase.Setup(x => x.HashGetAsync(key, "data", It.IsAny<CommandFlags>()))
+                .ReturnsAsync(new RedisValue(JsonConvert.SerializeObject(searchRequest)));
+
+            await _sut.UpdateDataPartnerCompleteStatus(key, "UnknownPartner");
+
+            _mockTransaction.Verify(x => x.HashSetAsync(key, "data", It.IsAny<RedisValue>(), When.Always, CommandFlags.None), Times.Once);
+        }
+
+        [Test]
+        public async Task update_data_partner_complete_status_retries_when_transaction_fails_then_succeeds()
+        {
+            string key = "retry-key";
+            var searchRequest = new SearchRequest
+            {
+                SearchRequestKey = key,
+                DataPartners = new List<DataPartner> { new DataPartner { Name = "ICBC", Completed = false } }
+            };
+            _mockDatabase.Setup(x => x.HashGetAsync(key, "data", It.IsAny<CommandFlags>()))
+                .ReturnsAsync(new RedisValue(JsonConvert.SerializeObject(searchRequest)));
+
+            _mockTransaction.SetupSequence(x => x.ExecuteAsync(It.IsAny<CommandFlags>()))
+                .ReturnsAsync(false)
+                .ReturnsAsync(true);
+
+            await _sut.UpdateDataPartnerCompleteStatus(key, "ICBC");
+
+            _mockDatabase.Verify(x => x.HashGetAsync(key, "data", It.IsAny<CommandFlags>()), Times.Exactly(2));
+            _mockTransaction.Verify(x => x.ExecuteAsync(It.IsAny<CommandFlags>()), Times.Exactly(2));
+        }
+
+        [Test]
+        public async Task update_data_partner_complete_status_exceeds_max_retries_returns_without_throwing()
+        {
+            string key = "always-fails-key";
+            var searchRequest = new SearchRequest
+            {
+                SearchRequestKey = key,
+                DataPartners = new List<DataPartner> { new DataPartner { Name = "ICBC", Completed = false } }
+            };
+            _mockDatabase.Setup(x => x.HashGetAsync(key, "data", It.IsAny<CommandFlags>()))
+                .ReturnsAsync(new RedisValue(JsonConvert.SerializeObject(searchRequest)));
+
+            _mockTransaction.Setup(x => x.ExecuteAsync(It.IsAny<CommandFlags>())).ReturnsAsync(false);
+
+            await _sut.UpdateDataPartnerCompleteStatus(key, "ICBC");
+
+            _mockDatabase.Verify(x => x.HashGetAsync(key, "data", It.IsAny<CommandFlags>()), Times.Exactly(1000));
+            _mockTransaction.Verify(x => x.ExecuteAsync(It.IsAny<CommandFlags>()), Times.Exactly(1000));
+        }
+
+        [Test]
+        public async Task update_data_partner_complete_status_with_corrupt_data_does_not_retry_when_cleanup_transaction_fails()
+        {
+            string key = "corrupt-key-no-retry";
+            _mockDatabase.Setup(x => x.HashGetAsync(key, "data", It.IsAny<CommandFlags>()))
+                .ReturnsAsync(new RedisValue("null"));
+            _mockTransaction.Setup(x => x.ExecuteAsync(It.IsAny<CommandFlags>())).ReturnsAsync(false);
+
+            await _sut.UpdateDataPartnerCompleteStatus(key, "ICBC");
+
+            _mockDatabase.Verify(x => x.HashGetAsync(key, "data", It.IsAny<CommandFlags>()), Times.Once);
+            _mockTransaction.Verify(x => x.HashDeleteAsync(key, "data", It.IsAny<CommandFlags>()), Times.Once);
+        }
+
+        [Test]
+        public async Task update_data_partner_complete_status_with_null_data_partners_collection_still_writes_back_data()
+        {
+            string key = "null-partners-key";
+            var searchRequest = new SearchRequest
+            {
+                SearchRequestKey = key,
+                DataPartners = null
+            };
+            _mockDatabase.Setup(x => x.HashGetAsync(key, "data", It.IsAny<CommandFlags>()))
+                .ReturnsAsync(new RedisValue(JsonConvert.SerializeObject(searchRequest)));
+
+            await _sut.UpdateDataPartnerCompleteStatus(key, "ICBC");
+
+            _mockTransaction.Verify(x => x.HashSetAsync(key, "data", It.IsAny<RedisValue>(), When.Always, CommandFlags.None), Times.Once);
         }
     }
 }

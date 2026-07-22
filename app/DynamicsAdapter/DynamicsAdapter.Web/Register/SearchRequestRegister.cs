@@ -181,7 +181,7 @@ namespace DynamicsAdapter.Web.Register
             SSG_SearchApiRequest searchApiReqeust = await GetSearchApiRequest(searchApiRequestId);
             if (searchApiReqeust == null)
             {
-                _logger.LogWarning("Cannot find the searchApiRequest in Redis Cache.");
+                _logger.LogError("Cannot find the searchApiRequest in Redis Cache.");
                 return null;
             }
             if (identifer == null)
@@ -205,7 +205,7 @@ namespace DynamicsAdapter.Web.Register
             
             if (searchApiRequest == null)
             {
-                _logger.LogWarning("Cannot find the searchApiRequest in Redis Cache.");
+                _logger.LogError("Cannot find the searchApiRequest in Redis Cache.");
                 return null;
             }
             if (identifer == null)
@@ -298,8 +298,32 @@ namespace DynamicsAdapter.Web.Register
                 return true;
             }
 
+            JToken parsedData;
+            try
+            {
+                parsedData = JToken.Parse(data);
+            }
+            catch (JsonReaderException ex)
+            {
+                _logger.LogWarning(
+                    ex,
+                    $"DataPartnerSearchIsComplete - Cached data for searchRequestKey: {searchRequestKey} is not valid JSON. Returning true."
+                );
+
+                return true;
+            }
+
+            if (parsedData.Type != JTokenType.Object)
+            {
+                _logger.LogWarning(
+                    $"DataPartnerSearchIsComplete - Cached data for searchRequestKey: {searchRequestKey} is not a valid object. Returning true."
+                );
+
+                return true;
+            }
+
             // Find all DataPartners where Completed is false
-            IEnumerable<JToken> incompleteRecords = JObject.Parse(data).SelectTokens("$.DataPartners[?(@.Completed == false)]");
+            IEnumerable<JToken> incompleteRecords = ((JObject)parsedData).SelectTokens("$.DataPartners[?(@.Completed == false)]");
             var incompleteCount = incompleteRecords.Count();
 
             _logger.LogInformation(

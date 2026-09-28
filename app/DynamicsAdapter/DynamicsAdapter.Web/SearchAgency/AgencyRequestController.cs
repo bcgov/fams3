@@ -327,7 +327,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                     RequestId = requestOrdered.RequestId,
                     SearchRequestKey = ssgSearchRequest.FileId,
                     SearchRequestId = ssgSearchRequest.SearchRequestId,
-                    TimeStamp = DateTime.Now,
+                    TimeStamp = DateTime.UtcNow,
                     EstimatedCompletion = ssgSearchRequest?.EstimatedCompletionDate,
                     QueuePosition = ssgSearchRequest?.QueuePosition,
                     Message = $"The new Search Request reference: {requestOrdered.RequestId} has been submitted successfully.",
@@ -348,7 +348,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                     RequestId = requestOrdered.RequestId,
                     SearchRequestKey = requestOrdered.SearchRequestKey,
                     SearchRequestId = ssgSearchRequest == null ? Guid.Empty : ssgSearchRequest.SearchRequestId,
-                    TimeStamp = DateTime.Now,
+                    TimeStamp = DateTime.UtcNow,
                     ProviderProfile = new ProviderProfile()
                     {
                         Name = requestOrdered?.Person?.Agency?.Code
@@ -368,7 +368,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                     RequestId = requestOrdered.RequestId,
                     SearchRequestKey = requestOrdered.SearchRequestKey,
                     SearchRequestId = ssgSearchRequest == null ? Guid.Empty : ssgSearchRequest.SearchRequestId,
-                    TimeStamp = DateTime.Now,
+                    TimeStamp = DateTime.UtcNow,
                     EstimatedCompletion = ssgSearchRequest?.EstimatedCompletionDate,
                     QueuePosition = ssgSearchRequest?.QueuePosition,
                     ProviderProfile = new ProviderProfile()

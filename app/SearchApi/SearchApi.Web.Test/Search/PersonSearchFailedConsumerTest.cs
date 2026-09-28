@@ -1,4 +1,4 @@
-﻿using MassTransit.Testing;
+using MassTransit.Testing;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
@@ -34,7 +34,7 @@ namespace SearchApi.Web.Test.Search
             var fakePersonSearchStatus = new FakePersonSearchFailed
             {
                 SearchRequestKey = _requestKey,
-                TimeStamp = DateTime.Now
+                TimeStamp = DateTime.UtcNow
             };
 
 

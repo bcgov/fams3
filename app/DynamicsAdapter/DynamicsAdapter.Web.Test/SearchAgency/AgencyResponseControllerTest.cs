@@ -1,4 +1,4 @@
-﻿using DynamicsAdapter.Web.Register;
+using DynamicsAdapter.Web.Register;
 using DynamicsAdapter.Web.SearchAgency;
 using DynamicsAdapter.Web.SearchAgency.Models;
 using DynamicsAdapter.Web.SearchAgency.Webhook;
@@ -33,7 +33,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             _ready = new SearchResponseReady()
             {
                 Activity = "RequestClosed",
-                ActivityDate = DateTime.Now,
+                ActivityDate = DateTime.UtcNow,
                 Agency = "agency",
                 FileId = "fileId",
                 AgencyFileId = "referId",

@@ -799,7 +799,7 @@ namespace DynamicsAdapter.Web.SearchAgency
                 }
                 else
                 {
-                    string date = DateTime.Now.ToString("ddMMMyyy");
+                    string date = DateTime.UtcNow.ToString("ddMMMyyy");
                     resultStr = currentNote.Insert(cleanPreviousNote.Length, $"**UPDATE {date}**");
                 }
             }

@@ -1,4 +1,4 @@
-﻿using BcGov.Fams3.SearchApi.Contracts.Person;
+using BcGov.Fams3.SearchApi.Contracts.Person;
 using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 using BcGov.Fams3.SearchApi.Core.Adapters.Configuration;
 using MassTransit.Testing;
@@ -55,7 +55,7 @@ namespace SearchAdapter.Sample.Test
             await _harness.BusControl.Publish<PersonSearchReceived>(new PersonSearchReceivedTest()
             {
                 SearchRequestId = validGuid,
-                TimeStamp = DateTime.Now,
+                TimeStamp = DateTime.UtcNow,
                 SearchRequestKey = "SearchRequestKey",
                 ReceivedPayload = "{json string}"
             });

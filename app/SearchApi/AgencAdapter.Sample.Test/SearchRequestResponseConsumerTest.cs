@@ -1,4 +1,4 @@
-﻿using AgencyAdapter.Sample.SearchRequest;
+using AgencyAdapter.Sample.SearchRequest;
 using BcGov.Fams3.SearchApi.Contracts.Person;
 using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 using BcGov.Fams3.SearchApi.Contracts.SearchRequest;
@@ -49,7 +49,7 @@ namespace AgencAdapter.Sample.Test
                 SearchRequestId = validGuid,
                 SearchRequestKey = "SearchRequestKey",
                 RequestId = "RequestId",
-                TimeStamp = DateTime.Now,
+                TimeStamp = DateTime.UtcNow,
 
             });
 

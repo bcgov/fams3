@@ -1,4 +1,4 @@
-﻿using BcGov.Fams3.SearchApi.Contracts.Person;
+using BcGov.Fams3.SearchApi.Contracts.Person;
 using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 using BcGov.Fams3.SearchApi.Core.Adapters.Configuration;
 using MassTransit;
@@ -40,7 +40,7 @@ namespace SearchAdapter.Sample.SearchResult
 
             _logger.LogWarning("Sample Adapter, do not use in PRODUCTION.");
 
-            await context.Publish(FakePersonBuilder.BuildFakePersonSearchCompleted(context.Message.SearchRequestId, context.Message.SearchRequestKey, "FirstName", "LastName",DateTime.Now, _profile));
+            await context.Publish(FakePersonBuilder.BuildFakePersonSearchCompleted(context.Message.SearchRequestId, context.Message.SearchRequestKey, "FirstName", "LastName",DateTime.UtcNow, _profile));
         }
      
     }

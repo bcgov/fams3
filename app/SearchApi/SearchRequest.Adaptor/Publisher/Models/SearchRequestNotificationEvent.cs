@@ -1,4 +1,4 @@
-﻿using BcGov.Fams3.SearchApi.Contracts.Person;
+using BcGov.Fams3.SearchApi.Contracts.Person;
 using BcGov.Fams3.SearchApi.Contracts.SearchRequest;
 using System;
 using System.Collections.Generic;
@@ -15,7 +15,7 @@ namespace SearchRequest.Adaptor.Publisher.Models
 
             this.RequestId = baseEvent.RequestId;
             this.SearchRequestId = baseEvent.SearchRequestId;
-            this.TimeStamp = DateTime.Now;
+            this.TimeStamp = DateTime.UtcNow;
             this.SearchRequestKey = baseEvent.SearchRequestKey;
 
         }

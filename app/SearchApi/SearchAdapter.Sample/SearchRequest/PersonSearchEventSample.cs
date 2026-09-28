@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using BcGov.Fams3.SearchApi.Contracts.Person;
 using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
@@ -56,7 +56,7 @@ namespace SearchAdapter.Sample.SearchRequest
                 ProviderProfile = _profile,
                 SearchRequestId = searchrequestId,
                 SearchRequestKey = SearchRequestKey,
-                TimeStamp = DateTime.Now,
+                TimeStamp = DateTime.UtcNow,
                 MatchedPersons = new List<PersonFound>()
                 {
                     new PersonFound(){
@@ -503,7 +503,7 @@ namespace SearchAdapter.Sample.SearchRequest
                 ProviderProfile = _profile,
                 SearchRequestId = searchrequestId,
                 SearchRequestKey = SearchRequestKey,
-                TimeStamp = DateTime.Now,
+                TimeStamp = DateTime.UtcNow,
                 MatchedPersons = new List<PersonFound>()
                 {
                     new PersonFound(){
@@ -948,7 +948,7 @@ namespace SearchAdapter.Sample.SearchRequest
                 ProviderProfile = _profile,
                 SearchRequestId = searchrequestId,
                 SearchRequestKey = searchRequestKey,
-                TimeStamp = DateTime.Now
+                TimeStamp = DateTime.UtcNow
             };
         }
 
@@ -962,7 +962,7 @@ namespace SearchAdapter.Sample.SearchRequest
 
         public PersonSearchRejectedEvent(Guid searchRequestId, string SearchRequestKey, ProviderProfile providerProfile)
         {
-            TimeStamp = DateTime.Now;
+            TimeStamp = DateTime.UtcNow;
             SearchRequestId = searchRequestId;
             ProviderProfile = providerProfile;
             this.SearchRequestKey = SearchRequestKey;

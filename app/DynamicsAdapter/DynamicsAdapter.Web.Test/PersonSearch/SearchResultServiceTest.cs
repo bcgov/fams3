@@ -204,7 +204,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
 
             _fakePerson = new Person()
             {
-                DateOfBirth = DateTime.Now,
+                DateOfBirth = DateTime.UtcNow,
                 FirstName = "TEST1",
                 LastName = "TEST2",
                 Identifiers = new List<PersonalIdentifier>()
@@ -632,7 +632,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
         {
             Person fakePersonNull = new Person()
             {
-                DateOfBirth = DateTime.Now,
+                DateOfBirth = DateTime.UtcNow,
                 FirstName = "TEST1",
                 LastName = "TEST2",
                 Identifiers = null,

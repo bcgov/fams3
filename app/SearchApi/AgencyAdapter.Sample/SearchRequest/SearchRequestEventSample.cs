@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using BcGov.Fams3.SearchApi.Contracts.Person;
 using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
@@ -45,7 +45,7 @@ namespace AgencyAdapter.Sample.SearchRequest
                 SearchRequestId = searchrequestId,
                 SearchRequestKey = searchRequestKey,
                 RequestId = requestId,
-                TimeStamp = DateTime.Now,
+                TimeStamp = DateTime.UtcNow,
                 NotificationType = notification,
                 Action = action,
                 Message = $"{action} occured"

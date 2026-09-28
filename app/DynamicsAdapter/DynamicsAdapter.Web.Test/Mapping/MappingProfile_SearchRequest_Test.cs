@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using DynamicsAdapter.Web.Mapping;
 using DynamicsAdapter.Web.SearchAgency.Models;
 using Fams3Adapter.Dynamics.SearchRequest;
@@ -156,7 +156,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 RequestId = "requestId",
                 SearchRequestKey = "requestKey",
                 SearchRequestId = Guid.NewGuid(),
-                TimeStamp = DateTime.Now,
+                TimeStamp = DateTime.UtcNow,
                 Person = new Person()
                 {
                     Agency = null
@@ -174,7 +174,7 @@ namespace DynamicsAdapter.Web.Test.Mapping
                 RequestId = "requestId",
                 SearchRequestKey = "requestKey",
                 SearchRequestId = Guid.NewGuid(),
-                TimeStamp = DateTime.Now,
+                TimeStamp = DateTime.UtcNow,
                 Person = null,
             };
             Assert.Throws<ArgumentNullException>(() => _mapper.Map<SearchRequestEntity>(searchRequestOrdered));

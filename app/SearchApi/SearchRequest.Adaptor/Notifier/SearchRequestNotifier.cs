@@ -149,7 +149,7 @@ namespace SearchRequestAdaptor.Notifier
                             SearchRequestKey = saved.SearchRequestKey,
                             QueuePosition = saved.QueuePosition,
                             Message = $"Activity RequestSaved occured. ",
-                            TimeStamp = DateTime.Now,
+                            TimeStamp = DateTime.UtcNow,
                             EstimatedCompletion = saved.EstimatedCompletion,
                             FSOName = null,
                             Person = null
@@ -170,7 +170,7 @@ namespace SearchRequestAdaptor.Notifier
                             SearchRequestKey = saved.SearchRequestKey,
                             QueuePosition = saved.QueuePosition,
                             Message = $"Activity RequestSaved occured. ",
-                            TimeStamp = DateTime.Now,
+                            TimeStamp = DateTime.UtcNow,
                             EstimatedCompletion = saved.EstimatedCompletion,
                             FSOName = null,
                             Person = null

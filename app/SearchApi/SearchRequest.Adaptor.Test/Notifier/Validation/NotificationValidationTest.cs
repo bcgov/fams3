@@ -1,4 +1,4 @@
-﻿using Microsoft.VisualBasic;
+using Microsoft.VisualBasic;
 using NUnit.Framework;
 using SearchRequest.Adaptor.Notifier.Models;
 using SearchRequest.Adaptor.Notifier.Models.Validation;
@@ -23,7 +23,7 @@ namespace SearchRequest.Adaptor.Test.Notifier.Validation
         {
             notification = new Notification
             {
-                ActivityDate = DateTime.Now,
+                ActivityDate = DateTime.UtcNow,
                 Acvitity = "RequestAssignedToFSO",
                 AgencyFileId = "12312312",
                 Agency = "FMEP",
@@ -40,7 +40,7 @@ namespace SearchRequest.Adaptor.Test.Notifier.Validation
         {
             notification = new Notification
             {
-                ActivityDate = DateTime.Now,
+                ActivityDate = DateTime.UtcNow,
                 Acvitity = "RequestAsToFSO",
                 AgencyFileId = "12312312",
                 Agency = "FMEP",
@@ -57,7 +57,7 @@ namespace SearchRequest.Adaptor.Test.Notifier.Validation
         {
             notification = new Notification
             {
-                ActivityDate = DateTime.Now,
+                ActivityDate = DateTime.UtcNow,
                 AgencyFileId = "12312312",
                 Agency = "FMEP",
                 FileId = "121212"
@@ -90,7 +90,7 @@ namespace SearchRequest.Adaptor.Test.Notifier.Validation
         {
             notification = new Notification
             {
-                ActivityDate = DateTime.Now,
+                ActivityDate = DateTime.UtcNow,
                 Acvitity = "RequestAssignedToFSO",
                 Agency = "FMEP",
                 FileId = "121212"
@@ -106,7 +106,7 @@ namespace SearchRequest.Adaptor.Test.Notifier.Validation
         {
             notification = new Notification
             {
-                ActivityDate = DateTime.Now,
+                ActivityDate = DateTime.UtcNow,
                 Acvitity = "RequestAssignedToFSO",
                 AgencyFileId = "12312312",
                 FileId = "121212"
@@ -123,7 +123,7 @@ namespace SearchRequest.Adaptor.Test.Notifier.Validation
         {
             notification = new Notification
             {
-                ActivityDate = DateTime.Now,
+                ActivityDate = DateTime.UtcNow,
                 Acvitity = "RequestAssignedToFSO",
                 AgencyFileId = "12312312"
             };

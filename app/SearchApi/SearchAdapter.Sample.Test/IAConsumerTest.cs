@@ -1,4 +1,4 @@
-﻿using BcGov.Fams3.SearchApi.Contracts.IA;
+using BcGov.Fams3.SearchApi.Contracts.IA;
 using BcGov.Fams3.SearchApi.Contracts.Person;
 using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 using MassTransit.Testing;
@@ -53,7 +53,7 @@ namespace SearchAdapter.Sample.Test
                 await _harness.BusControl.Publish<IASearchOrdered>(new IAOrderedTest()
                 {
                     SearchRequestId = Guid.NewGuid(),
-                    TimeStamp = DateTime.Now,
+                    TimeStamp = DateTime.UtcNow,
                     BatchNo = "091212",
                     Person = new Person()
                     {

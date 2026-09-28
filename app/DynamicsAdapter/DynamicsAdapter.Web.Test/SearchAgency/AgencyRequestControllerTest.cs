@@ -1,4 +1,4 @@
-﻿using DynamicsAdapter.Web.Register;
+using DynamicsAdapter.Web.Register;
 using DynamicsAdapter.Web.SearchAgency;
 using DynamicsAdapter.Web.SearchAgency.Models;
 using Fams3Adapter.Dynamics.SearchRequest;
@@ -34,7 +34,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             {
                 Action = RequestAction.NEW,
                 RequestId = "121212121212",
-                TimeStamp = DateTime.Now,
+                TimeStamp = DateTime.UtcNow,
                 Person = new Person()
                 {
                     Agency = new Agency()
@@ -77,7 +77,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             {
                 Action = RequestAction.NEW,
                 RequestId = Guid.NewGuid().ToString(),
-                TimeStamp = DateTime.Now,
+                TimeStamp = DateTime.UtcNow,
             };
             var result = await _sut.CreateSearchRequest(null, validSearchRequestOrdered);
 
@@ -100,7 +100,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             {
                 Action = RequestAction.UPDATE,
                 RequestId = Guid.NewGuid().ToString(),
-                TimeStamp = DateTime.Now,
+                TimeStamp = DateTime.UtcNow,
             };
             var result = await _sut.CreateSearchRequest("requestId", updateSearchRequestOrdered);
 
@@ -116,7 +116,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             {
                 Action = RequestAction.NEW,
                 RequestId = requestId,
-                TimeStamp = DateTime.Now,
+                TimeStamp = DateTime.UtcNow,
             };
 
             _agencyRequestServiceMock.Setup(
@@ -147,7 +147,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 Action = RequestAction.CANCEL,
                 RequestId = "121212121212",
                 SearchRequestKey = "fileId",
-                TimeStamp = DateTime.Now,
+                TimeStamp = DateTime.UtcNow,
                 Person = new Person()
                 {
                     Agency = new Agency()
@@ -185,7 +185,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             {
                 Action = RequestAction.NEW,
                 RequestId = Guid.NewGuid().ToString(),
-                TimeStamp = DateTime.Now,
+                TimeStamp = DateTime.UtcNow,
             };
             var result = await _sut.CancelSearchRequest("requestId", validSearchRequestOrdered);
 
@@ -207,7 +207,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             {
                 Action = RequestAction.UPDATE,
                 RequestId = Guid.NewGuid().ToString(),
-                TimeStamp = DateTime.Now,
+                TimeStamp = DateTime.UtcNow,
             };
             var result = await _sut.CancelSearchRequest("requestId", updateSearchRequestOrdered);
 
@@ -222,7 +222,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             {
                 Action = RequestAction.CANCEL,
                 RequestId = Guid.NewGuid().ToString(),
-                TimeStamp = DateTime.Now,
+                TimeStamp = DateTime.UtcNow,
             };
             var result = await _sut.CancelSearchRequest("requestId", updateSearchRequestOrdered);
 
@@ -237,7 +237,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             {
                 Action = RequestAction.CANCEL,
                 RequestId = Guid.NewGuid().ToString(),
-                TimeStamp = DateTime.Now,
+                TimeStamp = DateTime.UtcNow,
                 SearchRequestKey = "notexist"
             };
             _agencyRequestServiceMock.Setup(x => x.ProcessCancelSearchRequest(It.IsAny<SearchRequestOrdered>()))
@@ -255,7 +255,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             {
                 Action = RequestAction.CANCEL,
                 RequestId = "23232321",
-                TimeStamp = DateTime.Now,
+                TimeStamp = DateTime.UtcNow,
                 SearchRequestKey = "exceptionFileId"
             };
 
@@ -277,7 +277,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
                 Action = RequestAction.UPDATE,
                 RequestId = "121212121212",
                 SearchRequestKey = "fileId",
-                TimeStamp = DateTime.Now,
+                TimeStamp = DateTime.UtcNow,
                 Person = new Person()
                 {
                     Agency = new Agency()
@@ -318,7 +318,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             {
                 Action = RequestAction.UPDATE,
                 RequestId = Guid.NewGuid().ToString(),
-                TimeStamp = DateTime.Now,
+                TimeStamp = DateTime.UtcNow,
             };
             var result = await _sut.UpdateSearchRequest(null, validSearchRequestOrdered);
 
@@ -340,7 +340,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             {
                 Action = RequestAction.CANCEL,
                 RequestId = Guid.NewGuid().ToString(),
-                TimeStamp = DateTime.Now,
+                TimeStamp = DateTime.UtcNow,
             };
             var result = await _sut.UpdateSearchRequest("requestId", updateSearchRequestOrdered);
 
@@ -355,7 +355,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             {
                 Action = RequestAction.UPDATE,
                 RequestId = Guid.NewGuid().ToString(),
-                TimeStamp = DateTime.Now,
+                TimeStamp = DateTime.UtcNow,
             };
             var result = await _sut.UpdateSearchRequest("requestId", updateSearchRequestOrdered);
 
@@ -370,7 +370,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             {
                 Action = RequestAction.UPDATE,
                 RequestId = Guid.NewGuid().ToString(),
-                TimeStamp = DateTime.Now,
+                TimeStamp = DateTime.UtcNow,
                 SearchRequestKey = "notexist"
             };
             _agencyRequestServiceMock.Setup(x => x.ProcessUpdateSearchRequest(It.IsAny<SearchRequestOrdered>()))
@@ -388,7 +388,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             {
                 Action = RequestAction.UPDATE,
                 RequestId = "23232321",
-                TimeStamp = DateTime.Now,
+                TimeStamp = DateTime.UtcNow,
                 SearchRequestKey = "exceptionFileId"
             };
 
@@ -409,7 +409,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             {
                 Action = RequestAction.NEW,
                 RequestId = "121212121212",
-                TimeStamp = DateTime.Now,
+                TimeStamp = DateTime.UtcNow,
                 ProviderProfile=new Web.PersonSearch.Models.ProviderProfile { Name="providerProfile"},
                 NotificationType=BcGov.Fams3.SearchApi.Contracts.SearchRequest.NotificationType.RequestClosed,
                 SearchRequestKey="123344",
@@ -437,7 +437,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             Acknowledgement ack = new Acknowledgement()
             {
                 RequestId = "121212121212",
-                TimeStamp = DateTime.Now,
+                TimeStamp = DateTime.UtcNow,
                 ProviderProfile = new Web.PersonSearch.Models.ProviderProfile { Name = "providerProfile" },
                 NotificationType = BcGov.Fams3.SearchApi.Contracts.SearchRequest.NotificationType.RequestClosed,
                 SearchRequestKey = "",
@@ -456,7 +456,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             Acknowledgement ack = new Acknowledgement()
             {
                 RequestId = "notInCache",
-                TimeStamp = DateTime.Now,
+                TimeStamp = DateTime.UtcNow,
                 ProviderProfile = new Web.PersonSearch.Models.ProviderProfile { Name = "providerProfile" },
                 NotificationType = BcGov.Fams3.SearchApi.Contracts.SearchRequest.NotificationType.RequestClosed,
                 SearchRequestKey = "123344",

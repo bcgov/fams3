@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
@@ -25,7 +25,7 @@ namespace SearchRequest.Adaptor.Test.Notifier
             FakeNotification = new Notification
             {
                 Acvitity = "RequestAssignedToFSO",
-                ActivityDate = DateTime.Now,
+                ActivityDate = DateTime.UtcNow,
                 FileId = "1231231",
                 Agency = "FMEP",
                 AgencyFileId = "1231231"

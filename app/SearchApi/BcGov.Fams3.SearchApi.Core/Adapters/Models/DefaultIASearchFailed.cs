@@ -1,4 +1,4 @@
-﻿using BcGov.Fams3.SearchApi.Contracts.IA;
+using BcGov.Fams3.SearchApi.Contracts.IA;
 using BcGov.Fams3.SearchApi.Contracts.Person;
 using System;
 
@@ -10,7 +10,7 @@ namespace BcGov.Fams3.SearchApi.Core.Adapters.Models
         public DefaultIASearchFailed(Guid searchRequestId, string searchRequestKey, Person person, string batchNo = "None")
         {
             SearchRequestId = searchRequestId;
-            TimeStamp = DateTime.Now;
+            TimeStamp = DateTime.UtcNow;
             SearchRequestKey = searchRequestKey;
             Person = person;
             BatchNo = batchNo;

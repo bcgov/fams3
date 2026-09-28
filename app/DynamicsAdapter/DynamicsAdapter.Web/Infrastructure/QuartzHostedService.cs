@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
@@ -66,12 +67,18 @@ namespace DynamicsAdapter.Web.Infrastructure
                 .Build();
         }
 
+        // Explicit BC timezone so schedule times are DST-aware and consistent with the
+        // other Quartz schedulers in the solution (Fams.File.Adapter, Fams.IA.Adapter.Web).
+        // Uses the IANA id so it resolves correctly on Linux containers; the OS tzdata
+        // package is what determines DST rule changes, not this code.
+        private const string BcTimeZoneId = "America/Vancouver";
+
         private static ITrigger CreateTrigger(JobSchedule schedule)
         {
             return TriggerBuilder
                 .Create()
                 .WithIdentity($"{schedule.JobType.FullName}.trigger")
-                .WithCronSchedule(schedule.CronExpression)
+                .WithCronSchedule(schedule.CronExpression, x => x.InTimeZone(TimeZoneInfo.FindSystemTimeZoneById(BcTimeZoneId)))
                 .WithDescription(schedule.CronExpression)
                 .Build();
         }

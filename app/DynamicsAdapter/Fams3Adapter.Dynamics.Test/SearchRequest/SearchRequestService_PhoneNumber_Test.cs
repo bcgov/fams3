@@ -46,7 +46,7 @@ namespace Fams3Adapter.Dynamics.Test.SearchRequest
                 );
             var phone = new PhoneNumberEntity()
             {
-                Date1 = DateTime.Now,
+                Date1 = DateTime.UtcNow,
                 Date1Label = "Effective Date",
                 Date2 = new DateTime(2001, 1, 1),
                 Date2Label = "Expiry Date",

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 
 namespace BcGov.Fams3.SearchApi.Core.Adapters.Models
@@ -7,7 +7,7 @@ namespace BcGov.Fams3.SearchApi.Core.Adapters.Models
     {
         public DefaultPersonSearchAccepted(Guid searchRequestId, ProviderProfile providerProfile, string searchRequestKey)
         {
-            TimeStamp = DateTime.Now;
+            TimeStamp = DateTime.UtcNow;
             SearchRequestId = searchRequestId;
             ProviderProfile = providerProfile;
             this.SearchRequestKey = searchRequestKey;

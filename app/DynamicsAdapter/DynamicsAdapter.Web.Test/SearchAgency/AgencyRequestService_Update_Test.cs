@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using DynamicsAdapter.Web.SearchAgency;
 using DynamicsAdapter.Web.SearchAgency.Exceptions;
 using DynamicsAdapter.Web.SearchAgency.Models;
@@ -1259,7 +1259,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             string existingNotes = "Be careful of this.";
             string newNotes = "Be careful of this. not that.";
             string result = _sut.UpdateCurrentNote(newNotes, existingNotes);
-            string date = DateTime.Now.ToString("ddMMMyyyy");
+            string date = DateTime.UtcNow.ToString("ddMMMyyyy");
             Assert.AreEqual($"Be careful of this.**UPDATE {date}** not that.", result);
         }
 
@@ -1269,7 +1269,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             string existingNotes = "Be careful of this.**UPDATE 19Mar2021** not that.";
             string newNotes = "Be careful of this. not that. and stay away.";
             string result = _sut.UpdateCurrentNote(newNotes, existingNotes);
-            string date = DateTime.Now.ToString("ddMMMyyyy");
+            string date = DateTime.UtcNow.ToString("ddMMMyyyy");
             Assert.AreEqual($"Be careful of this. not that.**UPDATE {date}** and stay away.", result);
         }
 
@@ -1288,7 +1288,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             string existingNotes = $"Be careful of this not that.{Environment.NewLine}Person Sought : Weight";
             string newNotes = "Be careful of this not that. and stay away.";
             string result = _sut.UpdateCurrentNote(newNotes, existingNotes);
-            string date = DateTime.Now.ToString("ddMMMyyyy");
+            string date = DateTime.UtcNow.ToString("ddMMMyyyy");
             Assert.AreEqual($"Be careful of this not that.**UPDATE {date}** and stay away.", result);
         }
     }

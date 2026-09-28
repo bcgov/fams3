@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -99,7 +99,7 @@ namespace SearchApi.Web.Controllers
             public PersonSearchOrderEvent(Guid searchRequestId, string SearchRequestKey)
             {
                 SearchRequestId = searchRequestId;
-                TimeStamp = DateTime.Now;
+                TimeStamp = DateTime.UtcNow;
                 this.SearchRequestKey = SearchRequestKey;
             }
 

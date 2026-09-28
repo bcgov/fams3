@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
@@ -85,7 +85,7 @@ namespace SearchApi.Web.Test.Notifications
                 {
                     SearchRequestKey = "SearchRequestKey",
                     SearchRequestId = Guid.NewGuid(),
-                    TimeStamp = DateTime.Now,
+                    TimeStamp = DateTime.UtcNow,
                     ProviderProfile = new FakeProviderProfile()
 
 

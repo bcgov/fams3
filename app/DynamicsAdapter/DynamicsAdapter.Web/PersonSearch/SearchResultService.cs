@@ -196,7 +196,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                         FirstName = t1TaxInfos.FirstOrDefault()?.FirstName,
                         LastName = t1TaxInfos.FirstOrDefault()?.LastName,
                         DateOfBirth = t1TaxInfos.FirstOrDefault()?.DateOfBirth,
-                        // Date1 = DateTime.Now,
+                        // Date1 = DateTime.UtcNow,
                         Date1 = GetPacificTimeNow(),    // Temporary code see jira ticket FAMS3-4305
                         SuppliedBySystem = Constants.JcaSystem,
                         TaxIncomeInformations = t1TaxInfos
@@ -422,7 +422,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                     txin.Description = matchedCode?.Value ?? taxinfo.Description ?? taxinfo.TaxCode.Code;
 
                     txin.InformationSource = Constants.JcaSystem;
-                    // txin.Date1 = DateTime.Now;
+                    // txin.Date1 = DateTime.UtcNow;
                     txin.Date1 = GetPacificTimeNow();    // Temporary code see jira ticket FAMS3-4305
 
                     var uploadedTxin = await _searchRequestService.CreateTaxIncomeInformation(txin, cancellationToken);
@@ -486,7 +486,7 @@ namespace DynamicsAdapter.Web.PersonSearch
                     otherin.Description = finIncome.Description ?? finIncome.TaxCode?.Code;
                     otherin.TaxYear = finIncome.TaxYear;
                     otherin.Form = finIncome.Form;
-                    // otherin.Date = DateTime.Now;
+                    // otherin.Date = DateTime.UtcNow;
                     otherin.Date = GetPacificTimeNow();    // Temporary code see jira ticket FAMS3-4305
                     otherin.InformationSource = Constants.JcaSystem;
 

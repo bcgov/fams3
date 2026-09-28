@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -70,7 +70,7 @@ namespace SearchAdapter.Sample.Test
             await _harness.BusControl.Publish<PersonSearchOrdered>(new PersonSearchOrderedTest()
             {
                 SearchRequestId = validGuid,
-                TimeStamp = DateTime.Now,
+                TimeStamp = DateTime.UtcNow,
                 Person = new Person()
                 {
                     FirstName = "firstName",
@@ -83,7 +83,7 @@ namespace SearchAdapter.Sample.Test
             await _harness.BusControl.Publish<PersonSearchOrdered>(new PersonSearchOrderedTest()
             {
                 SearchRequestId = validGuid,
-                TimeStamp = DateTime.Now,
+                TimeStamp = DateTime.UtcNow,
                 Person = new Person()
                 {
                     FirstName = "exception",
@@ -95,7 +95,7 @@ namespace SearchAdapter.Sample.Test
             await _harness.BusControl.Publish<PersonSearchOrdered>(new PersonSearchOrderedTest()
             {
                 SearchRequestId = inValidGuid,
-                TimeStamp = DateTime.Now,
+                TimeStamp = DateTime.UtcNow,
                 Person = new Person()
                 {
                     FirstName = "",

@@ -49,7 +49,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
             _ready = new SearchResponseReady()
             {
                 Activity = "RequestClosed",
-                ActivityDate = DateTime.Now,
+                ActivityDate = DateTime.UtcNow,
                 Agency = "agency",
                 FileId = "fileId",
                 AgencyFileId = "referId",

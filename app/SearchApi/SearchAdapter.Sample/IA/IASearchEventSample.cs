@@ -1,4 +1,4 @@
-﻿using BcGov.Fams3.SearchApi.Contracts.IA;
+using BcGov.Fams3.SearchApi.Contracts.IA;
 using BcGov.Fams3.SearchApi.Contracts.Person;
 using System;
 using System.Collections.Generic;
@@ -52,7 +52,7 @@ namespace SearchAdapter.Sample.IA
                     BatchNo = batchno,
                     SearchRequestKey = SearchRequestKey,
                     SearchRequestId = searchrequestId,
-                    TimeStamp = DateTime.Now,
+                    TimeStamp = DateTime.UtcNow,
                     RequestorTimeStamp = "RequestorTimeStamp",
                     Person = new Person
                     {
@@ -82,7 +82,7 @@ namespace SearchAdapter.Sample.IA
                     BatchNo = batchno,
                     SearchRequestKey = searchRequestKey,
                     SearchRequestId = searchrequestId,
-                    TimeStamp = DateTime.Now,
+                    TimeStamp = DateTime.UtcNow,
                     RequestorTimeStamp = "RequestorTimeStamp",
                     Person = new Person
                     {

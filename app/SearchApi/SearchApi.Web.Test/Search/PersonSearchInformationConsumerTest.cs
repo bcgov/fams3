@@ -1,4 +1,4 @@
-﻿using MassTransit.Testing;
+using MassTransit.Testing;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
@@ -35,7 +35,7 @@ namespace SearchApi.Web.Test.Search
             var fakePersonSearchStatus = new FakePersonSearchInformation
             {
                 SearchRequestKey = _requestKey,
-                TimeStamp = DateTime.Now,
+                TimeStamp = DateTime.UtcNow,
                 Message = "code : fake person search information recieved",
                 ProviderProfile = new FakeProviderProfile { Name ="JCA", SearchSpeedType=SearchSpeedType.Slow }
             };

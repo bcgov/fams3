@@ -57,7 +57,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
 
             _searchRequestPerson = new Person()
             {
-                DateOfBirth = DateTime.Now,
+                DateOfBirth = DateTime.UtcNow,
                 FirstName = "TEST1",
                 LastName = "TEST2",
                 CautionFlag="cautionFlag",
@@ -349,7 +349,7 @@ namespace DynamicsAdapter.Web.Test.SearchAgency
         {
             Person nullPerson = new Person()
             {
-                DateOfBirth = DateTime.Now,
+                DateOfBirth = DateTime.UtcNow,
                 FirstName = "TEST1",
                 LastName = "TEST2",
                 Identifiers = null,

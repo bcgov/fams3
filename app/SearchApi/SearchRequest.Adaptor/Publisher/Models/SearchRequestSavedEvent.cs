@@ -11,7 +11,7 @@ namespace SearchRequestAdaptor.Publisher.Models
         {
             this.RequestId = baseEvent.RequestId;
             this.SearchRequestId = baseEvent.SearchRequestId;
-            this.TimeStamp = DateTime.Now;
+            this.TimeStamp = DateTime.UtcNow;
             this.SearchRequestKey = baseEvent.SearchRequestKey;
             this.Action = baseEvent.Action;
         }

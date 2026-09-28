@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using BcGov.Fams3.SearchApi.Contracts.Person;
 using BcGov.Fams3.SearchApi.Contracts.PersonSearch;
 using BcGov.Fams3.SearchApi.Contracts.SearchRequest;
@@ -14,7 +14,7 @@ namespace BcGov.Fams3.SearchApi.Core.Adapters.Models
             SearchRequestId = searchRequestId;
             Action = action;
             Cause = cause;
-            TimeStamp = DateTime.Now;
+            TimeStamp = DateTime.UtcNow;
             SearchRequestKey = searchRequestKey;
         }
 

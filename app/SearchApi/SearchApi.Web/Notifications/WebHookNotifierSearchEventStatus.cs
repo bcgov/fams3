@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using SearchApi.Web.Configuration;
@@ -67,7 +67,7 @@ namespace SearchApi.Web.Notifications
                                 SearchRequestKey = eventStatus.SearchRequestKey,
                                 Message = "Search Request Finalized",
                                 SearchRequestId = eventStatus.SearchRequestId,
-                                TimeStamp = DateTime.Now
+                                TimeStamp = DateTime.UtcNow
                             };
                             content = new StringContent(JsonConvert.SerializeObject(finalizedSearch));
                         }
@@ -169,7 +169,7 @@ namespace SearchApi.Web.Notifications
                             SearchRequestKey = searchRequestKey,
                             Message = "Search Request Finalized",
                             SearchRequestId = Guid.NewGuid(),
-                            TimeStamp = DateTime.Now,
+                            TimeStamp = DateTime.UtcNow,
                             ProviderProfile = new ProviderProfileDetails { Name = dataPartner }
                         };
                         await NotifyEventAsync(searchRequestKey, (PersonSearchFinalized)finalizedSearch, EventName.Finalized, new CancellationToken());

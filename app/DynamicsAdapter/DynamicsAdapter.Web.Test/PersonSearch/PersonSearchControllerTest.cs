@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -130,7 +130,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             {
                 SearchRequestId = Guid.NewGuid(),
                 SearchRequestKey = _searchRequestKey,
-                TimeStamp = DateTime.Now,
+                TimeStamp = DateTime.UtcNow,
                 ProviderProfile = new ProviderProfile()
                 {
                     Name = "TEST PROVIDER"
@@ -141,7 +141,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             {
                 SearchRequestId = Guid.NewGuid(),
                 SearchRequestKey= _searchRequestKey,
-                TimeStamp = DateTime.Now,
+                TimeStamp = DateTime.UtcNow,
                 ProviderProfile = new ProviderProfile()
                 {
                     Name = "TEST PROVIDER"
@@ -149,7 +149,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
                 MatchedPersons = new List<PersonFound>()
                 {
                     new PersonFound(){
-                        DateOfBirth = DateTime.Now,
+                        DateOfBirth = DateTime.UtcNow,
                         FirstName = "TEST1",
                         LastName = "TEST2",
                         Identifiers = new List<PersonalIdentifier>() { },
@@ -168,7 +168,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             {
                 SearchRequestId = Guid.NewGuid(),
                 SearchRequestKey = _searchRequestKey,
-                TimeStamp = DateTime.Now,
+                TimeStamp = DateTime.UtcNow,
                 ProviderProfile = new ProviderProfile()
                 {
                     Name = "TEST PROVIDER"
@@ -181,7 +181,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             {
                 SearchRequestId = Guid.NewGuid(),
                 SearchRequestKey = _searchRequestKey,
-                TimeStamp = DateTime.Now,
+                TimeStamp = DateTime.UtcNow,
                 ProviderProfile = new ProviderProfile()
                 {
                     Name = "TEST PROVIDER"
@@ -193,7 +193,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             {
                 SearchRequestId = Guid.NewGuid(),
                 SearchRequestKey = _searchRequestKey,
-                TimeStamp = DateTime.Now,
+                TimeStamp = DateTime.UtcNow,
                 Message = "test message"
             };
 
@@ -201,7 +201,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             {
                 SearchRequestId = Guid.NewGuid(),
                 SearchRequestKey = _searchRequestKey,
-                TimeStamp = DateTime.Now,
+                TimeStamp = DateTime.UtcNow,
                 ProviderProfile = new ProviderProfile()
                 {
                     Name = "TEST PROVIDER"
@@ -213,7 +213,7 @@ namespace DynamicsAdapter.Web.Test.PersonSearch
             {
                 SearchRequestId = Guid.NewGuid(),
                 SearchRequestKey = _searchRequestKey,
-                TimeStamp = DateTime.Now,
+                TimeStamp = DateTime.UtcNow,
                 ProviderProfile = new ProviderProfile()
                 {
                     Name = "TEST PROVIDER"

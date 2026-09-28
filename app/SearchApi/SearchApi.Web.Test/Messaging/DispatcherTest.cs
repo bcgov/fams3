@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -101,7 +101,7 @@ namespace SearchApi.Web.Test.Messaging
             await sut.Dispatch(new PersonSearchRequest(
                 "firstName",
                 "lastName",
-                DateTime.Now,
+                DateTime.UtcNow,
                 new List<PersonalIdentifier>(),
                 new List<Address>(),
                 new List<Phone>(),
@@ -133,7 +133,7 @@ namespace SearchApi.Web.Test.Messaging
             await sut.Dispatch(new PersonSearchRequest(
                 "firstName",
                 "lastName",
-                DateTime.Now,
+                DateTime.UtcNow,
                 new List<PersonalIdentifier>(),
                 new List<Address>(),
                 new List<Phone>(),
@@ -168,7 +168,7 @@ namespace SearchApi.Web.Test.Messaging
             await sut.Dispatch(new PersonSearchRequest(
                 "firstName",
                 "lastName",
-                DateTime.Now,
+                DateTime.UtcNow,
                 new List<PersonalIdentifier>(),
                 new List<Address>(),
                 new List<Phone>(),
@@ -202,7 +202,7 @@ namespace SearchApi.Web.Test.Messaging
             await sut.Dispatch(new PersonSearchRequest(
                 "firstName",
                 "lastName",
-                DateTime.Now,
+                DateTime.UtcNow,
                 new List<PersonalIdentifier>(),
                 new List<Address>(),
                 new List<Phone>(),
@@ -224,7 +224,7 @@ namespace SearchApi.Web.Test.Messaging
             await sut.Dispatch(new PersonSearchRequest(
                 "firstName",
                 "lastName",
-                DateTime.Now,
+                DateTime.UtcNow,
                 new List<PersonalIdentifier>(),
                 new List<Address>(),
                 new List<Phone>(),
@@ -256,7 +256,7 @@ namespace SearchApi.Web.Test.Messaging
             Assert.ThrowsAsync<ArgumentNullException>(() => sut.Dispatch(new PersonSearchRequest(
                 "firstName",
                 "lastName",
-                DateTime.Now,
+                DateTime.UtcNow,
                 new List<PersonalIdentifier>(),
                 new List<Address>(),
                 new List<Phone>(),

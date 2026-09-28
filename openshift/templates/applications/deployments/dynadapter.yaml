@@ -54,7 +54,7 @@ objects:
         containers:
         - env:
           - name: JAEGER_SERVICE_NAME
-            value: dyanadapter
+            value: dynadapter
           - name: ADP
             required: true
             value: "set.adp"

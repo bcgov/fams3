@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -56,7 +56,7 @@ namespace SearchApi.Core.Test.Adapters.Middleware
             await _harness.BusControl.Publish<PersonSearchOrdered>(new PersonSearchOrderedTest()
             {
                 SearchRequestId = Guid.NewGuid(),
-                TimeStamp = DateTime.Now,
+                TimeStamp = DateTime.UtcNow,
                 Person = new Person()
                 {
                     FirstName = "",
